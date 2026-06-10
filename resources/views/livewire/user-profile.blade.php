@@ -54,7 +54,7 @@
                     <div class="crop-modal-overlay" wire:ignore.self>
                         <div class="crop-modal">
                             <div class="crop-modal-header">
-                                <h3>Crop Your Profile Picture</h3>
+                                <h3>Crop Your Profile Image</h3>
                                 <button type="button" class="modal-close-btn" wire:click="closeCropModal">×</button>
                             </div>
 
@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="crop-actions">
                                     <button type="button" class="btn-cancel" wire:click="closeCropModal">Cancel</button>
-                                    <button type="button" class="btn-save" id="saveCropBtn">Save Picture</button>
+                                    <button type="button" class="btn-save" id="saveCropBtn">Save Image</button>
                                 </div>
                             </div>
                         </div>

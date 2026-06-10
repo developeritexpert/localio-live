@@ -127,7 +127,7 @@
                             <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}"
                                 class="cta cta_trans">{{ $headerContent['login_btn_lable'] ?? 'Login' }}</a>
                             <a href="{{ route('register', ['locale' => session('lang_code', 'en-us')]) }}"
-                                class="cta cta_orange">{{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}</a>
+                                class="cta cta_orange wht-t-org-btn">{{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}</a>
                             @else
                             <x-user-profile />
                             <!-- <a href="{{ url('/logout') }}"
@@ -199,6 +199,13 @@
                                                 </div>
                                             </ul>
                                         </li>
+                                         {{-- @foreach($categories as $category)
+                                            <li class="menu-item">
+                                                <a href="{{ route('category.show', $category->slug) }}">
+                                                    {{ $category->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach --}}
                                         {{-- <li class=" menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
                                             <a href="#">{{ $headerContent['exclusive'] ?? 'Exclusive Deals' }}</a>
                                             <span class="dropdown_toggle"><i class="fa-solid fa-chevron-down"></i></span>

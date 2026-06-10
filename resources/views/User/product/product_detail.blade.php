@@ -195,9 +195,9 @@
 
                             // Fixed dynamic top content
                             $staticBottomSections = [
-                                ['id' => 'section9', 'label' => "Software like"],
+                                // ['id' => 'section9', 'label' => "Software like"],
                                 ['id' => 'section15', 'label' => 'FAQ'],
-                                ['id' => 'section14', 'label' => "Localio Reviews"],
+                                ['id' => 'section14', 'label' => "Reviews"],
                                 ['id' => 'section16', 'label' => 'Inbox'],
                             ];
 
@@ -221,14 +221,14 @@
                             // Fixed bottom static sections
 
                             $staticTopSections = [
-                                ['id' => 'section1', 'label' => 'Reviews'],
+                                ['id' => 'section1', 'label' => 'Ratings'],
                                 // ['id' => 'section2', 'label' => "$name"],
                                 ['id' => 'section3', 'label' => "Pricing"],
-                                ['id' => 'section4', 'label' => "Pros & cons"],
-                                ['id' => 'section5', 'label' => 'Popular Alternative'],
+                                // ['id' => 'section4', 'label' => "Pros & cons"],
+                                ['id' => 'section5', 'label' => 'Alternatives'],
                                 ['id' => 'features' , 'label' => 'Features'],
-                                ['id' => 'softweretopic', 'label' => 'Software Topic'],
-                                ['id' => 'business-integration', 'label' => 'Business Integration']
+                                // ['id' => 'softweretopic', 'label' => 'Software Topic'],
+                                ['id' => 'business-integration', 'label' => 'Integration']
 
                             ];
 
@@ -290,10 +290,9 @@
                 <div class="main_feture">
                     <div class=" fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
                         @if (count($business->features) > 0)
-                            <div class="main_feature_lg">
+                            {{-- <div class="main_feature_lg">
                                 <div class="feture_box lft_check_box size18 position-relative">
                                 <span class="badge-label">{{ $productBadgeLabel }}</span>
-                                {{-- <div class="feture_box lft_check_box size18"> --}}
                                     <ul class="list-unstyled">
                                         @foreach ($business->features as $feature)
                                             <li class="d-flex align-items-center size18">
@@ -305,7 +304,7 @@
                                         @endforeach
                                     </ul>
                                 </div>
-                            </div>
+                            </div> --}}
                         @else
                             <div class="main_feature_lg">
                                 <div class="feture_box lft_check_box size18">
@@ -383,16 +382,15 @@
                         <div class="main_feature_sm">
                             <div class="feture_box str_prc_box">
                                  <div class=r"src_box text-center">
-                                    <!-- Blue Dollarrr Circrle -->ff
+                                    <!-- Blue Dollarrr Circrle -->
                                     <div class="price-icon">
                                         <img src="{{ asset('ffront/img/ddmoney.svg') }}">
-                                    </div>ddff
-ddrr
-                                    <h2 class="big_text mt-2">Starrting Price</h2>
-                                    @if ($starrtingPrice)
+                                    </div>
+                                    <h2 class="big_text mt-2">Starting Price</h2>
+                                    @if ($startingPrice)
                                         <h3 class="blue-text">{{ $currency }}{{ $startingPrice }}<span
-                                       r         class="big_text">/ {{ $timeUnit }}</span></h3>
-                                    @elrse
+                                                class="big_text">/ {{ $timeUnit }}</span></h3>
+                                    @else
                                         <h3 class="blue-text">{{ $currency }}9<span class="big_text">/
                                                 {{ $timeUnit }}</span></h3>
                                     @endif
@@ -400,7 +398,7 @@ ddrr
 
                             </div>
                         </div>
-dddd
+
                         <div class="main_feature_sm">
                             <div class="fre_trail feture_box size22">
                                 <div class="grn_check_big">
@@ -410,7 +408,7 @@ dddd
                                     Available
                                 </h6>
                                 <div class="accor-btn">
-                                    <a class="cta cta_white blue_org_btn"
+                                    <a class="cta cta_white blue_t_org_btn"
                                         data-track="{{ json_encode([
                                             'type' => 'click',
                                             // 'product_id' => $product->id,
@@ -470,6 +468,11 @@ dddd
 
             </div>
         </section>
+
+
+              
+
+
         <!-- Products Section -->
 
         <!-- Products Section -->
@@ -1997,10 +2000,10 @@ dddd
                                 {{-- End Localio Review Breakdown --}}
                                 <div class="crm_review_box review_sec" id="all-reviews">
                                     <nav class="d-flex">
-                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                        {{-- <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                             <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
                                                 data-bs-target="#nav-home" type="button" role="tab"
-                                                aria-controls="nav-home" aria-selected="true">All Reviews</button>
+                                                aria-controls="nav-home" aria-selected="true">All Reviews</button> --}}
 
                                             {{-- @auth
                                                 <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
@@ -2010,7 +2013,7 @@ dddd
                                                 </button>
                                             @endauth --}}
 
-                                                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
+                                                {{-- <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
                                                 data-bs-target="#nav-profile" type="button" role="tab"
                                                 aria-controls="nav-profile" aria-selected="false">Localio
                                                 Reviews
@@ -2020,7 +2023,7 @@ dddd
                                                 data-bs-target="#nav-contact" type="button" role="tab"
                                                 aria-controls="nav-contact" aria-selected="false">Trustpilot
                                                 Reviews</button>
-                                        </div>
+                                        </div> --}}
                                         <div class="selct_box">
                                             <form method="GET" id="sort-form">
                                                 <label for="rating-select">Sort by:</label>
