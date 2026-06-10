@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('trash_files', function (Blueprint $table) {
+            $table->id();
+            $table->string('dir_path');
+            $table->string('file_name');
+            $table->string('file_type');
+            $table->integer('file_size');
+            $table->timestamp('soft_deleted_at');  // When it was soft deleted
+            $table->timestamps();  // Created and updated timestamps
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('trash_files');
+    }
+};

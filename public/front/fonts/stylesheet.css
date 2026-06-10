@@ -1,0 +1,45 @@
+@font-face {
+    font-family: 'Basis Grotesque Arabic Pro Md';
+    src: url('BasisGrotesqueArabicPro-Medium.woff2') format('woff2'),
+        url('BasisGrotesqueArabicPro-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Basis Grotesque Arabic Pro';
+    src: url('BasisGrotesqueArabicPro-Bold.woff2') format('woff2'),
+        url('BasisGrotesqueArabicPro-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Basis Grotesque Arabic Pro Lt';
+    src: url('BasisGrotesqueArabicPro-Light.woff2') format('woff2'),
+        url('BasisGrotesqueArabicPro-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Basis Grotesque Arabic Pro Blk';
+    src: url('BasisGrotesqueArabicPro-Black.woff2') format('woff2'),
+        url('BasisGrotesqueArabicPro-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Basis Grotesque Arabic Pro';
+    src: url('BasisGrotesqueArabicPro-Regular.woff2') format('woff2'),
+        url('BasisGrotesqueArabicPro-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
