@@ -4687,7 +4687,7 @@ div.dataTables_wrapper div.dataTables_filter .input-group.has-validation > .form
   border-color: #06498b;
 }
 .page-link.disabled, .disabled > .page-link {
-  color: var(--bs-pagination-disabled-color);
+  /* color: var(--bs-pagination-disabled-color); */
   pointer-events: none;
   background-color: var(--bs-pagination-disabled-bg);
   border-color: var(--bs-pagination-disabled-border-color);
@@ -41520,6 +41520,7 @@ a.btn.btn-light:hover {
 
 #DataTables_Table_0_wrapper .drodown .dropdown-menu.dropdown-menu-end ul.link-list-opt li a {
   color: #526484 !important;
+  cursor:pointer;
 }
 
 .link-list-opt .icon{
@@ -41617,4 +41618,9 @@ div#DataTables_Table_0_wrapper .drodown .dropdown a::before {
 }
 .permanent-link-container .permanent-link-display:not([style="display:none;"]) span.url-editable {
     padding-right: 20px;
+}
+
+/* 11-jun-26 */
+.select2-container--default .select2-selection--multiple .select2-selection__clear{
+    display:none;
 }

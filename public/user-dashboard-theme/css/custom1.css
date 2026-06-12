@@ -390,7 +390,7 @@ h6 {
 
 /* footer css */
 footer.ds_ftr {
-  padding: 15.25px 0px;
+  padding: 12px 0px;
   position: relative;
   background-color: #06498b !important;
 }
@@ -2004,10 +2004,16 @@ ul.list-unstyled.m-0 li:hover {
   border: 1px solid #06498b !important;
 }
 
-.crop-modal-overlay .btn-save:hover {
+/* .crop-modal-overlay .btn-save:hover {
   border: 1px solid #06498b !important;
   background-color: transparent !important;
   color: #06498b !important;
+} */
+
+.crop-modal-overlay .btn-save:hover {
+  border: 1px solid #f9633b !important;
+  background-color: #f9633b !important;
+  color: #fff !important;
 }
 
 .btn-cancel {
@@ -2661,3 +2667,17 @@ header.main_dhdr {
   color: #000 !important;
 }
 /* 7oct2025 end  */
+
+/* 11-jun-26  */
+.usr_profile img {
+  max-width:50px
+}
+.notf .notfictn_lnk span{
+  font-size:12px;
+  font-weight: 700;
+}
+.reward-main-inner {
+border:1px solid #dadce0;
+border-radius:5px;
+}
+

@@ -274,219 +274,14 @@
                 {{-- End this table content Stacture code --}}
 
             </div>
-            <div class="container">
-                <div class="lcl_text">
-                    <p class="sml_text">{{ static_text('localio_commissions_message') }}
-                        <a class="big-bld" type="button" onclick="openModal()">Learn more</a>
-                    </p>
-                </div>
-                @php
-                    $productBadgeLabel = static_text('product_badge_label') ?? 'Key Features';
-                    // dd($productBadgeLabel);
-                @endphp
-
-                {{-- changes here --}}
-                {{-- <div class="main_feture" style="--product-badge-label: '{{ addslashes($productBadgeLabel) }}';"> --}}
-                <div class="main_feture">
-                    <div class=" fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
-                        @if (count($business->features) > 0)
-                            {{-- <div class="main_feature_lg">
-                                <div class="feture_box lft_check_box size18 position-relative">
-                                <span class="badge-label">{{ $productBadgeLabel }}</span>
-                                    <ul class="list-unstyled">
-                                        @foreach ($business->features as $feature)
-                                            <li class="d-flex align-items-center size18">
-                                                <div class="grn_chk">
-                                                    <img src="{{ asset('front/img/tick-img.png') }}">
-                                                </div>
-                                                <p class="m-0">{{ $feature->translations->first()->name ?? '' }}</p>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div> --}}
-                        @else
-                            <div class="main_feature_lg">
-                                <div class="feture_box lft_check_box size18">
-                                    <ul class="list-unstyled">
-                                        <li class="d-flex align-items-center size18">
-                                            <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
-                                            </div>
-                                            <p class="m-0">Free domain & SSL certificate</p>
-                                        </li>
-                                        <li class="d-flex align-items-center size18">
-                                            <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
-                                            </div>
-                                            <p class="m-0">Customizable automatic updates</p>
-                                        </li>
-                                        <li class="d-flex align-items-center size18">
-                                            <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
-                                            </div>
-                                            <p class="m-0">Scalable performance management</p>
-                                        </li>
-                                        <li class="d-flex align-items-center size18">
-                                            <div class="grn_chk">
-                                                <img src="{{ asset('front/img/tick-img.png') }}">
-                                            </div>
-                                            <p class="m-0">DDoS & malware protection</p>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        @endif
-
-                        {{-- Replace This Feature Section side of the Free trial box --}}
-                        {{-- <div class="main_feature_lg">
-                            <div class="feture_box">
-                                <h2 class="size22 big-bld">Localio Review Breakdown</h2>
-                                <ul class="p-0 m-0">
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Ease of Use</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $easeOfUseAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $easeOfUseAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Customer Service</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $customerServiceAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $customerServiceAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Features</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $exclusiveFeatureAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $exclusiveFeatureAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Value for Money</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $valueForMoneyAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $valueForMoneyAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div> --}}
-
-                        <div class="main_feature_sm">
-                            <div class="feture_box str_prc_box">
-                                 <div class=r"src_box text-center">
-                                    <!-- Blue Dollarrr Circrle -->
-                                    <div class="price-icon">
-                                        <img src="{{ asset('ffront/img/ddmoney.svg') }}">
-                                    </div>
-                                    <h2 class="big_text mt-2">Starting Price</h2>
-                                    @if ($startingPrice)
-                                        <h3 class="blue-text">{{ $currency }}{{ $startingPrice }}<span
-                                                class="big_text">/ {{ $timeUnit }}</span></h3>
-                                    @else
-                                        <h3 class="blue-text">{{ $currency }}9<span class="big_text">/
-                                                {{ $timeUnit }}</span></h3>
-                                    @endif
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="main_feature_sm">
-                            <div class="fre_trail feture_box size22">
-                                <div class="grn_check_big">
-                                    <img src="{{ asset('front/img/new-grn-chk.svg') }}">
-                                </div>
-                                <h6 class="blue-text big-bld">Free Trial
-                                    Available
-                                </h6>
-                                <div class="accor-btn">
-                                    <a class="cta cta_white blue_t_org_btn"
-                                        data-track="{{ json_encode([
-                                            'type' => 'click',
-                                            // 'product_id' => $product->id,
-                                            'business_id' => $business->id,
-                                            'action' => 'claim_now',
-                                            'label' => 'Claim Now',
-                                        ]) }}"
-                                        type="button">Claim Now</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Add Here Feature Localio Review Breakdown --}}
-                        <div class="main_feature_lg">
-                            <div class="feture_box">
-                                <h2 class="size22 big-bld">Localio Review Breakdown</h2>
-                                <ul class="p-0 m-0">
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Ease of Use</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $easeOfUseAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $easeOfUseAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Customer Service</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $customerServiceAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $customerServiceAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Features</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $exclusiveFeatureAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $exclusiveFeatureAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Value for Money</span>
-                                        <div class="prgs_br">
-                                            <progress class="progress-bar" value="{{ $valueForMoneyAvg * 20 }}"
-                                                max="100"></progress>
-                                            <output>{{ $valueForMoneyAvg }}/5</output>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        {{-- End Feature Localio Review Breakdown --}}
-                    </div>
-                </div>
-
-
-            </div>
+           
         </section>
 
 
-              
-
-
-        <!-- Products Section -->
-
-        <!-- Products Section -->
-
-        <!-- section whatis -->
-        <div class="con_table pb-0" id="section2">
-            <div class="container">
-
-                <div class="row pt-0 p_50">
-                    <div class="col-lg-12">
-                        <div class="inner_table_1">
-                            <section class="is-asana light">
-
-                                <div class="is-asana-wrp" data-aos="fade-up" data-aos-duration="1000">
+              <section class="revie_img_sec">
+                   <div class="container">
+                       <div class="image_revie_inr">
+                            <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
                                     <div class="row sld_rw">
                                         <div class="col-lg-12">
                                             <div class="is-asana-lft">
@@ -580,7 +375,225 @@
                                         {{-- End Business Images  --}}
 
                                     </div>
+                                    <div class="lcl_text">
+                                    <p class="sml_text">{{ static_text('localio_commissions_message') }}
+                                        <a class="big-bld" type="button" onclick="openModal()">Learn more</a>
+                                    </p>
                                 </div>
+                            </div>
+                            <div class="thre_revi_rgt">
+                                
+                                @php
+                                    $productBadgeLabel = static_text('product_badge_label') ?? 'Key Features';
+                                    // dd($productBadgeLabel);
+                                @endphp
+
+                                {{-- changes here --}}
+                                {{-- <div class="main_feture" style="--product-badge-label: '{{ addslashes($productBadgeLabel) }}';"> --}}
+                                <div class="main_feture">
+                                    <div class=" fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
+                                        @if (count($business->features) > 0)
+                                            {{-- <div class="main_feature_lg">
+                                                <div class="feture_box lft_check_box size18 position-relative">
+                                                <span class="badge-label">{{ $productBadgeLabel }}</span>
+                                                    <ul class="list-unstyled">
+                                                        @foreach ($business->features as $feature)
+                                                            <li class="d-flex align-items-center size18">
+                                                                <div class="grn_chk">
+                                                                    <img src="{{ asset('front/img/tick-img.png') }}">
+                                                                </div>
+                                                                <p class="m-0">{{ $feature->translations->first()->name ?? '' }}</p>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div> --}}
+                                        @else
+                                            <div class="main_feature_lg">
+                                                <div class="feture_box lft_check_box size18">
+                                                    <ul class="list-unstyled">
+                                                        <li class="d-flex align-items-center size18">
+                                                            <div class="grn_chk">
+                                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                            </div>
+                                                            <p class="m-0">Free domain & SSL certificate</p>
+                                                        </li>
+                                                        <li class="d-flex align-items-center size18">
+                                                            <div class="grn_chk">
+                                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                            </div>
+                                                            <p class="m-0">Customizable automatic updates</p>
+                                                        </li>
+                                                        <li class="d-flex align-items-center size18">
+                                                            <div class="grn_chk">
+                                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                            </div>
+                                                            <p class="m-0">Scalable performance management</p>
+                                                        </li>
+                                                        <li class="d-flex align-items-center size18">
+                                                            <div class="grn_chk">
+                                                                <img src="{{ asset('front/img/tick-img.png') }}">
+                                                            </div>
+                                                            <p class="m-0">DDoS & malware protection</p>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Replace This Feature Section side of the Free trial box --}}
+                                        {{-- <div class="main_feature_lg">
+                                            <div class="feture_box">
+                                                <h2 class="size22 big-bld">Localio Review Breakdown</h2>
+                                                <ul class="p-0 m-0">
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Ease of Use</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $easeOfUseAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $easeOfUseAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Customer Service</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $customerServiceAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $customerServiceAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Features</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $exclusiveFeatureAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $exclusiveFeatureAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Value for Money</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $valueForMoneyAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $valueForMoneyAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div> --}}
+
+                                    <div class="innr_price_trail">
+
+                                        <div class="main_feature_sm">
+                                            <div class="feture_box str_prc_box">
+                                                <div class=r"src_box text-center">
+                                                    <!-- Blue Dollarrr Circrle -->
+                                                    <div class="price-icon">
+                                                        <img src="{{ asset('ffront/img/ddmoney.svg') }}">
+                                                    </div>
+                                                    <h2 class="big_text mt-2">Starting Price</h2>
+                                                    @if ($startingPrice)
+                                                        <h3 class="blue-text">{{ $currency }}{{ $startingPrice }}<span
+                                                                class="big_text">/ {{ $timeUnit }}</span></h3>
+                                                    @else
+                                                        <h3 class="blue-text">{{ $currency }}9<span class="big_text">/
+                                                                {{ $timeUnit }}</span></h3>
+                                                    @endif
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="main_feature_sm">
+                                            <div class="fre_trail feture_box size22">
+                                                <div class="grn_check_big">
+                                                    <img src="{{ asset('front/img/new-grn-chk.svg') }}">
+                                                </div>
+                                                <h6 class="blue-text big-bld">Free Trial
+                                                    Available
+                                                </h6>
+                                                <div class="accor-btn">
+                                                    <a class="cta cta_white blue_t_org_btn"
+                                                        data-track="{{ json_encode([
+                                                            'type' => 'click',
+                                                            // 'product_id' => $product->id,
+                                                            'business_id' => $business->id,
+                                                            'action' => 'claim_now',
+                                                            'label' => 'Claim Now',
+                                                        ]) }}"
+                                                        type="button">Claim Now</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                        {{-- Add Here Feature Localio Review Breakdown --}}
+                                        <div class="main_feature_lg">
+                                            <div class="feture_box">
+                                                <h2 class="size22 big-bld">Localio Review Breakdown</h2>
+                                                <ul class="p-0 m-0">
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Ease of Use</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $easeOfUseAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $easeOfUseAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Customer Service</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $customerServiceAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $customerServiceAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Features</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $exclusiveFeatureAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $exclusiveFeatureAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                    <li class="d-flex justify-content-between">
+                                                        <span class="lyt-text">Value for Money</span>
+                                                        <div class="prgs_br">
+                                                            <progress class="progress-bar" value="{{ $valueForMoneyAvg * 20 }}"
+                                                                max="100"></progress>
+                                                            <output>{{ $valueForMoneyAvg }}/5</output>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        {{-- End Feature Localio Review Breakdown --}}
+                                    </div>
+                                </div>
+
+
+                            </div>
+                       </div>     
+                   </div>         
+              </section>
+
+        
+{{-- -------------------------------------------------------------- --}}
+
+        <!-- Products Section -->
+
+        <!-- Products Section -->
+
+        <!-- section whatis -->
+        <div class="con_table pb-0" id="section2">
+            <div class="container">
+
+                <div class="row pt-0 p_50">
+                    <div class="col-lg-12">
+                        <div class="inner_table_1">
+                            <section class="is-asana light">
+
+                                
                             </section>
 
                             {{-- Added The New Section preview reviews --}}
@@ -1230,7 +1243,7 @@
                             @endif
 
                             <!-- section software-like -->
-                            <section class="software-like p_50 dark " id="section9">
+                            <section class="software-like p_50 product_integra_sec " id="section9">
                                 <div class="sftwre-like-innr">
                                     <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
                                         {{-- <h2>Software like {{ $business->translations->first()->name }}</h2> --}}
@@ -1856,7 +1869,7 @@
 
 
                             <!-- scetion crm sec -->
-                            <section class="crm_sec " id="section14">
+                            <section class="crm_sec revie_left_rgt_sec " id="section14">
 
                                 <div class="crm_content" data-aos="fade-up" data-aos-duration="1000">
                                     <div class="crm_hd">
@@ -2042,104 +2055,238 @@
                                             </form>
                                         </div>
                                     </nav>
-                                    <div class="tab-content" id="nav-tabContent">
-                                        <div class="tab-pane fade active show" id="nav-home" role="tabpanel"
-                                            aria-labelledby="nav-home-tab">
-                                            @foreach ($allReviews as $review)
-                                                <div class="review_detl populr-alternative" data-aos="fade-up"
-                                                    data-aos-duration="1000">
-                                                    <div class="reviw_hd">
-                                                        <div class="ans_lft">
-                                                            <div class="asn-img">
-                                                                @if ($review->user && $review->user->profile_image)
-                                                                    <img src="{{ asset($review->user->profile_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="User Image">
-                                                                @else
-                                                                    <img src="{{ asset($default_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="Default Image">
-                                                                @endif
-                                                            </div>
-                                                            <div class="asn-rating">
-                                                                <h6>
-                                                                    @if ($review->user && $review->user->user_type === 'admin')
-                                                                        {{ $review->public_name ?? 'Public' }}
-                                                                    @else
-                                                                        {{ $review->user->first_name ?? 'Anonymous' }}
-                                                                    @endif
-                                                                </h6>
+                                <div class="row review-row-prod-inr">
+                                      <div class="col-lg-4">
+                                            <div class="review-col">
 
-                                                                <div class="rating light">
-                                                                    {{-- Change Review --}}
-                                                                    <div class="inn_ul">
-                                                                        <div class="rating-stars">
-                                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                                @if ($i <= floor($averageRating))
-                                                                                    <i
-                                                                                        class="fas fa-star text-warning"></i>
-                                                                                @elseif ($i - 0.5 <= $averageRating)
-                                                                                    <i
-                                                                                        class="fas fa-star-half-alt text-warning"></i>
+                                                {{-- <div class="review-star-box">
+                                                    <ul class="progress-list">
+                                                        @for ($i = 5; $i >= 1; $i--)
+                                                            @php
+                                                                $count = $ratingsCount[$i] ?? 0;
+                                                                $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+                                                            @endphp
+                                                            <li class="progress-list-item">
+                                                                <div class="star-div">
+                                                                    <ol class="star-div-ol">
+                                                                        @for ($j = 1; $j <= 5; $j++)
+                                                                            @if ($j <= $i)
+                                                                                <li><img src="{{ asset('front/img/star-lft.svg') }}" alt="Star"></li>
+                                                                            @else
+                                                                                <li><img src="{{ asset('front/img/empty-star-img.svg') }}" alt="Star"></li>
+                                                                            @endif
+                                                                        @endfor
+                                                                    </ol>
+                                                                </div>
+                                                                <div class="progress-box">
+                                                                    <div class="progress-fill" style="width: {{ $percent }}%;"></div>
+                                                                </div>
+                                                                <div class="profres-value">
+                                                                    <p>{{ $percent }}%</p>
+                                                                </div>
+                                                            </li>
+                                                        @endfor
+                                                    </ul>
+                                                </div> --}}
+
+                                                <div class="review-star-box">
+                                                    <ul class="progress-list">
+                                                        @for ($i = 5; $i >= 1; $i--)
+                                                            @php
+                                                                $count = $ratingsCount[$i] ?? 0;
+                                                                $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+                                                            @endphp
+                                                            <li class="progress-list-item">
+                                                                <div class="star-div">
+                                                                    <ol class="star-div-ol">
+                                                                        @for ($j = 1; $j <= 5; $j++)
+                                                                            <li>
+                                                                                @if ($j <= $i)
+                                                                                    <i class="fas fa-star text-warning"></i>
                                                                                 @else
-                                                                                    <i
-                                                                                        class="far fa-star text-warning"></i>
+                                                                                    <i class="far fa-star text-warning"></i>
                                                                                 @endif
-                                                                            @endfor
+                                                                            </li>
+                                                                        @endfor
+                                                                    </ol>
+                                                                </div>
+                                                                <div class="progress-box">
+                                                                    <div class="progress-fill" style="width: {{ $percent }}%;"></div>
+                                                                </div>
+                                                                <div class="profres-value">
+                                                                    <p>{{ $percent }}%</p>
+                                                                </div>
+                                                            </li>
+                                                        @endfor
+                                                    </ul>
+                                                </div>
+
+                                             </div>
+                                      </div>
+                                      <div class="col-lg-8">
+                                        <div class="tab-content" id="nav-tabContent">
+                                            <div class="tab-pane fade active show" id="nav-home" role="tabpanel"
+                                                aria-labelledby="nav-home-tab">
+                                                @foreach ($allReviews as $review)
+                                                    <div class="review_detl populr-alternative" data-aos="fade-up"
+                                                        data-aos-duration="1000">
+                                                        <div class="reviw_hd">
+                                                            <div class="ans_lft">
+                                                                <div class="asn-img">
+                                                                    @if ($review->user && $review->user->profile_image)
+                                                                        <img src="{{ asset($review->user->profile_image) }}"
+                                                                            class="img-fluid profile-circle"
+                                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                                            alt="User Image">
+                                                                    @else
+                                                                        <img src="{{ asset($default_image) }}"
+                                                                            class="img-fluid profile-circle"
+                                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                                            alt="Default Image">
+                                                                    @endif
+                                                                </div>
+                                                                <div class="asn-rating">
+                                                                    <h6>
+                                                                        @if ($review->user && $review->user->user_type === 'admin')
+                                                                            {{ $review->public_name ?? 'Public' }}
+                                                                        @else
+                                                                            {{ $review->user->first_name ?? 'Anonymous' }}
+                                                                        @endif
+                                                                    </h6>
+
+                                                                    <div class="rating light">
+                                                                        {{-- Change Review --}}
+                                                                        <div class="inn_ul">
+                                                                            <div class="rating-stars">
+                                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                                    @if ($i <= floor($averageRating))
+                                                                                        <i
+                                                                                            class="fas fa-star text-warning"></i>
+                                                                                    @elseif ($i - 0.5 <= $averageRating)
+                                                                                        <i
+                                                                                            class="fas fa-star-half-alt text-warning"></i>
+                                                                                    @else
+                                                                                        <i
+                                                                                            class="far fa-star text-warning"></i>
+                                                                                    @endif
+                                                                                @endfor
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="rate_box">
+                                                                            {{ number_format($averageRating, 1) }} |
+                                                                            {{-- {{ $ratingCount }} ratings --}}
+                                                                            @if ($ratingCount === 0)
+                                                                                0 Ratings
+                                                                            @elseif ($ratingCount === 1)
+                                                                                1 Rating
+                                                                            @else
+                                                                                {{ $ratingCount }} Ratings
+                                                                            @endif
                                                                         </div>
                                                                     </div>
-                                                                    <div class="rate_box">
-                                                                        {{ number_format($averageRating, 1) }} |
-                                                                        {{-- {{ $ratingCount }} ratings --}}
-                                                                        @if ($ratingCount === 0)
-                                                                            0 Ratings
-                                                                        @elseif ($ratingCount === 1)
-                                                                            1 Rating
+
+                                                                    {{-- <span
+                                                                    class="rating-text size18">{{ number_format($review->rating, 1) }}</span>
+                                                                <div class="rating_str">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        @if ($i <= floor($review->rating))
+                                                                        <i class="fas fa-star text-warning"></i>
+                                                                        @elseif ($i - 0.5 <= $review->rating)
+                                                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                                                            @else
+                                                                            <i class="far fa-star text-warning"></i>
+                                                                            @endif
+                                                                            @endfor
+                                                                </div>  --}}
+
+                                                                </div>
+                                                            </div>
+                                                            <p>{{ $review->created_at->diffForHumans() }}</p>
+                                                        </div>
+                                                        <div class="review_text size18">
+                                                            <p class="size22 big-bld">
+                                                                {{ $review->translations->first()->title ?? '' }}
+                                                            </p>
+                                                            <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                                <div class="btm-bttn light">
+                                                    <a class="cta cta_white"
+                                                        href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
+                                                        More Reviews</a>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="nav-profile" role="tabpanel"
+                                                aria-labelledby="nav-profile-tab">
+                                                @foreach ($ourReviews as $review)
+                                                    @if ($review->user)
+                                                        <div class="review_detl" data-aos="fade-up" data-aos-duration="1000">
+                                                            <div class="reviw_hd">
+                                                                <div class="ans_lft">
+                                                                    <div class="asn-img">
+                                                                        @if ($review->user && $review->user->profile_image)
+                                                                            <img src="{{ asset($review->user->profile_image) }}"
+                                                                                class="img-fluid profile-circle"
+                                                                                style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                                                alt="User Image">
                                                                         @else
-                                                                            {{ $ratingCount }} Ratings
+                                                                            <img src="{{ asset($default_image) }}"
+                                                                                class="img-fluid profile-circle"
+                                                                                style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                                                alt="Default Image">
                                                                         @endif
                                                                     </div>
+                                                                    <div class="asn-rating">
+                                                                        <h6>
+                                                                            @if ($review->user && $review->user->user_type === 'admin')
+                                                                                {{ $review->public_name ?? 'Public' }}
+                                                                            @else
+                                                                                {{ $review->user->first_name ?? 'Anonymous' }}
+                                                                            @endif
+                                                                        </h6>
+                                                                        <div class="rating light">
+                                                                            <span
+                                                                                class="rating-score size18">{{ number_format($review->rating, 1) }}</span>
+                                                                            <div class="rating_str">
+                                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                                    @if ($i <= floor($review->rating))
+                                                                                        <i
+                                                                                            class="fas fa-star text-warning"></i>
+                                                                                    @elseif ($i - 0.5 <= $review->rating)
+                                                                                        <i
+                                                                                            class="fas fa-star-half-alt text-warning"></i>
+                                                                                    @else
+                                                                                        <i
+                                                                                            class="far fa-star text-warning"></i>
+                                                                                    @endif
+                                                                                @endfor
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-
-                                                                {{-- <span
-                                                                class="rating-text size18">{{ number_format($review->rating, 1) }}</span>
-                                                            <div class="rating_str">
-                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                    @if ($i <= floor($review->rating))
-                                                                    <i class="fas fa-star text-warning"></i>
-                                                                    @elseif ($i - 0.5 <= $review->rating)
-                                                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                                                        @else
-                                                                        <i class="far fa-star text-warning"></i>
-                                                                        @endif
-                                                                        @endfor
-                                                            </div>  --}}
-
+                                                                <p>{{ $review->created_at->diffForHumans() }}</p>
+                                                            </div>
+                                                            <div class="review_text size18">
+                                                                <p class="size22 big-bld">
+                                                                    {{ $review->translations->first()->title ?? '' }}
+                                                                </p>
+                                                                <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <p>{{ $review->created_at->diffForHumans() }}</p>
-                                                    </div>
-                                                    <div class="review_text size18">
-                                                        <p class="size22 big-bld">
-                                                            {{ $review->translations->first()->title ?? '' }}
-                                                        </p>
-                                                        <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
-                                                        </p>
-                                                    </div>
+                                                    @endif
+                                                @endforeach
+                                                <div class="btm-bttn light">
+                                                    <a class="cta cta_white"
+                                                        href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
+                                                        All Reviews</a>
                                                 </div>
-                                            @endforeach
-                                            <div class="btm-bttn light">
-                                                <a class="cta cta_white"
-                                                    href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                                                    More Reviews</a>
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="nav-profile" role="tabpanel"
-                                            aria-labelledby="nav-profile-tab">
-                                            @foreach ($ourReviews as $review)
-                                                @if ($review->user)
+                                            <div class="tab-pane fade" id="nav-contact" role="tabpanel"
+                                                aria-labelledby="nav-contact-tab">
+                                                @foreach ($trustpilotReviews as $review)
                                                     <div class="review_detl" data-aos="fade-up" data-aos-duration="1000">
                                                         <div class="reviw_hd">
                                                             <div class="ans_lft">
@@ -2164,24 +2311,52 @@
                                                                             {{ $review->user->first_name ?? 'Anonymous' }}
                                                                         @endif
                                                                     </h6>
-                                                                    <div class="rating light">
+
+                                                                    {{-- <div class="rating light">
                                                                         <span
-                                                                            class="rating-score size18">{{ number_format($review->rating, 1) }}</span>
+                                                                            class="rating-text size18">{{ number_format($review->rating, 1) }} 2313221</span>
                                                                         <div class="rating_str">
                                                                             @for ($i = 1; $i <= 5; $i++)
                                                                                 @if ($i <= floor($review->rating))
-                                                                                    <i
-                                                                                        class="fas fa-star text-warning"></i>
+                                                                                    <i class="fas fa-star text-warning"></i>
                                                                                 @elseif ($i - 0.5 <= $review->rating)
                                                                                     <i
                                                                                         class="fas fa-star-half-alt text-warning"></i>
                                                                                 @else
-                                                                                    <i
-                                                                                        class="far fa-star text-warning"></i>
+                                                                                    <i class="far fa-star text-warning"></i>
                                                                                 @endif
                                                                             @endfor
                                                                         </div>
+                                                                    </div> --}}
+
+                                                                    <div class="rating light">
+                                                                        <div class="inn_ul">
+                                                                            <div class="rating-stars">
+                                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                                    @if ($i <= floor($review->rating))
+                                                                                        <i class="fas fa-star text-warning"></i>
+                                                                                    @elseif ($i - 0.5 <= $review->rating)
+                                                                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                                                                    @else
+                                                                                        <i class="far fa-star text-warning"></i>
+                                                                                    @endif
+                                                                                @endfor
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="rate_box">
+                                                                            {{ number_format($review->rating, 1) }} |
+                                                                            {{-- {{ $ratingCount }} ratings --}}
+                                                                            @if ($ratingCount === 0)
+                                                                            0 Ratings
+                                                                            @elseif ($ratingCount === 1)
+                                                                                1 Rating
+                                                                            @else
+                                                                                {{ $ratingCount }} Ratings
+                                                                            @endif
+                                                                        </div>
+
                                                                     </div>
+
                                                                 </div>
                                                             </div>
                                                             <p>{{ $review->created_at->diffForHumans() }}</p>
@@ -2194,107 +2369,17 @@
                                                             </p>
                                                         </div>
                                                     </div>
-                                                @endif
-                                            @endforeach
-                                            <div class="btm-bttn light">
-                                                <a class="cta cta_white"
-                                                    href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                                                    All Reviews</a>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane fade" id="nav-contact" role="tabpanel"
-                                            aria-labelledby="nav-contact-tab">
-                                            @foreach ($trustpilotReviews as $review)
-                                                <div class="review_detl" data-aos="fade-up" data-aos-duration="1000">
-                                                    <div class="reviw_hd">
-                                                        <div class="ans_lft">
-                                                            <div class="asn-img">
-                                                                @if ($review->user && $review->user->profile_image)
-                                                                    <img src="{{ asset($review->user->profile_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="User Image">
-                                                                @else
-                                                                    <img src="{{ asset($default_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="Default Image">
-                                                                @endif
-                                                            </div>
-                                                            <div class="asn-rating">
-                                                                <h6>
-                                                                    @if ($review->user && $review->user->user_type === 'admin')
-                                                                        {{ $review->public_name ?? 'Public' }}
-                                                                    @else
-                                                                        {{ $review->user->first_name ?? 'Anonymous' }}
-                                                                    @endif
-                                                                </h6>
-
-                                                                {{-- <div class="rating light">
-                                                                    <span
-                                                                        class="rating-text size18">{{ number_format($review->rating, 1) }} 2313221</span>
-                                                                    <div class="rating_str">
-                                                                        @for ($i = 1; $i <= 5; $i++)
-                                                                            @if ($i <= floor($review->rating))
-                                                                                <i class="fas fa-star text-warning"></i>
-                                                                            @elseif ($i - 0.5 <= $review->rating)
-                                                                                <i
-                                                                                    class="fas fa-star-half-alt text-warning"></i>
-                                                                            @else
-                                                                                <i class="far fa-star text-warning"></i>
-                                                                            @endif
-                                                                        @endfor
-                                                                    </div>
-                                                                </div> --}}
-
-                                                                <div class="rating light">
-                                                                    <div class="inn_ul">
-                                                                        <div class="rating-stars">
-                                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                                @if ($i <= floor($review->rating))
-                                                                                    <i class="fas fa-star text-warning"></i>
-                                                                                @elseif ($i - 0.5 <= $review->rating)
-                                                                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                @else
-                                                                                    <i class="far fa-star text-warning"></i>
-                                                                                @endif
-                                                                            @endfor
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="rate_box">
-                                                                        {{ number_format($review->rating, 1) }} |
-                                                                        {{-- {{ $ratingCount }} ratings --}}
-                                                                        @if ($ratingCount === 0)
-                                                                        0 Ratings
-                                                                        @elseif ($ratingCount === 1)
-                                                                            1 Rating
-                                                                        @else
-                                                                            {{ $ratingCount }} Ratings
-                                                                        @endif
-                                                                    </div>
-
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
-                                                        <p>{{ $review->created_at->diffForHumans() }}</p>
-                                                    </div>
-                                                    <div class="review_text size18">
-                                                        <p class="size22 big-bld">
-                                                            {{ $review->translations->first()->title ?? '' }}
-                                                        </p>
-                                                        <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
-                                                        </p>
-                                                    </div>
+                                                @endforeach
+                                                <div class="btm-bttn light">
+                                                    <a class="cta cta_white"
+                                                        href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
+                                                        All Reviews</a>
                                                 </div>
-                                            @endforeach
-                                            <div class="btm-bttn light">
-                                                <a class="cta cta_white"
-                                                    href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                                                    All Reviews</a>
                                             </div>
                                         </div>
-                                    </div>
+                                     </div>
+                                </div>     
+
                                 </div>
                             </section>
                         </div>

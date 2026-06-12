@@ -1,5 +1,10 @@
 @extends('admin_layout.master')
 @section('content')
+<style>
+    #DataTables_Table_0_wrapper .drodown .dropdown-menu.dropdown-menu-end ul.link-list-opt li a {
+    cursor: pointer;
+}
+</style>
     <div class="nk-block nk-block-lg business-categories">
         <div class="nk-block-head nk-block-head-sm">
             <div class="nk-block-between">

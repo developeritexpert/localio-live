@@ -533,9 +533,9 @@
                                                             class="badge bg-primary">{{ count($selectedCountries) }}</span>
                                                     </label>
                                                     <div class="border rounded p-2"
-                                                        style="max-height:100px; overflow-y: auto;">
+                                                        style="max-height:150px; overflow-y: auto;">
                                                         @if (!empty($selectedCountries) && count($selectedCountries) > 0)
-                                                            <div class="d-flex flex-wrap gap-2" style="height:1.75rem;">
+                                                            <div class="d-flex flex-wrap gap-2" style="height:150px;">
                                                                 @foreach ($selectedCountries as $countryId)
                                                                     @php
                                                                         $selectedCountry = collect($countries)->firstWhere(
