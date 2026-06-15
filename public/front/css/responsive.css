@@ -1284,9 +1284,9 @@
     max-width: 934px;
   }
 
-  .banner_sec.top-auto-bnr {
+  /* .banner_sec.top-auto-bnr {
     border-radius: 0px 0px 50px 50px;
-  }
+  } */
 
   .auto-btm-hd .search-box input {
     padding: 16px 20px;
@@ -1578,9 +1578,9 @@
     font-size: 15px;
   }
 
-  .asn_main_sec .an_lkd {
+  /* .asn_main_sec .an_lkd {
     flex-wrap: wrap;
-  }
+  } */
 
   .asn_main_sec .an_lkd span {
     flex: 0 0 100%;
@@ -1771,9 +1771,10 @@
     margin-bottom: 10px !important;
   }
 
+  /* 
   .pros-cons {
     padding: 30px 0;
-  }
+  } */
 
   /* 11-jun-26  */
   .revie_img_sec .thre_revi_rgt .innr_price_trail {
@@ -2188,9 +2189,9 @@
     padding-bottom: 10px;
   }
 
-  .banner_sec {
+  /* .banner_sec {
     border-radius: 0px 0px 70px 70px;
-  }
+  } */
 
   .banner_sec.help-cntr-bnr.inr-bnr .banner_row .banner_text_col h1 {
     font-size: 40px;
@@ -2489,14 +2490,14 @@
     gap: 0;
   }
 
-  .sftware-alternative-pck:first-child,
+  /* .sftware-alternative-pck:first-child,
   .sftware-alternative-pck:nth-child(2) {
     border-bottom: 1px solid #ffffff4d;
-  }
+  } */
 
-  .sftware-alternative-pck:nth-child(2) {
+  /* .sftware-alternative-pck:nth-child(2) {
     border-right: none;
-  }
+  } */
 
   .crm-pack-lft {
     padding: 40px 0;
@@ -2962,9 +2963,9 @@
     margin-right: 20px;
   }
 
-  .banner_sec {
+  /* .banner_sec {
     padding-top: 80px;
-  }
+  } */
 
   .banner_row .banner_text_col {
     width: 50%;
@@ -3000,9 +3001,9 @@
     padding-bottom: 10px;
   }
 
-  .banner_sec {
+  /* .banner_sec {
     border-radius: 0px 0px 50px 50px;
-  }
+  } */
 
   .banner_sec.help-cntr-bnr.inr-bnr .banner_row .banner_text_col {
     width: 100%;
@@ -3336,12 +3337,12 @@
     gap: 20px;
   }
 
-  .sftware-alternative-pck:first-child,
+  /* .sftware-alternative-pck:first-child,
   .sftware-alternative-pck:nth-child(2),
   .sftware-alternative-pck:nth-child(3) {
     border-bottom: 1px solid #ffffff4d;
     border-right: 0;
-  }
+  } */
 
   .crm_sec .crm_hd {
     flex-direction: column;
@@ -3457,8 +3458,8 @@
   }
 
   .choice_img img {
-    height: 60px;
-    max-width: 60px;
+    height: unset;
+    max-width: 50px;
   }
 
   .compari_crm_pck .sftwre-alt-btn {
@@ -3522,19 +3523,29 @@
     width: 100%;
   }
 
-    /* 11-jun-26 */
+  /* 11-jun-26 */
   .revie_img_sec .is-asana-rgt .slick-list {
     height: 100% !important;
     width: 100% !important;
-}
+  }
 
   .revie_img_sec .asan-slider.asan-slider-btm .slick-track {
-        display: flex;
+    display: flex;
     flex-direction: row !important;
     width: 100%;
-}
-.revie_img_sec .image_revie_inr {
+  }
+
+  .revie_img_sec .image_revie_inr {
     gap: 20px;
+  }
+
+.asn_dv .Tab-outerlnk #table-of-content ul {
+  scrollbar-width: unset;
+  -ms-overflow-style: unset;
+}
+
+.asn_dv .Tab-outerlnk #table-of-content ul::-webkit-scrollbar {
+  display: block;
 }
 
 }
@@ -3583,9 +3594,9 @@
     white-space: nowrap;
   }
 
-  .banner_sec {
+  /* .banner_sec {
     border-radius: 0 0 50px 50px;
-  }
+  } */
 
   .banner_content_inner p {
     font-size: 14px;
@@ -3714,9 +3725,9 @@
     padding: 0px 15px;
   }
 
-  .banner_sec {
+  /* .banner_sec {
     padding-top: 60px;
-  }
+  } */
 
   .top_header .navbar-toggler {
     margin-right: 0px;
@@ -3993,9 +4004,9 @@
     display: block;
   }
 
-  .banner_sec.top-auto-bnr {
+  /* .banner_sec.top-auto-bnr {
     border-radius: 0px 0px 20px 20px;
-  }
+  } */
 
   .starting-price span {
     font-size: 23px;
@@ -4119,11 +4130,12 @@
     min-width: 60px;
   }
 
+  /* 
   .sftware-alternative-pck:first-child,
   .sftware-alternative-pck:nth-child(2),
   .sftware-alternative-pck:nth-child(3) {
     border-right: 1px solid #ffffff4d;
-  }
+  } */
 
   .crm_sec .crm_hd {
     gap: 15px;
@@ -7310,9 +7322,9 @@ div#learnMoreModal button.modal-close {
     .fixed-div {
       height: 180px;
     }
-    
 
- 
+
+
   }
 
   @media only screen and (max-width: 1600px) {
@@ -11262,7 +11274,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
   display: flex;
   align-items: center;
   gap: 14px;
-  justify-content: space-between;
+  /* justify-content: space-between; */
 }
 
 #section1 .asn_dv .asn_dv_contnt .asn-img {
@@ -11488,9 +11500,9 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
     font-size: 12px;
   }
 
-  #section1 .asn_dv .asn_dv_contnt {
+  /* #section1 .asn_dv .asn_dv_contnt {
     gap: 5px;
-  }
+  } */
 
   .right_bottom {
     flex-direction: column-reverse;
@@ -11515,13 +11527,13 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
     width: 100%;
   }
 
-  
+
   /* 11-jun-26  */
 
-.revie_img_sec .thre_revi_rgt .innr_price_trail {
+  .revie_img_sec .thre_revi_rgt .innr_price_trail {
     gap: 20px;
     flex-direction: column;
-}
+  }
 }
 
 @media only screen and (max-width: 1500px) {
@@ -11747,7 +11759,7 @@ ul.list-unstyled.m-0 li:hover a .time span {
   }
 
   .faq-inner h2 {
-    font-size: 18px !important;
+    font-size: 22px !important;
   }
 
   div#accordionExample .accordion-item .accordion-collapse .accordion-body {
@@ -11785,9 +11797,10 @@ ul.list-unstyled.m-0 li:hover a .time span {
     justify-content: space-between;
   }
 
+  /* 
   .main_feture .feture_box .progress-bar {
     width: 155px;
-  }
+  } */
 
   .software-like .sftwre-asana-hd p {
     font-size: 16px;
@@ -11830,7 +11843,7 @@ ul.list-unstyled.m-0 li:hover a .time span {
 }
 
 .ovr-progrs-div .prgs_br {
-  width: 200px;
+  width: 100%;
   justify-content: end;
 }
 
@@ -12558,4 +12571,286 @@ textarea#message {
   height: 50px;
   min-width: 50px;
   object-fit: cover;
+}
+
+
+
+
+/* 15 jun 26 */
+/* responsive css  */
+
+@media (max-width:1199px) {
+  .asn_main_sec.asn_main_sec_2 .fixed-div {
+    height: unset;
+  }
+}
+
+@media (max-width:991px) {
+  #pvc_section {
+    padding: 120px 0px !important;
+  }
+
+  #pvc_section .policy-nav {
+    top: 130px;
+  }
+
+  header ul.dropdown_menu.dropdown_menu--animated.dropdown_menu-6.mob-drp-contnt.show .dropdown-ul-inner .oter_dropul {
+    padding: 0;
+    background-color: transparent;
+    margin-top: 20px;
+  }
+
+  .product_sec .inner_banner_sec {
+    padding-top: 90px !important;
+  }
+
+  #section1 .asn_dv .asn_dv_contnt .asn-img {
+    width: unset;
+    height: unset;
+    overflow: unset;
+    border-radius: unset;
+  }
+
+  .business-integration-section .integration-items {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pros-cons .tikcrsotr {
+    gap: 20px;
+  }
+
+  .pros-cons#section4 {
+    padding: 30px;
+  }
+
+  .pros-cons .tikcrsotr .cons_ot {
+    padding: 30px 20px;
+  }
+
+  .revie_left_rgt_sec .asn-img img {
+    height: unset !important;
+  }
+
+  .crm_sec .crm_review_box {
+    margin-top: 40px;
+  }
+
+  .business-integration-section .integration-items .integration-inboxs {
+    padding: 12px 18px;
+  }
+
+  .product_integra_sec .sftware-alternative {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .revie_left_rgt_sec .review-row-prod-inr .review-col {
+    margin-bottom: 30px;
+  }
+
+  .faq-inner .faq-accor {
+    margin-top: 20px;
+  }
+
+}
+
+@media (max-width:767px) {
+  .pvc_sec .policy-nav {
+    margin-bottom: 30px;
+  }
+
+  #pvc_section h5 {
+    font-size: 30px;
+  }
+
+  #pvc_section {
+    padding: 120px 0px 80px !important;
+  }
+
+  .top-automotive-sec .auto-choice-rgt {
+    margin-top: 30px;
+  }
+
+  .asn_main_sec .asn_dv .ans_ryt .site_vsit {
+    flex-direction: row !important;
+    gap: 20px;
+  }
+
+  .asn_main_sec .asn_dv_contnt .top-pro-btn.tp_visit {
+    justify-content: left;
+  }
+
+  .pros-cons .tikcrsotr {
+    flex-direction: column;
+  }
+
+  .pros-cons .tikcrsotr .cons_ot,
+  .pros-cons .tikcrsotr .pros_ot {
+    width: 100%;
+  }
+
+  .business-integration-section .integration-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .asn_main_sec .an_lkd h1 {
+    font-size: 24px !important;
+  }
+
+  .asn_main_sec .asn_dv .asn-rating .product-pricing {
+    font-size: 15px;
+  }
+
+  .reviews-section>.container {
+    padding-top: 0 !important
+  }
+
+  .business-features {
+    padding: 60px 0px 30px;
+  }
+  .asan-slider.asan-slider-btm .slick-track .slick-slide img {   
+    max-width: 100%;
+}
+}
+
+
+@media (max-width:575px) {
+  header nav#mobile_res {
+    background-color: #003f7d;
+  }
+
+  #pvc_section h5 {
+    font-size: 26px;
+  }
+
+  #pvc_section {
+    padding: 100px 0px 60px !important;
+  }
+
+  .login_form .contact_content {
+    padding: 20px 15px !important;
+  }
+
+  .top-automotive-sec {
+    padding-bottom: 50px;
+  }
+
+  .feture_box .prgs_br {
+    width: 100%;
+  }
+
+  .con_table .row .col-lg-12 {
+    padding: 0;
+  }
+
+  .main_feture .feture_box .progress-bar {
+    width: 100%;
+    max-width: 80%;
+  }
+
+  .business-integration-section .integration-items {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  #section1 .asn_dv .asn_dv_contnt {
+    flex-direction: column;
+    align-items: unset;
+  }
+
+
+  #section1 .asn_dv .asn_dv_contnt .div_prent_ever {
+    width: 100%;
+  }
+
+  .asn_main_sec .an_lkd h1 {
+    font-size: 22px !important;
+  }
+
+  .product_sec .container-fluid,
+  .asn_main_sec_2 .container-fluid {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .asn-img {
+    display: none;
+  }
+
+  .choice-business {
+    padding: 24px 0;
+  }
+
+  .faq-section {
+    padding: 40px 0 !important;
+  }
+
+  .business-features {
+    padding: 50px 0px 20px;
+  }
+
+  .business-features .feature-section .col-md-6 {
+    padding: 0;
+  }
+
+  .product_pricing_sec .row.table_st_1 .col-md-6 {
+    padding: 0;
+  }
+
+  .asn_main_sec .asn_dv .ans_ryt .site_vsit {
+    gap: unset;
+  }
+
+  .all_sec_wrp>.container .container {
+    padding: 0;
+  }
+
+  .revie_left_rgt_sec,
+  .product_pricing_sec {
+    padding-inline: 0 !important;
+  }
+
+  .revie_left_rgt_sec .review-row-prod-inr>div {
+    padding: 0;
+  }
+
+  .crm_sec .crm_review_box .btm-bttn {
+    margin: 0;
+
+  }
+
+  .revie_left_rgt_sec {
+    margin-top: 0;
+  }
+
+  .reviews-section .swiper.myReviewSlider .swiper-button-prev {
+    top: unset;
+    bottom: -60px;
+    left: 0px;
+  }
+
+  .reviews-section .swiper.myReviewSlider .swiper-button-next,
+  .reviews-section .swiper-button-prev {
+    height: 40px !important;
+    width: 40px !important;
+
+  }
+
+  .reviews-section .swiper.myReviewSlider .swiper-button-next {
+    right: unset;
+    left: 50px;
+    top: unset;
+    bottom: -60px;
+  }
+
+  .reviews-section .swiper .slide-bx {
+    padding: 20px !important;
+  }
+
+  .reviews-section .btm-btn {
+    margin-top: 80px !important;
+  }
+.crm_sec.rev-tabi{
+  padding-inline: 12px;
+}
 }

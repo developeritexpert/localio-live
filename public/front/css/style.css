@@ -1947,7 +1947,7 @@ global classes */
 }
 
 .review_sec .review_detl {
-  padding:25px 40px;
+  padding: 25px 40px;
   border: 1px solid #06498b08;
   border-radius: 25px;
   margin-bottom: 30px;
@@ -1965,7 +1965,7 @@ global classes */
   justify-content: space-between;
   align-items: center;
   /* margin-bottom: 35px; */
-   margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .btm-bttn {
@@ -2164,7 +2164,7 @@ global classes */
 }
 
 .crm_sec .crm_review_box .btm-bttn {
-  margin: 50px 0px;
+  margin: 50px 0px 0;
 }
 
 /* rupali css */
@@ -5899,7 +5899,7 @@ header .menu .dropdown_menu {
 
 footer {
   position: relative;
-  z-index: 99;
+  z-index: 90;
 }
 
 footer .options {
@@ -8511,11 +8511,16 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 
-.business-integration-section .integration-items {
+/* .business-integration-section .integration-items {
   display: flex;
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+} */
+.business-integration-section .integration-items {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
 }
 
 .business-integration-section .integration-items .integration-inboxs {
@@ -8523,7 +8528,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   padding: 16px 24px;
   border-radius: 16px;
   box-shadow: 0 4px 10px rgb(218 228 238);
-  width: 20%;
+  /* width: 20%; */
 }
 
 .business-integration-section .integration-items .integration-inboxs .integration-item img {
@@ -8651,15 +8656,55 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   display: flex;
   gap: 30px
 }
+
 .revie_img_sec .main_feture h2.big_text {
-text-align: center;
+  text-align: center;
 }
 
 .con_table {
-    overflow: hidden;
+  overflow: hidden;
 }
+
 /* stucture change css end */
 
-.revie_left_rgt_sec .review-star-box .star-div-ol li{
-   list-style:none !important;
+.revie_left_rgt_sec .review-star-box .star-div-ol li {
+  list-style: none !important;
+}
+
+
+/* 15-jun-26  */
+#pvc_section .col-md-8 .mb-5:last-child {
+  margin-bottom: 0 !important;
+}
+
+.asn_dv .Tab-outerlnk #table-of-content ul {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.asn_dv .Tab-outerlnk #table-of-content ul::-webkit-scrollbar {
+  display: none;
+}
+
+.product_sec .container-fluid,
+.asn_main_sec_2 .container-fluid {
+  max-width: 1440px;
+  margin-inline: auto;
+}
+
+section.revie_img_sec {
+  padding-top: 30px;
+}
+
+.revie_img_sec .str_prc_box .price-icon {
+  display: flex;
+  justify-content: center;
+}
+
+.business-features .feature-card {
+  height: 100%;
+}
+
+.business-features .feature-section .col-md-6 {
+  margin-bottom: 20px;
 }

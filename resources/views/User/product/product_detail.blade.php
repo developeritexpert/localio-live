@@ -8,7 +8,7 @@
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
             <div class="inner_banner_sec">
-                <div class="container" style="display: flex; justify-content: space-between;">
+                <div class="container-fluid" style="display: flex; justify-content: space-between;">
                     <div class="inner_banr_content">
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
@@ -37,7 +37,7 @@
         <!-- Products Section -->
         <section class="asn_main_sec asn_main_sec_2" id="section1">
             <div class="asn_dv">
-                <div class="container">
+                <div class="container-fluid">
                     <div class="asn_dv_contnt">
                         <div class="asn-img">
                             <img src="{{ asset($business->icon_id) }}" alt="{{ $business->translations->first()->name }}">
@@ -585,10 +585,10 @@
         <!-- Products Section -->
 
         <!-- section whatis -->
-        <div class="con_table pb-0" id="section2">
+        <div class="con_table pb-0 all_sec_wrp" id="section2">
             <div class="container">
 
-                <div class="row pt-0 p_50">
+                <div class="row pt-0 ">
                     <div class="col-lg-12">
                         <div class="inner_table_1">
                             <section class="is-asana light">
@@ -610,7 +610,7 @@
                                                 <div class="swiper-slide">
                                                     <div class="d-flex">
                                                         @foreach($chunk as $review)
-                                                            <div class="p-5 bg-white rounded shadow-sm flex-fill me-3">
+                                                            <div class="p-5 bg-white slide-bx rounded shadow-sm flex-fill me-3">
                                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                                     <div class="d-flex align-items-center">
                                                                         <div class="me-3">
@@ -664,7 +664,7 @@
                                         <a href="#allReviewsSection" class="btn btn-dark">View All Reviews</a>
                                     </div> --}}
 
-                                    <div class="text-center mt-4">
+                                    <div class="text-center mt-4 btm-btn">
                                         <a href="javascript:void(0);" id="scrollToReviews" class="cta cta_orange">View All Reviews</a>
                                     </div>
 
@@ -731,7 +731,7 @@
                                                     }
                                                 @endphp
 
-                                                <div class="col-md-4 col-lg-4 mb-4" data-aos="fade-up"
+                                                <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up"
                                                     data-aos-duration="1000">
                                                     <div class="pricing_card">
                                                         <div class="pricing_header">
