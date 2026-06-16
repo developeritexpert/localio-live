@@ -260,7 +260,7 @@
                             <div id="phone_screen" class="mobile_display">
                                 <!-- Profile Icon -->
                                 <div class="d-flex justify-content-end align-items-center">
-                                    <img src="https://logomax.com/public/icons/user_icon_new.svg" alt="Profile" class="profile-icon"
+                                    <img src="{{ asset('front/img/Vector.svg') }}" alt="Profile" class="profile-icon"
                                         data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas" aria-controls="profileOffcanvas">
                                 </div>
 
@@ -294,8 +294,8 @@
                         <p>Create an Account and Secure Your Exclusive Logo Today. </p>
 
                          <div class="Header_buttons">
-                                                        <a href="http://127.0.0.1:8001/en-us/login" class="cta cta_trans">Login</a>
-                            <a href="http://127.0.0.1:8001/en-us/register" class="cta cta_orange">Sign Up</a>
+                                                        <a href="{{route('login')}}" class="cta cta_trans">Login</a>
+                            <a href="{{route('register')}}" class="cta cta_orange">Sign Up</a>
                                                     </div>
                                 </div>
 
