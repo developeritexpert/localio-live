@@ -19,7 +19,7 @@
                 </div>
                 <div class="scl_login">
                     <div class="row ">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="login_box size18" style="
                             text-align: right;
                         ">
@@ -29,7 +29,7 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="login_box size18">
                                 <a href="{{ route('login.facebook') }}" class="login_link">
                                     <span class="scl-icn"><i class="fa-brands fa-facebook"></i></span>

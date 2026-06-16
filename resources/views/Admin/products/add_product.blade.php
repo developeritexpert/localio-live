@@ -327,7 +327,7 @@
                         />
                     </div>
                 </div>
-                <hr>
+                <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
                 {{-- Row 3: Label + Renewal Price + Time Unit --}}
                 <div class="mb-2">
                     <label class="form-label">Renewal</label>
@@ -357,7 +357,7 @@
                         />
                     </div>
                 </div>
-                <hr>
+                <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
                 {{-- Row 4: Label + Discount Price + Time Unit --}}
                 <div class="mb-2">
                     <label class="form-label">Discount</label>

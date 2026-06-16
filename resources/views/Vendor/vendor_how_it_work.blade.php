@@ -134,7 +134,7 @@
                                                 </div>
                                             </div>
                                             <div class="rate_box">
-                                                {{ $avgRating }} | {{ $ratingsCount }} ratings
+                                                {{ $avgRating }} | {{ $ratingsCount }} Reviews
                                             </div>
                                         </div>
                                     </div>

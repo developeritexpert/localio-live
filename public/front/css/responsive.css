@@ -3063,10 +3063,10 @@
     margin-bottom: 20px;
   }
 
-  .scl_login .row {
+  /* .scl_login .row {
     flex-direction: column;
     gap: 15px;
-  }
+  } */
 
   .hd-innr-txt {
     max-width: 500px;
@@ -12652,6 +12652,23 @@ textarea#message {
   .faq-inner .faq-accor {
     margin-top: 20px;
   }
+  .top-automotive-sec .auto-choice-rgt {
+    margin-top: 30px;
+  }
+
+  .top-automotive-sec .auto-choice-lft div#filterAccordion {
+    max-height: 400px;
+    overflow-y: auto; 
+    scrollbar-width: thin;
+    scrollbar-color: #f9633b #f5f5f5;
+}
+.top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar-thumb {
+    background: #f9633b;
+}
 
 }
 
@@ -12668,10 +12685,7 @@ textarea#message {
     padding: 120px 0px 80px !important;
   }
 
-  .top-automotive-sec .auto-choice-rgt {
-    margin-top: 30px;
-  }
-
+  
   .asn_main_sec .asn_dv .ans_ryt .site_vsit {
     flex-direction: row !important;
     gap: 20px;
@@ -12852,5 +12866,8 @@ textarea#message {
   }
 .crm_sec.rev-tabi{
   padding-inline: 12px;
+}
+.contact_sec .contact_content {
+    border-radius: 15px;
 }
 }

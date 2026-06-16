@@ -112,7 +112,7 @@
                                 </div>
 
                                 <p class="size20 m-0">
-                                    Pricing, Features, Alternatives & User Ratings
+                                    Pricing, Features, Alternatives & User Reviews
                                 </p>
                             </div>
                         </div>
@@ -366,7 +366,7 @@
                                     <div class="card p-3 mb-3 bg-light rounded d-flex justify-content-between align-items-center">
                                         <div>
                                             <h5 class="fw-bold mb-0">Thread Theory Atelier</h5>
-                                            <small class="text-muted">Pricing, Features, Alternatives & User Ratings</small>
+                                            <small class="text-muted">Pricing, Features, Alternatives & User Reviews</small>
                                         </div>
                                         <div>
                                             <a href="#" class="btn btn-danger rounded-pill">Visit Website →</a>

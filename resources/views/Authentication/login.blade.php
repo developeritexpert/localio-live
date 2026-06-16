@@ -14,7 +14,7 @@
                 </div>
                 <div class="scl_login">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="login_box size18">
                                 <div class="l_goin1">
                                 <a href="{{ route('google.login') }}" class="login_link" onclick="openGoogleLogin(event)" style="background: #DB4437;">
@@ -24,7 +24,7 @@
                             </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-6">
                             <div class="login_box size18">
                                 <div class="l_goin2">
                                 <a href="{{ route('login.facebook') }}" class="login_link">

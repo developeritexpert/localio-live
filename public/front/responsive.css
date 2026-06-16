@@ -2401,6 +2401,19 @@
   .top-auto-bnr .hd-share {
     margin-bottom: 10px;
   }
+  .top-automotive-sec .auto-choice-lft div#filterAccordion {
+    max-height: 400px;
+    overflow-y: auto; 
+    scrollbar-width: thin;
+    scrollbar-color: #f9633b #f5f5f5;
+}
+.top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar-thumb {
+    background: #f9633b;
+}
 }
 
 @media only screen and (max-width: 767px) {

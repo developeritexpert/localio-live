@@ -123,7 +123,7 @@
                                         <!-- Rating Filter Section - Styled like the image -->
                                         <div class="filter-section">
                                             <h3>
-                                                User Rating</h3>
+                                                User Reviews</h3>
 
                                             @foreach ([5, 4, 3, 2, 1] as $rating)
                                                 <div class="form-check">
@@ -512,7 +512,7 @@
                                                                     </div>
                                                                     <div class="rate_box">
                                                                         {{ number_format($averageRating, 1) }} |
-                                                                        {{ $ratingCount }} ratings
+                                                                        {{ $ratingCount }} Reviews
                                                                     </div>
                                                                 </div>
                                                             </div>

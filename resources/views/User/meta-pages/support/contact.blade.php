@@ -76,7 +76,7 @@
                         :value="old('name')"
                         placeholder="Enter your full name"
                         :alwaysActive="true"
-                    />r
+                    />
                 </div>
 
                 <div class="form-group">
@@ -112,7 +112,7 @@
                         :value="old('message')"
                         rows="8"
                         :alwaysActive="true"
-                    />r
+                    />
 
                     {{-- <label for="upload_input" class="upload-icon">
                         <img src="https://legalio.mx/assets/img/Group1.svg" alt="Upload" />
@@ -187,7 +187,7 @@
 </section>
 
 {{-- SCRIPT 1: Handle form submission for non-authenticated users --}}
-<script>r
+<script>
 document.getElementById('contact-submit-btn')?.addEventListener('click', function() {
     const isAuth = this.getAttribute('data-auth') === '1';
     const form = document.querySelector('.conatct_from');

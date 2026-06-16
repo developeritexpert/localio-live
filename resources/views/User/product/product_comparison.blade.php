@@ -87,7 +87,7 @@
                                                         <li><i class="fa-solid fa-angle-down"></i></li>
                                                     </div>
                                                     <div class="rate_box ms-3">
-                                                        {{ $ratingCount }} rating{{ $ratingCount !== 1 ? 's' : '' }}
+                                                        {{ $ratingCount }} Reviews{{ $ratingCount !== 1 ? 's' : '' }}
                                                     </div>
                                                 </div>
 
@@ -339,7 +339,7 @@
                                                 </li>
                                             </div>
                                             <div class="rate_box">
-                                                {{ $ratingCount }} rating{{ $ratingCount !== 1 ? 's' : '' }}
+                                                {{ $ratingCount }} Reviews{{ $ratingCount !== 1 ? 's' : '' }}
                                             </div>
                                         </div>
 

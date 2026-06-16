@@ -90,7 +90,7 @@
                                                 </div>
                                                 <div class="rate_box">
                                                     {{ number_format($businessRating, 1) }} |
-                                                    {{ $business->reviews->count() }} ratings
+                                                    {{ $business->reviews->count() }} Reviews
                                                 </div>
                                             </div>
                                         </div>

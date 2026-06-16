@@ -432,7 +432,7 @@
                                                                 <div class="rate_box">
                                                                     {{ number_format($item->reviews->avg('rating'), 1) }}
                                                                     |
-                                                                    {{ $item->reviews->count() }} ratings
+                                                                    {{ $item->reviews->count() }} Reviews
                                                                 </div>
                                                             </div>
                                                         </div>

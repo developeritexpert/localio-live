@@ -233,7 +233,7 @@
                                                                                                 <div class="rate_box">
                                                                                                     {{ $avgRating }} |
                                                                                                     {{ $ratingsCount }}
-                                                                                                    ratings
+                                                                                                    Reviews
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>

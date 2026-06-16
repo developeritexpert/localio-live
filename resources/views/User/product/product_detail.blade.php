@@ -62,7 +62,7 @@
 
                                             </div>
                                             <p class="product-pricing">
-                                                Pricing, Features, Alternatives & User Ratings
+                                                Pricing, Features, Alternatives & User Reviews
                                             </p>
                                         </div>
                                     </div>
@@ -124,7 +124,7 @@
                                                 @elseif ($ratingCount === 1)
                                                     1 Rating
                                                 @else
-                                                    {{ $ratingCount }} Ratings
+                                                    {{ $ratingCount }} Reviews
                                                 @endif
                                             </div>
                                         </div>
@@ -136,7 +136,7 @@
                                 <div class="tp-btm d-flex col-lg-6">
                                     {{-- add under this class an_lkd --}}
                                     {{-- <p class="size20 m-0">
-                                        Pricing, Features, Alternatives & User Ratings
+                                        Pricing, Features, Alternatives & User Reviews
                                     </p> --}}
                                 </div>
 
@@ -1299,7 +1299,7 @@
                                                             @elseif ($ratingCount === 1)
                                                                 1 Rating
                                                             @else
-                                                                {{ $ratingCount }} Ratings
+                                                                {{ $ratingCount }} Reviews
                                                             @endif
                                                         </div>
                                                     </div>
@@ -1441,7 +1441,7 @@
                                                                 @elseif ($count === 1)
                                                                     1 Rating
                                                                 @else
-                                                                    {{ $count }} Ratings
+                                                                    {{ $count }} Reviews
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -2347,11 +2347,11 @@
                                                                             {{ number_format($review->rating, 1) }} |
                                                                             {{-- {{ $ratingCount }} ratings --}}
                                                                             @if ($ratingCount === 0)
-                                                                            0 Ratings
+                                                                            0 Reviews
                                                                             @elseif ($ratingCount === 1)
-                                                                                1 Rating
+                                                                                1 Review
                                                                             @else
-                                                                                {{ $ratingCount }} Ratings
+                                                                                {{ $ratingCount }} Reviews
                                                                             @endif
                                                                         </div>
 
@@ -2421,7 +2421,7 @@
                                 // Fixed bottom static sections
 
                                 $staticTopSections = [
-                                    ['id' => 'section1', 'label' => 'User Rating Breakdown'],
+                                    ['id' => 'section1', 'label' => 'User Reviews Breakdown'],
                                     ['id' => 'section2', 'label' => "What is $name"],
                                     ['id' => 'section3', 'label' => "$name Pricing Plans"],
                                     ['id' => 'section4', 'label' => "$name Pros and cons"],
