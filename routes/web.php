@@ -461,6 +461,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     // Category Controller
     Route::get('/categories', [CategoryController::class, 'index'])->name('category');
     Route::get('/categories/{slug}', [CategoryController::class, 'categoryDetail'])->name('category.detail');
+    
 
 
     // Product Controller

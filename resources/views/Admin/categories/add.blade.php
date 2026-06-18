@@ -41,6 +41,27 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label d-block" for="is_important">
+                                    Important Category
+                                </label>
+
+                                <div class="form-check form-switch">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="is_important"
+                                        name="is_important"
+                                        value="1"
+                                        {{ isset($category_data) && $category_data['is_important'] == 1 ? 'checked' : '' }}
+                                    >
+                                    <label class="form-check-label" for="is_important">
+                                        Mark as Important
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-12">
                             <div class="form-group">

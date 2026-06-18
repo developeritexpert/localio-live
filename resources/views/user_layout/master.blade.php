@@ -64,6 +64,100 @@
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
     <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
     <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        @media (max-width: 767px) {
+
+            .footer-dropdown .footer-title{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                cursor:pointer;
+                margin-bottom:0;
+            }
+
+            .footer-dropdown .foot-col-list{
+                max-height:0;
+                overflow:hidden;
+                transition:max-height .3s ease;
+            }
+
+            .footer-dropdown.active .foot-col-list{
+                max-height:200px;
+            }
+
+            .footer-arrow{
+                display:flex;
+                align-items:center;
+            }
+
+            .footer-arrow i{
+                transition:transform .3s ease;
+                font-size:14px;
+            }
+
+            .footer-dropdown.active .footer-arrow i{
+                transform:rotate(180deg);
+            }
+        }
+
+        .mobile-sidebar{
+                position:fixed;
+                top:0;
+                left:-320px;
+                width:320px;
+                height:100vh;
+                background:black;
+                z-index:99999;
+                transition:.3s;
+                overflow-y:auto;
+            }
+
+            .mobile-sidebar.active{
+                left:0;
+            }
+
+            .mobile-sidebar-overlay{
+                position:fixed;
+                inset:0;
+                background:rgba(0,0,0,.5);
+                opacity:0;
+                visibility:hidden;
+                transition:.3s;
+                z-index:99998;
+            }
+
+            .mobile-sidebar-overlay.active{
+                opacity:1;
+                visibility:visible;
+            }
+
+            .mobile-sidebar-header{
+                display:flex;
+                justify-content:space-between;
+                padding:20px;
+            }
+
+            .mobile-sidebar-close{
+                border:none;
+                background:none;
+            }
+
+
+
+
+            @media(min-width:992px){
+
+            .mobile-sidebar,
+            .mobile-sidebar-overlay,
+            .mobile-sidebar-btn{
+                display:none;
+            }
+        }
+
+        .mobile-sidebar-logo img {
+    height: 34px;
+}
+    </style>
 
 </head>
 
@@ -141,9 +235,7 @@
             <div class="top_header dark">
                 <div class="container-fluid">
                     <nav  id="mobile_res" class="navbar navbar-expand-lg">
-                        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler mobile-sidebar-btn collapsed" type="button">
                             <span class="bar"></span>
                             <span class="bar"></span>
                             <span class="bar"></span>
@@ -166,6 +258,8 @@
                             ->with('media')
                             ->get();
                         ?>
+                        
+                        
                         <!-- mobile nav -->
                             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                 <div class="left_menu">
@@ -259,10 +353,95 @@
 
                             <div id="phone_screen" class="mobile_display">
                                 <!-- Profile Icon -->
+                                @guest                                   
                                 <div class="d-flex justify-content-end align-items-center">
                                     <img src="{{ asset('front/img/Vector.svg') }}" alt="Profile" class="profile-icon"
                                         data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas" aria-controls="profileOffcanvas">
                                 </div>
+                                @endguest
+                                @auth
+                                    
+                                 <div class="user_img drop_menu">
+                                    <div class="usr_profile">
+                                        @if (Auth::user()->profile_image)
+                                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%;'>
+                                        @else
+                                        <img src="{{ dimage()}}" class="img-fluid">
+                                        @endif
+                                    </div>
+                                    <div class="dropdown-menu dropdown-menu-right" style="margin-right: 20px;">
+                                        <div class="dropdown-main ">
+                                            <div class="user_detail">
+                                                <div class="user_img">
+                                                    @if (Auth::user()->profile_image)
+                                                    <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%;'>
+                                                    @else
+                                                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{
+                                                    strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                                    @endif
+                                                </div>
+                                                <div class="user_name">
+                                                    <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
+                                                    <p>{{ Auth::user()->email }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="dash-icon">
+                                                @if(Auth::user()->user_type ==='user')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}"><i
+                                                        class="fa-solid fa-envelope-open-text"></i></i>Dashboard
+                                                </a>
+                                                @elseif(Auth::user()->user_type ==='vendor')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('vendor-overview', ['locale' => app()->getLocale()]) }}"><i
+                                                        class="fa-solid fa-envelope-open-text"></i></i>Dashboard
+                                                </a>
+                                                @endif
+
+                                            </div>
+
+                                            <div class="dash-icon">
+                                                @if(Auth::user()->user_type ==='user')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"><i
+                                                        class="fa fa-user"></i>My Profile</a>
+                                                @elseif(Auth::user()->user_type ==='vendor')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}"><i
+                                                        class="fa fa-user"></i>My Profile</a>
+                                                @endif
+                                            </div>
+
+                                            @if(Auth::user()->user_type ==='user')
+                                            <div class="dash-icon">
+                                                <a class="dropdown-item"
+                                                    href="{{ route('user-support', ['locale' => app()->getLocale()]) }}">
+                                                    <i class="fa-solid fa-headset"></i>Support
+                                                </a>
+                                            </div>
+                                            @endif
+
+                                            <div class="dash-icon">
+
+                                                @if(Auth::user()->user_type ==='user')
+                                                <a class="dropdown-item"
+                                                href="{{ route('user-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
+                                                @elseif(Auth::user()->user_type ==='vendor')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
+                                                @endif
+                                                </div>
+
+                                            <div class="dash-icon">
+                                                <a class="dropdown-item" href="{{ route('logout') }}"><i
+                                                        class="fa fa-power-off"></i>Sign Out</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endauth
+
+
 
                                 <!-- Offcanvas Profile Dropdown -->
                                 <div class="offcanvas offcanvas-end" tabindex="-1" id="profileOffcanvas" aria-labelledby="offcanvasLabel">
@@ -309,6 +488,71 @@
 
 
                         <!-- mobile nav -->
+
+                       <div class="mobile-sidebar">
+
+                            {{-- Header: Logo on left, Close button on right --}}
+                            <div class="mobile-sidebar-header">
+                                <div class="mobile-sidebar-logo">
+                                    @if (isset($headerLogo) && $headerLogo)
+                                        <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
+                                            <img src="{{ asset($headerLogo->meta_value) }}" alt="{{ $headerLogo->meta_key }}">
+                                        </a>
+                                    @else
+                                        <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
+                                            <img src="{{ asset('front/img/logo.svg') }}">
+                                        </a>
+                                    @endif
+                                </div>
+
+                                <button class="mobile-sidebar-close">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
+                            <div class="mobile-sidebar-body">
+
+                                {{-- Categories: flat list, no dropdown, top 3 only --}}
+                                <div class="menu_section">
+                                    <h4 class="section_heading">{{ $headerContent['Categories'] ?? 'Categories' }}</h4>
+                                    <hr class="section_divider">
+                                    <ul class="flat_list">
+                                        <livewire:category-search :limit="3" />
+                                    </ul>
+                                </div>
+
+                                {{-- Top Rated Products: flat list, no dropdown, top 3 only --}}
+                                <div class="menu_section">
+                                    <h4 class="section_heading">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</h4>
+                                    <hr class="section_divider">
+                                    <ul class="flat_list">
+                                        <livewire:product-search :limit="3" />
+                                    </ul>
+                                </div>
+
+                                {{-- Information --}}
+                                <div class="menu_section">
+                                    <h3 class="section_heading">Information</h3>
+                                    <hr class="section_divider">
+                                    <ul class="flat_list">
+                                        <li>
+                                            <a href="{{ route('expert-guide', ['locale' => session('lang_code', 'en-us')]) }}">
+                                                {{ $headerContent['expert_guide'] ?? 'Expert Guides' }}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ route('help-center', ['locale' => session('lang_code', 'en-us')]) }}">
+                                                {{ $headerContent['help_center'] ?? 'Help Center' }}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mobile-sidebar-overlay"></div>
                     </nav>
                 </div>
             </div>
@@ -392,8 +636,12 @@
 
                             </div>
 
-                            <div class="foot-col">
-                                <h6> {{ $footerContents['discover'] ?? 'Discover' }}</h6>
+                            <div class="foot-col footer-dropdown">
+                                <h6 class="footer-title"> {{ $footerContents['discover'] ?? 'Discover' }}
+                                    <span class="footer-arrow d-flex d-md-none">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </span>
+                                </h6>
                                 <ul class="foot-col-list">
                                     <li>
                                         <a
@@ -412,8 +660,13 @@
                                     </li> --}}
                                 </ul>
                             </div>
-                            <div class="foot-col">
-                                <h6>{{ $footerContents['company'] ?? 'Company' }}</h6>
+                            <div class="foot-col footer-dropdown">
+                                <h6 class="footer-title">
+                                    {{ $footerContents['company'] ?? 'Company' }}
+                                    <span class="footer-arrow d-flex d-md-none">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </span>
+                                </h6>
                                 <ul class="foot-col-list">
                                     <li><a
                                             href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['who_we_are'] ??
@@ -446,8 +699,12 @@
                                         
                                 </ul>
                             </div> --}}
-                            <div class="foot-col">
-                                <h6>{{ $footerContents['help'] ?? 'Help' }}</h6>
+                            <div class="foot-col footer-dropdown">
+                                <h6 class="footer-title">{{ $footerContents['help'] ?? 'Help' }}
+                                    <span class="footer-arrow d-flex d-md-none">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </span>
+                                </h6>
                                 <ul class="foot-col-list">
                                     {{-- <li>
                                         <a href="{{ route('expert-guide', ['locale' => session('lang_code', 'en-us')]) }}"
@@ -962,79 +1219,6 @@
     <!----------------------------------------- read section end --------------------------------------- -->
     <!-- AddToAny BEGIN -->
     <script async src="https://static.addtoany.com/menu/page.js"></script>
-    <!-- AddToAny END -->
-
-
-    {{-- <script>
-        // Mobile Navigation Dropdown Script
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get all dropdown menu items
-            const dropdownToggles = document.querySelectorAll('.dropdown_toggle');
-            const body = document.body;
-
-            // Class to be added to body when dropdown is open
-            const bodyOpenClass = 'nav-dropdown-open';
-
-            // Function to check if any dropdown is open
-            function checkDropdownStatus() {
-                const hasOpenDropdown = document.querySelector('.cat_menu_item.dropdown.open');
-                if (hasOpenDropdown) {
-                    body.classList.add(bodyOpenClass);
-                } else {
-                    body.classList.remove(bodyOpenClass);
-                }
-            }
-
-            // Add click event listeners to dropdown toggles only
-            dropdownToggles.forEach(toggle => {
-                toggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    const parentDropdown = toggle.closest('.cat_menu_item.dropdown');
-                    const isCurrentlyOpen = parentDropdown.classList.contains('open');
-
-                    // Close all other dropdowns first
-                    document.querySelectorAll('.cat_menu_item.dropdown').forEach(item => {
-                        if (item !== parentDropdown) {
-                            item.classList.remove('open');
-                        }
-                    });
-
-                    // Toggle current dropdown
-                    if (isCurrentlyOpen) {
-                        parentDropdown.classList.remove('open');
-                    } else {
-                        parentDropdown.classList.add('open');
-                    }
-
-                    // Check and update body class
-                    checkDropdownStatus();
-                });
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.cat_menu_item.dropdown')) {
-                    document.querySelectorAll('.cat_menu_item.dropdown').forEach(item => {
-                        item.classList.remove('open');
-                    });
-                    body.classList.remove(bodyOpenClass);
-                }
-            });
-
-            // Close dropdown when close button is clicked
-            const closeBtn = document.querySelector('.close_btn_mobile');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function() {
-                    document.querySelectorAll('.cat_menu_item.dropdown').forEach(item => {
-                        item.classList.remove('open');
-                    });
-                    body.classList.remove(bodyOpenClass);
-                });
-            }
-        });
-    </script> --}}
     <script>
         window.addEventListener('open-modal', () => {
             const modal = document.getElementById('learnMoreModal');
@@ -1105,6 +1289,24 @@
             url.pathname = `/${langCode}/products/${ProductId}`;
             window.location.href = url.href;
         }
+
+        document.querySelectorAll('.footer-title').forEach(function(item){
+            item.addEventListener('click', function(){
+                this.closest('.footer-dropdown').classList.toggle('active');
+            });
+        });
+
+            $('.mobile-sidebar-btn').on('click', function () {
+                $('.mobile-sidebar').addClass('active');
+                $('.mobile-sidebar-overlay').addClass('active');
+            });
+
+            $('.mobile-sidebar-close, .mobile-sidebar-overlay').on('click', function () {
+    $('.mobile-sidebar').removeClass('active');
+    $('.mobile-sidebar-overlay').removeClass('active');
+});
+
+
     </script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
@@ -1196,33 +1398,6 @@
         });
     </script>
 
-    <!-- <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Select the dropdown toggle button
-            let dropdownToggle = document.querySelector(".dropdown_toggle");
-            let dropdownMenu = document.querySelector(".dropdown_menu");
-
-            if (dropdownToggle && dropdownMenu) {
-                dropdownToggle.addEventListener("click", function(event) {
-                    event.preventDefault(); // Prevent default link action
-
-                    // Toggle the dropdown menu visibility
-                    if (dropdownMenu.style.display === "none" || dropdownMenu.style.display === "") {
-
-                    } else {
-                        dropdownMenu.style.display = "none"; // Hide dropdown
-                    }
-                });
-            }
-            });
-            //             $(document).ready(function(){
-            //     $(".cat_menu").click(function(event){
-            //         event.preventDefault();
-            //         $(".dropdown_menu").toggle();
-            //     });
-        // });
-    </script> -->
-
     <script>
         document.addEventListener('livewire:load', function() {
             window.Livewire.on('swal:success', function(data) {
@@ -1269,15 +1444,7 @@
     </script>
 
     <script>
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     document.querySelectorAll('.menu-item').forEach(function (el) {
-        //         el.addEventListener('click', function (e) {
-        //             e.stopPropagation();
-        //             // const parent = el.closest('.dropdown');
-        //             parent.classList.toggle('body_hiden');
-        //         });
-        //     });
-        // });
+
 
         $(document).ready(function(){
             $('.menu-item').on('click',function(){

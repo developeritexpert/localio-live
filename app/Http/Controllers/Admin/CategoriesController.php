@@ -80,6 +80,7 @@ class CategoriesController extends Controller
     }
     public function add_process(Request $request)
     {
+        // dd($request->all());
         $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
         $isNewCategory = !$request->category_id;
         $rules = [
@@ -129,14 +130,18 @@ class CategoriesController extends Controller
             while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->exists()) {
                 $slug = $originalSlug . '-' . $count++;
             }
-            CategoryTranslation::updateOrCreate(
-                ['lang_id' => (int)$language_id, 'category_id' => $category->id],
+           CategoryTranslation::updateOrCreate(
                 [
-                    'category_id' => $category->id,
-                    'lang_id' => $language_id,
-                    'name' => $validate['name'],
-                    'description' => $validate['description'],
-                    'slug' => $slug
+                    'lang_id' => (int) $language_id,
+                    'category_id' => $category->id
+                ],
+                [
+                    'category_id'  => $category->id,
+                    'lang_id'      => $language_id,
+                    'name'         => $validate['name'],
+                    'description'  => $validate['description'],
+                    'slug'         => $slug,
+                    'is_important' => $request->has('is_important') ? 1 : 0,
                 ]
             );
             return redirect()->route('categories')->with('success', 'Category saved successfully');
