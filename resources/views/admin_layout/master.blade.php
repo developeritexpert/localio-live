@@ -150,7 +150,6 @@
                                 <li class="nk-menu-item">
                                     <a href="{{ route('features') }}" class="nk-menu-link">
                                         <span class="nk-menu-icon">
-                                            <!-- <em class="icon ni ni-filter-fill"></em> -->
                                              <em class="icon ni ni-cpu"></em>
                                         </span>
                                         <span class="nk-menu-text">Features</span>
@@ -162,6 +161,14 @@
                                     <a href="{{ route('filters') }}" class="nk-menu-link">
                                         <span class="nk-menu-icon"><em class="icon ni ni-filter-fill"></em></span>
                                         <span class="nk-menu-text">Filters</span>
+                                    </a>
+                                </li>
+
+                                 <!-- Contact us Queries -->
+                                <li class="nk-menu-item">
+                                    <a href="{{ route('admin.queries.index') }}" class="nk-menu-link">
+                                        <span class="nk-menu-icon"><em class="icon ni ni-filter-fill"></em></span>
+                                        <span class="nk-menu-text">Contact us Queries</span>
                                     </a>
                                 </li>
 

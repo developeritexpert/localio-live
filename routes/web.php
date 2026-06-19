@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\{AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
+use App\Http\Controllers\Admin\QueryController;
 
 use App\Http\Controllers\AdminDealController;
 use App\Http\Controllers\Auth\AuthenticationController;
@@ -52,6 +53,19 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin/page-tile-translation/update', [AdminDashController::class, 'MPSsectionUpdate'])->name('admin.page_tile_translation.update');
     Route::post('/admin/page-tile-specialist-translation/update', [AdminDashController::class, 'SpecialistUpdate'])->name('admin.page_tile_specialist_translation.update');
 
+    // Admin Queries Route
+    Route::get('/queries', [QueryController::class, 'index'])
+        ->name('admin.queries.index');
+
+    Route::get('/queries/{id}', [QueryController::class, 'show'])
+        ->name('admin.queries.show');
+
+    Route::get('/queries/delete/{id}', [QueryController::class, 'delete'])
+        ->name('admin.queries.delete');
+
+    Route::post('/queries/reply/{id}', [QueryController::class, 'reply'])
+        ->name('admin.queries.reply');
+   
     // Exclusive Deals Routes
     Route::get('/exclusive-deals',[AdminDealController::class,'index'])->name('exclusive-deals.index');
     Route::get('/admin-dashboard/exclusive-deals/create',[AdminDealController::class,'create'])->name('exclusive-deals.create');
@@ -493,6 +507,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/who-we-are', [MetaPagesController::class, 'whoWeAre'])->name('who-we-are');
     Route::get('/contact', [MetaPagesController::class, 'contact'])->name('contact');
     Route::post('/contact-form-submit', [MetaPagesController::class, 'contactFormSubmit'])->name('contact.submit');
+    Route::post('/query-form-submit', [MetaPagesController::class, 'queryFormSubmit'])->name('query.submit');
+
 
     // Route::get('/privacy-policy', [MetaPagesController::class, 'showPrivacyPolicy'])->name('privacy-policy');
 

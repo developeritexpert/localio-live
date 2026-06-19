@@ -157,6 +157,37 @@
         .mobile-sidebar-logo img {
     height: 34px;
 }
+
+/* 19_june */
+.mobile-sidebar-body .menu_section .section_heading {
+    color: #fff !important;
+    padding-left: 20px;
+    margin: 0 !important;
+    font-size: 20px !important;
+    font-weight: 500 !important;
+}
+
+.mobile-sidebar-body .section_divider {
+    margin: 10px auto !important;
+    width: 90% !important;
+}
+
+.mobile-sidebar-body .ab_img {
+    display: none !important;
+}
+
+.mobile-sidebar-body .hdr_dropul.category-list_a li {
+    padding: 0 !important;
+    height: unset;
+}
+
+.mobile-sidebar-body .hdr_dropul li,
+.mobile-sidebar-body .hdr_dropul.category-list_a li,
+.mobile-sidebar-body .flat_list li {
+    padding-bottom: 10px !important;
+    list-style: none !important;
+}
+
     </style>
 
 </head>
@@ -536,8 +567,9 @@
                                     <hr class="section_divider">
                                     <ul class="flat_list">
                                         <li>
-                                            <a href="{{ route('expert-guide', ['locale' => session('lang_code', 'en-us')]) }}">
-                                                {{ $headerContent['expert_guide'] ?? 'Expert Guides' }}
+                                            <a href="{{ route('contact', ['locale' => session('lang_code', 'en-us')]) }}">
+                                                {{-- {{ $headerContent['expert_guide'] ?? 'Expert Guides' }} --}}
+                                                Contact Us
                                             </a>
                                         </li>
                                         <li>

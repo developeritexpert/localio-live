@@ -26,6 +26,18 @@
     </div>
 </section>
 
+@if(session('success'))
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "{{ session('success') }}"
+    });
+});
+</script>
+@endif
+
 <section class="contact_sec login_form light">
     <div class="container">
         <div class="contact_content aos-init aos-animate my-2 mx-auto" data-aos="fade-up" data-aos-duration="1000">
@@ -41,7 +53,9 @@
                     <br>
             </div> --}}
 
-            <form action="{{ route('contact.submit', ['locale' => session('lang_code', 'en-us')]) }}" method="POST" class="conatct_from" enctype="multipart/form-data">
+
+
+            <form action="{{ route('query.submit', ['locale' => session('lang_code', 'en-us')]) }}" method="POST" class="conatct_from" enctype="multipart/form-data">
                 @csrf
 
                 {{-- Query Dropdown (used as reason_id) --}}
@@ -81,26 +95,16 @@
 
                 <div class="form-group">
                     <x-google-input
-                        type="email"r
-                        name="email"r
+                        type="email"
+                        name="email"
                         id="email"
                         label="Email Address"
                         :value="old('email')"
-                        placeholder="Enter your email"r
+                        placeholder="Enter your email"
                         :alwaysActive="true"
                     />
                 </div>
 
-                {{-- Subject --}}
-                {{-- <div class="form-group">
-                    <x-google-input
-                    r    type="text"
-                        name="subject"
-                        label="Subject"
-                        id="subject"
-                        :value="old('subject')"
-                    />
-                </div> --}}
 
                 {{-- Message --}}
                 <div class="textarea-upload-wrapper position-relative">
@@ -126,9 +130,9 @@
                         type="button"
                         class="btn cta cta_orange"
                         id="contact-submit-btn"
-                        data-auth="{{ auth()->check() ? '1' : '0' }}"
+                    
                     >
-                        {{ static_text('send_message') }}r
+                        {{ static_text('send_message') }}
                     </button>
                 </div>
             </form>
@@ -192,46 +196,7 @@ document.getElementById('contact-submit-btn')?.addEventListener('click', functio
     const isAuth = this.getAttribute('data-auth') === '1';
     const form = document.querySelector('.conatct_from');
 
-    if (!isAuth) {
-        // User not authenticated - save data and show login
-        const formData = new FormData(form);
-        let dataObject = {};
-        const file = form.querySelector('#upload_input')?.files[0];resr
-
-        const saveAndLogin = (fileBase64 = null) => {
-            // Save all text field values
-            formData.forEach((value, key) => {
-                if (value instanceof File) return; // skip File objects
-                dataObject[key] = value;
-            });
-
-            // Save file data if existsree
-            if (fileBase64 && file) {
-                dataObject['_file_base64'] = fileBase64;
-                dataObject['_file_name'] = file.name;
-                dataObject['_file_type'] = file.type;
-                dataObject['_file_size'] = file.size;
-            }
-
-            localStorage.setItem('pendingContactForm', JSON.stringify(dataObject));
-            console.log('Data saved to localStorage:', dataObject); // Debug
-            openLoginModal();
-        };
-
-        // Handle file conversion if exists
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                saveAndLogin(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            saveAndLogin();
-        }
-    } else {
-        // User authenticated - submit directly
-        form.submit();
-    }
+    form.submit();
 });
 </script>
 

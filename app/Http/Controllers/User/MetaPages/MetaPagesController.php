@@ -11,13 +11,13 @@ use App\Models\WhoWeAre;
 use App\Models\ExpertGuides;
 use App\Models\PolicyTranslation;
 use App\Models\ContactContent;
+use App\Models\Query;
 use App\Models\ExpertGuideArticle;
 use App\Models\ExpertGuideCategory;
 use App\Models\HelpCenterContent;
 use App\Models\HomeContent;
 use App\Models\PageTile;
 use App\Models\Review;
-
 use App\Models\Ticket;
 use App\Models\TicketMessage;
 use App\Services\MediaService;
@@ -370,5 +370,38 @@ class MetaPagesController extends Controller
         //dd($policy_data); // Debugging: Check if data is retrieved
 
         return view('User.terms_condition.privacy_policy', compact('privacy_policy'));
+    }
+
+    public function queryFormSubmit(Request $request){
+
+    // dd($request->all());
+    $request->validate([
+        'query_type' => 'required|integer',
+        'name'       => 'required|string|max:255',
+        'email'      => 'required|email|max:255',
+        'message'    => 'required|string',
+        'attachment' => 'nullable|file|max:5120',
+    ]);
+
+    $attachment = null;
+
+    if ($request->hasFile('attachment')) {
+        $attachment = $request->file('attachment')
+            ->store('queries', 'public');
+    }
+
+    Query::create([
+        'user_id'    => auth()->id(),
+        'query_type' => $request->query_type,
+        'name'       => $request->name,
+        'email'      => $request->email,
+        'message'    => $request->message,
+        'attachment' => $attachment,
+    ]);
+    return back()->with('success', 'Your query has been submitted successfully.');
+    // return response()->json([
+    //     'status'  => true,
+    //     'message' => 'Your query has been submitted successfully.',
+    // ]);
     }
 }
