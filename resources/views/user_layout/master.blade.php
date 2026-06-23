@@ -573,13 +573,12 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('help-center', ['locale' => session('lang_code', 'en-us')]) }}">
-                                                {{ $headerContent['help_center'] ?? 'Help Center' }}
+                                            <a href="{{ route('FaqsShow', ['locale' => session('lang_code', 'en-us')]) }}">
+                                                {{ $headerContent['FAQs'] ?? 'FAQs' }}
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
 
                         </div>
@@ -751,6 +750,10 @@
                                     <li>
                                         <a
                                             href="{{ route('contact', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['contact'] ?? 'Contact' }}</a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="{{ route('FaqsShow', ['locale' => session('lang_code', 'en-us')]) }}">{{ $FAQs['contact'] ?? 'FAQs' }}</a>
                                     </li>
                                 </ul>
                             </div>

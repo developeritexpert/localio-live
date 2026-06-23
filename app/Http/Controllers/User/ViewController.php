@@ -215,7 +215,7 @@ class ViewController extends Controller
 
     public function changeLanguage(Request $request, $lang_code)
     {
-        // dd($lang_code);
+        dd($lang_code);
         $cacheKey = "userDetails";
         $languages = getLanguages();
         $languageRecord = $languages->firstWhere('lang_code', $lang_code);
@@ -294,7 +294,7 @@ class ViewController extends Controller
                 $query->where('language_id', $lang_id);
             },
 
-            //  'original', //added
+            //  'original', //added 
 
         ])
             ->where('business_id', $business->id)
