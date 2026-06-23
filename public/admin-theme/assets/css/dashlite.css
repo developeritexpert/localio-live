@@ -17397,9 +17397,9 @@ a:hover .btn-trigger:before {
   background: #2c3782;
 }
 
-.card-bordered {
+/* .card-bordered {
   border: 1px solid #dbdfea;
-}
+} */
 
 .card-bordered.is-dark {
   border-color: #2c3782;
@@ -49286,4 +49286,9 @@ div#DataTables_Table_0_wrapper .drodown .dropdown a::before {
     min-width: 400px
   }
 
+}
+@media(max-width:575px) {
+.nk-header-fixed+.nk-content {
+    overflow: hidden;
+}
 }

@@ -634,6 +634,13 @@
   .form-wrp select {
     height: 45px;
   }
+
+  /* 23-june-26 */
+  .ds_ftr ul.options .footer-langs-container li {
+    width: 25%;
+  }
+
+
 }
 
 @media only screen and (max-width: 991px) {
@@ -646,6 +653,24 @@
     max-width: 0;
     flex: 0 0 0%;
   }
+
+  /* 23-june-26 */
+  .ds_ftr ul.options .footer-langs-container li {
+    width: 33% !important;
+  }
+
+  .custom-select.active+.dropdown-options {
+    display: block;
+    max-height: 500px;
+    overflow-y: scroll;
+    scrollbar-gutter: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #f9633b #f1f1f1;
+  }
+  .custom-select.active+.dropdown-options::-webkit-scrollbar {
+    width: 10px;
+  }
+
 }
 
 @media only screen and (max-width: 991px) {
@@ -698,7 +723,7 @@
 
   .user_dashbord .dashboard_lft.menu-open {
     transform: translateX(0%);
-    z-index: 10;
+    z-index: 19;
   }
 
   /* Toggler Button */
@@ -782,8 +807,8 @@
   }
 
   .ds_ftr .dropdown-options {
-    right: 5%;
-    left: 12px;
+    /* right: 5%; */
+    /* left: 12px; */
   }
 
   .main_dhdr {
@@ -1280,6 +1305,14 @@
   .points-text p {
     font-size: 14px;
   }
+
+  .ds_ftr ul.options .footer-langs-container li {
+    width: 49% !important;
+  }
+
+  .custom-select.active+.dropdown-options {
+    max-height: 450px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -1570,6 +1603,10 @@
     height: 10px;
     margin-bottom: 2px;
   }
+
+  .ds_ftr ul.options .footer-langs-container li {
+    width: 100% !important;
+  }
 }
 
 .points-text h2 {
@@ -1757,12 +1794,21 @@ footer.ds_ftr {
 
 
   .ds_ftr .foot_end_box {
-    flex-direction: column-reverse;
+    flex-direction: column-reverse !important;
   }
 
   /* 16- jun -26  */
   .main_dhdr .hdr_lft .menu-toggler {
     width: 40px;
+  }
+
+  .custom-select.active+.dropdown-options {
+    max-height: 400px;
+  }
+
+  .ds_ftr ul.options {
+    margin: 0px;
+    padding: 20px !important;
   }
 }
 
