@@ -4594,7 +4594,7 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .hd_text h2 {
   text-align: center;
-  color: #fff;
+  color: #fff !important;
 }
 
 .prc_contnt:first-child {
@@ -8707,4 +8707,20 @@ section.revie_img_sec {
 
 .business-features .feature-section .col-md-6 {
   margin-bottom: 20px;
+}
+
+/* 23-jun-26  */
+.como_sec_2 .knowledge-tabs {
+display:flex;
+gap:15px;
+justify-content:center;
+flex-wrap:wrap;
+}
+.faq-inner .faq-accor #accordionExample a.view-all {
+display: inline-block;
+margin:0;
+}
+.faq-section #accordionExample .btn-holder {
+   display: flex;
+   justify-content: center;
 }

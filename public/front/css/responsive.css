@@ -3539,14 +3539,14 @@
     gap: 20px;
   }
 
-.asn_dv .Tab-outerlnk #table-of-content ul {
-  scrollbar-width: unset;
-  -ms-overflow-style: unset;
-}
+  .asn_dv .Tab-outerlnk #table-of-content ul {
+    scrollbar-width: unset;
+    -ms-overflow-style: unset;
+  }
 
-.asn_dv .Tab-outerlnk #table-of-content ul::-webkit-scrollbar {
-  display: block;
-}
+  .asn_dv .Tab-outerlnk #table-of-content ul::-webkit-scrollbar {
+    display: block;
+  }
 
 }
 
@@ -9387,13 +9387,15 @@ div#learnMoreModal button.modal-close {
   max-width: 100%;
 }
 
+
 .como_sec .knowledge-tabs a.category-tab {
   margin: 0px;
   background-color: #003f7d;
   color: #fff;
   border: none;
-  margin: 0px 5px;
+  /* margin: 0px 5px; */
 }
+
 
 .como_sec .knowledge-tabs .category-tab.active {
   background-color: #f9633b;
@@ -12723,9 +12725,22 @@ textarea#message {
   .business-features {
     padding: 60px 0px 30px;
   }
-  .asan-slider.asan-slider-btm .slick-track .slick-slide img {   
+
+  .asan-slider.asan-slider-btm .slick-track .slick-slide img {
     max-width: 100%;
-}
+  }
+
+  .knwledge-page2-row .knwlege-detail-rgt h2 {
+    font-size: 30px !important;
+  }
+
+  .ft-btm-rgt .select-menu.active .options {
+    max-height: 300px;
+    overflow-y: scroll;
+    scrollbar-gutter: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #f9633b #f1f1f1;
+  }
 }
 
 
@@ -12792,7 +12807,7 @@ textarea#message {
   }
 
   .choice-business {
-    padding: 24px 0;
+    padding: 24px 12px;
   }
 
   .faq-section {
@@ -12864,8 +12879,44 @@ textarea#message {
   .reviews-section .btm-btn {
     margin-top: 80px !important;
   }
-.crm_sec.rev-tabi{
-  padding-inline: 12px;
+
+  .crm_sec.rev-tabi {
+    padding-inline: 12px;
+  }
+
+  footer .footer-wrp .foot-col.active .footer-title {
+    margin-bottom: 10px;
+  }
+
+  .pros-cons#section4 {
+    padding: 30px 20px;
+  }
+
+  .knowledge_page2 .knowledge_page_container>div .border_box ul li {
+    padding: 0;
+  }
+
+  .knwledge-page2-row .col-lg-8 .card .knwlege-detail-rgt {
+    padding-inline: 0 !important;
+  }
+
+  .knwledge-page2-row .knwlege-detail-rgt h2 {
+    font-size: 28px !important;
+  }
+
+  .faq-section #accordionExample .btn-holder {
+    padding-top: 25px;
+  }
+
+  .como_secotr2 {
+    padding: 60px 0;
+  }
+
+  .latest_review_part_footer {
+    overflow: hidden;
+  }
+  .ft-btm-rgt .select-menu.active .options {
+    max-height: 400px;
 }
 .contact_sec .contact_content {
     border-radius: 15px;
