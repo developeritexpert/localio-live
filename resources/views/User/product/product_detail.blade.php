@@ -3050,7 +3050,7 @@
                 768: { slidesPerView: slidesPerView, slidesPerGroup: slidesPerGroup }
             }
         });
-
+    
         // Add 'active' class to the first slide initially
         slides.forEach(slide => slide.classList.remove('active'));
         slides[reviewSwiper.activeIndex].classList.add('active');
