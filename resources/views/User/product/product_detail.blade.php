@@ -49,9 +49,9 @@
                     gap: 20px 0;
                 }
                 .new-visit-anc .cta.cta_orange {
-                    font-size: 12px;
-                    width: fit-content;
-                }
+                font-size: 12px;
+                width: fit-content;
+            }
             }
     </style>
     <div data-business-id="{{ $business->id }}">
@@ -270,7 +270,7 @@
                             // Fixed bottom static sections
 
                             $staticTopSections = [
-                                ['id' => 'section1', 'label' => 'Ratings'],
+                                ['id' => 'section1', 'label' => 'Description'],
                                 // ['id' => 'section2', 'label' => "$name"],
                                 ['id' => 'section3', 'label' => "Pricing"],
                                 // ['id' => 'section4', 'label' => "Pros & cons"],
