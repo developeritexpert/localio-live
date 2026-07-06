@@ -86,7 +86,7 @@
         </div>
     </section>
     <!-- section most-popular -->
-    <section class="most-populr-sec light p_120 pb-0">
+    <section class="most-populr-sec light p_120">
         <div class="container">
             <div class="most-popular-wrp" data-aos="fade-up" data-aos-duration="1000">
 

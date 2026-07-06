@@ -261,7 +261,7 @@ header .menu li.menu-item.cat_menu_item {
 
 header .menu>li.menu-item>a {
   color: #ffffff;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -1701,7 +1701,7 @@ global classes */
 .asn_dv .ans_ryt .site_vsit {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   justify-content: flex-end;
 }
 
@@ -8389,8 +8389,8 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 .asn_dv .Tab-outerlnk #table-of-content {
   background-color: transparent !important;
   box-shadow: none !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding: 0 !important;
+  /* padding-bottom: 0 !important; */
 }
 
 .asn_dv .Tab-outerlnk {
@@ -8409,8 +8409,8 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a {
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 400;
+  font-size: 14px;
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active {
@@ -8431,7 +8431,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .asn_main_sec.asn_main_sec_2 .fixed-div {
-  height: 160px;
+  height: 168px;
 }
 
 /* 8oct2025 end */
@@ -8461,8 +8461,8 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a {
-  border-radius: 5px 5px 0 0;
-  padding: 4px 10px !important;
+  border-radius: 8px 8px 0 0;
+  padding: 8px 20px 20px !important;
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active {
@@ -8573,10 +8573,9 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 /* 10-june-2026  */
 .wht-t-org-btn {
-  background-color: #fff !important;
-  border-color: #fff !important;
-  color: #f9633b;
-
+    background-color: #fff !important;
+    border-color: #fff !important;
+    color: #003f7d;
 }
 
 .wht-t-org-btn:hover {

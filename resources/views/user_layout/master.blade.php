@@ -284,11 +284,19 @@
                         $lang_id = getCurrentLanguageID();
 
                         $categories = Category::whereHas('translation', function ($query) use ($lang_id) {
-                            $query->where('lang_id', $lang_id);
+                            $query->where('lang_id', $lang_id)
+                                ->where('is_important', 1);
                         })
-                            ->with('media')
-                            ->get();
+                        ->with(['translation' => function ($query) use ($lang_id) {
+                            $query->where('lang_id', $lang_id);
+                        }])
+                        ->with('media')
+                        ->get();
+                        // dd($categories->toArray());
+
                         ?>
+
+
                         
                         
                         <!-- mobile nav -->
@@ -324,6 +332,28 @@
                                                 </div>
                                             </ul>
                                         </li>
+                                        @foreach($categories as $category)
+    <li class="menu-item">
+        <a href="{{ route('category.detail', [
+            'locale' => app()->getLocale(),
+            'slug' => $category->translation->slug
+        ]) }}">
+            {{ $category->translation->name }}
+        </a>
+    </li>
+@endforeach
+                                    
+
+                                        {{-- @foreach($categories as $category)
+                                                <li class="menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
+                                                    <a href="{{ route('category.detail', [
+                                                        'locale' => app()->getLocale(),
+                                                        'slug' => $category->translation->slug
+                                                    ]) }}">
+                                                        {{ $category->translation->name }}
+                                                    </a>
+                                                </li>
+                                        @endforeach --}}
                                          {{-- @foreach($categories as $category)
                                             <li class="menu-item">
                                                 <a href="{{ route('category.show', $category->slug) }}">

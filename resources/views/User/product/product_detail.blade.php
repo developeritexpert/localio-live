@@ -5,6 +5,55 @@
     $business->translations->first()->name : 'Products')
 @section('content')
     @livewire('add-review')
+    <style>
+               #section1 .asn_dv {
+                padding-bottom: 0;
+               }
+            .Tab-outerlnk.container-fluid {
+                padding: 0;
+            }
+            .asn_dv .Tab-outerlnk #table-of-content ul li a:hover {
+                background: #06498b0d;
+            }
+            .asan-slider.asan-slider-btm.slider-nav {
+    padding: 0;
+}
+
+.asan-slider.asan-slider-btm.slider-nav .slick-list {
+    width: 100%;
+}
+
+.asan-slider.asan-slider-btm.slider-nav .slick-track {
+    display: flex;
+}
+
+.asan-slider.asan-slider-btm.slider-nav .slick-track .slick-slide.slick-active {
+    margin: 10px 5px 0 !important;
+}
+.new-visit-anc .cta.cta_orange {
+    font-size: 13px;
+    padding: 12px 22px;
+    width: 185px;
+    justify-content: center;
+}
+.new-review-side .rate_box {
+    font-size: 13px !important;
+}
+          @media (max-width: 1599px) {
+                .asn_dv .Tab-outerlnk #table-of-content{
+                    padding-inline: 15px !important;
+                }
+            }
+            @media (max-width: 575px) {
+             .frst_rw {
+                    gap: 20px 0;
+                }
+                .new-visit-anc .cta.cta_orange {
+                    font-size: 12px;
+                    width: fit-content;
+                }
+            }
+    </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
             <div class="inner_banner_sec">
@@ -38,7 +87,7 @@
         <section class="asn_main_sec asn_main_sec_2" id="section1">
             <div class="asn_dv">
                 <div class="container-fluid">
-                    <div class="asn_dv_contnt">
+                    <div class="asn_dv_contnt ">
                         <div class="asn-img">
                             <img src="{{ asset($business->icon_id) }}" alt="{{ $business->translations->first()->name }}">
                         </div>
@@ -73,7 +122,7 @@
                                         <div class="site_vsit">
                                             <ul class="list-unstyled">
                                             </ul>
-                                            <div class="top-pro-btn tp_visit">
+                                            <div class="top-pro-btn tp_visit new-visit-anc">
                                                 <a href="{{ $business->getTrackedUrl() }}"
                                                     data-track="{{ json_encode([
                                                         'type' => 'click',
@@ -96,7 +145,7 @@
                                             @php
                                             $ratingCount = $business->reviews->where('status', 'active')->count();
                                         @endphp
-                                        <div class="right_bottom col-lg-6 hd_str"
+                                        <div class="right_bottom col-lg-6 hd_str new-review-side "
                                             @auth
 
                                             onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
@@ -186,7 +235,7 @@
                     </div>
                 </div>
                  {{-- Added the change Stacture content table code --}}
-                 <div class="Tab-outerlnk">
+                 <div class="Tab-outerlnk container-fluid">
                     <div class="inner_table2">
 
                         @php
@@ -241,7 +290,7 @@
 
                         <div class="inner_table2">
                             <div class="table_st">
-                                <div id="table-of-content" class="feture_box p-3 shadow rounded bg-white"
+                                <div id="table-of-content" class="feture_box p-3 shadow rounded bg-white bar-option"
                                     style="top: 90px; max-height: max-content; overflow-y: auto;">
                                     <ul class="list-unstyled toc-links small">
                                         @foreach ($tableOfContents as $i => $item)
@@ -345,7 +394,7 @@
                                                 <div class="is-asana-rgt">
                                                     <div class="row is-asan-slider">
                                                         <!-- Main Slider -->
-                                                        <div class="col-md-10 asan-slider slider-for">
+                                                        <div class="col-md-12 asan-slider slider-for">
                                                             @foreach ($images as $index => $image)
                                                                 <div class="asan-slider-inr">
                                                                     <img src="{{ asset($image) }}"
@@ -356,7 +405,7 @@
                                                         </div>
 
                                                         <!-- Thumbnail Slider -->
-                                                        <div class="col-md-2 asan-slider asan-slider-btm slider-nav"
+                                                        <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
                                                             style="margin-top: 15px;">
                                                             @foreach ($images as $index => $image)
                                                                 <div style="padding: 0 5px;">
@@ -482,50 +531,7 @@
                                             </div>
                                         </div> --}}
 
-                                    <div class="innr_price_trail">
-
-                                        <div class="main_feature_sm">
-                                            <div class="feture_box str_prc_box">
-                                                <div class=r"src_box text-center">
-                                                    <!-- Blue Dollarrr Circrle -->
-                                                    <div class="price-icon">
-                                                        <img src="{{ asset('ffront/img/ddmoney.svg') }}">
-                                                    </div>
-                                                    <h2 class="big_text mt-2">Starting Price</h2>
-                                                    @if ($startingPrice)
-                                                        <h3 class="blue-text">{{ $currency }}{{ $startingPrice }}<span
-                                                                class="big_text">/ {{ $timeUnit }}</span></h3>
-                                                    @else
-                                                        <h3 class="blue-text">{{ $currency }}9<span class="big_text">/
-                                                                {{ $timeUnit }}</span></h3>
-                                                    @endif
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="main_feature_sm">
-                                            <div class="fre_trail feture_box size22">
-                                                <div class="grn_check_big">
-                                                    <img src="{{ asset('front/img/new-grn-chk.svg') }}">
-                                                </div>
-                                                <h6 class="blue-text big-bld">Free Trial
-                                                    Available
-                                                </h6>
-                                                <div class="accor-btn">
-                                                    <a class="cta cta_white blue_t_org_btn"
-                                                        data-track="{{ json_encode([
-                                                            'type' => 'click',
-                                                            // 'product_id' => $product->id,
-                                                            'business_id' => $business->id,
-                                                            'action' => 'claim_now',
-                                                            'label' => 'Claim Now',
-                                                        ]) }}"
-                                                        type="button">Claim Now</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
 
                                         {{-- Add Here Feature Localio Review Breakdown --}}
                                         <div class="main_feature_lg">
@@ -568,6 +574,50 @@
                                             </div>
                                         </div>
                                         {{-- End Feature Localio Review Breakdown --}}
+                                        <div class="innr_price_trail">
+
+                                            <div class="main_feature_sm">
+                                                <div class="feture_box str_prc_box">
+                                                    <div class=r"src_box text-center">
+                                                        <!-- Blue Dollarrr Circrle -->
+                                                        <div class="price-icon">
+                                                            <img src="{{ asset('ffront/img/ddmoney.svg') }}">
+                                                        </div>
+                                                        <h2 class="big_text mt-2">Starting Price</h2>
+                                                        @if ($startingPrice)
+                                                            <h3 class="blue-text">{{ $currency }}{{ $startingPrice }}<span
+                                                                    class="big_text">/ {{ $timeUnit }}</span></h3>
+                                                        @else
+                                                            <h3 class="blue-text">{{ $currency }}9<span class="big_text">/
+                                                                    {{ $timeUnit }}</span></h3>
+                                                        @endif
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="main_feature_sm">
+                                                <div class="fre_trail feture_box size22">
+                                                    <div class="grn_check_big">
+                                                        <img src="{{ asset('front/img/new-grn-chk.svg') }}">
+                                                    </div>
+                                                    <h6 class="blue-text big-bld">Free Trial
+                                                        Available
+                                                    </h6>
+                                                    <div class="accor-btn">
+                                                        <a class="cta cta_white blue_t_org_btn"
+                                                            data-track="{{ json_encode([
+                                                                'type' => 'click',
+                                                                // 'product_id' => $product->id,
+                                                                'business_id' => $business->id,
+                                                                'action' => 'claim_now',
+                                                                'label' => 'Claim Now',
+                                                            ]) }}"
+                                                            type="button">Claim Now</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

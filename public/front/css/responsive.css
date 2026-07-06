@@ -8,9 +8,9 @@
     width: 90% !important;
   }
 
-  .asn_dv .Tab-outerlnk #table-of-content ul {
+  /* .asn_dv .Tab-outerlnk #table-of-content ul {
     justify-content: center !important;
-  }
+  } */
 }
 
 @media only screen and (min-width: 1500px) {
