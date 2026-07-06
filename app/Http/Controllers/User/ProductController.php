@@ -84,37 +84,42 @@ class ProductController extends Controller
             }
         }
 
-        // Build review query
-        $reviewsQuery = Review::where('business_id', $business->id)
-            ->where('status', 'active')
-            ->whereHas('user', fn($q) => $q->where('user_type', '!=', 'admin')) // exclude admin users
-            ->with([
-                'user',
-                'translations' => fn($q) => $q->where('language_id', $lang_id),
-            ]);
-
-        // Filter: stars
-        if ($request->has('stars') && $request->stars !== 'all') {
-            $reviewsQuery->where('rating', $request->stars);
+        // Filter: stars (can be array or comma-separated string)
+        $selectedStars = $request->get('stars');
+        if (is_string($selectedStars)) {
+            $selectedStars = explode(',', $selectedStars);
         }
+        $selectedStars = array_filter(array_map('intval', (array) $selectedStars));
 
-        $sort = $request->get('sort', 'best');
+        $sort = $request->get('sort', 'recent');
 
-        $reviewsQuery = Review::with(['user', 'translations'])->where('business_id', $business->id);
+        $applyFiltersAndSort = function ($query) use ($selectedStars, $sort, $lang_id) {
+            $query->where('status', 'active');
+            
+            if (!empty($selectedStars)) {
+                $query->whereIn('rating', $selectedStars);
+            }
+            
+            switch ($sort) {
+                case 'best':
+                case 'high-to-low':
+                    $query->orderByDesc('rating')->orderByDesc('created_at');
+                    break;
+                case 'low-to-high':
+                    $query->orderBy('rating')->orderByDesc('created_at');
+                    break;
+                case 'recent':
+                default:
+                    $query->orderByDesc('created_at');
+                    break;
+            }
+            return $query;
+        };
 
-        switch ($sort) {
-            case 'high-to-low':
-                $reviewsQuery->orderByDesc('rating');
-                break;
-            case 'low-to-high':
-                $reviewsQuery->orderBy('rating');
-                break;
-            case 'best':
-            default:
-                $reviewsQuery->orderByDesc('rating'); // or any default logic
-                break;
-        }
-        $reviews = $reviewsQuery->get();
+        // Build reviews
+        $reviewsQuery = Review::where('business_id', $business->id);
+        $reviews = $applyFiltersAndSort($reviewsQuery)->get();
+
         $topReviews = Review::with([
             'user',
             'business',
@@ -126,37 +131,47 @@ class ProductController extends Controller
             ->take(3)
             ->get();
 
-        $allReviews = Review::with([
+        $allReviewsQuery = Review::with([
             'user',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
         ])
             ->where('business_id', $business->id)
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-            // ->whereHas('user', fn($q) => $q->where('user_type', '!=', 'admin')) //  exclude admin reviews
-            ->latest()
-            ->get();
+            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
+        $allReviews = $applyFiltersAndSort($allReviewsQuery)->get();
 
-        $ourReviews = Review::with([
+        $ourReviewsQuery = Review::with([
             'user',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
         ])
             ->where('business_id', $business->id)
             ->where('user_id', auth()->id())
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-            // ->whereHas('user', fn($q) => $q->where('user_type', '!=', 'admin')) // exclude admin reviews
-            ->latest()
-            ->get();
+            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
+        $ourReviews = $applyFiltersAndSort($ourReviewsQuery)->get();
 
-        $trustpilotReviews = Review::with([
+        $trustpilotReviewsQuery = Review::with([
             'user',
             'business',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
         ])
             ->where('business_id', $business->id)
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-            // ->whereHas('user', fn($q) => $q->where('user_type', '!=', 'admin')) //  exclude admin reviews
-            ->latest()
-            ->get();
+            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
+        $trustpilotReviews = $applyFiltersAndSort($trustpilotReviewsQuery)->get();
+
+        $ratingCount = $business->reviews->where('status', 'active')->count();
+
+        $default_image = WebSetting::where('key','user_default_image')->value('value');
+
+        if ($request->ajax()) {
+            return view('User.product.partials.reviews_list', compact(
+                'business',
+                'allReviews',
+                'ourReviews',
+                'trustpilotReviews',
+                'default_image',
+                'averageRating',
+                'ratingCount'
+            ))->render();
+        }
 
         $startingPrice = null;
         $currency = '$';
@@ -177,7 +192,9 @@ class ProductController extends Controller
         // Calculate rating breakdown
         $ratingCounts = $business->reviews
             ->where('status', 'active')
-            ->groupBy('rating')
+            ->groupBy(function ($review) {
+                return (int) round($review->rating);
+            })
             ->map(fn($group) => $group->count());
 
         // Total active reviews
