@@ -97,7 +97,16 @@ class ProductController extends Controller
             $query->where('status', 'active');
             
             if (!empty($selectedStars)) {
-                $query->whereIn('rating', $selectedStars);
+                $query->where(function($q) use ($selectedStars) {
+                    foreach ($selectedStars as $star) {
+                        $min = $star - 0.5;
+                        $max = $star + 0.5;
+                        $q->orWhere(function($sub) use ($min, $max) {
+                            $sub->where('rating', '>=', $min)
+                                ->where('rating', '<', $max);
+                        });
+                    }
+                });
             }
             
             switch ($sort) {
@@ -137,7 +146,7 @@ class ProductController extends Controller
         ])
             ->where('business_id', $business->id)
             ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
-        $allReviews = $applyFiltersAndSort($allReviewsQuery)->get();
+        $allReviews = $applyFiltersAndSort($allReviewsQuery)->take(10)->get();
 
         $ourReviewsQuery = Review::with([
             'user',
@@ -146,7 +155,7 @@ class ProductController extends Controller
             ->where('business_id', $business->id)
             ->where('user_id', auth()->id())
             ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
-        $ourReviews = $applyFiltersAndSort($ourReviewsQuery)->get();
+        $ourReviews = $applyFiltersAndSort($ourReviewsQuery)->take(10)->get();
 
         $trustpilotReviewsQuery = Review::with([
             'user',
@@ -155,7 +164,7 @@ class ProductController extends Controller
         ])
             ->where('business_id', $business->id)
             ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id));
-        $trustpilotReviews = $applyFiltersAndSort($trustpilotReviewsQuery)->get();
+        $trustpilotReviews = $applyFiltersAndSort($trustpilotReviewsQuery)->take(10)->get();
 
         $ratingCount = $business->reviews->where('status', 'active')->count();
 

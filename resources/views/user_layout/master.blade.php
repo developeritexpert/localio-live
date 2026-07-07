@@ -292,7 +292,22 @@
                         }])
                         ->with('media')
                         ->get();
-                        // dd($categories->toArray());
+
+                        $sidebarCategories = Category::whereHas('translation', function ($query) use ($lang_id) {
+                            $query->where('lang_id', $lang_id);
+                        })
+                        ->with([
+                            'translation' => function ($query) use ($lang_id) {
+                                $query->where('lang_id', $lang_id);
+                            },
+                            'businesses' => function ($query) {
+                                $query->where('status', 1);
+                            },
+                            'businesses.translations' => function ($query) use ($lang_id) {
+                                $query->where('lang_id', $lang_id);
+                            }
+                        ])
+                        ->get();
 
                         ?>
 
@@ -303,19 +318,8 @@
                             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                 <div class="left_menu">
                                     <ul class="menu">
-                                        <li class=" menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
-                                            <a href="#">{{ $headerContent['Categories'] ?? 'All Categories' }}</a>
-                                            <span class="dropdown_toggle"><i class="fa-solid fa-chevron-down"></i></span>
-                                            <ul
-                                                class="dropdown_menu dropdown_menu--animated dropdown_menu-6 mob-drp-contnt">
-                                                <div class="dropdown-ul-inner">
-                                                    <div class="oter_dropul">
-                                                        <div class="row">
-                                                            <livewire:category-search />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </ul>
+                                        <li class="menu-item cat_menu_item">
+                                            <a href="javascript:void(0);" id="open-categories-sidebar"><i class="fa-solid fa-bars me-2"></i>{{ $headerContent['Categories'] ?? 'All Categories' }}</a>
                                         </li>
                                         <li class=" menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
                                             <a
@@ -1557,5 +1561,293 @@
 
 
 
+    <!-- Category Sidebar Drawer (Amazon Style) -->
+    <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
+    <div class="category-sidebar" id="categories-sidebar">
+        <div class="category-sidebar-header">
+            <div class="user-greeting">
+                <i class="fa-solid fa-circle-user avatar-icon"></i>
+                <span>Hello, {{ Auth::check() ? Auth::user()->first_name : 'Sign In' }}</span>
+            </div>
+            <button class="category-sidebar-close" id="categories-sidebar-close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div class="category-sidebar-viewport">
+            <div class="category-sidebar-panels-container" id="sidebar-panels-container">
+                <!-- Main Panel -->
+                <div class="category-sidebar-panel active" id="main-panel">
+                    <div class="sidebar-menu-section">
+                        <h3 class="sidebar-section-title">Trending</h3>
+                        <ul class="sidebar-menu-list">
+                            <li>
+                                <a href="{{ route('top-rated-product', ['locale' => app()->getLocale()]) }}">
+                                    <!-- <i class="fa-solid fa-star text-warning me-2"></i> -->
+                                     Bestsellers / Top Rated
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="sidebar-menu-divider"></div>
+                    
+                    <div class="sidebar-menu-section">
+                        <h3 class="sidebar-section-title">Shop by Category</h3>
+                        <ul class="sidebar-menu-list">
+                            @foreach($sidebarCategories as $cat)
+                                @if($cat->translation)
+                                    <li>
+                                        <a href="javascript:void(0);" class="parent-category-item" data-category-id="{{ $cat->id }}">
+                                            {{ $cat->translation->name }}
+                                            <i class="fa-solid fa-chevron-right float-end mt-1"></i>
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Dynamic Category Sub-panels -->
+                @foreach($sidebarCategories as $cat)
+                    @if($cat->translation)
+                        <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
+                            <div class="sub-panel-back">
+                                <a href="javascript:void(0);" class="back-to-main-btn">
+                                    <i class="fa-solid fa-arrow-left me-2"></i> Main Menu
+                                </a>
+                            </div>
+                            <div class="sidebar-menu-divider"></div>
+                            <div class="sidebar-menu-section">
+                                <h3 class="sidebar-section-title">{{ $cat->translation->name }}</h3>
+                                <ul class="sidebar-menu-list">
+                                    <li>
+                                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cat->translation->slug]) }}" class="view-all-link">
+                                            <strong>View All in {{ $cat->translation->name }}</strong>
+                                        </a>
+                                    </li>
+                                    @foreach($cat->businesses as $business)
+                                        @if($business->translations->first())
+                                            <li>
+                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug]) }}">
+                                                    {{ $business->translations->first()->name }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Amazon-like Categories Sidebar styling */
+        .category-sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 99998;
+        }
+        .category-sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .category-sidebar {
+            position: fixed;
+            top: 0;
+            left: -380px;
+            width: 380px;
+            max-width: 85%;
+            height: 100vh;
+            background: #fff;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.25);
+            z-index: 99999;
+            transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            font-family: inherit;
+        }
+        .category-sidebar.show {
+            left: 0;
+        }
+        .category-sidebar-header {
+            background: #003f7d;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 55px;
+        }
+        .category-sidebar-header .user-greeting {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .category-sidebar-header .user-greeting .avatar-icon {
+            font-size: 24px;
+        }
+        .category-sidebar-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .category-sidebar-viewport {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .category-sidebar-panels-container {
+            display: flex;
+            width: 200%; /* We have Main Panel + Sub Panel side-by-side */
+            height: 100%;
+            transition: transform 0.25s ease-in-out;
+        }
+        .category-sidebar-panels-container.slide-active {
+            transform: translateX(-50%);
+        }
+        .category-sidebar-panel {
+            width: 50%;
+            height: 100%;
+            padding: 20px 0;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .category-sidebar-panel.sub-panel {
+            display: none;
+        }
+        .category-sidebar-panel.sub-panel.active {
+            display: block;
+        }
+        .sidebar-menu-section {
+            padding: 0 20px;
+        }
+        .sidebar-section-title {
+            font-size: 14px !important;
+            text-transform: uppercase;
+            color: #111  !important;
+            font-weight: 700  !important;
+            margin-bottom: 12px !important;
+            letter-spacing: 0.5px !important;
+        }
+        .sidebar-menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-menu-list li {
+            margin-bottom: 5px;
+        }
+        .sidebar-menu-list li a {
+            display: block;
+            padding: 10px 12px;
+            color: #444;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .sidebar-menu-list li a:hover {
+            background: #eaeded;
+            color: #f26522;
+        }
+        .sidebar-menu-divider {
+            height: 1px;
+            background: #e5e5e5;
+            margin: 15px 0;
+        }
+        .sub-panel-back {
+            padding: 0 20px 10px;
+        }
+        .sub-panel-back a {
+            display: inline-flex;
+            align-items: center;
+            color: #111;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .sub-panel-back a:hover {
+            color: #f26522;
+        }
+        .view-all-link {
+            color: #004692 !important;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const openBtn = document.getElementById('open-categories-sidebar');
+            const closeBtn = document.getElementById('categories-sidebar-close');
+            const overlay = document.getElementById('categories-sidebar-overlay');
+            const sidebar = document.getElementById('categories-sidebar');
+            const container = document.getElementById('sidebar-panels-container');
+            const subPanels = document.querySelectorAll('.category-sidebar-panel.sub-panel');
+
+            if (openBtn && sidebar && overlay) {
+                openBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    sidebar.classList.add('show');
+                    overlay.classList.add('show');
+                    document.body.style.overflow = 'hidden'; // prevent scrolling main body
+                });
+            }
+
+            function closeSidebar() {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+                // Reset view back to main panel
+                setTimeout(() => {
+                    container.classList.remove('slide-active');
+                    subPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+                }, 300);
+            }
+
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (overlay) overlay.addEventListener('click', closeSidebar);
+
+            // Slide to category sub-menu
+            document.querySelectorAll('.parent-category-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const catId = this.getAttribute('data-category-id');
+                    const targetPanel = document.getElementById('sub-panel-' + catId);
+                    
+                    // Hide all sub panels, show target sub panel
+                    subPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                        container.classList.add('slide-active');
+                    }
+                });
+            });
+
+            // Back to main menu
+            document.querySelectorAll('.back-to-main-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    container.classList.remove('slide-active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
