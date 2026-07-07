@@ -1918,517 +1918,251 @@
                                         </div> --}}
 
 
-                            <!-- scetion crm sec -->
-                            <section class="crm_sec revie_left_rgt_sec " id="section14">
-
-                                <div class="crm_content" data-aos="fade-up" data-aos-duration="1000">
-                                    <div class="crm_hd">
-                                        <div class="crm_lft">
-                                            <h2>Localio {{ $business->translations->first()->name }} Reviews</h2>
-                                        </div>
-                                        <div class="crm-ryt">
-                                            <div class="ryt-rvw-btn" style="cursor: pointer;">
-                                                <a class="cta cta_orange"
-                                                            @auth
-                                       onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                @else
-                                onclick="window.location.href = '/login'" @endauth>Write
-                                                            Review</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Added Localio Review Breakdown --}}
-                                {{-- <div class="crm-review-innr crm-review-innr_2 " data-aos="fade-up"
-                                    data-aos-duration="1000">
-                                    <div class="row pt-0 p_50">
-                                        <div class="col-xl-5">
-                                            <div class="sales-crm-pack crm-pack-lft"> --}}
-
-                                                {{-- same --}}
-
-                                                {{-- <div class="inn_sl_hed">
-                                                    <div class="sli_img choice_img">
-                                                        <img class="slider_img"
-                                                            src="{{ asset($business->icon_id ?? 'front/img/big-asana.png') }}"
-                                                            alt="">
-                                                    </div>
-                                                    <div class="sl_h">
-                                                        <div class="inn_h d-flex align-items-center">
-                                                            <h6 class="head">
-                                                                {{ $business->translations->first()->name }}
-                                                            </h6>
-                                                            <livewire:wishlist :product-id="$business->id"
-                                                                :wire:key="'wishlist-'.$business->id" />
-                                                        </div>
-                                                        <div class="tp-btm d-flex flex-col-mob pt-2">
-                                                            <div class="inn_ul">
-                                                                <div class="rating-stars">
-                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                        @if ($i <= floor($averageRating))
-                                                                            <i class="fas fa-star text-warning"></i>
-                                                                        @elseif ($i - 0.5 <= $averageRating)
-                                                                            <i
-                                                                                class="fas fa-star-half-alt text-warning"></i>
-                                                                        @else
-                                                                            <i class="far fa-star text-warning"></i>
-                                                                        @endif
-                                                                    @endfor
-                                                                </div>
-                                                            </div>
-                                                            <div class="rate_box">
-                                                                {{ number_format($averageRating, 1) }} | --}}
-
-                                                                {{-- {{ $ratingCount }} --}}
-
-                                                                {{-- @if ($ratingCount === 0)
-                                                                    0 Ratings
-                                                                @elseif ($ratingCount === 1)
-                                                                    1 Rating
-                                                                @else
-                                                                    {{ $ratingCount }} Ratings
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="col-xl-4 ">
-                                            <div class="sales-crm-pack">
-                                                <div class="feture_box">
-                                                    <h6 class="size22 big-bld">Localio Review Breakdown</h6>
-                                                    <ul class="p-0 m-0">
-                                                        <li class="d-flex justify-content-between">
-                                                            <span class="lyt-text">Ease of Use</span>
-                                                            <div class="prgs_br">
-                                                                <progress class="progress-bar"
-                                                                    value="{{ $easeOfUseAvg * 20 }}"
-                                                                    max="100"></progress>
-                                                                <output>{{ $easeOfUseAvg }}/5</output>
-                                                            </div>
-                                                        </li>
-                                                        <li class="d-flex justify-content-between">
-                                                            <span class="lyt-text">Customer Service</span>
-                                                            <div class="prgs_br">
-                                                                <progress class="progress-bar"
-                                                                    value="{{ $customerServiceAvg * 20 }}"
-                                                                    max="100"></progress>
-                                                                <output>{{ $customerServiceAvg }}/5</output>
-                                                            </div>
-                                                        </li>
-                                                        <li class="d-flex justify-content-between">
-                                                            <span class="lyt-text">Features</span>
-                                                            <div class="prgs_br">
-                                                                <progress class="progress-bar"
-                                                                    value="{{ $exclusiveFeatureAvg * 20 }}"
-                                                                    max="100"></progress>
-                                                                <output>{{ $exclusiveFeatureAvg }}/5</output>
-                                                            </div>
-                                                        </li>
-                                                        <li class="d-flex justify-content-between">
-                                                            <span class="lyt-text">Value for Money</span>
-                                                            <div class="prgs_br">
-                                                                <progress class="progress-bar"
-                                                                    value="{{ $valueForMoneyAvg * 20 }}"
-                                                                    max="100"></progress>
-                                                                <output>{{ $valueForMoneyAvg }}/5</output>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3 ">
-                                            <div class="sales-crm-pack">
-                                                <div class="fre_trail feture_box size22">
-                                                    <div class="grn_check_big">
-                                                        <img src="{{ asset('front/img/new-grn-chk.png') }}">
-                                                    </div>
-                                                    <h6 class="blue-text big-bld">Free Trial <br>
-                                                        Available
-                                                    </h6>
-                                                    <div class="accor-btn p-0">
-                                                        <a class="cta cta_white">Claim Now</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> --}}
-                                {{-- End Localio Review Breakdown --}}
+                           <!-- scetion crm sec -->
+                            <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important;">
+                                <style>
+                                    .review-sidebar-sticky {
+                                        position: sticky !important;
+                                        position: -webkit-sticky !important;
+                                        top: 180px !important;
+                                        height: fit-content !important;
+                                        z-index: 10;
+                                    }
+                                    .rating-filter-checkbox {
+                                        width: 18px;
+                                        height: 18px;
+                                        margin-right: 10px;
+                                        cursor: pointer;
+                                        accent-color: #0056b3;
+                                    }
+                                    .review-star-box {
+                                        border: none !important;
+                                        background: none !important;
+                                        box-shadow: none !important;
+                                        padding: 0 !important;
+                                    }
+                                    .rating-filter-header h4 {
+                                        font-size: 16px;
+                                        font-weight: 600;
+                                        color: #777;
+                                        margin-bottom: 5px;
+                                    }
+                                    .overall-stars {
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 8px;
+                                        margin-bottom: 5px;
+                                    }
+                                    .overall-stars i {
+                                        font-size: 18px;
+                                    }
+                                    .filter-by-title-row {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        align-items: center;
+                                        margin-top: 20px;
+                                        margin-bottom: 15px;
+                                        font-weight: 600;
+                                        font-size: 15px;
+                                        color: #333;
+                                        border-bottom: 1px solid #eee;
+                                        padding-bottom: 8px;
+                                    }
+                                    .clear-filters-btn {
+                                        color: #007bff;
+                                        text-decoration: none;
+                                        font-size: 13px;
+                                        cursor: pointer;
+                                    }
+                                    .clear-filters-btn:hover {
+                                        text-decoration: underline;
+                                    }
+                                    .crm_sec, .crm_review_box, .revie_left_rgt_sec, .review_sec, div[data-business-id], .all_sec_wrp {
+                                        overflow: visible !important;
+                                    }
+                                    .review-row-prod-inr {
+                                        display: flex !important;
+                                        align-items: stretch !important;
+                                    }
+                                </style>
                                 <div class="crm_review_box review_sec" id="all-reviews">
-                                    <nav class="d-flex">
-                                        {{-- <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-home" type="button" role="tab"
-                                                aria-controls="nav-home" aria-selected="true">All Reviews</button> --}}
+                                    <div class="row review-row-prod-inr">
+                                        
+                                        <!-- Left Column (Sticky Header, Sort, Overall rating, filter) -->
+                                        <div class="col-lg-4">
+                                            <div class="review-sidebar-sticky">
+                                                
+                                                <!-- Localio Reviews Header -->
+                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 20px; color: #1e3050; line-height: 1.3;">
+                                                    Localio {{ $business->translations->first()->name }} Reviews
+                                                </h2>
 
-                                            {{-- @auth
-                                                <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#nav-profile" type="button" role="tab"
-                                                    aria-controls="nav-profile" aria-selected="false">Localio
-                                                    Reviews
-                                                </button>
-                                            @endauth --}}
+                                                <!-- Sort by Dropdown -->
+                                                <div class="selct_box" style="margin-bottom: 25px;">
+                                                    <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                                                        <label for="rating-select" style="font-size: 15px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
+                                                        <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 14px; border-radius: 6px; cursor: pointer; width: auto; min-width: 140px; border: 1px solid #ced4da;">
+                                                            <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
+                                                            <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
+                                                            <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
+                                                            <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
+                                                        </select>
+                                                    </form>
+                                                </div>
 
-                                                {{-- <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-profile" type="button" role="tab"
-                                                aria-controls="nav-profile" aria-selected="false">Localio
-                                                Reviews
-                                            </button>
+                                                <!-- Overall Rating -->
+                                                <div class="rating-filter-header">
+                                                    <h4>Overall rating</h4>
+                                                    <div class="overall-stars">
+                                                        <div>
+                                                            @for ($j = 1; $j <= 5; $j++)
+                                                                @if ($j <= floor($averageRating))
+                                                                    <i class="fas fa-star text-warning"></i>
+                                                                @elseif ($j - 0.5 <= $averageRating)
+                                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                                @else
+                                                                    <i class="far fa-star text-warning"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                        <span style="font-size: 20px; font-weight: 700; color: #333; margin-left: 5px;">{{ number_format($averageRating, 1) }}</span>
+                                                    </div>
+                                                    <p class="text-muted" style="font-size: 14px; margin: 0;">Based on {{ $ratingCount }} reviews</p>
+                                                </div>
 
-                                            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab"
-                                                data-bs-target="#nav-contact" type="button" role="tab"
-                                                aria-controls="nav-contact" aria-selected="false">Trustpilot
-                                                Reviews</button>
-                                        </div> --}}
-                                        <div class="selct_box">
-                                            <form method="GET" id="sort-form">
-                                                <label for="rating-select">Sort by:</label>
-                                                <select class="form-select" id="rating-select" name="sort" onchange="this.form.submit()">
-                                                    <option value="best"
-                                                        {{ request('sort') == 'best' ? 'selected' : '' }}>Best
-                                                        Rating
-                                                    </option>
-                                                    <option value="high-to-low"
-                                                        {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High
-                                                        to Low</option>
-                                                    <option value="low-to-high"
-                                                        {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low
-                                                        to High</option>
-                                                </select>
-                                            </form>
-                                        </div>
-                                    </nav>
-                                <div class="row review-row-prod-inr">
-                                      <div class="col-lg-4">
-                                            <div class="review-col">
+                                                <!-- Filter by Rating Title Row -->
+                                                <div class="filter-by-title-row">
+                                                    <span>Filter by rating</span>
+                                                    <span class="clear-filters-btn" id="clear-filters" style="display: none;">Clear &times;</span>
+                                                </div>
 
-                                                {{-- <div class="review-star-box">
-                                                    <ul class="progress-list">
-                                                        @for ($i = 5; $i >= 1; $i--)
-                                                            @php
-                                                                $count = $ratingsCount[$i] ?? 0;
-                                                                $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
-                                                            @endphp
-                                                            <li class="progress-list-item">
-                                                                <div class="star-div">
-                                                                    <ol class="star-div-ol">
-                                                                        @for ($j = 1; $j <= 5; $j++)
-                                                                            @if ($j <= $i)
-                                                                                <li><img src="{{ asset('front/img/star-lft.svg') }}" alt="Star"></li>
-                                                                            @else
-                                                                                <li><img src="{{ asset('front/img/empty-star-img.svg') }}" alt="Star"></li>
-                                                                            @endif
-                                                                        @endfor
-                                                                    </ol>
-                                                                </div>
-                                                                <div class="progress-box">
-                                                                    <div class="progress-fill" style="width: {{ $percent }}%;"></div>
-                                                                </div>
-                                                                <div class="profres-value">
-                                                                    <p>{{ $percent }}%</p>
-                                                                </div>
-                                                            </li>
-                                                        @endfor
-                                                    </ul>
-                                                </div> --}}
-
+                                                <!-- Star Breakdown Checkboxes -->
                                                 <div class="review-star-box">
-                                                    <ul class="progress-list">
+                                                    <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
                                                         @for ($i = 5; $i >= 1; $i--)
                                                             @php
-                                                                $count = $ratingsCount[$i] ?? 0;
+                                                                $count = $ratingCounts[$i] ?? 0;
                                                                 $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
                                                             @endphp
-                                                            <li class="progress-list-item">
-                                                                <div class="star-div">
-                                                                    <ol class="star-div-ol">
-                                                                        @for ($j = 1; $j <= 5; $j++)
-                                                                            <li>
-                                                                                @if ($j <= $i)
-                                                                                    <i class="fas fa-star text-warning"></i>
-                                                                                @else
-                                                                                    <i class="far fa-star text-warning"></i>
-                                                                                @endif
-                                                                            </li>
-                                                                        @endfor
-                                                                    </ol>
-                                                                </div>
-                                                                <div class="progress-box">
-                                                                    <div class="progress-fill" style="width: {{ $percent }}%;"></div>
-                                                                </div>
-                                                                <div class="profres-value">
-                                                                    <p>{{ $percent }}%</p>
-                                                                </div>
+                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}">
+                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer;">
+                                                                    <span style="display: inline-flex; align-items: center; width: 60px; font-size: 14px; color: #555;">
+                                                                        <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
+                                                                        <span style="font-size: 12px; color: #888; margin-left: 4px;">({{ $count }})</span>
+                                                                    </span>
+                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin: 0 10px;">
+                                                                        <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
+                                                                    </div>
+                                                                </label>
                                                             </li>
                                                         @endfor
                                                     </ul>
                                                 </div>
 
                                              </div>
-                                      </div>
-                                      <div class="col-lg-8">
-                                        <div class="tab-content" id="nav-tabContent">
-                                            <div class="tab-pane fade active show" id="nav-home" role="tabpanel"
-                                                aria-labelledby="nav-home-tab">
-                                                @foreach ($allReviews as $review)
-                                                    <div class="review_detl populr-alternative" data-aos="fade-up"
-                                                        data-aos-duration="1000">
-                                                        <div class="reviw_hd">
-                                                            <div class="ans_lft">
-                                                                <div class="asn-img">
-                                                                    @if ($review->user && $review->user->profile_image)
-                                                                        <img src="{{ asset($review->user->profile_image) }}"
-                                                                            class="img-fluid profile-circle"
-                                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                            alt="User Image">
-                                                                    @else
-                                                                        <img src="{{ asset($default_image) }}"
-                                                                            class="img-fluid profile-circle"
-                                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                            alt="Default Image">
-                                                                    @endif
-                                                                </div>
-                                                                <div class="asn-rating">
-                                                                    <h6>
-                                                                        @if ($review->user && $review->user->user_type === 'admin')
-                                                                            {{ $review->public_name ?? 'Public' }}
-                                                                        @else
-                                                                            {{ $review->user->first_name ?? 'Anonymous' }}
-                                                                        @endif
-                                                                    </h6>
+                                        </div>
 
-                                                                    <div class="rating light">
-                                                                        {{-- Change Review --}}
-                                                                        <div class="inn_ul">
-                                                                            <div class="rating-stars">
-                                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                                    @if ($i <= floor($averageRating))
-                                                                                        <i
-                                                                                            class="fas fa-star text-warning"></i>
-                                                                                    @elseif ($i - 0.5 <= $averageRating)
-                                                                                        <i
-                                                                                            class="fas fa-star-half-alt text-warning"></i>
-                                                                                    @else
-                                                                                        <i
-                                                                                            class="far fa-star text-warning"></i>
-                                                                                    @endif
-                                                                                @endfor
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="rate_box">
-                                                                            {{ number_format($averageRating, 1) }} |
-                                                                            {{-- {{ $ratingCount }} ratings --}}
-                                                                            @if ($ratingCount === 0)
-                                                                                0 Ratings
-                                                                            @elseif ($ratingCount === 1)
-                                                                                1 Rating
-                                                                            @else
-                                                                                {{ $ratingCount }} Ratings
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {{-- <span
-                                                                    class="rating-text size18">{{ number_format($review->rating, 1) }}</span>
-                                                                <div class="rating_str">
-                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                        @if ($i <= floor($review->rating))
-                                                                        <i class="fas fa-star text-warning"></i>
-                                                                        @elseif ($i - 0.5 <= $review->rating)
-                                                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                                                            @else
-                                                                            <i class="far fa-star text-warning"></i>
-                                                                            @endif
-                                                                            @endfor
-                                                                </div>  --}}
-
-                                                                </div>
-                                                            </div>
-                                                            <p>{{ $review->created_at->diffForHumans() }}</p>
-                                                        </div>
-                                                        <div class="review_text size18">
-                                                            <p class="size22 big-bld">
-                                                                {{ $review->translations->first()->title ?? '' }}
-                                                            </p>
-                                                            <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                                <div class="btm-bttn light">
-                                                    <a class="cta cta_white"
-                                                        href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                                                        More Reviews</a>
+                                        <!-- Right Column (Write Review button & Reviews List) -->
+                                        <div class="col-lg-8">
+                                            
+                                            <!-- Write Review Button (Top Right) -->
+                                            <div style="display: flex; justify-content: flex-end; margin-bottom: 25px;">
+                                                <div class="ryt-rvw-btn" style="cursor: pointer;">
+                                                    <a class="cta cta_orange"
+                                                        @auth
+                                                            onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                                        @else
+                                                            onclick="window.location.href = '/login'" 
+                                                        @endauth
+                                                        style="padding: 10px 24px; border-radius: 30px; font-weight: bold; background-color: #004692; color: #fff; text-decoration: none; display: inline-block;"
+                                                    >Write Review</a>
                                                 </div>
                                             </div>
-                                            <div class="tab-pane fade" id="nav-profile" role="tabpanel"
-                                                aria-labelledby="nav-profile-tab">
-                                                @foreach ($ourReviews as $review)
-                                                    @if ($review->user)
-                                                        <div class="review_detl" data-aos="fade-up" data-aos-duration="1000">
-                                                            <div class="reviw_hd">
-                                                                <div class="ans_lft">
-                                                                    <div class="asn-img">
-                                                                        @if ($review->user && $review->user->profile_image)
-                                                                            <img src="{{ asset($review->user->profile_image) }}"
-                                                                                class="img-fluid profile-circle"
-                                                                                style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                                alt="User Image">
-                                                                        @else
-                                                                            <img src="{{ asset($default_image) }}"
-                                                                                class="img-fluid profile-circle"
-                                                                                style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                                alt="Default Image">
-                                                                        @endif
-                                                                    </div>
-                                                                    <div class="asn-rating">
-                                                                        <h6>
-                                                                            @if ($review->user && $review->user->user_type === 'admin')
-                                                                                {{ $review->public_name ?? 'Public' }}
-                                                                            @else
-                                                                                {{ $review->user->first_name ?? 'Anonymous' }}
-                                                                            @endif
-                                                                        </h6>
-                                                                        <div class="rating light">
-                                                                            <span
-                                                                                class="rating-score size18">{{ number_format($review->rating, 1) }}</span>
-                                                                            <div class="rating_str">
-                                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                                    @if ($i <= floor($review->rating))
-                                                                                        <i
-                                                                                            class="fas fa-star text-warning"></i>
-                                                                                    @elseif ($i - 0.5 <= $review->rating)
-                                                                                        <i
-                                                                                            class="fas fa-star-half-alt text-warning"></i>
-                                                                                    @else
-                                                                                        <i
-                                                                                            class="far fa-star text-warning"></i>
-                                                                                    @endif
-                                                                                @endfor
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <p>{{ $review->created_at->diffForHumans() }}</p>
-                                                            </div>
-                                                            <div class="review_text size18">
-                                                                <p class="size22 big-bld">
-                                                                    {{ $review->translations->first()->title ?? '' }}
-                                                                </p>
-                                                                <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                                <div class="btm-bttn light">
-                                                    <a class="cta cta_white"
-                                                        href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                                                        All Reviews</a>
-                                                </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="nav-contact" role="tabpanel"
-                                                aria-labelledby="nav-contact-tab">
-                                                @foreach ($trustpilotReviews as $review)
-                                                    <div class="review_detl" data-aos="fade-up" data-aos-duration="1000">
-                                                        <div class="reviw_hd">
-                                                            <div class="ans_lft">
-                                                                <div class="asn-img">
-                                                                    @if ($review->user && $review->user->profile_image)
-                                                                        <img src="{{ asset($review->user->profile_image) }}"
-                                                                            class="img-fluid profile-circle"
-                                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                            alt="User Image">
-                                                                    @else
-                                                                        <img src="{{ asset($default_image) }}"
-                                                                            class="img-fluid profile-circle"
-                                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                            alt="Default Image">
-                                                                    @endif
-                                                                </div>
-                                                                <div class="asn-rating">
-                                                                    <h6>
-                                                                        @if ($review->user && $review->user->user_type === 'admin')
-                                                                            {{ $review->public_name ?? 'Public' }}
-                                                                        @else
-                                                                            {{ $review->user->first_name ?? 'Anonymous' }}
-                                                                        @endif
-                                                                    </h6>
 
-                                                                    {{-- <div class="rating light">
-                                                                        <span
-                                                                            class="rating-text size18">{{ number_format($review->rating, 1) }} 2313221</span>
-                                                                        <div class="rating_str">
-                                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                                @if ($i <= floor($review->rating))
-                                                                                    <i class="fas fa-star text-warning"></i>
-                                                                                @elseif ($i - 0.5 <= $review->rating)
-                                                                                    <i
-                                                                                        class="fas fa-star-half-alt text-warning"></i>
-                                                                                @else
-                                                                                    <i class="far fa-star text-warning"></i>
-                                                                                @endif
-                                                                            @endfor
-                                                                        </div>
-                                                                    </div> --}}
-
-                                                                    <div class="rating light">
-                                                                        <div class="inn_ul">
-                                                                            <div class="rating-stars">
-                                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                                    @if ($i <= floor($review->rating))
-                                                                                        <i class="fas fa-star text-warning"></i>
-                                                                                    @elseif ($i - 0.5 <= $review->rating)
-                                                                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                    @else
-                                                                                        <i class="far fa-star text-warning"></i>
-                                                                                    @endif
-                                                                                @endfor
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="rate_box">
-                                                                            {{ number_format($review->rating, 1) }} |
-                                                                            {{-- {{ $ratingCount }} ratings --}}
-                                                                            @if ($ratingCount === 0)
-                                                                            0 Reviews
-                                                                            @elseif ($ratingCount === 1)
-                                                                                1 Review
-                                                                            @else
-                                                                                {{ $ratingCount }} Reviews
-                                                                            @endif
-                                                                        </div>
-
-                                                                    </div>
-
-                                                                </div>
-                                                            </div>
-                                                            <p>{{ $review->created_at->diffForHumans() }}</p>
-                                                        </div>
-                                                        <div class="review_text size18">
-                                                            <p class="size22 big-bld">
-                                                                {{ $review->translations->first()->title ?? '' }}
-                                                            </p>
-                                                            <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                                <div class="btm-bttn light">
-                                                    <a class="cta cta_white"
-                                                        href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                                                        All Reviews</a>
-                                                </div>
+                                            <div id="reviews-list-container">
+                                                @include('User.product.partials.reviews_list')
                                             </div>
                                         </div>
-                                     </div>
-                                </div>     
+                                    </div>
+                                </div>
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function () {
+                                    const checkboxes = document.querySelectorAll('.rating-filter-checkbox');
+                                    const sortSelect = document.getElementById('rating-select');
+                                    const clearBtn = document.getElementById('clear-filters');
+                                    const container = document.getElementById('reviews-list-container');
+
+                                    const sortForm = document.getElementById('sort-form');
+                                    if (sortForm) {
+                                        sortForm.addEventListener('submit', function (e) {
+                                            e.preventDefault();
+                                        });
+                                    }
+
+                                    if (sortSelect) {
+                                        sortSelect.addEventListener('change', fetchReviews);
+                                    }
+
+                                    checkboxes.forEach(cb => {
+                                        cb.addEventListener('change', function() {
+                                            updateClearButtonVisibility();
+                                            fetchReviews();
+                                        });
+                                    });
+
+                                    if (clearBtn) {
+                                        clearBtn.addEventListener('click', function() {
+                                            checkboxes.forEach(cb => cb.checked = false);
+                                            updateClearButtonVisibility();
+                                            fetchReviews();
+                                        });
+                                    }
+
+                                    function updateClearButtonVisibility() {
+                                        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                                        if (clearBtn) {
+                                            clearBtn.style.display = anyChecked ? 'inline' : 'none';
+                                        }
+                                    }
+
+                                    function fetchReviews() {
+                                        const selectedStars = Array.from(checkboxes)
+                                            .filter(cb => cb.checked)
+                                            .map(cb => cb.value);
+
+                                        const sortValue = sortSelect ? sortSelect.value : 'recent';
+
+                                        container.style.opacity = '0.5';
+
+                                        const url = new URL(window.location.href);
+                                        url.searchParams.set('sort', sortValue);
+                                        if (selectedStars.length > 0) {
+                                            url.searchParams.set('stars', selectedStars.join(','));
+                                        } else {
+                                            url.searchParams.delete('stars');
+                                        }
+
+                                        fetch(url.toString(), {
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest'
+                                            }
+                                        })
+                                        .then(response => response.text())
+                                        .then(html => {
+                                            container.innerHTML = html;
+                                            container.style.opacity = '1';
+                                            if (typeof AOS !== 'undefined') {
+                                                AOS.refresh();
+                                            }
+                                        })
+                                        .catch(err => {
+                                            console.error('Error fetching reviews:', err);
+                                            container.style.opacity = '1';
+                                        });
+                                    }
+                                });
+                                </script>     
 
                                 </div>
                             </section>
@@ -2526,7 +2260,7 @@
 
 
             </div>
-            <section class="subs_sec light p_50" id="section16">
+            <section class="subs_sec light p_50 mt-4" id="section16">
                 <x-news-letter-subscription />
             </section>
         </div>
@@ -3050,7 +2784,7 @@
                 768: { slidesPerView: slidesPerView, slidesPerGroup: slidesPerGroup }
             }
         });
-
+    
         // Add 'active' class to the first slide initially
         slides.forEach(slide => slide.classList.remove('active'));
         slides[reviewSwiper.activeIndex].classList.add('active');
