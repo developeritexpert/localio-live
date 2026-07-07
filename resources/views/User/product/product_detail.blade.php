@@ -53,6 +53,287 @@
                 width: fit-content;
             }
             }
+
+            /* pros and cons  */
+
+               .review-breakdown-box{
+                padding:22px;
+            }
+
+            .review-breakdown-box h2{
+                margin-bottom:18px;
+            }
+/* 
+            .compact-item{
+                display:flex;
+                align-items:center;
+                gap:12px;
+                padding:10px 0;
+                border-bottom:1px solid #ececec;
+            } */
+            .compact-item {
+                display: flex;
+                gap: 12px;
+                padding: 4px 0;
+                align-items: center;
+            }
+            .feture_box  h2 {
+                font-size: 20px !important;
+            }
+            .pros-cons-box .compact-item p {
+                text-align: left;
+                font-size: 13px;
+            }
+            .compact-item:last-child{
+                border-bottom:none;
+            }
+
+            .compact-item p{
+                margin:0;
+                font-size:14px;
+                font-weight:500;
+                color:#222;
+                line-height:1.4;
+                flex:1;
+            }
+
+            .greenfonticon,
+            .redboxicon{
+                width:26px;
+                height:26px;
+                border-radius:50%;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                flex-shrink:0;
+            }
+
+            .greenfonticon{
+                background:#eaf9f0;
+                color:#28a745;
+            }
+
+            .redboxicon{
+                background:#fdecec;
+                color:#dc3545;
+            }
+
+            .greenfonticon i,
+            .redboxicon i{
+                font-size:12px;
+            }
+
+            /* side review */
+            .review-breakdown-box{
+    padding:25px;
+}
+
+.sidebar-review-card{
+    padding:18px 0;
+    border-bottom:1px solid #ececec;
+}
+
+.sidebar-review-card:last-child{
+    border-bottom:none;
+    padding-bottom:0;
+}
+
+.review-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:12px;
+}
+
+.review-user{
+    display:flex;
+    gap:12px;
+}
+
+.review-user h6{
+    margin:0 0 5px;
+    font-size:15px;
+    font-weight:600;
+}
+
+.review-user img{
+    object-fit:cover;
+}
+
+.sidebar-review-card h5{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:8px;
+    color:#002655;
+}
+
+.sidebar-review-card p{
+    margin:0;
+    font-size:14px;
+    color:#666;
+    line-height:1.6;
+}
+
+.rating-stars i{
+    font-size:13px;
+}
+
+.main_feture .feture_box {
+    box-shadow: 0 8px 24px rgb(141 143 144 / 28%);
+}
+
+
+.review-breakdown-card{
+    padding:24px;
+    border-radius:14px;
+}
+
+.review-header-box{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:18px;
+}
+
+.review-header-box h5{
+    margin:0;
+    font-size:18px;
+    font-weight:700;
+    color:#002655;
+}
+
+.review-header-box small{
+    display:block;
+    margin-top:3px;
+    color:#777;
+    font-size:13px;
+}
+
+.view-review-link{
+    color:#002655;
+    font-size:13px;
+    font-weight:600;
+    text-decoration:none;
+}
+
+.view-review-link:hover{
+    text-decoration:underline;
+}
+
+.overall-rating-box{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.overall-rating-number{
+    font-size:34px;
+    font-weight:700;
+    color:#222;
+    line-height:1;
+}
+
+.breakdown-title{
+    font-size:24px;
+    color:#002655;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.review-progress-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+    gap:15px;
+}
+
+.review-progress-item span{
+    width:150px;
+    font-size:15px;
+    font-weight:500;
+    color:#444;
+}
+
+.progress-wrap{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.progress{
+    flex:1;
+    height:8px;
+    background:#edf6ed;
+    border-radius:30px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    background:#199429;
+    border-radius:30px;
+}
+
+.progress-wrap strong{
+    width:42px;
+    text-align:right;
+    font-size:14px;
+    color:#333;
+    font-weight:600;
+}
+
+.rating-stars i{
+    font-size:18px;
+}
+
+
+.str_prc_box{
+    background:#fff;
+    border:1px solid #e9ecef;
+    border-radius:14px;
+    padding:28px 20px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:220px;
+}
+
+.starting-price-title{
+    font-size:15px;
+    font-weight:600;
+    color:#6c757d;
+    margin-bottom:18px;
+}
+
+.starting-price-value{
+    font-size:42px;
+    font-weight:700;
+    color:#002655;
+    line-height:1;
+    margin-bottom:12px;
+}
+
+.starting-price-text{
+    font-size:14px;
+    color:#8a8a8a;
+    margin-bottom:35px;
+}
+
+.starting-price-link{
+    color:#002655;
+    font-size:15px;
+    font-weight:600;
+    text-decoration:none;
+    transition:.3s;
+}
+
+.starting-price-link:hover{
+    color:#002655;
+    text-decoration:underline;
+}
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -534,67 +815,139 @@
                                     
 
                                         {{-- Add Here Feature Localio Review Breakdown --}}
-                                        <div class="main_feature_lg">
-                                            <div class="feture_box">
-                                                <h2 class="size22 big-bld">Localio Review Breakdown</h2>
-                                                <ul class="p-0 m-0">
-                                                    <li class="d-flex justify-content-between">
-                                                        <span class="lyt-text">Ease of Use</span>
-                                                        <div class="prgs_br">
-                                                            <progress class="progress-bar" value="{{ $easeOfUseAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <output>{{ $easeOfUseAvg }}/5</output>
+                                       <div class="main_feature_lg">
+                                            <div class="feture_box review-breakdown-card">
+
+                                                {{-- Header --}}
+                                                <div class="review-header-box">
+                                                    <div>
+                                                        <h5>Overall Rating</h5>
+                                                        <small>Based on {{ $ratingCount }} reviews</small>
+                                                    </div>
+
+                                                    <a href="#section14" class="view-review-link">
+                                                        See all reviews
+                                                    </a>
+                                                </div>
+
+                                                {{-- Overall Rating --}}
+                                                <div class="overall-rating-box">
+
+                                                    <div class="rating-stars">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= floor($averageRating))
+                                                                <i class="fas fa-star text-warning"></i>
+                                                            @elseif ($i - 0.5 <= $averageRating)
+                                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+
+                                                    <span class="overall-rating-number">
+                                                        {{ number_format($averageRating,1) }}
+                                                    </span>
+
+                                                </div>
+
+                                                <h2 class="breakdown-title">
+                                                    Localio Review Breakdown
+                                                </h2>
+
+                                                {{-- Breakdown --}}
+                                                <div class="review-progress-list">
+
+                                                    <div class="review-progress-item">
+                                                        <span>Ease of Use</span>
+
+                                                        <div class="progress-wrap">
+                                                            <div class="progress">
+                                                                <div class="progress-bar"
+                                                                    style="width: {{ $easeOfUseAvg*20 }}%">
+                                                                </div>
+                                                            </div>
+
+                                                            <strong>{{ number_format($easeOfUseAvg,1) }}/5</strong>
                                                         </div>
-                                                    </li>
-                                                    <li class="d-flex justify-content-between">
-                                                        <span class="lyt-text">Customer Service</span>
-                                                        <div class="prgs_br">
-                                                            <progress class="progress-bar" value="{{ $customerServiceAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <output>{{ $customerServiceAvg }}/5</output>
+                                                    </div>
+
+                                                    <div class="review-progress-item">
+                                                        <span>Customer Service</span>
+
+                                                        <div class="progress-wrap">
+                                                            <div class="progress">
+                                                                <div class="progress-bar"
+                                                                    style="width: {{ $customerServiceAvg*20 }}%">
+                                                                </div>
+                                                            </div>
+
+                                                            <strong>{{ number_format($customerServiceAvg,1) }}/5</strong>
                                                         </div>
-                                                    </li>
-                                                    <li class="d-flex justify-content-between">
-                                                        <span class="lyt-text">Features</span>
-                                                        <div class="prgs_br">
-                                                            <progress class="progress-bar" value="{{ $exclusiveFeatureAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <output>{{ $exclusiveFeatureAvg }}/5</output>
+                                                    </div>
+
+                                                    <div class="review-progress-item">
+                                                        <span>Features</span>
+
+                                                        <div class="progress-wrap">
+                                                            <div class="progress">
+                                                                <div class="progress-bar"
+                                                                    style="width: {{ $exclusiveFeatureAvg*20 }}%">
+                                                                </div>
+                                                            </div>
+
+                                                            <strong>{{ number_format($exclusiveFeatureAvg,1) }}/5</strong>
                                                         </div>
-                                                    </li>
-                                                    <li class="d-flex justify-content-between">
-                                                        <span class="lyt-text">Value for Money</span>
-                                                        <div class="prgs_br">
-                                                            <progress class="progress-bar" value="{{ $valueForMoneyAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <output>{{ $valueForMoneyAvg }}/5</output>
+                                                    </div>
+
+                                                    <div class="review-progress-item">
+                                                        <span>Value for Money</span>
+
+                                                        <div class="progress-wrap">
+                                                            <div class="progress">
+                                                                <div class="progress-bar"
+                                                                    style="width: {{ $valueForMoneyAvg*20 }}%">
+                                                                </div>
+                                                            </div>
+
+                                                            <strong>{{ number_format($valueForMoneyAvg,1) }}/5</strong>
                                                         </div>
-                                                    </li>
-                                                </ul>
+                                                    </div>
+
+                                                </div>
+
                                             </div>
                                         </div>
                                         {{-- End Feature Localio Review Breakdown --}}
                                         <div class="innr_price_trail">
 
                                             <div class="main_feature_sm">
-                                                <div class="feture_box str_prc_box">
-                                                    <div class=r"src_box text-center">
-                                                        <!-- Blue Dollarrr Circrle -->
-                                                        <div class="price-icon">
-                                                            <img src="{{ asset('ffront/img/ddmoney.svg') }}">
-                                                        </div>
-                                                        <h2 class="big_text mt-2">Starting Price</h2>
-                                                        @if ($startingPrice)
-                                                            <h3 class="blue-text">{{ $currency }}{{ $startingPrice }}<span
-                                                                    class="big_text">/ {{ $timeUnit }}</span></h3>
-                                                        @else
-                                                            <h3 class="blue-text">{{ $currency }}9<span class="big_text">/
-                                                                    {{ $timeUnit }}</span></h3>
-                                                        @endif
-                                                    </div>
+    <div class="feture_box str_prc_box">
 
-                                                </div>
-                                            </div>
+        <h6 class="starting-price-title">
+            Starting Price
+        </h6>
+
+        @if ($startingPrice)
+            <h2 class="starting-price-value">
+                {{ $currency }}{{ $startingPrice }}
+            </h2>
+        @else
+            <h2 class="starting-price-value">
+                {{ $currency }}9
+            </h2>
+        @endif
+
+        <p class="starting-price-text">
+            Flat Rate, Per {{ ucfirst($timeUnit) }}
+        </p>
+
+        <a href="#section3" class="starting-price-link">
+            View Pricing
+        </a>
+
+    </div>
+</div>
 
                                             <div class="main_feature_sm">
                                                 <div class="fre_trail feture_box size22">
@@ -616,6 +969,156 @@
                                                             type="button">Claim Now</a>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                      @php
+                                        $pros = collect();
+                                        $cons = collect();
+
+                                        $reviews = $business->reviews
+                                            ->where('status', 'active')
+                                            ->shuffle(); // Random reviews
+
+                                        foreach ($reviews as $review) {
+
+                                            $translation = $review->translations
+                                                ->where('language_id', getCurrentLanguageID())
+                                                ->first() ?? $review->translations->first();
+
+                                            if (!$translation) {
+                                                continue;
+                                            }
+
+                                            // ---------- Pros ----------
+                                            if (!empty($translation->pros)) {
+
+                                                $text = trim(strip_tags($translation->pros));
+
+                                                if (str_word_count($text) <= 6) {
+                                                    $pros->push($text);
+                                                }
+                                            }
+
+                                            // ---------- Cons ----------
+                                            if (!empty($translation->cons)) {
+
+                                                $text = trim(strip_tags($translation->cons));
+
+                                                if (str_word_count($text) <= 6) {
+                                                    $cons->push($text);
+                                                }
+                                            }
+
+                                            if ($pros->count() >= 2 && $cons->count() >= 2) {
+                                                break;
+                                            }
+                                        }
+
+                                        $pros = $pros->unique()->take(2);
+                                        $cons = $cons->unique()->take(2);
+
+                                        // Default values
+                                        while ($pros->count() < 2) {
+                                            $pros->push('Service staff is good');
+                                            $pros = $pros->unique();
+                                        }
+
+                                        while ($cons->count() < 2) {
+                                            $cons->push('Service not as well as expected');
+                                            $cons = $cons->unique();
+                                        }
+                                    @endphp
+
+                                        <div class="main_feature_lg">
+                                            <div class="feture_box review-breakdown-box pros-cons-box">
+
+                                                <h2 class="size22 big-bld">Pros & Cons</h2>
+
+                                                <div class="review-breakdown-list">
+
+                                                    {{-- Pros --}}
+                                                    @foreach($pros as $pro)
+                                                        <div class="review-item compact-item">
+                                                            <div class="greenfonticon">
+                                                                <i class="fa-solid fa-plus"></i>
+                                                            </div>
+
+                                                            <p>{{ \Illuminate\Support\Str::limit($pro, 70) }}</p>
+                                                        </div>
+                                                    @endforeach
+
+                                                    {{-- Cons --}}
+                                                    @foreach($cons as $con)
+                                                        <div class="review-item compact-item">
+                                                            <div class="redboxicon">
+                                                                <i class="fa-solid fa-minus"></i>
+                                                            </div>
+
+                                                            <p>{{ \Illuminate\Support\Str::limit($con, 70) }}</p>
+                                                        </div>
+                                                    @endforeach
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="main_feature_lg">
+                                            <div class="feture_box review-breakdown-box">
+
+                                                <h2 class="size22 big-bld">What Users Like</h2>
+
+                                                @foreach($topReviews->take(2) as $review)
+                                                    <div class="sidebar-review-card">
+
+                                                        <div class="review-header">
+
+                                                            <div class="review-user">
+
+                                                                @if($review->user && $review->user->profile_image)
+                                                                    <img src="{{ asset($review->user->profile_image) }}"
+                                                                        class="rounded-circle"
+                                                                        width="45"
+                                                                        height="45">
+                                                                @else
+                                                                    <img src="{{ asset($default_image) }}"
+                                                                        class="rounded-circle"
+                                                                        width="45"
+                                                                        height="45">
+                                                                @endif
+
+                                                                <div>
+                                                                    <h6>{{ $review->user->first_name ?? 'Anonymous' }}</h6>
+
+                                                                    <div class="rating-stars">
+                                                                        @for($i=1;$i<=5;$i++)
+                                                                            @if($i<=floor($review->rating))
+                                                                                <i class="fas fa-star text-warning"></i>
+                                                                            @elseif($i-0.5<=$review->rating)
+                                                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                                                            @else
+                                                                                <i class="far fa-star text-warning"></i>
+                                                                            @endif
+                                                                        @endfor
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <small>{{ $review->created_at->diffForHumans() }}</small>
+
+                                                        </div>
+
+                                                        <h5>
+                                                            {{ $review->translations->first()->title ?? 'Review' }}
+                                                        </h5>
+
+                                                        <p>
+                                                            {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
+                                                        </p>
+
+                                                    </div>
+                                                @endforeach
+
                                             </div>
                                         </div>
                                     </div>
@@ -648,77 +1151,7 @@
 
                             {{-- Added The New Section preview reviews --}}
                             <section class="reviews-section">
-                                <div class="container py-5">
-                                    <div class="swiper myReviewSlider">
-                                        <div class="swiper-wrapper">
-                                            @php
-                                                $reviewsCount = $topReviews->count();
-                                                $chunks = $topReviews->take(7)->chunk(2); // 2 reviews per slide
-                                            @endphp
-
-                                            @forelse($chunks as $chunk)
-                                                <div class="swiper-slide">
-                                                    <div class="d-flex">
-                                                        @foreach($chunk as $review)
-                                                            <div class="p-5 bg-white slide-bx rounded shadow-sm flex-fill me-3">
-                                                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="me-3">
-                                                                            @if ($review->user && $review->user->profile_image)
-                                                                                <img src="{{ asset($review->user->profile_image) }}" alt="User" class="rounded-circle" width="50" height="50">
-                                                                            @else
-                                                                                <img src="{{ asset($default_image) }}" alt="Default" class="rounded-circle" width="50" height="50">
-                                                                            @endif
-                                                                        </div>
-                                                                        <div>
-                                                                            <h6 class="mb-1">{{ $review->user->first_name ?? 'Anonymous' }}</h6>
-                                                                            <div class="rating">
-                                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                                    @if ($i <= floor($review->rating))
-                                                                                        <i class="fas fa-star text-warning"></i>
-                                                                                    @elseif ($i - 0.5 <= $review->rating)
-                                                                                        <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                    @else
-                                                                                        <i class="far fa-star text-warning"></i>
-                                                                                    @endif
-                                                                                @endfor
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <small>{{ $review->created_at->diffForHumans() }}</small>
-                                                                </div>
-                                                                <p class="fw-bold mb-2">{{ $review->translations->first()->title ?? 'Review' }}</p>
-                                                                <p>{{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? 'No Description'), 120) }}</p>
-                                                            </div>
-                                                        @endforeach
-
-                                                        @if($chunk->count() == 1)
-                                                            <!-- Fill empty space if only 1 review in chunk -->
-                                                            <div class="p-4 bg-white rounded shadow-sm flex-fill" style="display: none;"></div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @empty
-                                                <div class="swiper-slide text-center">
-                                                    <p>No reviews yet.</p>
-                                                </div>
-                                            @endforelse
-                                        </div>
-
-                                        <!-- Navigation -->
-                                        <div class="swiper-button-prev"></div>
-                                        <div class="swiper-button-next"></div>
-                                    </div>
-
-                                    {{-- <div class="text-center mt-4">
-                                        <a href="#allReviewsSection" class="btn btn-dark">View All Reviews</a>
-                                    </div> --}}
-
-                                    <div class="text-center mt-4 btm-btn">
-                                        <a href="javascript:void(0);" id="scrollToReviews" class="cta cta_orange">View All Reviews</a>
-                                    </div>
-
-                                </div>
+                               
                             </section>
                             {{-- End preview reviews section  --}}
 
@@ -2025,7 +2458,7 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
-                                                        <span style="font-size: 20px; font-weight: 700; color: #333; margin-left: 5px;">{{ number_format($averageRating, 1) }}</span>
+                                                        <span style="font-size: 20px; font-weight: 700; color: # ; margin-left: 5px;">{{ number_format($averageRating, 1) }}</span>
                                                     </div>
                                                     <p class="text-muted" style="font-size: 14px; margin: 0;">Based on {{ $ratingCount }} reviews</p>
                                                 </div>
@@ -2047,9 +2480,9 @@
                                                             <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px;">
                                                                 <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}">
                                                                 <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                                                                    <span style="display: inline-flex; align-items: center; width: 60px; font-size: 14px; color: #555;">
+                                                                    <span style="display: inline-flex; align-items: center; width: 60px; font-size: 16px; color: #000;">
                                                                         <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
-                                                                        <span style="font-size: 12px; color: #888; margin-left: 4px;">({{ $count }})</span>
+                                                                        <span style="font-size: 14px; color: #000; margin-left: 4px;">({{ $count }})</span>
                                                                     </span>
                                                                     <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin: 0 10px;">
                                                                         <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
@@ -2913,7 +3346,7 @@
                         toastr.error(' Error submitting review. Please try again.');
                     }
                 },
-                complete: function() {
+                 complete: function() {
                     $('#submitPopupReview').prop('disabled', false);
                 }
             });

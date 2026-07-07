@@ -320,7 +320,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                   <div class="xclusve-img">
+                                   <div  class="xclusve-img">
                                         <img src="{{ $product->product_icon ?? asset('front/img/default-product.png') }}"
                                             alt="">
                                     </div>

@@ -1811,7 +1811,7 @@ global classes */
 }
 
 .main_feture .feture_box p {
-  text-align: center;
+  text-align: left;
   font-weight: 500;
   color: #000;
 }
