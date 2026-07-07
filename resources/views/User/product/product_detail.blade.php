@@ -1977,12 +1977,69 @@
                                     .clear-filters-btn:hover {
                                         text-decoration: underline;
                                     }
-                                    .crm_sec, .crm_review_box, .revie_left_rgt_sec, .review_sec, div[data-business-id], .all_sec_wrp {
-                                        overflow: visible !important;
-                                    }
                                     .review-row-prod-inr {
                                         display: flex !important;
                                         align-items: stretch !important;
+                                    }
+                                    .crm_sec, .crm_review_box, .revie_left_rgt_sec, .review_sec, div[data-business-id], .all_sec_wrp {
+                                        overflow: visible !important;
+                                    }
+                                    .review_sec .review_detl {
+                                        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+                                        border-radius: 20px !important;
+                                        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+                                    }
+                                    .review_sec .review_detl:hover {
+                                        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
+                                        border-color: rgba(0, 0, 0, 0.12) !important;
+                                    }
+
+                                    /* Responsiveness for Review Section */
+                                    @media (max-width: 991px) {
+                                        .crm_sec {
+                                            background: transparent !important;
+                                            padding: 0 !important;
+                                        }
+                                        .review-row-prod-inr {
+                                            display: block !important;
+                                        }
+                                        .review-sidebar-sticky {
+                                            position: static !important;
+                                            margin-bottom: 30px;
+                                        }
+                                    }
+                                    @media (max-width: 575px) {
+                                        .review_sec .review_detl {
+                                            padding: 20px 15px !important;
+                                            border-radius: 15px !important;
+                                        }
+                                        .review_sec .review_detl .reviw_hd {
+                                            flex-direction: column;
+                                            align-items: flex-start;
+                                            gap: 10px;
+                                        }
+                                        .review_sec .review_detl .reviw_hd p {
+                                            margin: 0;
+                                            font-size: 13px;
+                                        }
+                                        .ans_lft {
+                                            gap: 0px 12px;
+                                        }
+                                        .asn-img img {
+                                            width: 55px !important;
+                                            height: 55px !important;
+                                        }
+                                        .review_text.size18 {
+                                            font-size: 15px !important;
+                                        }
+                                        .review_text.size18 .size22.big-bld {
+                                            font-size: 18px !important;
+                                            line-height: 1.3;
+                                        }
+                                        .review-sidebar-sticky h2 {
+                                            font-size: 22px !important;
+                                        }
                                     }
                                 </style>
                                 <div class="crm_review_box review_sec" id="all-reviews">
@@ -2011,29 +2068,31 @@
                                                 </div>
 
                                                 <!-- Overall Rating -->
-                                                <div class="rating-filter-header">
-                                                    <h4>Overall rating</h4>
-                                                    <div class="overall-stars">
-                                                        <div>
-                                                            @for ($j = 1; $j <= 5; $j++)
-                                                                @if ($j <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning"></i>
-                                                                @elseif ($j - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                                                @else
-                                                                    <i class="far fa-star text-warning"></i>
-                                                                @endif
-                                                            @endfor
+                                                <div class="rating-filter-header" style="margin-bottom: 20px;">
+                                                    <h4 style="font-size: 16px !important; font-weight: 500 !important; color: #333 !important; margin-bottom: 8px !important;">Overall rating</h4>
+                                                    <div class="overall-stars" style="display: flex; align-items: center; gap: 12px;">
+                                                        <span style="font-size: 38px; font-weight: 500; color: #000; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                            <div style="display: flex; align-items: center; gap: 2px;">
+                                                                @for ($j = 1; $j <= 5; $j++)
+                                                                    @if ($j <= floor($averageRating))
+                                                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                                                    @elseif ($j - 0.5 <= $averageRating)
+                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                                                    @else
+                                                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                                                    @endif
+                                                                @endfor
+                                                            </div>
+                                                            <p style="font-size: 13px; margin: 0; color: #777; font-weight: 500;">Based on {{ $ratingCount }} reviews</p>
                                                         </div>
-                                                        <span style="font-size: 20px; font-weight: 700; color: #333; margin-left: 5px;">{{ number_format($averageRating, 1) }}</span>
                                                     </div>
-                                                    <p class="text-muted" style="font-size: 14px; margin: 0;">Based on {{ $ratingCount }} reviews</p>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->
-                                                <div class="filter-by-title-row">
-                                                    <span>Filter by rating</span>
-                                                    <span class="clear-filters-btn" id="clear-filters" style="display: none;">Clear &times;</span>
+                                                <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+                                                    <span style="font-size: 16px; font-weight: 700; color: #1e3050;">Filter by rating</span>
+                                                    <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span>
                                                 </div>
 
                                                 <!-- Star Breakdown Checkboxes -->
@@ -2044,14 +2103,14 @@
                                                                 $count = $ratingCounts[$i] ?? 0;
                                                                 $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
                                                             @endphp
-                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px;">
-                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}">
-                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                                                                    <span style="display: inline-flex; align-items: center; width: 60px; font-size: 14px; color: #555;">
-                                                                        <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
-                                                                        <span style="font-size: 12px; color: #888; margin-left: 4px;">({{ $count }})</span>
+                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 8px;">
+                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="width: 18px; height: 18px; margin-right: 6px; cursor: pointer; accent-color: #0056b3;">
+                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0; gap: 6px;">
+                                                                    <span style="display: inline-flex; align-items: center; font-size: 14px; color: #333; font-weight: 500; gap: 4px; white-space: nowrap;">
+                                                                        <i class="far fa-star text-warning"></i> {{ $i }}
                                                                     </span>
-                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin: 0 10px;">
+                                                                    <span style="font-size: 13px; color: #888; min-width: 35px; white-space: nowrap; margin-left: 2px;">({{ $count }})</span>
+                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px;">
                                                                         <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
                                                                     </div>
                                                                 </label>

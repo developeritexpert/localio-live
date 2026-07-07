@@ -269,7 +269,7 @@ class ViewController extends Controller
 
 
 
-    public function allReview($locale, $slug)
+    public function allReview(Request $request, $locale, $slug)
     {
         $lang_id = getCurrentLanguageID();
 
@@ -284,8 +284,13 @@ class ViewController extends Controller
 
         $business = $businessTranslation->business; // Get actual Business model
 
-        // Now use business->id as usual
-        $reviews = Review::with([
+        // Calculate average rating based on active reviews
+        $averageRating = $business->reviews->where('status', 'active')->count() > 0
+            ? $business->reviews->where('status', 'active')->avg('rating')
+            : 0;
+
+        // Build reviews query
+        $reviewsQuery = Review::with([
             'user',
             'business.translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
@@ -293,28 +298,66 @@ class ViewController extends Controller
             'translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             },
-
-            //  'original', //added 
-
         ])
             ->where('business_id', $business->id)
             ->whereHas('translations', function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             })->whereHas('user', function ($query) {
                 $query->where('user_type', '!=', 'admin');
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(5);
-            // dd($reviews);
+            });
 
+        // Filter by rating (stars)
+        $selectedStars = $request->get('stars');
+        if (is_string($selectedStars)) {
+            $selectedStars = explode(',', $selectedStars);
+        }
+        $selectedStars = array_filter(array_map('intval', (array) $selectedStars));
+
+        if (!empty($selectedStars)) {
+            $reviewsQuery->where(function($q) use ($selectedStars) {
+                foreach ($selectedStars as $star) {
+                    $min = $star - 0.5;
+                    $max = $star + 0.5;
+                    $q->orWhere(function($sub) use ($min, $max) {
+                        $sub->where('rating', '>=', $min)
+                            ->where('rating', '<', $max);
+                    });
+                }
+            });
+        }
+
+        // Sort reviews
+        $sort = $request->get('sort', 'recent');
+        switch ($sort) {
+            case 'best':
+            case 'high-to-low':
+                $reviewsQuery->orderByDesc('rating')->orderByDesc('created_at');
+                break;
+            case 'low-to-high':
+                $reviewsQuery->orderBy('rating')->orderByDesc('created_at');
+                break;
+            case 'recent':
+            default:
+                $reviewsQuery->orderByDesc('created_at');
+                break;
+        }
+
+        $reviews = $reviewsQuery->paginate(5)->appends($request->query());
+
+        // Calculate rating breakdown
         $ratingsCount = Review::where('business_id', $business->id)
-            ->selectRaw('rating, COUNT(*) as count')
-            ->groupBy('rating')
-            ->pluck('count', 'rating');
+            ->where('status', 'active')
+            ->selectRaw('ROUND(rating) as rounded_rating, COUNT(*) as count')
+            ->groupBy('rounded_rating')
+            ->pluck('count', 'rounded_rating');
 
         $totalReviews = $ratingsCount->sum();
 
-        return view('User.review.user_review2', compact('totalReviews', 'ratingsCount', 'reviews', 'business'));
+        if ($request->ajax()) {
+            return view('User.review.partials.reviews_list', compact('reviews', 'business'))->render();
+        }
+
+        return view('User.review.user_review2', compact('totalReviews', 'ratingsCount', 'reviews', 'business', 'averageRating'));
     }
 
     //Review Transalation function
