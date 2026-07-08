@@ -528,7 +528,7 @@
                                 // ['id' => 'section9', 'label' => "Software like"],
                                 ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section14', 'label' => "Reviews"],
-                                ['id' => 'section16', 'label' => 'Inbox'],
+                                // ['id' => 'section16', 'label' => 'Inbox'],
                             ];
 
                             // Dynamic middle sections from topics
@@ -555,10 +555,10 @@
                                 // ['id' => 'section2', 'label' => "$name"],
                                 ['id' => 'section3', 'label' => "Pricing"],
                                 // ['id' => 'section4', 'label' => "Pros & cons"],
-                                ['id' => 'section5', 'label' => 'Alternatives'],
                                 ['id' => 'features' , 'label' => 'Features'],
                                 // ['id' => 'softweretopic', 'label' => 'Software Topic'],
-                                ['id' => 'business-integration', 'label' => 'Integration']
+                                ['id' => 'business-integration', 'label' => 'Integration'],
+                                ['id' => 'section9', 'label' => 'Alternatives']
 
                             ];
 
