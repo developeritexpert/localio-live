@@ -1018,14 +1018,24 @@
                                         $cons = $cons->unique()->take(2);
 
                                         // Default values
-                                        while ($pros->count() < 2) {
-                                            $pros->push('Service staff is good');
-                                            $pros = $pros->unique();
+                                        $defaultPros = ['Service staff is good', 'Easy to use and navigate'];
+                                        foreach ($defaultPros as $defaultPro) {
+                                            if ($pros->count() >= 2) {
+                                                break;
+                                            }
+                                            if (!$pros->contains($defaultPro)) {
+                                                $pros->push($defaultPro);
+                                            }
                                         }
 
-                                        while ($cons->count() < 2) {
-                                            $cons->push('Service not as well as expected');
-                                            $cons = $cons->unique();
+                                        $defaultCons = ['Service not as well as expected', 'Pricing could be more flexible'];
+                                        foreach ($defaultCons as $defaultCon) {
+                                            if ($cons->count() >= 2) {
+                                                break;
+                                            }
+                                            if (!$cons->contains($defaultCon)) {
+                                                $cons->push($defaultCon);
+                                            }
                                         }
                                     @endphp
 
