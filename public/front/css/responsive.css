@@ -1035,7 +1035,7 @@
               flex: 0 0 100%;
             } */
   .inn_sl_hed.mst_hdn .slider_img {
-    min-width: 60px;
+    /* min-width: 60px; */
     width: 100%;
   }
 
@@ -1944,6 +1944,7 @@
 
   .popular-accordion-wrp .accor-btn .cta {
     padding: 11px 28px;
+    font-size: small;
   }
 
   .accor-bdy-row {
@@ -12654,23 +12655,25 @@ textarea#message {
   .faq-inner .faq-accor {
     margin-top: 20px;
   }
+
   .top-automotive-sec .auto-choice-rgt {
     margin-top: 30px;
   }
 
   .top-automotive-sec .auto-choice-lft div#filterAccordion {
     max-height: 400px;
-    overflow-y: auto; 
+    overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #f9633b #f5f5f5;
-}
-.top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar {
-    width: 10px;
-}
+  }
 
-.top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar-thumb {
+  .top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar-thumb {
     background: #f9633b;
-}
+  }
 
 }
 
@@ -12687,7 +12690,7 @@ textarea#message {
     padding: 120px 0px 80px !important;
   }
 
-  
+
   .asn_main_sec .asn_dv .ans_ryt .site_vsit {
     flex-direction: row !important;
     gap: 20px;
@@ -12915,10 +12918,12 @@ textarea#message {
   .latest_review_part_footer {
     overflow: hidden;
   }
+
   .ft-btm-rgt .select-menu.active .options {
     max-height: 400px;
-}
-.contact_sec .contact_content {
+  }
+
+  .contact_sec .contact_content {
     border-radius: 15px;
-}
+  }
 }
