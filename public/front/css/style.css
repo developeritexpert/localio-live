@@ -8815,3 +8815,45 @@ section.revie_img_sec {
     color: #475569 !important;
   }
 }
+
+/* Responsive adjustments for Latest Reviews section header on mobile */
+@media (max-width: 480px) {
+  .reviews_block .inn_sl_hed {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    position: relative !important;
+  }
+  .reviews_block .sl_h {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+    position: relative !important;
+  }
+  .reviews_block .sl_main {
+    display: block !important;
+    width: 100% !important;
+  }
+  .reviews_block .sl_main h6.head {
+    font-size: 16px !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    padding-right: 32px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+  .reviews_block .wishlist {
+    position: absolute !important;
+    right: 0 !important;
+    top: 2px !important;
+    z-index: 10 !important;
+  }
+  .reviews_block .wishlist > div a {
+    position: static !important;
+    transform: none !important;
+  }
+}
