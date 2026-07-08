@@ -242,7 +242,7 @@
                                                                                     <div class="slider_content_sec">
                                                                                         <div
                                                                                             class="content_para text-truncate-3-lines">
-                                                                                            {{ $businessTranslation->description ?? 'Description not available.' }}
+                                                                                            {!! strip_tags($businessTranslation->description ?? 'Description not available.') !!}
                                                                                         </div>
                                                                                         <div class="view-more-btn">
                                                                                             @if ($businessTranslation)
