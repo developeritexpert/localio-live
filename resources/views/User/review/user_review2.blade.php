@@ -97,8 +97,14 @@
                     display: block !important;
                 }
                 .review-sidebar-sticky {
-                    position: static !important;
-                    margin-bottom: 30px;
+                    background: #ffffff;
+                    border: 1px solid #f2f4f8;
+                    border-radius: 12px;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+                    position: relative !important;
+                    top: 0 !important;
+                    margin-bottom: 30px !important;
+                    padding: 20px !important;
                 }
             }
             @media (max-width: 575px) {
@@ -167,16 +173,16 @@
                                         $count = $ratingsCount[$i] ?? 0;
                                         $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
                                     @endphp
-                                    <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 8px;">
-                                        <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="width: 18px; height: 18px; margin-right: 6px; cursor: pointer; accent-color: #0056b3;">
-                                        <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0; gap: 6px;">
-                                            <span style="display: inline-flex; align-items: center; font-size: 14px; color: #333; font-weight: 500; gap: 4px; white-space: nowrap;">
-                                                <i class="far fa-star text-warning"></i> {{ $i }}
+                                    <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
+                                        <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0; accent-color: #0056b3;">
+                                        <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
+                                            <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #555; flex-shrink: 0;">
+                                                <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
                                             </span>
-                                            <span style="font-size: 13px; color: #888; min-width: 35px; white-space: nowrap; margin-left: 2px;">({{ $count }})</span>
-                                            <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px;">
+                                            <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
                                                 <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
                                             </div>
+                                            <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
                                         </label>
                                     </li>
                                 @endfor
