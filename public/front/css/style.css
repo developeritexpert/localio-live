@@ -8727,3 +8727,91 @@ section.revie_img_sec {
   display: flex;
   justify-content: center;
 }
+
+/* Responsive adjustments for Most Popular card header on mobile */
+@media (max-width: 480px) {
+  .most-populr-sec .inn_sl_hed.mst_hdn {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 14px !important;
+    text-align: left !important;
+    padding: 12px 4px !important;
+    border-bottom: 1px dashed #e2e8f0 !important;
+    margin-bottom: 12px !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .sli_img {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 50% !important;
+    border: 2px solid #f1f5f9 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .sli_img img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .sl_h {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .inn_h {
+    width: 100% !important;
+  }
+  .most-populr-sec .inn_h .sl_main {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+  }
+  .most-populr-sec .inn_h .sl_main h6.head {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+    padding-right: 30px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    letter-spacing: -0.02em !important;
+  }
+  .most-populr-sec .inn_h .sl_main div[wire\:key*="wishlist-container"] {
+    position: absolute !important;
+    right: 0 !important;
+    top: 2px !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .tp-btm {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    width: 100% !important;
+    margin-top: 2px !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .tp-btm .tab_star_li {
+    white-space: nowrap !important;
+    display: flex !important;
+    gap: 2px !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .tp-btm .tab_star_li i {
+    font-size: 12px !important;
+    color: #fbbf24 !important;
+  }
+  .most-populr-sec .inn_sl_hed.mst_hdn .rate_box {
+    white-space: nowrap !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #475569 !important;
+  }
+}
