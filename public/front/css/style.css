@@ -8064,7 +8064,9 @@ input:checked~.toggle-dot {
 .tikcrsotr .pros_ot .pr_pros .innr_pr .greenfonticon {
   width: 14px;
   height: 20px;
-  color: #28a745;
+  color: #28a745 !important;
+  background: #1a538a !important;
+
   font-size: 16px;
   display: flex;
   align-items: center;
@@ -8573,9 +8575,9 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 /* 10-june-2026  */
 .wht-t-org-btn {
-    background-color: #fff !important;
-    border-color: #fff !important;
-    color: #003f7d;
+  background-color: #fff !important;
+  border-color: #fff !important;
+  color: #003f7d;
 }
 
 .wht-t-org-btn:hover {
@@ -8710,16 +8712,18 @@ section.revie_img_sec {
 
 /* 23-jun-26  */
 .como_sec_2 .knowledge-tabs {
-display:flex;
-gap:15px;
-justify-content:center;
-flex-wrap:wrap;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
+
 .faq-inner .faq-accor #accordionExample a.view-all {
-display: inline-block;
-margin:0;
+  display: inline-block;
+  margin: 0;
 }
+
 .faq-section #accordionExample .btn-holder {
-   display: flex;
-   justify-content: center;
+  display: flex;
+  justify-content: center;
 }

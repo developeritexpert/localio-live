@@ -4,10 +4,339 @@
 @section('meta_title', isset($business->translations->first()->name) && isset($business->translations->first()->name) ?
     $business->translations->first()->name : 'Products')
 @section('content')
-    @livewire('add-review')
-    <style>
-               #section1 .asn_dv {
+    @php
+        $images = is_array($business->business_images)
+            ? $business->business_images
+            : json_decode($business->business_images ?? '[]', true);
+    @endphp
+    <!-- Modal script driver (Declared early to prevent race conditions on render) -->
+    <script>
+        console.log("Gallery script block rendered");
+        
+        let modalImages = {!! json_encode($images) !!};
+        let currentModalIndex = 0;
+
+        function updateModalImage(index) {
+            console.log("updateModalImage called with index:", index);
+            currentModalIndex = parseInt(index, 10);
+            if (currentModalIndex >= 0 && currentModalIndex < modalImages.length) {
+                let imgUrl = '{{ asset("") }}' + modalImages[currentModalIndex].replace(/^\/+/, '');
+                console.log("Updating modal active image src to:", imgUrl);
+                let activeImg = document.getElementById('modalActiveImg');
+                if (activeImg) {
+                    activeImg.src = imgUrl;
+                } else {
+                    console.error("modalActiveImg element not found");
+                }
+                
+                const thumbs = document.querySelectorAll('.modal-thumb-item');
+                thumbs.forEach(thumb => {
+                    thumb.classList.remove('active-thumb');
+                    thumb.style.borderColor = 'transparent';
+                    thumb.style.opacity = '0.6';
+                });
+                
+                const activeThumb = document.querySelector(`.modal-thumb-item[data-index="${currentModalIndex}"]`);
+                if (activeThumb) {
+                    activeThumb.classList.add('active-thumb');
+                    activeThumb.style.borderColor = '#007bff';
+                    activeThumb.style.opacity = '1';
+                } else {
+                    console.warn("Active thumbnail element not found for index:", currentModalIndex);
+                }
+            } else {
+                console.error("Invalid currentModalIndex:", currentModalIndex, "Images count:", modalImages.length);
+            }
+        }
+
+        window.openGallery = function (index) {
+            console.log("Global openGallery called with index:", index);
+            try {
+                updateModalImage(index);
+                const modalEl = document.getElementById('imageGalleryModal');
+                if (modalEl) {
+                    console.log("Found modalEl, initializing Bootstrap Modal instance");
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                        console.log("Bootstrap modal.show() invoked successfully");
+                    } else {
+                        console.error("bootstrap or bootstrap.Modal is undefined! Make sure bootstrap bundle JS is loaded.");
+                        // Fallback in case bootstrap object is missing:
+                        modalEl.classList.add('show');
+                        modalEl.style.display = 'block';
+                        document.body.classList.add('modal-open');
+                        let backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        document.body.appendChild(backdrop);
+                        console.log("Applied fallback modal display style rules");
+                    }
+                } else {
+                    console.error("imageGalleryModal element not found");
+                }
+            } catch (err) {
+                console.error("Error in openGallery function:", err);
+            }
+        };
+
+        window.addEventListener('load', function () {
+            console.log("Gallery window load event fired. Images parsed:", modalImages);
+
+            const thumbContainer = document.getElementById('modalThumbContainer');
+            if (thumbContainer) {
+                thumbContainer.addEventListener('click', function (e) {
+                    const thumbItem = e.target.closest('.modal-thumb-item');
+                    if (thumbItem) {
+                        const index = thumbItem.getAttribute('data-index');
+                        console.log("Modal thumbnail clicked. Index:", index);
+                        updateModalImage(index);
+                    }
+                });
+            }
+
+            const prevBtn = document.getElementById('modalPrevBtn');
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function () {
+                    let nextIndex = (currentModalIndex - 1 + modalImages.length) % modalImages.length;
+                    console.log("Modal prev button clicked. Next index:", nextIndex);
+                    updateModalImage(nextIndex);
+                });
+            }
+
+            const nextBtn = document.getElementById('modalNextBtn');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function () {
+                    let nextIndex = (currentModalIndex + 1) % modalImages.length;
+                    console.log("Modal next button clicked. Next index:", nextIndex);
+                    updateModalImage(nextIndex);
+                });
+            }
+
+            document.addEventListener('keydown', function (e) {
+                const modalEl = document.getElementById('imageGalleryModal');
+                if (modalEl && modalEl.classList.contains('show')) {
+                    if (e.key === 'ArrowLeft') {
+                        let nextIndex = (currentModalIndex - 1 + modalImages.length) % modalImages.length;
+                        console.log("Left arrow pressed. Next index:", nextIndex);
+                        updateModalImage(nextIndex);
+                    } else if (e.key === 'ArrowRight') {
+                        let nextIndex = (currentModalIndex + 1) % modalImages.length;
+                        console.log("Right arrow pressed. Next index:", nextIndex);
+                        updateModalImage(nextIndex);
+                    }
+                }
+            });
+        });
+    </script>
+
+        @livewire('add-review')
+        <style>
+             /* Responsive CSS for Gallery Modal */
+             #imageGalleryModal .modal-dialog {
+                 max-width: 95%;
+                 width: 1400px;
+                 transition: all 0.3s ease;
+             }
+             .gallery-header {
+                 padding: 24px 32px 16px 32px;
+                 display: flex;
+                 justify-content: space-between;
+                 align-items: center;
+                 border-bottom: 1px solid #f0f0f0;
+                 background: #ffffff;
+             }
+             .gallery-header-left {
+                 display: flex;
+                 align-items: center;
+                 gap: 16px;
+             }
+             .gallery-header-cta {
+                 margin-right: 40px;
+             }
+             .gallery-body {
+                 height: 60vh;
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+                 background: #fafafa;
+                 position: relative;
+                 padding: 24px;
+             }
+             .gallery-thumbnails {
+                 padding: 16px 32px;
+                 border-top: 1px solid #f0f0f0;
+                 background: #ffffff;
+                 display: flex;
+                 justify-content: center;
+                 gap: 12px;
+                 overflow-x: auto;
+                 flex-wrap: wrap;
+             }
+
+             .gallery-image-wrap {
+                 width: 100%;
+                 height: 100%;
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+                 border-radius: 8px;
+                 overflow: hidden;
+                 padding-inline: 48px;
+             }
+
+             @media (max-width: 768px) {
+                 #imageGalleryModal .modal-dialog {
+                     max-width: 98% !important;
+                     width: auto !important;
+                     margin: 10px auto !important;
+                 }
+                 .gallery-header {
+                     padding: 16px !important;
+                     flex-direction: column !important;
+                     align-items: flex-start !important;
+                     gap: 12px !important;
+                 }
+                 .gallery-header-cta {
+                     margin-right: 0 !important;
+                     width: 100% !important;
+                 }
+                 .gallery-header-cta a {
+                     width: 100% !important;
+                     justify-content: center !important;
+                 }
+                 .gallery-body {
+                     height: 50vh !important;
+                     padding: 12px !important;
+                 }
+                 .gallery-image-wrap {
+                     padding-inline: 16px !important;
+                 }
+                 #imageGalleryModal .btn-close {
+                     right: 16px !important;
+                     top: 16px !important;
+                 }
+                 .gallery-thumbnails {
+                     padding: 12px !important;
+                     gap: 8px !important;
+                 }
+                 .modal-thumb-item {
+                     width: 60px !important;
+                     height: 40px !important;
+                 }
+                 #modalPrevBtn, #modalNextBtn {
+                     width: 36px !important;
+                     height: 36px !important;
+                     font-size: 14px !important;
+                 }
+                 #modalPrevBtn {
+                     left: 12px !important;
+                 }
+                 #modalNextBtn {
+                     right: 12px !important;
+                     margin-right: 0 !important;
+                 }
+             }
+
+             /* Extra small screens (320px - 480px) */
+             @media (max-width: 480px) {
+                 .gallery-header {
+                     padding: 12px !important;
+                     gap: 8px !important;
+                 }
+                 .gallery-header-left {
+                     gap: 12px !important;
+                 }
+                 .gallery-header-left img {
+                     width: 44px !important;
+                     height: 44px !important;
+                 }
+                 .gallery-header-left h3 {
+                     font-size: 18px !important;
+                 }
+                 .gallery-header-left div div {
+                     font-size: 12px !important;
+                 }
+                 .gallery-body {
+                     height: 40vh !important;
+                     padding: 8px !important;
+                 }
+                 .gallery-image-wrap {
+                     padding-inline: 8px !important;
+                 }
+                 #modalPrevBtn, #modalNextBtn {
+                     width: 30px !important;
+                     height: 30px !important;
+                     font-size: 11px !important;
+                 }
+                 #modalPrevBtn {
+                     left: 6px !important;
+                 }
+                 #modalNextBtn {
+                     right: 6px !important;
+                 }
+                 #imageGalleryModal .btn-close {
+                     font-size: 16px !important;
+                     right: 12px !important;
+                     top: 12px !important;
+                  }
+              }
+
+             /* Sidebar review cards styling */
+             .sidebar-review-card .review-header {
+                 display: flex;
+                 justify-content: space-between;
+                 align-items: flex-start;
+                 gap: 12px;
+             }
+             .sidebar-review-card .review-user {
+                 display: flex;
+                 align-items: center;
+                 gap: 12px;
+             }
+             .sidebar-review-card .rating-stars {
+                 display: flex !important;
+                 gap: 2px;
+                 white-space: nowrap !important;
+             }
+             @media (max-width: 480px) {
+                 .sidebar-review-card .review-header {
+                     flex-direction: column !important;
+                     align-items: flex-start !important;
+                     gap: 6px !important;
+                 }
+                 .sidebar-review-card .review-header small {
+                     margin-left: 57px !important; /* Offset by avatar width + gap */
+                     margin-top: -4px !important;
+                     color: #888 !important;
+                 }
+              }
+
+             /* Sticky Reviews Filter Sidebar Card */
+             .review-sidebar-sticky {
+                 position: sticky;
+                 top: 20px;
+             }
+             @media (max-width: 991px) {
+                 .review-sidebar-sticky {
+                     background: #ffffff;
+                     border: 1px solid #f2f4f8;
+                     border-radius: 12px;
+                     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+                     position: relative;
+                     top: 0;
+                     margin-bottom: 30px;
+                     padding: 20px;
+                 }
+             }
+
+                #section1 .asn_dv {
                 padding-bottom: 0;
+               }
+               .slider-for:not(.slick-initialized) .asan-slider-inr:not(:first-child) {
+                   display: none !important;
+               }
+               .slider-nav:not(.slick-initialized) > div:not(:first-child) {
+                   display: none !important;
                }
             .Tab-outerlnk.container-fluid {
                 padding: 0;
@@ -115,9 +444,22 @@
 
             .redboxicon{
                 background:#fdecec;
-                color:#dc3545;
+                color:#dc3545 !important;
+            }
+            .innr_pr .redboxicon {
+                background: transparent !important;
+            }
+            i.fa-solid.fa-check {
+                color: #15c731 !important;
             }
 
+            ::before {}
+
+            i.fa-solid.fa-minus {
+                color: #ff0000 !important;
+            }
+
+            
             .greenfonticon i,
             .redboxicon i{
                 font-size:12px;
@@ -333,6 +675,9 @@
 .starting-price-link:hover{
     color:#002655;
     text-decoration:underline;
+}
+.feture_box.str_prc_box .starting-price-text {
+    text-align: center !important;
 }
     </style>
     <div data-business-id="{{ $business->id }}">
@@ -670,15 +1015,16 @@
                                                 : json_decode($business->business_images ?? '[]', true);
                                         @endphp
 
-                                        @if (!empty($images))
+                                         @if (!empty($images))
                                             <div class="col-lg-12">
                                                 <div class="is-asana-rgt">
                                                     <div class="row is-asan-slider">
                                                         <!-- Main Slider -->
                                                         <div class="col-md-12 asan-slider slider-for">
                                                             @foreach ($images as $index => $image)
-                                                                <div class="asan-slider-inr">
+                                                                <div class="asan-slider-inr" style="cursor: pointer;">
                                                                     <img src="{{ asset($image) }}"
+                                                                        onclick="openGallery({{ $index }})"
                                                                         alt="Business Image {{ $index + 1 }}"
                                                                         style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
                                                                 </div>
@@ -689,8 +1035,9 @@
                                                         <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
                                                             style="margin-top: 15px;">
                                                             @foreach ($images as $index => $image)
-                                                                <div style="padding: 0 5px;">
+                                                                <div style="padding: 0 5px; cursor: pointer;">
                                                                     <img src="{{ asset($image) }}"
+                                                                        onclick="openGallery({{ $index }})"
                                                                         alt="Thumbnail {{ $index + 1 }}"
                                                                         style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;"
                                                                         onmouseover="this.style.borderColor='#007bff'"
@@ -701,7 +1048,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endif
+                                         @endif
                                         {{-- End Business Images  --}}
 
                                     </div>
@@ -2546,17 +2893,16 @@
                                                                 $count = $ratingCounts[$i] ?? 0;
                                                                 $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
                                                             @endphp
-                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px;">
-                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}">
-                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer;">
-                                                                    <span style="display: inline-flex; align-items: center; width: 60px; font-size: 14px; color: #555;">
+                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
+                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
+                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
+                                                                    <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #555; flex-shrink: 0;">
                                                                         <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
-                                                                        <span style="font-size: 12px; color: #888; margin-left: 4px;">({{ $count }})</span>
                                                                     </span>
-                                                                    <span style="font-size: 13px; color: #888; min-width: 35px; white-space: nowrap; margin-left: 2px;">({{ $count }})</span>
-                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px;">
+                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
                                                                         <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
                                                                     </div>
+                                                                    <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
                                                                 </label>
                                                             </li>
                                                         @endfor
@@ -3185,6 +3531,21 @@
                     $currentThumb.css('border-color', '#007bff');
                 });
 
+                // Click handlers to open the gallery modal using CustomEvent delegation
+                $('.slider-for').on('click', '.asan-slider-inr', function () {
+                    let index = $(this).attr('data-gallery-index');
+                    if (typeof index !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('open-gallery-modal', { detail: { index: parseInt(index, 10) } }));
+                    }
+                });
+
+                $('.slider-nav').on('click', '[data-gallery-index]', function () {
+                    let index = $(this).attr('data-gallery-index');
+                    if (typeof index !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent('open-gallery-modal', { detail: { index: parseInt(index, 10) } }));
+                    }
+                });
+
                 // Preload all images in the slider to avoid delay when switching images
                 function preloadSliderImages() {
                     $('.slider-for img').each(function () {
@@ -3421,7 +3782,106 @@
                 }
             });
         });
-    });
     </script>
+    <!-- Big Premium Gallery Modal (Bootstrap 5) -->
+    <div class="modal fade" id="imageGalleryModal" tabindex="-1" aria-hidden="true" style="z-index: 999999;">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+                
+                <!-- Close Button -->
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" 
+                        style="position: absolute; right: 24px; top: 24px; z-index: 10000; font-size: 20px; font-weight: bold; background: none; border: none; color: #555;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <!-- Header: Icon, Name, Rating | CTA -->
+                <div class="gallery-header">
+                    <div class="gallery-header-left">
+                        <div style="width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: #f9f9f9; display: flex; align-items: center; justify-content: center; border: 1px solid #eaeaea; flex-shrink: 0;">
+                            <img src="{{ asset($business->icon_id ?? 'front/img/big-asana.png') }}" 
+                                 alt="{{ $business->translations->first()->name }}" 
+                                 style="width: 100%; height: 100%; object-fit: contain;">
+                        </div>
+                        <div>
+                            <h3 style="margin: 0 0 4px 0; font-size: 22px; font-weight: 700; color: #002347;">
+                                {{ $business->translations->first()->name }}
+                            </h3>
+                            <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; white-space: nowrap; flex-wrap: nowrap;">
+                                <div style="color: #ff9d28; display: flex; gap: 2px; flex-shrink: 0; white-space: nowrap;">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($averageRating))
+                                            <i class="fas fa-star"></i>
+                                        @elseif ($i - 0.5 <= $averageRating)
+                                            <i class="fas fa-star-half-alt"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span style="font-weight: 600; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                                <span style="color: #888;">({{ $ratingCount }} reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA button -->
+                    <div class="gallery-header-cta">
+                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" 
+                           target="_blank"
+                           class="cta cta_orange"
+                           style="padding: 12px 24px; font-weight: 600; border-radius: 30px; text-decoration: none; display: flex; align-items: center; gap: 8px;"
+                        >
+                            Visit Website
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Body: Large image + arrows -->
+                <div class="gallery-body">
+                    <!-- Left Arrow -->
+                    <button type="button" id="modalPrevBtn"
+                            style="position: absolute; left: 24px; top: 50%; transform: translateY(-50%); background: #ffffff; border: 1px solid #eaeaea; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); font-size: 18px; color: #333; z-index: 1000; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='#007bff'; this.style.color='#ffffff';"
+                            onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#333';"
+                    >
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+
+                    <!-- Active Image -->
+                    <div class="gallery-image-wrap">
+                        <img id="modalActiveImg" src="" 
+                             alt="Active View" 
+                             style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; display: block; width: auto; height: auto;">
+                    </div>
+
+                    <!-- Right Arrow -->
+                    <button type="button" id="modalNextBtn"
+                            style="position: absolute; right: 24px; top: 50%; transform: translateY(-50%); background: #ffffff; border: 1px solid #eaeaea; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); font-size: 18px; color: #333; z-index: 1000; transition: all 0.2s;"
+                            onmouseover="this.style.backgroundColor='#007bff'; this.style.color='#ffffff';"
+                            onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#333';"
+                    >
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Footer: Thumbnails at bottom -->
+                <div id="modalThumbContainer" class="gallery-thumbnails">
+                    @foreach ($images as $index => $image)
+                        <div class="modal-thumb-item" data-index="{{ $index }}"
+                             style="width: 90px; height: 60px; border-radius: 6px; overflow: hidden; cursor: pointer; border: 3px solid transparent; opacity: 0.6; transition: all 0.2s; flex-shrink: 0; box-sizing: border-box;"
+                             onmouseover="this.style.opacity='1'"
+                             onmouseout="if(!$(this).hasClass('active-thumb')) this.style.opacity='0.6'"
+                        >
+                            <img src="{{ asset($image) }}" 
+                                 alt="Thumbnail {{ $index + 1 }}" 
+                                 style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 @endsection
