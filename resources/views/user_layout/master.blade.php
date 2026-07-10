@@ -364,6 +364,158 @@
                 .user_img.drop_menu .dropdown-menu .dash-icon:last-of-type {
                     border-bottom: none !important;
                 }
+                /* Restore top description padding & negative-margin bottom cards section */
+                .popular-accordion-wrp .accordion-body,
+                div#accordionExample .accordion-item .accordion-collapse .accordion-body {
+                    padding: 16px !important;
+                    padding-top: 0px !important;
+                }
+                .accor-bdy-btm {
+                    margin-left: -16px !important;
+                    margin-right: -16px !important;
+                    padding-top: 24px !important;
+                }
+                .accor-bdy-btm .accor-bdy-row {
+                    margin: 0 !important;
+                }
+                .accor-bdy-btm .accor-bdy-row > div {
+                    padding: 0 16px !important;
+                    margin-bottom: 24px !important;
+                }
+                .accor-bdy-btm .accor-bdy-row > div:last-child {
+                    margin-bottom: 0 !important;
+                }
+
+                /* Polished Mobile Business Card Refactoring (Yelp/Airbnb Style) */
+                .top-rate-innr {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    padding: 20px !important;
+                    border-radius: 16px !important;
+                    background-color: #fff !important;
+                    box-shadow: 0 8px 30px rgba(0, 35, 71, 0.06) !important;
+                    border: 1px solid rgba(6, 73, 139, 0.08) !important;
+                    position: relative !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                }
+                .inn_sl_hed {
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 16px !important;
+                    position: relative !important;
+                    width: 100% !important;
+                    margin: 0 !important;
+                }
+                /* Best Value offset adjust */
+                .inn_sl_hed.mst_hdn.mt-4 {
+                    margin-top: 28px !important;
+                }
+                .sli_img {
+                    flex: 0 0 54px !important;
+                    width: 54px !important;
+                    height: 54px !important;
+                    border-radius: 50% !important;
+                    overflow: hidden !important;
+                    background-color: #f8f9fa !important;
+                    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+                .sli_img img,
+                .sli_img .slider_img {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: cover !important;
+                    border-radius: 50% !important;
+                }
+                .sl_h {
+                    flex: 1 1 auto !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 4px !important;
+                    padding-right: 28px !important; /* Spacing for heart icon */
+                }
+                .sl_h h6 {
+                    font-size: 16px !important;
+                    font-weight: 700 !important;
+                    color: #002347 !important;
+                    margin: 0 !important;
+                    line-height: 1.3 !important;
+                }
+                .rate_box {
+                    display: flex !important;
+                    align-items: center !important;
+                    flex-wrap: wrap !important;
+                    gap: 6px !important;
+                    font-size: 12px !important;
+                    color: #555 !important;
+                }
+                .rate_box .stars {
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 1px !important;
+                }
+                .rate_box .stars i {
+                    font-size: 11px !important;
+                }
+                .rate_box span {
+                    font-weight: 600 !important;
+                }
+                .wishlist {
+                    position: absolute !important;
+                    top: 4px !important;
+                    right: 0 !important;
+                    z-index: 5 !important;
+                    width: 32px !important;
+                    height: 32px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    background-color: rgba(255, 255, 255, 0.9) !important;
+                    border-radius: 50% !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+                    cursor: pointer !important;
+                }
+                .wishlist i {
+                    font-size: 16px !important;
+                    color: #555 !important;
+                }
+                .tp-btm {
+                    margin-top: 14px !important;
+                    margin-bottom: 18px !important;
+                }
+                .content_para {
+                    font-size: 13px !important;
+                    line-height: 1.5 !important;
+                    color: #4a5568 !important;
+                    margin: 0 !important;
+                    min-height: auto !important;
+                }
+                /* Polished CTA button centering & full-width target */
+                .top-rate-innr .text-center {
+                    margin-top: auto !important;
+                }
+                .top-rate-innr .text-center .cta_orange {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                    height: 42px !important;
+                    padding: 0 !important;
+                    font-size: 14px !important;
+                    font-weight: 700 !important;
+                    border-radius: 21px !important;
+                    background-color: #F9633B !important;
+                    color: white !important;
+                    box-shadow: 0 4px 12px rgba(249, 99, 59, 0.2) !important;
+                    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+                    border: none !important;
+                }
+                .top-rate-innr .text-center .cta_orange:active {
+                    transform: scale(0.98) !important;
+                }
             }
 
     </style>
