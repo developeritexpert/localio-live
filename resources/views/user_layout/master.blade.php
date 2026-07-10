@@ -106,10 +106,11 @@
                 left:-320px;
                 width:320px;
                 height:100vh;
-                background:black;
+                background:#002347;
                 z-index:99999;
                 transition:.3s;
                 overflow-y:auto;
+                box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
             }
 
             .mobile-sidebar.active{
@@ -134,59 +135,236 @@
             .mobile-sidebar-header{
                 display:flex;
                 justify-content:space-between;
+                align-items:center;
                 padding:20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
 
             .mobile-sidebar-close{
                 border:none;
                 background:none;
+                color:#fff !important;
+                font-size:24px;
+                cursor:pointer;
+                transition:color .2s ease;
             }
 
-
-
+            .mobile-sidebar-close:hover{
+                color:#F9633B !important;
+            }
 
             @media(min-width:992px){
-
-            .mobile-sidebar,
-            .mobile-sidebar-overlay,
-            .mobile-sidebar-btn{
-                display:none;
+                .mobile-sidebar,
+                .mobile-sidebar-overlay,
+                .mobile-sidebar-btn{
+                    display:none;
+                }
             }
-        }
 
-        .mobile-sidebar-logo img {
-    height: 34px;
-}
+            .mobile-sidebar-logo img {
+                height: 28px;
+            }
 
-/* 19_june */
-.mobile-sidebar-body .menu_section .section_heading {
-    color: #fff !important;
-    padding-left: 20px;
-    margin: 0 !important;
-    font-size: 20px !important;
-    font-weight: 500 !important;
-}
+            .mobile-sidebar-body {
+                padding: 20px 0;
+            }
 
-.mobile-sidebar-body .section_divider {
-    margin: 10px auto !important;
-    width: 90% !important;
-}
+            .mobile-sidebar-body .menu_section {
+                margin-bottom: 25px;
+            }
 
-.mobile-sidebar-body .ab_img {
-    display: none !important;
-}
+            .mobile-sidebar-body .menu_section .section_heading {
+                color: #fff !important;
+                padding-left: 20px;
+                margin: 0 !important;
+                font-size: 18px !important;
+                font-weight: 600 !important;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+            }
 
-.mobile-sidebar-body .hdr_dropul.category-list_a li {
-    padding: 0 !important;
-    height: unset;
-}
+            .mobile-sidebar-body .section_divider {
+                margin: 8px auto 15px !important;
+                width: 90% !important;
+                border-color: rgba(255, 255, 255, 0.1) !important;
+            }
 
-.mobile-sidebar-body .hdr_dropul li,
-.mobile-sidebar-body .hdr_dropul.category-list_a li,
-.mobile-sidebar-body .flat_list li {
-    padding-bottom: 10px !important;
-    list-style: none !important;
-}
+            .mobile-sidebar-body .flat_list {
+                padding: 0 20px;
+                margin: 0;
+                list-style: none;
+            }
+
+            .mobile-sidebar-body .flat_list li {
+                padding: 10px 0 !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .mobile-sidebar-body .flat_list li:last-child {
+                border-bottom: none;
+            }
+
+            .mobile-sidebar-body .flat_list li a {
+                color: rgba(255, 255, 255, 0.8) !important;
+                text-decoration: none;
+                font-size: 15px;
+                transition: all 0.2s ease;
+                display: block;
+            }
+
+            .mobile-sidebar-body .flat_list li a:hover {
+                color: #F9633B !important;
+                padding-left: 5px;
+            }
+
+            /* Responsive tweaks for top mobile header */
+            @media (max-width: 991px) {
+                nav#mobile_res .search_logo_2 .brand img {
+                    max-height: 28px !important;
+                    width: auto !important;
+                    object-fit: contain;
+                }
+                .top_header .navbar-toggler .bar {
+                    width: 22px !important;
+                    height: 2px !important;
+                    margin: 4px 0 !important;
+                }
+                .top_header .navbar-toggler:not(.collapsed) .bar:nth-child(1) {
+                    transform: translateY(6px) rotate(45deg) !important;
+                }
+                .top_header .navbar-toggler:not(.collapsed) .bar:nth-child(3) {
+                    transform: translateY(-6px) rotate(-45deg) !important;
+                }
+                #phone_screen {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: flex-end !important;
+                }
+                .profile-icon {
+                    width: 22px !important;
+                    height: 22px !important;
+                }
+                .user_img.drop_menu {
+                    position: relative !important;
+                    flex: 0 0 28px !important;
+                    width: 28px !important;
+                    height: 28px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .usr_profile {
+                    width: 28px !important;
+                    height: 28px !important;
+                    min-width: 28px !important;
+                    max-height: 28px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    overflow: hidden !important;
+                }
+                .usr_profile img,
+                .user_img img {
+                    width: 28px !important;
+                    height: 28px !important;
+                    min-width: 28px !important;
+                    max-width: 28px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                /* Mobile profile dropdown alignment and styling */
+                .user_img.drop_menu .dropdown-menu {
+                    position: absolute !important;
+                    top: 100% !important;
+                    right: 0 !important;
+                    left: auto !important;
+                    transform: translateY(10px) !important;
+                    width: 260px !important;
+                    border-radius: 12px !important;
+                    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                    background-color: #fff !important;
+                    padding: 0 !important;
+                    z-index: 100000 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail {
+                    display: flex !important;
+                    align-items: center !important;
+                    padding: 15px !important;
+                    background-color: #f8f9fa !important;
+                    border-bottom: 1px solid #eee !important;
+                    border-radius: 12px 12px 0 0 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_img {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    background-color: #003f7d !important;
+                    color: #fff !important;
+                    border-radius: 50% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    font-size: 13px !important;
+                    font-weight: 600 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_img img {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    max-width: 32px !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_name {
+                    padding-left: 10px !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_name h5 {
+                    font-size: 14px !important;
+                    font-weight: 600 !important;
+                    color: #003f7d !important;
+                    margin-bottom: 2px !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_name p {
+                    font-size: 11px !important;
+                    color: #666 !important;
+                    margin: 0 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item {
+                    display: flex !important;
+                    align-items: center !important;
+                    padding: 10px 15px !important;
+                    font-size: 13px !important;
+                    color: #333 !important;
+                    font-weight: 500 !important;
+                    border-bottom: none !important;
+                    background: none !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item:hover {
+                    background-color: #f8f9fa !important;
+                    color: #F9633B !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item i {
+                    margin-right: 10px !important;
+                    font-size: 15px !important;
+                    width: 18px !important;
+                    text-align: center !important;
+                    color: #555 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item:hover i {
+                    color: #F9633B !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dash-icon {
+                    border-bottom: 1px solid #f1f1f1 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dash-icon:last-of-type {
+                    border-bottom: none !important;
+                }
+            }
 
     </style>
 
@@ -293,7 +471,7 @@
                         ->with('media')
                         ->get();
 
-                        $sidebarCategories = Category::whereHas('translation', function ($query) use ($lang_id) {
+                                                $sidebarCategories = Category::whereHas('translation', function ($query) use ($lang_id) {
                             $query->where('lang_id', $lang_id);
                         })
                         ->with([
@@ -308,6 +486,16 @@
                             }
                         ])
                         ->get();
+
+                        $mobileBusinesses = \App\Models\Business::where('status', 1)
+                            ->whereHas('translations', function ($query) use ($lang_id) {
+                                $query->where('lang_id', $lang_id);
+                            })
+                            ->with(['translations' => function ($query) use ($lang_id) {
+                                $query->where('lang_id', $lang_id);
+                            }])
+                            ->limit(3)
+                            ->get();
 
                         ?>
 
@@ -582,7 +770,18 @@
                                     <h4 class="section_heading">{{ $headerContent['Categories'] ?? 'Categories' }}</h4>
                                     <hr class="section_divider">
                                     <ul class="flat_list">
-                                        <livewire:category-search :limit="3" />
+                                        @foreach($categories->take(3) as $category)
+                                            @php
+                                                $translation = $category->translation ?? $category->translations->first();
+                                            @endphp
+                                            @if($translation)
+                                                <li>
+                                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $translation->slug]) }}">
+                                                        {{ $translation->name }}
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        @endforeach
                                     </ul>
                                 </div>
 
@@ -591,7 +790,18 @@
                                     <h4 class="section_heading">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</h4>
                                     <hr class="section_divider">
                                     <ul class="flat_list">
-                                        <livewire:product-search :limit="3" />
+                                        @foreach($mobileBusinesses as $business)
+                                            @php
+                                                $translation = $business->translations->first();
+                                            @endphp
+                                            @if($translation)
+                                                <li>
+                                                    <a href="javascript:void(0);" onclick="changeProducts('{{ $translation->slug }}')">
+                                                        {{ $translation->name }}
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        @endforeach
                                     </ul>
                                 </div>
 

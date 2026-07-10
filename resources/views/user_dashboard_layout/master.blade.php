@@ -71,6 +71,219 @@
                 object-fit: cover;
                 border-radius: 50%;
             }
+
+            .menu-toggler {
+                display: none !important;
+            }
+        </style>
+        
+        <style>
+            /* Responsive tweaks for top mobile header */
+            @media (max-width: 991px) {
+                header.main_dhdr,
+                .main_dhdr {
+                    background-color: #003f7d !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+                /* Center the logo in the navbar */
+                .main_dhdr nav.navbar {
+                    position: relative !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    height: 56px !important;
+                    background-color: #003f7d !important;
+                    padding: 0 15px !important;
+                }
+                .main_dhdr .hdr_lft {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    position: static !important;
+                    width: auto !important;
+                }
+                .main_dhdr .hdr_lft .navbar-brand {
+                    position: absolute !important;
+                    left: 50% !important;
+                    top: 50% !important;
+                    transform: translate(-50%, -50%) !important;
+                    margin: 0 !important;
+                    display: block !important;
+                }
+                .main_dhdr nav .hdr_lft a img.img-fluid {
+                    max-height: 28px !important;
+                    width: auto !important;
+                    object-fit: contain !important;
+                }
+                .menu-toggler {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: space-between !important;
+                    position: absolute !important;
+                    left: 15px !important;
+                    top: 50% !important;
+                    transform: translateY(-50%) !important;
+                    width: 22px !important;
+                    height: 14px !important;
+                    padding: 0 !important;
+                    border: none !important;
+                    background: transparent !important;
+                    cursor: pointer !important;
+                }
+                .menu-toggler .bar {
+                    width: 22px !important;
+                    height: 2px !important;
+                    background-color: #fff !important;
+                    transition: all 0.3s ease !important;
+                    margin: 0 !important;
+                    display: block !important;
+                }
+                .hdr_ryt {
+                    position: absolute !important;
+                    right: 15px !important;
+                    top: 50% !important;
+                    transform: translateY(-50%) !important;
+                    display: block !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .hdr_info {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: flex-end !important;
+                    gap: 15px !important;
+                }
+                .notf.drop_menu a img {
+                    width: 20px !important;
+                    height: 20px !important;
+                    object-fit: contain !important;
+                }
+                .profile-icon {
+                    width: 22px !important;
+                    height: 22px !important;
+                }
+                .user_img.drop_menu {
+                    position: relative !important;
+                    flex: 0 0 28px !important;
+                    width: 28px !important;
+                    height: 28px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .usr_profile {
+                    width: 28px !important;
+                    height: 28px !important;
+                    min-width: 28px !important;
+                    max-height: 28px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    overflow: hidden !important;
+                }
+                .usr_profile img,
+                .user_img img {
+                    width: 28px !important;
+                    height: 28px !important;
+                    min-width: 28px !important;
+                    max-width: 28px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                /* Mobile profile dropdown alignment and styling */
+                .user_img.drop_menu .dropdown-menu {
+                    position: absolute !important;
+                    top: 100% !important;
+                    right: 0 !important;
+                    left: auto !important;
+                    transform: translateY(10px) !important;
+                    width: 260px !important;
+                    border-radius: 12px !important;
+                    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
+                    background-color: #fff !important;
+                    padding: 0 !important;
+                    z-index: 100000 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail {
+                    display: flex !important;
+                    align-items: center !important;
+                    padding: 15px !important;
+                    background-color: #f8f9fa !important;
+                    border-bottom: 1px solid #eee !important;
+                    border-radius: 12px 12px 0 0 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_img {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    background-color: #003f7d !important;
+                    color: #fff !important;
+                    border-radius: 50% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    font-size: 13px !important;
+                    font-weight: 600 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_img img {
+                    width: 32px !important;
+                    height: 32px !important;
+                    min-width: 32px !important;
+                    max-width: 32px !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_name {
+                    padding-left: 10px !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_name h5 {
+                    font-size: 14px !important;
+                    font-weight: 600 !important;
+                    color: #003f7d !important;
+                    margin-bottom: 2px !important;
+                }
+                .user_img.drop_menu .dropdown-menu .user_detail .user_name p {
+                    font-size: 11px !important;
+                    color: #666 !important;
+                    margin: 0 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item {
+                    display: flex !important;
+                    align-items: center !important;
+                    padding: 10px 15px !important;
+                    font-size: 13px !important;
+                    color: #333 !important;
+                    font-weight: 500 !important;
+                    border-bottom: none !important;
+                    background: none !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item:hover {
+                    background-color: #f8f9fa !important;
+                    color: #F9633B !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item i {
+                    margin-right: 10px !important;
+                    font-size: 15px !important;
+                    width: 18px !important;
+                    text-align: center !important;
+                    color: #555 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dropdown-item:hover i {
+                    color: #F9633B !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dash-icon {
+                    border-bottom: 1px solid #f1f1f1 !important;
+                }
+                .user_img.drop_menu .dropdown-menu .dash-icon:last-of-type {
+                    border-bottom: none !important;
+                }
+            }
         </style>
     </head>
 
@@ -79,15 +292,15 @@
         <div class="container-fluid">
             <nav class="navbar navbar-expand-lg navbar-light">
                 <div class="hdr_lft">
-                    <a class="navbar-brand" href="{{ route('home') }}">
-                        <img src="{{ asset('front/img/logo.svg') }}" class="img-fluid">
-                    </a>
-                    <button class="menu-toggler" style="display: none;">
+                    <button class="menu-toggler">
                         <span class="bar bar1"></span>
                         <span class="bar bar2"></span>
                         <span class="bar bar3"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ route('home') }}">
+                        <img src="{{ asset('front/img/logo.svg') }}" class="img-fluid">
+                    </a>
                 </div>
-                </button>
                 {{-- <div class="form">
                     <input type="search" class="search-box"
                         placeholder="Enter a product, category, or what you’d like to compare...">
