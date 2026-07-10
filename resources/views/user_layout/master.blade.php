@@ -487,8 +487,13 @@
                     color: #555 !important;
                 }
                 .tp-btm {
-                    margin-top: 14px !important;
-                    margin-bottom: 18px !important;
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    gap: 8px !important;
+                    margin: 6px 0 0 0 !important; /* tight 6px top spacing directly below title */
+                    padding: 0 !important;
                 }
                 .content_para {
                     font-size: 13px !important;
@@ -569,19 +574,27 @@
                     color: #fbbf24 !important;
                 }
 
-                /* Latest Reviews section header refactor on mobile */
-                .reviews_block .inn_sl_hed {
+                /* Unified CSS Grid Card Header Layout Refactor on Mobile */
+                /* High-reliability Flexbox Card Header Column Layout on Mobile */
+                .top-rate-innr .inn_sl_hed,
+                .reviews_block .inn_sl_hed,
+                .automotive-card .inn_sl_hed {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: flex-start !important;
                     justify-content: flex-start !important;
                     gap: 16px !important;
                     width: 100% !important;
-                    margin: 0 0 24px 0 !important;
+                    margin: 0 !important;
                     padding: 0 !important;
                     position: relative !important;
                 }
-                .reviews_block .inn_sl_hed .sli_img {
+                .reviews_block .inn_sl_hed {
+                    margin: 0 0 24px 0 !important; /* Specific bottom margin for reviews */
+                }
+                .top-rate-innr .sli_img,
+                .reviews_block .inn_sl_hed .sli_img,
+                .automotive-card .inn_sl_hed > a {
                     flex: 0 0 48px !important;
                     width: 48px !important;
                     height: 48px !important;
@@ -590,36 +603,46 @@
                     max-width: 48px !important;
                     max-height: 48px !important;
                     margin: 0 !important;
+                    display: block !important;
                 }
+                .top-rate-innr .sli_img img,
                 .reviews_block .inn_sl_hed .sli_img img,
-                .reviews_block .inn_sl_hed .sli_img .header_img {
+                .reviews_block .inn_sl_hed .sli_img .header_img,
+                .automotive-card .sli_img.choice_img img,
+                .automotive-card .sli_img.choice_img .slider_img {
                     width: 48px !important;
                     height: 48px !important;
                     border-radius: 50% !important;
                     object-fit: cover !important;
                     margin: 0 !important;
                 }
-                .reviews_block .sl_h {
+                .top-rate-innr .sl_h,
+                .reviews_block .sl_h,
+                .automotive-card .sl_h {
                     flex: 1 1 auto !important;
                     display: flex !important;
                     flex-direction: column !important;
                     justify-content: flex-start !important;
+                    align-items: flex-start !important;
                     gap: 6px !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     min-width: 0 !important;
                 }
-                .reviews_block .sl_h .inn_h {
-                    width: 100% !important;
+                .top-rate-innr .inn_h,
+                .top-rate-innr .inn_h a,
+                .reviews_block .sl_h .inn_h,
+                .reviews_block .sl_h .inn_h a,
+                .automotive-card .sl_h .inn_h,
+                .automotive-card .sl_h .inn_h a {
                     display: block !important;
+                    width: 100% !important;
                     margin: 0 !important;
                     padding: 0 !important;
                 }
-                .reviews_block .sl_h .inn_h a {
-                    /* display: block !important;
-                    width: 100% !important; */
-                }
-                .reviews_block .sl_main {
+                .top-rate-innr .sl_main,
+                .reviews_block .sl_main,
+                .automotive-card .sl_main {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: flex-start !important;
@@ -627,9 +650,12 @@
                     gap: 16px !important;
                     width: 100% !important;
                     margin: 0 !important;
-                    padding: 0 !important;
+                    padding: 0 48px 0 0 !important; /* Space on the right for absolute wishlist badge */
+                    position: relative !important;
                 }
-                .reviews_block .sl_main h6.head {
+                .top-rate-innr .sl_main h6.head,
+                .reviews_block .sl_main h6.head,
+                .automotive-card .sl_main h6.head {
                     flex: 1 1 auto !important;
                     font-size: 16px !important;
                     line-height: 1.25 !important;
@@ -638,22 +664,32 @@
                     margin: 0 !important;
                     padding: 0 !important;
                     word-break: break-word !important;
+                    align-self: flex-start !important;
                 }
-                .reviews_block .sl_main .wishlist {
+                .top-rate-innr .wishlist,
+                .reviews_block .wishlist,
+                .automotive-card .wishlist,
+                .automotive-card div[wire\:key*="wishlist-container"] {
                     flex: 0 0 44px !important;
                     width: 44px !important;
                     height: 44px !important;
                     min-width: 44px !important;
                     min-height: 44px !important;
-                    /* position: static !important; */
+                    margin: 0 !important;
+                    position: absolute !important;
+                    right: 0 !important;
+                    top: 0 !important;
                     background-color: rgba(255, 255, 255, 0.9) !important;
                     border-radius: 50% !important;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                     align-self: flex-start !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
                 }
-                .reviews_block .tp-btm {
+                .top-rate-innr .tp-btm,
+                .reviews_block .tp-btm,
+                .automotive-card .tp-btm,
+                .automotive-card .auto-choice-hd .tp-btm,
+                .automotive-card .tp-btm.flex-col-mob,
+                .automotive-card .auto-choice-hd .tp-btm.flex-col-mob {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: center !important;
@@ -662,7 +698,8 @@
                     margin: 0 !important;
                     padding: 0 !important;
                 }
-                .reviews_block .tp-btm .inn_ul {
+                .reviews_block .tp-btm .inn_ul,
+                .automotive-card .tp-btm .inn_ul {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: center !important;
@@ -673,7 +710,8 @@
                 .reviews_block .tp-btm .inn_ul i.fa-angle-down {
                     display: none !important;
                 }
-                .reviews_block .tp-btm .rate_box {
+                .reviews_block .tp-btm .rate_box,
+                .automotive-card .tp-btm .rate_box {
                     font-size: 13px !important;
                     color: #718096 !important;
                     font-weight: 500 !important;
@@ -726,6 +764,143 @@
                     min-width: 0 !important;
                     min-height: 0 !important;
                     position: static !important;
+                }
+
+                /* Automotive/Product Cards layout refactor on mobile */
+                .automotive-card .inn_sl_hed {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: flex-start !important;
+                    justify-content: flex-start !important;
+                    gap: 16px !important;
+                    width: 100% !important;
+                    margin: 0 0 16px 0 !important;
+                    padding: 0 !important;
+                    position: relative !important;
+                }
+                .automotive-card .inn_sl_hed > a {
+                    flex: 0 0 48px !important;
+                    width: 48px !important;
+                    height: 48px !important;
+                    min-width: 48px !important;
+                    min-height: 48px !important;
+                    max-width: 48px !important;
+                    max-height: 48px !important;
+                    margin: 0 !important;
+                    display: block !important;
+                }
+                .automotive-card .sli_img.choice_img {
+                    width: 100% !important;
+                    height: 100% !important;
+                    margin: 0 !important;
+                }
+                .automotive-card .sli_img.choice_img img,
+                .automotive-card .sli_img.choice_img .slider_img {
+                    width: 48px !important;
+                    height: 48px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    margin: 0 !important;
+                }
+                .automotive-card .sl_h {
+                    flex: 1 1 auto !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: flex-start !important;
+                    gap: 6px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    min-width: 0 !important;
+                }
+                .automotive-card .sl_h .inn_h {
+                    width: 100% !important;
+                    display: block !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .automotive-card .sl_main {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: flex-start !important;
+                    justify-content: space-between !important;
+                    gap: 16px !important;
+                    width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .automotive-card .sl_main h6.head {
+                    flex: 1 1 auto !important;
+                    font-size: 16px !important;
+                    line-height: 1.25 !important;
+                    font-weight: 700 !important;
+                    color: #002347 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    word-break: break-word !important;
+                }
+                .automotive-card .sl_main div[wire\:key*="wishlist-container"] {
+                    position: static !important;
+                    flex: 0 0 44px !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    min-width: 44px !important;
+                    min-height: 44px !important;
+                    margin: 0 !important;
+                }
+                .automotive-card .sl_main .wishlist {
+                    flex: 0 0 44px !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    min-width: 44px !important;
+                    min-height: 44px !important;
+                    position: static !important;
+                    background-color: rgba(255, 255, 255, 0.9) !important;
+                    border-radius: 50% !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+                    align-self: flex-start !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .automotive-card .tp-btm,
+                .automotive-card .auto-choice-hd .tp-btm,
+                .automotive-card .tp-btm.flex-col-mob,
+                .automotive-card .auto-choice-hd .tp-btm.flex-col-mob {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    gap: 8px !important;
+                    margin: 4px 0 0 0 !important; /* tight 4px spacing directly below title */
+                    padding: 0 !important;
+                }
+                .automotive-card .tp-btm .inn_ul {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    gap: 2px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .automotive-card .tp-btm .rate_box {
+                    font-size: 13px !important;
+                    color: #718096 !important;
+                    font-weight: 500 !important;
+                    white-space: nowrap !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+            }
+
+            @media (max-width: 360px) {
+                .top-rate-innr .tp-btm,
+                .reviews_block .tp-btm,
+                .automotive-card .tp-btm,
+                .automotive-card .auto-choice-hd .tp-btm,
+                .automotive-card .tp-btm.flex-col-mob,
+                .automotive-card .auto-choice-hd .tp-btm.flex-col-mob {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    gap: 4px !important;
                 }
             }
 
@@ -2420,6 +2595,49 @@
                     container.classList.remove('slide-active');
                 });
             });
+        });
+    </script>
+
+    <script>
+        /* Conditional negative margin on Top Rated Products mobile business cards based on title line counts */
+        function adjustAutomotiveRatings() {
+            if (window.innerWidth > 991) {
+                document.querySelectorAll('.automotive-card .tp-btm').forEach(el => {
+                    el.style.setProperty('margin-top', '', 'important');
+                });
+                return;
+            }
+
+            document.querySelectorAll('.automotive-card').forEach(card => {
+                const titleEl = card.querySelector('h6.head');
+                const ratingEl = card.querySelector('.tp-btm');
+                if (!titleEl || !ratingEl) return;
+
+                // Reset style first to measure correctly
+                ratingEl.style.setProperty('margin-top', '', 'important');
+
+                const style = window.getComputedStyle(titleEl);
+                const lineHeight = parseFloat(style.lineHeight) || 20; // fallback to 20px
+                const titleHeight = titleEl.getBoundingClientRect().height;
+
+                // If title fits in one line (height is less than 1.5x line-height)
+                if (titleHeight <= lineHeight * 1.5) {
+                    ratingEl.style.setProperty('margin-top', '-1rem', 'important');
+                } else {
+                    ratingEl.style.setProperty('margin-top', '', 'important');
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', adjustAutomotiveRatings);
+        window.addEventListener('load', adjustAutomotiveRatings);
+        window.addEventListener('resize', adjustAutomotiveRatings);
+        
+        // Listen to Livewire's update hooks to rerun height calculation after pagination or filtering
+        document.addEventListener('livewire:load', function () {
+            if (window.livewire) {
+                window.livewire.hook('message.processed', adjustAutomotiveRatings);
+            }
         });
     </script>
 </body>
