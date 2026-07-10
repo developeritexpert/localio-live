@@ -283,6 +283,10 @@
                 .user_img.drop_menu .dropdown-menu .dash-icon:last-of-type {
                     border-bottom: none !important;
                 }
+                /* Reduce gap below mobile header */
+                .user_dashbord .user_content {
+                    padding-top: 76px !important;
+                }
             }
         </style>
     </head>
