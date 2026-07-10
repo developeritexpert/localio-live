@@ -401,8 +401,9 @@
                 }
                 .inn_sl_hed {
                     display: flex !important;
-                    align-items: center !important;
-                    gap: 16px !important;
+                    align-items: flex-start !important;
+                    justify-content: space-between !important;
+                    gap: 12px !important;
                     position: relative !important;
                     width: 100% !important;
                     margin: 0 !important;
@@ -422,6 +423,7 @@
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
+                    align-self: center !important; /* Vertically center logo with title block */
                 }
                 .sli_img img,
                 .sli_img .slider_img {
@@ -435,7 +437,7 @@
                     display: flex !important;
                     flex-direction: column !important;
                     gap: 4px !important;
-                    padding-right: 28px !important; /* Spacing for heart icon */
+                    padding-right: 8px !important;
                 }
                 .sl_h h6 {
                     font-size: 16px !important;
@@ -464,12 +466,11 @@
                     font-weight: 600 !important;
                 }
                 .wishlist {
-                    position: absolute !important;
-                    top: 4px !important;
-                    right: 0 !important;
-                    z-index: 5 !important;
-                    width: 32px !important;
-                    height: 32px !important;
+                    flex: 0 0 44px !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    min-width: 44px !important;
+                    min-height: 44px !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
@@ -477,9 +478,12 @@
                     border-radius: 50% !important;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                     cursor: pointer !important;
+                    align-self: flex-start !important; /* Pin heart icon to top right */
+                    margin-top: 4px !important; /* Visual micro-alignment with first line of title */
+                    position: static !important; /* Use flex flow instead of absolute positioning */
                 }
                 .wishlist i {
-                    font-size: 16px !important;
+                    font-size: 18px !important;
                     color: #555 !important;
                 }
                 .tp-btm {
@@ -515,6 +519,45 @@
                 }
                 .top-rate-innr .text-center .cta_orange:active {
                     transform: scale(0.98) !important;
+                }
+
+                /* Wishlist container overlap and wrapping fix on all mobile cards */
+                .sl_main > a {
+                    display: flex !important;
+                    align-items: flex-start !important;
+                    justify-content: space-between !important;
+                    gap: 12px !important;
+                    width: 100% !important;
+                }
+                .sl_main h6.head,
+                .sl_main h6 {
+                    flex: 1 1 auto !important;
+                    padding-right: 0 !important; /* Clear old absolute padding offset */
+                    font-size: 16px !important;
+                    line-height: 1.3 !important;
+                    margin: 0 !important;
+                }
+                .sl_main div[wire\:key*="wishlist-container"] {
+                    position: static !important;
+                    flex: 0 0 44px !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    margin: 0 !important;
+                }
+                .sl_main div[wire\:key*="wishlist-container"] .wishlist {
+                    position: static !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    min-width: 44px !important;
+                    min-height: 44px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    background-color: rgba(255, 255, 255, 0.9) !important;
+                    border-radius: 50% !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+                    align-self: flex-start !important;
+                    margin: 0 !important;
                 }
             }
 
