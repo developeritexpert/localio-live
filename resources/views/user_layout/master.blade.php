@@ -569,45 +569,129 @@
                     color: #fbbf24 !important;
                 }
 
-                /* Latest Reviews section wishlist alignment and layout fix on mobile */
+                /* Latest Reviews section header refactor on mobile */
+                .reviews_block .inn_sl_hed {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: flex-start !important;
+                    justify-content: flex-start !important;
+                    gap: 16px !important;
+                    width: 100% !important;
+                    margin: 0 0 24px 0 !important;
+                    padding: 0 !important;
+                    position: relative !important;
+                }
+                .reviews_block .inn_sl_hed .sli_img {
+                    flex: 0 0 48px !important;
+                    width: 48px !important;
+                    height: 48px !important;
+                    min-width: 48px !important;
+                    min-height: 48px !important;
+                    max-width: 48px !important;
+                    max-height: 48px !important;
+                    margin: 0 !important;
+                }
+                .reviews_block .inn_sl_hed .sli_img img,
+                .reviews_block .inn_sl_hed .sli_img .header_img {
+                    width: 48px !important;
+                    height: 48px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    margin: 0 !important;
+                }
+                .reviews_block .sl_h {
+                    flex: 1 1 auto !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    justify-content: flex-start !important;
+                    gap: 6px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    min-width: 0 !important;
+                }
+                .reviews_block .sl_h .inn_h {
+                    width: 100% !important;
+                    display: block !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .reviews_block .sl_h .inn_h a {
+                    /* display: block !important;
+                    width: 100% !important; */
+                }
                 .reviews_block .sl_main {
                     display: flex !important;
+                    flex-direction: row !important;
                     align-items: flex-start !important;
                     justify-content: space-between !important;
-                    gap: 12px !important;
+                    gap: 16px !important;
                     width: 100% !important;
-                    position: relative !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                 }
                 .reviews_block .sl_main h6.head {
                     flex: 1 1 auto !important;
-                    padding-right: 0 !important; /* Clear old absolute padding offset */
                     font-size: 16px !important;
-                    line-height: 1.3 !important;
+                    line-height: 1.25 !important;
+                    font-weight: 700 !important;
+                    color: #002347 !important;
                     margin: 0 !important;
+                    padding: 0 !important;
+                    word-break: break-word !important;
                 }
                 .reviews_block .sl_main .wishlist {
-                    position: static !important;
                     flex: 0 0 44px !important;
                     width: 44px !important;
                     height: 44px !important;
                     min-width: 44px !important;
                     min-height: 44px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
+                    /* position: static !important; */
                     background-color: rgba(255, 255, 255, 0.9) !important;
                     border-radius: 50% !important;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                     align-self: flex-start !important;
                     margin: 0 !important;
+                    padding: 0 !important;
                 }
-                .reviews_block .sl_h .inn_h {
-                    width: 100% !important;
-                    display: block !important;
+                .reviews_block .tp-btm {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    gap: 8px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                 }
-                .reviews_block .sl_h .inn_h a {
-                    /* display: block !important;
-                    width: 100% !important; */
+                .reviews_block .tp-btm .inn_ul {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    gap: 2px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                .reviews_block .tp-btm .inn_ul i.fa-angle-down {
+                    display: none !important;
+                }
+                .reviews_block .tp-btm .rate_box {
+                    font-size: 13px !important;
+                    color: #718096 !important;
+                    font-weight: 500 !important;
+                    white-space: nowrap !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                }
+                /* Show only 1 star rating in latest reviews cards on mobile */
+                .reviews_block .tab_star_li span:nth-child(n+2) {
+                    display: none !important;
+                }
+                .reviews_block .tab_star_li span:first-child::before {
+                    font-family: "Font Awesome 5 Free" !important;
+                    font-weight: 900 !important; /* Force filled star */
+                    content: "\f005" !important;
+                    color: #fe9d27 !important;
+                    display: inline-block !important;
+                    font-size: 12px;
                 }
                 /* Center heart icon inside the circular badge */
                 [class*="wishlist"],
