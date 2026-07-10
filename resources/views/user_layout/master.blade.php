@@ -559,6 +559,90 @@
                     align-self: flex-start !important;
                     margin: 0 !important;
                 }
+
+                /* Show only 1 star rating in most popular cards on mobile */
+                .popular-accordion-wrp .tab_star_li i:nth-child(n+2) {
+                    display: none !important;
+                }
+                .popular-accordion-wrp .tab_star_li i:first-child {
+                    font-weight: 900 !important; /* Force filled star */
+                    color: #fbbf24 !important;
+                }
+
+                /* Latest Reviews section wishlist alignment and layout fix on mobile */
+                .reviews_block .sl_main {
+                    display: flex !important;
+                    align-items: flex-start !important;
+                    justify-content: space-between !important;
+                    gap: 12px !important;
+                    width: 100% !important;
+                    position: relative !important;
+                }
+                .reviews_block .sl_main h6.head {
+                    flex: 1 1 auto !important;
+                    padding-right: 0 !important; /* Clear old absolute padding offset */
+                    font-size: 16px !important;
+                    line-height: 1.3 !important;
+                    margin: 0 !important;
+                }
+                .reviews_block .sl_main .wishlist {
+                    position: static !important;
+                    flex: 0 0 44px !important;
+                    width: 44px !important;
+                    height: 44px !important;
+                    min-width: 44px !important;
+                    min-height: 44px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    background-color: rgba(255, 255, 255, 0.9) !important;
+                    border-radius: 50% !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+                    align-self: flex-start !important;
+                    margin: 0 !important;
+                }
+                .reviews_block .sl_h .inn_h {
+                    width: 100% !important;
+                    display: block !important;
+                }
+                .reviews_block .sl_h .inn_h a {
+                    /* display: block !important;
+                    width: 100% !important; */
+                }
+                /* Center heart icon inside the circular badge */
+                [class*="wishlist"],
+                [class*="wishlist"] div,
+                [class*="wishlist"] a,
+                [class*="wishlist"] i,
+                [class*="wishlist"] > div a {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                }
+                [class*="wishlist"] a,
+                [class*="wishlist"] div a,
+                [class*="wishlist"] > div a {
+                    position: static !important;
+                    transform: none !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    top: auto !important;
+                    right: auto !important;
+                    left: auto !important;
+                    bottom: auto !important;
+                }
+                /* Reset nested wishlist styles to prevent double circle/shadow rendering */
+                .wishlist .wishlist {
+                    background: transparent !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                    border: none !important;
+                    width: 100% !important;
+                    height: 100% !important;
+                    min-width: 0 !important;
+                    min-height: 0 !important;
+                    position: static !important;
+                }
             }
 
     </style>
