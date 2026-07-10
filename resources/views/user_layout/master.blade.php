@@ -2629,16 +2629,29 @@
             });
         }
 
+        // Run immediately to prevent layout shift before events fire
+        adjustAutomotiveRatings();
+
         window.addEventListener('DOMContentLoaded', adjustAutomotiveRatings);
         window.addEventListener('load', adjustAutomotiveRatings);
         window.addEventListener('resize', adjustAutomotiveRatings);
         
-        // Listen to Livewire's update hooks to rerun height calculation after pagination or filtering
-        document.addEventListener('livewire:load', function () {
-            if (window.livewire) {
-                window.livewire.hook('message.processed', adjustAutomotiveRatings);
-            }
+        // Use MutationObserver to watch for Livewire updates and rerun instantly
+        const observer = new MutationObserver((mutations) => {
+            observer.disconnect();
+            adjustAutomotiveRatings();
+            observe();
         });
+
+        function observe() {
+            const target = document.body;
+            observer.observe(target, {
+                childList: true,
+                subtree: true
+            });
+        }
+        
+        observe();
     </script>
 </body>
 </html>
