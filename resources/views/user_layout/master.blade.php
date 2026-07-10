@@ -640,9 +640,14 @@
                     margin: 0 !important;
                     padding: 0 !important;
                 }
-                i.far.fa-heart.text-gray-600.hover\:text-red-600 {
-                    margin-left: -1rem;
-                }
+             .most-populr-sec.light.p_120 .wishlist i.far.fa-heart.text-gray-600.hover\:text-red-600 {
+                margin-left: -1rem;
+            }
+   .slick-list.draggable i.far.fa-heart.text-gray-600.hover\:text-red-600,
+    .slick-list.draggable i.fas.fa-heart.text-red-600.hover\:text-red-700 {
+        margin-left: -1rem;
+    }
+                    
                 .top-rate-innr .sl_main,
                 .reviews_block .sl_main,
                 .automotive-card .sl_main {
