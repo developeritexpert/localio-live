@@ -736,7 +736,7 @@ class BusinessEdit extends Component
 
     protected function loadCategories()
     {
-        $this->categories = Category::with(['categoryTranslations' => function ($query) {
+        $this->categories = Category::onlySubcategories()->with(['categoryTranslations' => function ($query) {
             $query->where('lang_id', $this->lang_id);
         }])->whereHas('categoryTranslations', function ($query) {
             $query->where('lang_id', $this->lang_id);
@@ -1228,7 +1228,11 @@ class BusinessEdit extends Component
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
-            'selected_category' => 'required|exists:categories,id',
+            'selected_category' => ['required', 'exists:categories,id', function($attribute, $value, $fail) {
+                if (\App\Models\Category::where('id', $value)->whereNull('parent_id')->exists()) {
+                    $fail('The selected category must be a sub-category.');
+                }
+            }],
             'business_description' => 'nullable|string',
             'permanentUrlSlug' => [
                 'required',

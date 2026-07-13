@@ -307,7 +307,7 @@ class ProductForm extends Component
     {
         return view('livewire.product-form', [
             'businesses' => Business::with('translations')->get(),
-            'categories' => Category::with('translations')->get(),
+            'categories' => Category::onlySubcategories()->with('translations')->get(),
         ]);
     }
 }

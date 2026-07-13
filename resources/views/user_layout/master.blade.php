@@ -1017,21 +1017,22 @@
                         ->with('media')
                         ->get();
 
-                                                $sidebarCategories = Category::whereHas('translation', function ($query) use ($lang_id) {
-                            $query->where('lang_id', $lang_id);
-                        })
-                        ->with([
-                            'translation' => function ($query) use ($lang_id) {
+                                                $sidebarCategories = Category::onlyParents()
+                            ->whereHas('translation', function ($query) use ($lang_id) {
                                 $query->where('lang_id', $lang_id);
-                            },
-                            'businesses' => function ($query) {
-                                $query->where('status', 1);
-                            },
-                            'businesses.translations' => function ($query) use ($lang_id) {
-                                $query->where('lang_id', $lang_id);
-                            }
-                        ])
-                        ->get();
+                            })
+                            ->with([
+                                'translation' => function ($query) use ($lang_id) {
+                                    $query->where('lang_id', $lang_id);
+                                },
+                                'subCategories' => function ($query) {
+                                    $query->where('status', 1);
+                                },
+                                'subCategories.translation' => function ($query) use ($lang_id) {
+                                    $query->where('lang_id', $lang_id);
+                                }
+                            ])
+                            ->get();
 
                         $mobileBusinesses = \App\Models\Business::where('status', 1)
                             ->whereHas('translations', function ($query) use ($lang_id) {
@@ -2373,16 +2374,16 @@
                             <div class="sidebar-menu-section">
                                 <h3 class="sidebar-section-title">{{ $cat->translation->name }}</h3>
                                 <ul class="sidebar-menu-list">
-                                    <li>
+                                    <!-- <li>
                                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cat->translation->slug]) }}" class="view-all-link">
                                             <strong>View All in {{ $cat->translation->name }}</strong>
                                         </a>
-                                    </li>
-                                    @foreach($cat->businesses as $business)
-                                        @if($business->translations->first())
+                                    </li> -->
+                                    @foreach($cat->subCategories as $subCat)
+                                        @if($subCat->translation)
                                             <li>
-                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug]) }}">
-                                                    {{ $business->translations->first()->name }}
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}">
+                                                    {{ $subCat->translation->name }}
                                                 </a>
                                             </li>
                                         @endif

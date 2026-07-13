@@ -100,7 +100,7 @@ class AdminProductController extends Controller
         }])->where('status',1)->whereHas('translations', function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
         })->where('status', '1')->get();
-        $categories = Category::with(['categoryTranslations' => function ($query) use ($lang_id) {
+        $categories = Category::onlySubcategories()->with(['categoryTranslations' => function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
         }])->whereHas('categoryTranslations', function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
@@ -480,7 +480,7 @@ class AdminProductController extends Controller
         }])->whereHas('translations', function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
         })->where('status', '1')->get();
-        $categories = Category::with(['categoryTranslations' => function ($query) use ($lang_id) {
+        $categories = Category::onlySubcategories()->with(['categoryTranslations' => function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
         }])->whereHas('categoryTranslations', function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
