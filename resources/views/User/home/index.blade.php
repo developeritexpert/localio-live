@@ -129,6 +129,9 @@
                                                             </div>
                                                             <div class="col-lg-6 col-md-6">
                                                                 <div class="accor-txt-contnt">
+                                                                    @if(!empty($category->translations->title))
+                                                                        <h3 class="category-title mb-3" style="font-size: 24px; font-weight: 700; color: #003f7d;">{{ $category->translations->title }}</h3>
+                                                                    @endif
                                                                     {!! $category->translations->description !!}
                                                                     <div class="accor-btn">
                                                                         <a  onclick="changeCategory('{{ $category->translations->slug ?? '' }}')"

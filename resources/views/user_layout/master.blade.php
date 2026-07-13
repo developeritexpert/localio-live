@@ -1017,7 +1017,7 @@
                         ->with('media')
                         ->get();
 
-                                                $sidebarCategories = Category::onlyParents()
+                        $sidebarCategories = Category::onlyParents()
                             ->whereHas('translation', function ($query) use ($lang_id) {
                                 $query->where('lang_id', $lang_id);
                             })
@@ -1029,6 +1029,12 @@
                                     $query->where('status', 1);
                                 },
                                 'subCategories.translation' => function ($query) use ($lang_id) {
+                                    $query->where('lang_id', $lang_id);
+                                },
+                                'subCategories.businesses' => function ($query) {
+                                    $query->where('status', 1);
+                                },
+                                'subCategories.businesses.translations' => function ($query) use ($lang_id) {
                                     $query->where('lang_id', $lang_id);
                                 }
                             ])
@@ -2374,16 +2380,12 @@
                             <div class="sidebar-menu-section">
                                 <h3 class="sidebar-section-title">{{ $cat->translation->name }}</h3>
                                 <ul class="sidebar-menu-list">
-                                    <!-- <li>
-                                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cat->translation->slug]) }}" class="view-all-link">
-                                            <strong>View All in {{ $cat->translation->name }}</strong>
-                                        </a>
-                                    </li> -->
                                     @foreach($cat->subCategories as $subCat)
                                         @if($subCat->translation)
                                             <li>
-                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}">
+                                                <a href="javascript:void(0);" class="subcategory-item" data-subcategory-id="{{ $subCat->id }}">
                                                     {{ $subCat->translation->name }}
+                                                    <i class="fa-solid fa-chevron-right float-end mt-1"></i>
                                                 </a>
                                             </li>
                                         @endif
@@ -2392,6 +2394,41 @@
                             </div>
                         </div>
                     @endif
+                @endforeach
+
+                <!-- Dynamic Sub-category Business Panels (3rd Level) -->
+                @foreach($sidebarCategories as $cat)
+                    @foreach($cat->subCategories as $subCat)
+                        @if($subCat->translation)
+                            <div class="category-sidebar-panel business-panel" id="business-panel-{{ $subCat->id }}">
+                                <div class="sub-panel-back">
+                                    <a href="javascript:void(0);" class="back-to-subcategories-btn" data-parent-cat-id="{{ $cat->id }}">
+                                        <i class="fa-solid fa-arrow-left me-2"></i> {{ $cat->translation->name }}
+                                    </a>
+                                </div>
+                                <div class="sidebar-menu-divider"></div>
+                                <div class="sidebar-menu-section">
+                                    <h3 class="sidebar-section-title">{{ $subCat->translation->name }}</h3>
+                                    <ul class="sidebar-menu-list">
+                                        <!-- <li>
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}" class="view-all-link">
+                                                <strong>View All in {{ $subCat->translation->name }}</strong>
+                                            </a>
+                                        </li> -->
+                                        @foreach($subCat->businesses as $business)
+                                            @if($business->translations->first())
+                                                <li>
+                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug]) }}">
+                                                        {{ $business->translations->first()->name }}
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
                 @endforeach
             </div>
         </div>
@@ -2471,24 +2508,29 @@
         }
         .category-sidebar-panels-container {
             display: flex;
-            width: 200%; /* We have Main Panel + Sub Panel side-by-side */
+            width: 300%; /* We have Main Panel + Sub Panel + Business Panel side-by-side */
             height: 100%;
             transition: transform 0.25s ease-in-out;
         }
         .category-sidebar-panels-container.slide-active {
-            transform: translateX(-50%);
+            transform: translateX(-33.333%);
+        }
+        .category-sidebar-panels-container.slide-business-active {
+            transform: translateX(-66.666%);
         }
         .category-sidebar-panel {
-            width: 50%;
+            width: 33.333%;
             height: 100%;
             padding: 20px 0;
             overflow-y: auto;
             box-sizing: border-box;
         }
-        .category-sidebar-panel.sub-panel {
+        .category-sidebar-panel.sub-panel,
+        .category-sidebar-panel.business-panel {
             display: none;
         }
-        .category-sidebar-panel.sub-panel.active {
+        .category-sidebar-panel.sub-panel.active,
+        .category-sidebar-panel.business-panel.active {
             display: block;
         }
         .sidebar-menu-section {
@@ -2556,6 +2598,7 @@
             const sidebar = document.getElementById('categories-sidebar');
             const container = document.getElementById('sidebar-panels-container');
             const subPanels = document.querySelectorAll('.category-sidebar-panel.sub-panel');
+            const businessPanels = document.querySelectorAll('.category-sidebar-panel.business-panel');
 
             if (openBtn && sidebar && overlay) {
                 openBtn.addEventListener('click', function (e) {
@@ -2573,8 +2616,13 @@
                 // Reset view back to main panel
                 setTimeout(() => {
                     container.classList.remove('slide-active');
+                    container.classList.remove('slide-business-active');
                     subPanels.forEach(panel => {
                         panel.classList.remove('active');
+                    });
+                    businessPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                        panel.style.display = 'none';
                     });
                 }, 300);
             }
@@ -2582,7 +2630,7 @@
             if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
             if (overlay) overlay.addEventListener('click', closeSidebar);
 
-            // Slide to category sub-menu
+            // Slide to category sub-menu (2nd level)
             document.querySelectorAll('.parent-category-item').forEach(item => {
                 item.addEventListener('click', function () {
                     const catId = this.getAttribute('data-category-id');
@@ -2592,9 +2640,34 @@
                     subPanels.forEach(panel => {
                         panel.classList.remove('active');
                     });
+                    // Hide business panels
+                    businessPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                        panel.style.display = 'none';
+                    });
                     if (targetPanel) {
                         targetPanel.classList.add('active');
+                        container.classList.remove('slide-business-active');
                         container.classList.add('slide-active');
+                    }
+                });
+            });
+
+            // Slide to sub-category business-menu (3rd level)
+            document.querySelectorAll('.subcategory-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const subCatId = this.getAttribute('data-subcategory-id');
+                    const targetPanel = document.getElementById('business-panel-' + subCatId);
+                    
+                    // Hide all business panels, show target business panel
+                    businessPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                        panel.style.display = 'none';
+                    });
+                    if (targetPanel) {
+                        targetPanel.style.display = 'block';
+                        targetPanel.classList.add('active');
+                        container.classList.add('slide-business-active');
                     }
                 });
             });
@@ -2603,6 +2676,25 @@
             document.querySelectorAll('.back-to-main-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
                     container.classList.remove('slide-active');
+                    container.classList.remove('slide-business-active');
+                });
+            });
+
+            // Back to sub-categories menu (from 3rd level back to 2nd level)
+            document.querySelectorAll('.back-to-subcategories-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const parentCatId = this.getAttribute('data-parent-cat-id');
+                    const targetPanel = document.getElementById('sub-panel-' + parentCatId);
+                    
+                    // Hide business panels, make sure parent sub-panel is active
+                    subPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                    }
+                    container.classList.remove('slide-business-active');
+                    container.classList.add('slide-active');
                 });
             });
         });

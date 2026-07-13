@@ -29,6 +29,18 @@
                             @enderror
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="title">Title (Most Popular Section)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="title" name="title"
+                                        value="{{ isset($category_data) ? ($category_data['title'] ?? '') : old('title') }}" />
+                                </div>
+                                @error('title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">
