@@ -1053,22 +1053,11 @@
                                 <div class="left_menu">
                                     <ul class="menu">
                                         <li class="menu-item cat_menu_item">
-                                            <a href="javascript:void(0);" id="open-categories-sidebar"><i class="fa-solid fa-bars me-2"></i>{{ $headerContent['Categories'] ?? 'All Categories' }}</a>
+                                            <a href="javascript:void(0);" id="open-categories-sidebar"><i class="fa-solid fa-bars me-2"></i>{{ $headerContent['Categories'] ?? 'All' }}</a>
                                         </li>
-                                        <li class=" menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
+                                        <li class=" menu-item cat_menu_item">
                                             <a
-                                                href="#">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</a>
-                                            <span class="dropdown_toggle"><i class="fa-solid fa-chevron-down"></i></span>
-                                            <ul
-                                                class="dropdown_menu dropdown_menu--animated dropdown_menu-6 mob-drp-contnt">
-                                                <div class="dropdown-ul-inner">
-                                                    <div class="oter_dropul">
-                                                        <div class="row">
-                                                            <livewire:product-search />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </ul>
+                                                href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</a>
                                         </li>
                                         @foreach($categories as $category)
     <li class="menu-item">
@@ -2321,10 +2310,17 @@
     <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
     <div class="category-sidebar" id="categories-sidebar">
         <div class="category-sidebar-header">
-            <div class="user-greeting">
-                <i class="fa-solid fa-circle-user avatar-icon"></i>
-                <span>Hello, {{ Auth::check() ? Auth::user()->first_name : 'Sign In' }}</span>
-            </div>
+            @if(Auth::check())
+                <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
+                    <i class="fa-solid fa-circle-user avatar-icon"></i>
+                    <span>Hello, {{ Auth::user()->first_name }}</span>
+                </a>
+            @else
+                <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
+                    <i class="fa-solid fa-circle-user avatar-icon"></i>
+                    <span>Hello, Sign In</span>
+                </a>
+            @endif
             <button class="category-sidebar-close" id="categories-sidebar-close">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -2334,19 +2330,18 @@
             <div class="category-sidebar-panels-container" id="sidebar-panels-container">
                 <!-- Main Panel -->
                 <div class="category-sidebar-panel active" id="main-panel">
-                    <div class="sidebar-menu-section">
+                    <!-- <div class="sidebar-menu-section">
                         <h3 class="sidebar-section-title">Trending</h3>
                         <ul class="sidebar-menu-list">
                             <li>
                                 <a href="{{ route('top-rated-product', ['locale' => app()->getLocale()]) }}">
-                                    <!-- <i class="fa-solid fa-star text-warning me-2"></i> -->
                                      Bestsellers / Top Rated
                                 </a>
                             </li>
                         </ul>
                     </div>
                     
-                    <div class="sidebar-menu-divider"></div>
+                    <div class="sidebar-menu-divider"></div> -->
                     
                     <div class="sidebar-menu-section">
                         <h3 class="sidebar-section-title">Shop by Category</h3>
@@ -2449,6 +2444,12 @@
             gap: 10px;
             font-size: 18px;
             font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        .category-sidebar-header .user-greeting:hover {
+            color: #fff;
+            text-decoration: none;
         }
         .category-sidebar-header .user-greeting .avatar-icon {
             font-size: 24px;
