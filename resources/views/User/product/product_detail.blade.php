@@ -687,14 +687,36 @@
                     <div class="inner_banr_content">
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="javascript:void(0);"
-                                        onclick="changeCategory('{{ $business->category->translation()->first()->slug }}')"
-                                        style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
-                                        onmouseout="this.style.color=''">
-                                        {{ optional($business->category->translation)->name }}
-                                    </a>
-                                </li>
+                                @if ($business->category && $business->category->parent)
+                                    @php
+                                        $parentTranslation = $business->category->parent->translation()->first();
+                                    @endphp
+                                    @if ($parentTranslation)
+                                        <li class="breadcrumb-item">
+                                            <a href="javascript:void(0);"
+                                                onclick="changeCategory('{{ $parentTranslation->slug }}')"
+                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
+                                                onmouseout="this.style.color=''">
+                                                {{ $parentTranslation->name }}
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endif
+                                @if ($business->category)
+                                    @php
+                                        $categoryTranslation = $business->category->translation()->first();
+                                    @endphp
+                                    @if ($categoryTranslation)
+                                        <li class="breadcrumb-item">
+                                            <a href="javascript:void(0);"
+                                                onclick="changeCategory('{{ $categoryTranslation->slug }}')"
+                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
+                                                onmouseout="this.style.color=''">
+                                                {{ $categoryTranslation->name }}
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endif
                                 <li class="breadcrumb-item active" aria-current="page">
                                     {{ $business->translations->first()->name }}
                                 </li>

@@ -67,7 +67,7 @@ class CategoryPageContent extends Seeder
             ],
             [
                 'meta_key'  =>  'search_placeholder_text',
-                'meta_value'    =>  'Enter a product, category, or what you’d like to compare...',
+                'meta_value'    =>  'Search for a company or category...',
                 'lang_id'     =>  '1',
                 'created_at'    =>  now(),
                 'updated_at'    =>  now(),
