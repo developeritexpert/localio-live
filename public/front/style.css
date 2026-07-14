@@ -295,6 +295,19 @@ div#navbarSupportedContent {
 	border-color: #f9633b;
 }
 
+.cta.cta_outline {
+	background-color: transparent;
+	border: 1.5px solid #06498b;
+	color: #06498b;
+	transition: all 0.3s ease-in-out;
+}
+
+.cta.cta_outline:hover {
+	background-color: #06498b;
+	border-color: #06498b;
+	color: #ffffff;
+}
+
 .dark .cta:hover {
 	background-color: #ffffff;
 	border-color: #ffffff;

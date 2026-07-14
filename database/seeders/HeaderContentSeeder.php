@@ -59,7 +59,7 @@ class HeaderContentSeeder extends Seeder
             ],
             [
                 'meta_key'  =>  'header_search_placeholder',
-                'meta_value'    =>  'Enter a product, category, or what you’d like to compare...',
+                'meta_value'    =>  'Search for a company or category...',
                 'type'         => 'text',
                 'lang_id'     =>  '1',
                 'created_at'    =>  now(),

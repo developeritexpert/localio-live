@@ -175,101 +175,92 @@
                                                                             $isBestValue = $index === 0; // Highest rated business
                                                                         @endphp
 
-                                                                        <div
-                                                                            class="col-lg-4 {{ $isBestValue ? 'order-lg-2' : ($index === 1 ? 'order-lg-1' : 'order-lg-3') }}">
-                                                                            <div
-                                                                                class="review_card light top-rate-card {{ $isBestValue ? 'center-card-pack' : '' }}">
-                                                                                <div class="inner_box_silder top-rate-innr top-rate-innr_2 ">
-
-                                                                                    @if ($isBestValue)
-                                                                                        <div class="best-value">
-                                                                                            <p>
-                                                                                                <img src="{{ asset('front/img/star.png') }}"
-                                                                                                    alt="">
-                                                                                                   <span> BEST
-                                                                                                VALUE</span></p>
-                                                                                        </div>
-                                                                                    @endif
-
-                                                                                    <div
-                                                                                        class="inn_sl_hed mst_hdn {{ $isBestValue ? 'mt-4' : '' }}">
-                                                                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
-                                                                                        <div class="sli_img">
-                                                                                            <img class="slider_img"
-                                                                                                src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}"
-                                                                                                alt="">
-                                                                                        </div>
-                                                                                         </a>
-                                                                                        <div class="sl_h">
-                                                                                            <div class="inn_h">
-                                                                                                <div class="sl_main">
-                                                                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
-                                                                                                    <h6 class="head">
-                                                                                                        {{ $businessTranslation->name ?? 'Business' }}
-                                                                                                    </h6>
-                                                                                                    <div
-                                                                                                        wire:key="wishlist-container-{{ $business->id }}">
-                                                                                                        @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
-                                                                                                    </div>
-                                                                                                </a>
-                                                                                                </div>
-
-                                                                                            </div>
-                                                                                            <div class="tp-btm d-flex">
-                                                                                                <div class="inn_ul">
-                                                                                                    <div
-                                                                                                        class="tab_star_li">
-                                                                                                        @php
-                                                                                                            $rating =
-                                                                                                                $avgRating >
-                                                                                                                0
-                                                                                                                    ? round(
-                                                                                                                        $avgRating,
-                                                                                                                    )
-                                                                                                                    : 0;
-                                                                                                        @endphp
-
-                                                                                                        @for ($i = 1; $i <= 5; $i++)
-                                                                                                            <i
-                                                                                                                class="fa-star {{ $i <= $rating ? 'fas text-warning' : 'far text-warning' }}"></i>
-                                                                                                        @endfor
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div class="rate_box">
-                                                                                                    {{ $avgRating }} |
-                                                                                                    {{ $ratingsCount }}
-                                                                                                    Reviews
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-
-                                                                                    <div class="slider_content_sec">
-                                                                                        <div
-                                                                                            class="content_para text-truncate-3-lines">
-                                                                                            {!! strip_tags($businessTranslation->description ?? 'Description not available.') !!}
-                                                                                        </div>
-                                                                                        <div class="view-more-btn">
-                                                                                            @if ($businessTranslation)
-                                                                                                <a
-                                                                                                    href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
-                                                                                                    Read More
-                                                                                                </a>
-                                                                                            @endif
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div class="top-pro-box">
-                                                                                        <div class="top-pro-btn">
-                                                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}"
-                                                                                                class="cta cta_orange d-flex align-items-center">
-                                                                                                {{ $homeContents['visit_website'] ?? 'Visit Website' }}
-                                                                                                <div class="right-arw"><i
-                                                                                                        class="fa-solid fa-arrow-right"></i>
-                                                                                                </div>
-                                                                                            </a>
-                                                                                        </div>
-                                                                                    </div>
-
+                                                                        <div class="col-lg-4 {{ $isBestValue ? 'order-lg-2' : ($index === 1 ? 'order-lg-1' : 'order-lg-3') }}">
+                                                                            <div class="review_card light top-rate-card {{ $isBestValue ? 'center-card-pack' : '' }}">
+                                                                                 <div class="inner_box_silder top-rate-innr top-rate-innr_2 ">
+                                                                                     <div class="inn_sl_hed mst_hdn">
+                                                                                         <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
+                                                                                         <div class="sli_img">
+                                                                                             <img class="slider_img"
+                                                                                                 src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}"
+                                                                                                 alt="">
+                                                                                         </div>
+                                                                                          </a>
+                                                                                         <div class="sl_h">
+                                                                                             <div class="inn_h">
+                                                                                                 <div class="sl_main">
+                                                                                                     <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
+                                                                                                     <h6 class="head">
+                                                                                                         {{ $businessTranslation->name ?? 'Business' }}
+                                                                                                     </h6>
+                                                                                                     <div
+                                                                                                         wire:key="wishlist-container-{{ $business->id }}">
+                                                                                                         @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
+                                                                                                     </div>
+                                                                                                 </a>
+                                                                                                 </div>
+                                                                                             </div>
+                                                                                             <div class="tp-btm d-flex">
+                                                                                                 <div class="inn_ul">
+                                                                                                     <div
+                                                                                                         class="tab_star_li">
+                                                                                                         @php
+                                                                                                             $rating =
+                                                                                                                 $avgRating >
+                                                                                                                 0
+                                                                                                                     ? round(
+                                                                                                                         $avgRating,
+                                                                                                                     )
+                                                                                                                     : 0;
+                                                                                                         @endphp
+ 
+                                                                                                         @for ($i = 1; $i <= 5; $i++)
+                                                                                                             <i
+                                                                                                                 class="fa-star {{ $i <= $rating ? 'fas text-warning' : 'far text-warning' }}"></i>
+                                                                                                         @endfor
+                                                                                                     </div>
+                                                                                                 </div>
+                                                                                                 <div class="rate_box">
+                                                                                                     {{ $avgRating }} |
+                                                                                                     {{ $ratingsCount }}
+                                                                                                     Reviews
+                                                                                                 </div>
+                                                                                             </div>
+                                                                                             @if ($isBestValue)
+                                                                                                 <div class="best-value-inline-container">
+                                                                                                     <div class="best-value-inline">
+                                                                                                         <i class="fa-regular fa-thumbs-up"></i>
+                                                                                                         <span>Best Value</span>
+                                                                                                     </div>
+                                                                                                 </div>
+                                                                                             @endif
+                                                                                         </div>
+                                                                                     </div>
+ 
+                                                                                     <div class="slider_content_sec">
+                                                                                         <div
+                                                                                             class="content_para text-truncate-3-lines">
+                                                                                             {!! strip_tags($businessTranslation->description ?? 'Description not available.') !!}
+                                                                                         </div>
+                                                                                     </div>
+                                                                                     <div class="top-pro-box" style="display: flex; justify-content: space-between; gap: 10px;">
+                                                                                         <div class="top-pro-btn">
+                                                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}"
+                                                                                                 class="cta cta_outline d-flex align-items-center">
+                                                                                                 View details
+                                                                                             </a>
+                                                                                         </div>
+                                                                                         <div class="top-pro-btn">
+                                                                                             <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? '#' }}"
+                                                                                                 class="cta cta_orange d-flex align-items-center"
+                                                                                                 target="_blank" rel="noopener noreferrer">
+                                                                                                 {{ $homeContents['visit_website'] ?? 'Visit Website' }}
+                                                                                                 <div class="right-arw"><i
+                                                                                                         class="fa-solid fa-arrow-right"></i>
+                                                                                                 </div>
+                                                                                             </a>
+                                                                                         </div>
+                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>

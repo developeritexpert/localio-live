@@ -15,7 +15,7 @@
 
             <div class="compaign_search">
                 <div class="form">
-                    <input type="search" class="search-box" placeholder="Enter a product, category, or what you’d like to compare...">
+                    <input type="search" class="search-box" placeholder="Search for a company or category...">
                     <button class="btn cta_dark active"><i class="fa-solid fa-magnifying-glass"></i></button>
                  </div>
 
