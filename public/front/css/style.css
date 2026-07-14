@@ -8670,7 +8670,23 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 .sftware-alternative-pck progress::-webkit-progress-bar,
 .sftware-alternative-pck .progress-bar {
-  background-color: #0000002e;
+  background-color: #00000015;
+  border-radius: 4px;
+}
+
+.sftware-alternative-pck progress::-webkit-progress-value {
+  background: #41B06E !important;
+  border-radius: 4px;
+}
+
+.sftware-alternative-pck progress::-moz-progress-bar {
+  background: #41B06E !important;
+  border-radius: 4px;
+}
+
+.sftware-alternative-pck progress::-ms-fill {
+  background: #41B06E !important;
+  border-radius: 4px;
 }
 
 
