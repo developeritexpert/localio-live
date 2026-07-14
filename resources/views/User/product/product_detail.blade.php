@@ -1740,6 +1740,9 @@
                             <section class="business-features light" id="features">
                                 <div class="container" data-aos="fade-up" data-aos-duration="1000">
                                     <h2 class="text-feature">Features</h2>
+                                    <p class="text-feature-desc mb-4" style="color: #666; font-size: 15px; margin-top: 10px;">
+                                        Features will be defined in admin for each sub-category. And then when rating a business of that sub-category, users will see these features and can rate them. The same features are shown on the details page of each business.
+                                    </p>
                                     @if($business->features && $business->features->isNotEmpty())
                                         <div class="feature-section">
                                             <div class="row">
@@ -1752,18 +1755,20 @@
                                                     @endphp
 
                                                     <div class="col-md-6 col-lg-4">
-                                                        <div class="feature-card border rounded p-3 mb-3 shadow-sm">
+                                                        <div class="feature-card border rounded p-4 mb-3 shadow-sm bg-white">
                                                             <div class="feature-texts">
-                                                                <h6 class="feature-title-hd mb-1">
+                                                                <h6 class="feature-title-hd mb-0">
                                                                     {{ $translation->name ?? $feature->name ?? 'Unnamed Feature' }}
                                                                 </h6>
 
                                                                 <!-- Clickable Rating Text In key Feature (opens popup) -->
-                                                                <p class="feature-content mb-2 open-review-popup"
+                                                                <p class="feature-content m-0 open-review-popup"
                                                                    data-feature="{{ $feature->id }}">
-                                                                    {{ number_format($avgRating, 1) }} ({{ $ratingCount }})
+                                                                    <i class="fa-solid fa-star text-warning"></i>
+                                                                    <span>{{ number_format($avgRating, 1) }}</span>
                                                                 </p>
                                                             </div>
+                                                            <hr class="feature-card-divider" style="border: 0; border-top: 1px solid #eee; margin-top: 10px; margin-bottom: 15px;">
 
                                                             <!-- Description -->
                                                             @if(!empty($translation->description))

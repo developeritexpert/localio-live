@@ -8527,24 +8527,28 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .business-features .feature-section .feature-card .feature-texts h6 {
-  color: #fff;
+  color: #06498b;
   margin: 0;
   font-size: 18px;
+  font-weight: 600;
 }
 
 .business-features .feature-section .feature-card .feature-texts .feature-content {
   font-weight: 500;
-  font-size: 18px;
+  font-size: 16px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .business-features .feature-section .feature-card .feature-texts {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* background: linear-gradient(to right, #f9633b1f, #f9633b7a); */
-  background-color: #003f7d;
-  padding: 6px 10px;
-  margin-bottom: 10px;
+  background-color: transparent;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 .business-features .feature-section .feature-card p {
@@ -8639,7 +8643,11 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .business-features .feature-section .feature-card .feature-content {
-  color: #fff !important;
+  color: #555 !important;
+}
+
+.business-features .feature-section .feature-card .feature-content i {
+  color: #555 !important;
 }
 
 .product_integra_sec {
