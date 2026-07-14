@@ -183,6 +183,11 @@
                  overflow: hidden;
                  padding-inline: 48px;
              }
+             .crm_sec.revie_left_rgt_sec .review_text p:last-child{
+                font-size:16px;
+                margin-bottom:0;
+             }
+
 
              @media (max-width: 768px) {
                  #imageGalleryModal .modal-dialog {
@@ -517,7 +522,7 @@
 }
 
 .rating-stars i{
-    font-size:13px;
+    font: size 12px;
 }
 
 .main_feture .feture_box {
@@ -627,7 +632,7 @@
 }
 
 .rating-stars i{
-    font-size:18px;
+    font-size:12px;
 }
 
 
@@ -927,7 +932,7 @@
                                                         100 + count($dynamicTopics) - 1;
                                             @endphp
 
-                                            <li class="py-1 {{ $isLastDynamic ? 'mb-0' : '' }}">
+                                            <li class=" {{ $isLastDynamic ? 'mb-0' : '' }}">
                                                 <a href="#{{ $item['id'] }}" class="text-blue-600 d-block">
                                                     {{ $item['label'] }}
                                                 </a>
@@ -2881,7 +2886,7 @@
 
                                                 <!-- Filter by Rating Title Row -->
                                                 <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
-                                                    <span style="font-size: 16px; font-weight: 700; color: #1e3050;">Filter by rating</span>
+                                                    <span style="font-size: 18px; font-weight: 600; color: #002347;">Filter by rating</span>
                                                     <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span>
                                                 </div>
 
@@ -2904,7 +2909,7 @@
                                                                     </div>
                                                                     <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
                                                                 </label>
-                                                            </li>
+                                                            </li>               
                                                         @endfor
                                                     </ul>
                                                 </div>
