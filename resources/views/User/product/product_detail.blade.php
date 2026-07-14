@@ -1033,18 +1033,18 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                         @endif
-                                        {{-- End Business Images  --}}
+                                        @endif
+                                         {{-- End Business Images  --}}
 
                                     </div>
-                                    <div class="lcl_text">
+                                </div>
+                            </div>
+                            <div class="thre_revi_rgt">
+                                <div class="lcl_text" style="margin-bottom: 20px;">
                                     <p class="sml_text">{{ static_text('localio_commissions_message') }}
                                         <a class="big-bld" type="button" onclick="openModal()">Learn more</a>
                                     </p>
                                 </div>
-                            </div>
-                            <div class="thre_revi_rgt">
                                 
                                 @php
                                     $productBadgeLabel = static_text('product_badge_label') ?? 'Key Features';
@@ -2798,23 +2798,21 @@
 
                                                 <!-- Overall Rating -->
                                                 <div class="rating-filter-header" style="margin-bottom: 20px;">
-                                                    <h4 style="font-size: 16px !important; font-weight: 500 !important; color: #333 !important; margin-bottom: 8px !important;">Overall rating</h4>
-                                                    <div class="overall-stars" style="display: flex; align-items: center; gap: 12px;">
-                                                        <span style="font-size: 38px; font-weight: 500; color: #000; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
-                                                        <div style="display: flex; flex-direction: column; gap: 4px;">
-                                                            <div style="display: flex; align-items: center; gap: 2px;">
-                                                                @for ($j = 1; $j <= 5; $j++)
-                                                                    @if ($j <= floor($averageRating))
-                                                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
-                                                                    @elseif ($j - 0.5 <= $averageRating)
-                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
-                                                                    @else
-                                                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
-                                                                    @endif
-                                                                @endfor
-                                                            </div>
-                                                            <p style="font-size: 13px; margin: 0; color: #777; font-weight: 500;">Based on {{ $ratingCount }} reviews</p>
+                                                    <h4 style="font-size: 18px; font-weight: 700; color: #002655; margin-bottom: 4px;">Overall Rating</h4>
+                                                    <p style="font-size: 13px; margin: 0 0 15px 0; color: #777; font-weight: 500;">Based on {{ $ratingCount }} reviews</p>
+                                                    <div class="overall-stars" style="display: flex; align-items: center; gap: 10px;">
+                                                        <div style="display: flex; align-items: center; gap: 2px;">
+                                                            @for ($j = 1; $j <= 5; $j++)
+                                                                @if ($j <= floor($averageRating))
+                                                                    <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
+                                                                @elseif ($j - 0.5 <= $averageRating)
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
+                                                                @else
+                                                                    <i class="far fa-star text-warning" style="font-size: 20px;"></i>
+                                                                @endif
+                                                            @endfor
                                                         </div>
+                                                        <span style="font-size: 28px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
                                                     </div>
                                                 </div>
 
