@@ -363,11 +363,9 @@ h6 {
 }
 
 .user_content .acc-box:hover {
-  background-image: radial-gradient(
-    rgba(255, 255, 255, 1),
-    transparent 20%,
-    rgba(0, 0, 0, 0.05)
-  );
+  background-image: radial-gradient(rgba(255, 255, 255, 1),
+      transparent 20%,
+      rgba(0, 0, 0, 0.05));
 }
 
 .user_content .acc-box .acc-img {
@@ -390,7 +388,7 @@ h6 {
 
 /* footer css */
 footer.ds_ftr {
-  padding: 12px 0px;
+  padding: 6px 0px;
   position: relative;
   background-color: #06498b !important;
 }
@@ -454,7 +452,7 @@ footer.ds_ftr {
   background-color: #01255508;
 }
 
-.custom-select.active + .dropdown-options {
+.custom-select.active+.dropdown-options {
   display: block;
 }
 
@@ -485,7 +483,7 @@ footer.ds_ftr {
   align-items: center;
   padding: 15px;
   border-radius: 20px 20px 0 0;
-  border-bottom: 1.5px solid #656f79;
+  border-bottom: 0.2px solid #656f7933;
 }
 
 .dropdown-menu .user_detail .user_img {
@@ -1175,7 +1173,7 @@ select {
   cursor: pointer;
 }
 
-select > option {
+select>option {
   font-size: 15px;
   background: #fafafa;
 }
@@ -1568,9 +1566,11 @@ select > option {
   color: #06498b;
   font-weight: 500;
 }
+
 .deactivate-accnt a:hover {
   color: #fd5602;
 }
+
 .click-deacti:hover {
   color: #fd5602;
 }
@@ -1627,8 +1627,8 @@ select > option {
 
 .all-unread-hd {
   padding: 10px 20px;
-  border-top: 1.5px solid #656f79;
-  border-bottom: 1.5px solid #656f79;
+  border-top: 0.2px solid #656f7933;
+  border-bottom: 0.2px solid #656f7933;
   justify-content: space-between;
 }
 
@@ -1655,7 +1655,7 @@ select > option {
 
 .notify-cntnt ul li {
   padding: 16px 0;
-  border-top: 1px solid #656f79;
+  border-top: 0.2px solid #656f7933;
 }
 
 /* custom scroll bar */
@@ -2292,19 +2292,19 @@ ul.list-unstyled.m-0 li:hover {
   color: #666 !important;
 }
 
-.notify-cntnt ul li a > div img {
+.notify-cntnt ul li a>div img {
   filter: unset !important;
   max-width: unset;
 }
 
-.user_dashbord > div > div:first-child {
+.user_dashbord>div>div:first-child {
   max-width: 19%;
   flex: 0 0 19%;
   background-color: #06498b;
   min-height: 100vh;
 }
 
-.user_dashbord > div > .col-lg-9 {
+.user_dashbord>div>.col-lg-9 {
   max-width: 81%;
   flex: 0 0 81%;
 }
@@ -2385,7 +2385,7 @@ ul.list-unstyled.m-0 li:hover {
   color: #ff9d28;
 }
 
-.img_p_info p > i {
+.img_p_info p>i {
   color: #000;
   font-size: 11px;
 }
@@ -2396,7 +2396,7 @@ ul.list-unstyled.m-0 li:hover {
   gap: 30px;
 }
 
-.re_child_1 .img_p_info > span {
+.re_child_1 .img_p_info>span {
   font-size: 16px;
   line-height: 100%;
   color: #000;
@@ -2533,12 +2533,7 @@ ul.list-unstyled.m-0 li:hover {
   background-color: #e9ecef !important;
 }
 
-.reward-main-inner
-  .rewrd-innr-btm
-  form
-  .form-wrp
-  .input-box.active
-  .input-label {
+.reward-main-inner .rewrd-innr-btm form .form-wrp .input-box.active .input-label {
   top: -11px;
 }
 
@@ -2632,9 +2627,11 @@ header.main_dhdr {
 .cart_dv.review_dv .message-thread .message-box {
   margin-bottom: 20px;
 }
+
 .cart_dv.review_dv .reply-box {
   margin-top: 0 !important;
 }
+
 .cart_dv.review_dv .text-end .btn.btn-primary {
   color: white;
   background-color: #003f7d;
@@ -2644,40 +2641,53 @@ header.main_dhdr {
   padding: 14px 40px;
   border-radius: 100px;
 }
+
 .cart_dv.review_dv .text-end .btn.btn-primary:hover {
   border: 1px solid #003f7d;
   background-color: #fff;
   color: #003f7d;
 }
+
 .cart_dv.review_dv .message-thread .message-box strong {
   font-weight: 500;
   text-transform: capitalize;
 }
+
 .swal2-styled.swal2-confirm {
   background-color: #000 !important;
   border-radius: 50px;
   padding: 11px 26px;
 }
+
 .swal2-styled.swal2-cancel {
   background-color: #f9633b !important;
   border-radius: 50px;
   padding: 11px 46px;
 }
-.swal2-title{
+
+.swal2-title {
   color: #000 !important;
 }
+
 /* 7oct2025 end  */
 
 /* 11-jun-26  */
 .usr_profile img {
-  max-width:50px
-}
-.notf .notfictn_lnk span{
-  font-size:12px;
-  font-weight: 700;
-}
-.reward-main-inner {
-border:1px solid #dadce0;
-border-radius:5px;
+  max-width: 50px
 }
 
+.notf .notfictn_lnk span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reward-main-inner {
+  border: 1px solid #dadce0;
+  border-radius: 5px;
+}
+
+
+/* 13-july-26  */
+.user_dashbord .form-wrp select {
+  appearance: auto !important;
+}

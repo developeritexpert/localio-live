@@ -113,6 +113,7 @@
                         <thead>
                             <tr class="nk-tb-item nk-tb-head">
                                 <th class="nk-tb-col"><span class="sub-text">Name</span></th>
+                                <th class="nk-tb-col"><span class="sub-text">Type</span></th>
                                 <th class="nk-tb-col tb-tnx-action">
                                     <span>Action</span>
                                 </th>
@@ -127,6 +128,17 @@
                                                 <span class="tb-lead">{{ $category->name ?? '' }}</span>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        @if($category->category->parent_id === null)
+                                            <span class="badge badge-dim bg-primary">Parent Category</span>
+                                        @else
+                                            @php
+                                                $parentTranslation = $category->category->parent ? ($category->category->parent->translations()->where('lang_id', $category->lang_id)->first() 
+                                                    ?? $category->category->parent->translations()->first()) : null;
+                                            @endphp
+                                            <span class="badge badge-dim bg-outline-info">Sub-category (of {{ $parentTranslation->name ?? 'Unknown' }})</span>
+                                        @endif
                                     </td>
                                     <td class="nk-tb-col nk-tb-col-tools">
                                         <ul class="nk-tb-actions gx-1">

@@ -428,8 +428,8 @@
 
             .greenfonticon,
             .redboxicon{
-                width:26px;
-                height:26px;
+                /* width:26px;
+                height:26px; */
                 border-radius:50%;
                 display:flex;
                 align-items:center;
@@ -438,7 +438,7 @@
             }
 
             .greenfonticon{
-                background:#eaf9f0;
+                /* background:#eaf9f0; */
                 color:#28a745;
             }
 
@@ -570,8 +570,8 @@
 }
 
 .overall-rating-number{
-    font-size:34px;
-    font-weight:700;
+    font-size:30px;
+    font-weight:600;
     color:#222;
     line-height:1;
 }
@@ -644,9 +644,9 @@
 }
 
 .starting-price-title{
-    font-size:15px;
+    font-size:20px;
     font-weight:600;
-    color:#6c757d;
+    color:#002347;
     margin-bottom:18px;
 }
 
@@ -1686,7 +1686,7 @@
                                     {{-- Two Column Layout --}}
                                     <div class="tikcrsotr">
                                         {{-- Pros --}}
-                                        <div class="pros_ot">
+                                        <div class="pros_ot border shadow-sm">
                                             <h3>Things I like</h3>
                                             @foreach ($uniquePros as $pro)
                                                 <div class="pr_pros">
@@ -1703,7 +1703,7 @@
                                         </div>
 
                                         {{-- Cons --}}
-                                        <div class="cons_ot">
+                                        <div class="cons_ot border shadow-sm">
                                             <h4>Things that could be improved</h4>
 
                                             @foreach ($uniqueCons as $con)

@@ -4,7 +4,7 @@
 @section('meta_description', isset($homeContents['meta_home_description']) ? $homeContents['meta_home_description'] :
     'Default Description')
 @section('content')
-    <section class="banner_sec dark" style="background-color: #003F7D;">
+    <section class="banner_sec dark home_bnr_sec" style="background-color: #003F7D;">
         <div class="bubble-wrp">
             <?php
             $headerBackgroundImage = $homeContantImages->get('header_background_img');
@@ -129,6 +129,9 @@
                                                             </div>
                                                             <div class="col-lg-6 col-md-6">
                                                                 <div class="accor-txt-contnt">
+                                                                    @if(!empty($category->translations->title))
+                                                                        <h3 class="category-title mb-3" style="font-size: 24px; font-weight: 700; color: #003f7d;">{{ $category->translations->title }}</h3>
+                                                                    @endif
                                                                     {!! $category->translations->description !!}
                                                                     <div class="accor-btn">
                                                                         <a  onclick="changeCategory('{{ $category->translations->slug ?? '' }}')"
@@ -180,9 +183,11 @@
 
                                                                                     @if ($isBestValue)
                                                                                         <div class="best-value">
-                                                                                            <p><img src="{{ asset('front/img/star.png') }}"
-                                                                                                    alt="">BEST
-                                                                                                VALUE</p>
+                                                                                            <p>
+                                                                                                <img src="{{ asset('front/img/star.png') }}"
+                                                                                                    alt="">
+                                                                                                   <span> BEST
+                                                                                                VALUE</span></p>
                                                                                         </div>
                                                                                     @endif
 

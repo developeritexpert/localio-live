@@ -30,7 +30,11 @@ class ProductRequest extends FormRequest
             'product_countries.*' => 'exists:countries,id',
             'product_businesses' => 'required|array|min:1',
             'product_businesses.*' => 'exists:businesses,id',
-            'product_category' => 'required|exists:categories,id',
+            'product_category' => ['required', 'exists:categories,id', function($attribute, $value, $fail) {
+                if (\App\Models\Category::where('id', $value)->whereNull('parent_id')->exists()) {
+                    $fail('The selected category must be a sub-category.');
+                }
+            }],
             'product_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 

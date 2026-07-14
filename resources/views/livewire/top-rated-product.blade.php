@@ -1,5 +1,5 @@
 <div>
-    <section class="banner_sec help-cntr-bnr top-auto-bnr dark " style="background-color: #003F7D;">
+    <section class="banner_sec help-cntr-bnr top-auto-bnr top_rated_bnr-sec dark " style="background-color: #003F7D;">
         <div class="bubble-wrp" data-aos="fade-up" data-aos-duration="1000">
             {{-- <img src="img/small-bnnr-bg.png" alt=""> --}}
         </div>

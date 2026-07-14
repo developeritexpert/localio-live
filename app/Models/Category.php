@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'image','category_icon', 'status','total_products','total_reviews'];
+    protected $fillable = [ 'parent_id', 'image','category_icon', 'status','total_products','total_reviews'];
 
     protected $lang_code, $lang_id;
 
@@ -18,6 +18,27 @@ class Category extends Model
         $this->lang_id = session()->get('lang_id');
         $this->lang_code = session()->get('lang_code');
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function subCategories()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function scopeOnlyParents($query)
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    public function scopeOnlySubcategories($query)
+    {
+        return $query->whereNotNull('parent_id');
+    }
+
     public function features()
     {
         return $this->hasMany(Feature::class);

@@ -66,23 +66,55 @@ class CategoriesController extends Controller
     public function add($id = null)
     {
         $locale = getCurrentLocale();
+        $lang_id = Language::where('lang_code', $locale)->value('id') ?? 1;
+        $categoryId = null;
+        $category = null;
+        $hasSubcategories = false;
+        $hasItems = false;
+        $category_image_url = null;
+        $category_icon_url = null;
+        $category_data = null;
+
         if ($id != null) {
             $category_data = CategoryTranslation::where('id', $id)->first()->toArray();
-            $category = Category::where('id', $category_data['category_id'])->first(['image', 'category_icon']);
-            $category_image = Media::where('id', $category->image)->first();
-            $category_icon = Media::where('id', $category->category_icon)->first();
-            $category_image_url = $category_image ? asset($category_image->dir_path . '/' . $category_image->file_name) : null;
-            $category_icon_url = $category_icon ? asset($category_icon->dir_path . '/' . $category_icon->file_name) : null;
-            return view('Admin.categories.add', compact(['category_data', 'category_image_url','category_icon_url']));
-        } else {
-            return view('Admin.categories.add');
+            $categoryId = $category_data['category_id'];
+            $category = Category::where('id', $categoryId)->first();
+            if ($category) {
+                $hasSubcategories = $category->subCategories()->exists();
+                $hasItems = $category->businesses()->exists() || $category->products()->exists();
+                $category_image = Media::where('id', $category->image)->first();
+                $category_icon = Media::where('id', $category->category_icon)->first();
+                $category_image_url = $category_image ? asset($category_image->dir_path . '/' . $category_image->file_name) : null;
+                $category_icon_url = $category_icon ? asset($category_icon->dir_path . '/' . $category_icon->file_name) : null;
+            }
         }
+
+        $parentCategories = Category::onlyParents()
+            ->when($categoryId, function ($query) use ($categoryId) {
+                $query->where('id', '!=', $categoryId);
+            })
+            ->with(['translation' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            }])
+            ->get();
+
+        return view('Admin.categories.add', compact([
+            'category_data',
+            'category',
+            'category_image_url',
+            'category_icon_url',
+            'parentCategories',
+            'hasSubcategories',
+            'hasItems'
+        ]));
     }
+
     public function add_process(Request $request)
     {
         // dd($request->all());
         $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
         $isNewCategory = !$request->category_id;
+        
         $rules = [
             'name' => [
                 'required',
@@ -94,15 +126,77 @@ class CategoriesController extends Controller
                     })
                     ->ignore($request->category_id),
             ],
-
+            'title' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
             'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
             'category_icon' => $isNewCategory
             ? 'required|mimes:svg,png,jpg,jpeg,webp|max:2048'
             : 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
-
+            'is_parent' => 'nullable',
+            'parent_id' => 'nullable|required_without:is_parent|exists:categories,id',
         ];
-        $validate = $request->validate($rules);
+
+        $validator = Validator::make($request->all(), $rules);
+
+        $validator->after(function ($validator) use ($request) {
+            $is_parent = $request->boolean('is_parent');
+            $parent_id = $request->parent_id;
+            $category_id = null;
+
+            if ($request->category_id) {
+                $categoryTranslation = CategoryTranslation::find($request->category_id);
+                if ($categoryTranslation) {
+                    $category_id = $categoryTranslation->category_id;
+                }
+            }
+
+            if (!$is_parent) {
+                if (empty($parent_id)) {
+                    $validator->errors()->add('parent_id', 'The parent category field is required when not a parent category.');
+                    return;
+                }
+
+                if ($category_id && $parent_id == $category_id) {
+                    $validator->errors()->add('parent_id', 'A category cannot be its own parent.');
+                    return;
+                }
+
+                $parentCategory = Category::find($parent_id);
+                if ($parentCategory && $parentCategory->parent_id !== null) {
+                    $validator->errors()->add('parent_id', 'The selected parent category must not be a sub-category itself.');
+                }
+
+                if ($category_id) {
+                    $category = Category::find($category_id);
+                    if ($category) {
+                        if ($category->subCategories()->where('id', $parent_id)->exists()) {
+                            $validator->errors()->add('parent_id', 'Circular reference detected: The selected parent category is a sub-category of this category.');
+                        }
+                        if ($category->subCategories()->exists()) {
+                            $validator->errors()->add('is_parent', 'This category cannot be converted to a sub-category because it contains active sub-categories.');
+                        }
+                    }
+                }
+            } else {
+                if ($category_id) {
+                    $category = Category::find($category_id);
+                    if ($category && $category->parent_id !== null) {
+                        $hasBusinesses = $category->businesses()->exists();
+                        $hasProducts = $category->products()->exists();
+                        if ($hasBusinesses || $hasProducts) {
+                            $validator->errors()->add('is_parent', 'This category cannot be converted to a parent category because it contains active businesses or products.');
+                        }
+                    }
+                }
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validate = $validator->validated();
+
         $category_id = null;
         if ($request->category_id) {
             $categoryTranslation = CategoryTranslation::where('id', $request->category_id)->first();
@@ -114,6 +208,9 @@ class CategoriesController extends Controller
         if (!$category) {
             $category = new Category();
         }
+
+        $category->parent_id = $request->boolean('is_parent') ? null : $request->parent_id;
+
         if ($request->hasFile('image')) {
             $media = $this->mediaservice->uploadMedia($request->file('image'), 'category/images');
             $category->image = $media->id;
@@ -139,9 +236,10 @@ class CategoriesController extends Controller
                     'category_id'  => $category->id,
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
+                    'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
                     'slug'         => $slug,
-                    'is_important' => $request->has('is_important') ? 1 : 0,
+                    'is_important' => $request->boolean('is_parent') ? 0 : ($request->has('is_important') ? 1 : 0),
                 ]
             );
             return redirect()->route('categories')->with('success', 'Category saved successfully');
@@ -154,6 +252,11 @@ class CategoriesController extends Controller
         try {
             $categoryTranslation = CategoryTranslation::findOrFail($id);
             $category = Category::findOrFail($categoryTranslation->category_id);
+
+            if ($category->parent_id === null && $category->subCategories()->exists()) {
+                return redirect()->back()->with('error', 'Cannot delete a parent category that contains active sub-categories. Please delete or re-assign sub-categories first.');
+            }
+
             if ($category->image) {
                 $imagePath = public_path('CategoryImages/' . $category->image);
                 if (File::exists($imagePath)) {

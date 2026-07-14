@@ -29,6 +29,18 @@
                             @enderror
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="title">Title (Most Popular Section)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="title" name="title"
+                                        value="{{ isset($category_data) ? ($category_data['title'] ?? '') : old('title') }}" />
+                                </div>
+                                @error('title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -42,6 +54,60 @@
                             </div>
                         </div>
                         <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label d-block" for="is_parent">
+                                    Category Type
+                                </label>
+                                <div class="form-check form-switch">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="is_parent"
+                                        name="is_parent"
+                                        value="1"
+                                        {{ (!isset($category) || $category->parent_id === null) ? 'checked' : '' }}
+                                        {{ $hasSubcategories ? 'disabled' : '' }}
+                                        {{ $hasItems ? 'disabled' : '' }}
+                                    >
+                                    <label class="form-check-label" for="is_parent">
+                                        This is a parent category
+                                    </label>
+                                </div>
+                                @if($hasSubcategories)
+                                    <small class="text-warning d-block mt-1">Cannot convert to subcategory: this category contains active subcategories.</small>
+                                    <input type="hidden" name="is_parent" value="1" />
+                                @endif
+                                @if($hasItems)
+                                    <small class="text-warning d-block mt-1">Cannot convert to parent category: this category contains active businesses or products.</small>
+                                    <input type="hidden" name="is_parent" value="0" />
+                                @endif
+                                @error('is_parent')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" id="parent_category_group" style="display: {{ (!isset($category) || $category->parent_id === null) ? 'none' : 'block' }}">
+                            <div class="form-group">
+                                <label class="form-label" for="parent_id">Select Parent Category</label>
+                                <div class="form-control-wrap">
+                                    <select class="form-control" name="parent_id" id="parent_id">
+                                        <option value="">-- Select Parent --</option>
+                                        @foreach($parentCategories as $parent)
+                                            <option value="{{ $parent->id }}" 
+                                                {{ (isset($category) && $category->parent_id == $parent->id) ? 'selected' : '' }}>
+                                                {{ $parent->translation->name ?? 'Unnamed Parent' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('parent_id')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" id="important_category_group" style="display: {{ (!isset($category) || $category->parent_id === null) ? 'none' : 'block' }}">
                             <div class="form-group">
                                 <label class="form-label d-block" for="is_important">
                                     Important Category
@@ -108,4 +174,33 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const isParentCheckbox = document.getElementById('is_parent');
+            const parentCategoryGroup = document.getElementById('parent_category_group');
+            const parentCategorySelect = document.getElementById('parent_id');
+            const importantCategoryGroup = document.getElementById('important_category_group');
+            const importantCategoryCheckbox = document.getElementById('is_important');
+
+            function toggleParentDropdown() {
+                if (isParentCheckbox && isParentCheckbox.checked) {
+                    parentCategoryGroup.style.display = 'none';
+                    importantCategoryGroup.style.display = 'none';
+                    if (parentCategorySelect) {
+                        parentCategorySelect.value = '';
+                    }
+                    if (importantCategoryCheckbox) {
+                        importantCategoryCheckbox.checked = false;
+                    }
+                } else {
+                    parentCategoryGroup.style.display = 'block';
+                    importantCategoryGroup.style.display = 'block';
+                }
+            }
+
+            if (isParentCheckbox) {
+                isParentCheckbox.addEventListener('change', toggleParentDropdown);
+            }
+        });
+    </script>
 @endsection
