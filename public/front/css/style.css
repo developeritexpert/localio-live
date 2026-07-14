@@ -8461,7 +8461,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   content: "";
   position: absolute;
   left: 0;
-  bottom: -2px;
+  bottom: 0;
   width: 0;
   height: 2.5px;
   background: #06498b;
@@ -8474,7 +8474,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .asn_main_sec.asn_main_sec_2 .fixed-div {
-  height: 165px;
+  height: unset;
 }
 
 /* 8oct2025 end */
@@ -8943,10 +8943,10 @@ section.revie_img_sec {
 
 /* 13-july-26 */
 .home_bnr_sec .banner_image img {
-    max-width: 460px;
-    width: 100%;
-    max-height: 400px;
-    object-fit: contain;
+  max-width: 460px;
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
 }
 
 .most-populr-sec .accor-txt-contnt a.cta:hover {
@@ -8956,7 +8956,7 @@ section.revie_img_sec {
 .most-populr-sec .top-rate-innr .best-value p {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .most-populr-sec .top-rate-innr .best-value p img {
@@ -9007,10 +9007,26 @@ section.revie_img_sec {
   max-width: 460px;
   width: 100%;
 }
-.top-auto-bnr{
+
+.top-auto-bnr {
   padding-top: 150px;
 }
 
+/* 14-july-26  */
+.revie_img_sec .review-header small {
+  font-size: 12px;
+}
+
+.top-automotive-sec.top_rate_pg #filterAccordion .filter-section {
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 10px;
+  padding-bottom: 15px
+}
+
+.top_rate_pg .pric_rnge {
+  border-top: 1px solid #dee2e6;
+  margin-top: 10px;
+  padding-top: 15px
 @media (max-width: 575px) {
   .top-pro-box {
     flex-direction: column !important;
