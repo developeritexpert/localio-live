@@ -1709,7 +1709,7 @@ global classes */
 
 .asn_dv_contnt .frst_rw {
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   /* margin-bottom: 10px; */
 }
 
@@ -8049,6 +8049,7 @@ input:checked~.toggle-dot {
   width: 100%;
   display: flex;
   justify-content: end;
+  margin-top: 15px;
 }
 
 .asn_main_sec .asn_dv .ans_ryt .site_vsit {

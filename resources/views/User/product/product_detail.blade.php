@@ -285,7 +285,7 @@
              .sidebar-review-card .review-header {
                  display: flex;
                  justify-content: space-between;
-                 align-items: flex-start;
+                 align-items: center;
                  gap: 12px;
              }
              .sidebar-review-card .review-user {
@@ -789,42 +789,6 @@
                                                 </a>
                                             </div>
 
-                                            {{-- Replace class add here --}}
-                                            @php
-                                            $ratingCount = $business->reviews->where('status', 'active')->count();
-                                        @endphp
-                                        <div class="right_bottom col-lg-6 hd_str new-review-side "
-                                            @auth
-
-                                            onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-
-                                            @else
-                                            onclick="window.location.href = '/login'" @endauth>
-                                            {{-- Change Review  --}}
-                                            <div class="inn_ul">
-                                                <div class="rating-stars">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= floor($averageRating))
-                                                            <i class="fas fa-star text-warning"></i>
-                                                        @elseif ($i - 0.5 <= $averageRating)
-                                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                                        @else
-                                                            <i class="far fa-star text-warning"></i>
-                                                        @endif
-                                                    @endfor
-                                                </div>
-                                            </div>
-                                            <div class="rate_box">
-                                                {{ number_format($averageRating, 1) }} |
-                                                @if ($ratingCount === 0)
-                                                    0 Ratings
-                                                @elseif ($ratingCount === 1)
-                                                    1 Rating
-                                                @else
-                                                    {{ $ratingCount }} Reviews
-                                                @endif
-                                            </div>
-                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1190,12 +1154,12 @@
                                                 {{-- Header --}}
                                                 <div class="review-header-box">
                                                     <div>
-                                                        <h5>Overall Rating</h5>
-                                                        <small>Based on {{ $ratingCount }} reviews</small>
+                                                        <h5>Overall rating</h5>
+                                                        <small>Based on {{ $totalReviews }} reviews</small>
                                                     </div>
 
                                                     <a href="#section14" class="view-review-link">
-                                                        See all reviews
+                                                        View all reviews
                                                     </a>
                                                 </div>
 
@@ -1221,7 +1185,7 @@
                                                 </div>
 
                                                 <h2 class="breakdown-title">
-                                                    Localio Review Breakdown
+                                                    Review breakdown
                                                 </h2>
 
                                                 {{-- Breakdown --}}
@@ -1294,7 +1258,7 @@
     <div class="feture_box str_prc_box">
 
         <h6 class="starting-price-title">
-            Starting Price
+            Starting price
         </h6>
 
         @if ($startingPrice)
@@ -1311,8 +1275,16 @@
             Flat Rate, Per {{ ucfirst($timeUnit) }}
         </p>
 
-        <a href="#section3" class="starting-price-link">
-            View Pricing
+        <a href="{{ $business->getTrackedUrl() }}"
+            data-track="{{ json_encode([
+                'type' => 'click',
+                'business_id' => $business->id,
+                'action' => 'view_pricing',
+                'label' => 'View pricing',
+            ]) }}"
+            target="_blank"
+            class="starting-price-link">
+            View pricing
         </a>
 
     </div>
@@ -1407,85 +1379,55 @@
                                             }
                                         }
                                     @endphp
-
-                                        <div class="main_feature_lg">
-                                            <div class="feture_box review-breakdown-box pros-cons-box">
-
-                                                <h2 class="size22 big-bld">Pros & Cons</h2>
-
-                                                <div class="review-breakdown-list">
-
-                                                    {{-- Pros --}}
-                                                    @foreach($pros as $pro)
-                                                        <div class="review-item compact-item">
-                                                            <div class="greenfonticon">
-                                                                <i class="fa-solid fa-plus"></i>
-                                                            </div>
-
-                                                            <p>{{ \Illuminate\Support\Str::limit($pro, 70) }}</p>
-                                                        </div>
-                                                    @endforeach
-
-                                                    {{-- Cons --}}
-                                                    @foreach($cons as $con)
-                                                        <div class="review-item compact-item">
-                                                            <div class="redboxicon">
-                                                                <i class="fa-solid fa-minus"></i>
-                                                            </div>
-
-                                                            <p>{{ \Illuminate\Support\Str::limit($con, 70) }}</p>
-                                                        </div>
-                                                    @endforeach
-
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <div class="main_feature_lg">
+                                                <div class="main_feature_lg">
                                             <div class="feture_box review-breakdown-box">
 
-                                                <h2 class="size22 big-bld">What Users Like</h2>
+                                                 <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
+                                                     <h2 class="size22 big-bld m-0">Users reviews</h2>
+                                                     <a href="#section14" class="view-review-link">
+                                                         View all reviews
+                                                     </a>
+                                                 </div>
 
-                                                @foreach($topReviews->take(2) as $review)
-                                                    <div class="sidebar-review-card">
+                                                 @foreach($topReviews->take(2) as $review)
+                                                     <div class="sidebar-review-card">
 
-                                                        <div class="review-header">
+                                                         <div class="review-header">
 
-                                                            <div class="review-user">
+                                                             <div class="review-user">
 
-                                                                @if($review->user && $review->user->profile_image)
-                                                                    <img src="{{ asset($review->user->profile_image) }}"
-                                                                        class="rounded-circle"
-                                                                        width="45"
-                                                                        height="45">
-                                                                @else
-                                                                    <img src="{{ asset($default_image) }}"
-                                                                        class="rounded-circle"
-                                                                        width="45"
-                                                                        height="45">
-                                                                @endif
+                                                                 @if($review->user && $review->user->profile_image)
+                                                                     <img src="{{ asset($review->user->profile_image) }}"
+                                                                         class="rounded-circle"
+                                                                         width="45"
+                                                                         height="45">
+                                                                 @else
+                                                                     <img src="{{ asset($default_image) }}"
+                                                                         class="rounded-circle"
+                                                                         width="45"
+                                                                         height="45">
+                                                                 @endif
 
-                                                                <div>
-                                                                    <h6>{{ $review->user->first_name ?? 'Anonymous' }}</h6>
+                                                                 <div>
+                                                                     <h6>{{ $review->user->first_name ?? 'Anonymous' }}</h6>
+                                                                     <small class="text-muted" style="font-size: 12px;">{{ $review->created_at->diffForHumans() }}</small>
+                                                                 </div>
 
-                                                                    <div class="rating-stars">
-                                                                        @for($i=1;$i<=5;$i++)
-                                                                            @if($i<=floor($review->rating))
-                                                                                <i class="fas fa-star text-warning"></i>
-                                                                            @elseif($i-0.5<=$review->rating)
-                                                                                <i class="fas fa-star-half-alt text-warning"></i>
-                                                                            @else
-                                                                                <i class="far fa-star text-warning"></i>
-                                                                            @endif
-                                                                        @endfor
-                                                                    </div>
-                                                                </div>
+                                                             </div>
 
-                                                            </div>
+                                                             <div class="rating-stars">
+                                                                 @for($i=1;$i<=5;$i++)
+                                                                     @if($i<=floor($review->rating))
+                                                                         <i class="fas fa-star text-warning"></i>
+                                                                     @elseif($i-0.5<=$review->rating)
+                                                                         <i class="fas fa-star-half-alt text-warning"></i>
+                                                                     @else
+                                                                         <i class="far fa-star text-warning"></i>
+                                                                     @endif
+                                                                 @endfor
+                                                             </div>
 
-                                                            <small>{{ $review->created_at->diffForHumans() }}</small>
-
-                                                        </div>
+                                                         </div>
 
                                                         <h5>
                                                             {{ $review->translations->first()->title ?? 'Review' }}
@@ -1535,7 +1477,7 @@
                             {{-- End preview reviews section  --}}
 
                             <!-- Product Pricing Section -->
-                            <section class="product_pricing_sec p_50 pb-0" id="section3">
+                            <!-- <section class="product_pricing_sec p_50 pb-0" id="section3">
 
                                 <div class="section_title text-center mb-4" data-aos="fade-up" data-aos-duration="1000">
                                     <h2> {{ $business->translations->first()->name }} Pricing Plans </h2>
@@ -1669,7 +1611,7 @@
                                         pricing.</p>
                                 </div>
 
-                            </section>
+                            </section> -->
 
                             {{-- pros and Cons --}}
                             @php
@@ -1693,7 +1635,7 @@
                                 $uniqueCons = $consList->unique()->take(5);
                             @endphp
 
-                            <section class="pros-cons p_50 light" id="section4">
+                            <!-- <section class="pros-cons p_50 light" id="section4">
                                 <div>
                                     <div style="margin-bottom: 30px;">
                                         <h2>{{ $business->translations->first()->name ?? 'Business' }} pros and cons</h2>
@@ -1743,7 +1685,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </section>
+                            </section> -->
 
                             <!-- section popular-altrnative -->
                             
@@ -1752,7 +1694,6 @@
                             {{-- <section class="business-features light" id="features">
                                 <div class="container" data-aos="fade-up" data-aos-duration="1000">
                                     <h2 class="text-feature">Features</h2>
-
                                     @if($business->features && $business->features->isNotEmpty())
                                      <div class="feature-section">
                                         <div class="row">
@@ -1799,7 +1740,6 @@
                             <section class="business-features light" id="features">
                                 <div class="container" data-aos="fade-up" data-aos-duration="1000">
                                     <h2 class="text-feature">Features</h2>
-
                                     @if($business->features && $business->features->isNotEmpty())
                                         <div class="feature-section">
                                             <div class="row">
