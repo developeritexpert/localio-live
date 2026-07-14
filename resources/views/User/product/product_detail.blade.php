@@ -2820,7 +2820,6 @@
                                                 <!-- Filter by Rating Title Row -->
                                                 <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
                                                     <span style="font-size: 16px; font-weight: 700; color: #1e3050;">Filter by rating</span>
-                                                    <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span>
                                                 </div>
 
                                                 <!-- Star Breakdown Checkboxes -->
