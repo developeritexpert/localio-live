@@ -2780,7 +2780,8 @@
                                                 
                                                 <!-- Localio Reviews Header -->
                                                 <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 20px; color: #1e3050; line-height: 1.3;">
-                                                    Localio {{ $business->translations->first()->name }} Reviews
+                                                    <!-- Localio {{ $business->translations->first()->name }} Reviews -->
+                                                    User reviews
                                                 </h2>
 
                                                 <!-- Sort by Dropdown -->
