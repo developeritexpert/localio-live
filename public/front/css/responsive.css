@@ -23,7 +23,8 @@
   }
 
   .product_sec .inner_banner_sec {
-    padding-top:125px;
+    padding-top: 125px;
+    padding-bottom: 10px;
   }
 
   /* .banner_text_col .search-box input {

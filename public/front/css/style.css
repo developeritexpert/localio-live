@@ -1306,8 +1306,10 @@ textarea:focus-visible {
 
 .best-value-inline-container {
   display: flex !important;
-  margin-top: 8px !important;
+  justify-content: flex-end !important;
+  margin-top: 0 !important;
   margin-bottom: 4px !important;
+  width: 100% !important;
 }
 
 .best-value-inline {

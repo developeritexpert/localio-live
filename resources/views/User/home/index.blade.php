@@ -187,6 +187,14 @@
                                                                                          </div>
                                                                                           </a>
                                                                                          <div class="sl_h">
+                                                                                             @if ($isBestValue)
+                                                                                                 <div class="best-value-inline-container">
+                                                                                                     <div class="best-value-inline">
+                                                                                                         <i class="fa-regular fa-thumbs-up"></i>
+                                                                                                         <span>Best Value</span>
+                                                                                                     </div>
+                                                                                                 </div>
+                                                                                             @endif
                                                                                              <div class="inn_h">
                                                                                                  <div class="sl_main">
                                                                                                      <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
@@ -226,14 +234,6 @@
                                                                                                      Reviews
                                                                                                  </div>
                                                                                              </div>
-                                                                                             @if ($isBestValue)
-                                                                                                 <div class="best-value-inline-container">
-                                                                                                     <div class="best-value-inline">
-                                                                                                         <i class="fa-regular fa-thumbs-up"></i>
-                                                                                                         <span>Best Value</span>
-                                                                                                     </div>
-                                                                                                 </div>
-                                                                                             @endif
                                                                                          </div>
                                                                                      </div>
  
