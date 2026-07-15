@@ -23,7 +23,8 @@
   }
 
   .product_sec .inner_banner_sec {
-    padding-top:125px;
+    padding-top: 125px;
+    padding-bottom: 10px;
   }
 
   /* .banner_text_col .search-box input {
@@ -12925,5 +12926,44 @@ textarea#message {
 
   .contact_sec .contact_content {
     border-radius: 15px;
+  }
+}
+
+/* Custom Category Accordion Cards Buttons Responsiveness */
+.accor-bdy-btm .top-pro-box {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.accor-bdy-btm .top-pro-box .top-pro-btn {
+  flex: 1 1 0% !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.accor-bdy-btm .top-pro-box .top-pro-btn .cta {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 10px 8px !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+}
+
+/* On mobile (stack and take full width) */
+@media (max-width: 767px) {
+  .accor-bdy-btm .top-pro-box {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .accor-bdy-btm .top-pro-box .top-pro-btn {
+    flex: 0 0 100% !important;
+    width: 100% !important;
   }
 }

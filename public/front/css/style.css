@@ -1306,8 +1306,10 @@ textarea:focus-visible {
 
 .best-value-inline-container {
   display: flex !important;
-  margin-top: 8px !important;
+  justify-content: flex-end !important;
+  margin-top: 0 !important;
   margin-bottom: 4px !important;
+  width: 100% !important;
 }
 
 .best-value-inline {
@@ -4975,7 +4977,8 @@ section.product_comp_sec {
 }
 
 .inn_sl_hed.mst_hdn .sl_h {
-  flex: 0 0 80%;
+  flex: 1 1 0%;
+  min-width: 0;
 }
 
 .inn_sl_hed.mst_hdn .inn_h {

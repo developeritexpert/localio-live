@@ -1038,18 +1038,26 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                        @endif
+                                         @endif
                                          {{-- End Business Images  --}}
+
+                                         @if (!empty($business->translations->first()->after_image_description))
+                                             <div class="col-lg-12 mt-4 after-image-desc">
+                                                 <div class="is_text">
+                                                     {!! $business->translations->first()->after_image_description !!}
+                                                 </div>
+                                             </div>
+                                         @endif
 
                                     </div>
                                 </div>
                             </div>
                             <div class="thre_revi_rgt">
-                                <div class="lcl_text" style="margin-bottom: 20px;">
+                                <!-- <div class="lcl_text" style="margin-bottom: 20px;">
                                     <p class="sml_text">{{ static_text('localio_commissions_message') }}
                                         <a class="big-bld" type="button" onclick="openModal()">Learn more</a>
                                     </p>
-                                </div>
+                                </div> -->
                                 
                                 @php
                                     $productBadgeLabel = static_text('product_badge_label') ?? 'Key Features';
@@ -1108,7 +1116,11 @@
                                                 </div>
                                             </div>
                                         @endif
-
+                                <div class="lcl_text" style="margin-bottom: 0px; margin-top: 0px;">
+                                    <p class="sml_text">{{ static_text('localio_commissions_message') }}
+                                        <a class="big-bld" type="button" onclick="openModal()">Learn more</a>
+                                    </p>
+                                </div>
                                         {{-- Replace This Feature Section side of the Free trial box --}}
                                         {{-- <div class="main_feature_lg">
                                             <div class="feture_box">
