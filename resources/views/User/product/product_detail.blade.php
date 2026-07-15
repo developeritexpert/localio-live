@@ -880,7 +880,7 @@
                             // Fixed dynamic top content
                             $staticBottomSections = [
                                 // ['id' => 'section9', 'label' => "Software like"],
-                                ['id' => 'section15', 'label' => 'FAQ'],
+                                // ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section9', 'label' => 'Alternatives'],
                                 ['id' => 'section14', 'label' => "Reviews"],
                                 // ['id' => 'section16', 'label' => 'Inbox'],
@@ -908,7 +908,7 @@
                             $staticTopSections = [
                                 ['id' => 'section1', 'label' => 'Description'],
                                 // ['id' => 'section2', 'label' => "$name"],
-                                ['id' => 'section3', 'label' => "Pricing"],
+                                // ['id' => 'section3', 'label' => "Pricing"],
                                 // ['id' => 'section4', 'label' => "Pros & cons"],
                                 ['id' => 'features' , 'label' => 'Features'],
                                 // ['id' => 'softweretopic', 'label' => 'Software Topic'],

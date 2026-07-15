@@ -667,6 +667,7 @@
     scrollbar-width: thin;
     scrollbar-color: #f9633b #f1f1f1;
   }
+
   .custom-select.active+.dropdown-options::-webkit-scrollbar {
     width: 10px;
   }
@@ -747,7 +748,7 @@
   }
 
   .menu-toggler.active .bar1 {
-    transform: translateY(8px) rotate(45deg);
+    transform: translateY(5px) rotate(45deg);
   }
 
   .menu-toggler.active .bar2 {
@@ -755,7 +756,7 @@
   }
 
   .menu-toggler.active .bar3 {
-    transform: translateY(-12px) rotate(-45deg);
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .main_dhdr .form {
