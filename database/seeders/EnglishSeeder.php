@@ -22,7 +22,7 @@ DB::table('footer_contents')->where('lang_id', 1)->delete();
             'header_description' => 'Get free, unbiased product comparisons, read real customer reviews, and',
             'header_background_img' => 'front/img/bnnr-bg.png',
             'header_img' => 'front/img/banner_image.png',
-            'placeholder_text' => 'Enter a product, category, or what you’d like to compare...',
+            'placeholder_text' => 'Search for a company or category...',
             'trusted_brands_text' => 'Trusted Brands, Unbeatable Choices',
             'trusted_brands_img' => 'front/img/marq-img1.svg',
             'most_popular' => 'Most Popular',
@@ -35,7 +35,7 @@ DB::table('footer_contents')->where('lang_id', 1)->delete();
             'ai_section_right_img' => 'front/img/right-tool-vector2.png',
             'ai_title' => 'AI-Powered Smart Search',
             'ai_description' => 'Quickly discover and compare the best products with our AI-powered search, designed to match your specific needs and preferences.',
-            'ai_placeholder' => 'Enter a product, category, or what you’d like to compare...',
+            'ai_placeholder' => 'Search for a company or category...',
             'ai_send_img' => 'front/img/btn-img.svg',
             'top_product' => 'Top Rated Products',
             'all_top_product' => 'All Top-Rated Products',
@@ -63,7 +63,7 @@ DB::table('footer_contents')->where('lang_id', 1)->delete();
 
         $headercontent = [
             'header_logo' => 'front/img/logo.svg',
-            'header_search_placeholder' => 'Enter a product, category, or what you would like to compare...',
+            'header_search_placeholder' => 'Search for a company or category...',
             'login_btn_lable' => 'Log In',
             'sign_up_btn_lable' => 'Sign Up',
             'sign_out_btn_lable' => 'Sign Out',

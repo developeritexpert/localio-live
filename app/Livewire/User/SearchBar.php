@@ -12,7 +12,7 @@ class SearchBar extends Component
     public $results = [];
     public $placeholder;
 
-    public function mount($placeholder = 'Search for products or categories...')
+    public function mount($placeholder = 'Search for a company or category...')
     {
         $this->placeholder = $placeholder;
     }

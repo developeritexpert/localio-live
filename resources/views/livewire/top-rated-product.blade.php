@@ -42,7 +42,7 @@
         </div>
     </section>
 
-    <section class="top-automotive-sec light  ">
+    <section class="top-automotive-sec top_rate_pg light  ">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
@@ -91,7 +91,7 @@
                                     <link rel="stylesheet"
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
-                                    <div class="filter-section mb-4 pb-3 border-bottom">
+                                    <div class="filter-section mb-4 pb-3 border-bottom pric_rnge">
                                         <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
 
                                         <div class="price-slider-container">

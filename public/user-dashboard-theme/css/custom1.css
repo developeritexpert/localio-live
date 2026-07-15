@@ -2691,3 +2691,7 @@ header.main_dhdr {
 .user_dashbord .form-wrp select {
   appearance: auto !important;
 }
+
+.user_dashbord a.nav-link {
+  transition-duration: 0s !important;
+}

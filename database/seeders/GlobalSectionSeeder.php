@@ -47,7 +47,7 @@ class GlobalSectionSeeder extends Seeder
             ],
             [
                 'meta_key'  =>  'header_search_placeholder',
-                'meta_value'    =>  'Enter a product, category, or what you’d like to compare...',
+                'meta_value'    =>  'Search for a company or category...',
                 'type'         => 'text',
                 'page_name' => 'header',
                 'lang_id'     =>  '1',
@@ -184,7 +184,7 @@ class GlobalSectionSeeder extends Seeder
                 ],
                 [
                     'meta_key' => 'placeholder_text',
-                    'meta_value' => 'Enter a product, category, or what you’d like to compare...',
+                    'meta_value' => 'Search for a company or category...',
                     'page_name' => 'home',
                     'type'         => 'text',
                     'lang_id' => '1',
@@ -317,7 +317,7 @@ class GlobalSectionSeeder extends Seeder
                 ],
                 [
                     'meta_key' => 'ai_placeholder',
-                    'meta_value' => 'Enter a product, category, or what you’d like to compare...',
+                    'meta_value' => 'Search for a company or category...',
                     'page_name' => 'home',
                     'type'         => 'text',
                     'lang_id' => '1',

@@ -30,28 +30,27 @@
                                         {{ $review->user->first_name ?? 'Anonymous' }}
                                     @endif
                                 </h6>
-
-                                <div class="rating light">
-                                    <div class="inn_ul">
-                                        <div class="rating-stars">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= floor($review->rating))
-                                                    <i class="fas fa-star text-warning"></i>
-                                                @elseif ($i - 0.5 <= $review->rating)
-                                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                                @else
-                                                    <i class="far fa-star text-warning"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                    </div>
-                                    <div class="rate_box">
-                                        {{ number_format($review->rating, 1) }}
-                                    </div>
-                                </div>
+                                <p style="font-size: 14px; color: #777; margin: 4px 0 0 0;">{{ $review->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
-                        <p>{{ $review->created_at->diffForHumans() }}</p>
+                        <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
+                            <div class="inn_ul">
+                                <div class="rating-stars">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($review->rating))
+                                            <i class="fas fa-star text-warning"></i>
+                                        @elseif ($i - 0.5 <= $review->rating)
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        @else
+                                            <i class="far fa-star text-warning"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            </div>
+                            <div class="rate_box" style="margin: 0; font-size: 15px; font-weight: 600; color: #555;">
+                                {{ number_format($review->rating, 1) }}
+                            </div>
+                        </div>
                     </div>
                     <div class="review_text size18">
                         <p class="size22 big-bld">
@@ -101,23 +100,23 @@
                                             {{ $review->user->first_name ?? 'Anonymous' }}
                                         @endif
                                     </h6>
-                                    <div class="rating light">
-                                        <span class="rating-score size18">{{ number_format($review->rating, 1) }}</span>
-                                        <div class="rating_str">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= floor($review->rating))
-                                                    <i class="fas fa-star text-warning"></i>
-                                                @elseif ($i - 0.5 <= $review->rating)
-                                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                                @else
-                                                    <i class="far fa-star text-warning"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                    </div>
+                                    <p style="font-size: 14px; color: #777; margin: 4px 0 0 0;">{{ $review->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
-                            <p>{{ $review->created_at->diffForHumans() }}</p>
+                            <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
+                                <div class="rating_str">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($review->rating))
+                                            <i class="fas fa-star text-warning"></i>
+                                        @elseif ($i - 0.5 <= $review->rating)
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        @else
+                                            <i class="far fa-star text-warning"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="rating-score size18" style="margin: 0; font-size: 15px; font-weight: 600; color: #555;">{{ number_format($review->rating, 1) }}</span>
+                            </div>
                         </div>
                         <div class="review_text size18">
                             <p class="size22 big-bld">
@@ -167,27 +166,27 @@
                                         {{ $review->user->first_name ?? 'Anonymous' }}
                                     @endif
                                 </h6>
-                                <div class="rating light">
-                                    <div class="inn_ul">
-                                        <div class="rating-stars">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= floor($review->rating))
-                                                    <i class="fas fa-star text-warning"></i>
-                                                @elseif ($i - 0.5 <= $review->rating)
-                                                    <i class="fas fa-star-half-alt text-warning"></i>
-                                                @else
-                                                    <i class="far fa-star text-warning"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                    </div>
-                                    <div class="rate_box">
-                                        {{ number_format($review->rating, 1) }}
-                                    </div>
-                                </div>
+                                <p style="font-size: 14px; color: #777; margin: 4px 0 0 0;">{{ $review->created_at->diffForHumans() }}</p>
                             </div>
                         </div>
-                        <p>{{ $review->created_at->diffForHumans() }}</p>
+                        <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
+                            <div class="inn_ul">
+                                <div class="rating-stars">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($review->rating))
+                                            <i class="fas fa-star text-warning"></i>
+                                        @elseif ($i - 0.5 <= $review->rating)
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        @else
+                                            <i class="far fa-star text-warning"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            </div>
+                            <div class="rate_box" style="margin: 0; font-size: 15px; font-weight: 600; color: #555;">
+                                {{ number_format($review->rating, 1) }}
+                            </div>
+                        </div>
                     </div>
                     <div class="review_text size18">
                         <p class="size22 big-bld">

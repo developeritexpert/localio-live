@@ -54,6 +54,7 @@ class ProductController extends Controller
                       });
             }),
             'category.translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
             'category.Topics.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'pricingOptions.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'features.translations' => fn($q) => $q->where('lang_id', $lang_id),
