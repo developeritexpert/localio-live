@@ -12967,3 +12967,19 @@ textarea#message {
     width: 100% !important;
   }
 }
+
+/* Category Description Styles in Accordion */
+.category-desc-text {
+  font-size: 15px !important;
+  color: #666 !important;
+  line-height: 1.6 !important;
+  margin-bottom: 10px !important;
+  max-width: none !important;
+  width: 100% !important;
+}
+.category-desc-text p {
+  font-size: 15px !important;
+  color: #666 !important;
+  line-height: 1.6 !important;
+  margin-bottom: 0 !important;
+}
