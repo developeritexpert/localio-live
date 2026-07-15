@@ -1038,8 +1038,16 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                        @endif
+                                         @endif
                                          {{-- End Business Images  --}}
+
+                                         @if (!empty($business->translations->first()->after_image_description))
+                                             <div class="col-lg-12 mt-4 after-image-desc">
+                                                 <div class="is_text">
+                                                     {!! $business->translations->first()->after_image_description !!}
+                                                 </div>
+                                             </div>
+                                         @endif
 
                                     </div>
                                 </div>

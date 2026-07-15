@@ -13,6 +13,7 @@ class BusinessTranslation extends Model
         'name',
         'lang_id',
         'description',
+        'after_image_description',
         'business_id',
         'headquarters',
         'support_options',

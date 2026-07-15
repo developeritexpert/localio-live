@@ -113,6 +113,46 @@
                         </div>
                     </div>
 
+                    <!-- Description (After Image) Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Description (After Image)</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.afterImageEditor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.after_image_description = editor.getData();
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="afterImageEditor"
+                                        class="form-control description @error('after_image_description') is-invalid @enderror"
+                                        wire:model.live="after_image_description"
+                                        rows="5">
+                                    </textarea>
+                                    @error('after_image_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Pricing Options Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">

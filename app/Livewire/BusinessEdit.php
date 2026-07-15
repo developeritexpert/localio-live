@@ -65,6 +65,7 @@ class BusinessEdit extends Component
     public $affiliate_link = '';
     public $is_affiliate_partner = false;
     public $business_description = '';
+    public $after_image_description = '';
     public $features = ['', '', ''];
     public $headquaters = '';
     public $pricingOptions = '';
@@ -999,6 +1000,7 @@ class BusinessEdit extends Component
         $this->languages_supported = $business->languages_supported;
         $this->support_options = $translation->support_options ?? '';
         $this->business_description = $translation->description ?? '';
+        $this->after_image_description = $translation->after_image_description ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
         $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
         $this->is_affiliate_partner = $business->is_affiliate ? 1 : 0;
@@ -1234,6 +1236,7 @@ class BusinessEdit extends Component
                 }
             }],
             'business_description' => 'nullable|string',
+            'after_image_description' => 'nullable|string',
             'permanentUrlSlug' => [
                 'required',
                 'string',
@@ -1324,6 +1327,7 @@ class BusinessEdit extends Component
             'headquarters' => $this->headquaters,
             'support_options' => $this->support_options,
             'description' => $this->business_description,
+            'after_image_description' => $this->after_image_description,
             'primary_keywords' => $this->primary_keywords,
             'secondary_keywords' => $this->secondary_keywords,
             'long_tail_keywords' => $this->long_tail_keywords,
@@ -1390,6 +1394,7 @@ class BusinessEdit extends Component
                 'headquarters' => $this->headquaters,
                 'support_options' => $this->support_options,
                 'description' => $this->business_description,
+                'after_image_description' => $this->after_image_description,
                 'primary_keywords' => $this->primary_keywords,
                 'secondary_keywords' => $this->secondary_keywords,
                 'long_tail_keywords' => $this->long_tail_keywords,
