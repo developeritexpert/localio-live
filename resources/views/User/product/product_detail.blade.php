@@ -739,6 +739,11 @@
         <!-- Products Section -->
         <section class="asn_main_sec asn_main_sec_2" id="section1">
             <div class="asn_dv">
+                @php
+                    $activeReviews = $business->reviews->where('status', 'active');
+                    $ratingCount = $activeReviews->count();
+                    $averageRating = $ratingCount > 0 ? $activeReviews->avg('rating') : 0;
+                @endphp
                 <div class="container-fluid">
                     <div class="asn_dv_contnt ">
                         <div class="asn-img">
@@ -763,9 +768,22 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="product-pricing">
-                                                Pricing, Features, Alternatives & User Reviews
-                                            </p>
+                                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+                                                <div style="display: flex; gap: 2px;">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($averageRating))
+                                                            <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                                        @elseif ($i - 0.5 <= $averageRating)
+                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span style="font-size: 14px; font-weight: 600; color: #555;">
+                                                    {{ number_format($averageRating, 1) }} | {{ $ratingCount }} {{ $ratingCount === 1 ? 'Review' : 'Reviews' }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -3061,9 +3079,11 @@
 
 
             </div>
-            <section class="subs_sec light p_50 mt-4" id="section16">
-                <x-news-letter-subscription />
-            </section>
+            <div class="mt-5">
+                <section class="subs_sec light p_50 d-none" id="section16">
+                    <x-news-letter-subscription />
+                </section>
+            </div>
         </div>
     </div>
 

@@ -61,10 +61,9 @@
                 </div>
             @endforeach
         @endif
-        <div class="btm-bttn light">
-            <a class="cta cta_white"
-                href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                More Reviews</a>
+        <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+            <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}"
+                style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View more reviews</a>
         </div>
     </div>
     
@@ -128,10 +127,9 @@
                 @endif
             @endforeach
         @endif
-        <div class="btm-bttn light">
-            <a class="cta cta_white"
-                href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                All Reviews</a>
+        <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+            <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}"
+                style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View all reviews</a>
         </div>
     </div>
     
@@ -197,10 +195,9 @@
                 </div>
             @endforeach
         @endif
-        <div class="btm-bttn light">
-            <a class="cta cta_white"
-                href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
-                All Reviews</a>
+        <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+            <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}"
+                style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View all reviews</a>
         </div>
     </div>
 </div>
