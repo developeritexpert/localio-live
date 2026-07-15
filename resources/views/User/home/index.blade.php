@@ -142,7 +142,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="accor-bdy-btm">
-                                                        <div class="row accor-bdy-row">
+                                                        <div class="row accor-bdy-row justify-content-start">
                                                             @if ($category->businesses->isNotEmpty())
                                                                 @php
                                                                     $businesses = $category->businesses
@@ -175,7 +175,7 @@
                                                                             $isBestValue = $index === 0; // Highest rated business
                                                                         @endphp
 
-                                                                        <div class="col-lg-4 {{ $isBestValue ? 'order-lg-2' : ($index === 1 ? 'order-lg-1' : 'order-lg-3') }}">
+                                                                        <div class="col-xl-4 col-md-6 col-12 {{ $isBestValue ? 'order-xl-2 order-md-1' : ($index === 1 ? 'order-xl-1 order-md-2' : 'order-xl-3 order-md-3') }}">
                                                                             <div class="review_card light top-rate-card {{ $isBestValue ? 'center-card-pack' : '' }}">
                                                                                  <div class="inner_box_silder top-rate-innr top-rate-innr_2 ">
                                                                                      <div class="inn_sl_hed mst_hdn">
@@ -243,7 +243,7 @@
                                                                                              {!! strip_tags($businessTranslation->description ?? 'Description not available.') !!}
                                                                                          </div>
                                                                                      </div>
-                                                                                     <div class="top-pro-box" style="display: flex; justify-content: space-between; gap: 10px;">
+                                                                                     <div class="top-pro-box" style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
                                                                                          <div class="top-pro-btn">
                                                                                              <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}"
                                                                                                  class="cta cta_outline d-flex align-items-center">

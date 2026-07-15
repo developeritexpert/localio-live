@@ -565,14 +565,15 @@
                     margin: 0 !important;
                 }
 
-                /* Show only 1 star rating in most popular cards on mobile */
+                /* Show only 1 star rating in most popular cards on mobile (Disabled)
                 .popular-accordion-wrp .tab_star_li i:nth-child(n+2) {
                     display: none !important;
                 }
                 .popular-accordion-wrp .tab_star_li i:first-child {
-                    font-weight: 900 !important; /* Force filled star */
+                    font-weight: 900 !important;
                     color: #fbbf24 !important;
                 }
+                */
 
                 /* Unified CSS Grid Card Header Layout Refactor on Mobile */
                 /* High-reliability Flexbox Card Header Column Layout on Mobile */
@@ -727,18 +728,19 @@
                     margin: 0 !important;
                     padding: 0 !important;
                 }
-                /* Show only 1 star rating in latest reviews cards on mobile */
+                /* Show only 1 star rating in latest reviews cards on mobile (Disabled)
                 .reviews_block .tab_star_li span:nth-child(n+2) {
                     display: none !important;
                 }
                 .reviews_block .tab_star_li span:first-child::before {
                     font-family: "Font Awesome 5 Free" !important;
-                    font-weight: 900 !important; /* Force filled star */
+                    font-weight: 900 !important;
                     content: "\f005" !important;
                     color: #fe9d27 !important;
                     display: inline-block !important;
                     font-size: 12px;
                 }
+                */
                 /* Center heart icon inside the circular badge */
                 [class*="wishlist"],
                 [class*="wishlist"] div,
@@ -2383,9 +2385,8 @@
                                     @foreach($cat->subCategories as $subCat)
                                         @if($subCat->translation)
                                             <li>
-                                                <a href="javascript:void(0);" class="subcategory-item" data-subcategory-id="{{ $subCat->id }}">
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}">
                                                     {{ $subCat->translation->name }}
-                                                    <i class="fa-solid fa-chevron-right float-end mt-1"></i>
                                                 </a>
                                             </li>
                                         @endif
@@ -2394,41 +2395,6 @@
                             </div>
                         </div>
                     @endif
-                @endforeach
-
-                <!-- Dynamic Sub-category Business Panels (3rd Level) -->
-                @foreach($sidebarCategories as $cat)
-                    @foreach($cat->subCategories as $subCat)
-                        @if($subCat->translation)
-                            <div class="category-sidebar-panel business-panel" id="business-panel-{{ $subCat->id }}">
-                                <div class="sub-panel-back">
-                                    <a href="javascript:void(0);" class="back-to-subcategories-btn" data-parent-cat-id="{{ $cat->id }}">
-                                        <i class="fa-solid fa-arrow-left me-2"></i> {{ $cat->translation->name }}
-                                    </a>
-                                </div>
-                                <div class="sidebar-menu-divider"></div>
-                                <div class="sidebar-menu-section">
-                                    <h3 class="sidebar-section-title">{{ $subCat->translation->name }}</h3>
-                                    <ul class="sidebar-menu-list">
-                                        <!-- <li>
-                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}" class="view-all-link">
-                                                <strong>View All in {{ $subCat->translation->name }}</strong>
-                                            </a>
-                                        </li> -->
-                                        @foreach($subCat->businesses as $business)
-                                            @if($business->translations->first())
-                                                <li>
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug]) }}">
-                                                        {{ $business->translations->first()->name }}
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
                 @endforeach
             </div>
         </div>
