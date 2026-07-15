@@ -118,27 +118,9 @@
                                             data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
                                                 <div class="accordion-bdy-wrp">
-                                                    <div class="accor-bdy-hd">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-lg-6 col-md-6">
-                                                                <div class="accor-lft-img">
-                                                                    {{-- <img src="{{ asset('front/img/accor-bdy-img.png') }}"
-                                                                        alt=""> --}}
-                                                                        <img src="{{ asset(($category->imageMedia?->dir_path ?? 'images') . '/' . ($category->imageMedia?->file_name ?? 'default-category.png')) }}" alt="Category Icon">
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-6">
-                                                                <div class="accor-txt-contnt">
-                                                                    @if(!empty($category->translations->title))
-                                                                        <h3 class="category-title mb-3" style="font-size: 24px; font-weight: 700; color: #003f7d;">{{ $category->translations->title }}</h3>
-                                                                    @endif
-                                                                    {!! $category->translations->description !!}
-                                                                    <div class="accor-btn">
-                                                                        <a  onclick="changeCategory('{{ $category->translations->slug ?? '' }}')"
-                                                                            class="cta cta_white">{{ $homeContents['campare_business'] ?? 'Compare Businesses' }}</a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                    <div class="accor-bdy-hd" style="margin-bottom: 25px;">
+                                                        <div class="accor-txt-contnt category-desc-text">
+                                                            {!! $category->translations->description !!}
                                                         </div>
                                                     </div>
                                                     <div class="accor-bdy-btm">

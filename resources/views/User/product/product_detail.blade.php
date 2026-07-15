@@ -1990,8 +1990,8 @@
 
                             </section> --}}
 
-                            <section class="choice-business" id="softweretopic">
-                            @php
+                            <section class="choice-business d-none" id="softweretopic">
+                            <!-- @php
                                 $langId = getCurrentLanguageID();
                                 $businessName =
                                     $business->translations->firstWhere('lang_id', $langId)?->name ?? 'This Business';
@@ -2035,7 +2035,7 @@
                                     </div>
 
                                 @endif
-                            @endforeach
+                            @endforeach -->
                         </section>
 
                       {{-- Business Integration Section --}}
