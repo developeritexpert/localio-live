@@ -2327,7 +2327,7 @@
             @else
                 <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
                     <i class="fa-solid fa-circle-user avatar-icon"></i>
-                    <span>Hello, Sign In</span>
+                    <span>Hello, sign In</span>
                 </a>
             @endif
             <button class="category-sidebar-close" id="categories-sidebar-close">

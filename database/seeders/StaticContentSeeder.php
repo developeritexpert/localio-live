@@ -44,7 +44,7 @@ class StaticContentSeeder extends Seeder
             ['key' => 'top_rated_product_des', 'lang_id' =>1, 'value'=> 'How to find the Best Product'],
             ['key' => 'exclusive_deals_title', 'lang_id' =>1, 'value'=> 'Top Rated Product'],
             ['key' => 'exclusive_deals_des', 'lang_id' =>1, 'value'=> 'How to find the Best Product'],
-            ['key' => 'localio_commissions_message', 'lang_id' =>1, 'value'=> 'Localio provides independent research and reviews, and may earn affiliate commissions.'],
+            ['key' => 'localio_commissions_message', 'lang_id' => 1, 'value' => 'Some links may earn us a commission.'],
             ['key' => 'learn_more', 'lang_id' =>1, 'value'=> 'Learn More'],
             ['key' => 'product_search_placeholder', 'lang_id' =>1, 'value'=> 'Search product name'],
             ['key' => 'filters', 'lang_id' =>1, 'value'=> 'Filters'],
