@@ -9030,15 +9030,19 @@ section.revie_img_sec {
   border-top: 1px solid #dee2e6;
   margin-top: 10px;
   padding-top: 15px
+}
+
 @media (max-width: 575px) {
   .top-pro-box {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 12px !important;
   }
+
   .top-pro-btn {
     width: 100% !important;
   }
+
   .top-pro-btn .cta {
     width: 100% !important;
     display: flex !important;
@@ -9046,4 +9050,11 @@ section.revie_img_sec {
     align-items: center !important;
     text-align: center !important;
   }
+}
+
+
+
+.transparency-banner .inr-trans {
+  background-color: #ffffff26;
+  padding: 8px 10px;
 }

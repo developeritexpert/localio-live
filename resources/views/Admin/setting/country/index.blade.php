@@ -37,6 +37,7 @@
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Country Name</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Country Code</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Disclaimer Banner</span></th>
                         <th class="nk-tb-col tb-tnx-action"><span>Action</span></th>
                     </tr>
                 </thead>
@@ -49,6 +50,12 @@
 
                         <td class="nk-tb-col">
                             <span class="tb-lead">{{ $country->country_code }}</span>
+                        </td>
+
+                        <td class="nk-tb-col">
+                            <span class="badge {{ $country->show_disclaimer ? 'badge-dim bg-success text-success' : 'badge-dim bg-danger text-danger' }}">
+                                {{ $country->show_disclaimer ? 'Enabled' : 'Disabled' }}
+                            </span>
                         </td>
 
                         <td class="nk-tb-col nk-tb-col-tools">

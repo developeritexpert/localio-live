@@ -21,23 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="abs-txt">
-            <div class="container">
-                <div class="hd-innr-txt">
-                    <div class="inside_text">
-                        <p class="m-0">{{ static_text('localio_commissions_message') }}
-                            <a href="#"
-                                onclick="event.preventDefault(); window.dispatchEvent(new CustomEvent('open-modal'))"
-                                style="color: white; text-decoration: none;" onmouseover="this.style.color='#f9633b'"
-                                onmouseout="this.style.color='white'" onmousedown="this.style.color='#f9633b'"
-                                onmouseup="this.style.color='#f9633b'">
-                                Learn more
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </section>
     <section class="top-automotive-sec light  ">
         <div class="top-auto-btm">

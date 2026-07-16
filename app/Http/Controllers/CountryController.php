@@ -31,6 +31,7 @@ class CountryController extends Controller
         try {
             $country = Country::findOrFail($request->id);
             $country->name = $request->name;
+            $country->show_disclaimer = $request->has('show_disclaimer') ? 1 : 0;
             $country->save();
             // return redirect()->back()->with('success', 'Country updated successfully.');
             return redirect()->route('country.index')->with('success', 'Country updated successfully.');
@@ -50,6 +51,7 @@ class CountryController extends Controller
 
         $country = new Country;
         $country->name = $request->name ?? '';
+        $country->show_disclaimer = $request->has('show_disclaimer') ? 1 : 0;
         $country->save();
         return redirect()->back()->with('success', 'Country added successfully.');
     }

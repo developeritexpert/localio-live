@@ -944,7 +944,63 @@
         $footerContents = \App\Models\FooterContent::where('lang_id', 1)->where('type', 'text')->pluck('meta_value', 'meta_key');
     }
 
+    $currentCountryId = getCurrentCountry();
+    $countryModel = \App\Models\Country::find($currentCountryId);
+    $showCommissionsBanner = false;
+    if ($countryModel && $countryModel->show_disclaimer == 1) {
+        $showCommissionsBanner = !in_array(Route::currentRouteName(), [
+            'who-we-are',
+            'privacy-policy',
+            'terms-condition',
+            'contact',
+            'FaqsShow',
+            'login',
+            'register'
+        ]);
+    }
     ?>
+    @if($showCommissionsBanner)
+        <div class="transparency-banner" style="position: relative; top: 0; left: 0; width: 100%; height: 34px; background-color: #003f7d; z-index: 10; text-align: center;  box-sizing: border-box;">
+           <div class="inr-trans">
+        <div style="display: inline-block; font-size: 11.5px; color: #ffffff; line-height: 1.2; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
+                {{ static_text('localio_commissions_message') }}
+                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #ffffff; font-weight: 600; text-decoration: underline; margin-left: 4px; transition: color 0.2s;" onmouseover="this.style.color='#f9633b'" onmouseout="this.style.color='#ffffff'">Learn more.</a>
+            </div>
+</div>
+        </div>
+        <style>
+            header .sec_head {
+                top: 34px !important;
+            }
+            /* .product-page-body header .sec_head {
+                margin-top: 34px !important;
+            } */
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const banner = document.querySelector('.transparency-banner');
+                const header = document.querySelector('header .sec_head');
+                if (banner && header) {
+                    const updateHeaderPosition = () => {
+                        let scroll = window.scrollY;
+                        if (scroll > 34) {
+                            banner.style.transform = 'translateY(-34px)';
+                            if (!document.body.classList.contains('product-page-body')) {
+                                header.style.setProperty('top', '0px', 'important');
+                            }
+                        } else {
+                            banner.style.transform = 'translateY(-' + scroll + 'px)';
+                            if (!document.body.classList.contains('product-page-body')) {
+                                header.style.setProperty('top', (34 - scroll) + 'px', 'important');
+                            }
+                        }
+                    };
+                    window.addEventListener('scroll', updateHeaderPosition);
+                    updateHeaderPosition();
+                }
+            });
+        </script>
+    @endif
     <header>
         <section class="sec_head">
             <div class="bottom_header dark">
