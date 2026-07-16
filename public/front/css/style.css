@@ -9101,3 +9101,8 @@ header .menu li.menu-item a {
 .product_integra_sec  progress::-webkit-progress-value {
   background: #21ac21 !important;
 }
+
+.transparency-banner .inr-trans {
+  background-color: #ffffff26;
+  padding: 8px 10px;
+}

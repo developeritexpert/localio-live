@@ -112,6 +112,15 @@ class BusinessEdit extends Component
     public $faqEditId;
     public $editingFAQ;
 
+    // USPs
+    public $businessUsps = [
+        ['text' => ''],
+        ['text' => ''],
+        ['text' => ''],
+        ['text' => ''],
+        ['text' => ''],
+    ];
+
 
 
     protected function rules()
@@ -965,7 +974,14 @@ class BusinessEdit extends Component
         $this->addbusiness = false;
         $this->businessId = $id;
 
-        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features'])->findOrFail($id);
+        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps'])->findOrFail($id);
+
+        // Load existing USPs into the form slots (pad to 5 empty slots)
+        $existingUsps = $business->usps->pluck('text')->toArray();
+        $this->businessUsps = array_map(
+            fn($text) => ['text' => $text],
+            array_pad($existingUsps, 5, '')
+        );
 
         // Set the selected countries (IDs) for the business
         $this->selectedCountries = $business->countries->pluck('id')->toArray();
@@ -1130,6 +1146,8 @@ class BusinessEdit extends Component
 
             $this->syncBusinessRelationships($business);
 
+            $this->saveUsps($business->id);
+
             DB::commit();
 
             BusinessLanguage::create([
@@ -1171,6 +1189,8 @@ class BusinessEdit extends Component
 
             $this->saveTopicDescriptions();
 
+            $this->saveUsps($business->id);
+
             DB::commit();
 
             $this->editMode = false;
@@ -1185,6 +1205,38 @@ class BusinessEdit extends Component
         }
     }
 
+
+    /**
+     * Save USPs for a business (delete + re-insert pattern)
+     */
+    public function saveUsps($businessId)
+    {
+        \App\Models\BusinessUsp::where('business_id', $businessId)->delete();
+
+        foreach ($this->businessUsps as $index => $usp) {
+            $text = trim($usp['text'] ?? '');
+            if ($text !== '') {
+                \App\Models\BusinessUsp::create([
+                    'business_id' => $businessId,
+                    'text'        => $text,
+                    'sort_order'  => $index,
+                ]);
+            }
+        }
+    }
+
+    public function addUsp()
+    {
+        if (count($this->businessUsps) < 5) {
+            $this->businessUsps[] = ['text' => ''];
+        }
+    }
+
+    public function removeUsp($index)
+    {
+        unset($this->businessUsps[$index]);
+        $this->businessUsps = array_values($this->businessUsps);
+    }
 
     public function saveTopicDescriptions()
     {
