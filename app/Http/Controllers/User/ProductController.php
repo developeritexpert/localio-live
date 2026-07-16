@@ -64,6 +64,7 @@ class ProductController extends Controller
                         ->orderBy('position', 'asc')
                         ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
                 },
+            'usps',
         ])->firstOrFail();
         // dd($business);
         $languages = Language::all();

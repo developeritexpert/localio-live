@@ -75,6 +75,7 @@ class ViewController extends Controller
                 ->with([
                     'translations' => fn($q) => $q->where('lang_id', $lang_id),
                     'reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
+                    'usps',
                 ])
                 ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC') // ⭐ FIX: handle nulls
                 ->take(3)

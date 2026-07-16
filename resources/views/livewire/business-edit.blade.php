@@ -373,6 +373,42 @@
                 </div>
             @endif
 
+                    {{-- USP / Key Selling Points Section --}}
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <label class="form-label mb-0"><strong>Key Selling Points (USPs)</strong></label>
+                                    <p class="text-muted small mb-0">Up to 5 short bullet points shown with ✓ on the product page.</p>
+                                </div>
+                            </div>
+
+                            @foreach ($businessUsps as $index => $usp)
+                                <div class="d-flex align-items-center mb-2 gap-2">
+                                    <span class="text-success fw-bold me-1" style="font-size:18px;">✓</span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        wire:model.live="businessUsps.{{ $index }}.text"
+                                        placeholder="e.g. Free domain & SSL certificate"
+                                        maxlength="255"
+                                    />
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removeUsp({{ $index }})" title="Remove">
+                                        <em class="icon ni ni-trash"></em>
+                                    </button>
+                                </div>
+                            @endforeach
+
+                            @if (count($businessUsps) < 5)
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addUsp">
+                                    <em class="icon ni ni-plus"></em> Add USP
+                                </button>
+                            @else
+                                <p class="text-muted small mt-2 mb-0">Maximum of 5 USPs reached.</p>
+                            @endif
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="col-md-4">

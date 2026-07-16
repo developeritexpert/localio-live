@@ -684,6 +684,16 @@
 .feture_box.str_prc_box .starting-price-text {
     text-align: center !important;
 }
+/* Rating hidden in normal view, visible only in sticky scroll header */
+.main-view-rating-hide {
+    display: none !important;
+}
+.fixed-div .main-view-rating-hide {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -692,6 +702,11 @@
                     <div class="inner_banr_content">
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
+                                       style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
+                                       onmouseout="this.style.color=''">All</a>
+                                </li>
                                 @if ($business->category && $business->category->parent)
                                     @php
                                         $parentTranslation = $business->category->parent->translation()->first();
@@ -699,9 +714,9 @@
                                     @if ($parentTranslation)
                                         <li class="breadcrumb-item">
                                             <a href="javascript:void(0);"
-                                                onclick="changeCategory('{{ $parentTranslation->slug }}')"
-                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
-                                                onmouseout="this.style.color=''">
+                                               onclick="changeCategory('{{ $parentTranslation->slug }}')"
+                                               style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
+                                               onmouseout="this.style.color=''">
                                                 {{ $parentTranslation->name }}
                                             </a>
                                         </li>
@@ -712,19 +727,11 @@
                                         $categoryTranslation = $business->category->translation()->first();
                                     @endphp
                                     @if ($categoryTranslation)
-                                        <li class="breadcrumb-item">
-                                            <a href="javascript:void(0);"
-                                                onclick="changeCategory('{{ $categoryTranslation->slug }}')"
-                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
-                                                onmouseout="this.style.color=''">
-                                                {{ $categoryTranslation->name }}
-                                            </a>
+                                        <li class="breadcrumb-item active" aria-current="page">
+                                            {{ $categoryTranslation->name }}
                                         </li>
                                     @endif
                                 @endif
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    {{ $business->translations->first()->name }}
-                                </li>
                             </ol>
                         </nav>
                     </div>
@@ -768,7 +775,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px;">
+                                            <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
                                                         @if ($i <= floor($averageRating))
@@ -1086,45 +1093,46 @@
                                 {{-- <div class="main_feture" style="--product-badge-label: '{{ addslashes($productBadgeLabel) }}';"> --}}
                                 <div class="main_feture">
                                     <div class=" fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
-                                        @if (count($business->features) > 0)
-                                            {{-- <div class="main_feature_lg">
-                                                <div class="feture_box lft_check_box size18 position-relative">
-                                                <span class="badge-label">{{ $productBadgeLabel }}</span>
+                                        @if ($business->usps->count() > 0)
+                                            {{-- Dynamic USPs from admin --}}
+                                            <div class="main_feature_lg">
+                                                <div class="feture_box lft_check_box size15">
                                                     <ul class="list-unstyled">
-                                                        @foreach ($business->features as $feature)
-                                                            <li class="d-flex align-items-center size18">
+                                                        @foreach ($business->usps->take(5) as $usp)
+                                                            <li class="d-flex flex-row align-items-center size15">
                                                                 <div class="grn_chk">
                                                                     <img src="{{ asset('front/img/tick-img.png') }}">
                                                                 </div>
-                                                                <p class="m-0">{{ $feature->translations->first()->name ?? '' }}</p>
+                                                                <p class="m-0">{{ $usp->text }}</p>
                                                             </li>
                                                         @endforeach
                                                     </ul>
                                                 </div>
-                                            </div> --}}
+                                            </div>
                                         @else
+                                            {{-- Fallback static USPs when none are set in admin --}}
                                             <div class="main_feature_lg">
-                                                <div class="feture_box lft_check_box size18">
+                                                <div class="feture_box lft_check_box size15">
                                                     <ul class="list-unstyled">
-                                                        <li class="d-flex align-items-center size18">
+                                                        <li class="d-flex flex-row align-items-center size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Free domain & SSL certificate</p>
                                                         </li>
-                                                        <li class="d-flex align-items-center size18">
+                                                        <li class="d-flex flex-row align-items-center size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Customizable automatic updates</p>
                                                         </li>
-                                                        <li class="d-flex align-items-center size18">
+                                                        <li class="d-flex flex-row align-items-center size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Scalable performance management</p>
                                                         </li>
-                                                        <li class="d-flex align-items-center size18">
+                                                        <li class="d-flex flex-row align-items-center size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
@@ -3373,8 +3381,7 @@
                 });
             });
 
-            // Active section highlight on scroll
-            window.addEventListener('scroll', function() {
+            function updateActiveSection() {
                 const scrollPosition = window.scrollY + 120;
                 let currentSectionId = null;
 
@@ -3384,6 +3391,11 @@
                     }
                 });
 
+                // Default to the first section if we are at the top or above it
+                if (!currentSectionId && sections.length > 0 && sections[0]) {
+                    currentSectionId = sections[0].id;
+                }
+
                 links.forEach(link => {
                     link.classList.remove('active');
                     const href = link.getAttribute('href').substring(1);
@@ -3391,7 +3403,13 @@
                         link.classList.add('active');
                     }
                 });
-            });
+            }
+
+            // Active section highlight on scroll
+            window.addEventListener('scroll', updateActiveSection);
+
+            // Initialize on page load
+            updateActiveSection();
         });
     </script>
 

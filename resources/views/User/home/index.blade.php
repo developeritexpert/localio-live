@@ -223,30 +223,41 @@
                                                                                          <div class="main_feature_lg" style="margin-bottom: 15px;">
                                                                                              <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto;">
                                                                                                  <ul class="list-unstyled" style="margin: 0; padding: 0;">
-                                                                                                     <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
-                                                                                                         <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                                                         </div>
-                                                                                                         <p class="m-0" style="font-size: 13px; color: #333;">Free domain & SSL certificate</p>
-                                                                                                     </li>
-                                                                                                     <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
-                                                                                                         <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                                                         </div>
-                                                                                                         <p class="m-0" style="font-size: 13px; color: #333;">Customizable automatic updates</p>
-                                                                                                     </li>
-                                                                                                     <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
-                                                                                                         <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                                                         </div>
-                                                                                                         <p class="m-0" style="font-size: 13px; color: #333;">Scalable performance management</p>
-                                                                                                     </li>
-                                                                                                     <li class="d-flex align-items-center size18" style="margin-bottom: 0;">
-                                                                                                         <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                                                         </div>
-                                                                                                         <p class="m-0" style="font-size: 13px; color: #333;">DDoS & malware protection</p>
-                                                                                                     </li>
+                                                                                                     @if ($business->usps->count() > 0)
+                                                                                                         @foreach ($business->usps->take(5) as $usp)
+                                                                                                         <li class="d-flex align-items-center size18" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
+                                                                                                             <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                                 <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                                             </div>
+                                                                                                             <p class="m-0" style="font-size: 13px; color: #333;">{{ $usp->text }}</p>
+                                                                                                         </li>
+                                                                                                         @endforeach
+                                                                                                     @else
+                                                                                                         <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
+                                                                                                             <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                                 <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                                             </div>
+                                                                                                             <p class="m-0" style="font-size: 13px; color: #333;">Free domain & SSL certificate</p>
+                                                                                                         </li>
+                                                                                                         <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
+                                                                                                             <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                                 <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                                             </div>
+                                                                                                             <p class="m-0" style="font-size: 13px; color: #333;">Customizable automatic updates</p>
+                                                                                                         </li>
+                                                                                                         <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
+                                                                                                             <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                                 <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                                             </div>
+                                                                                                             <p class="m-0" style="font-size: 13px; color: #333;">Scalable performance management</p>
+                                                                                                         </li>
+                                                                                                         <li class="d-flex align-items-center size18" style="margin-bottom: 0;">
+                                                                                                             <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                                 <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                                             </div>
+                                                                                                             <p class="m-0" style="font-size: 13px; color: #333;">DDoS & malware protection</p>
+                                                                                                         </li>
+                                                                                                     @endif
                                                                                                  </ul>
                                                                                              </div>
                                                                                          </div>

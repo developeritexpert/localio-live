@@ -7142,8 +7142,8 @@ div#learnMoreModal button.modal-close {
   }
 
   #section1 .asn_dv .asn_dv_contnt .asn-img {
-    width: 80px;
-    height: 80px;
+    width: 65px;
+    height: 65px;
     overflow: hidden;
     border-radius: 50%;
   }
@@ -11282,8 +11282,8 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 }
 
 #section1 .asn_dv .asn_dv_contnt .asn-img {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   overflow: hidden;
   border-radius: 50%;
 }
@@ -12962,6 +12962,7 @@ textarea#message {
     align-items: stretch !important;
     gap: 8px !important;
   }
+
   .accor-bdy-btm .top-pro-box .top-pro-btn {
     flex: 0 0 100% !important;
     width: 100% !important;
@@ -12977,6 +12978,7 @@ textarea#message {
   max-width: none !important;
   width: 100% !important;
 }
+
 .category-desc-text p {
   font-size: 15px !important;
   color: #666 !important;
