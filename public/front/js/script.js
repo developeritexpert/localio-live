@@ -219,36 +219,37 @@ document.addEventListener("click", (e) => {
 $(document).ready(function () {
   $('.reviews_slider').slick({
      infinite: false,
-     slidesToShow: 3,
-     slidesToScroll: 1,
+     slidesToShow: 4,
+     slidesToScroll: 4,
      dots: false,
      arrows: true,
+     prevArrow: '.reviews-prev',
+     nextArrow: '.reviews-next',
      autoplay: false,
-     autoplaySpeed: 3000,
+     swipeToSlide: true,
      responsive: [{
-           breakpoint: 1024,
-           settings: {
-              slidesToShow: 2,
-              slidesToScroll: 1
-           }
-        },
-        {
-           breakpoint: 768,
-           settings: {
-              slidesToShow: 1,
-              slidesToScroll: 1
-           }
-        },
-        {
-           breakpoint: 575,
-           settings: {
-              slidesToShow: 1,
-              slidesToScroll: 1,
-              dots: false,
-           }
-        }
-     ]
-  });
+            breakpoint: 1200,
+            settings: {
+               slidesToShow: 3.2,
+               slidesToScroll: 3
+            }
+         },
+         {
+            breakpoint: 991,
+            settings: {
+               slidesToShow: 2.2,
+               slidesToScroll: 2
+            }
+         },
+         {
+            breakpoint: 575,
+            settings: {
+               slidesToShow: 1.2,
+               slidesToScroll: 1
+            }
+         }
+      ]
+   });
 });
 
 $(document).ready(function () {

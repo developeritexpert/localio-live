@@ -145,4 +145,9 @@ class Business extends Model
         return $this->hasOne(BusinessIntegration::class);
     }
 
+    public function usps()
+    {
+        return $this->hasMany(BusinessUsp::class)->orderBy('sort_order');
+    }
+
 }
