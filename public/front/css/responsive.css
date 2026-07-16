@@ -12086,6 +12086,11 @@ textarea#message {
   border-radius: 6px !important;
 }
 
+.asan-slider.asan-slider-btm .slick-track .slick-slide img:hover {
+  border: 1px solid #000;
+  border-radius: 6px !important;
+}
+
 .asan-slider.asan-slider-btm .slick-track .slick-slide img {
   height: 90px !important;
   width: 100% !important;
