@@ -279,7 +279,7 @@ header .menu-item span.dropdown_toggle {
 
 header .menu li.menu-item {
   position: relative;
-  padding: 3.5px 16px;
+  /* padding: 3.5px 16px; */
   /* width: 152px; */
 }
 
@@ -363,7 +363,7 @@ div#navbarSupportedContent {
   background-color: transparent !important;
   border: 1.5px solid #06498b !important;
   color: #06498b !important;
-  transition: all 0.3s ease-in-out;
+  /* transition: all 0.3s ease-in-out; */
 }
 
 .cta.cta_outline:hover {
@@ -5856,12 +5856,12 @@ header .menu .dropdown_menu {
   border-radius: 8px;
 }
 
-.left_menu>.menu>.menu-item:hover {
+.left_menu>.menu>.menu-item a:hover {
   background-color: #ffffff45;
   border-radius: 8px;
 }
 
-.left_menu>.menu>.menu-item.menu-active {
+.left_menu>.menu>.menu-item.menu-active a {
   border-radius: 8px;
   background-color: #ffffff;
 }
@@ -7052,7 +7052,7 @@ ul#pills-tab {
 }
 
 .inner_box_silder .inn_sl_hed {
-  gap: 6px;
+  /* gap: 6px; */
   position: relative;
 }
 
@@ -8465,15 +8465,16 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 0;
+  width: 100% !important;
   height: 2.5px;
   background: #06498b;
-  transition: width 0.3s ease;
+  opacity: 0;
+  /* transition: width 0.3s ease; */
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after,
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active::after {
-  width: 100%;
+  opacity: 1;
 }
 
 .asn_main_sec.asn_main_sec_2 .fixed-div {
@@ -8513,7 +8514,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a:hover,
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active {
-  background-color: #06498b0d;
+  /* background-color: #06498b0d; */
   color: #003f7d;
 }
 
@@ -8668,12 +8669,12 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .product_integra_sec .over-rate-progress .progress-bar {
-  border-color: #00000030;
+  border-color: #edf6ed;
 }
 
 .sftware-alternative-pck progress::-webkit-progress-bar,
 .sftware-alternative-pck .progress-bar {
-  background-color: #00000015;
+  background-color: #edf6ed;
   border-radius: 4px;
 }
 
@@ -8946,9 +8947,9 @@ section.revie_img_sec {
 
 /* 13-july-26 */
 .home_bnr_sec .banner_image img {
-  max-width: 460px;
+  max-width: 350px;
   width: 100%;
-  max-height: 400px;
+  max-height: 290px;
   object-fit: contain;
 }
 
@@ -8966,12 +8967,13 @@ section.revie_img_sec {
   max-width: 16px;
 }
 
+/* 
 .accor-bdy-btm .top-rate-card h6 {
   font-size: 18px;
-}
+} */
 
 .most-populr-sec .top-rate-card .tab_star_li .fa-star {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .outer_slider .inn_h h6.head {
@@ -9030,15 +9032,19 @@ section.revie_img_sec {
   border-top: 1px solid #dee2e6;
   margin-top: 10px;
   padding-top: 15px
+}
+
 @media (max-width: 575px) {
   .top-pro-box {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 12px !important;
   }
+
   .top-pro-btn {
     width: 100% !important;
   }
+
   .top-pro-btn .cta {
     width: 100% !important;
     display: flex !important;
@@ -9046,4 +9052,52 @@ section.revie_img_sec {
     align-items: center !important;
     text-align: center !important;
   }
+}
+
+
+/* 16-july-26 */
+header .menu li.menu-item a {
+  padding: 8px 16px;
+}
+
+.banner_text_col .search-box input::placeholder {
+  font-size: 14px !important;
+}
+
+.sec_head .search-box input::placeholder {
+  font-size: 14px !important;
+}
+
+.most-populr-sec .accor-bdy-btm .top-rate-card h6 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.most-populr-sec .top-rate-card .slider_img {
+  max-width: 48px;
+}
+
+/* .most-populr-sec .inner_box_silder .inn_sl_hed {
+    gap: 12px;   
+} */
+.revie_img_sec .fetru_row .rating-stars i {
+  font-size: 18px;
+}
+
+/* .asan-slider.asan-slider-btm .slick-track .slick-slide{
+  border:unset;
+}
+.asan-slider.asan-slider-btm .slick-track .slick-slide:hover{
+  border:unset !important;
+}  */
+.product_integra_sec .sftware-alternative-pck .cta.btn_blue:hover {
+  background-color: #f9633b !important;
+}
+
+.product_integra_sec .sftware-alternative-pck .cta.btn_blue {
+  transition: unset !important;
+  ;
+}
+.product_integra_sec  progress::-webkit-progress-value {
+  background: #21ac21 !important;
 }

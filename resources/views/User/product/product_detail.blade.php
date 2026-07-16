@@ -346,9 +346,9 @@
             .Tab-outerlnk.container-fluid {
                 padding: 0;
             }
-            .asn_dv .Tab-outerlnk #table-of-content ul li a:hover {
+            /* .asn_dv .Tab-outerlnk #table-of-content ul li a:hover {
                 background: #06498b0d;
-            }
+            } */
             .asan-slider.asan-slider-btm.slider-nav {
     padding: 0;
 }
@@ -366,8 +366,8 @@
 }
 .new-visit-anc .cta.cta_orange {
     font-size: 13px;
-    padding: 12px 22px;
-    width: 185px;
+    padding: 18px 22px;
+    width: 195px;
     justify-content: center;
 }
 .new-review-side .rate_box {
@@ -598,7 +598,7 @@
 
 .review-progress-item span{
     width:150px;
-    font-size:15px;
+    font-size:13px;
     font-weight:500;
     color:#444;
 }
@@ -626,7 +626,7 @@
 .progress-wrap strong{
     width:42px;
     text-align:right;
-    font-size:14px;
+    font-size:12px;
     color:#333;
     font-weight:600;
 }
@@ -652,7 +652,7 @@
     font-size:20px;
     font-weight:600;
     color:#002347;
-    margin-bottom:18px;
+    margin-bottom:25px;
 }
 
 .starting-price-value{
@@ -683,6 +683,11 @@
 }
 .feture_box.str_prc_box .starting-price-text {
     text-align: center !important;
+    color:#444444;
+}
+
+.thre_revi_rgt .feture_box  h2 {
+    font-size: 16px !important;
 }
     </style>
     <div data-business-id="{{ $business->id }}">
@@ -2187,11 +2192,11 @@
                                                             <div class="rating-stars" style="display: flex; gap: 2px;">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <= floor($averageRating))
-                                                                        <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                                                        <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
                                                                     @elseif ($i - 0.5 <= $averageRating)
-                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 12px;"></i>
                                                                     @else
-                                                                        <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
                                                                     @endif
                                                                 @endfor
                                                             </div>
@@ -2203,51 +2208,51 @@
                                                 </div>
 
                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <h6 class="fw_700 mb-3" style="color: #06498b; font-size: 15px;">Localio Review Breakdown</h6>
+                                                    <h6 class="fw_700 mb-3" style="color: #002347; font-size: 15px;">Localio Review Breakdown</h6>
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
+                                                        <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
                                                         <div class="prgs_br d-flex align-items-center">
                                                             <progress class="progress-bar"
                                                                 value="{{ $easeOfUseAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $easeOfUseAvg }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $easeOfUseAvg }}/5</span>
                                                         </div>
                                                     </div>
 
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 14px; color: #555;">Customer Service</p>
+                                                        <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
                                                         <div class="prgs_br d-flex align-items-center">
                                                             <progress class="progress-bar"
                                                                 value="{{ $customerServiceAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $customerServiceAvg }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $customerServiceAvg }}/5</span>
                                                         </div>
                                                     </div>
 
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 14px; color: #555;">Features</p>
+                                                        <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
                                                         <div class="prgs_br d-flex align-items-center">
                                                             <progress class="progress-bar"
                                                                 value="{{ $exclusiveFeatureAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $exclusiveFeatureAvg }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $exclusiveFeatureAvg }}/5</span>
                                                         </div>
                                                     </div>
 
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 14px; color: #555;">Value for Money</p>
+                                                        <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
                                                         <div class="prgs_br d-flex align-items-center">
                                                             <progress class="progress-bar"
                                                                 value="{{ $valueForMoneyAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $valueForMoneyAvg }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $valueForMoneyAvg }}/5</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                    <h6 style="font-size: 14px; color: #666; font-weight: 600; margin-bottom: 4px;">Starting price</h6>
-                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px;">
+                                                    <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
                                                         <span>{{ $currency }}{{ $startingPrice }}</span>
                                                     </h3>
                                                     <small class="text-muted" style="font-size: 13px;">{{ $additional_info }}</small>
@@ -2339,7 +2344,7 @@
                                                     </div>
 
                                                     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                        <h6 class="fw_700 mb-3" style="color: #06498b; font-size: 15px;">Localio Review Breakdown</h6>
+                                                        <h6 class="fw_700 mb-3" style="color: #002347; font-size: 15px;">Localio Review Breakdown</h6>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                             <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
                                                             <div class="prgs_br d-flex align-items-center">
@@ -2347,47 +2352,47 @@
                                                                     value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}/5</span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                            <p class="m-0" style="font-size: 14px; color: #555;">Customer Service</p>
+                                                            <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
                                                             <div class="prgs_br d-flex align-items-center">
                                                                 <progress class="progress-bar"
                                                                     value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}/5</span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                            <p class="m-0" style="font-size: 14px; color: #555;">Features</p>
+                                                            <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
                                                             <div class="prgs_br d-flex align-items-center">
                                                                 <progress class="progress-bar"
                                                                     value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}/5</span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                            <p class="m-0" style="font-size: 14px; color: #555;">Value for Money</p>
+                                                            <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
                                                             <div class="prgs_br d-flex align-items-center">
                                                                 <progress class="progress-bar"
                                                                     value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 13px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}/5</span>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                        <h6 style="font-size: 14px; color: #666; font-weight: 600; margin-bottom: 4px;">Starting price</h6>
-                                                        <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px;">
+                                                        <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                        <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
                                                             <span>{{ $currency }}{{ $startingPrice }}</span>
                                                         </h3>
-                                                        <small class="text-muted" style="font-size: 13px;">{{ $additional_info }}</small>
+                                                        <small class="text-muted" style="font-size: 12px;">{{ $additional_info }}</small>
                                                     </div>
 
                                                     <div class="sftwre-alt-btn pt-2">
