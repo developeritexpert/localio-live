@@ -1055,9 +1055,7 @@
                                                                     <img src="{{ asset($image) }}"
                                                                         onclick="openGallery({{ $index }})"
                                                                         alt="Thumbnail {{ $index + 1 }}"
-                                                                        style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;"
-                                                                        onmouseover="this.style.borderColor='#007bff'"
-                                                                        onmouseout="this.style.borderColor='transparent'">
+                                                                        style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
                                                                 </div>
                                                             @endforeach
                                                         </div>
@@ -1422,7 +1420,7 @@
                                             <div class="feture_box review-breakdown-box">
 
                                                  <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
-                                                     <h2 class="size22 big-bld m-0">Users reviews</h2>
+                                                     <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
                                                      <a href="#section14" class="view-review-link">
                                                          View all reviews
                                                      </a>
@@ -2207,7 +2205,7 @@
                                                 </div>
 
                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <h6 class="fw_700 mb-3" style="color: #06498b; font-size: 15px;">Localio Review Breakdown</h6>
+                                                    <h6 class="fw_700 mb-3" style="color: #002655; font-size: 14px;">Review breakdown</h6>
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                         <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
                                                         <div class="prgs_br d-flex align-items-center">
@@ -2262,7 +2260,7 @@
                                                         target="_blank"
                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                         style="background-color: #06498b; color: #fff; border-radius: 25px; padding: 10px 20px; font-weight: bold; text-decoration: none; font-size: 14px; border: none; transition: background-color 0.2s;">
-                                                        Visit website
+                                                         View details
                                                     </a>
                                                 </div>
                                             </div>
@@ -2343,7 +2341,7 @@
                                                     </div>
 
                                                     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                        <h6 class="fw_700 mb-3" style="color: #06498b; font-size: 15px;">Localio Review Breakdown</h6>
+                                                        <h6 class="fw_700 mb-3" style="color: #002655; font-size: 14px;">Review breakdown</h6>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                             <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
                                                             <div class="prgs_br d-flex align-items-center">
@@ -2399,7 +2397,7 @@
                                                             target="_blank"
                                                             class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                             style="background-color: #06498b; color: #fff; border-radius: 25px; padding: 10px 20px; font-weight: bold; text-decoration: none; font-size: 14px; border: none; transition: background-color 0.2s;">
-                                                            Visit website
+                                                            View details 
                                                         </a>
                                                     </div>
                                                 </div>
@@ -3468,9 +3466,6 @@
                 // Initialize main slider (big image)
                 $('.slider-for').on('init', function () {
                     slidersReady = true;
-
-                    // Set initial border for active thumbnail
-                    $('.slider-nav .slick-current img').css('border-color', '#007bff');
                 }).slick({
                     slidesToShow: 1,
                     slidesToScroll: 1,
@@ -3480,7 +3475,12 @@
                 });
 
                 // Initialize thumbnail slider (small images)
-                $('.slider-nav').slick({
+                $('.slider-nav').on('init', function() {
+                    // Set initial border for active thumbnail after nav slider is initialized
+                    setTimeout(() => {
+                        $('.slider-nav .slick-slide[data-slick-index="0"] img').css('border-color', '#007bff');
+                    }, 50);
+                }).slick({
                     slidesToShow: 4,
                     slidesToScroll: 1,
                     vertical: true,
