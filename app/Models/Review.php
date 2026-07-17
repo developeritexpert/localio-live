@@ -19,8 +19,14 @@ class Review extends Model
         'customer_service_rating',
         'exclusive_service_rating',
         'rating',
+        'recommend',
         'status',  // keep this if you use it elsewhere, otherwise optional
     ];
+
+    public function ratings()
+    {
+        return $this->hasMany(ReviewRating::class, 'review_id');
+    }
 
 
     public function user()

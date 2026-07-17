@@ -1242,63 +1242,26 @@
 
                                                 {{-- Breakdown --}}
                                                 <div class="review-progress-list">
-
+                                                    @foreach ($criteria as $criterion)
                                                     <div class="review-progress-item">
-                                                        <span>Ease of Use</span>
+                                                        <span>{{ $criterion->name }}</span>
 
                                                         <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $easeOfUseAvg*20 }}%">
-                                                                </div>
-                                                            </div>
+                                                             <div class="progress">
+                                                                 <div class="progress-bar"
+                                                                     style="width: {{ $criterion->average_rating * 20 }}%">
+                                                                 </div>
+                                                             </div>
 
-                                                            <strong>{{ number_format($easeOfUseAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
+                                                             <strong>{{ number_format($criterion->average_rating, 1) }}/5</strong>
+                                                         </div>
+                                                     </div>
+                                                     @endforeach
+                                                </div>
 
-                                                    <div class="review-progress-item">
-                                                        <span>Customer Service</span>
-
-                                                        <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $customerServiceAvg*20 }}%">
-                                                                </div>
-                                                            </div>
-
-                                                            <strong>{{ number_format($customerServiceAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="review-progress-item">
-                                                        <span>Features</span>
-
-                                                        <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $exclusiveFeatureAvg*20 }}%">
-                                                                </div>
-                                                            </div>
-
-                                                            <strong>{{ number_format($exclusiveFeatureAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="review-progress-item">
-                                                        <span>Value for Money</span>
-
-                                                        <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $valueForMoneyAvg*20 }}%">
-                                                                </div>
-                                                            </div>
-
-                                                            <strong>{{ number_format($valueForMoneyAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
-
+                                                <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Recommended by users</span>
+                                                    <strong style="color: #06498b; font-size: 16px;">{{ $recommendPercent }}%</strong>
                                                 </div>
 
                                             </div>
@@ -2219,44 +2182,21 @@
 
                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                     <h6 class="fw_700 mb-3" style="color: #002655; font-size: 14px;">Review breakdown</h6>
+                                                    @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
+                                                        <p class="m-0" style="font-size: 12px; color: #555;">{{ $criterion->name }}</p>
                                                         <div class="prgs_br d-flex align-items-center">
                                                             <progress class="progress-bar"
-                                                                value="{{ $easeOfUseAvg * 20 }}"
+                                                                value="{{ $criterion->average_rating * 20 }}"
                                                                 max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $easeOfUseAvg }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $criterion->average_rating }}/5</span>
                                                         </div>
                                                     </div>
+                                                    @endforeach
 
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $customerServiceAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $customerServiceAvg }}/5</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $exclusiveFeatureAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $exclusiveFeatureAvg }}/5</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $valueForMoneyAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $valueForMoneyAvg }}/5</span>
-                                                        </div>
+                                                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                        <span style="font-weight: 600; color: #002655; font-size: 12px;">Recommended by users</span>
+                                                        <strong style="color: #06498b; font-size: 14px;">{{ $recommendPercent }}%</strong>
                                                     </div>
                                                 </div>
 

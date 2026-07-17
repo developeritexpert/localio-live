@@ -14,20 +14,28 @@ class AddReview extends Component
     public $comment = '';
     public $show = false;
 
-    public $ease_of_use_rating = 0;
-    public $value_for_money_rating = 0;
-    public $customer_service_rating = 0;
-    public $exclusive_service_rating = 0;
+    public $criteria = [];
+    public $criteriaRatings = [];
+    public $recommend = 1;
     public $pros;
     public $cons;
-
-
 
     #[On('openReviewModal')]
     public function openReviewModal($businessId)
     {
-        $this->reset(['rating', 'comment']);
-            $this->businessId = $businessId;
+        $this->reset(['rating', 'comment', 'title2', 'pros', 'cons', 'criteriaRatings', 'recommend']);
+        $this->businessId = $businessId;
+        $this->recommend = 1;
+
+        $business = \App\Models\Business::find($businessId);
+        if ($business && $business->category) {
+            $this->criteria = $business->category->ratingCriteria->toArray();
+            foreach ($this->criteria as $criterion) {
+                $this->criteriaRatings[$criterion['id']] = 0;
+            }
+        } else {
+            $this->criteria = [];
+        }
 
         $this->show = true;
     }
@@ -36,20 +44,19 @@ class AddReview extends Component
     {
         $lang_id = getCurrentLanguageID();
     
-        $this->validate([
-       
-            'ease_of_use_rating'       => 'required|integer|min:1|max:5',
-            'value_for_money_rating'   => 'required|integer|min:1|max:5',
-            'customer_service_rating'  => 'required|integer|min:1|max:5',
-            'exclusive_service_rating' => 'required|integer|min:1|max:5',
-            'title2'                   => 'nullable|string|max:500',
-            'comment'                  => 'nullable|string|max:1000',
-            'pros'                     => 'required|string|min:5',
-            'cons'                     => 'required|string|min:5',
-           
-        ]);
+        $rules = [
+            'title2'    => 'required|string|max:500',
+            'comment'   => 'required|string|max:1000',
+            'pros'      => 'nullable|string',
+            'cons'      => 'nullable|string',
+            'recommend' => 'required|boolean',
+        ];
 
-        
+        foreach ($this->criteria as $criterion) {
+            $rules['criteriaRatings.' . $criterion['id']] = 'required|integer|min:1|max:5';
+        }
+
+        $this->validate($rules);
     
         if (!$this->businessId) {
             $this->dispatch('alert', ['type' => 'error', 'message' => 'Something went wrong. Please refresh and try again.']);
@@ -70,34 +77,37 @@ class AddReview extends Component
         }
     
         // Calculate average rating
-        $avg_rating = round((
-           
-            $this->ease_of_use_rating +
-            $this->value_for_money_rating +
-            $this->customer_service_rating +
-            $this->exclusive_service_rating
-        ) / 4, 2);
+        $totalRating = 0;
+        $criteriaCount = count($this->criteriaRatings);
+        foreach ($this->criteriaRatings as $ratingVal) {
+            $totalRating += $ratingVal;
+        }
+        $avg_rating = $criteriaCount > 0 ? round($totalRating / $criteriaCount, 2) : 0;
     
         $review = Review::create([
-            'user_id'                 => Auth::id(),
-            'business_id'            => $this->businessId,
-            'lang_id'                => $lang_id,
-         
-            'ease_of_use_rating'     => $this->ease_of_use_rating,
-            'value_for_money_rating' => $this->value_for_money_rating,
-            'customer_service_rating'=> $this->customer_service_rating,
-            'exclusive_service_rating'=> $this->exclusive_service_rating,
-
-            'rating'             => $avg_rating,
+            'user_id'     => Auth::id(),
+            'business_id' => $this->businessId,
+            'lang_id'     => $lang_id,
+            'rating'      => $avg_rating,
+            'recommend'   => (bool)$this->recommend,
         ]);
+
+        // Save individual criteria ratings
+        foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
+            \App\Models\ReviewRating::create([
+                'review_id'   => $review->id,
+                'criteria_id' => $criteriaId,
+                'rating'      => $ratingVal
+            ]);
+        }
     
         $review->translations()->create([
             'business_id' => $this->businessId,
             'language_id' => $lang_id,
             'title'       => $this->title2,
             'description' => $this->comment,
-            'pros' => $this->pros,
-            'cons' => $this->cons,
+            'pros'        => $this->pros,
+            'cons'        => $this->cons,
         ]);
     
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Review submitted successfully.']);

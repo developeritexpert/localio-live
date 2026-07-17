@@ -11,35 +11,48 @@
                     <div class="modal-body">
                         <h6 class="fw-semibold mb-3">Rate the following:</h6>
                         <div class="row">
-                    
-                            @php
-                            $ratings = [
-                                'ease_of_use_rating' => $ease_of_use_rating,
-                                'value_for_money_rating' => $value_for_money_rating,
-                                'customer_service_rating' => $customer_service_rating,
-                                'exclusive_service_rating' => $exclusive_service_rating,
-                            ];
-                        @endphp
                         
-                        @foreach($ratings as $name => $value)
+                        @foreach($criteria as $criterion)
+                            @php
+                                $cId = $criterion['id'];
+                                $value = $criteriaRatings[$cId] ?? 0;
+                            @endphp
                             <div class="mb-3 col-md-6">
                                 <label class="form-label">
-                                    {{ ucwords(str_replace('_', ' ', $name)) }}:
+                                    {{ $criterion['name'] }}:
                                 </label>
-                                <div class="d-flex align-items-center star-rating" data-rating-name="{{ $name }}">
+                                <div class="d-flex align-items-center star-rating" data-rating-name="criteria_{{ $cId }}">
                                     @for ($i = 1; $i <= 5; $i++)
                                         <i class="fa fa-star text-warning fs-5 me-1 star-item {{ $i <= $value ? 'filled' : '' }}"
                                         data-value="{{ $i }}"
-                                        wire:click="$set('{{ $name }}', {{ $i }})"
+                                        wire:click="$set('criteriaRatings.{{ $cId }}', {{ $i }})"
                                         style="cursor: pointer;"></i>
                                     @endfor
                        
                                 </div>
-                                <input type="hidden" id="{{ $name }}" value="{{ $value }}">
-                                @error($name) <small class="text-danger">{{ $message }}</small> @enderror
+                                <input type="hidden" id="criteria_{{ $cId }}" value="{{ $value }}">
+                                @error('criteriaRatings.' . $cId) <small class="text-danger">Rating is required.</small> @enderror
                             </div>
                         @endforeach
                         
+                        </div>
+
+                        <hr class="my-3">
+
+                        {{-- Recommendation Toggle --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Would you recommend this business?</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="recommend" id="recommend_yes" value="1" wire:model="recommend">
+                                    <label class="form-check-label" for="recommend_yes">Yes, I recommend</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="recommend" id="recommend_no" value="0" wire:model="recommend">
+                                    <label class="form-check-label" for="recommend_no">No, I do not recommend</label>
+                                </div>
+                            </div>
+                            @error('recommend') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
 
                         <hr class="my-4">
@@ -58,14 +71,14 @@
                             @error('comment') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         {{-- Pros & Cons --}}
-                           <div class="mb-3">
-                            <label for="pros" class="form-label">Pros:</label>
+                        <div class="mb-3">
+                            <label for="pros" class="form-label">Pros (optional):</label>
                             <textarea id="pros" class="form-control" wire:model.defer="pros" rows="3" placeholder="What did you like about it?"></textarea>
                             @error('pros') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="cons" class="form-label">Cons:</label>
+                            <label for="cons" class="form-label">Cons (optional):</label>
                             <textarea id="cons" class="form-control" wire:model.defer="cons" rows="3" placeholder="What could be improved?"></textarea>
                             @error('cons') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
