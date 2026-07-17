@@ -13,24 +13,24 @@
                                 @if ($review->user && $review->user->profile_image)
                                     <img src="{{ asset($review->user->profile_image) }}"
                                         class="img-fluid profile-circle"
-                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                         alt="User Image">
                                 @else
                                     <img src="{{ asset($default_image) }}"
                                         class="img-fluid profile-circle"
-                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                         alt="Default Image">
                                 @endif
                             </div>
                             <div class="asn-rating">
-                                <h6>
+                                <h6 style="font-size: 15px; font-weight: 600; margin-bottom: 2px;">
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
                                         {{ $review->user->first_name ?? 'Anonymous' }}
                                     @endif
                                 </h6>
-                                <p style="font-size: 14px; color: #777; margin: 4px 0 0 0;">{{ $review->created_at->diffForHumans() }}</p>
+                                <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title ?? 'User' }}</p>
                             </div>
                         </div>
                         <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
@@ -53,9 +53,10 @@
                         </div>
                     </div>
                     <div class="review_text size18">
-                        <p class="size22 big-bld">
+                        <p class="size22 big-bld" style="margin-bottom: 4px;">
                             {{ $review->translations->first()->title ?? '' }}
                         </p>
+                        <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>
                         <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}</p>
                     </div>
                 </div>
@@ -99,7 +100,7 @@
                                             {{ $review->user->first_name ?? 'Anonymous' }}
                                         @endif
                                     </h6>
-                                    <p style="font-size: 14px; color: #777; margin: 4px 0 0 0;">{{ $review->created_at->diffForHumans() }}</p>
+                                    <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title ?? 'User' }}</p>
                                 </div>
                             </div>
                             <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
@@ -118,9 +119,10 @@
                             </div>
                         </div>
                         <div class="review_text size18">
-                            <p class="size22 big-bld">
+                            <p class="size22 big-bld" style="margin-bottom: 4px;">
                                 {{ $review->translations->first()->title ?? '' }}
                             </p>
+                            <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>
                             <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}</p>
                         </div>
                     </div>
@@ -147,24 +149,24 @@
                                 @if ($review->user && $review->user->profile_image)
                                     <img src="{{ asset($review->user->profile_image) }}"
                                         class="img-fluid profile-circle"
-                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                         alt="User Image">
                                 @else
                                     <img src="{{ asset($default_image) }}"
                                         class="img-fluid profile-circle"
-                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                         alt="Default Image">
                                 @endif
                             </div>
                             <div class="asn-rating">
-                                <h6>
+                                <h6 style="font-size: 15px; font-weight: 600; margin-bottom: 2px;">
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
                                         {{ $review->user->first_name ?? 'Anonymous' }}
                                     @endif
                                 </h6>
-                                <p style="font-size: 14px; color: #777; margin: 4px 0 0 0;">{{ $review->created_at->diffForHumans() }}</p>
+                                <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title ?? 'User' }}</p>
                             </div>
                         </div>
                         <div class="rating light" style="display: flex; align-items: center; gap: 8px;">
@@ -187,9 +189,10 @@
                         </div>
                     </div>
                     <div class="review_text size18">
-                        <p class="size22 big-bld">
+                        <p class="size22 big-bld" style="margin-bottom: 4px;">
                             {{ $review->translations->first()->title ?? '' }}
                         </p>
+                        <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>
                         <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}</p>
                     </div>
                 </div>
