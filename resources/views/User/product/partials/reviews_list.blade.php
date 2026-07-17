@@ -82,17 +82,17 @@
                                     @if ($review->user && $review->user->profile_image)
                                         <img src="{{ asset($review->user->profile_image) }}"
                                             class="img-fluid profile-circle"
-                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                            style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                             alt="User Image">
                                     @else
                                         <img src="{{ asset($default_image) }}"
                                             class="img-fluid profile-circle"
-                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                            style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                             alt="Default Image">
                                     @endif
                                 </div>
                                 <div class="asn-rating">
-                                    <h6>
+                                    <h6 style="font-size: 15px; font-weight: 600; margin-bottom: 2px;">
                                         @if ($review->user && $review->user->user_type === 'admin')
                                             {{ $review->public_name ?? 'Public' }}
                                         @else

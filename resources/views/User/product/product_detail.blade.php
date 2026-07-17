@@ -2821,48 +2821,29 @@
                                             <div class="review-sidebar-sticky">
                                                 
                                                 <!-- Localio Reviews Header -->
-                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 20px; color: #1e3050; line-height: 1.3;">
-                                                    <!-- Localio {{ $business->translations->first()->name }} Reviews -->
-                                                    User reviews
+                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #1e3050; line-height: 1.3;">
+                                                    User reviews ({{ $ratingCount }})
                                                 </h2>
 
-                                                <!-- Sort by Dropdown -->
-                                                <div class="selct_box" style="margin-bottom: 25px;">
-                                                    <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                        <label for="rating-select" style="font-size: 15px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
-                                                        <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 14px; border-radius: 6px; cursor: pointer; width: auto; min-width: 140px; border: 1px solid #ced4da;">
-                                                            <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
-                                                            <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
-                                                            <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
-                                                            <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
-                                                        </select>
-                                                    </form>
-                                                </div>
-
-                                                <!-- Overall Rating -->
-                                                <div class="rating-filter-header" style="margin-bottom: 20px;">
-                                                    <h4 style="font-size: 18px; font-weight: 700; color: #002655; margin-bottom: 4px;">Overall Rating</h4>
-                                                    <p style="font-size: 13px; margin: 0 0 15px 0; color: #777; font-weight: 500;">Based on {{ $ratingCount }} reviews</p>
-                                                    <div class="overall-stars" style="display: flex; align-items: center; gap: 10px;">
-                                                        <div style="display: flex; align-items: center; gap: 2px;">
-                                                            @for ($j = 1; $j <= 5; $j++)
-                                                                @if ($j <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
-                                                                @elseif ($j - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
-                                                                @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 20px;"></i>
-                                                                @endif
-                                                            @endfor
-                                                        </div>
-                                                        <span style="font-size: 28px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                <!-- Rating Stars (Moved below headline) -->
+                                                <div class="overall-stars" style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
+                                                    <div style="display: flex; align-items: center; gap: 2px;">
+                                                        @for ($j = 1; $j <= 5; $j++)
+                                                            @if ($j <= floor($averageRating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
+                                                            @elseif ($j - 0.5 <= $averageRating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 20px;"></i>
+                                                            @endif
+                                                        @endfor
                                                     </div>
+                                                    <span style="font-size: 20px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->
                                                 <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
-                                                    <span style="font-size: 18px; font-weight: 600; color: #002347;">Filter by rating</span>
-                                                    <!-- <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span> -->
+                                                    <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
                                                 </div>
 
                                                 <!-- Star Breakdown Checkboxes -->
@@ -2895,14 +2876,26 @@
                                         <!-- Right Column (Write Review button & Reviews List) -->
                                         <div class="col-lg-8">
                                             
-                                            <div style="display: flex; justify-content: flex-end; margin-bottom: 25px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                                                <div class="selct_box">
+                                                    <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                                                        <label for="rating-select" style="font-size: 14px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
+                                                        <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 13px; border-radius: 6px; cursor: pointer; width: auto; min-width: 130px; border: 1px solid #ced4da;">
+                                                            <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
+                                                            <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
+                                                            <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
+                                                            <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
+                                                        </select>
+                                                    </form>
+                                                </div>
+
                                                 <a class="write-review-link"
                                                     @auth
                                                         onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                     @else
                                                         onclick="window.location.href = '/login'" 
                                                     @endauth
-                                                    style="cursor: pointer; font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;"
+                                                    style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
                                                 >Write review</a>
                                             </div>
 
