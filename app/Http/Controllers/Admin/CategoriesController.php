@@ -10,6 +10,7 @@ use App\Models\{Business, Category, Language, CategoryTranslation, Media, Produc
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use App\Models\BusinessCategoryTopic;
+use App\Models\CategoryRatingCriteria;
 use App\Models\BusinessCategoryTopicTranslation;
 use App;
 use Illuminate\Validation\Rule;
@@ -74,6 +75,7 @@ class CategoriesController extends Controller
         $category_image_url = null;
         $category_icon_url = null;
         $category_data = null;
+        $rating_criteria = [];
 
         if ($id != null) {
             $category_data = CategoryTranslation::where('id', $id)->first()->toArray();
@@ -86,6 +88,7 @@ class CategoriesController extends Controller
                 $category_icon = Media::where('id', $category->category_icon)->first();
                 $category_image_url = $category_image ? asset($category_image->dir_path . '/' . $category_image->file_name) : null;
                 $category_icon_url = $category_icon ? asset($category_icon->dir_path . '/' . $category_icon->file_name) : null;
+                $rating_criteria = $category->ratingCriteria()->get();
             }
         }
 
@@ -98,15 +101,7 @@ class CategoriesController extends Controller
             }])
             ->get();
 
-        return view('Admin.categories.add', compact([
-            'category_data',
-            'category',
-            'category_image_url',
-            'category_icon_url',
-            'parentCategories',
-            'hasSubcategories',
-            'hasItems'
-        ]));
+        return view('Admin.categories.add', compact('category_data', 'category', 'category_image_url', 'category_icon_url', 'parentCategories', 'hasSubcategories', 'hasItems', 'rating_criteria'));
     }
 
     public function add_process(Request $request)
@@ -242,6 +237,32 @@ class CategoriesController extends Controller
                     'is_important' => $request->boolean('is_parent') ? 0 : ($request->has('is_important') ? 1 : 0),
                 ]
             );
+
+            // Handle rating criteria
+            $submittedExistingCriteria = $request->input('existing_rating_criteria', []);
+            $submittedNewCriteria = $request->input('new_rating_criteria', []);
+            
+            // Delete criteria not in the submitted list
+            $existingIds = array_keys($submittedExistingCriteria);
+            $category->ratingCriteria()->whereNotIn('id', $existingIds)->delete();
+
+            // Update existing criteria (preserves historical reviews!)
+            foreach ($submittedExistingCriteria as $criteriaId => $name) {
+                if (trim($name) !== '') {
+                    CategoryRatingCriteria::where('id', $criteriaId)->where('category_id', $category->id)->update(['name' => trim($name)]);
+                }
+            }
+
+            // Add new criteria
+            foreach ($submittedNewCriteria as $name) {
+                if (trim($name) !== '') {
+                    CategoryRatingCriteria::create([
+                        'category_id' => $category->id,
+                        'name' => trim($name)
+                    ]);
+                }
+            }
+
             return redirect()->route('categories')->with('success', 'Category saved successfully');
         } else {
             return redirect()->route('categories')->with('error', 'Failed to save the category.');

@@ -163,6 +163,31 @@
                                 <img src="{{ asset($category_icon_url) }}" alt="Category Image" class="img-fluid rounded-circle" style="height: 50px;">
                             </div>
                         @endisset
+
+                        <!-- Rating Criteria Section -->
+                        <div class="col-md-12 mt-4" id="rating_criteria_section">
+                            <h5 class="title mb-3">Rating Criteria</h5>
+                            <p class="text-muted small">Add the criteria users will rate businesses on (e.g. "Value for money", "Ease of use").</p>
+                            <div id="criteria_wrapper">
+                                @if(isset($rating_criteria) && count($rating_criteria) > 0)
+                                    @foreach($rating_criteria as $index => $criterion)
+                                        <div class="d-flex mb-2 criteria-row">
+                                            <input type="text" class="form-control" name="existing_rating_criteria[{{ $criterion->id }}]" value="{{ $criterion->name }}" placeholder="Enter criteria name" required />
+                                            <button type="button" class="btn btn-danger ms-2 remove-criteria"><i class="fa fa-trash"></i></button>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="d-flex mb-2 criteria-row">
+                                        <input type="text" class="form-control" name="new_rating_criteria[]" placeholder="Enter criteria name (e.g. Ease of use)" />
+                                        <button type="button" class="btn btn-danger ms-2 remove-criteria"><i class="fa fa-trash"></i></button>
+                                    </div>
+                                @endif
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_criteria_btn">
+                                <i class="fa fa-plus me-1"></i> Add Another Criteria
+                            </button>
+                        </div>
+
                         <!-- Submit Button -->
                         <div class="col-md-12 mt-5">
                             <div class="form-group">
@@ -200,6 +225,35 @@
 
             if (isParentCheckbox) {
                 isParentCheckbox.addEventListener('change', toggleParentDropdown);
+            }
+
+            // Rating Criteria Logic
+            const addCriteriaBtn = document.getElementById('add_criteria_btn');
+            const criteriaWrapper = document.getElementById('criteria_wrapper');
+
+            if (addCriteriaBtn && criteriaWrapper) {
+                addCriteriaBtn.addEventListener('click', function() {
+                    const row = document.createElement('div');
+                    row.className = 'd-flex mb-2 criteria-row';
+                    row.innerHTML = `
+                        <input type="text" class="form-control" name="new_rating_criteria[]" placeholder="Enter criteria name" required />
+                        <button type="button" class="btn btn-danger ms-2 remove-criteria"><i class="fa fa-trash"></i></button>
+                    `;
+                    criteriaWrapper.appendChild(row);
+                });
+
+                criteriaWrapper.addEventListener('click', function(e) {
+                    const removeBtn = e.target.closest('.remove-criteria');
+                    if (removeBtn) {
+                        const rows = criteriaWrapper.querySelectorAll('.criteria-row');
+                        if (rows.length > 1) {
+                            removeBtn.closest('.criteria-row').remove();
+                        } else {
+                            // If it's the last one, just clear the value
+                            removeBtn.closest('.criteria-row').querySelector('input').value = '';
+                        }
+                    }
+                });
             }
         });
     </script>
