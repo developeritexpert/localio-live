@@ -700,6 +700,9 @@
     gap: 8px;
     margin-top: 4px;
 }
+.fixed-div .hide-on-sticky {
+    display: none !important;
+}
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -778,7 +781,7 @@
                                         <div class="asn-rating">
                                             <div class="an_lkd">
                                                 <h1 style="color: #000;" class="mb-0 p-1">
-                                                    {{ $business->translations->first()->name }} Review {{ $business->created_at->format('Y') }} </h1>
+                                                    {{ $business->translations->first()->name }} <span class="hide-on-sticky">Review {{ date('Y') }}</span> </h1>
 
                                                 {{-- <h6 style="color: #000;" class="mb-0 p-1">Review
                                                     {{ $business->created_at->format('Y') }}</h6> --}}
@@ -787,7 +790,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted size16 mb-2 p-1" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions, features & alternatives</p>
+                                            <p class="text-muted size16 mb-2 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions, features & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -1239,22 +1242,18 @@
                                                 </h2>
 
                                                 {{-- Breakdown --}}
-                                                <div class="review-progress-list">
+                                                <div class="review-progress-list mt-3">
                                                     @foreach ($criteria as $criterion)
-                                                    <div class="review-progress-item">
-                                                        <span>{{ $criterion->name }}</span>
-
-                                                        <div class="progress-wrap">
-                                                             <div class="progress">
-                                                                 <div class="progress-bar"
-                                                                     style="width: {{ $criterion->average_rating * 20 }}%">
-                                                                 </div>
-                                                             </div>
-
-                                                             <strong>{{ number_format($criterion->average_rating, 1) }}/5</strong>
-                                                         </div>
-                                                     </div>
-                                                     @endforeach
+                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-3">
+                                                        <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                        <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                            <progress class="progress-bar w-100"
+                                                                value="{{ $criterion->average_rating * 20 }}"
+                                                                max="100" style="height: 8px;"></progress>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                        </div>
+                                                    </div>
+                                                    @endforeach
                                                 </div>
 
                                                 <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">

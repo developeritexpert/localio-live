@@ -9097,7 +9097,7 @@ header .menu li.menu-item a {
 
 .transparency-banner .inr-trans {
   background-color: #ffffff26;
-  padding: 8px 10px;
+  padding: 2px;
 }
 
 /* 17-july-26  */
@@ -9181,8 +9181,9 @@ header .menu li.menu-item a {
 .business-integration-section .integration-items .integration-inboxs a:hover {
   box-shadow: 0 4px 10px rgb(218 228 238);
 }
-.product_inr_faq .accordion-button:not(.collapsed) ,
+
+.product_inr_faq .accordion-button:not(.collapsed),
 .product_inr_faq .accordion-button,
-.product_inr_faq .accordion-collapse{
+.product_inr_faq .accordion-collapse {
   background-color: #06498b08;
 }
