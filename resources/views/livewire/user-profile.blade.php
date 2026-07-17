@@ -2,7 +2,7 @@
     <div class="user_content user_info user-profile">
 
         <div class="uer_nm">
-            <h1>My Profile</h1>
+            <h1>My discussions</h1>
         </div>
 
         <div class="profile-main">

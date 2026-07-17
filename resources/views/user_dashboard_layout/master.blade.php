@@ -336,7 +336,7 @@
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_account.svg') }}" alt="">
                                         </span>
-                                        <span class="icons-text">My Account</span>
+                                        <span class="icons-text">My account</span>
                                     </div>
                                 </a>
                             </li>
@@ -348,7 +348,7 @@
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_profile.svg') }}" alt="">
                                         </span>
-                                        <span class="icons-text">My Deals</span>
+                                        <span class="icons-text">My deals</span>
                                     </div>
                                 </a>
                             </li>
@@ -360,7 +360,7 @@
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/saved_product.svg') }}" alt="">
                                         </span>
-                                        <span class="icons-text">My Favorites</span>
+                                        <span class="icons-text">My favorites</span>
                                     </div>
                                 </a>
                             </li>
@@ -371,7 +371,7 @@
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_review.svg') }}" alt="">
                                         </span>
-                                        <span class="icons-text">My Reviews</span>
+                                        <span class="icons-text">My reviews</span>
                                     </div>
                                 </a>
                             </li>
@@ -383,7 +383,7 @@
                                         <span class="icons-links">
                                             <img src="{{ asset('user-dashboard-theme/img/my_profile_per.svg') }}" alt="">
                                         </span>
-                                        <span class="icons-text">My Profile</span>
+                                        <span class="icons-text">My discussions</span>
                                     </div>
                                 </a>
                             </li>

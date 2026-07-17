@@ -1375,7 +1375,7 @@
                                                 @if(Auth::user()->user_type ==='user')
                                                 <a class="dropdown-item"
                                                     href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa fa-user"></i>My Profile</a>
+                                                        class="fa fa-user"></i>My discussions</a>
                                                 @elseif(Auth::user()->user_type ==='vendor')
                                                 <a class="dropdown-item"
                                                     href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}"><i

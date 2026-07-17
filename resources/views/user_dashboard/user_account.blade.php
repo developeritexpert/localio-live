@@ -7,7 +7,7 @@
        <div class="col-lg-9 p-0">
           <div class="user_content">
              <div class="uer_nm">
-                <h1>My Account</h1>
+                <h1>My account</h1>
              </div>
              <div class="mi_detail">
                 <div class="row gy-4">
@@ -20,7 +20,7 @@
                         </div>
                         <div class="acc-text">
 
-                           <h2>My Deals</h2>
+                           <h2>My deals</h2>
                            <p>Your exclusive offers and discounts.</p>
                         </div>
                      </a>
@@ -34,7 +34,7 @@
                            <img src="{{asset('user-dashboard-theme/img/saved_prdt.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
-                           <h2>My Favorites</h2>
+                           <h2>My favorites</h2>
                            <p>Your shortlist of top picks</p>
                         </div>
                      </a>
@@ -48,7 +48,7 @@
                            <img src="{{asset('user-dashboard-theme/img/my_rview.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
-                           <h2>My Reviews</h2>
+                           <h2>My reviews</h2>
                            <p>Your published reviews, all in one place</p>
                         </div>
                      </a>
@@ -61,8 +61,8 @@
                            <img src="{{asset('user-dashboard-theme/img/my_profle.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
-                           <h2>My Profile</h2>
-                           <p>Add your industry, job function, company size to get personalized picks</p>
+                           <h2>My discussions</h2>
+                           <p>Your discussions and recent replies</p>
                         </div>
                      </a>
                   </div>
