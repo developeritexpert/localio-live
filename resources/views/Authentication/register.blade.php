@@ -79,6 +79,11 @@
                     </div>
                     <div class="row">
                         <div class="form-group form-group_m">
+                            <x-google-input type="text" name="job_title" label="Job Title" id="jobTitle" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group form-group_m">
                             {{-- <input type="password" class="form-control" id="password" name="password" placeholder="Password"> --}}
                             <x-google-input type="password" name="password" id="register-password"  label="Password" :attributes="['autocomplete' => 'new-password']" />
                             <span id="togglePassword" class="eye-icon" style="cursor: pointer;">

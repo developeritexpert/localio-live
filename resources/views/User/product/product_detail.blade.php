@@ -10,6 +10,7 @@
             : json_decode($business->business_images ?? '[]', true);
     @endphp
     <!-- Modal script driver (Declared early to prevent race conditions on render) -->
+
     <script>
         console.log("Gallery script block rendered");
         
@@ -733,7 +734,13 @@
                                     @endphp
                                     @if ($categoryTranslation)
                                         <li class="breadcrumb-item active" aria-current="page">
-                                            {{ $categoryTranslation->name }}
+                                            <!-- {{ $categoryTranslation->name }} -->
+                                            <a href="javascript:void(0);"
+                                               onclick="changeCategory('{{ $categoryTranslation->slug }}')"
+                                               style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
+                                               onmouseout="this.style.color=''">
+                                                {{ $categoryTranslation->name }}
+                                            </a>
                                         </li>
                                     @endif
                                 @endif
@@ -780,6 +787,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
+                                            <p class="text-muted size16 mb-2 p-1" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions, features & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -816,11 +824,8 @@
                                                     ]) }}"
                                                     class="cta cta_orange d-flex align-items-center" target="_blank"
                                                     tabindex="0">
-                                                    Visit
-                                                    Website
-                                                    <div class="right-arw">
-                                                        <img src="{{ asset('front/img/right-arrw.svg') }}" alt="">
-                                                    </div>
+                                                    Visit website
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </a>
                                             </div>
 
@@ -895,6 +900,8 @@
                                 // ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section9', 'label' => 'Alternatives'],
                                 ['id' => 'section14', 'label' => "Reviews"],
+                                ['id' => 'sectionDiscussions', 'label' => "Discussions"],
+                                
                                 // ['id' => 'section16', 'label' => 'Inbox'],
                             ];
 
@@ -922,9 +929,10 @@
                                 // ['id' => 'section2', 'label' => "$name"],
                                 // ['id' => 'section3', 'label' => "Pricing"],
                                 // ['id' => 'section4', 'label' => "Pros & cons"],
-                                ['id' => 'features' , 'label' => 'Features'],
+                                // ['id' => 'features' , 'label' => 'Features'],
+                                ['id' => 'section15' , 'label' => 'FAQs'],  
                                 // ['id' => 'softweretopic', 'label' => 'Software Topic'],
-                                ['id' => 'business-integration', 'label' => 'Integration']
+                                // ['id' => 'business-integration', 'label' => 'Integration']
 
                             ];
 
@@ -1232,63 +1240,26 @@
 
                                                 {{-- Breakdown --}}
                                                 <div class="review-progress-list">
-
+                                                    @foreach ($criteria as $criterion)
                                                     <div class="review-progress-item">
-                                                        <span>Ease of Use</span>
+                                                        <span>{{ $criterion->name }}</span>
 
                                                         <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $easeOfUseAvg*20 }}%">
-                                                                </div>
-                                                            </div>
+                                                             <div class="progress">
+                                                                 <div class="progress-bar"
+                                                                     style="width: {{ $criterion->average_rating * 20 }}%">
+                                                                 </div>
+                                                             </div>
 
-                                                            <strong>{{ number_format($easeOfUseAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
+                                                             <strong>{{ number_format($criterion->average_rating, 1) }}/5</strong>
+                                                         </div>
+                                                     </div>
+                                                     @endforeach
+                                                </div>
 
-                                                    <div class="review-progress-item">
-                                                        <span>Customer Service</span>
-
-                                                        <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $customerServiceAvg*20 }}%">
-                                                                </div>
-                                                            </div>
-
-                                                            <strong>{{ number_format($customerServiceAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="review-progress-item">
-                                                        <span>Features</span>
-
-                                                        <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $exclusiveFeatureAvg*20 }}%">
-                                                                </div>
-                                                            </div>
-
-                                                            <strong>{{ number_format($exclusiveFeatureAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="review-progress-item">
-                                                        <span>Value for Money</span>
-
-                                                        <div class="progress-wrap">
-                                                            <div class="progress">
-                                                                <div class="progress-bar"
-                                                                    style="width: {{ $valueForMoneyAvg*20 }}%">
-                                                                </div>
-                                                            </div>
-
-                                                            <strong>{{ number_format($valueForMoneyAvg,1) }}/5</strong>
-                                                        </div>
-                                                    </div>
-
+                                                <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Recommended by users</span>
+                                                    <strong style="color: #06498b; font-size: 16px;">{{ $recommendPercent }}%</strong>
                                                 </div>
 
                                             </div>
@@ -1779,7 +1750,7 @@
                                 </div>
                             </section> --}}
 
-                            <section class="business-features light" id="features">
+                            <!-- <section class="business-features light" id="features">
                                 <div class="container" data-aos="fade-up" data-aos-duration="1000">
                                     <h2 class="text-feature">Features</h2>
                                     <p class="text-feature-desc mb-4" style="color: #666; font-size: 15px; margin-top: 10px;">
@@ -1803,7 +1774,6 @@
                                                                     {{ $translation->name ?? $feature->name ?? 'Unnamed Feature' }}
                                                                 </h6>
 
-                                                                <!-- Clickable Rating Text In key Feature (opens popup) -->
                                                                 <p class="feature-content m-0 open-review-popup"
                                                                    data-feature="{{ $feature->id }}">
                                                                     <i class="fa-solid fa-star text-warning"></i>
@@ -1812,7 +1782,6 @@
                                                             </div>
                                                             <hr class="feature-card-divider" style="border: 0; border-top: 1px solid #eee; margin-top: 10px; margin-bottom: 15px;">
 
-                                                            <!-- Description -->
                                                             @if(!empty($translation->description))
                                                                 <p class="text-muted mb-0">{{ $translation->description }}</p>
                                                             @else
@@ -1827,7 +1796,7 @@
                                         <p class="text-center text-muted">No features have been added yet for this business.</p>
                                     @endif
                                 </div>
-                            </section>
+                            </section> -->
 
                             <!-- Key Feature Popup Modal -->
                             <div class="modal fade" id="reviewPopup" tabindex="-1" aria-labelledby="reviewPopupLabel" aria-hidden="true">
@@ -2055,7 +2024,7 @@
 
                             @endphp
 
-                            @if($items && count($items) > 0)
+                            <!-- @if($items && count($items) > 0)
                             <section class="business-integration-section" id="business-integration">
                                 <div class="container">
                                     {{-- Section Title --}}
@@ -2089,11 +2058,11 @@
                             </section>
                             @else
                             <p class="text-center text-muted">No integration items available.</p>
-                            @endif
+                            @endif -->
 
                             <!-- section software-like -->
                             {{-- faq --}}
-                            <section class="faq-section  faq-section_1 p_50 pt-2 light" id="section15">
+                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15">
                                 <div class="container">
                                     <div class="faq-inner">
                                         <div class="row">
@@ -2211,44 +2180,21 @@
 
                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                     <h6 class="fw_700 mb-3" style="color: #002655; font-size: 14px;">Review breakdown</h6>
+                                                    @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
+                                                        <p class="m-0" style="font-size: 12px; color: #555;">{{ $criterion->name }}</p>
                                                         <div class="prgs_br d-flex align-items-center">
                                                             <progress class="progress-bar"
-                                                                value="{{ $easeOfUseAvg * 20 }}"
+                                                                value="{{ $criterion->average_rating * 20 }}"
                                                                 max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $easeOfUseAvg }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $criterion->average_rating }}/5</span>
                                                         </div>
                                                     </div>
+                                                    @endforeach
 
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $customerServiceAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $customerServiceAvg }}/5</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $exclusiveFeatureAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $exclusiveFeatureAvg }}/5</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $valueForMoneyAvg * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $valueForMoneyAvg }}/5</span>
-                                                        </div>
+                                                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                        <span style="font-weight: 600; color: #002655; font-size: 12px;">Recommended by users</span>
+                                                        <strong style="color: #06498b; font-size: 14px;">{{ $recommendPercent }}%</strong>
                                                     </div>
                                                 </div>
 
@@ -2523,11 +2469,8 @@
                                                                 <a href="{{ $link }}"
                                                                     class="cta cta_orange d-flex align-items-center"
                                                                     tabindex="0">
-                                                                    Visit Website
-                                                                    <div class="right-arw">
-                                                                        <img src="{{ asset('front/img/right-arrw.svg') }}"
-                                                                            alt="">
-                                                                    </div>
+                                                                    Visit website
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
 
 
@@ -2821,48 +2764,29 @@
                                             <div class="review-sidebar-sticky">
                                                 
                                                 <!-- Localio Reviews Header -->
-                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 20px; color: #1e3050; line-height: 1.3;">
-                                                    <!-- Localio {{ $business->translations->first()->name }} Reviews -->
-                                                    User reviews
+                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #1e3050; line-height: 1.3;">
+                                                    User reviews ({{ $ratingCount }})
                                                 </h2>
 
-                                                <!-- Sort by Dropdown -->
-                                                <div class="selct_box" style="margin-bottom: 25px;">
-                                                    <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                        <label for="rating-select" style="font-size: 15px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
-                                                        <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 14px; border-radius: 6px; cursor: pointer; width: auto; min-width: 140px; border: 1px solid #ced4da;">
-                                                            <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
-                                                            <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
-                                                            <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
-                                                            <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
-                                                        </select>
-                                                    </form>
-                                                </div>
-
-                                                <!-- Overall Rating -->
-                                                <div class="rating-filter-header" style="margin-bottom: 20px;">
-                                                    <h4 style="font-size: 18px; font-weight: 700; color: #002655; margin-bottom: 4px;">Overall Rating</h4>
-                                                    <p style="font-size: 13px; margin: 0 0 15px 0; color: #777; font-weight: 500;">Based on {{ $ratingCount }} reviews</p>
-                                                    <div class="overall-stars" style="display: flex; align-items: center; gap: 10px;">
-                                                        <div style="display: flex; align-items: center; gap: 2px;">
-                                                            @for ($j = 1; $j <= 5; $j++)
-                                                                @if ($j <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
-                                                                @elseif ($j - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
-                                                                @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 20px;"></i>
-                                                                @endif
-                                                            @endfor
-                                                        </div>
-                                                        <span style="font-size: 28px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                <!-- Rating Stars (Moved below headline) -->
+                                                <div class="overall-stars" style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
+                                                    <div style="display: flex; align-items: center; gap: 2px;">
+                                                        @for ($j = 1; $j <= 5; $j++)
+                                                            @if ($j <= floor($averageRating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
+                                                            @elseif ($j - 0.5 <= $averageRating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 20px;"></i>
+                                                            @endif
+                                                        @endfor
                                                     </div>
+                                                    <span style="font-size: 20px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->
                                                 <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
-                                                    <span style="font-size: 18px; font-weight: 600; color: #002347;">Filter by rating</span>
-                                                    <!-- <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span> -->
+                                                    <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
                                                 </div>
 
                                                 <!-- Star Breakdown Checkboxes -->
@@ -2895,14 +2819,26 @@
                                         <!-- Right Column (Write Review button & Reviews List) -->
                                         <div class="col-lg-8">
                                             
-                                            <div style="display: flex; justify-content: flex-end; margin-bottom: 25px;">
+                                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                                                <div class="selct_box">
+                                                    <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                                                        <label for="rating-select" style="font-size: 14px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
+                                                        <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 13px; border-radius: 6px; cursor: pointer; width: auto; min-width: 130px; border: 1px solid #ced4da;">
+                                                            <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
+                                                            <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
+                                                            <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
+                                                            <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
+                                                        </select>
+                                                    </form>
+                                                </div>
+
                                                 <a class="write-review-link"
                                                     @auth
                                                         onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                     @else
                                                         onclick="window.location.href = '/login'" 
                                                     @endauth
-                                                    style="cursor: pointer; font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;"
+                                                    style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
                                                 >Write review</a>
                                             </div>
 
@@ -3823,7 +3759,7 @@
                            style="padding: 12px 24px; font-weight: 600; border-radius: 30px; text-decoration: none; display: flex; align-items: center; gap: 8px;"
                         >
                             Visit Website
-                            <i class="fa-solid fa-arrow-right"></i>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>
                     </div>
                 </div>

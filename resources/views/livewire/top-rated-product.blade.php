@@ -1,80 +1,159 @@
 <div>
-    <section class="banner_sec help-cntr-bnr top-auto-bnr top_rated_bnr-sec dark " style="background-color: #003F7D;">
-        <div class="bubble-wrp" data-aos="fade-up" data-aos-duration="1000">
-            {{-- <img src="img/small-bnnr-bg.png" alt=""> --}}
-        </div>
-        <div class="banner_content">
-            <div class="container">
-                <div class="banner_row" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="banner_text_col">
-                        <div class="banner_content_inner">
-                            <div class="hd-share-flex d-flex align-items-center">
-                                <h1>{{ static_text('top_rated_product_title') }}</h1>
-                            </div>
-                            <p class="fw_700">{{ static_text('top_rated_product_des') }}</p>
-                        </div>
-                    </div>
-                    <div class="banner_image_col">
-                        <div class="banner_image">
-                            <img src="{{ asset('front/img/top-rated-bnr-bg.png') }}" class="banner_top_image">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </section>
+    <style>
+        .top-rated-heading-block h1 {
+            font-size: 28px !important;
+            font-weight: 700;
+            padding: 0 !important;
+            margin-bottom: 4px !important;
+            color: #002347 !important;
+            
+        }
+        .top-rated-heading-block{
+            border-bottom: 2px solid #e8eef6;
+            margin-bottom: 15px;
+        }
+        section.top-automotive-sec.top_rate_pg.light {
+           margin-top: 4rem !important;
+        }
+        /* View details button – match height of Visit website */
+        .auto-choice-btn .cta_outline {
+            padding: 10px 16px !important;
+            height: auto !important;
+            min-height: 44px !important;
+            box-sizing: border-box !important;
+            line-height: 1.4 !important;
+        }
+        .automotive-card .blue-chkbox {
+            bottom: 105px !important;
+            transition: all 0.3s ease;
+        }
+        .usp-grid-container {
+            display: grid !important;
+            grid-template-columns: auto auto !important;
+            justify-content: start !important;
+            gap: 8px 45px !important;
+            width: 100% !important;
+        }
+        @media (max-width: 768px) {
+            .automotive-card {
+                padding-bottom: 20px !important;
+            }
+            .automotive-card .blue-chkbox {
+                position: relative !important;
+                bottom: auto !important;
+                right: auto !important;
+                border-radius: 8px !important;
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                margin-top: 15px !important;
+                padding: 12px 15px !important;
+            }
+            .automotive-card .blue-chkbox label {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                margin: 0 !important;
+            }
+            .usp-grid-container {
+                grid-template-columns: 1fr !important;
+                gap: 8px 0px !important;
+            }
+            .key-feature-price {
+                flex-direction: column !important;
+                align-items: stretch !important;
+            }
+            .starting-price-box, .free-trial-box {
+                width: 100% !important;
+                min-width: 100% !important;
+                margin-bottom: 10px !important;
+            }
+        #myID.search-box {
+            visibility: visible !important;
+            display: block !important;
+        }
+        .top-automotive-sec.top_rate_pg {
+            padding-top: 160px !important;
+        }
+        .top-rated-heading-block {
+            margin-left: 27%;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e8eef6;
+        }
+        .top-rated-heading-block h1 {
+            /* font-size: 34px;
+            font-weight: 800;
+            color: #002347;
+            margin: 0 0 5px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.2; */
+            font-size: 28px !important;
+            font-weight: 700;
+            padding: 0 !important;
+            margin-bottom: 4px !important;
+            color: #002347 !important;
+        }
+        .top-rated-heading-block p {
+            font-size: 15px;
+            color: #7a8ea8;
+            margin: 0;
+            font-weight: 400;
+        }
+        @media (max-width: 768px) {
+            .top-automotive-sec.top_rate_pg {
+                padding-top: 110px !important;
+            }
+            .top-rated-heading-block h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 
     <section class="top-automotive-sec top_rate_pg light  ">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
+                    <div class="top-rated-heading-block">
+                        <h1>Top-rated products</h1>
+                        <p>How to find the Best Product</p>
+                    </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
-                            <div class="search-box">
-                                {{-- <input type="text" wire:model.live="searchTerm"
-                                    placeholder="{{ static_text('product_search_placeholder') }}">
-                                <i class="fa fa-search"></i> --}}
-                                <input type="text" wire:model.live.debounce.500ms="searchTerm"
-                                placeholder="Search product">
-                             <i class="fa fa-search"></i>
-                            </div>
                             <div class="container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                 </div>
                                 <div class="col-md-12">
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
-                                        <h5>
-                                            {{ static_text('user_rating') }}</h5>
+                                        <h3 class="fw-semibold text-dark mb-3">
+                                            {{ static_text('user_rating') }}</h3>
 
-                                        @foreach ([5, 4, 3, 2, 1] as $rating)
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input"
-                                                    wire:model.live="selectedRatings" value="{{ $rating }}"
-                                                    id="rating-{{ $rating }}">
-                                                <label class="form-check-label" for="rating-{{ $rating }}">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= $rating)
-                                                            <i class="fas fa-star text-warning"></i>
-                                                        @else
-                                                            <i class="far fa-star text-warning"></i>
-                                                        @endif
-                                                    @endfor
-                                                    <span class="filter1">&
-                                                        up</span>
-                                                    <span class="filter2">
-                                                        ({{ $ratingCounts[$rating] ?? 0 }})
-                                                    </span>
-                                                </label>
-                                            </div>
-                                        @endforeach
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                wire:model.live="selectedRatings" value="4"
+                                                id="rating-4">
+                                            <label class="form-check-label" for="rating-4">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= 4)
+                                                        <i class="fas fa-star text-warning"></i>
+                                                    @else
+                                                        <i class="far fa-star text-warning"></i>
+                                                    @endif
+                                                @endfor
+                                                <span class="filter1">&
+                                                    up</span>
+                                                <span class="filter2">
+                                                    ({{ $ratingCounts[4] ?? 0 }})
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <link rel="stylesheet"
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
-                                    <div class="filter-section mb-4 pb-3 border-bottom pric_rnge">
+                                    <div class="filter-section mt-4 mb-4 pb-3 border-bottom pric_rnge">
                                         <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
 
                                         <div class="price-slider-container">
@@ -407,107 +486,130 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="auto-choice-btn">
+                                                    <div class="auto-choice-btn d-flex flex-column gap-2" style="min-width: 170px;">
                                                         <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
-                                                            class="cta cta_orange">
-                                                            Visit Website
-                                                            <div class="right-arw">
-                                                                <i class="fa-solid fa-arrow-right"></i>
-                                                            </div>
+                                                            class="cta cta_orange justify-content-center"
+                                                            target="_blank" style="display: flex !important; width: 100%; align-items: center;">
+                                                            Visit website
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                        </a>
+                                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
+                                                            class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; box-sizing: border-box;">
+                                                            View details
                                                         </a>
                                                     </div>
                                                 </div>
-                                                <div class="text-choice">
-                                                    <p>{!! $item->translations->first()->description !!}</p>
-                                                    <a style="color: #002347; text-decoration: none;"
-                                                        onmouseover="this.style.color='#F9633B'"
-                                                        onmouseout="this.style.color='#002347'"
-                                                        onmousedown="this.style.color='#F9633B'"
-                                                        onmouseup="this.style.color='#F9633B'"
-                                                        href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">Read
-                                                        More</a>
+
+                                                <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
+                                                    <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
+                                                        <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
+                                                            <div class="usp-grid-container">
+                                                                @if ($item->usps->count() > 0)
+                                                                    @foreach ($item->usps->take(4) as $usp)
+                                                                        <div class="d-flex align-items-center size18">
+                                                                            <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                                <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                            </div>
+                                                                            <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                        </div>
+                                                                    @endforeach
+                                                                @else
+                                                                    <div class="d-flex align-items-center size18">
+                                                                        <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                        </div>
+                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                    </div>
+                                                                    <div class="d-flex align-items-center size18">
+                                                                        <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                        </div>
+                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                    </div>
+                                                                    <div class="d-flex align-items-center size18">
+                                                                        <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
+                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                        </div>
+                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                <div class="key-feature-price d-flex">
-                                                    <div class="choice-key-features">
-                                                        <h6>Key Features</h6>
-                                                        <ul class="list-unstyled key-fea-lst">
-                                                            @if (!empty($item->features))
-                                                                @foreach ($item->features as $feature)
-                                                                    <li class="d-flex align-items-center">
-                                                                        <div class="grn_chk">
-                                                                            <img src="{{ asset('front/img/tick-img.png') }}"
-                                                                                alt="">
-                                                                        </div>
-                                                                        <p class="m-0">{!! $feature->translations->first()->name !!}</p>
-                                                                    </li>
-                                                                @endforeach
-                                                            @endif
-                                                        </ul>
-                                                    </div>
-
-                                                    @php
-                                                        $allPrices = $item->products
-                                                            ->flatMap(function ($product) {
-                                                                return $product->prices;
-                                                            })
-                                                            ->sortBy(function ($price) {
-                                                                // Prioritize: valid discount → renewal → base
-                                                                $now = Illuminate\Support\Carbon::now();
-
-                                                                if (
-                                                                    $price->discount_price &&
-                                                                    $price->discount_expiration_date &&
-                                                                    $now->lte(
-                                                                        Illuminate\Support\Carbon::parse(
-                                                                            $price->discount_expiration_date,
-                                                                        ),
-                                                                    )
-                                                                ) {
-                                                                    return $price->discount_price;
-                                                                } elseif ($price->renewal_price) {
-                                                                    return $price->renewal_price;
-                                                                } else {
-                                                                    return $price->price;
-                                                                }
-                                                            });
-
-                                                        $startingPrice = $allPrices->first();
-
-                                                        // Decide which field to show
-                                                        $displayPrice = null;
-
-                                                        if ($startingPrice) {
+                                                @php
+                                                    $allPrices = $item->products
+                                                        ->flatMap(function ($product) {
+                                                            return $product->prices;
+                                                        })
+                                                        ->sortBy(function ($price) {
+                                                            // Prioritize: valid discount → renewal → base
                                                             $now = Illuminate\Support\Carbon::now();
+
                                                             if (
-                                                                $startingPrice->discount_price &&
-                                                                $startingPrice->discount_expiration_date &&
+                                                                $price->discount_price &&
+                                                                $price->discount_expiration_date &&
                                                                 $now->lte(
                                                                     Illuminate\Support\Carbon::parse(
-                                                                        $startingPrice->discount_expiration_date,
+                                                                        $price->discount_expiration_date,
                                                                     ),
                                                                 )
                                                             ) {
-                                                                $displayPrice = $startingPrice->discount_price;
-                                                            } elseif ($startingPrice->renewal_price) {
-                                                                $displayPrice = $startingPrice->renewal_price;
+                                                                return $price->discount_price;
+                                                            } elseif ($price->renewal_price) {
+                                                                return $price->renewal_price;
                                                             } else {
-                                                                $displayPrice = $startingPrice->price;
+                                                                return $price->price;
                                                             }
-                                                        }
-                                                    @endphp
+                                                        });
 
+                                                    $startingPrice = $allPrices->first();
+
+                                                    // Decide which field to show
+                                                    $displayPrice = null;
+
+                                                    if ($startingPrice) {
+                                                        $now = Illuminate\Support\Carbon::now();
+                                                        if (
+                                                            $startingPrice->discount_price &&
+                                                            $startingPrice->discount_expiration_date &&
+                                                            $now->lte(
+                                                                Illuminate\Support\Carbon::parse(
+                                                                    $startingPrice->discount_expiration_date,
+                                                                ),
+                                                            )
+                                                        ) {
+                                                            $displayPrice = $startingPrice->discount_price;
+                                                        } elseif ($startingPrice->renewal_price) {
+                                                            $displayPrice = $startingPrice->renewal_price;
+                                                        } else {
+                                                            $displayPrice = $startingPrice->price;
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                <div class="key-feature-price d-flex gap-3 mt-3 align-items-stretch" style="display: flex !important; justify-content: flex-start !important; gap: 15px !important; flex-wrap: wrap;">
                                                     @if ($startingPrice)
-                                                        <div class="starting-price"
-                                                            style="margin-bottom: 35px;/* margin-left: -15px; */">
-                                                            <h6 class="m-0">Starting Price</h6>
-                                                            <p class="m-0">
-                                                                <span>{{ $startingPrice->currency }}
-                                                                    {{ number_format($displayPrice, 2) }}</span>
-                                                            </p>
+                                                        <div class="starting-price-box p-3 rounded d-flex flex-column justify-content-between" style="background: #fff; border: 1px solid #eef0f4; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-width: 220px; text-align: center; margin-bottom: 15px;">
+                                                            <div>
+                                                                <h6 style="font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Starting price</h6>
+                                                                <h3 style="font-weight: 700; color: #06498b; font-size: 24px; margin-bottom: 6px;">
+                                                                    {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+                                                                </h3>
+                                                                <p style="font-size: 12px; color: #888; margin-bottom: 12px;">Flat Rate, Per One_time</p>
+                                                            </div>
+                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}#pricing" style="font-size: 13px; font-weight: 600; color: #f9633b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
                                                         </div>
                                                     @endif
 
+                                                    <div class="free-trial-box p-3 rounded d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #eef0f4; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-width: 200px; text-align: center; margin-bottom: 15px;">
+                                                        <div class="trial-icon-circle d-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px; background-color: #06498b; border-radius: 50%; color: #fff;">
+                                                            <i class="fa fa-check" style="font-size: 20px;"></i>
+                                                        </div>
+                                                        <h6 style="font-size: 14px; font-weight: 700; color: #06498b; margin-bottom: 2px;">Free Trial</h6>
+                                                        <p class="m-0" style="font-size: 13px; color: #555; font-weight: 600;">Available</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />

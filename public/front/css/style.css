@@ -1568,7 +1568,7 @@ textarea:focus-visible {
   padding: 30px;
   padding-top: 0px;
   font-size: 18px;
-  max-width: 90%;
+  /* max-width: 90%; */
 }
 
 .faq-accor .accordion-button::after,
@@ -1699,10 +1699,10 @@ global classes */
   margin-bottom: 0;
 }
 
-.inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item.active {
+/* .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item.active {
   color: #06498b;
   font-weight: 500;
-}
+} */
 
 .asn_dv {
   background: #06498b08;
@@ -7942,7 +7942,7 @@ input:checked~.toggle-dot {
 /* 10sep start  */
 
 .faq-section {
-  background-color: #06498b08;
+  /* background-color: #06498b08; */
   padding: 40px 20px !important;
 }
 
@@ -8295,7 +8295,7 @@ input:checked~.toggle-dot {
 /* 1 october  */
 
 .crm_sec {
-  background: #f7f9fb;
+  /* background: #f7f9fb; */
   padding: 30px;
 }
 
@@ -8575,11 +8575,11 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   gap: 14px;
 }
 
-.business-integration-section .integration-items .integration-inboxs {
+.business-integration-section .integration-items .integration-inboxs a {
   border: 1px solid rgb(229, 229, 229);
   padding: 16px 24px;
   border-radius: 16px;
-  box-shadow: 0 4px 10px rgb(218 228 238);
+  /* box-shadow: 0 4px 10px rgb(218 228 238); */
   /* width: 20%; */
 }
 
@@ -8655,7 +8655,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .product_integra_sec {
-  background-color: transparent;
+  background-color: #f7f9fb;
 }
 
 .product_integra_sec .sftwre-like-innr .sftwre-asana-hd h2 {
@@ -9077,19 +9077,11 @@ header .menu li.menu-item a {
   max-width: 48px;
 }
 
-/* .most-populr-sec .inner_box_silder .inn_sl_hed {
-    gap: 12px;   
-} */
 .revie_img_sec .fetru_row .rating-stars i {
   font-size: 18px;
 }
 
-/* .asan-slider.asan-slider-btm .slick-track .slick-slide{
-  border:unset;
-}
-.asan-slider.asan-slider-btm .slick-track .slick-slide:hover{
-  border:unset !important;
-}  */
+
 .product_integra_sec .sftware-alternative-pck .cta.btn_blue:hover {
   background-color: #f9633b !important;
 }
@@ -9098,11 +9090,99 @@ header .menu li.menu-item a {
   transition: unset !important;
   ;
 }
-.product_integra_sec  progress::-webkit-progress-value {
+
+.product_integra_sec progress::-webkit-progress-value {
   background: #21ac21 !important;
 }
 
 .transparency-banner .inr-trans {
   background-color: #ffffff26;
   padding: 8px 10px;
+}
+
+/* 17-july-26  */
+
+.home_bnr_sec .banner_content_inner p,
+.cate_bnr_sec .banner_content_inner p {
+  margin-bottom: 30px;
+}
+
+.home_bnr_sec .search-box input,
+.cate_bnr_sec .search-box input {
+  padding: 18px 24px;
+}
+
+.inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item a:hover {
+  color: #000 !important;
+  text-decoration: underline;
+}
+
+.revie_img_sec .main_feture .feture_box {
+  border: 1px solid #06498b1a;
+}
+
+.revie_img_sec .review-header-box h5,
+.revie_img_sec .feture_box .starting-price-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.revie_img_sec .feture_box .starting-price-title {
+  margin-bottom: 35px;
+}
+
+.revie_img_sec .feture_box .starting-price-value {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+}
+
+.product_integra_sec .asn-rating h6 {
+  font-weight: 600;
+}
+
+.product_integra_sec .sftware-alternative-pck .asn-img {
+  height: 50px;
+  width: 50px;
+}
+
+.product_integra_sec .sft_ware_test .sftware-alternative {
+  gap: 20px;
+  border: unset;
+}
+
+.product_integra_sec .sft_ware_test .sftware-alternative {
+  gap: 20px;
+  border: unset;
+  box-shadow: unset;
+}
+
+.product_integra_sec .sftware-alternative-pck {
+  border-radius: 15px;
+}
+
+.product_integra_sec .sftware-alternative-pck:hover {
+  box-shadow: 0px 30px 40px 0px #06498b1a;
+}
+
+.latest_review_part_footer .business-info a:hover {
+  text-decoration: underline !important;
+}
+
+.pvc_sec ol.list-unstyled li a:hover {
+  text-decoration: underline;
+}
+
+.revie_left_rgt_sec a.write-review-link:hover,
+.revie_left_rgt_sec .btm-bttn a:hover {
+  text-decoration: underline !important;
+}
+
+
+.business-integration-section .integration-items .integration-inboxs a:hover {
+  box-shadow: 0 4px 10px rgb(218 228 238);
+}
+.product_inr_faq .accordion-button:not(.collapsed) ,
+.product_inr_faq .accordion-button,
+.product_inr_faq .accordion-collapse{
+  background-color: #06498b08;
 }

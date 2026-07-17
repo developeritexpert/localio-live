@@ -656,6 +656,13 @@ class BusinessEdit extends Component
     {
         $this->permanent_url = 'https://localio.com/' . $value;
     }
+    public function updatedName($value)
+    {
+        if (!$this->editMode) {
+            $this->permanentUrlSlug = Str::slug($value);
+            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        }
+    }
     protected function loadCategoryFeatures($categoryId)
     {
         $this->lang_id = getCurrentLanguageID();
@@ -1128,6 +1135,11 @@ class BusinessEdit extends Component
     // store new business in DB
     public function storeBusiness()
     {
+        if (empty($this->permanentUrlSlug) && !empty($this->name)) {
+            $this->permanentUrlSlug = Str::slug($this->name);
+            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        }
+
         // Mark all fields as touched before validation
         foreach (array_keys($this->getValidationRules()) as $field) {
             $this->touchedFields[$field] = true;
@@ -1167,6 +1179,10 @@ class BusinessEdit extends Component
 
     public function updateBusiness()
     {
+        if (empty($this->permanentUrlSlug) && !empty($this->name)) {
+            $this->permanentUrlSlug = Str::slug($this->name);
+            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        }
 
         // Mark all fields as touched before validation
         foreach (array_keys($this->getValidationRules()) as $field) {
@@ -1270,7 +1286,7 @@ class BusinessEdit extends Component
             ],
             'affiliate_partner' => 'nullable|string|max:191',
             'countryIsAffiliate' => 'boolean',
-            'affiliate_link' => 'required|url|max:191',
+            'affiliate_link' => $this->is_affiliate_partner ? 'required|url|max:191' : 'nullable',
             'icon_file' => 'nullable|image|mimes:jpg,png,svg|max:2048',
             'image_file' => 'nullable|image|mimes:jpg,png,svg|max:2048',
             'active_all_countries' => 'required|boolean',

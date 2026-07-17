@@ -44,6 +44,11 @@ class Category extends Model
         return $this->hasMany(Feature::class);
     }
 
+    public function ratingCriteria()
+    {
+        return $this->hasMany(CategoryRatingCriteria::class, 'category_id');
+    }
+
     public function media()
 {
     return $this->hasOne(Media::class, 'id', 'category_icon');

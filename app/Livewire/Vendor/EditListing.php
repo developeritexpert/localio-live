@@ -177,6 +177,7 @@ class EditListing extends Component
             ->where('business_id', $this->business->id)
             ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
             ->orderByDesc('rating')
+            ->orderByDesc('created_at')
             ->take(3)
             ->get();
 

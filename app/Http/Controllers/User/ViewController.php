@@ -57,7 +57,7 @@ class ViewController extends Controller
         })
         ->sortByDesc('average_rating') // sort by calculated average
         ->values()
-        ->take(3);
+        ->take(10);
 
 
         $categories->each(function ($category) use ($lang_id) {
@@ -78,7 +78,7 @@ class ViewController extends Controller
                     'usps',
                 ])
                 ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC') // ⭐ FIX: handle nulls
-                ->take(3)
+                ->take(6)
                 ->get();
 
             $category->setRelation('businesses', $businesses);

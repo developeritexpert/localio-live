@@ -129,6 +129,7 @@ class AuthenticationController extends Controller
             'last_name'  => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required',
+            'job_title' => 'required|string|max:191',
             // 'country_id' => 'required',
         ]);
 
@@ -141,6 +142,7 @@ class AuthenticationController extends Controller
             $user->last_name  = $request->last_name;
             $user->email      = $request->email;
             $user->password   = Hash::make($request->password);
+            $user->job_title  = $request->job_title;
             $user->country_id    = $country_code->country_id;
             $user->save();
             if ($user) {

@@ -914,6 +914,124 @@
                 }
             }
 
+                /* G2 Style 'Most popular categories' Section Redesign */
+                .most-popular-g2-layout {
+                    margin-top: 20px;
+                }
+                .popular-categories-sidebar {
+                    background: #fff;
+                    padding: 24px;
+                    border-radius: 16px;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+                    border: 1px solid rgba(0, 0, 0, 0.05);
+                }
+                .popular-categories-title {
+                    font-size: 24px !important;
+                    font-weight: 800 !important;
+                    color: #002347 !important;
+                    margin-top: 0 !important;
+                    margin-bottom: 24px !important;
+                    line-height: 1.3 !important;
+                }
+                .see-all-category-container {
+                    height: 31px !important; /* Matches line-height height of h2 popular-categories-title */
+                    margin-top: 0 !important;
+                    margin-bottom: 24px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: flex-end !important;
+                }
+                .popular-categories-nav {
+                    gap: 8px !important;
+                }
+                .popular-category-tab-btn {
+                    background: transparent !important;
+                    border: none !important;
+                    border-left: 3px solid transparent !important;
+                    border-radius: 0 !important;
+                    color: #4a5568 !important;
+                    font-size: 16px !important;
+                    font-weight: 600 !important;
+                    padding: 12px 16px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    gap: 12px !important;
+                    width: 100% !important;
+                    transition: all 0.2s ease-in-out !important;
+                    text-align: left !important;
+                }
+                .popular-category-tab-btn:hover {
+                    color: #002347 !important;
+                    background-color: #f7fafc !important;
+                }
+                .popular-category-tab-btn.active {
+                    color: #F9633B !important;
+                    background-color: #fff8f6 !important;
+                    border-left-color: #F9633B !important;
+                    font-weight: 700 !important;
+                }
+                .category-icon-wrapper {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    width: 32px !important;
+                    height: 32px !important;
+                    border-radius: 6px !important;
+                    background-color: #f7fafc !important;
+                    padding: 4px !important;
+                    flex-shrink: 0 !important;
+                }
+                .popular-category-tab-btn.active .category-icon-wrapper {
+                    background-color: #ffebe6 !important;
+                }
+                .category-btn-icon {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: contain !important;
+                }
+                .category-btn-text {
+                    flex-grow: 1 !important;
+                }
+                .see-all-category-link {
+                    font-size: 16px !important;
+                    font-weight: 700 !important;
+                    color: #F9633B !important;
+                    text-decoration: none !important;
+                    transition: color 0.2s !important;
+                }
+                .see-all-category-link:hover {
+                    color: #d84b25 !important;
+                    text-decoration: underline !important;
+                }
+                /* Mobile tweaks */
+                @media (max-width: 991px) {
+                    .popular-categories-sidebar {
+                        padding: 16px;
+                    }
+                    .popular-categories-nav {
+                        flex-direction: row !important;
+                        overflow-x: auto !important;
+                        flex-wrap: nowrap !important;
+                        padding-bottom: 8px !important;
+                    }
+                    .popular-category-tab-btn {
+                        width: auto !important;
+                        white-space: nowrap !important;
+                        border-left: none !important;
+                        border-bottom: 3px solid transparent !important;
+                        padding: 8px 16px !important;
+                    }
+                    .popular-category-tab-btn.active {
+                        border-left-color: transparent !important;
+                        border-bottom-color: #F9633B !important;
+                    }
+                    .see-all-category-container {
+                        height: auto !important;
+                        justify-content: flex-start !important;
+                        margin-bottom: 16px !important;
+                    }
+                }
+
     </style>
 
 </head>
@@ -1257,7 +1375,7 @@
                                                 @if(Auth::user()->user_type ==='user')
                                                 <a class="dropdown-item"
                                                     href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa fa-user"></i>My Profile</a>
+                                                        class="fa fa-user"></i>My discussions</a>
                                                 @elseif(Auth::user()->user_type ==='vendor')
                                                 <a class="dropdown-item"
                                                     href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}"><i
@@ -2206,6 +2324,10 @@
         $(document).ready(function() {
             function checkScroll() {
                 const $myElement = $('#myID');
+                @if (Route::currentRouteName() === 'top-rated-product' || Route::currentRouteName() === 'category.detail')
+                    $myElement.show();
+                    return;
+                @endif
 
                 if ($(window).scrollTop() > 460) {
                     $myElement.show();
@@ -2383,7 +2505,7 @@
             @else
                 <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
                     <i class="fa-solid fa-circle-user avatar-icon"></i>
-                    <span>Hello, sign In</span>
+                    <span>Hello, sign in</span>
                 </a>
             @endif
             <button class="category-sidebar-close" id="categories-sidebar-close">

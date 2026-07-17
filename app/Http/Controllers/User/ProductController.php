@@ -139,6 +139,7 @@ class ProductController extends Controller
             ->where('business_id', $business->id)
             ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
             ->orderByDesc('rating')
+            ->orderByDesc('created_at')
             ->take(3)
             ->get();
 
@@ -250,10 +251,47 @@ class ProductController extends Controller
         ->get();
         $link = $business->websites->first()->website_url ?? $business->affiliate_link ?? $business->permanent_url ?? '#';
         $reviews = Review::where('business_id', $business->id)->get();
-        $easeOfUseAvg = round($reviews->avg('ease_of_use_rating'), 1);
-        $valueForMoneyAvg = round($reviews->avg('value_for_money_rating'), 1);
-        $customerServiceAvg = round($reviews->avg('customer_service_rating'), 1);
-        $exclusiveFeatureAvg = round($reviews->avg('exclusive_service_rating'), 1);
+
+        $criteria = $business->category ? $business->category->ratingCriteria : collect();
+        $activeReviews = $reviews->where('status', 'active');
+        foreach ($criteria as $criterion) {
+            $totalScore = 0;
+            $count = 0;
+            foreach ($activeReviews as $review) {
+                $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+                    ->where('criteria_id', $criterion->id)
+                    ->first();
+                if ($ratingRecord) {
+                    $totalScore += $ratingRecord->rating;
+                    $count++;
+                } else {
+                    $legacyVal = null;
+                    if ($criterion->name === 'Ease of Use') {
+                        $legacyVal = $review->ease_of_use_rating;
+                    } elseif ($criterion->name === 'Customer Service') {
+                        $legacyVal = $review->customer_service_rating;
+                    } elseif ($criterion->name === 'Features') {
+                        $legacyVal = $review->exclusive_service_rating;
+                    } elseif ($criterion->name === 'Value for Money') {
+                        $legacyVal = $review->value_for_money_rating;
+                    }
+                    if (!is_null($legacyVal)) {
+                        $totalScore += $legacyVal;
+                        $count++;
+                    }
+                }
+            }
+            $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
+        }
+
+        $activeReviewsCount = $reviews->where('status', 'active')->count();
+        if ($activeReviewsCount > 0) {
+            $recommendCount = $reviews->where('status', 'active')->where('recommend', 1)->count();
+            $recommendPercent = round(($recommendCount / $activeReviewsCount) * 100);
+        } else {
+            $recommendPercent = 0;
+        }
+
         $default_image=WebSetting::where('key','user_default_image')->value('value');
         return view('User.product.product_detail', compact(
             'business','alternativeBusiness','additional_info','link','default_image',
@@ -271,10 +309,8 @@ class ProductController extends Controller
             'allReviews',
             'ourReviews',
             'trustpilotReviews',
-            'easeOfUseAvg',
-            'valueForMoneyAvg',
-            'customerServiceAvg',
-            'exclusiveFeatureAvg'
+            'criteria',
+            'recommendPercent'
         ));
     }
 
