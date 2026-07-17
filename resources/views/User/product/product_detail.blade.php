@@ -733,7 +733,13 @@
                                     @endphp
                                     @if ($categoryTranslation)
                                         <li class="breadcrumb-item active" aria-current="page">
-                                            {{ $categoryTranslation->name }}
+                                            <!-- {{ $categoryTranslation->name }} -->
+                                            <a href="javascript:void(0);"
+                                               onclick="changeCategory('{{ $categoryTranslation->slug }}')"
+                                               style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
+                                               onmouseout="this.style.color=''">
+                                                {{ $categoryTranslation->name }}
+                                            </a>
                                         </li>
                                     @endif
                                 @endif
@@ -895,6 +901,8 @@
                                 // ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section9', 'label' => 'Alternatives'],
                                 ['id' => 'section14', 'label' => "Reviews"],
+                                ['id' => 'sectionDiscussions', 'label' => "Discussions"],
+                                
                                 // ['id' => 'section16', 'label' => 'Inbox'],
                             ];
 
@@ -922,9 +930,10 @@
                                 // ['id' => 'section2', 'label' => "$name"],
                                 // ['id' => 'section3', 'label' => "Pricing"],
                                 // ['id' => 'section4', 'label' => "Pros & cons"],
-                                ['id' => 'features' , 'label' => 'Features'],
+                                // ['id' => 'features' , 'label' => 'Features'],
+                                ['id' => 'section15' , 'label' => 'FAQs'],  
                                 // ['id' => 'softweretopic', 'label' => 'Software Topic'],
-                                ['id' => 'business-integration', 'label' => 'Integration']
+                                // ['id' => 'business-integration', 'label' => 'Integration']
 
                             ];
 
