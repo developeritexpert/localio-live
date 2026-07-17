@@ -2062,7 +2062,7 @@
 
                             <!-- section software-like -->
                             {{-- faq --}}
-                            <section class="faq-section  faq-section_1 p_50 pt-2 light" id="section15">
+                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15">
                                 <div class="container">
                                     <div class="faq-inner">
                                         <div class="row">
