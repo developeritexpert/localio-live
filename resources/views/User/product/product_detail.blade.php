@@ -10,6 +10,7 @@
             : json_decode($business->business_images ?? '[]', true);
     @endphp
     <!-- Modal script driver (Declared early to prevent race conditions on render) -->
+
     <script>
         console.log("Gallery script block rendered");
         

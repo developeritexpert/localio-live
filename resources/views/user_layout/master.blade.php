@@ -2324,6 +2324,10 @@
         $(document).ready(function() {
             function checkScroll() {
                 const $myElement = $('#myID');
+                @if (Route::currentRouteName() === 'top-rated-product' || Route::currentRouteName() === 'category.detail')
+                    $myElement.show();
+                    return;
+                @endif
 
                 if ($(window).scrollTop() > 460) {
                     $myElement.show();

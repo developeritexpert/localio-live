@@ -1,5 +1,20 @@
 <div>
     <style>
+        .top-rated-heading-block h1 {
+            font-size: 28px !important;
+            font-weight: 700;
+            padding: 0 !important;
+            margin-bottom: 4px !important;
+            color: #002347 !important;
+            
+        }
+        .top-rated-heading-block{
+            border-bottom: 2px solid #e8eef6;
+            margin-bottom: 15px;
+        }
+        section.top-automotive-sec.top_rate_pg.light {
+           margin-top: 4rem !important;
+        }
         .automotive-card .blue-chkbox {
             bottom: 105px !important;
             transition: all 0.3s ease;
@@ -45,48 +60,58 @@
                 min-width: 100% !important;
                 margin-bottom: 10px !important;
             }
+        #myID.search-box {
+            visibility: visible !important;
+            display: block !important;
+        }
+        .top-automotive-sec.top_rate_pg {
+            padding-top: 160px !important;
+        }
+        .top-rated-heading-block {
+            margin-left: 27%;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e8eef6;
+        }
+        .top-rated-heading-block h1 {
+            /* font-size: 34px;
+            font-weight: 800;
+            color: #002347;
+            margin: 0 0 5px 0;
+            letter-spacing: -0.5px;
+            line-height: 1.2; */
+            font-size: 28px !important;
+            font-weight: 700;
+            padding: 0 !important;
+            margin-bottom: 4px !important;
+            color: #002347 !important;
+        }
+        .top-rated-heading-block p {
+            font-size: 15px;
+            color: #7a8ea8;
+            margin: 0;
+            font-weight: 400;
+        }
+        @media (max-width: 768px) {
+            .top-automotive-sec.top_rate_pg {
+                padding-top: 110px !important;
+            }
+            .top-rated-heading-block h1 {
+                font-size: 24px;
+            }
         }
     </style>
-    <section class="banner_sec help-cntr-bnr top-auto-bnr top_rated_bnr-sec dark " style="background-color: #003F7D;">
-        <div class="bubble-wrp" data-aos="fade-up" data-aos-duration="1000">
-            {{-- <img src="img/small-bnnr-bg.png" alt=""> --}}
-        </div>
-        <div class="banner_content">
-            <div class="container">
-                <div class="banner_row" data-aos="fade-up" data-aos-duration="1000">
-                    <div class="banner_text_col">
-                        <div class="banner_content_inner">
-                            <div class="hd-share-flex d-flex align-items-center">
-                                <h1>{{ static_text('top_rated_product_title') }}</h1>
-                            </div>
-                            <p class="fw_700">{{ static_text('top_rated_product_des') }}</p>
-                        </div>
-                    </div>
-                    <div class="banner_image_col">
-                        <div class="banner_image">
-                            <img src="{{ asset('front/img/top-rated-bnr-bg.png') }}" class="banner_top_image">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </section>
 
     <section class="top-automotive-sec top_rate_pg light  ">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
+                    <div class="top-rated-heading-block">
+                        <h1>Top-rated products</h1>
+                        <p>How to find the Best Product</p>
+                    </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
-                            <div class="search-box">
-                                {{-- <input type="text" wire:model.live="searchTerm"
-                                    placeholder="{{ static_text('product_search_placeholder') }}">
-                                <i class="fa fa-search"></i> --}}
-                                <input type="text" wire:model.live.debounce.500ms="searchTerm"
-                                placeholder="Search product">
-                             <i class="fa fa-search"></i>
-                            </div>
                             <div class="container">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                 </div>
