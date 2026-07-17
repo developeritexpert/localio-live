@@ -2,7 +2,7 @@
 @section('meta_title', isset($categoriesContents['meta_title']) && isset($categoriesContents['meta_title']) ? $categoriesContents['meta_title'] : 'Categories')
 @section('content')
 <!-- <h1>hello haia</h1> -->
-<section class="banner_sec help-cntr-bnr inr-bnr dark " style="background-color: #003F7D;">
+<section class="banner_sec help-cntr-bnr inr-bnr dark cate_bnr_sec" style="background-color: #003F7D;">
     <div class="bubble-wrp">
 
         @if ($backgroundImage)
