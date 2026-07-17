@@ -528,70 +528,54 @@
         @endif
     </section> --}}
 
+    @guest
     <!-- section right-tool -->
     <section class="right_tool_sec dark p_80">
         <div class="container">
             <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
                 <div class="otr_rgtool">
-                    <h2>{{ $homeContents['find_tool'] ?? null }}<h2>
+                    <h2>Join the Localio community</h2>
+                    <p class="text-white size18 mt-2" style="max-width: 700px; margin: 0 auto 30px;">Write reviews, join discussions, and help others make better buying decisions.</p>
                 </div>
                 <div class="right-tool-pack">
                     <div class="row">
                         <div class="col-lg-4">
                             <div class="tool-card">
                                 <div class="tool-card-img">
-                                    @if (isset($verifiedImage))
-                                        <img src="{{ asset($verifiedImage->meta_value) }}" alt="">
-                                    @endif
-
-                                    <!-- <img src="{{ asset('front/img/right-tool-img1.png') }}" alt=""> -->
+                                    <i class="fa-solid fa-user" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed">{{ $homeContents['verify_user_review'] ?? null }}</h3>
-                                    <p class="size18">{{ $homeContents['verify_review_description'] ?? null }}
-                                    </p>
+                                    <h3 class="tool_hed">Share your experience</h3>
+                                    <p class="size18">Help others by reviewing the products you use.</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="tool-card">
                                 <div class="tool-card-img">
-
-                                    @if (isset($featureImage))
-                                        <img src="{{ asset($featureImage->meta_value) }}" alt="">
-                                    @else
-                                        <img src="{{ asset('front/img/right-tool-img2.png') }}" alt="">
-                                    @endif
-                                    <!-- <img src="{{ asset('front/img/right-tool-img2.png') }}" alt=""> -->
+                                    <i class="fa-solid fa-comments" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed">{{ $homeContents['feature_price'] ?? null }}</h3>
-                                    <p class="size18">
-                                        {{ $homeContents['feature_price_description'] ?? null }}
-                                    </p>
+                                    <h3 class="tool_hed">Join discussions</h3>
+                                    <p class="size18">Ask questions and exchange experiences with the community.</p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4">
                             <div class="tool-card">
                                 <div class="tool-card-img">
-                                    @if (isset($indepentImage))
-                                        <img src="{{ asset($indepentImage->meta_value) }}" alt="">
-                                    @endif
-                                    <!-- <img src="{{ asset('front/img/right-tool-img3.png') }}" alt=""> -->
+                                    <i class="fa-solid fa-star" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed"> {{ $homeContents['independent'] ?? null }}</h3>
-                                    <p class="size18">{{ $homeContents['independent_description'] ?? null }} </p>
+                                    <h3 class="tool_hed">Build your reputation</h3>
+                                    <p class="size18">Earn badges and become a trusted contributor.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="right-tool-btn text-center">
-                    <a href="{{ route('category', ['locale' => app()->getLocale()]) }}" class="cta">
-                        {{ $homeContents['get_button_lable'] ?? null }}
-                    </a>
+                    <a href="{{ route('register') }}" class="cta">Sign up for free</a>
                 </div>
             </div>
         </div>
@@ -611,6 +595,7 @@
             <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
         </div>
     </section>
+    @endguest
 @endsection
 
 <script>
