@@ -139,6 +139,7 @@ class ProductController extends Controller
             ->where('business_id', $business->id)
             ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
             ->orderByDesc('rating')
+            ->orderByDesc('created_at')
             ->take(3)
             ->get();
 

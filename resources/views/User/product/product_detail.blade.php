@@ -786,6 +786,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
+                                            <p class="text-muted size16 mb-2 p-1" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions, features & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -1788,7 +1789,7 @@
                                 </div>
                             </section> --}}
 
-                            <section class="business-features light" id="features">
+                            <!-- <section class="business-features light" id="features">
                                 <div class="container" data-aos="fade-up" data-aos-duration="1000">
                                     <h2 class="text-feature">Features</h2>
                                     <p class="text-feature-desc mb-4" style="color: #666; font-size: 15px; margin-top: 10px;">
@@ -1812,7 +1813,6 @@
                                                                     {{ $translation->name ?? $feature->name ?? 'Unnamed Feature' }}
                                                                 </h6>
 
-                                                                <!-- Clickable Rating Text In key Feature (opens popup) -->
                                                                 <p class="feature-content m-0 open-review-popup"
                                                                    data-feature="{{ $feature->id }}">
                                                                     <i class="fa-solid fa-star text-warning"></i>
@@ -1821,7 +1821,6 @@
                                                             </div>
                                                             <hr class="feature-card-divider" style="border: 0; border-top: 1px solid #eee; margin-top: 10px; margin-bottom: 15px;">
 
-                                                            <!-- Description -->
                                                             @if(!empty($translation->description))
                                                                 <p class="text-muted mb-0">{{ $translation->description }}</p>
                                                             @else
@@ -1836,7 +1835,7 @@
                                         <p class="text-center text-muted">No features have been added yet for this business.</p>
                                     @endif
                                 </div>
-                            </section>
+                            </section> -->
 
                             <!-- Key Feature Popup Modal -->
                             <div class="modal fade" id="reviewPopup" tabindex="-1" aria-labelledby="reviewPopupLabel" aria-hidden="true">
@@ -2064,7 +2063,7 @@
 
                             @endphp
 
-                            @if($items && count($items) > 0)
+                            <!-- @if($items && count($items) > 0)
                             <section class="business-integration-section" id="business-integration">
                                 <div class="container">
                                     {{-- Section Title --}}
@@ -2098,7 +2097,7 @@
                             </section>
                             @else
                             <p class="text-center text-muted">No integration items available.</p>
-                            @endif
+                            @endif -->
 
                             <!-- section software-like -->
                             {{-- faq --}}
