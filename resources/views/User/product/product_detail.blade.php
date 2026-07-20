@@ -132,6 +132,7 @@
 
         @livewire('add-review')
         <style>
+
              /* Responsive CSS for Gallery Modal */
              #imageGalleryModal .modal-dialog {
                  max-width: 95%;
@@ -703,6 +704,15 @@
 .fixed-div .hide-on-sticky {
     display: none !important;
 }
+
+
+            /* 20-0702026 */
+            h5.card-title.mb-3 {
+                font-size: 24px !important;
+                font-weight: 600 !important;
+                line-height: 1.3 !important;
+                color: #002347 !important;
+            }
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -998,6 +1008,79 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {{-- PROS & CONS SECTION --}}
+                                        @if($business->proCons->count() > 0)
+                                        <div class="col-lg-12 mt-4 mb-4">
+                                            <div class="row g-4">
+                                                <div class="col-md-6">
+                                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title mb-3" style="font-weight: 700;">Pros</h5>
+                                                            <ul class="list-unstyled mb-0">
+                                                                @foreach($business->proCons->where('type', 'pro') as $pro)
+                                                                <li class="d-flex align-items-start mb-2">
+                                                                    <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                    <span>{{ $pro->text }}</span>
+                                                                </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title mb-3" style="font-weight: 700;">Cons</h5>
+                                                            <ul class="list-unstyled mb-0">
+                                                                @foreach($business->proCons->where('type', 'con') as $con)
+                                                                <li class="d-flex align-items-start mb-2">
+                                                                    <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                    <span>{{ $con->text }}</span>
+                                                                </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if(!empty($business->pro_cons_summary))
+                                            <div class="mt-3 text-muted" style="font-size: 14px;">
+                                                <em>{{ $business->pro_cons_summary }}</em>
+                                            </div>
+                                            @endif
+                                        </div>
+                                        @endif
+
+                                        {{-- OFFERINGS SECTION --}}
+                                        @if($business->offerings->count() > 0)
+                                        @php $offering = $business->offerings->first(); @endphp
+                                        <div class="col-lg-12 mt-4 mb-4">
+                                            <div class="offering-section mb-5">
+                                                @if($offering->headline)
+                                                    <h3 class="mb-3" style="font-weight: 700;">{{ $offering->headline }}</h3>
+                                                @endif
+                                                
+                                                @if($offering->top_text)
+                                                    <div class="mb-3">
+                                                        {{ $offering->top_text }}
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($offering->image)
+                                                    <div class="mb-3">
+                                                        <img src="{{ asset($offering->image) }}" class="img-fluid rounded" alt="{{ $offering->headline }}" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($offering->bottom_text)
+                                                    <div class="mt-3">
+                                                        {{ $offering->bottom_text }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @endif
 
                                         {{-- <div class="col-lg-12">
                                     <div class="is-asana-rgt">
