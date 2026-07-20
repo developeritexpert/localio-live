@@ -2791,24 +2791,24 @@
                                             <div class="review-sidebar-sticky">
                                                 
                                                 <!-- Localio Reviews Header -->
-                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #1e3050; line-height: 1.3;">
-                                                    User reviews ({{ $ratingCount }})
+                                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
+                                                    User reviews
                                                 </h2>
 
-                                                <!-- Rating Stars (Moved below headline) -->
-                                                <div class="overall-stars" style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
-                                                    <div style="display: flex; align-items: center; gap: 2px;">
+                                                <div class="overall-rating-box" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                                                    <span style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 8px;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="overall-stars" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 8px;">
                                                         @for ($j = 1; $j <= 5; $j++)
                                                             @if ($j <= floor($averageRating))
-                                                                <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
+                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
                                                             @elseif ($j - 0.5 <= $averageRating)
-                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                                             @else
-                                                                <i class="far fa-star text-warning" style="font-size: 20px;"></i>
+                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="font-size: 20px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                    <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->
