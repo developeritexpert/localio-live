@@ -686,6 +686,7 @@
 .feture_box.str_prc_box .starting-price-text {
     text-align: center !important;
     color:#444444;
+    font-size:12px;
 }
 
 .thre_revi_rgt .feture_box  h2 {
