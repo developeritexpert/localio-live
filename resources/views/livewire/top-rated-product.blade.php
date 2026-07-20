@@ -114,9 +114,28 @@
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
-                    <div class="top-rated-heading-block">
-                        <h1>Top-rated products</h1>
-                        <p>How to find the Best Product</p>
+                    <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
+                        <div class="row align-items-start">
+                            <div class="col-md-8 text-start">
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Best Website Builder Software</h1>
+                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                    Learn more from our team about Website Builder Software pricing features and benefits in our <a href="#" style="color: #06498b; font-weight: 600; text-decoration: none;">Website Builder Buyers Guide</a>
+                                </p>
+                            </div>
+                            <div class="col-md-4 mt-4 mt-md-0 text-start">
+                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                    <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+                                        <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                    </div>
+                                    <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                    </p>
+                                    <a href="#" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
