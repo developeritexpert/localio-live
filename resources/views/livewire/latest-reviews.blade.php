@@ -13,7 +13,8 @@
                 margin: 0 !important;
             }
             .latest_review_part_footer .review_card {
-                height: 240px !important;
+                height: auto !important;
+                min-height: 240px !important;
                 padding: 16px !important;
             }
         }
@@ -22,7 +23,8 @@
         <div class="container">
             <div class="slider_h" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="head_box" style="margin: 0;">
-                    <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0;">{{ $title ?? static_text('latest_reviews') ?? 'Recent reviews' }}</h2>
+                    <!-- <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0;">{{ $title ?? static_text('latest_reviews') ?? 'Recent reviews' }}</h2> -->
+                    <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0;">Latest reviews</h2>
                 </div>
                 <div class="reviews-slider-nav" style="display: flex; gap: 8px;">
                     <button class="reviews-prev" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #cbd5e0; background: #ffffff; color: #4a5568; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4a5568'; this.style.background='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.background='#ffffff';"><i class="fas fa-chevron-left"></i></button>
@@ -53,7 +55,7 @@
                                 @endphp
 
                                 @if ($business && $businessTranslation)
-                                    <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.02)';">
+                                    <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.02)';">
                                         <!-- Top part: user icon, name, rating -->
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                                             <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -65,22 +67,27 @@
                                             </div>
                                             <div class="user-info" style="display: flex; flex-direction: column; gap: 2px;">
                                                 <div class="user-name" style="font-size: 14px; font-weight: 600; color: #1a202c; line-height: 1.2;">{{ $userName }}</div>
-                                                <!-- Yellow Star ratings (as before) -->
-                                                <div class="rating-stars" style="display: flex; gap: 2px;">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= floor($review->rating))
-                                                            <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
-                                                        @else
-                                                            <i class="far fa-star text-warning" style="font-size: 12px;"></i>
-                                                        @endif
-                                                    @endfor
-                                                </div>
+                                                @if ($user && $user->job_title)
+                                                    <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
+                                                @endif
+                                                @if ($user && $user->company_size)
+                                                    <div class="user-company-size" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->company_size }}</div>
+                                                @endif
                                             </div>
                                         </div>
 
                                         <!-- Middle part: Title & Description -->
                                         <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
                                             <h5 style="color: #0d1b2a; font-size: 14px; font-weight: 700; margin: 0 0 6px 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">{{ $reviewTitle }}</h5>
+                                            <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($review->rating))
+                                                        <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
+                                                    @else
+                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
                                             <p style="font-size: 12.5px; color: #4a5568; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
                                                 {{ $reviewDescription ? strip_tags($reviewDescription) : 'No review content available.' }}
                                             </p>

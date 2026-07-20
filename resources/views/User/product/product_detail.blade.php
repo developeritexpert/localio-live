@@ -790,7 +790,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted size16 mb-2 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions, features & alternatives</p>
+                                            <p class="text-muted size16 mb-2 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -1204,45 +1204,39 @@
                                        <div class="main_feature_lg">
                                             <div class="feture_box review-breakdown-card">
 
-                                                {{-- Header --}}
-                                                <div class="review-header-box">
-                                                    <div>
-                                                        <h5>Overall rating</h5>
-                                                        <small>Based on {{ $totalReviews }} reviews</small>
+                                                {{-- Header & Overall Rating --}}
+                                                <div class="review-header-box" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                                                    <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                                        <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1;">
+                                                            {{ number_format($averageRating,1) }}
+                                                        </span>
+
+                                                        <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= floor($averageRating))
+                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                @elseif ($i - 0.5 <= $averageRating)
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                @else
+                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+
+                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} reviews</span>
                                                     </div>
 
-                                                    <a href="#section14" class="view-review-link">
+                                                    <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
                                                         View all reviews
                                                     </a>
                                                 </div>
 
-                                                {{-- Overall Rating --}}
-                                                <div class="overall-rating-box">
-
-                                                    <div class="rating-stars">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            @if ($i <= floor($averageRating))
-                                                                <i class="fas fa-star text-warning"></i>
-                                                            @elseif ($i - 0.5 <= $averageRating)
-                                                                <i class="fas fa-star-half-alt text-warning"></i>
-                                                            @else
-                                                                <i class="far fa-star text-warning"></i>
-                                                            @endif
-                                                        @endfor
-                                                    </div>
-
-                                                    <span class="overall-rating-number">
-                                                        {{ number_format($averageRating,1) }}
-                                                    </span>
-
-                                                </div>
-
-                                                <h2 class="breakdown-title">
+                                                <h2 class="breakdown-title" style="margin-bottom: 0;">
                                                     Review breakdown
                                                 </h2>
 
                                                 {{-- Breakdown --}}
-                                                <div class="review-progress-list mt-3">
+                                                <div class="review-progress-list mt-2">
                                                     @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-3">
                                                         <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
@@ -1259,6 +1253,18 @@
                                                 <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Recommended by users</span>
                                                     <strong style="color: #06498b; font-size: 16px;">{{ $recommendPercent }}%</strong>
+                                                </div>
+
+                                                <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <div style="display: flex; gap: 8px;">
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <i class="fas fa-thumbs-up"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <i class="fas fa-thumbs-down"></i>
+                                                        </a>
+                                                    </div>
                                                 </div>
 
                                             </div>
@@ -2756,6 +2762,28 @@
                                     }
                                 </style>
                                 <div class="crm_review_box review_sec" id="all-reviews">
+                                    
+                                    <!-- Review Prompt Banner -->
+                                    <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                                            </div>
+                                            <div>
+                                                <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Have you used {{ $business->translations->first()->name ?? 'this product' }} before?</h4>
+                                                <p style="margin: 0; font-size: 13.5px; color: #4a5568;">Answer a few questions to help the community.</p>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 12px; align-items: center;">
+                                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <i class="fas fa-check" style="color: #06498b;"></i> Yes
+                                            </button>
+                                            <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <i class="fas fa-times" style="color: #e53e3e;"></i> No
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     <div class="row review-row-prod-inr">
                                         
                                         <!-- Left Column (Sticky Header, Sort, Overall rating, filter) -->
