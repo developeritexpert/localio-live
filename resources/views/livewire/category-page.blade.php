@@ -176,8 +176,272 @@
             </div>
         @endif
         <div>
-            <!-- section top-rated automaotive -->
-            <section class="top-automotive-sec cat_pg light">
+            @if($isParentCategory)
+                <style>
+                    /* Parent Category UI Styles */
+                    .parent-cat-sidebar {
+                        border: 1px solid #e8eef6;
+                        border-radius: 8px;
+                        padding: 20px;
+                        background: #fff;
+                    }
+                    .parent-cat-sidebar h4 {
+                        font-size: 18px;
+                        font-weight: 700;
+                        margin-bottom: 15px;
+                        color: #002347;
+                        line-height: 1.3;
+                    }
+                    .parent-cat-sidebar ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .parent-cat-sidebar li {
+                        margin-bottom: 12px;
+                    }
+                    .parent-cat-sidebar li a {
+                        color: #555;
+                        font-size: 14px;
+                        text-decoration: none;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        transition: color 0.2s;
+                    }
+                    .parent-cat-sidebar li a:hover {
+                        color: #e56b46; /* The orange hover color */
+                    }
+                    .parent-cat-sidebar li a::after {
+                        content: '›';
+                        font-size: 18px;
+                        color: #e56b46;
+                        margin-left: 5px;
+                    }
+                    
+                    .parent-cat-main h1 {
+                        font-size: 32px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin-bottom: 5px;
+                    }
+                    .parent-cat-main > p {
+                        font-size: 15px;
+                        color: #666;
+                        margin-bottom: 20px;
+                    }
+                    .parent-cat-main h3 {
+                        font-size: 24px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .subcat-block {
+                        border: 1px solid #e8eef6;
+                        border-radius: 8px;
+                        padding: 20px;
+                        background: #fff;
+                        margin-bottom: 25px;
+                    }
+                    .subcat-block h4 {
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin-bottom: 8px;
+                    }
+                    .subcat-block p {
+                        font-size: 14px;
+                        color: #555;
+                        margin-bottom: 15px;
+                    }
+                    .subcat-block .subcat-popular-text {
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #333;
+                        margin-bottom: 15px;
+                    }
+                    
+                    .top-products-grid {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 15px;
+                    }
+                    @media(max-width: 991px) {
+                        .top-products-grid {
+                            grid-template-columns: repeat(2, 1fr);
+                        }
+                    }
+                    @media(max-width: 575px) {
+                        .top-products-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                    
+                    .top-product-card {
+                        border: 1px solid #e8eef6;
+                        border-radius: 6px;
+                        padding: 12px;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        background: #fff;
+                        text-decoration: none;
+                        transition: box-shadow 0.2s;
+                    }
+                    .top-product-card:hover {
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+                    }
+                    .top-product-logo {
+                        width: 50px;
+                        height: 50px;
+                        border: 1px solid #eee;
+                        border-radius: 6px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 4px;
+                        background: #fff;
+                        flex-shrink: 0;
+                    }
+                    .top-product-logo img {
+                        max-width: 100%;
+                        max-height: 100%;
+                        object-fit: contain;
+                    }
+                    .top-product-logo .avatar-placeholder {
+                        width: 100%;
+                        height: 100%;
+                        background-color: #002347;
+                        color: #fff;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: 700;
+                        font-size: 20px;
+                        border-radius: 4px;
+                    }
+                    .top-product-info {
+                        flex: 1;
+                        min-width: 0;
+                    }
+                    .top-product-info h6 {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin: 0 0 2px 0;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    .top-product-rating {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    .top-product-stars {
+                        color: #e56b46;
+                        font-size: 11px;
+                        display: flex;
+                    }
+                    .top-product-rating-text {
+                        font-size: 11px;
+                        color: #333;
+                        font-weight: 600;
+                        margin-top: 2px;
+                    }
+                </style>
+                <section class="top-automotive-sec cat_pg light" style="margin-top: 4rem;">
+                    <div class="container">
+                        <div class="row">
+                            <!-- Sidebar -->
+                            <div class="col-lg-3 mb-4">
+                                <div class="parent-cat-sidebar">
+                                    <h4>{{ $category->translations->name ?? 'Category' }} Categories</h4>
+                                    <ul>
+                                        @foreach($parentSubCategories as $subcat)
+                                            <li>
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}">
+                                                    {{ $subcat->translations->name ?? 'Subcategory' }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Main Content -->
+                            <div class="col-lg-9">
+                                <div class="parent-cat-main">
+                                    <h1>Best {{ $category->translations->name ?? 'Software' }}</h1>
+                                    <p>See more below to select the best {{ $category->translations->name ?? 'software' }}.</p>
+                                    
+                                    <h3>Popular {{ $category->translations->name ?? 'Software' }} Categories</h3>
+                                    
+                                    @foreach($parentSubCategories as $subcat)
+                                        <div class="subcat-block">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h4 class="mb-0">{{ $subcat->translations->name ?? 'Subcategory' }}</h4>
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}" style="color: #e56b46; font-size: 14px; font-weight: 600; text-decoration: none;">View All <i class="fas fa-chevron-right" style="font-size: 12px; margin-left: 3px;"></i></a>
+                                            </div>
+                                            
+                                            @php
+                                                $desc = strip_tags($subcat->translations->description ?? '');
+                                                if(empty($desc)) {
+                                                    $desc = ($subcat->translations->name ?? 'Software') . ' solutions designed to help you manage your workflow efficiently.';
+                                                }
+                                            @endphp
+                                            <p>{{ $desc }}</p>
+                                            
+                                            <div class="subcat-popular-text">
+                                                Popular {{ $subcat->translations->name ?? 'products' }} used by {{ $category->translations->name ?? 'professionals' }}
+                                            </div>
+                                            
+                                            <div class="top-products-grid">
+                                                @foreach($subcat->top_businesses as $business)
+                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}" class="top-product-card">
+                                                        <div class="top-product-logo">
+                                                            @if($business->logo)
+                                                                <img src="{{ asset($business->logo) }}" alt="Logo">
+                                                            @else
+                                                                <div class="avatar-placeholder">{{ strtoupper(substr($business->translations->first()->name ?? 'B', 0, 1)) }}</div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="top-product-info">
+                                                            <h6>{{ $business->translations->first()->name ?? 'Business Name' }}</h6>
+                                                            
+                                                            <div class="top-product-rating">
+                                                                <div class="top-product-stars">
+                                                                    @php $rating = round($business->average_rating); @endphp
+                                                                    @for($i = 1; $i <= 5; $i++)
+                                                                        @if($i <= $rating)
+                                                                            <i class="fas fa-star" style="margin-right:2px;"></i>
+                                                                        @else
+                                                                            <i class="far fa-star" style="margin-right:2px; color:#ccc;"></i>
+                                                                        @endif
+                                                                    @endfor
+                                                                </div>
+                                                                <span>({{ number_format($business->active_reviews_count) }})</span>
+                                                            </div>
+                                                            <div class="top-product-rating-text">
+                                                                {{ number_format($business->average_rating, 1) }} out of 5 stars
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            @else
+                <!-- section top-rated automaotive -->
+                <section class="top-automotive-sec cat_pg light">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
@@ -747,6 +1011,7 @@
             </div> --}}
             <x-news-letter-subscription/>
         </section>
+            @endif
         <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
