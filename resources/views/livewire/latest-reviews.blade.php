@@ -58,11 +58,11 @@
                                     <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.02)';">
                                         <!-- Top part: user icon, name, rating -->
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                            <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                @if ($userImage && $userImage !== 'front/img/default.png')
-                                                    <img src="{{ asset($userImage) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                @if ($user && $user->profile_image && $user->profile_image !== 'front/img/default.png')
+                                                    <img src="{{ asset($user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
                                                 @else
-                                                    <span style="font-weight: 600; color: #4a5568; font-size: 15px;">{{ strtoupper(substr($userName, 0, 1)) }}</span>
+                                                    <span style="font-weight: 600; color: #ffffff; font-size: 18px;">{{ strtoupper(substr($userName, 0, 1)) }}</span>
                                                 @endif
                                             </div>
                                             <div class="user-info" style="display: flex; flex-direction: column; gap: 2px;">

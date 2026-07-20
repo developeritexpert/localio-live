@@ -1497,16 +1497,15 @@
 
                                                              <div class="review-user">
 
-                                                                 @if($review->user && $review->user->profile_image)
+                                                                 @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                                      <img src="{{ asset($review->user->profile_image) }}"
                                                                          class="rounded-circle"
                                                                          width="45"
                                                                          height="45">
                                                                  @else
-                                                                     <img src="{{ asset($default_image) }}"
-                                                                         class="rounded-circle"
-                                                                         width="45"
-                                                                         height="45">
+                                                                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center;">
+                                                                         <span style="color: white; font-weight: bold; font-size: 20px;">{{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}</span>
+                                                                     </div>
                                                                  @endif
 
                                                                  <div>
@@ -1930,17 +1929,22 @@
                                                     <div class="reviw_hd">
                                                         <div class="ans_lft">
                                                             <div class="asn-img">
-                                                                @if ($review->user && $review->user->profile_image)
-                                                                    <img src="{{ asset($review->user->profile_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="User Image">
-                                                                @else
-                                                                    <img src="{{ asset($default_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="Default Image">
-                                                                @endif
+                                                                @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                     <img src="{{ asset($review->user->profile_image) }}"
+                                                                         class="img-fluid profile-circle"
+                                                                         style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                                         alt="User Image">
+                                                                 @else
+                                                                     <div class="profile-circle" style="width: 70px; height: 70px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                                                         <span style="color: white; font-weight: bold; font-size: 28px;">
+                                                                             @if ($review->user && $review->user->user_type === 'admin')
+                                                                                 {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                                             @else
+                                                                                 {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                                                             @endif
+                                                                         </span>
+                                                                     </div>
+                                                                 @endif
                                                             </div>
                                                             <div class="asn-rating">
                                                                 <h6>

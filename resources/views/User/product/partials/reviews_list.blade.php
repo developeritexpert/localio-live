@@ -19,16 +19,21 @@
                     <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
                         <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
                             <div class="asn-img" style="flex-shrink: 0;">
-                                @if ($review->user && $review->user->profile_image)
+                                @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                     <img src="{{ asset($review->user->profile_image) }}"
                                         class="img-fluid profile-circle"
                                         style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                         alt="User Image">
                                 @else
-                                    <img src="{{ asset($default_image) }}"
-                                        class="img-fluid profile-circle"
-                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                        alt="Default Image">
+                                    <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: bold; font-size: 20px;">
+                                            @if ($review->user && $review->user->user_type === 'admin')
+                                                {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                            @else
+                                                {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
                             <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
@@ -113,16 +118,21 @@
                         <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
                             <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
                                 <div class="asn-img" style="flex-shrink: 0;">
-                                    @if ($review->user && $review->user->profile_image)
+                                    @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                         <img src="{{ asset($review->user->profile_image) }}"
                                             class="img-fluid profile-circle"
                                             style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                             alt="User Image">
                                     @else
-                                        <img src="{{ asset($default_image) }}"
-                                            class="img-fluid profile-circle"
-                                            style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                            alt="Default Image">
+                                        <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center;">
+                                            <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                @if ($review->user && $review->user->user_type === 'admin')
+                                                    {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                @else
+                                                    {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                                @endif
+                                            </span>
+                                        </div>
                                     @endif
                                 </div>
                                 <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
@@ -198,16 +208,21 @@
                     <div class="reviw_hd">
                         <div class="ans_lft">
                             <div class="asn-img">
-                                @if ($review->user && $review->user->profile_image)
+                                @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                     <img src="{{ asset($review->user->profile_image) }}"
                                         class="img-fluid profile-circle"
                                         style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
                                         alt="User Image">
                                 @else
-                                    <img src="{{ asset($default_image) }}"
-                                        class="img-fluid profile-circle"
-                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                        alt="Default Image">
+                                    <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: bold; font-size: 20px;">
+                                            @if ($review->user && $review->user->user_type === 'admin')
+                                                {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                            @else
+                                                {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                            @endif
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
                             <div class="asn-rating">
