@@ -1078,7 +1078,7 @@
     }
     ?>
     @if($showCommissionsBanner)
-        <div class="transparency-banner" style="position: relative; top: 0; left: 0; width: 100%; height: 34px; background-color: #003f7d; z-index: 10; text-align: center;  box-sizing: border-box;">
+        <div class="transparency-banner" style="position: relative; top: 0; left: 0; width: 100%; background-color: #003f7d; z-index: 10; text-align: center;  box-sizing: border-box;">
            <div class="inr-trans">
         <div style="display: inline-block; font-size: 11.5px; color: #ffffff; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
                 {{ static_text('localio_commissions_message') }}
