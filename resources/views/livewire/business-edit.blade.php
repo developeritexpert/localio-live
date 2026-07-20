@@ -104,45 +104,6 @@
                         </div>
                     </div>
 
-                    <!-- Description (After Image) Section -->
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Description (After Image)</label>
-                            </div>
-
-                            <div wire:ignore x-data="{
-                                editor: null,
-                                init() {
-                                    this.$nextTick(() => {
-                                        ClassicEditor
-                                            .create(this.$refs.afterImageEditor)
-                                            .then(editor => {
-                                                this.editor = editor;
-                                                editor.model.document.on('change:data', () => {
-                                                    this.$wire.after_image_description = editor.getData();
-                                                });
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
-                                    });
-                                }
-                            }">
-                                <div class="form-group">
-                                    <textarea
-                                        x-ref="afterImageEditor"
-                                        class="form-control b_description @error('after_image_description') is-invalid @enderror"
-                                        wire:model.live="after_image_description"
-                                        rows="5">
-                                    </textarea>
-                                    @error('after_image_description')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Pricing Options Section -->
                     <div class="card card-bordered mb-3">
@@ -483,20 +444,35 @@
                                 </div>
                                 
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Image</label>
-                                    <div class="d-flex align-items-center">
-                                        @if (isset($newOfferingImages[0]) && $newOfferingImages[0])
-                                            <img src="{{ $newOfferingImages[0]->temporaryUrl() }}" class="img-thumbnail me-3" style="height: 60px;">
-                                        @elseif (!empty($businessOfferings[0]['image']))
-                                            <img src="{{ asset($businessOfferings[0]['image']) }}" class="img-thumbnail me-3" style="height: 60px;">
-                                        @endif
-                                        <input type="file" class="form-control" wire:model="newOfferingImages.0" accept="image/*">
+                                    <label class="form-label">Description (After Image)</label>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.afterImageEditor)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.after_image_description = editor.getData();
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="afterImageEditor"
+                                            class="form-control b_description @error('after_image_description') is-invalid @enderror"
+                                            wire:model.live="after_image_description"
+                                            rows="5">
+                                        </textarea>
+                                        @error('after_image_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                </div>
-                                
-                                <div class="form-group mb-3">
-                                    <label class="form-label">Bottom Text</label>
-                                    <textarea class="form-control" rows="3" wire:model.live="businessOfferings.0.bottom_text" placeholder="Text below the image..."></textarea>
                                 </div>
                             </div>
                         </div>

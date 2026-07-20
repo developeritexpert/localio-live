@@ -1066,18 +1066,6 @@
                                                         {{ $offering->top_text }}
                                                     </div>
                                                 @endif
-                                                
-                                                @if($offering->image)
-                                                    <div class="mb-3">
-                                                        <img src="{{ asset($offering->image) }}" class="img-fluid rounded" alt="{{ $offering->headline }}" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                                                    </div>
-                                                @endif
-                                                
-                                                @if($offering->bottom_text)
-                                                    <div class="mt-3">
-                                                        {{ $offering->bottom_text }}
-                                                    </div>
-                                                @endif
                                             </div>
                                         </div>
                                         @endif
