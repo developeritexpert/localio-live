@@ -74,11 +74,11 @@
             visibility: visible !important;
             display: block !important;
         }
-        .top-automotive-sec.top_rate_pg {
+        /* .top-automotive-sec.top_rate_pg {
             padding-top: 160px !important;
-        }
+        } */
         .top-rated-heading-block {
-            margin-left: 27%;
+            /* margin-left: 27%; */
             margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 2px solid #e8eef6;
@@ -104,12 +104,18 @@
         }
     }
         @media (max-width: 768px) {
-            .top-automotive-sec.top_rate_pg {
+            /* .top-automotive-sec.top_rate_pg {
                 padding-top: 110px !important;
-            }
+            } */
             .top-rated-heading-block h1 {
                 font-size: 24px;
             }
+            .top-auto-choice {
+    padding-top: 0;
+}
+section.top-automotive-sec.top_rate_pg.light {
+    margin-top: 55px !important;
+}
         }
     </style>
 
@@ -455,18 +461,15 @@
                                     </div>
                                 </div>
                                 @if (!empty($products))
-                                    @foreach ($products as $item)
+                                    @foreach ($products as $index => $item)
                                         <div class="automotive-card auto-bg" data-aos="fade-up"
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
                                             <div class="auto-choice-card" style="position: relative; ">
-                                                @if(isset($item->is_best_value) && $item->is_best_value)
-                                                    <div style="position: absolute; top: -14px; left: 24px; margin-bottom: 0;">
-                                                        <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                                            <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
-                                                        </span>
-                                                    </div>
-                                                @elseif(isset($item->best_value) && $item->best_value)
-                                                    <div style="position: absolute; top: -14px; left: 24px; margin-bottom: 0;">
+                                                @php
+                                                    $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
+                                                @endphp
+                                                @if($isBestValue)
+                                                    <div style="margin-bottom: 15px;">
                                                         <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
                                                             <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
                                                         </span>
