@@ -11,6 +11,6 @@
                id="compare{{ $item->id }}"
                wire:model.live="isInCompare"
                wire:click="toggleCompare({{ $item->id }})">
-        <label for="compare{{ $item->id }}">Compare Products</label>
+        <label for="compare{{ $item->id }}">Compare</label>
     </div>
     </div>

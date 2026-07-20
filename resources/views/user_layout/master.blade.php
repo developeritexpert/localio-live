@@ -1345,21 +1345,28 @@
                                     
                                  <div class="user_img drop_menu">
                                     <div class="usr_profile">
-                                        @if (Auth::user()->profile_image)
-                                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%;'>
+                                        @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 40px; height: 40px; object-fit: cover; flex-shrink: 0;'>
                                         @else
-                                        <img src="{{ dimage()}}" class="img-fluid">
+                                        <div class="profile-circle" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 50%; background-color: #f76b1c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <span style="color: white; font-weight: bold; font-size: 18px; line-height: 1; margin-top: 2px;">
+                                                {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                            </span>
+                                        </div>
                                         @endif
                                     </div>
                                     <div class="dropdown-menu dropdown-menu-right" style="margin-right: 20px;">
                                         <div class="dropdown-main ">
                                             <div class="user_detail">
                                                 <div class="user_img">
-                                                    @if (Auth::user()->profile_image)
-                                                    <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%;'>
+                                                    @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                                                    <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
                                                     @else
-                                                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{
-                                                    strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                                    <div class="profile-circle" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                        <span style="color: white; font-weight: bold; font-size: 20px; line-height: 1; margin-top: 2px;">
+                                                            {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                                        </span>
+                                                    </div>
                                                     @endif
                                                 </div>
                                                 <div class="user_name">

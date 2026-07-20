@@ -28,6 +28,7 @@ class Business extends Model
         'secondary_keywords',
         'long_tail_keywords',
         'high_intent_keywords',
+        'pro_cons_summary',
     ];
     protected $casts = [
         'is_affiliate' => 'integer',
@@ -96,6 +97,14 @@ class Business extends Model
     public function features()
     {
         return $this->belongsToMany(Feature::class, 'business_feature');
+    }
+    public function proCons()
+    {
+        return $this->hasMany(BusinessProCon::class);
+    }
+    public function offerings()
+    {
+        return $this->hasMany(BusinessOffering::class);
     }
     public function limitedFeatures()
 {
