@@ -3046,10 +3046,8 @@ select:focus {
 
 .blue-chkbox {
   position: absolute;
-  right: 0;
-  bottom: 31px;
   background-color: #ebf0f6;
-  border-radius: 70px 0 0 70px;
+  border-radius: 0 70px 70px 0;
   padding: 16px 35px;
   color: #002347;
 }
@@ -9186,4 +9184,8 @@ header .menu li.menu-item a {
 .product_inr_faq .accordion-button,
 .product_inr_faq .accordion-collapse {
   background-color: #06498b08;
+}
+
+.top_rate_pg .auto-choice-rgt .auto-choice-card {
+  width: 100% !important;
 }
