@@ -714,6 +714,13 @@
                 line-height: 1.3 !important;
                 color: #002347 !important;
             }
+
+            /* 21-july-26 */
+            .asan-slider.asan-slider-btm .slick-track .hover_main , 
+            .asan-slider.asan-slider-btm .slick-track .slick-slide:hover {
+                border: 1px solid rgb(0, 0, 0);
+                border-radius: 6px !important;
+            }
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">

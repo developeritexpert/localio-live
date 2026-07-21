@@ -465,7 +465,7 @@
                 .rate_box span {
                     font-weight: 600 !important;
                 }
-                /* .wishlist {
+                .wishlist {
                     flex: 0 0 44px !important;
                     width: 44px !important;
                     height: 44px !important;
@@ -481,7 +481,7 @@
                     align-self: flex-start !important; /* Pin heart icon to top right */
                     margin-top: 4px !important; /* Visual micro-alignment with first line of title */
                     position: static !important; /* Use flex flow instead of absolute positioning */
-                } */
+                }
                 .wishlist i {
                     font-size: 18px !important;
                     color: #555 !important;
@@ -549,7 +549,7 @@
                     height: 44px !important;
                     margin: 0 !important;
                 }
-                /* .sl_main div[wire\:key*="wishlist-container"] .wishlist {
+                .sl_main div[wire\:key*="wishlist-container"] .wishlist {
                     position: static !important;
                     width: 44px !important;
                     height: 44px !important;
@@ -563,7 +563,7 @@
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                     align-self: flex-start !important;
                     margin: 0 !important;
-                } */
+                }
 
                 /* Show only 1 star rating in most popular cards on mobile (Disabled)
                 .popular-accordion-wrp .tab_star_li i:nth-child(n+2) {
@@ -675,7 +675,7 @@
                     word-break: break-word !important;
                     align-self: flex-start !important;
                 }
-                /* .top-rate-innr .wishlist,
+                .top-rate-innr .wishlist,
                 .reviews_block .wishlist,
                 .automotive-card .wishlist,
                 .automotive-card div[wire\:key*="wishlist-container"] {
@@ -692,7 +692,7 @@
                     border-radius: 50% !important;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
                     align-self: flex-start !important;
-                } */
+                }
                 .top-rate-innr .tp-btm,
                 .reviews_block .tp-btm,
                 .automotive-card .tp-btm,
