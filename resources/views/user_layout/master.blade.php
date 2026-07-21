@@ -1099,7 +1099,7 @@
         </div>
         <style>
             header .sec_head {
-                top: 15px !important;
+                top: 26px !important;
             }
             /* .product-page-body header .sec_head {
                 margin-top: 34px !important;
@@ -1113,14 +1113,14 @@
                     const updateHeaderPosition = () => {
                         let scroll = window.scrollY;
                         if (scroll > 0) {
-                            banner.style.transform = 'translateY(-16px)';
+                            banner.style.transform = 'translateY(0)';
                             if (!document.body.classList.contains('product-page-body')) {
                                 header.style.setProperty('top', '0px', 'important');
                             }
                         } else {
                             banner.style.transform = 'translateY(-' + scroll + 'px)';
                             if (!document.body.classList.contains('product-page-body')) {
-                                header.style.setProperty('top', (16 - scroll) + 'px', 'important');
+                                header.style.setProperty('top', (26 - scroll) + 'px', 'important');
                             }
                         }
                     };
@@ -1414,7 +1414,11 @@
 
                                                 @if(Auth::user()->user_type ==='user')
                                                 <a class="dropdown-item"
-                                                href="{{ route('user-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
+                                                href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-key"></i>Change Password</a>
+                                                </div>
+                                            <div class="dash-icon">
+                                                <a class="dropdown-item"
+                                                href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-envelope"></i>Email Preferences</a>
                                                 @elseif(Auth::user()->user_type ==='vendor')
                                                 <a class="dropdown-item"
                                                     href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
@@ -1593,8 +1597,8 @@
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}"
                                     class="brand"><img src="{{ asset('front/img/foot-logo.svg') }}"></a>
                                 @endif
-
-                                <ul class="foot-right-list">
+                                    <p class="mt-2">Make better buying decisions</p>
+                                <ul class="foot-right-list d-none">
                                     <li>
                                         <a href="{{ $footerMediaUrls['facebook_url'] ?? '#' }}" target="_blank">
                                             @if (isset($facebookIcon))

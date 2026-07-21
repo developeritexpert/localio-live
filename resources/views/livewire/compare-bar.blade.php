@@ -13,7 +13,7 @@
                 <div>
                     <strong>{{ count($comparedProducts) }}</strong> product(s) selected for comparison
                 </div>
-                <button class="btn btn-primary" wire:click="goToComparison">
+                <button class="btn btn-primary" wire:click="goToComparison" @if(count($comparedProducts) < 2) disabled title="Please select 2 products to compare" style="opacity: 0.6; cursor: not-allowed;" @endif>
                     Compare Now
                 </button>
             </div>

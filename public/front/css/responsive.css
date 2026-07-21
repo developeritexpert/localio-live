@@ -11255,9 +11255,9 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 }
 
 .ft-btm-rgt .select-menu ul.options h3 {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-weight: 700;
-  font-size: 28px !important;
+  font-size: 22px !important;
 }
 
 .subs_sec .subs_content>div label a {
@@ -12704,6 +12704,17 @@ textarea#message {
     background: #f9633b;
   }
 
+  /* 21-july-26 */
+  .most-populr-sec .main_feature_lg {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .most-populr-sec .top-pro-btn .cta {
+    font-size: 12px !important;
+    padding: 11px 15px;
+  }
+
 }
 
 @media (max-width:767px) {
@@ -12955,6 +12966,47 @@ textarea#message {
   .contact_sec .contact_content {
     border-radius: 15px;
   }
+
+  /* 21-july-26  */
+  .transparency-banner .inr-trans>div {
+    font-size: 9px !important;
+  }
+
+  .transparency-banner .inr-trans {
+    padding: 9px;
+  }
+
+  .most-populr-sec .best-value-inline-container {
+    top: -20px;
+  }
+
+  .latest_review_part_footer .reviews_block .slick-track {
+    padding-bottom: 0;
+  }
+
+  .latest_review_part_footer .review-slide-column {
+    padding-block: 0 !important;
+  }
+
+  .latest_review_part_footer .slick-list.draggable {
+    padding: 0;
+  }
+
+  .asn_main_sec_2 .fixed-div .Tab-outerlnk.container-fluid {
+    display: none !important;
+  }
+
+  .asn_main_sec_2 .fixed-div {
+    padding-bottom: 5px !important;
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .new-visit-anc .cta.cta_orange {
+    padding: 8px 22px;
+  }
+
+  .asn_dv.fixed-div .frst_rw {
+    gap: 10px !important;
+  }
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */
@@ -13012,4 +13064,10 @@ textarea#message {
   color: #666 !important;
   line-height: 1.6 !important;
   margin-bottom: 0 !important;
+}
+
+@media (max-width:420px) {
+  .transparency-banner .inr-trans {
+    padding: 5px 10px;
+  }
 }

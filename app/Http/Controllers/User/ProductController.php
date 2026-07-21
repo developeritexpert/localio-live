@@ -342,6 +342,74 @@ class ProductController extends Controller
             // dd($businesses);
         return view('User.product.product_comparison', compact('businesses'));
     }
+
+    public function productComparisonSeo($locale = null, $comparison_slug = null, $comparison_businesses = null)
+    {
+        // If route is group prefixed with '{locale?}', the first param is $locale.
+        // We only really need $comparison_slug and $comparison_businesses.
+        if (!$comparison_businesses) {
+            $comparison_businesses = $comparison_slug;
+            $comparison_slug = $locale;
+        }
+        
+        $lang_id = getCurrentLanguageID();
+        
+        // Find the category based on comparison_slug to validate
+        $categoryTranslation = \App\Models\CategoryTranslation::where('comparison_slug', $comparison_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+            
+        if (!$categoryTranslation) {
+            abort(404);
+        }
+
+        // The user specified that "vs" is defined by country in general.
+        $vs_keyword = __('messages.vs') !== 'messages.vs' ? __('messages.vs') : 'vs'; 
+        
+        // In case translation doesn't match the url for some reason, default to standard -vs- fallback
+        $separator = "-{$vs_keyword}-";
+        
+        if (strpos($comparison_businesses, $separator) === false) {
+            $separator = "-vs-";
+        }
+        
+        $slugs = explode($separator, $comparison_businesses);
+        
+        if (count($slugs) != 2) {
+            abort(404); // Invalid format
+        }
+        
+        $businesses = Business::with([
+            'products.prices',
+            'translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
+            'reviews.translations' => function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            },
+            'features.translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
+        ])
+        ->whereHas('translations', function($query) use ($slugs) {
+            $query->whereIn('slug', $slugs);
+        })
+        ->get();
+        
+        // Ensure businesses are ordered in the same way they were requested
+        $orderedBusinesses = collect();
+        foreach ($slugs as $slug) {
+            $business = $businesses->first(function($b) use ($slug) {
+                return $b->translations->first() && $b->translations->first()->slug === $slug;
+            });
+            if ($business) {
+                $orderedBusinesses->push($business);
+            }
+        }
+        $businesses = $orderedBusinesses;
+
+        return view('User.product.product_comparison', compact('businesses'));
+    }
     public function removeFromComparison($locale, $productId)
     {
         \Log::info('Removing product from comparison: ' . $productId);

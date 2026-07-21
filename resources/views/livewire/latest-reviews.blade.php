@@ -24,7 +24,7 @@
             <div class="slider_h" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="head_box" style="margin: 0;">
                     <!-- <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0;">{{ $title ?? static_text('latest_reviews') ?? 'Recent reviews' }}</h2> -->
-                    <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0;">Latest reviews</h2>
+                    <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0; text-transform:none;">Latest reviews</h2>
                 </div>
                 <div class="reviews-slider-nav" style="display: flex; gap: 8px;">
                     <button class="reviews-prev" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #cbd5e0; background: #ffffff; color: #4a5568; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4a5568'; this.style.background='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.background='#ffffff';"><i class="fas fa-chevron-left"></i></button>

@@ -9,6 +9,7 @@ class CompareProducts extends Component
     public $comparedProducts = [];
     public $errorMessage = '';
     public $item;
+    public $isDisabled = false;
     public $isInCompare = false;
     protected $listeners = ['toggleCompareProduct' => 'refreshComparedProducts'];
 
@@ -21,6 +22,7 @@ class CompareProducts extends Component
     {
         $this->comparedProducts = app(CompareService::class)->getComparedProducts();
         $this->isInCompare = in_array((int)$this->item->id, $this->comparedProducts);
+        $this->isDisabled = count($this->comparedProducts) >= 2 && !$this->isInCompare;
     }
     public function toggleCompare($productId)
     {
@@ -30,8 +32,8 @@ class CompareProducts extends Component
         $result = $compareService->toggleProductComparison($productId);
 
         if ($result['error']) {
-            $this->errorMessage = $result['error'];
             $this->isInCompare = in_array($productId, $result['compared_products']);
+            $this->dispatch('show-toastr-error', message: $result['error']);
         } else {
             $this->comparedProducts = $result['compared_products'];
             $this->isInCompare = in_array($productId, $this->comparedProducts);
@@ -40,6 +42,7 @@ class CompareProducts extends Component
             // Dispatch event to notify all components
             $this->dispatch('toggleCompareProduct');
         }
+        $this->isDisabled = count($this->comparedProducts) >= 2 && !$this->isInCompare;
     }
 
     public function render()

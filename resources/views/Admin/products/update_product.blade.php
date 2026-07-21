@@ -324,22 +324,22 @@
                             <div class="card card-bordered">
                                 <div class="card-inner">
                                     <!-- Product Prices -->
-                                    <h5 class="card-title"> Product Price</h5>
+                                    <h5 class="card-title"> Starting price</h5>
                             
                                     <div id="price-container">
                                         @foreach ($product->prices as $price)
                                             <div class="price-box mb-3 p-3 rounded position-relative">
                             
                                                 {{-- Row 1: Default Price & Currency --}}
-                                                <div class="mb-2">
+                                                <!-- <div class="mb-2">
                                                     <label class="form-label">Default Price :</label>
-                                                </div>
+                                                </div> -->
                                                 <div class="row">
                                                     <div class="col-md-6 mb-3">
                                                         <x-google-input
                                                             type="number"
                                                             name="prices"
-                                                            label="Default Price"
+                                                            label="Starting price"
                                                             value="{{ $price->price }}"
                                                         />
                                                     </div>

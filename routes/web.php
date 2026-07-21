@@ -556,11 +556,12 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['User']], function () {
     Route::get('/user-dashboard/support', [UserDashboardController::class, 'userSupport'])->name('user-support');
     Route::get('/user-dashboard/support/{id}',[UserDashboardController::class,'supportView'])->name('user-support-view');
 
-    Route::get('/user-dashboard/configuration', [UserDashboardController::class, 'userConfiguration'])->name('user-configuration');
+    Route::get('/user-dashboard/change-password', [UserDashboardController::class, 'userChangePassword'])->name('user-change-password');
     Route::post('/user-dashboard-configuration-update', [UserDashboardController::class, 'updatePassword'])->name('user-updatePassword');
-
+    
+    Route::get('/user-dashboard/email-preferences', [UserDashboardController::class, 'userEmailPreferences'])->name('user-email-preferences');
     Route::post('/user-dashboard-configuration-email-prefernce-update', [UserDashboardController::class, 'updateEmailPreferences'])
-    ->name('user.email-preferences.update');
+        ->name('user.email-preferences.update');
 
 });
 
@@ -622,7 +623,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['vendor']], function () 
     Route::get('/vendor-dashboard/configuration', [HomeController::class, 'vendorConfiguration'])->name('vendor-configuration');
     Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
 
-
+    // Dynamic SEO Routes (Must be at the very bottom of the locale group to act as fallbacks)
+    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
 });
 
 

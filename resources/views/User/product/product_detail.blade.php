@@ -364,7 +364,7 @@
 }
 
 .asan-slider.asan-slider-btm.slider-nav .slick-track .slick-slide.slick-active {
-    margin: 10px 5px 0 !important;
+    margin: 0 5px  !important;
 }
 .new-visit-anc .cta.cta_orange {
     font-size: 13px;
@@ -713,6 +713,13 @@
                 font-weight: 600 !important;
                 line-height: 1.3 !important;
                 color: #002347 !important;
+            }
+
+            /* 21-july-26 */
+            .asan-slider.asan-slider-btm .slick-track .hover_main , 
+            .asan-slider.asan-slider-btm .slick-track .slick-slide:hover {
+                border: 1px solid rgb(0, 0, 0);
+                border-radius: 6px !important;
             }
     </style>
     <div data-business-id="{{ $business->id }}">
@@ -1137,7 +1144,7 @@
 
                                                         <!-- Thumbnail Slider -->
                                                         <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
-                                                            style="margin-top: 15px;">
+                                                            style="margin-top: 15px !important;">
                                                             @foreach ($images as $index => $image)
                                                                 <div style="padding: 0 5px; cursor: pointer;">
                                                                     <img src="{{ asset($image) }}"
@@ -1150,6 +1157,24 @@
                                                     </div>
                                                 </div>
                                          @endif
+
+                                         <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                // Wait for slick to initialize
+                                                setTimeout(() => {
+                                                    var $slider = $('.asan-slider-btm');
+                                                    
+                                                    // Give the active slide the class initially
+                                                    $slider.find('.slick-current').addClass('hover_main');
+                                                    
+                                                    // On hover, add class and remove from others
+                                                    $slider.on('mouseenter', '.slick-slide', function() {
+                                                        $slider.find('.slick-slide').removeClass('hover_main');
+                                                        $(this).addClass('hover_main');
+                                                    });
+                                                }, 500);
+                                            });
+                                         </script>
                                          {{-- End Business Images  --}}
 
                                          @if (!empty($business->translations->first()->after_image_description))
