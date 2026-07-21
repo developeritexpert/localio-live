@@ -1597,8 +1597,8 @@
                                 <a href="{{ route('home', ['locale' => app()->getLocale()]) }}"
                                     class="brand"><img src="{{ asset('front/img/foot-logo.svg') }}"></a>
                                 @endif
-
-                                <ul class="foot-right-list">
+                                    <p class="mt-2">Make better buying decisions</p>
+                                <ul class="foot-right-list d-none">
                                     <li>
                                         <a href="{{ $footerMediaUrls['facebook_url'] ?? '#' }}" target="_blank">
                                             @if (isset($facebookIcon))
