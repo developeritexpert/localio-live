@@ -95,8 +95,8 @@ class BusinessListing extends Component
         return array_merge($this->existingRules ?? [], [
             'faqQuestion' => 'required|string|max:500',
             'faqAnswer'   => 'required|string|max:2000',
-            'icon_file'   => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
-            'image_file'  => 'nullable|image|mimes:jpg,jpeg,png,svg|max:4096',
+            'icon_file'   => 'nullable|mimes:png,svg|max:2048',
+            'image_file'  => 'nullable|mimes:jpg,jpeg,png,svg|max:4096',
         ]);
     }
     // Data lists

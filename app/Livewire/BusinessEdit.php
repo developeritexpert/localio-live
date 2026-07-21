@@ -144,8 +144,8 @@ class BusinessEdit extends Component
         return array_merge($this->existingRules ?? [], [
             'faqQuestion' => 'required|string|max:500',
             'faqAnswer'   => 'required|string|max:2000',
-            'icon_file'   => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
-            'image_file'  => 'nullable|image|mimes:jpg,jpeg,png,svg|max:4096',
+            'icon_file'   => 'nullable|mimes:png,svg|max:2048',
+            'image_file'  => 'nullable|mimes:jpg,jpeg,png,svg|max:4096',
         ]);
     }
     // Data lists
@@ -724,7 +724,7 @@ class BusinessEdit extends Component
                 $this->iconFilePath = $path;
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
-            $this->iconError = "Invalid file type! Only JPG, PNG, SVG are allowed.";
+            $this->iconError = "Invalid file type! Only PNG, SVG are allowed.";
             $this->icon_file = null; // Prevent preview of invalid files
         }
     }
@@ -1441,8 +1441,8 @@ class BusinessEdit extends Component
             'affiliate_partner' => 'nullable|string|max:191',
             'countryIsAffiliate' => 'boolean',
             'affiliate_link' => $this->is_affiliate_partner ? 'required|url|max:191' : 'nullable',
-            'icon_file' => 'nullable|image|mimes:jpg,png,svg|max:2048',
-            'image_file' => 'nullable|image|mimes:jpg,png,svg|max:2048',
+            'icon_file' => 'nullable|mimes:png,svg|max:2048',
+            'image_file' => 'nullable|mimes:jpg,png,svg|max:2048',
             'active_all_countries' => 'required|boolean',
             'headquaters' => 'nullable|string|max:191',
             'languages_supported' => 'required',
