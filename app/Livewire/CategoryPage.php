@@ -62,6 +62,15 @@ class CategoryPage extends Component
             $query->where('lang_id', $this->lang_id);
         }])->firstOrFail();
 
+        // Clear comparison session if switching to a different category
+        $comparedProducts = session()->get('compared_products', []);
+        if (count($comparedProducts) > 0) {
+            $firstProduct = \App\Models\Business::find($comparedProducts[0]);
+            if ($firstProduct && $firstProduct->category_id != $this->category->id) {
+                session()->forget('compared_products');
+            }
+        }
+
         // Load filter types
         $this->filterTypes = FilterType::pluck('slug', 'id')->toArray();
 
