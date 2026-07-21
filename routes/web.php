@@ -544,9 +544,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
         ->name('review.translation');
     //user-dashboard
-
-    // Dynamic SEO Routes (Must be at the very bottom of the locale group to act as fallbacks)
-    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
 });
 Route::group(['prefix' => '{locale?}', 'middleware' => ['User']], function () {
     Route::get('/user-dashboard', [UserDashboardController::class, 'userAccount'])->name('user-dashboard');
@@ -635,8 +632,14 @@ Route::get('/refresh-csrf', function () {
     return response()->json(['token' => csrf_token()]);
 });
 
+
 // Ad tracking handling
-Route::post('/postback', [PostbackController::class, 'handle']);
+Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
+
+// Dynamic SEO Routes (Must be at the very bottom of the file to act as absolute fallbacks)
+Route::group(['prefix' => '{locale?}'], function () {
+    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
+});
 
 
 
