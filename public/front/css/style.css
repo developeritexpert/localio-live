@@ -8802,7 +8802,7 @@ section.revie_img_sec {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 14px !important;
+    gap: 8px !important;
     text-align: left !important;
     padding: 12px 4px !important;
     border-bottom: 1px dashed #e2e8f0 !important;
@@ -8853,7 +8853,7 @@ section.revie_img_sec {
     color: #0f172a !important;
     line-height: 1.25 !important;
     margin: 0 !important;
-    padding-right: 30px !important;
+    padding-right: 10px !important;
     white-space: normal !important;
     word-break: break-word !important;
     letter-spacing: -0.02em !important;
@@ -8892,6 +8892,10 @@ section.revie_img_sec {
     font-size: 13px !important;
     font-weight: 600 !important;
     color: #475569 !important;
+  }
+
+    .most-populr-sec .best-value-inline-container {
+    top: -25px;
   }
 }
 
@@ -8940,6 +8944,8 @@ section.revie_img_sec {
     position: static !important;
     transform: none !important;
   }
+
+
 }
 
 
@@ -9095,8 +9101,7 @@ header .menu li.menu-item a {
 
 .transparency-banner .inr-trans {
   background-color: #ffffff26;
-  padding: 2px;
-  max-height: 16px;
+  padding: 7px;
 }
 
 /* 17-july-26  */
@@ -9267,4 +9272,34 @@ footer .foot-row-lft {
 
 header .sec_head {
   top: 0 !important;
+}
+
+/* 21-july-26  */
+.product_integra_sec .sftware-alternative-pck {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+}
+
+.product_integra_sec .p_top_btm_sftwre {
+  margin-top: auto
+}
+
+.ft-btm-rgt .select-menu.active .options {
+  overflow-y: scroll;
+}
+
+footer .footer-wrp ul li {
+  padding: 5px 0;
+  line-height: 1.2;
+}
+
+.asan-slider.asan-slider-btm .slick-track .hover_main,
+.asan-slider.asan-slider-btm .slick-track .slick-slide:hover {
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 6px !important;
+}
+
+.latest_review_part_footer .review_card:last-child {
+  margin-bottom: 0 !important;
 }
