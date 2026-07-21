@@ -833,7 +833,7 @@ footer ul li {
 }
 
 .foot-col h6 {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .foot-right-list li a {
@@ -850,7 +850,7 @@ footer ul li {
 }
 
 footer ul li a:hover {
-  color: #f9633b;
+  text-decoration: underline;
 }
 
 /* custom select box css */
@@ -8507,7 +8507,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a {
   border-radius: 8px 8px 0 0;
-  padding: 10px 20px !important;
+  padding: 5px 15px !important;
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a:hover,
@@ -9096,6 +9096,7 @@ header .menu li.menu-item a {
 .transparency-banner .inr-trans {
   background-color: #ffffff26;
   padding: 2px;
+  max-height: 16px;
 }
 
 /* 17-july-26  */
@@ -9130,8 +9131,9 @@ header .menu li.menu-item a {
 }
 
 .revie_img_sec .feture_box .starting-price-value {
-  font-size: 20px !important;
+  font-size: 26px !important;
   font-weight: 700 !important;
+  margin-bottom: 8px;
 }
 
 .product_integra_sec .asn-rating h6 {
@@ -9188,4 +9190,81 @@ header .menu li.menu-item a {
 
 .top_rate_pg .auto-choice-rgt .auto-choice-card {
   width: 100% !important;
+}
+
+/* 20-july-26 */
+footer .foot-row-lft {
+  padding-bottom: 20px !important;
+}
+
+.most-populr-sec .inner_box_silder .head {
+  font-weight: 600;
+}
+
+.most-populr-sec .inner_box_silder {
+  position: relative;
+  padding-top: 35px !important;
+}
+
+.most-populr-sec .best-value-inline-container {
+  position: absolute;
+  top: -25px;
+  right: -20px
+}
+
+.most-populr-sec .top-pro-btn .cta {
+  padding: 11px 25px;
+}
+
+.most-populr-sec .mst_hdn .tp-btm {
+  line-height: 1.2;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div {
+  padding-top: 8px;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .new-visit-anc .cta.cta_orange {
+  padding: 12px 22px;
+  width: 180px;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .an_lkd h1 {
+  font-size: 18px !important;
+  font-weight: 600;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide span,
+.asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide i {
+  font-size: 12px !important;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .asn-img {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .Tab-outerlnk {
+  margin: 5px auto 0;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .an_lkd h1 {
+  margin-bottom: 0 !important;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide {
+  margin-top: 0;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div .top-pro-btn.tp_visit {
+  margin-top: 0;
+}
+
+.asn_main_sec_2 .fixed-div .Tab-outerlnk #table-of-content ul li a {
+  font-weight: 400;
+  font-size: 12px;
+}
+
+header .sec_head {
+  top: 0 !important;
 }

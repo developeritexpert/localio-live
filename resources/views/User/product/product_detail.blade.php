@@ -686,6 +686,7 @@
 .feture_box.str_prc_box .starting-price-text {
     text-align: center !important;
     color:#444444;
+    font-size:12px;
 }
 
 .thre_revi_rgt .feture_box  h2 {
@@ -800,7 +801,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted size16 mb-2 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions & alternatives</p>
+                                            <p class="text-muted size16 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px; margin-bottom: 0;">Real reviews, community discussions, features & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
