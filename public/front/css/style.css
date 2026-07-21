@@ -9247,15 +9247,22 @@ footer .foot-row-lft {
 }
 
 .asn_main_sec_2 .asn_dv.fixed-div .an_lkd h1 {
-    margin-bottom:0!important;
+  margin-bottom: 0 !important;
 }
-.asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide {   
-    margin-top: 0;
+
+.asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide {
+  margin-top: 0;
 }
-.asn_main_sec_2 .asn_dv.fixed-div .top-pro-btn.tp_visit {    
-    margin-top: 0;
+
+.asn_main_sec_2 .asn_dv.fixed-div .top-pro-btn.tp_visit {
+  margin-top: 0;
 }
-.asn_main_sec_2 .fixed-div  .Tab-outerlnk #table-of-content ul li a {
-    font-weight: 400;
-    font-size: 12px;
+
+.asn_main_sec_2 .fixed-div .Tab-outerlnk #table-of-content ul li a {
+  font-weight: 400;
+  font-size: 12px;
+}
+
+header .sec_head {
+  top: 0 !important;
 }
