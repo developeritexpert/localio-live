@@ -1414,7 +1414,11 @@
 
                                                 @if(Auth::user()->user_type ==='user')
                                                 <a class="dropdown-item"
-                                                href="{{ route('user-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
+                                                href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-key"></i>Change Password</a>
+                                                </div>
+                                            <div class="dash-icon">
+                                                <a class="dropdown-item"
+                                                href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-envelope"></i>Email Preferences</a>
                                                 @elseif(Auth::user()->user_type ==='vendor')
                                                 <a class="dropdown-item"
                                                     href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>

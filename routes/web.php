@@ -556,11 +556,12 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['User']], function () {
     Route::get('/user-dashboard/support', [UserDashboardController::class, 'userSupport'])->name('user-support');
     Route::get('/user-dashboard/support/{id}',[UserDashboardController::class,'supportView'])->name('user-support-view');
 
-    Route::get('/user-dashboard/configuration', [UserDashboardController::class, 'userConfiguration'])->name('user-configuration');
+    Route::get('/user-dashboard/change-password', [UserDashboardController::class, 'userChangePassword'])->name('user-change-password');
     Route::post('/user-dashboard-configuration-update', [UserDashboardController::class, 'updatePassword'])->name('user-updatePassword');
-
+    
+    Route::get('/user-dashboard/email-preferences', [UserDashboardController::class, 'userEmailPreferences'])->name('user-email-preferences');
     Route::post('/user-dashboard-configuration-email-prefernce-update', [UserDashboardController::class, 'updateEmailPreferences'])
-    ->name('user.email-preferences.update');
+        ->name('user.email-preferences.update');
 
 });
 

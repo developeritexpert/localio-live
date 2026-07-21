@@ -82,10 +82,12 @@ class UserDashboardController extends Controller
         return view('user_dashboard.user_deals',compact('token'));
     }
 
-    public function userConfiguration(){
+    public function userChangePassword(){
         $user=Auth::user();
-        // dd($user);
+        return view('user_dashboard.user_change_password',compact('user'));
+    }
 
+    public function userEmailPreferences(){
         $user = Auth::user();
         $langId = $user->lang_id ?? 1;
 
@@ -102,12 +104,10 @@ class UserDashboardController extends Controller
                 'title' => $translation['key'] ?? $template->key,
                 'desc' => 'You can disable this email if you don’t want to receive it.',
                 'value' => !$user->hasDisabledTemplate($template->id),
-
             ];
         });
-        // dd($mailPreferences);
 
-        return view('user_dashboard.user_configuration',compact('user' ,'preferences'));
+        return view('user_dashboard.user_email_preferences',compact('user' ,'preferences'));
     }
 
     public function updateEmailPreferences(Request $request)
