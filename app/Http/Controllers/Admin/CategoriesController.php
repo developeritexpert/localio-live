@@ -220,7 +220,7 @@ class CategoriesController extends Controller
             $slug = Str::slug($validate['name']);
             $originalSlug = $slug;
             $count = 1;
-            while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->exists()) {
+            while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->where('category_id', '!=', $category->id)->exists()) {
                 $slug = $originalSlug . '-' . $count++;
             }
            CategoryTranslation::updateOrCreate(
