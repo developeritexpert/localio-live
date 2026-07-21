@@ -104,45 +104,6 @@
                         </div>
                     </div>
 
-                    <!-- Description (After Image) Section -->
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Description (After Image)</label>
-                            </div>
-
-                            <div wire:ignore x-data="{
-                                editor: null,
-                                init() {
-                                    this.$nextTick(() => {
-                                        ClassicEditor
-                                            .create(this.$refs.afterImageEditor)
-                                            .then(editor => {
-                                                this.editor = editor;
-                                                editor.model.document.on('change:data', () => {
-                                                    this.$wire.after_image_description = editor.getData();
-                                                });
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
-                                    });
-                                }
-                            }">
-                                <div class="form-group">
-                                    <textarea
-                                        x-ref="afterImageEditor"
-                                        class="form-control b_description @error('after_image_description') is-invalid @enderror"
-                                        wire:model.live="after_image_description"
-                                        rows="5">
-                                    </textarea>
-                                    @error('after_image_description')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Pricing Options Section -->
                     <div class="card card-bordered mb-3">
@@ -406,6 +367,114 @@
                             @else
                                 <p class="text-muted small mt-2 mb-0">Maximum of 5 USPs reached.</p>
                             @endif
+                        </div>
+                    </div>
+
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <label class="form-label mb-0"><strong>Pros & Cons</strong></label>
+                                    <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="title mb-3">Pros</h6>
+                                    @foreach ($businessPros as $index => $pro)
+                                        <div class="d-flex align-items-center mb-2 gap-2">
+                                            <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
+                                            <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
+                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
+                                                <em class="icon ni ni-trash"></em>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro">
+                                        <em class="icon ni ni-plus"></em> Add Pro
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="title mb-3">Cons</h6>
+                                    @foreach ($businessCons as $index => $con)
+                                        <div class="d-flex align-items-center mb-2 gap-2">
+                                            <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
+                                            <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
+                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
+                                                <em class="icon ni ni-trash"></em>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon">
+                                        <em class="icon ni ni-plus"></em> Add Con
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Pros & Cons Summary Text</label>
+                                        <textarea class="form-control" rows="3" wire:model.live="pro_cons_summary" placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <label class="form-label mb-0"><strong>Offered Products or Services</strong></label>
+                                    <p class="text-muted small mb-0">Summarize offered products with a headline, images, and text.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="border p-3 mb-3 rounded">
+                                <div class="form-group mb-3 mt-3">
+                                    <label class="form-label">Headline</label>
+                                    <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does Bluehost offer?">
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Top Text</label>
+                                    <textarea class="form-control" rows="3" wire:model.live="businessOfferings.0.top_text" placeholder="Introduction text above the image..."></textarea>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Description (After Image)</label>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.afterImageEditor)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.after_image_description = editor.getData();
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="afterImageEditor"
+                                            class="form-control b_description @error('after_image_description') is-invalid @enderror"
+                                            wire:model.live="after_image_description"
+                                            rows="5">
+                                        </textarea>
+                                        @error('after_image_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -3046,10 +3046,8 @@ select:focus {
 
 .blue-chkbox {
   position: absolute;
-  right: 0;
-  bottom: 31px;
   background-color: #ebf0f6;
-  border-radius: 70px 0 0 70px;
+  border-radius: 0 70px 70px 0;
   padding: 16px 35px;
   color: #002347;
 }
@@ -9265,4 +9263,7 @@ footer .foot-row-lft {
 
 header .sec_head {
   top: 0 !important;
+}
+.top_rate_pg .auto-choice-rgt .auto-choice-card {
+  width: 100% !important;
 }

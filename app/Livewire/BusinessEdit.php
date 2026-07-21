@@ -121,6 +121,22 @@ class BusinessEdit extends Component
         ['text' => ''],
     ];
 
+    // Pros & Cons
+    public $businessPros = [
+        ['text' => ''], ['text' => ''], ['text' => '']
+    ];
+    public $businessCons = [
+        ['text' => ''], ['text' => ''], ['text' => '']
+    ];
+
+    // Offerings
+    public $businessOfferings = [
+        ['headline' => '', 'top_text' => '', 'bottom_text' => '', 'image' => null]
+    ];
+    public $newOfferingImages = []; // Array of temporary UploadedFile objects
+
+    public $pro_cons_summary = '';
+
 
 
     protected function rules()
@@ -981,7 +997,7 @@ class BusinessEdit extends Component
         $this->addbusiness = false;
         $this->businessId = $id;
 
-        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps'])->findOrFail($id);
+        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings'])->findOrFail($id);
 
         // Load existing USPs into the form slots (pad to 5 empty slots)
         $existingUsps = $business->usps->pluck('text')->toArray();
@@ -989,6 +1005,39 @@ class BusinessEdit extends Component
             fn($text) => ['text' => $text],
             array_pad($existingUsps, 5, '')
         );
+
+        // Load existing Pros
+        $existingPros = $business->proCons->where('type', 'pro')->pluck('text')->toArray();
+        $this->businessPros = array_map(
+            fn($text) => ['text' => $text],
+            array_pad($existingPros, 3, '')
+        );
+
+        // Load existing Cons
+        $existingCons = $business->proCons->where('type', 'con')->pluck('text')->toArray();
+        $this->businessCons = array_map(
+            fn($text) => ['text' => $text],
+            array_pad($existingCons, 3, '')
+        );
+        
+        $this->pro_cons_summary = $business->pro_cons_summary ?? '';
+
+        // Load existing Offerings (restricted to one for now)
+        if ($business->offerings->count() > 0) {
+            $offering = $business->offerings->first();
+            $this->businessOfferings = [
+                [
+                    'headline' => $offering->headline,
+                    'top_text' => $offering->top_text,
+                    'bottom_text' => $offering->bottom_text,
+                    'image' => $offering->image, // existing image string
+                ]
+            ];
+        } else {
+            $this->businessOfferings = [
+                ['headline' => '', 'top_text' => '', 'bottom_text' => '', 'image' => null]
+            ];
+        }
 
         // Set the selected countries (IDs) for the business
         $this->selectedCountries = $business->countries->pluck('id')->toArray();
@@ -1159,6 +1208,8 @@ class BusinessEdit extends Component
             $this->syncBusinessRelationships($business);
 
             $this->saveUsps($business->id);
+            $this->saveProsCons($business->id);
+            $this->saveOfferings($business->id);
 
             DB::commit();
 
@@ -1206,6 +1257,8 @@ class BusinessEdit extends Component
             $this->saveTopicDescriptions();
 
             $this->saveUsps($business->id);
+            $this->saveProsCons($business->id);
+            $this->saveOfferings($business->id);
 
             DB::commit();
 
@@ -1228,18 +1281,86 @@ class BusinessEdit extends Component
     public function saveUsps($businessId)
     {
         \App\Models\BusinessUsp::where('business_id', $businessId)->delete();
-
-        foreach ($this->businessUsps as $index => $usp) {
+        $uspsToInsert = [];
+        foreach ($this->businessUsps as $usp) {
             $text = trim($usp['text'] ?? '');
-            if ($text !== '') {
-                \App\Models\BusinessUsp::create([
+            if (!empty($text)) {
+                $uspsToInsert[] = [
                     'business_id' => $businessId,
-                    'text'        => $text,
-                    'sort_order'  => $index,
-                ]);
+                    'text' => $text,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
+        if (!empty($uspsToInsert)) {
+            \App\Models\BusinessUsp::insert($uspsToInsert);
+        }
     }
+
+    public function saveProsCons($businessId)
+    {
+        \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
+        $proConsToInsert = [];
+        foreach ($this->businessPros as $pro) {
+            $text = trim($pro['text'] ?? '');
+            if (!empty($text)) {
+                $proConsToInsert[] = [
+                    'business_id' => $businessId,
+                    'type' => 'pro',
+                    'text' => $text,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        foreach ($this->businessCons as $con) {
+            $text = trim($con['text'] ?? '');
+            if (!empty($text)) {
+                $proConsToInsert[] = [
+                    'business_id' => $businessId,
+                    'type' => 'con',
+                    'text' => $text,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+        if (!empty($proConsToInsert)) {
+            \App\Models\BusinessProCon::insert($proConsToInsert);
+        }
+    }
+
+    public function saveOfferings($businessId)
+    {
+        // For simplicity, we delete and recreate offerings.
+        \App\Models\BusinessOffering::where('business_id', $businessId)->delete();
+        foreach ($this->businessOfferings as $index => $offering) {
+            if (empty(trim($offering['headline'] ?? '')) && empty(trim($offering['top_text'] ?? ''))) {
+                continue; // skip empty offerings
+            }
+
+            $imagePath = $offering['image'] ?? null;
+            // Check if a new image was uploaded for this offering
+            if (isset($this->newOfferingImages[$index]) && $this->newOfferingImages[$index]) {
+                $file = $this->newOfferingImages[$index];
+                $path = $this->storeFile($file, 'offerings'); // Assuming storeFile returns the file path
+                if ($path) {
+                    $imagePath = $path;
+                }
+            }
+
+            \App\Models\BusinessOffering::create([
+                'business_id' => $businessId,
+                'headline' => trim($offering['headline'] ?? ''),
+                'top_text' => trim($offering['top_text'] ?? ''),
+                'bottom_text' => trim($offering['bottom_text'] ?? ''),
+                'image' => $imagePath,
+            ]);
+        }
+    }
+
+
 
     public function addUsp()
     {
@@ -1252,6 +1373,39 @@ class BusinessEdit extends Component
     {
         unset($this->businessUsps[$index]);
         $this->businessUsps = array_values($this->businessUsps);
+    }
+
+    public function addPro()
+    {
+        $this->businessPros[] = ['text' => ''];
+    }
+
+    public function removePro($index)
+    {
+        unset($this->businessPros[$index]);
+        $this->businessPros = array_values($this->businessPros);
+    }
+
+    public function addCon()
+    {
+        $this->businessCons[] = ['text' => ''];
+    }
+
+    public function removeCon($index)
+    {
+        unset($this->businessCons[$index]);
+        $this->businessCons = array_values($this->businessCons);
+    }
+
+    public function addOffering()
+    {
+        $this->businessOfferings[] = ['headline' => '', 'top_text' => '', 'bottom_text' => '', 'image' => null];
+    }
+
+    public function removeOffering($index)
+    {
+        unset($this->businessOfferings[$index]);
+        $this->businessOfferings = array_values($this->businessOfferings);
     }
 
     public function saveTopicDescriptions()
@@ -1381,7 +1535,8 @@ class BusinessEdit extends Component
             'created_by' => auth()->id(),
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
-            'status' => (bool)$this->status
+            'status' => (bool)$this->status,
+            'pro_cons_summary' => $this->pro_cons_summary
         ]);
     }
 
@@ -1447,7 +1602,8 @@ class BusinessEdit extends Component
             'languages_supported' => $this->languages_supported,
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
-            'status' => (bool)$this->status
+            'status' => (bool)$this->status,
+            'pro_cons_summary' => $this->pro_cons_summary
         ]);
     }
 
