@@ -822,6 +822,11 @@
   .hd-innr-txt {
     max-width: 1310px;
   }
+
+  .most-populr-sec .best-value-inline-container {
+    right: -10px
+  }
+
 }
 
 @media only screen and (max-width: 1399px) {
@@ -3550,6 +3555,10 @@
     display: block;
   }
 
+  .automotive-card .blue-chkbox {
+    left: 0 !important;
+  }
+
 }
 
 @media only screen and (max-width: 575px) {
@@ -4482,6 +4491,15 @@
 
   .ft-btm-rgt .select-menu .options {
     padding: 30px;
+  }
+
+  .top-automotive-sec .rgt_rgt_bx {
+    flex: 0 0 100% !important;
+  }
+
+  /* 20-july-26  */
+  .most-populr-sec .inner_box_silder {
+    padding-top: 25px !important;
   }
 }
 
@@ -10784,9 +10802,10 @@ div#table-of-content h6 {
   padding-left: 10px;
 }
 
-.automotive-card>div:last-child {
+/* .automotive-card>div:last-child {
   width: 50%;
-}
+} */
+
 
 #compareBar button:hover {
   background-color: #f9633b;
@@ -11277,7 +11296,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 #section1 .asn_dv .asn_dv_contnt {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   /* justify-content: space-between; */
 }
 
@@ -11683,6 +11702,10 @@ ul.list-unstyled.m-0 li:hover a .time span {
           justify-content: center !important;
         } */
 @media only screen and (max-width: 1399px) {
+  .top_rate_pg .slider_content_sec .usp-grid-container {
+    grid-template-columns: 1fr !important;
+  }
+
   .about_asn_content .asn_dv.asv_blue h6 {
     font-size: 16px;
   }

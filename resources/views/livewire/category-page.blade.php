@@ -105,9 +105,15 @@
         }
 
         /* Compare button alignment */
-        .automotive-card .blue-chkbox {
+        /* .automotive-card .blue-chkbox {
             bottom: 105px !important;
             transition: all 0.3s ease;
+        } */
+          .automotive-card .blue-chkbox {
+            bottom: 0 !important;
+            transition: all 0.3s ease;
+            right:unset;
+            left:-30px
         }
         /* Both Visit website and View details buttons – same height */
         .auto-choice-btn .cta {
@@ -170,8 +176,272 @@
             </div>
         @endif
         <div>
-            <!-- section top-rated automaotive -->
-            <section class="top-automotive-sec cat_pg light">
+            @if($isParentCategory)
+                <style>
+                    /* Parent Category UI Styles */
+                    .parent-cat-sidebar {
+                        border: 1px solid #e8eef6;
+                        border-radius: 8px;
+                        padding: 20px;
+                        background: #fff;
+                    }
+                    .parent-cat-sidebar h4 {
+                        font-size: 18px;
+                        font-weight: 700;
+                        margin-bottom: 15px;
+                        color: #002347;
+                        line-height: 1.3;
+                    }
+                    .parent-cat-sidebar ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .parent-cat-sidebar li {
+                        margin-bottom: 12px;
+                    }
+                    .parent-cat-sidebar li a {
+                        color: #555;
+                        font-size: 14px;
+                        text-decoration: none;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        transition: color 0.2s;
+                    }
+                    .parent-cat-sidebar li a:hover {
+                        color: #e56b46; /* The orange hover color */
+                    }
+                    .parent-cat-sidebar li a::after {
+                        content: '›';
+                        font-size: 18px;
+                        color: #e56b46;
+                        margin-left: 5px;
+                    }
+                    
+                    .parent-cat-main h1 {
+                        font-size: 32px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin-bottom: 5px;
+                    }
+                    .parent-cat-main > p {
+                        font-size: 15px;
+                        color: #666;
+                        margin-bottom: 20px;
+                    }
+                    .parent-cat-main h3 {
+                        font-size: 24px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .subcat-block {
+                        border: 1px solid #e8eef6;
+                        border-radius: 8px;
+                        padding: 20px;
+                        background: #fff;
+                        margin-bottom: 25px;
+                    }
+                    .subcat-block h4 {
+                        font-size: 20px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin-bottom: 8px;
+                    }
+                    .subcat-block p {
+                        font-size: 14px;
+                        color: #555;
+                        margin-bottom: 15px;
+                    }
+                    .subcat-block .subcat-popular-text {
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #333;
+                        margin-bottom: 15px;
+                    }
+                    
+                    .top-products-grid {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 15px;
+                    }
+                    @media(max-width: 991px) {
+                        .top-products-grid {
+                            grid-template-columns: repeat(2, 1fr);
+                        }
+                    }
+                    @media(max-width: 575px) {
+                        .top-products-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                    
+                    .top-product-card {
+                        border: 1px solid #e8eef6;
+                        border-radius: 6px;
+                        padding: 12px;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        background: #fff;
+                        text-decoration: none;
+                        transition: box-shadow 0.2s;
+                    }
+                    .top-product-card:hover {
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+                    }
+                    .top-product-logo {
+                        width: 50px;
+                        height: 50px;
+                        border: 1px solid #eee;
+                        border-radius: 6px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 4px;
+                        background: #fff;
+                        flex-shrink: 0;
+                    }
+                    .top-product-logo img {
+                        max-width: 100%;
+                        max-height: 100%;
+                        object-fit: contain;
+                    }
+                    .top-product-logo .avatar-placeholder {
+                        width: 100%;
+                        height: 100%;
+                        background-color: #002347;
+                        color: #fff;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: 700;
+                        font-size: 20px;
+                        border-radius: 4px;
+                    }
+                    .top-product-info {
+                        flex: 1;
+                        min-width: 0;
+                    }
+                    .top-product-info h6 {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #002347;
+                        margin: 0 0 2px 0;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    .top-product-rating {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                        font-size: 12px;
+                        color: #666;
+                    }
+                    .top-product-stars {
+                        color: #e56b46;
+                        font-size: 11px;
+                        display: flex;
+                    }
+                    .top-product-rating-text {
+                        font-size: 11px;
+                        color: #333;
+                        font-weight: 600;
+                        margin-top: 2px;
+                    }
+                </style>
+                <section class="top-automotive-sec cat_pg light" style="margin-top: 4rem;">
+                    <div class="container">
+                        <div class="row">
+                            <!-- Sidebar -->
+                            <div class="col-lg-3 mb-4">
+                                <div class="parent-cat-sidebar">
+                                    <h4>{{ $category->translations->name ?? 'Category' }} Categories</h4>
+                                    <ul>
+                                        @foreach($parentSubCategories as $subcat)
+                                            <li>
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}">
+                                                    {{ $subcat->translations->name ?? 'Subcategory' }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- Main Content -->
+                            <div class="col-lg-9">
+                                <div class="parent-cat-main">
+                                    <h1>Best {{ $category->translations->name ?? 'Software' }}</h1>
+                                    <p>See more below to select the best {{ $category->translations->name ?? 'software' }}.</p>
+                                    
+                                    <h3>Popular {{ $category->translations->name ?? 'Software' }} Categories</h3>
+                                    
+                                    @foreach($parentSubCategories as $subcat)
+                                        <div class="subcat-block">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h4 class="mb-0">{{ $subcat->translations->name ?? 'Subcategory' }}</h4>
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}" style="color: #e56b46; font-size: 14px; font-weight: 600; text-decoration: none;">View All <i class="fas fa-chevron-right" style="font-size: 12px; margin-left: 3px;"></i></a>
+                                            </div>
+                                            
+                                            @php
+                                                $desc = strip_tags($subcat->translations->description ?? '');
+                                                if(empty($desc)) {
+                                                    $desc = ($subcat->translations->name ?? 'Software') . ' solutions designed to help you manage your workflow efficiently.';
+                                                }
+                                            @endphp
+                                            <p>{{ $desc }}</p>
+                                            
+                                            <div class="subcat-popular-text">
+                                                Popular {{ $subcat->translations->name ?? 'products' }} used by {{ $category->translations->name ?? 'professionals' }}
+                                            </div>
+                                            
+                                            <div class="top-products-grid">
+                                                @foreach($subcat->top_businesses as $business)
+                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}" class="top-product-card">
+                                                        <div class="top-product-logo">
+                                                            @if($business->logo)
+                                                                <img src="{{ asset($business->logo) }}" alt="Logo">
+                                                            @else
+                                                                <div class="avatar-placeholder">{{ strtoupper(substr($business->translations->first()->name ?? 'B', 0, 1)) }}</div>
+                                                            @endif
+                                                        </div>
+                                                        <div class="top-product-info">
+                                                            <h6>{{ $business->translations->first()->name ?? 'Business Name' }}</h6>
+                                                            
+                                                            <div class="top-product-rating">
+                                                                <div class="top-product-stars">
+                                                                    @php $rating = round($business->average_rating); @endphp
+                                                                    @for($i = 1; $i <= 5; $i++)
+                                                                        @if($i <= $rating)
+                                                                            <i class="fas fa-star" style="margin-right:2px;"></i>
+                                                                        @else
+                                                                            <i class="far fa-star" style="margin-right:2px; color:#ccc;"></i>
+                                                                        @endif
+                                                                    @endfor
+                                                                </div>
+                                                                <span>({{ number_format($business->active_reviews_count) }})</span>
+                                                            </div>
+                                                            <div class="top-product-rating-text">
+                                                                {{ number_format($business->average_rating, 1) }} out of 5 stars
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            @else
+                <!-- section top-rated automaotive -->
+                <section class="top-automotive-sec cat_pg light">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
@@ -503,186 +773,192 @@
                                     @endphp
                                     <div>
 
-                                        @foreach ($products as $item)
-                                            {{-- <div class="automotive-card auto-bg " data-aos="fade-up" style="--badge-label:'{{ addslashes($badgeLabel) }}';" --}}
+                                        @foreach ($products as $index => $item)
                                             <div class="automotive-card auto-bg " data-aos="fade-up"
                                                 data-aos-duration="1000" wire:key="product-{{ $item->id }}">
-                                                 @if (!empty($badgeLabel))
-                                                    <span class="badge-label">{{ $badgeLabel }}</span>
-                                                @endif
-                                                <div class="auto-choice-card">
-                                                    <!-- Product card content remains the same -->
-                                                    <div class="auto-choice-hd">
-                                                        <div class="inn_sl_hed">
-                                                            <a
-                                                            href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
-                                                            <div class="sli_img choice_img">
-                                                                <img class="slider_img"
-                                                                    src="{{ asset($item->icon_id) }}"
-                                                                    alt="No Images For This Product">
-                                                            </div>
-                                                             </a>
-                                                            <div class="sl_h">
-                                                                <div class="inn_h">
-                                                                    <div class="sl_main">
-                                                                        <h6 class="head">
-                                                                            {{ $item->translations->first()->name }}</h6>
-                                                                        <div class="wishlist">
-                                                                            <livewire:wishlist :product-id="$item->id"
-                                                                                :key="'wishlist-instance-' .
-                                                                                    $item->id" />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                @php
-                                                                    $averageRating = round(
-                                                                        $item->reviews
-                                                                            ->where('status', 'active')
-                                                                            ->avg('rating'),
-                                                                        1,
-                                                                    );
-                                                                    $ratingCount = $item->reviews
-                                                                        ->where('status', 'active')
-                                                                        ->count();
-                                                                @endphp
-
-                                                                <div class="tp-btm d-flex flex-col-mob">
-                                                                    <div class="inn_ul">
-                                                                        <div class="rating-stars">
-                                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                                @if ($i <= floor($averageRating))
-                                                                                    <i
-                                                                                        class="fas fa-star text-warning"></i>
-                                                                                @elseif ($i - 0.5 <= $averageRating)
-                                                                                    <i
-                                                                                        class="fas fa-star-half-alt text-warning"></i>
-                                                                                @else
-                                                                                    <i
-                                                                                        class="far fa-star text-warning"></i>
-                                                                                @endif
-                                                                            @endfor
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="rate_box">
-                                                                        {{ number_format($averageRating, 1) }} |
-                                                                        {{ $ratingCount }} Reviews
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="auto-choice-btn d-flex flex-column gap-2" style="min-width: 170px;">
-                                                            <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
-                                                                class="cta cta_orange justify-content-center"
-                                                                target="_blank" rel="noopener noreferrer"
-                                                                style="display: flex !important; width: 100%; align-items: center; box-sizing: border-box;">
-                                                                Visit website
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                                            </a>
-                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
-                                                                class="cta cta_outline justify-content-center"
-                                                                style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; box-sizing: border-box;">
-                                                                View details
-                                                            </a>
-                                                        </div>
-                                                    </div>
-
-                                                    {{-- USP Grid (replaces description and key features) --}}
-                                                    <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
-                                                        <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
-                                                            <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
-                                                                <div class="usp-grid-container">
-                                                                    @if ($item->usps->count() > 0)
-                                                                        @foreach ($item->usps->take(4) as $usp)
-                                                                            <div class="d-flex align-items-center size18">
-                                                                                <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                    <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                                </div>
-                                                                                <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    @else
-                                                                        <div class="d-flex align-items-center size18">
-                                                                            <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                            </div>
-                                                                            <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
-                                                                        </div>
-                                                                        <div class="d-flex align-items-center size18">
-                                                                            <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                            </div>
-                                                                            <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
-                                                                        </div>
-                                                                        <div class="d-flex align-items-center size18">
-                                                                            <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                                            </div>
-                                                                            <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
+                                                <div class="auto-choice-card" style="position: relative;">
                                                     @php
-                                                    $allPrices = $item->products
-                                                        ->flatMap(function ($product) {
-                                                            return $product->prices;
-                                                        })
-                                                        ->sortBy(function ($price) {
-                                                            $now = Illuminate\Support\Carbon::now();
-                                                            if ($price->discount_price && $price->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($price->discount_expiration_date))) {
-                                                                return $price->discount_price;
-                                                            } elseif ($price->renewal_price) {
-                                                                return $price->renewal_price;
-                                                            } else {
-                                                                return $price->price;
-                                                            }
-                                                        });
-
-                                                    $startingPrice = $allPrices->first();
-                                                    $displayPrice = null;
-
-                                                    if ($startingPrice) {
-                                                        $now = Illuminate\Support\Carbon::now();
-                                                        if ($startingPrice->discount_price && $startingPrice->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($startingPrice->discount_expiration_date))) {
-                                                            $displayPrice = $startingPrice->discount_price;
-                                                        } elseif ($startingPrice->renewal_price) {
-                                                            $displayPrice = $startingPrice->renewal_price;
-                                                        } else {
-                                                            $displayPrice = $startingPrice->price;
-                                                        }
-                                                    }
+                                                        $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
                                                     @endphp
+                                                    @if($isBestValue)
+                                                        <div style="margin-bottom: 15px;">
+                                                            <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                                                <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
+                                                            </span>
+                                                        </div>
+                                                    @endif
 
-                                                    <div class="key-feature-price d-flex gap-3 mt-3 align-items-stretch" style="display: flex !important; justify-content: flex-start !important; gap: 15px !important; flex-wrap: wrap;">
-                                                        @if ($startingPrice)
-                                                            <div class="starting-price-box p-3 rounded d-flex flex-column justify-content-between" style="background: #fff; border: 1px solid #eef0f4; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-width: 220px; text-align: center; margin-bottom: 15px;">
-                                                                <div>
-                                                                    <h6 style="font-size: 11px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Starting price</h6>
-                                                                    <h3 style="font-weight: 700; color: #06498b; font-size: 24px; margin-bottom: 6px;">
+                                                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">
+                                                        <!-- Left Column -->
+                                                        <div style="flex: 1 1 0%; min-width: 320px; display: flex; flex-direction: column; justify-content: flex-start;">
+                                                            <!-- Logo & Title -->
+                                                            <div class="auto-choice-hd" style="border: none; padding: 0; margin-bottom: 0;">
+                                                                <div class="inn_sl_hed" style="width: 100%;">
+                                                                    <a
+                                                                    href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
+                                                                    <div class="sli_img choice_img">
+                                                                        <img class="slider_img"
+                                                                            src="{{ asset($item->icon_id) }}"
+                                                                            alt="No Images For This Product">
+                                                                    </div>
+                                                                     </a>
+                                                                    <div class="sl_h">
+                                                                        <div class="inn_h">
+                                                                            <div class="sl_main">
+                                                                                <h6 class="head">
+                                                                                    {{ $item->translations->first()->name }}</h6>
+                                                                                <div class="wishlist">
+                                                                                    <livewire:wishlist :product-id="$item->id"
+                                                                                        :key="'wishlist-instance-' .
+                                                                                            $item->id" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        @php
+                                                                            $averageRating = round(
+                                                                                $item->reviews
+                                                                                    ->where('status', 'active')
+                                                                                    ->avg('rating'),
+                                                                                1,
+                                                                            );
+                                                                            $ratingCount = $item->reviews
+                                                                                ->where('status', 'active')
+                                                                                ->count();
+                                                                        @endphp
+
+                                                                        <div class="tp-btm d-flex flex-col-mob">
+                                                                            <div class="inn_ul">
+                                                                                <div class="rating-stars">
+                                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                                        @if ($i <= floor($averageRating))
+                                                                                            <i
+                                                                                                class="fas fa-star text-warning"></i>
+                                                                                        @elseif ($i - 0.5 <= $averageRating)
+                                                                                            <i
+                                                                                                class="fas fa-star-half-alt text-warning"></i>
+                                                                                        @else
+                                                                                            <i
+                                                                                                class="far fa-star text-warning"></i>
+                                                                                        @endif
+                                                                                    @endfor
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="rate_box">
+                                                                                {{ number_format($averageRating, 1) }} |
+                                                                                {{ $ratingCount }} Reviews
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Features -->
+                                                            <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
+                                                                <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
+                                                                    <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
+                                                                        <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                                            @if ($item->usps->count() > 0)
+                                                                                @foreach ($item->usps->take(4) as $usp)
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                    </div>
+                                                                                @endforeach
+                                                                            @else
+                                                                                <div class="d-flex align-items-center size18">
+                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                    </div>
+                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                </div>
+                                                                                <div class="d-flex align-items-center size18">
+                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                    </div>
+                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                </div>
+                                                                                <div class="d-flex align-items-center size18">
+                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                    </div>
+                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Compare Checkbox -->
+                                                            <div style=" max-width: max-content; ">
+                                                                <livewire:compare-products :item="$item"
+                                                                    :wire:key="'compare-products-'.$item->id" />
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Right Column -->
+                                                        <div class="rgt_rgt_bx" style="flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
+                                                            <!-- Buttons -->
+                                                            <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
+                                                                <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
+                                                                    class="cta cta_orange justify-content-center"
+                                                                    target="_blank" rel="noopener noreferrer" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
+                                                                    Visit website
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                                </a>
+                                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
+                                                                    class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
+                                                                    View details
+                                                                </a>
+                                                            </div>
+
+                                                            @php
+                                                                $allPrices = $item->products
+                                                                    ->flatMap(function ($product) {
+                                                                        return $product->prices;
+                                                                    })
+                                                                    ->sortBy(function ($price) {
+                                                                        $now = Illuminate\Support\Carbon::now();
+                                                                        if ($price->discount_price && $price->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($price->discount_expiration_date))) {
+                                                                            return $price->discount_price;
+                                                                        } elseif ($price->renewal_price) {
+                                                                            return $price->renewal_price;
+                                                                        } else {
+                                                                            return $price->price;
+                                                                        }
+                                                                    });
+
+                                                                $startingPrice = $allPrices->first();
+                                                                $displayPrice = null;
+
+                                                                if ($startingPrice) {
+                                                                    $now = Illuminate\Support\Carbon::now();
+                                                                    if ($startingPrice->discount_price && $startingPrice->discount_expiration_date && $now->lte(Illuminate\Support\Carbon::parse($startingPrice->discount_expiration_date))) {
+                                                                        $displayPrice = $startingPrice->discount_price;
+                                                                    } elseif ($startingPrice->renewal_price) {
+                                                                        $displayPrice = $startingPrice->renewal_price;
+                                                                    } else {
+                                                                        $displayPrice = $startingPrice->price;
+                                                                    }
+                                                                }
+                                                            @endphp
+
+                                                            <!-- Price -->
+                                                            @if ($startingPrice)
+                                                                <div class="text-center mt-4 w-100" style="background-color: #fff; border: 1px solid #eef0f4; padding: 15px 25px; border-radius: 4px;">
+                                                                    <h6 style="font-size: 13px; color: #1e3050; font-weight: 700; margin-bottom: 4px;">Starting price</h6>
+                                                                    <h3 style="font-weight: 700; color: #1e3050; font-size: 20px; margin-bottom: 2px;">
                                                                         {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
                                                                     </h3>
-                                                                    <p style="font-size: 12px; color: #888; margin-bottom: 12px;">Flat Rate, Per One_time</p>
+                                                                    <p style="font-size: 11px; color: #666; margin-bottom: 0;">Flat Rate, Per One_time</p>
                                                                 </div>
-                                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}#pricing" style="font-size: 13px; font-weight: 600; color: #f9633b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
-                                                            </div>
-                                                        @endif
-
-                                                        <div class="free-trial-box p-3 rounded d-flex flex-column align-items-center justify-content-center" style="background: #fff; border: 1px solid #eef0f4; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-width: 200px; text-align: center; margin-bottom: 15px;">
-                                                            <div class="trial-icon-circle d-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px; background-color: #06498b; border-radius: 50%; color: #fff;">
-                                                                <i class="fa fa-check" style="font-size: 20px;"></i>
-                                                            </div>
-                                                            <h6 style="font-size: 14px; font-weight: 700; color: #06498b; margin-bottom: 2px;">Free Trial</h6>
-                                                            <p class="m-0" style="font-size: 13px; color: #555; font-weight: 600;">Available</p>
+                                                            @endif
                                                         </div>
                                                     </div>
-
                                                 </div>
-                                                <livewire:compare-products :item="$item"
-                                                    :wire:key="'compare-products-'.$item->id" />
                                             </div>
                                         @endforeach
                                         <!-- Empty state when no products at all -->
@@ -735,6 +1011,7 @@
             </div> --}}
             <x-news-letter-subscription/>
         </section>
+            @endif
         <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {

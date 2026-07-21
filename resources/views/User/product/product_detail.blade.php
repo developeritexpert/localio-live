@@ -132,6 +132,7 @@
 
         @livewire('add-review')
         <style>
+
              /* Responsive CSS for Gallery Modal */
              #imageGalleryModal .modal-dialog {
                  max-width: 95%;
@@ -685,6 +686,7 @@
 .feture_box.str_prc_box .starting-price-text {
     text-align: center !important;
     color:#444444;
+    font-size:12px;
 }
 
 .thre_revi_rgt .feture_box  h2 {
@@ -703,6 +705,15 @@
 .fixed-div .hide-on-sticky {
     display: none !important;
 }
+
+
+            /* 20-0702026 */
+            h5.card-title.mb-3 {
+                font-size: 24px !important;
+                font-weight: 600 !important;
+                line-height: 1.3 !important;
+                color: #002347 !important;
+            }
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -790,7 +801,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted size16 mb-2 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px;">Real reviews, community discussions, features & alternatives</p>
+                                            <p class="text-muted size16 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px; margin-bottom: 0;">Real reviews, community discussions, features & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -999,6 +1010,67 @@
                                             </div>
                                         </div>
 
+                                        {{-- PROS & CONS SECTION --}}
+                                        @if($business->proCons->count() > 0)
+                                        <div class="col-lg-12 mt-4 mb-4">
+                                            <div class="row g-4">
+                                                <div class="col-md-6">
+                                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title mb-3" style="font-weight: 700;">Pros</h5>
+                                                            <ul class="list-unstyled mb-0">
+                                                                @foreach($business->proCons->where('type', 'pro') as $pro)
+                                                                <li class="d-flex align-items-start mb-2">
+                                                                    <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                    <span>{{ $pro->text }}</span>
+                                                                </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title mb-3" style="font-weight: 700;">Cons</h5>
+                                                            <ul class="list-unstyled mb-0">
+                                                                @foreach($business->proCons->where('type', 'con') as $con)
+                                                                <li class="d-flex align-items-start mb-2">
+                                                                    <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                    <span>{{ $con->text }}</span>
+                                                                </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @if(!empty($business->pro_cons_summary))
+                                            <div class="mt-3 text-muted" style="font-size: 14px;">
+                                                <em>{{ $business->pro_cons_summary }}</em>
+                                            </div>
+                                            @endif
+                                        </div>
+                                        @endif
+
+                                        {{-- OFFERINGS SECTION --}}
+                                        @if($business->offerings->count() > 0)
+                                        @php $offering = $business->offerings->first(); @endphp
+                                        <div class="col-lg-12 mt-4 mb-4">
+                                            <div class="offering-section mb-5">
+                                                @if($offering->headline)
+                                                    <h3 class="mb-3" style="font-weight: 700;">{{ $offering->headline }}</h3>
+                                                @endif
+                                                
+                                                @if($offering->top_text)
+                                                    <div class="mb-3">
+                                                        {{ $offering->top_text }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @endif
+
                                         {{-- <div class="col-lg-12">
                                     <div class="is-asana-rgt">
                                         <div class="is-asan-slider">
@@ -1204,45 +1276,39 @@
                                        <div class="main_feature_lg">
                                             <div class="feture_box review-breakdown-card">
 
-                                                {{-- Header --}}
-                                                <div class="review-header-box">
-                                                    <div>
-                                                        <h5>Overall rating</h5>
-                                                        <small>Based on {{ $totalReviews }} reviews</small>
+                                                {{-- Header & Overall Rating --}}
+                                                <div class="review-header-box" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                                                    <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                                        <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1;">
+                                                            {{ number_format($averageRating,1) }}
+                                                        </span>
+
+                                                        <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= floor($averageRating))
+                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                @elseif ($i - 0.5 <= $averageRating)
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                @else
+                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+
+                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} reviews</span>
                                                     </div>
 
-                                                    <a href="#section14" class="view-review-link">
+                                                    <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
                                                         View all reviews
                                                     </a>
                                                 </div>
 
-                                                {{-- Overall Rating --}}
-                                                <div class="overall-rating-box">
-
-                                                    <div class="rating-stars">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            @if ($i <= floor($averageRating))
-                                                                <i class="fas fa-star text-warning"></i>
-                                                            @elseif ($i - 0.5 <= $averageRating)
-                                                                <i class="fas fa-star-half-alt text-warning"></i>
-                                                            @else
-                                                                <i class="far fa-star text-warning"></i>
-                                                            @endif
-                                                        @endfor
-                                                    </div>
-
-                                                    <span class="overall-rating-number">
-                                                        {{ number_format($averageRating,1) }}
-                                                    </span>
-
-                                                </div>
-
-                                                <h2 class="breakdown-title">
+                                                <h2 class="breakdown-title" style="margin-bottom: 0;">
                                                     Review breakdown
                                                 </h2>
 
                                                 {{-- Breakdown --}}
-                                                <div class="review-progress-list mt-3">
+                                                <div class="review-progress-list mt-2">
                                                     @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-3">
                                                         <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
@@ -1259,6 +1325,18 @@
                                                 <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Recommended by users</span>
                                                     <strong style="color: #06498b; font-size: 16px;">{{ $recommendPercent }}%</strong>
+                                                </div>
+
+                                                <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <div style="display: flex; gap: 8px;">
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <i class="fas fa-thumbs-up"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <i class="fas fa-thumbs-down"></i>
+                                                        </a>
+                                                    </div>
                                                 </div>
 
                                             </div>
@@ -1408,16 +1486,15 @@
 
                                                              <div class="review-user">
 
-                                                                 @if($review->user && $review->user->profile_image)
+                                                                 @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                                      <img src="{{ asset($review->user->profile_image) }}"
                                                                          class="rounded-circle"
                                                                          width="45"
                                                                          height="45">
                                                                  @else
-                                                                     <img src="{{ asset($default_image) }}"
-                                                                         class="rounded-circle"
-                                                                         width="45"
-                                                                         height="45">
+                                                                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center;">
+                                                                         <span style="color: white; font-weight: bold; font-size: 20px;">{{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}</span>
+                                                                     </div>
                                                                  @endif
 
                                                                  <div>
@@ -1841,17 +1918,22 @@
                                                     <div class="reviw_hd">
                                                         <div class="ans_lft">
                                                             <div class="asn-img">
-                                                                @if ($review->user && $review->user->profile_image)
-                                                                    <img src="{{ asset($review->user->profile_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="User Image">
-                                                                @else
-                                                                    <img src="{{ asset($default_image) }}"
-                                                                        class="img-fluid profile-circle"
-                                                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                                                        alt="Default Image">
-                                                                @endif
+                                                                @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                     <img src="{{ asset($review->user->profile_image) }}"
+                                                                         class="img-fluid profile-circle"
+                                                                         style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                                         alt="User Image">
+                                                                 @else
+                                                                     <div class="profile-circle" style="width: 70px; height: 70px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                                                         <span style="color: white; font-weight: bold; font-size: 28px;">
+                                                                             @if ($review->user && $review->user->user_type === 'admin')
+                                                                                 {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                                             @else
+                                                                                 {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                                                             @endif
+                                                                         </span>
+                                                                     </div>
+                                                                 @endif
                                                             </div>
                                                             <div class="asn-rating">
                                                                 <h6>
@@ -2756,6 +2838,28 @@
                                     }
                                 </style>
                                 <div class="crm_review_box review_sec" id="all-reviews">
+                                    
+                                    <!-- Review Prompt Banner -->
+                                    <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+                                        <div style="display: flex; align-items: center; gap: 16px;">
+                                            <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                                            </div>
+                                            <div>
+                                                <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Have you used {{ $business->translations->first()->name ?? 'this product' }} before?</h4>
+                                                <p style="margin: 0; font-size: 13.5px; color: #4a5568;">Answer a few questions to help the community.</p>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 12px; align-items: center;">
+                                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <i class="fas fa-check" style="color: #06498b;"></i> Yes
+                                            </button>
+                                            <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <i class="fas fa-times" style="color: #e53e3e;"></i> No
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     <div class="row review-row-prod-inr">
                                         
                                         <!-- Left Column (Sticky Header, Sort, Overall rating, filter) -->
@@ -2763,24 +2867,24 @@
                                             <div class="review-sidebar-sticky">
                                                 
                                                 <!-- Localio Reviews Header -->
-                                                <h2 style="font-size: 26px; font-weight: 700; margin-bottom: 10px; color: #1e3050; line-height: 1.3;">
-                                                    User reviews ({{ $ratingCount }})
+                                                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
+                                                    User reviews
                                                 </h2>
 
-                                                <!-- Rating Stars (Moved below headline) -->
-                                                <div class="overall-stars" style="display: flex; align-items: center; gap: 10px; margin-bottom: 30px;">
-                                                    <div style="display: flex; align-items: center; gap: 2px;">
+                                                <div class="overall-rating-box" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                                                    <span style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 8px;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="overall-stars" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 8px;">
                                                         @for ($j = 1; $j <= 5; $j++)
                                                             @if ($j <= floor($averageRating))
-                                                                <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
+                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
                                                             @elseif ($j - 0.5 <= $averageRating)
-                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                                             @else
-                                                                <i class="far fa-star text-warning" style="font-size: 20px;"></i>
+                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="font-size: 20px; font-weight: 700; color: #002655; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                    <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->

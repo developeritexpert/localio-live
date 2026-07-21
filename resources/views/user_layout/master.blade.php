@@ -927,8 +927,8 @@
                 }
                 .popular-categories-title {
                     font-size: 24px !important;
-                    font-weight: 800 !important;
-                    color: #002347 !important;
+                    font-weight: 600 !important;
+                    color: #0d1b2a !important;
                     margin-top: 0 !important;
                     margin-bottom: 24px !important;
                     line-height: 1.3 !important;
@@ -961,14 +961,17 @@
                     text-align: left !important;
                 }
                 .popular-category-tab-btn:hover {
-                    color: #002347 !important;
-                    background-color: #f7fafc !important;
+                    /* color: #002347 !important; */
+                    /* background-color: #f7fafc !important; */
                 }
-                .popular-category-tab-btn.active {
-                    color: #F9633B !important;
-                    background-color: #fff8f6 !important;
-                    border-left-color: #F9633B !important;
-                    font-weight: 700 !important;
+                .popular-category-tab-btn:hover,
+                .popular-category-tab-btn.active .category-btn-text {
+                    /* color: #F9633B !important; */
+                    /* background-color: #fff8f6 !important; */
+                    /* border-left-color: #F9633B !important; */
+                    /* font-weight: 700 !important;   */
+                    text-decoration:underline;
+                                  
                 }
                 .category-icon-wrapper {
                     display: flex !important;
@@ -981,9 +984,10 @@
                     padding: 4px !important;
                     flex-shrink: 0 !important;
                 }
-                .popular-category-tab-btn.active .category-icon-wrapper {
+                /* .popular-category-tab-btn.active .category-icon-wrapper,
+                      .popular-category-tab-btn:hover  .category-icon-wrapper {
                     background-color: #ffebe6 !important;
-                }
+                } */
                 .category-btn-icon {
                     width: 100% !important;
                     height: 100% !important;
@@ -994,13 +998,13 @@
                 }
                 .see-all-category-link {
                     font-size: 16px !important;
-                    font-weight: 700 !important;
-                    color: #F9633B !important;
+                    font-weight: 600 !important;
+                    color: #002347 !important;
                     text-decoration: none !important;
                     transition: color 0.2s !important;
                 }
                 .see-all-category-link:hover {
-                    color: #d84b25 !important;
+                    /* color: #d84b25 !important; */
                     text-decoration: underline !important;
                 }
                 /* Mobile tweaks */
@@ -1063,6 +1067,7 @@
     }
 
     $currentCountryId = getCurrentCountry();
+    // dd($currentCountryId);
     $countryModel = \App\Models\Country::find($currentCountryId);
     $showCommissionsBanner = false;
     if ($countryModel && $countryModel->show_disclaimer == 1) {
@@ -1076,19 +1081,25 @@
             'register'
         ]);
     }
+
+    // dd($showCommissionsBanner); 
+
     ?>
+
+
     @if($showCommissionsBanner)
         <div class="transparency-banner" style="position: relative; top: 0; left: 0; width: 100%; background-color: #003f7d; z-index: 10; text-align: center;  box-sizing: border-box;">
            <div class="inr-trans">
-        <div style="display: inline-block; font-size: 11.5px; color: #ffffff; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
-                {{ static_text('localio_commissions_message') }}
-                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #ffffff; font-weight: 600; text-decoration: underline; margin-left: 4px; transition: color 0.2s;" onmouseover="this.style.color='#f9633b'" onmouseout="this.style.color='#ffffff'">Learn more.</a>
+        <div style=" font-size: 11.5px; color: #ffffff; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
+                {{ static_text('localio_commissions_message')}}
+                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #ffffff;  text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#f9633b'" onmouseout="this.style.color='#ffffff'">Learn more</a>
             </div>
-</div>
+        </div>
+
         </div>
         <style>
             header .sec_head {
-                top: 34px !important;
+                top: 15px !important;
             }
             /* .product-page-body header .sec_head {
                 margin-top: 34px !important;
@@ -1101,15 +1112,15 @@
                 if (banner && header) {
                     const updateHeaderPosition = () => {
                         let scroll = window.scrollY;
-                        if (scroll > 34) {
-                            banner.style.transform = 'translateY(-34px)';
+                        if (scroll > 0) {
+                            banner.style.transform = 'translateY(-16px)';
                             if (!document.body.classList.contains('product-page-body')) {
                                 header.style.setProperty('top', '0px', 'important');
                             }
                         } else {
                             banner.style.transform = 'translateY(-' + scroll + 'px)';
                             if (!document.body.classList.contains('product-page-body')) {
-                                header.style.setProperty('top', (34 - scroll) + 'px', 'important');
+                                header.style.setProperty('top', (16 - scroll) + 'px', 'important');
                             }
                         }
                     };
@@ -1334,21 +1345,28 @@
                                     
                                  <div class="user_img drop_menu">
                                     <div class="usr_profile">
-                                        @if (Auth::user()->profile_image)
-                                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%;'>
+                                        @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 40px; height: 40px; object-fit: cover; flex-shrink: 0;'>
                                         @else
-                                        <img src="{{ dimage()}}" class="img-fluid">
+                                        <div class="profile-circle" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 50%; background-color: #f76b1c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <span style="color: white; font-weight: bold; font-size: 18px; line-height: 1; margin-top: 2px;">
+                                                {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                            </span>
+                                        </div>
                                         @endif
                                     </div>
                                     <div class="dropdown-menu dropdown-menu-right" style="margin-right: 20px;">
                                         <div class="dropdown-main ">
                                             <div class="user_detail">
                                                 <div class="user_img">
-                                                    @if (Auth::user()->profile_image)
-                                                    <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%;'>
+                                                    @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                                                    <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
                                                     @else
-                                                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{
-                                                    strtoupper(substr(Auth::user()->last_name, 0, 1)) }}
+                                                    <div class="profile-circle" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                        <span style="color: white; font-weight: bold; font-size: 20px; line-height: 1; margin-top: 2px;">
+                                                            {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                                        </span>
+                                                    </div>
                                                     @endif
                                                 </div>
                                                 <div class="user_name">

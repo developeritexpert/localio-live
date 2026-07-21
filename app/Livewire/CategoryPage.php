@@ -20,6 +20,11 @@ class CategoryPage extends Component
     public $lang_id = 1;
     public $searchTerm = '';
     public $country_id=1;
+    
+    // Parent Category properties
+    public $isParentCategory = false;
+    public $parentSubCategories = [];
+
     // Filter properties
     public $minPrice = 0;
     public $maxPrice = 2000;
@@ -72,6 +77,53 @@ class CategoryPage extends Component
         if (!empty($this->selectedOptions)) {
             $this->updateActiveFilters();
         }
+
+        // Check if this is a parent category
+        if (is_null($this->category->parent_id)) {
+            $this->loadParentCategoryData();
+            if ($this->parentSubCategories->isNotEmpty()) {
+                $this->isParentCategory = true;
+            }
+        }
+    }
+
+    protected function loadParentCategoryData()
+    {
+        // Load subcategories with their top products
+        $this->parentSubCategories = Category::where('parent_id', $this->category->id)
+            ->with(['translations' => function ($query) {
+                $query->where('lang_id', $this->lang_id);
+            }])
+            ->get()
+            ->map(function ($subcat) {
+                // Fetch top 6 businesses for this subcategory
+                $businesses = Business::where('category_id', $subcat->id)
+                    ->where('status', 1)
+                    ->whereHas('languages', function ($query) {
+                        $query->where('language_id', $this->lang_id);
+                    })
+                    ->where(function ($query) {
+                        $query->where('active_all_countries', 1)
+                            ->orWhereHas('countries', function ($q) {
+                                $q->where('country_id', $this->country_id);
+                            });
+                    })
+                    ->with(['translations' => function ($q) {
+                        $q->where('lang_id', $this->lang_id);
+                    }])
+                    ->withCount(['reviews as active_reviews_count' => function ($query) {
+                        $query->where('status', 'active');
+                    }])
+                    ->withAvg(['reviews as average_rating' => function ($query) {
+                        $query->where('status', 'active');
+                    }], 'rating')
+                    ->orderBy('average_rating', 'desc')
+                    ->take(6)
+                    ->get();
+                
+                $subcat->top_businesses = $businesses;
+                return $subcat;
+            });
     }
 
     protected function initializePriceRange()
