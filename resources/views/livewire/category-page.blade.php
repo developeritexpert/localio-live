@@ -277,83 +277,88 @@
                             grid-template-columns: 1fr;
                         }
                     }
-                    
                     .top-product-card {
                         border: 1px solid #e8eef6;
-                        border-radius: 6px;
-                        padding: 12px;
+                        border-radius: 10px;
+                        padding: 16px;
                         display: flex;
                         align-items: center;
-                        gap: 12px;
+                        gap: 15px;
                         background: #fff;
                         text-decoration: none;
-                        transition: box-shadow 0.2s;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
                     }
                     .top-product-card:hover {
-                        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+                        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+                        transform: translateY(-3px);
+                        border-color: #d1def0;
                     }
                     .top-product-logo {
-                        width: 50px;
-                        height: 50px;
-                        border: 1px solid #eee;
-                        border-radius: 6px;
+                        width: 55px;
+                        height: 55px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        padding: 4px;
-                        background: #fff;
                         flex-shrink: 0;
                     }
                     .top-product-logo img {
-                        max-width: 100%;
-                        max-height: 100%;
-                        object-fit: contain;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        border-radius: 50%;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
                     }
                     .top-product-logo .avatar-placeholder {
                         width: 100%;
                         height: 100%;
-                        background-color: #002347;
+                        background: linear-gradient(135deg, #002347 0%, #00438a 100%);
                         color: #fff;
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         font-weight: 700;
-                        font-size: 20px;
-                        border-radius: 4px;
+                        font-size: 22px;
+                        border-radius: 50%;
+                        box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.05);
                     }
                     .top-product-info {
                         flex: 1;
                         min-width: 0;
                     }
                     .top-product-info h6 {
-                        font-size: 14px;
+                        font-size: 15px;
                         font-weight: 700;
                         color: #002347;
-                        margin: 0 0 2px 0;
+                        margin: 0 0 5px 0;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
+                        transition: color 0.2s ease;
+                    }
+                    .top-product-card:hover .top-product-info h6 {
+                        color: #e56b46;
                     }
                     .top-product-rating {
                         display: flex;
                         align-items: center;
-                        gap: 5px;
-                        font-size: 12px;
-                        color: #666;
+                        gap: 6px;
+                        font-size: 13px;
+                        color: #777;
+                        margin-bottom: 2px;
                     }
                     .top-product-stars {
                         color: #e56b46;
-                        font-size: 11px;
+                        font-size: 12px;
                         display: flex;
                     }
                     .top-product-rating-text {
-                        font-size: 11px;
-                        color: #333;
-                        font-weight: 600;
-                        margin-top: 2px;
+                        font-size: 12px;
+                        color: #888;
+                        font-weight: 500;
                     }
                 </style>
-                <section class="top-automotive-sec cat_pg light" style="margin-top: 4rem;">
+                <section class="top-automotive-sec cat_pg light" style="margin-top: 6rem !important;">
                     <div class="container">
                         <div class="row">
                             <!-- Sidebar -->
@@ -376,9 +381,7 @@
                                 <div class="parent-cat-main">
                                     <h1>Best {{ $category->translations->name ?? 'Software' }}</h1>
                                     <p>See more below to select the best {{ $category->translations->name ?? 'software' }}.</p>
-                                    
-                                    <h3>Popular {{ $category->translations->name ?? 'Software' }} Categories</h3>
-                                    
+                                                                        
                                     @foreach($parentSubCategories as $subcat)
                                         <div class="subcat-block">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -394,16 +397,13 @@
                                             @endphp
                                             <p>{{ $desc }}</p>
                                             
-                                            <div class="subcat-popular-text">
-                                                Popular {{ $subcat->translations->name ?? 'products' }} used by {{ $category->translations->name ?? 'professionals' }}
-                                            </div>
                                             
                                             <div class="top-products-grid">
                                                 @foreach($subcat->top_businesses as $business)
                                                     <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}" class="top-product-card">
                                                         <div class="top-product-logo">
-                                                            @if($business->logo)
-                                                                <img src="{{ asset($business->logo) }}" alt="Logo">
+                                                            @if($business->icon_id)
+                                                                <img src="{{ asset($business->icon_id) }}" alt="Logo">
                                                             @else
                                                                 <div class="avatar-placeholder">{{ strtoupper(substr($business->translations->first()->name ?? 'B', 0, 1)) }}</div>
                                                             @endif
@@ -416,7 +416,7 @@
                                                                     @php $rating = round($business->average_rating); @endphp
                                                                     @for($i = 1; $i <= 5; $i++)
                                                                         @if($i <= $rating)
-                                                                            <i class="fas fa-star" style="margin-right:2px;"></i>
+                                                                            <i class="fas fa-star" style="margin-right:2px; color: #ffc107;"></i>
                                                                         @else
                                                                             <i class="far fa-star" style="margin-right:2px; color:#ccc;"></i>
                                                                         @endif
