@@ -485,7 +485,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/top-rated-products/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
     Route::get('/Exclusive-Businesses-Deals', [ProductController::class, 'ExclusiveBusinessDeals'])->name('exclusive-business-deals');
     Route::get('/product-comparison', [ProductController::class, 'productComparison'])->name('product-comparison');
-    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
     Route::post('/remove-from-comparison/{productId?}', [ProductController::class, 'removeFromComparison'])->name('remove-from-comparison');
     Route::post('/clear-comparison', [ProductController::class, 'clearComparison'])->name('clear-comparison');
 
@@ -623,7 +622,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['vendor']], function () 
     Route::get('/vendor-dashboard/configuration', [HomeController::class, 'vendorConfiguration'])->name('vendor-configuration');
     Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
 
-
+    // Dynamic SEO Routes (Must be at the very bottom of the locale group to act as fallbacks)
+    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
 });
 
 
