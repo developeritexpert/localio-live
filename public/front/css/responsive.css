@@ -822,6 +822,11 @@
   .hd-innr-txt {
     max-width: 1310px;
   }
+
+  .most-populr-sec .best-value-inline-container {
+    right: -10px
+  }
+
 }
 
 @media only screen and (max-width: 1399px) {
@@ -4488,10 +4493,14 @@
     padding: 30px;
   }
 
+  /* 20-july-26  */
+  .most-populr-sec .inner_box_silder {
+    padding-top: 25px !important;
+  }
   .top-automotive-sec .rgt_rgt_bx {
     flex: 0 0 100% !important;
   }
-}
+
 
 .inner_banner_sec {
   padding-top: 180px;
@@ -11286,7 +11295,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 #section1 .asn_dv .asn_dv_contnt {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   /* justify-content: space-between; */
 }
 
