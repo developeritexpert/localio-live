@@ -447,7 +447,7 @@
                         <div class="top-auto-choice">
                             <div class="cat-heading-block">
                                 <h1>{{ $category->translations->name ?? 'Products' }}</h1>
-                                <p>{{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}</p>
+                                <p>{{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }} <br><span style="font-size: 0.9em; color: #555; font-weight: 500;"><i class="fa fa-info-circle me-1"></i>Select up to 2 products to compare</span></p>
                             </div>
                             <div class="auto-choice-row d-flex">
                                 <div class="auto-choice-lft">
@@ -980,7 +980,7 @@
                         </div>
                     </div>
                 </div>
-                <livewire:compare-bar />
+                <livewire:compare-bar :category-id="$category->id" />
             </section>
             <!-- Remaining sections stay the same -->
         </div>

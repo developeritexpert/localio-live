@@ -122,6 +122,7 @@ class CategoriesController extends Controller
                     ->ignore($request->category_id),
             ],
             'title' => 'nullable|string|max:255',
+            'comparison_slug' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
             'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
             'category_icon' => $isNewCategory
@@ -234,6 +235,7 @@ class CategoriesController extends Controller
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
                     'slug'         => $slug,
+                    'comparison_slug' => $validate['comparison_slug'] ?? null,
                     'is_important' => $request->boolean('is_parent') ? 0 : ($request->has('is_important') ? 1 : 0),
                 ]
             );

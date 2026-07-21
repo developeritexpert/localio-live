@@ -41,6 +41,18 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="comparison_slug">Comparison Slug (SEO Route)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="comparison_slug" name="comparison_slug"
+                                        value="{{ isset($category_data) ? ($category_data['comparison_slug'] ?? '') : old('comparison_slug') }}" placeholder="e.g. software-comparison" />
+                                </div>
+                                @error('comparison_slug')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">
