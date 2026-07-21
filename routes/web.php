@@ -545,6 +545,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
         ->name('review.translation');
     //user-dashboard
 
+    // Dynamic SEO Routes (Must be at the very bottom of the locale group to act as fallbacks)
+    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
 });
 Route::group(['prefix' => '{locale?}', 'middleware' => ['User']], function () {
     Route::get('/user-dashboard', [UserDashboardController::class, 'userAccount'])->name('user-dashboard');
@@ -623,8 +625,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['vendor']], function () 
     Route::get('/vendor-dashboard/configuration', [HomeController::class, 'vendorConfiguration'])->name('vendor-configuration');
     Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
 
-    // Dynamic SEO Routes (Must be at the very bottom of the locale group to act as fallbacks)
-    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
 });
 
 
