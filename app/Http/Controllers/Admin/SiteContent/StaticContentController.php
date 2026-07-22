@@ -132,6 +132,15 @@ class StaticContentController extends Controller
         }])->get()->keyBy('key');
 
         $sections = [
+            'company_size' => [
+                'title' => 'Company Size Options',
+                'keys' => [
+                    'company_size_1',
+                    'company_size_2',
+                    'company_size_3',
+                    'company_size_4',
+                ],
+            ],
             'common' => [
                 'title' => 'Common Page Text',
                 'keys' => [

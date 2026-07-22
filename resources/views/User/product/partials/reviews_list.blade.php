@@ -41,12 +41,12 @@
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
-                                        {{ $review->user->first_name ?? 'Anonymous' }}
+                                        {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                     @endif
                                 </h6>
                                 <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title ?? 'User' }}</p>
                                 @if($review->user && $review->user->company_size)
-                                <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->company_size }}</p>
+                                <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                 @endif
                             </div>
                         </div>
@@ -140,12 +140,12 @@
                                         @if ($review->user && $review->user->user_type === 'admin')
                                             {{ $review->public_name ?? 'Public' }}
                                         @else
-                                            {{ $review->user->first_name ?? 'Anonymous' }}
+                                            {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                         @endif
                                     </h6>
                                     <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title ?? 'User' }}</p>
                                     @if($review->user && $review->user->company_size)
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->company_size }}</p>
+                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -230,10 +230,13 @@
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
-                                        {{ $review->user->first_name ?? 'Anonymous' }}
+                                        {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                     @endif
                                 </h6>
                                 <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title ?? 'User' }}</p>
+                                @if($review->user && $review->user->company_size)
+                                <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                @endif
                             </div>
                         </div>
                         <div class="rating light" style="display: flex; align-items: center; gap: 8px;">

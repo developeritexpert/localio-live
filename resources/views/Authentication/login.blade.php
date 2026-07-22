@@ -9,29 +9,19 @@
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">{{static_text('login_to_your_account')}}</h2>
-                    <p class="text-center">{{ static_text('welcome_back') }}</p>
+                    <h2 class="text-center">Sign In or Create an Account</h2>
+                    <p class="text-center">Continue with Google or use your email and password.</p>
                 </div>
                 <div class="scl_login">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="login_box size18">
+                    <div class="row justify-content-center">
+                        <div class="col-12">
+                            <div class="login_box size18" style="text-align: center;">
                                 <div class="l_goin1">
-                                <a href="{{ route('google.login') }}" class="login_link" onclick="openGoogleLogin(event)" style="background: #DB4437;">
-                                    <span class="scl-icn"><i class="fa-brands fa-google"></i></span>
-                                    {{-- Login with Google --}}
-                                </a>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="login_box size18">
-                                <div class="l_goin2">
-                                <a href="{{ route('login.facebook') }}" class="login_link">
-                                    <span class="scl-icn"><i class="fa-brands fa-facebook"></i></span>
-                                    {{-- Login with Facebook --}}
-                                </a>
-                            </div>
+                                    <a href="{{ route('google.login') }}" class="login_link" onclick="openGoogleLogin(event)" style="background: #DB4437; display: flex; align-items: center; justify-content: center; width: 100%; border-radius: 4px; padding: 12px; color: #fff; text-decoration: none; font-weight: 500;">
+                                        <span class="scl-icn" style="margin-right: 12px; font-size: 20px;"><i class="fa-brands fa-google"></i></span>
+                                        <span>Continue with Google</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -64,14 +54,8 @@
                         </div>
                     </div>
                     <div class="accor-btn">
-                        <button type="submit" class="cta cta_white">{{ static_text('login') }}</button>
+                        <button type="submit" class="cta cta_white">Continue</button>
                     </div>
-                    <p class="new-accnt text-center" style="margin-top: 10px;margin-bottom: 2px;">
-                        {{ static_text('new_to_localio') }} <a href="{{ route('register') }}" class="sk_blu big-bld"
-                        onmouseover="this.style.color='#f9633b'"
-                        onmouseout="this.style.color='#06498b'"
-                        >{{ static_text('sign_up') }}</a>
-                    </p>
                 </form>
             </div>
         </div>

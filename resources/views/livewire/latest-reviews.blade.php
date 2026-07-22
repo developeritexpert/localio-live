@@ -50,7 +50,7 @@
                                     $reviewDescription = $translation?->description ?? null;
                                     $user = $review->user ?? null;
                                     $userImage = $user?->profile_image ?? $default_image;
-                                    $userName = $user?->first_name ?? 'Anonymous';
+                                    $userName = $user ? $user->displayName() : 'Anonymous';
                                     $userType = $user?->user_type ?? 'Anonymous';
                                 @endphp
 
@@ -69,9 +69,6 @@
                                                 <div class="user-name" style="font-size: 14px; font-weight: 600; color: #1a202c; line-height: 1.2;">{{ $userName }}</div>
                                                 @if ($user && $user->job_title)
                                                     <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
-                                                @endif
-                                                @if ($user && $user->company_size)
-                                                    <div class="user-company-size" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->company_size }}</div>
                                                 @endif
                                             </div>
                                         </div>

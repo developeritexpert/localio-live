@@ -70,6 +70,17 @@ class AuthenticationController extends Controller
 
     $credentials = $request->only('email', 'password');
 
+    $user = User::where('email', $request->email)->first();
+    if (!$user) {
+        session([
+            'register_email' => $request->email,
+            'register_password' => $request->password,
+            'register_is_google' => false,
+        ]);
+        $lang = app()->getLocale() ?? session('lang_code', 'en-us');
+        return redirect()->to("/{$lang}/register/details");
+    }
+
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
         $locale = app()->getLocale();
@@ -112,6 +123,68 @@ class AuthenticationController extends Controller
     }
 
         return redirect()->back()->with('error', 'Invalid email or password.');
+    }
+
+    public function registerDetailsForm()
+    {
+        $email = session('register_email');
+        if (!$email) {
+            return redirect()->route('login', ['locale' => session('lang_code', 'en-us')]);
+        }
+        
+        $firstName = session('register_first_name', '');
+        $lastName = session('register_last_name', '');
+
+        return view('Authentication.register_details', compact('email', 'firstName', 'lastName'));
+    }
+
+    public function registerDetailsStore(Request $request)
+    {
+        $email = session('register_email');
+        $password = session('register_password');
+
+        if (!$email || !$password) {
+            return redirect()->route('login', ['locale' => session('lang_code', 'en-us')])->with('error', 'Session expired. Please try again.');
+        }
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'job_title' => 'required|string|max:255',
+            'company_size' => 'required|string|max:255',
+        ]);
+
+        $country_code = Language::where('lang_code', session('lang_code'))->first();
+
+        $user = new User();
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->email = $email;
+        $user->password = Hash::make($password);
+        $user->job_title = $request->job_title;
+        $user->company_size = $request->company_size;
+        $user->country_id = $country_code ? $country_code->country_id : null;
+        $user->user_type = 'user';
+        $user->status = 'active';
+        $user->save();
+
+        if ($user) {
+            Auth::login($user);
+
+            // Clear session data
+            session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google']);
+
+            // Create token and store in session
+            $token = $user->createToken('user_token')->plainTextToken;
+            session([
+                'api_token' => $token,
+                'user_id' => $user->id,
+            ]);
+
+            return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')])->with('success', 'Successfully registered!');
+        } else {
+            return redirect()->back()->withErrors(['error' => 'Registration failed']);
+        }
     }
 
     public function register()
@@ -308,33 +381,24 @@ class AuthenticationController extends Controller
         if ($existingUser) {
             // Log in the existing user
             Auth::login($existingUser);
+            $user = auth()->user();
+            $redirectUrl = $this->redirectUser($user, $lang);
         } else {
             // Handle the case where the user does not exist
             list($firstName, $lastName) = explode(' ', $googleUser->name . ' ', 2);
-
-            // Create a new user
-            $newUser = User::create([
-                'first_name' => trim($firstName), // Use trim to avoid any leading/trailing spaces
-                'last_name' => trim($lastName), // Last name may be empty if only one name is given
-                'email' => $googleUser->email,
-                'user_type' => 'user', // Default user type
-                'password' => Hash::make($googleUser->email), // Generate a random password
+            session([
+                'register_email' => $googleUser->email,
+                'register_password' => \Illuminate\Support\Str::random(16),
+                'register_first_name' => trim($firstName),
+                'register_last_name' => trim($lastName),
+                'register_is_google' => true,
             ]);
-
-            // Log in the newly created user
-            Auth::login($newUser);
+            $redirectUrl = "/{$lang}/register/details";
         }
 
-        // Get the logged-in user
-        $user = auth()->user();
-
-        // Redirect based on user type
-        // return $this->redirectUser($user, $lang);
-
-        $redirectUrl = $this->redirectUser($user, $lang);
         return view('Authentication.google_popup_view', [
-        'redirectUrl' => $redirectUrl
-         ]);
+            'redirectUrl' => $redirectUrl
+        ]);
 
     }
 

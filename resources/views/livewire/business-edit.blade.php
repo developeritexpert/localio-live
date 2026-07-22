@@ -104,6 +104,22 @@
                         </div>
                     </div>
 
+                    <!-- Short Description Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Short Description (for USP section)</label>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control @error('short_description') is-invalid @enderror"
+                                    wire:model.live="short_description" rows="3" placeholder="Enter a short description text..."></textarea>
+                                @error('short_description')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
 
                     <!-- Pricing Options Section -->
                     <div class="card card-bordered mb-3">

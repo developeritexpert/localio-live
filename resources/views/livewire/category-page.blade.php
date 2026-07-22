@@ -281,11 +281,7 @@
                         border: 1px solid #e8eef6;
                         border-radius: 10px;
                         padding: 16px;
-                        display: flex;
-                        align-items: center;
-                        gap: 15px;
                         background: #fff;
-                        text-decoration: none;
                         transition: all 0.3s ease;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
                     }
@@ -357,9 +353,72 @@
                         color: #888;
                         font-weight: 500;
                     }
+                    .subcat-link:hover {
+                    text-decoration: underline !important;
+                    }
+                    .btn-view-details {
+                        border: 1.5px solid #06498b;
+                        border-radius: 30px;
+                        background: transparent;
+                        color: #06498b;
+                        font-size: 11px;
+                        text-decoration: none;
+                        transition: all 0.2s ease;
+                    }
+
+                    .btn-view-details:hover {
+                        background: #06498b;
+                        color: #fff;
+                        text-decoration: none;
+                    }
                 </style>
                 <section class="top-automotive-sec cat_pg light" style="margin-top: 6rem !important;">
                     <div class="container">
+                        <!-- Breadcrumbs and Share Button Row -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-8">
+                                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                    <ol class="breadcrumb m-0" style="background: transparent; padding: 0;">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
+                                               style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
+                                               onmouseout="this.style.color=''">All</a>
+                                        </li>
+                                        <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
+                                            {{ $category->translations->name ?? 'Category' }}
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <x-social-icon />
+                            </div>
+                        </div>
+
+                        <!-- Title Section with Real Ratings Box (Full Width) -->
+                        <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
+                            <div class="row align-items-start">
+                                <div class="col-md-8 text-start">
+                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 32px;">Best {{ $category->translations->name ?? 'Software' }}</h1>
+                                    <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                        See more below to select the best {{ $category->translations->name ?? 'software' }}.
+                                    </p>
+                                </div>
+                                <div class="col-md-4 mt-4 mt-md-0 text-start">
+                                    <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                        <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+                                            <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
+                                            <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                        </div>
+                                        <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                            Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                        </p>
+                                        <a href="javascript:void(0)" onclick="openModal()" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <!-- Sidebar -->
                             <div class="col-lg-3 mb-4">
@@ -379,14 +438,12 @@
                             <!-- Main Content -->
                             <div class="col-lg-9">
                                 <div class="parent-cat-main">
-                                    <h1>Best {{ $category->translations->name ?? 'Software' }}</h1>
-                                    <p>See more below to select the best {{ $category->translations->name ?? 'software' }}.</p>
                                                                         
                                     @foreach($parentSubCategories as $subcat)
                                         <div class="subcat-block">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <h4 class="mb-0">{{ $subcat->translations->name ?? 'Subcategory' }}</h4>
-                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}" style="color: #e56b46; font-size: 14px; font-weight: 600; text-decoration: none;">View All <i class="fas fa-chevron-right" style="font-size: 12px; margin-left: 3px;"></i></a>
+                                                <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $subcat->translations->name ?? 'Subcategory' }}</h3>
+                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;">See all {{ $subcat->translations->name ?? 'Software' }}</a>
                                             </div>
                                             
                                             @php
@@ -397,38 +454,54 @@
                                             @endphp
                                             <p>{{ $desc }}</p>
                                             
-                                            
                                             <div class="top-products-grid">
                                                 @foreach($subcat->top_businesses as $business)
-                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}" class="top-product-card">
-                                                        <div class="top-product-logo">
-                                                            @if($business->icon_id)
-                                                                <img src="{{ asset($business->icon_id) }}" alt="Logo">
-                                                            @else
-                                                                <div class="avatar-placeholder">{{ strtoupper(substr($business->translations->first()->name ?? 'B', 0, 1)) }}</div>
-                                                            @endif
-                                                        </div>
-                                                        <div class="top-product-info">
-                                                            <h6>{{ $business->translations->first()->name ?? 'Business Name' }}</h6>
-                                                            
-                                                            <div class="top-product-rating">
-                                                                <div class="top-product-stars">
-                                                                    @php $rating = round($business->average_rating); @endphp
-                                                                    @for($i = 1; $i <= 5; $i++)
-                                                                        @if($i <= $rating)
-                                                                            <i class="fas fa-star" style="margin-right:2px; color: #ffc107;"></i>
-                                                                        @else
-                                                                            <i class="far fa-star" style="margin-right:2px; color:#ccc;"></i>
-                                                                        @endif
-                                                                    @endfor
+                                                    <div class="top-product-card d-flex flex-column justify-content-between p-3">
+                                                        <div class="d-flex align-items-center gap-2 mb-3">
+                                                            <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                                                @if($business->icon_id)
+                                                                    <img src="{{ asset($business->icon_id) }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+                                                                @else
+                                                                    <div class="avatar-placeholder" style="width: 100%; height: 100%; border-radius: 50%; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #002347 0%, #00438a 100%); color: #fff; display: flex; align-items: center; justify-content: center;">
+                                                                        {{ strtoupper(substr($business->translations->first()->name ?? 'B', 0, 1)) }}
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <div class="top-product-info min-w-0">
+                                                                <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
+                                                                    {{ $business->translations->first()->name ?? 'Business Name' }}
+                                                                    <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span>
+                                                                </h6>
+                                                                <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
+                                                                    <div class="d-flex" style="color: #ffb300;">
+                                                                        @php $rating = round($business->average_rating); @endphp
+                                                                        @for($i = 1; $i <= 5; $i++)
+                                                                            @if($i <= $rating)
+                                                                                <i class="fas fa-star" style="margin-right:1px;"></i>
+                                                                            @else
+                                                                                <i class="far fa-star" style="margin-right:1px; color:#ffe896;"></i>
+                                                                            @endif
+                                                                        @endfor
+                                                                    </div>
+                                                                    <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span>
+                                                                    <span>|</span>
+                                                                    <span>{{ $business->active_reviews_count }} reviews</span>
                                                                 </div>
-                                                                <span>({{ number_format($business->active_reviews_count) }})</span>
-                                                            </div>
-                                                            <div class="top-product-rating-text">
-                                                                {{ number_format($business->average_rating, 1) }} out of 5 stars
                                                             </div>
                                                         </div>
-                                                    </a>
+                                                        <div class="d-flex gap-2 w-100 mt-auto">
+                                                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
+                                                            class="btn-view-details btn py-1 px-2 fw-semibold w-50">
+                                                                View details
+                                                            </a>
+                                                            <a href="{{ $business->getTrackedUrl() }}" 
+                                                               target="_blank" 
+                                                               class="btn py-1 px-2 fw-semibold w-50 text-white" 
+                                                               style="background-color: #f26522; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition: background 0.2s;">
+                                                                Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 @endforeach
                                             </div>
                                         </div>
@@ -853,6 +926,13 @@
                                                                 </div>
                                                             </div>
 
+                                                             <!-- Short Description -->
+                                                             @if(!empty($item->translations->first()->short_description))
+                                                                 <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                     {{ $item->translations->first()->short_description }}
+                                                                 </div>
+                                                             @endif
+
                                                             <!-- Features -->
                                                             <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
                                                                 <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
@@ -984,7 +1064,7 @@
             </section>
             <!-- Remaining sections stay the same -->
         </div>
-        <section class="subs_sec light p_120 ">
+        <section class="subs_sec light ">
             {{-- <div class="container">
                 <div class="subs_content">
                     <div class="sub_img">
