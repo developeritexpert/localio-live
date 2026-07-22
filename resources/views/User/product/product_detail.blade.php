@@ -1148,7 +1148,6 @@
                                                             @foreach ($images as $index => $image)
                                                                 <div style="padding: 0 5px; cursor: pointer;">
                                                                     <img src="{{ asset($image) }}"
-                                                                        onclick="openGallery({{ $index }})"
                                                                         alt="Thumbnail {{ $index + 1 }}"
                                                                         style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
                                                                 </div>
