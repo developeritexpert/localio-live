@@ -542,12 +542,12 @@
 
     @guest
     <!-- section right-tool -->
-    <section class="right_tool_sec dark p_80">
+    <section class="right_tool_sec dark ">
         <div class="container">
             <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
                 <div class="otr_rgtool">
                     <h2>Join the Localio community</h2>
-                    <p class="text-white size18 mt-2" style="max-width: 700px; margin: 0 auto 30px;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                    <p class="text-white size16 mt-2" style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
                 </div>
                 <div class="right-tool-pack">
                     <div class="row">

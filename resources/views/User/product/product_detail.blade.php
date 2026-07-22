@@ -584,10 +584,10 @@
 }
 
 .breakdown-title{
-    font-size:24px;
+    font-size:16px;
     color:#002655;
-    font-weight:700;
-    margin-bottom:20px;
+    font-weight:600;
+    margin-bottom:16px;
 }
 
 .review-progress-item{
@@ -808,7 +808,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted size16 p-1 hide-on-sticky" style="color: #666; font-size: 16px; margin-top: 5px; margin-bottom: 0;">Real reviews, community discussions, features & alternatives</p>
+                                            <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -821,7 +821,7 @@
                                                         @endif
                                                     @endfor
                                                 </div>
-                                                <span style="font-size: 14px; font-weight: 600; color: #555;">
+                                                <span style="font-size: 14px; font-weight: 500; color: #555;">
                                                     {{ number_format($averageRating, 1) }} | {{ $ratingCount }} {{ $ratingCount === 1 ? 'Review' : 'Reviews' }}
                                                 </span>
                                             </div>
@@ -965,7 +965,7 @@
 
                         <div class="inner_table2">
                             <div class="table_st">
-                                <div id="table-of-content" class="feture_box p-3 shadow rounded bg-white bar-option"
+                                <div id="table-of-content" class="feture_box p-3 shadow  bg-white bar-option"
                                     style="top: 90px; max-height: max-content; overflow-y: auto;">
                                     <ul class="list-unstyled toc-links small">
                                         @foreach ($tableOfContents as $i => $item)
@@ -1302,7 +1302,7 @@
                                                 {{-- Header & Overall Rating --}}
                                                 <div class="review-header-box" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
-                                                        <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1;">
+                                                        <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1;">
                                                             {{ number_format($averageRating,1) }}
                                                         </span>
 
@@ -1326,14 +1326,14 @@
                                                     </a>
                                                 </div>
 
-                                                <h2 class="breakdown-title" style="margin-bottom: 0;">
+                                                <h2 class="breakdown-title" style="margin-bottom: 15px;">
                                                     Review breakdown
                                                 </h2>
 
                                                 {{-- Breakdown --}}
-                                                <div class="review-progress-list mt-2">
+                                                <div class="review-progress-list ">
                                                     @foreach ($criteria as $criterion)
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-3">
+                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                         <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                                         <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                             <progress class="progress-bar w-100"
@@ -2026,7 +2026,7 @@
                                                                          style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
                                                                          alt="User Image">
                                                                  @else
-                                                                     <div class="profile-circle" style="width: 70px; height: 70px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                                                     <div class="profile-circle" style="width: 70px; height: 70px; border-radius: 50%; background-color: #06498b ; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                                                                          <span style="color: white; font-weight: bold; font-size: 28px;">
                                                                              @if ($review->user && $review->user->user_type === 'admin')
                                                                                  {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
@@ -2393,7 +2393,7 @@
                                                     <a href="{{ $business->getTrackedUrl() }}"
                                                         target="_blank"
                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                        style="background-color: #06498b; color: #fff; border-radius: 25px; padding: 10px 20px; font-weight: bold; text-decoration: none; font-size: 14px; border: none; transition: background-color 0.2s;">
+                                                        style=" color: #002347; border-radius: 25px; padding: 10px 20px; font-weight:500; text-decoration: none; font-size: 14px; ">
                                                          View details
                                                     </a>
                                                 </div>
@@ -2530,7 +2530,7 @@
                                                         <a href="{{ $altbusiness->getTrackedUrl() }}"
                                                             target="_blank"
                                                             class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                            style="background-color: #06498b; color: #fff; border-radius: 25px; padding: 10px 20px; font-weight: bold; text-decoration: none; font-size: 14px; border: none; transition: background-color 0.2s;">
+                                                            style="  border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                             View details 
                                                         </a>
                                                     </div>
@@ -2982,9 +2982,9 @@
                                                     User reviews
                                                 </h2>
 
-                                                <div class="overall-rating-box" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                                                    <span style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 8px;">{{ number_format($averageRating, 1) }}</span>
-                                                    <div class="overall-stars" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 8px;">
+                                                <div class="overall-rating-box" style="background-color: #fff; border-radius: 12px; padding: 24px; border: 1px solid #06498b1a; box-shadow: 0 8px 24px rgb(141 143 144 / 28%); margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                                                    <span style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 12px;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="overall-stars" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 0;">
                                                         @for ($j = 1; $j <= 5; $j++)
                                                             @if ($j <= floor($averageRating))
                                                                 <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
