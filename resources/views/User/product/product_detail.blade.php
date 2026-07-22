@@ -1522,12 +1522,10 @@
                                                                      </div>
                                                                  @endif
 
-                                                                 <div>
-                                                                     <h6>{{ $review->user->first_name ?? 'Anonymous' }}</h6>
-                                                                     <small class="text-muted" style="font-size: 12px;">{{ $review->created_at->diffForHumans() }}</small>
-                                                                 </div>
-
-                                                             </div>
+                                                                  <div>
+                                                                      <h6>{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                      <small class="text-muted" style="font-size: 12px;">{{ $review->created_at->diffForHumans() }}</small>
+                                                                  </div></div>
 
                                                              <div class="rating-stars">
                                                                  @for($i=1;$i<=5;$i++)

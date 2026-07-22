@@ -456,10 +456,10 @@
                                                         @if ($review->user && $review->user->user_type === 'admin')
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
-                                                            {{ $review->user->first_name ?? 'Anonymous' }}
+                                                            {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                                         @endif
                                                     </div>
-                                                    <div class="joh_pos"> Position Here </div>
+                                                    <div class="joh_pos"> {{ $review->user->job_title ?? 'User' }} </div>
                                                 </div>
                                             </div>
                                         </div>

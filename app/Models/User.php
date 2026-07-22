@@ -95,4 +95,14 @@ class User extends Authenticatable
      {
          return $this->belongsTo(Business::class, 'business_id');
      }
+
+     public function displayName()
+     {
+         $firstName = $this->first_name ?? 'Anonymous';
+         $lastName = $this->last_name ?? '';
+         if ($lastName) {
+             return $firstName . ' ' . strtoupper(substr($lastName, 0, 1)) . '.';
+         }
+         return $firstName;
+     }
 }

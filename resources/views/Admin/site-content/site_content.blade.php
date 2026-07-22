@@ -28,7 +28,7 @@
                                     <div class="card-body">
                                         @foreach ($section['keys'] as $key)
                                             @php
-                                                $value = $keys[$key]->translations->first()->value ?? ($keys[$key]->default_value ?? '');
+                                                $value = isset($keys[$key]) ? ($keys[$key]->translations->first()->value ?? ($keys[$key]->default_value ?? '')) : '';
                                             @endphp
                                             <div class="form-group col-lg-12">
                                                 <label class="form-label" for="{{ $key }}">
