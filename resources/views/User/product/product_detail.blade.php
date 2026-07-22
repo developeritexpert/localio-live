@@ -864,21 +864,20 @@
 
                                 {{-- replace this under the visit button top-pro-btn tp_visit  --}}
 
-                                {{-- @php
+                                @php
                                     $ratingCount = $business->reviews->where('status', 'active')->count();
                                 @endphp
-                                <div class="right_bottom col-lg-6 hd_str"
-                                    @auth
-
-                                    onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-
-                                    @else
-                                    onclick="window.location.href = '/login'" @endauth>
+                                <!-- <div class="right_bottom col-lg-6 hd_str"
+                                     @auth
+                                     onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                     @else
+                                     onclick="openLoginModal()"
+                                     @endauth>
 
 
 
                                     {{-- Change Review  --}}
-                                    {{-- <div class="inn_ul">
+                                    <div class="inn_ul">
                                         <div class="rating-stars">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 @if ($i <= floor($averageRating))
@@ -901,7 +900,7 @@
                                             {{ $ratingCount }} Ratings
                                         @endif
                                     </div>
-                                </div> --}}
+                                </div>  -->
 
                             </div>
                         </div>
@@ -1354,12 +1353,21 @@
                                                 <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
-                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
-                                                            <i class="fas fa-thumbs-up"></i>
-                                                        </a>
-                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
-                                                            <i class="fas fa-thumbs-down"></i>
-                                                        </a>
+                                                        @auth
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                                <i class="fas fa-thumbs-up"></i>
+                                                            </a>
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                                <i class="fas fa-thumbs-down"></i>
+                                                            </a>
+                                                        @else
+                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                                <i class="fas fa-thumbs-up"></i>
+                                                            </a>
+                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                                <i class="fas fa-thumbs-down"></i>
+                                                            </a>
+                                                        @endauth
                                                     </div>
                                                 </div>
 
@@ -2945,12 +2953,21 @@
                                             </div>
                                         </div>
                                         <div style="display: flex; gap: 12px; align-items: center;">
-                                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                <i class="fas fa-check" style="color: #06498b;"></i> Yes
-                                            </button>
-                                            <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                <i class="fas fa-times" style="color: #e53e3e;"></i> No
-                                            </button>
+                                            @auth
+                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-check" style="color: #06498b;"></i> Yes
+                                                </button>
+                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-times" style="color: #e53e3e;"></i> No
+                                                </button>
+                                            @else
+                                                <button onclick="openLoginModal()" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-check" style="color: #06498b;"></i> Yes
+                                                </button>
+                                                <button onclick="openLoginModal()" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                    <i class="fas fa-times" style="color: #e53e3e;"></i> No
+                                                </button>
+                                            @endauth
                                         </div>
                                     </div>
 
@@ -3033,7 +3050,7 @@
                                                     @auth
                                                         onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                     @else
-                                                        onclick="window.location.href = '/login'" 
+                                                        onclick="openLoginModal()" 
                                                     @endauth
                                                     style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
                                                 >Write review</a>
