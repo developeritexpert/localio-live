@@ -208,6 +208,13 @@
                                                                 </div>
                                                             </div>
 
+                                                             <!-- Short Description -->
+                                                             @if(!empty($business->translations->first()->short_description))
+                                                                 <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                     {{ $business->translations->first()->short_description }}
+                                                                 </div>
+                                                             @endif
+
                                                             <div class="slider_content_sec my-3">
                                                                 <div class="main_feature_lg">
                                                                     <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto;">
@@ -456,10 +463,10 @@
                                                         @if ($review->user && $review->user->user_type === 'admin')
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
-                                                            {{ $review->user->first_name ?? 'Anonymous' }}
+                                                            {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                                         @endif
                                                     </div>
-                                                    <div class="joh_pos"> Position Here </div>
+                                                    <div class="joh_pos"> {{ $review->user->job_title ?? 'User' }} </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -535,12 +542,12 @@
 
     @guest
     <!-- section right-tool -->
-    <section class="right_tool_sec dark p_80">
+    <section class="right_tool_sec dark ">
         <div class="container">
             <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
                 <div class="otr_rgtool">
                     <h2>Join the Localio community</h2>
-                    <p class="text-white size18 mt-2" style="max-width: 700px; margin: 0 auto 30px;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                    <p class="text-white size16 mt-2" style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
                 </div>
                 <div class="right-tool-pack">
                     <div class="row">
@@ -551,7 +558,6 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Share your experience</h3>
-                                    <p class="size18">Help others by reviewing the products you use.</p>
                                 </div>
                             </div>
                         </div>
@@ -562,7 +568,6 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Join discussions</h3>
-                                    <p class="size18">Ask questions and exchange experiences with the community.</p>
                                 </div>
                             </div>
                         </div>
@@ -573,7 +578,6 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Build your reputation</h3>
-                                    <p class="size18">Earn badges and become a trusted contributor.</p>
                                 </div>
                             </div>
                         </div>

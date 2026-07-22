@@ -947,12 +947,11 @@
                 .popular-category-tab-btn {
                     background: transparent !important;
                     border: none !important;
-                    border-left: 3px solid transparent !important;
                     border-radius: 0 !important;
                     color: #4a5568 !important;
                     font-size: 16px !important;
                     font-weight: 600 !important;
-                    padding: 12px 16px !important;
+                    padding: 12px 0 !important;
                     display: flex !important;
                     align-items: center !important;
                     gap: 12px !important;
@@ -964,14 +963,12 @@
                     /* color: #002347 !important; */
                     /* background-color: #f7fafc !important; */
                 }
-                .popular-category-tab-btn:hover,
-                .popular-category-tab-btn.active .category-btn-text {
+                .popular-category-tab-btn:hover{
                     /* color: #F9633B !important; */
                     /* background-color: #fff8f6 !important; */
                     /* border-left-color: #F9633B !important; */
                     /* font-weight: 700 !important;   */
-                    text-decoration:underline;
-                                  
+                    text-decoration:underline;                                  
                 }
                 .category-icon-wrapper {
                     display: flex !important;
@@ -997,7 +994,7 @@
                     flex-grow: 1 !important;
                 }
                 .see-all-category-link {
-                    font-size: 16px !important;
+                    font-size: 14px !important;
                     font-weight: 600 !important;
                     color: #002347 !important;
                     text-decoration: none !important;
@@ -1088,46 +1085,51 @@
 
 
     @if($showCommissionsBanner)
-        <div class="transparency-banner" style="position: relative; top: 0; left: 0; width: 100%; background-color: #003f7d; z-index: 10; text-align: center;  box-sizing: border-box;">
+        <div class="transparency-banner">
            <div class="inr-trans">
-        <div style=" font-size: 11.5px; color: #ffffff; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
+        <div style=" font-size: 10px; color: #e5e4e4; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
                 {{ static_text('localio_commissions_message')}}
-                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #ffffff;  text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#f9633b'" onmouseout="this.style.color='#ffffff'">Learn more</a>
+                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #e5e4e4;  text-decoration:none; transition: color 0.2s;">Learn more</a>
             </div>
         </div>
 
         </div>
         <style>
             header .sec_head {
-                top: 26px !important;
+                top: 24px !important;
             }
             /* .product-page-body header .sec_head {
                 margin-top: 34px !important;
             } */
         </style>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const banner = document.querySelector('.transparency-banner');
-                const header = document.querySelector('header .sec_head');
-                if (banner && header) {
-                    const updateHeaderPosition = () => {
-                        let scroll = window.scrollY;
-                        if (scroll > 0) {
-                            banner.style.transform = 'translateY(0)';
-                            if (!document.body.classList.contains('product-page-body')) {
-                                header.style.setProperty('top', '0px', 'important');
-                            }
-                        } else {
-                            banner.style.transform = 'translateY(-' + scroll + 'px)';
-                            if (!document.body.classList.contains('product-page-body')) {
-                                header.style.setProperty('top', (26 - scroll) + 'px', 'important');
-                            }
-                        }
-                    };
-                    window.addEventListener('scroll', updateHeaderPosition);
-                    updateHeaderPosition();
+document.addEventListener('DOMContentLoaded', function () {
+    const banner = document.querySelector('.transparency-banner');
+    const header = document.querySelector('header .sec_head');
+
+    if (banner && header) {
+        const updateHeaderPosition = () => {
+            let scroll = window.scrollY;
+
+            if (scroll > 0) {
+                banner.style.transform = 'translateY(0)';
+
+                if (!document.body.classList.contains('product-page-body')) {
+                    header.classList.add('header-scrolled');
                 }
-            });
+            } else {
+                banner.style.transform = 'translateY(-' + scroll + 'px)';
+
+                if (!document.body.classList.contains('product-page-body')) {
+                    header.classList.remove('header-scrolled');
+                }
+            }
+        };
+
+        window.addEventListener('scroll', updateHeaderPosition);
+        updateHeaderPosition();
+    }
+});      
         </script>
     @endif
     <header>
@@ -1666,7 +1668,7 @@
                                     </li>
                                     <li><a
                                             href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['top_rated_product'] ??
-                                                'Top-Rated Products
+                                                'Top-rated products
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}
                                         </a>
                                     </li>
@@ -1928,15 +1930,10 @@
             <div class="text-center">
                 <h2 id="modal-title" class="modal-title">
                     <div class="hd_text">
-                        <h2 class="text-center">{{static_text('login_to_your_account')}}</h2>
-
+                        <h2 class="text-center">Sign In or Create an Account</h2>
                     </div>
                 </h2>
-                    <p class="text-center">{{ static_text('welcome_back') }}</p>
-
-                {{-- <p class="modal-description">
-                    Please sign in to add this business to your wishlist.
-                </p> --}}
+                <p class="text-center" style="margin-bottom: 20px;">Continue with Google or use your email and password.</p>
 
                 <div class="button">
                     <section class="">
@@ -1944,25 +1941,15 @@
                             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
 
                                 <div class="scl_login">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="login_box size18">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-12">
+                                            <div class="login_box size18" style="text-align: center;">
                                                 <div class="l_goin1">
-                                                <a href="{{ route('google.login') }}" class="login_link" style="background: #DB4437;">
-                                                    <span class="scl-icn"><i class="fa-brands fa-google"></i></span>
-                                                    {{-- Login with Google --}}
-                                                </a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="login_box size18">
-                                                <div class="l_goin2">
-                                                <a href="{{ route('login.facebook') }}" class="login_link">
-                                                    <span class="scl-icn"><i class="fa-brands fa-facebook"></i></span>
-                                                    {{-- Login with Facebook --}}
-                                                </a>
-                                            </div>
+                                                    <a href="{{ route('google.login') }}" class="login_link" onclick="openGoogleLogin(event)" style="background: #DB4437; display: flex; align-items: center; justify-content: center; width: 100%; border-radius: 4px; padding: 12px; color: #fff; text-decoration: none; font-weight: 500;">
+                                                        <span class="scl-icn" style="margin-right: 12px; font-size: 20px;"><i class="fa-brands fa-google"></i></span>
+                                                        <span>Continue with Google</span>
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1998,14 +1985,8 @@
                                         </div>
                                     </div>
                                     <div class="accor-btn">
-                                        <button type="submit" class="cta cta_white">{{ static_text('login') }}</button>
+                                        <button type="submit" class="cta cta_white">Continue</button>
                                     </div>
-                                    <p class="new-accnt text-center" style="margin-top: 10px;margin-bottom: 2px;">
-                                        {{ static_text('new_to_localio') }} <a href="{{ route('register') }}" class="sk_blu big-bld"
-                                        onmouseover="this.style.color='#f9633b'"
-                                        onmouseout="this.style.color='#06498b'"
-                                        >{{ static_text('sign_up') }}</a>
-                                    </p>
                                 </form>
                             </div>
                         </div>
