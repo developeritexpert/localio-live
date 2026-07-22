@@ -535,12 +535,12 @@
 
     @guest
     <!-- section right-tool -->
-    <section class="right_tool_sec dark p_80">
+    <section class="right_tool_sec dark ">
         <div class="container">
             <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
                 <div class="otr_rgtool">
                     <h2>Join the Localio community</h2>
-                    <p class="text-white size18 mt-2" style="max-width: 700px; margin: 0 auto 30px;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                    <p class="text-white size16 mt-2" style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
                 </div>
                 <div class="right-tool-pack">
                     <div class="row">
@@ -551,7 +551,7 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Share your experience</h3>
-                                    <p class="size18">Help others by reviewing the products you use.</p>
+                                    <p class="size16">Help others by reviewing the products you use.</p>
                                 </div>
                             </div>
                         </div>
@@ -562,7 +562,7 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Join discussions</h3>
-                                    <p class="size18">Ask questions and exchange experiences with the community.</p>
+                                    <p class="size16">Ask questions and exchange experiences with the community.</p>
                                 </div>
                             </div>
                         </div>
@@ -573,7 +573,7 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Build your reputation</h3>
-                                    <p class="size18">Earn badges and become a trusted contributor.</p>
+                                    <p class="size16">Earn badges and become a trusted contributor.</p>
                                 </div>
                             </div>
                         </div>

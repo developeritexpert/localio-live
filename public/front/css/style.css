@@ -773,12 +773,12 @@ header .search-box input {
 }
 
 .right_tool_sec .tool-crd-bdy {
-  padding-top: 35px;
+  padding-top: 20px;
 }
 
 .right_tool_sec .right-tool-pack {
   padding-top: 20px;
-  padding-bottom: 40px;
+  padding-bottom: 30px;
 }
 
 /* footer css */
@@ -833,7 +833,7 @@ footer ul li {
 }
 
 .foot-col h6 {
-  font-size: 20px;
+  font-size: 15px;
 }
 
 .foot-right-list li a {
@@ -5126,6 +5126,7 @@ body {
 
 .right_tool_sec {
   overflow: hidden;
+  padding: 60px 0;
 }
 
 .in_cont_box .read_para p {
@@ -5549,7 +5550,7 @@ i.white-heart {
 } */
 
 .right-tool-btn .cta {
-  padding: 21px 60px;
+  padding: 14px 48px;
 }
 
 /* 12nov2024 //////////////////////////////////////////// */
@@ -5711,9 +5712,9 @@ header .search_logo .search-box {
   cursor: pointer;
 }
 
-.right_tool_sec .otr_rgtool {
+/* .right_tool_sec .otr_rgtool {
   padding-bottom: 30px;
-}
+} */
 
 .in_cont_box:hover {
   box-shadow: 0px 20px 56px 0px #00000012;
@@ -5899,14 +5900,14 @@ header .menu .dropdown_menu {
   left: 0;
   right: 0;
   position: absolute;
-  bottom: 70px;
+  bottom: 65px;
   margin: 0;
-  padding: 50px;
+  padding: 20px 30px;
   height: 100%;
   width: 100% !important;
   z-index: 5;
   display: none;
-  padding-top: 40px;
+  /* padding-top: 40px; */
 }
 
 .ft-btm-rgt .select-menu .options .footer-langs-container {
@@ -6392,10 +6393,10 @@ button.cta.cta_white.register_btn {
   background-color: #06498b;
 }
 
-.ft-btm-rgt .select-menu .select-btn:hover,
+/* .ft-btm-rgt .select-menu .select-btn:hover,
 .ft-btm-rgt .select-menu .select-btn:hover i {
   color: #f9633b !important;
-}
+} */
 
 /* 23-April-2025 */
 .login_form .contact_content .login_box a:hover {
@@ -6452,7 +6453,7 @@ button.cta.cta_white.register_btn {
 .fixed-div {
   -webkit-animation: fadeIn 0.75s ease-out forwards;
   animation: fadeIn 0.75s ease-out forwards;
-  background-color: #e6ecf3;
+  background-color: #f5f5f5;
   position: fixed;
   top: 130px;
   left: 0;
@@ -8156,7 +8157,7 @@ input:checked~.toggle-dot {
   font-size: 28px !important;
   font-weight: 700;
   padding: 0 !important;
-  margin-bottom: 4px !important;
+  margin-bottom: 2px !important;
   color: #002347 !important;
 }
 
@@ -8464,7 +8465,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   left: 0;
   bottom: 0;
   width: 100% !important;
-  height: 2.5px;
+  height: 3px;
   background: #06498b;
   opacity: 0;
   /* transition: width 0.3s ease; */
@@ -8894,7 +8895,7 @@ section.revie_img_sec {
     color: #475569 !important;
   }
 
-    .most-populr-sec .best-value-inline-container {
+  .most-populr-sec .best-value-inline-container {
     top: -25px;
   }
 }
@@ -8977,7 +8978,7 @@ section.revie_img_sec {
 } */
 
 .most-populr-sec .top-rate-card .tab_star_li .fa-star {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .outer_slider .inn_h h6.head {
@@ -9078,7 +9079,7 @@ header .menu li.menu-item a {
 }
 
 .most-populr-sec .top-rate-card .slider_img {
-  max-width: 48px;
+  max-width: 42px;
 }
 
 .revie_img_sec .fetru_row .rating-stars i {
@@ -9086,9 +9087,9 @@ header .menu li.menu-item a {
 }
 
 
-.product_integra_sec .sftware-alternative-pck .cta.btn_blue:hover {
+/* .product_integra_sec .sftware-alternative-pck .cta.btn_blue:hover {
   background-color: #f9633b !important;
-}
+} */
 
 .product_integra_sec .sftware-alternative-pck .cta.btn_blue {
   transition: unset !important;
@@ -9146,8 +9147,8 @@ header .menu li.menu-item a {
 }
 
 .product_integra_sec .sftware-alternative-pck .asn-img {
-  height: 50px;
-  width: 50px;
+  height: 45px;
+  width: 45px;
 }
 
 .product_integra_sec .sft_ware_test .sftware-alternative {
@@ -9218,7 +9219,7 @@ footer .foot-row-lft {
 }
 
 .most-populr-sec .top-pro-btn .cta {
-  padding: 11px 25px;
+  padding: 8px 25px;
 }
 
 .most-populr-sec .mst_hdn .tp-btm {
@@ -9241,7 +9242,7 @@ footer .foot-row-lft {
 
 .asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide span,
 .asn_main_sec_2 .asn_dv.fixed-div .main-view-rating-hide i {
-  font-size: 12px !important;
+  font-size: 10px !important;
 }
 
 .asn_main_sec_2 .asn_dv.fixed-div .asn-img {
@@ -9281,7 +9282,7 @@ header .sec_head {
   height: auto;
 }
 
-.product_integra_sec .p_top_btm_sftwre {
+.product_integra_sec .start-from {
   margin-top: auto
 }
 
@@ -9303,3 +9304,110 @@ footer .footer-wrp ul li {
 .latest_review_part_footer .review_card:last-child {
   margin-bottom: 0 !important;
 }
+
+/* 22-july-26  */
+.transparency-banner .inr-trans a:hover {
+  text-decoration: underline !important;
+}
+
+footer .foot-row-lft .foot-logo p {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ft-btm-rgt .select-menu .select-btn:hover .sBtn-text {
+  text-decoration: underline !important;
+}
+
+.home_bnr_sec {
+  padding-bottom: 60px;
+}
+
+.most-populr-sec .popular-category-tab-btn {
+  border-bottom: 2px solid transparent !important;
+
+}
+
+.most-populr-sec .popular-category-tab-btn.active {
+  border-color: #002347 !important;
+}
+
+.most-populr-sec .popular-categories-nav {
+  width: fit-content;
+}
+
+.most-populr-sec .popular-category-tab-btn.active:hover {
+  text-decoration: none !important;
+}
+
+.most-populr-sec .inner_box_silder .head {
+  font-size: 16px;
+}
+
+.most-populr-sec .top-rate-innr .rate_box {
+  font-size: 12px;
+}
+
+.most-populr-sec .top-pro-btn .cta {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.revie_img_sec .main_feture .overall-rating-box {
+  gap: 0;
+}
+
+.revie_img_sec .overall-rating-box .overall-rating-number {
+  margin-bottom: 3px
+}
+
+.product_integra_sec .sftware-alternative-pck .asn-rating h6 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.product_integra_sec .sftware-alternative-pck .ans_lft {
+  gap: 10px;
+}
+
+.product_integra_sec .sftwre-alt-btn a {
+  border: 1.5px solid #06498b;
+  color: #06498b;
+  background-color: transparent;
+}
+
+.product_integra_sec .sftwre-alt-btn a:hover {
+  background-color: #06498b !important;
+  color: #fff !important;
+}
+
+.revie_left_rgt_sec .review-row-prod-inr .overall-rating-box {
+  gap: 0;
+}
+
+.asn_main_sec_2 .asn_dv.fixed-div {
+  border-bottom: 1px solid #00234714;
+}
+
+
+
+
+.sec_head.header-scrolled {
+  top: 0 !important;
+}
+
+header .sec_head {
+  transition: 0.2s ease-in;
+}
+
+.transparency-banner {
+  background-color:  #003f7d;
+    position: fixed !important;
+    z-index: 10;
+      top: 0 !important;
+      width:100%;
+      left: 0;
+      right: 0;
+      text-align: center;
+}
+

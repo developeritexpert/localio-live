@@ -947,12 +947,11 @@
                 .popular-category-tab-btn {
                     background: transparent !important;
                     border: none !important;
-                    border-left: 3px solid transparent !important;
                     border-radius: 0 !important;
                     color: #4a5568 !important;
                     font-size: 16px !important;
                     font-weight: 600 !important;
-                    padding: 12px 16px !important;
+                    padding: 12px 0 !important;
                     display: flex !important;
                     align-items: center !important;
                     gap: 12px !important;
@@ -964,14 +963,12 @@
                     /* color: #002347 !important; */
                     /* background-color: #f7fafc !important; */
                 }
-                .popular-category-tab-btn:hover,
-                .popular-category-tab-btn.active .category-btn-text {
+                .popular-category-tab-btn:hover{
                     /* color: #F9633B !important; */
                     /* background-color: #fff8f6 !important; */
                     /* border-left-color: #F9633B !important; */
                     /* font-weight: 700 !important;   */
-                    text-decoration:underline;
-                                  
+                    text-decoration:underline;                                  
                 }
                 .category-icon-wrapper {
                     display: flex !important;
@@ -997,7 +994,7 @@
                     flex-grow: 1 !important;
                 }
                 .see-all-category-link {
-                    font-size: 16px !important;
+                    font-size: 14px !important;
                     font-weight: 600 !important;
                     color: #002347 !important;
                     text-decoration: none !important;
@@ -1088,46 +1085,51 @@
 
 
     @if($showCommissionsBanner)
-        <div class="transparency-banner" style="position: relative; top: 0; left: 0; width: 100%; background-color: #003f7d; z-index: 10; text-align: center;  box-sizing: border-box;">
+        <div class="transparency-banner">
            <div class="inr-trans">
-        <div style=" font-size: 11.5px; color: #ffffff; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
+        <div style=" font-size: 10px; color: #e5e4e4; line-height: 1; font-family: sans-serif; max-height: 22px; overflow: hidden; vertical-align: middle;">
                 {{ static_text('localio_commissions_message')}}
-                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #ffffff;  text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color='#f9633b'" onmouseout="this.style.color='#ffffff'">Learn more</a>
+                <a href="#" onclick="event.preventDefault(); openModal()" style="color: #e5e4e4;  text-decoration:none; transition: color 0.2s;">Learn more</a>
             </div>
         </div>
 
         </div>
         <style>
             header .sec_head {
-                top: 26px !important;
+                top: 24px !important;
             }
             /* .product-page-body header .sec_head {
                 margin-top: 34px !important;
             } */
         </style>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const banner = document.querySelector('.transparency-banner');
-                const header = document.querySelector('header .sec_head');
-                if (banner && header) {
-                    const updateHeaderPosition = () => {
-                        let scroll = window.scrollY;
-                        if (scroll > 0) {
-                            banner.style.transform = 'translateY(0)';
-                            if (!document.body.classList.contains('product-page-body')) {
-                                header.style.setProperty('top', '0px', 'important');
-                            }
-                        } else {
-                            banner.style.transform = 'translateY(-' + scroll + 'px)';
-                            if (!document.body.classList.contains('product-page-body')) {
-                                header.style.setProperty('top', (26 - scroll) + 'px', 'important');
-                            }
-                        }
-                    };
-                    window.addEventListener('scroll', updateHeaderPosition);
-                    updateHeaderPosition();
+document.addEventListener('DOMContentLoaded', function () {
+    const banner = document.querySelector('.transparency-banner');
+    const header = document.querySelector('header .sec_head');
+
+    if (banner && header) {
+        const updateHeaderPosition = () => {
+            let scroll = window.scrollY;
+
+            if (scroll > 0) {
+                banner.style.transform = 'translateY(0)';
+
+                if (!document.body.classList.contains('product-page-body')) {
+                    header.classList.add('header-scrolled');
                 }
-            });
+            } else {
+                banner.style.transform = 'translateY(-' + scroll + 'px)';
+
+                if (!document.body.classList.contains('product-page-body')) {
+                    header.classList.remove('header-scrolled');
+                }
+            }
+        };
+
+        window.addEventListener('scroll', updateHeaderPosition);
+        updateHeaderPosition();
+    }
+});      
         </script>
     @endif
     <header>

@@ -58,7 +58,7 @@
                                     <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.02)';">
                                         <!-- Top part: user icon, name, rating -->
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                            <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                                 @if ($user && $user->profile_image && $user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
                                                 @else
@@ -78,7 +78,7 @@
 
                                         <!-- Middle part: Title & Description -->
                                         <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
-                                            <h5 style="color: #0d1b2a; font-size: 14px; font-weight: 700; margin: 0 0 6px 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">{{ $reviewTitle }}</h5>
+                                            <h5 style="color: #0d1b2a; font-size: 14px; font-weight: 600; margin: 0 0 6px 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">{{ $reviewTitle }}</h5>
                                             <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     @if ($i <= floor($review->rating))
@@ -88,7 +88,7 @@
                                                     @endif
                                                 @endfor
                                             </div>
-                                            <p style="font-size: 12.5px; color: #4a5568; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                            <p style="font-size: 13.5px; color: #4a5568; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
                                                 {{ $reviewDescription ? strip_tags($reviewDescription) : 'No review content available.' }}
                                             </p>
                                         </div>
