@@ -853,6 +853,13 @@
                                                                 </div>
                                                             </div>
 
+                                                             <!-- Short Description -->
+                                                             @if(!empty($item->translations->first()->short_description))
+                                                                 <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                     {{ $item->translations->first()->short_description }}
+                                                                 </div>
+                                                             @endif
+
                                                             <!-- Features -->
                                                             <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
                                                                 <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">

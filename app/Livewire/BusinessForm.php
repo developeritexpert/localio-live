@@ -65,6 +65,7 @@ class BusinessForm extends Component
     public $affiliate_link = '';
     public $is_affiliate_partner = false;
     public $business_description = '';
+    public $short_description = '';
     public $after_image_description = '';
     public $features = ['', '', ''];
     public $headquaters = '';
@@ -202,7 +203,7 @@ class BusinessForm extends Component
         $this->selectedBusinessId = $id;
         $this->selectedBusiness = Business::with('translations')->findOrFail($id);
         $this->selectedLanguages = [];
-        $this->fieldsToTranslate = ['name', 'description'];
+        $this->fieldsToTranslate = ['name', 'description', 'short_description'];
         $this->selectAllLanguages = false;
         $this->isTranslating = false;
 
@@ -247,7 +248,7 @@ class BusinessForm extends Component
         $this->showTranslateModal = false;
         $this->selectedBusiness = null;
         $this->selectedLanguages = [];
-        $this->fieldsToTranslate = ['description', 'name'];
+        $this->fieldsToTranslate = ['description', 'name', 'short_description'];
         $this->selectAllLanguages = false;
         $this->sourceLanguage = null;
         $this->isTranslating = false;
@@ -1083,6 +1084,7 @@ class BusinessForm extends Component
         $this->languages_supported = $business->languages_supported;
         $this->support_options = $translation->support_options ?? '';
         $this->business_description = $translation->description ?? '';
+        $this->short_description = $translation->short_description ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
         $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
@@ -1321,6 +1323,7 @@ class BusinessForm extends Component
                 }
             }],
             'business_description' => 'nullable|string',
+            'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
             'permanentUrlSlug' => [
                 'required',
@@ -1409,6 +1412,7 @@ class BusinessForm extends Component
             'headquarters' => $this->headquaters,
             'support_options' => $this->support_options,
             'description' => $this->business_description,
+            'short_description' => $this->short_description,
             'after_image_description' => $this->after_image_description,
             'primary_keywords' => $this->primary_keywords,
             'secondary_keywords' => $this->secondary_keywords,
@@ -1476,6 +1480,7 @@ class BusinessForm extends Component
                 'headquarters' => $this->headquaters,
                 'support_options' => $this->support_options,
                 'description' => $this->business_description,
+                'short_description' => $this->short_description,
                 'after_image_description' => $this->after_image_description,
                 'primary_keywords' => $this->primary_keywords,
                 'secondary_keywords' => $this->secondary_keywords,

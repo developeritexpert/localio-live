@@ -126,11 +126,11 @@ section.top-automotive-sec.top_rate_pg.light {
                     <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Best Website Builder Software</h1>
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-Rated Products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                <!-- <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                     Learn more from our team about Website Builder Software pricing features and benefits in our <a href="#" style="color: #06498b; font-weight: 600; text-decoration: none;">Website Builder Buyers Guide</a>
-                                </p>
+                                </p> -->
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
@@ -141,7 +141,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                         Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                     </p>
-                                    <a href="#" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
                                 </div>
                             </div>
                         </div>
@@ -517,6 +517,13 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <!-- Short Description -->
+                                                         @if(!empty($item->translations->first()->short_description))
+                                                             <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                 {{ $item->translations->first()->short_description }}
+                                                             </div>
+                                                         @endif
 
                                                         <!-- Features -->
                                                         <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">

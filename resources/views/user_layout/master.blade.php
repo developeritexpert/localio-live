@@ -1666,7 +1666,7 @@
                                     </li>
                                     <li><a
                                             href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['top_rated_product'] ??
-                                                'Top-Rated Products
+                                                'Top-rated products
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}
                                         </a>
                                     </li>
