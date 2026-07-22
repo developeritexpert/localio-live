@@ -64,9 +64,9 @@
     max-width: 1470px;
   }
 
-  .blue-chkbox {
+  /* .blue-chkbox {
     padding: 16px 42px;
-  }
+  } */
 }
 
 .size20 {
@@ -4524,7 +4524,7 @@
 
 @media only screen and (max-width: 1500px) {
   .inner_banner_sec {
-    padding-top: 135px ;
+    padding-top: 135px;
   }
 
   .fixed-div {
@@ -4540,7 +4540,7 @@
     width: 40px;
     height: 40px;
   }
-  
+
 }
 
 div#navbarSupportedContent .close_btn_mobile {
@@ -8670,7 +8670,7 @@ div#learnMoreModal button.modal-close {
 
 @media only screen and (max-width: 1500px) {
   .inner_banner_sec {
-    padding-top: 135px ;
+    padding-top: 135px;
   }
 
   .fixed-div {
@@ -8681,7 +8681,8 @@ div#learnMoreModal button.modal-close {
     width: 40px;
     height: 40px;
   }
-  .product_sec   .inner_banner_sec {
+
+  .product_sec .inner_banner_sec {
     padding-top: 114px;
   }
 }
@@ -12718,9 +12719,10 @@ textarea#message {
     font-size: 12px !important;
     padding: 11px 15px;
   }
-   .popular-categories-sidebar {
+
+  .popular-categories-sidebar {
     overflow-x: scroll;
-}
+  }
 
 }
 
@@ -12791,7 +12793,7 @@ textarea#message {
     scrollbar-width: thin;
     scrollbar-color: #f9633b #f1f1f1;
   }
- 
+
 }
 
 
@@ -13015,12 +13017,14 @@ textarea#message {
   .asn_dv.fixed-div .frst_rw {
     gap: 10px !important;
   }
-  .right_tool_sec {  
+
+  .right_tool_sec {
     padding: 50px 0;
-}
-.asn_dv_contnt .asn-img img {
- min-width: unset;
-    }
+  }
+
+  .asn_dv_contnt .asn-img img {
+    min-width: unset;
+  }
 
 }
 

@@ -340,7 +340,7 @@ div#navbarSupportedContent {
   border: 1px solid #ffffff;
   text-align: center;
   padding: 19px 40px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   border-radius: 100px;
   background-color: #06498b;
@@ -2973,7 +2973,7 @@ select:focus {
 }
 
 .auto-choice-btn .cta_orange {
-  padding: 13px 45px;
+  padding: 11px 45px;
 }
 
 .auto-choice-btn .cta_orange:hover {
@@ -3034,10 +3034,9 @@ select:focus {
   position: relative;
   border: 1px solid #06498b1a;
   border-radius: 14px;
-  padding: 30px 30px;
   margin-bottom: 30px;
+  padding: 0;
   box-shadow: 0px 34px 74px 0px #0023470f;
-  padding-bottom: 50px;
 }
 
 .text-choice {
@@ -3045,11 +3044,13 @@ select:focus {
 }
 
 .blue-chkbox {
-  position: absolute;
-  background-color: #ebf0f6;
-  border-radius: 0 70px 70px 0;
-  padding: 16px 35px;
+  /* position: absolute; */
+  /* background-color: #ebf0f6; */
+  /* border-radius: 0 70px 70px 0; */
+  /* padding: 16px 35px; */
   color: #002347;
+  border-top: 1px solid #06498b;
+  /* margin-top: 30px; */
 }
 
 .blue-chkbox label::before {
@@ -3103,12 +3104,12 @@ select:focus {
 }
 
 .blue-chkbox:has(input:checked) {
-  background-color: #06498b;
-  color: #fff;
+  /* background-color: #06498b; */
+  /* color: #fff; */
 }
 
 .blue-chkbox:has(input:checked) label::before {
-  background: #f9633b;
+  background: #06498b;
 }
 
 .blue-chkbox:has(input:checked) label::after {
@@ -5727,14 +5728,14 @@ header .search_logo .search-box {
 }
 
 .auto-choice-hd .rate_box {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 400;
 }
 
-.automotive-card .blue-chkbox:hover {
+/* .automotive-card .blue-chkbox:hover {
   background: #003f7d;
   color: #fff;
-}
+} */
 
 .automotive-card .blue-chkbox:hover label::before {
   border: 1px solid #fff;
@@ -9401,13 +9402,34 @@ header .sec_head {
 }
 
 .transparency-banner {
-  background-color:  #003f7d;
-    position: fixed !important;
-    z-index: 10;
-      top: 0 !important;
-      width:100%;
-      left: 0;
-      right: 0;
-      text-align: center;
+  background-color: #003f7d;
+  position: fixed !important;
+  z-index: 10;
+  top: 0 !important;
+  width: 100%;
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 
+.top-automotive-sec .inn_sl_hed h6.head {
+  font-size: 16px;
+}
+
+.top-automotive-sec .inn_sl_hed .sl_main {
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+.top-automotive-sec .inn_ul .rating-stars i {
+  font-size: 10px;
+}
+
+.top-automotive-sec .auto-choice-card .card-compare-m {
+  padding: 30px;
+}
+
+.blue-chkbox {
+  padding: 20px;
+}
