@@ -511,7 +511,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                             </div>
                                                                         </div>
                                                                         <div class="rate_box">
-                                                                            {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} Reviews
+                                                                            {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} reviews
                                                                         </div>
                                                                     </div>
                                                                 </div>
