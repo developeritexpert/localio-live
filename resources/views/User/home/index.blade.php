@@ -551,7 +551,6 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Share your experience</h3>
-                                    <p class="size18">Help others by reviewing the products you use.</p>
                                 </div>
                             </div>
                         </div>
@@ -562,7 +561,6 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Join discussions</h3>
-                                    <p class="size18">Ask questions and exchange experiences with the community.</p>
                                 </div>
                             </div>
                         </div>
@@ -573,7 +571,6 @@
                                 </div>
                                 <div class="tool-crd-bdy">
                                     <h3 class="tool_hed">Build your reputation</h3>
-                                    <p class="size18">Earn badges and become a trusted contributor.</p>
                                 </div>
                             </div>
                         </div>

@@ -734,7 +734,7 @@ section.top-automotive-sec.top_rate_pg.light {
         </div>
                         <livewire:compare-bar />
     </section>
-    <section class="subs_sec light p_120 ">
+    <section class="subs_sec light ">
         {{-- <div class="container">
             <div class="subs_content">
                 <h2 data-aos="fade-up" data-aos-duration="1000">{{ static_text('top_rated_mail_section_titile') }}

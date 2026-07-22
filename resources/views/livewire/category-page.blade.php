@@ -984,7 +984,7 @@
             </section>
             <!-- Remaining sections stay the same -->
         </div>
-        <section class="subs_sec light p_120 ">
+        <section class="subs_sec light ">
             {{-- <div class="container">
                 <div class="subs_content">
                     <div class="sub_img">
