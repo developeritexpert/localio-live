@@ -510,7 +510,7 @@
 }
 
 .sidebar-review-card h5{
-    font-size:16px;
+    font-size:15px;
     font-weight:600;
     margin-bottom:8px;
     color:#002655;
@@ -1503,48 +1503,57 @@
                                                      </a>
                                                  </div>
 
-                                                 @foreach($topReviews->take(2) as $review)
-                                                     <div class="sidebar-review-card">
+                                                  @foreach($topReviews->take(2) as $review)
+                                                      <div class="sidebar-review-card" style="margin-bottom: 20px;">
 
-                                                         <div class="review-header">
+                                                          <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
 
-                                                             <div class="review-user">
+                                                              <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
 
-                                                                 @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
-                                                                     <img src="{{ asset($review->user->profile_image) }}"
-                                                                         class="rounded-circle"
-                                                                         width="45"
-                                                                         height="45">
-                                                                 @else
-                                                                     <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center;">
-                                                                         <span style="color: white; font-weight: bold; font-size: 20px;">{{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}</span>
-                                                                     </div>
-                                                                 @endif
+                                                                  @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                      <img src="{{ asset($review->user->profile_image) }}"
+                                                                          class="rounded-circle"
+                                                                          width="45"
+                                                                          height="45">
+                                                                  @else
+                                                                      <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                                          <span style="color: white; font-weight: bold; font-size: 20px;">{{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}</span>
+                                                                      </div>
+                                                                  @endif
 
-                                                                  <div>
-                                                                      <h6>{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
-                                                                      <small class="text-muted" style="font-size: 12px;">{{ $review->created_at->diffForHumans() }}</small>
-                                                                  </div></div>
+                                                                   <div>
+                                                                       <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                       <div style="font-size: 12px; color: #777; margin-top: 2px;">
+                                                                           {{ $review->user->job_title ?? '' }}
+                                                                           @if($review->user && $review->user->company_size)
+                                                                               {{ $review->user->job_title ? ' • ' : '' }}{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}
+                                                                           @endif
+                                                                       </div>
+                                                                   </div>
+                                                              </div>
 
-                                                             <div class="rating-stars">
-                                                                 @for($i=1;$i<=5;$i++)
-                                                                     @if($i<=floor($review->rating))
-                                                                         <i class="fas fa-star text-warning"></i>
-                                                                     @elseif($i-0.5<=$review->rating)
-                                                                         <i class="fas fa-star-half-alt text-warning"></i>
-                                                                     @else
-                                                                         <i class="far fa-star text-warning"></i>
-                                                                     @endif
-                                                                 @endfor
+                                                             <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                                                                 <div class="rating-stars">
+                                                                     @for($i=1;$i<=5;$i++)
+                                                                         @if($i<=floor($review->rating))
+                                                                             <i class="fas fa-star text-warning"></i>
+                                                                         @elseif($i-0.5<=$review->rating)
+                                                                             <i class="fas fa-star-half-alt text-warning"></i>
+                                                                         @else
+                                                                             <i class="far fa-star text-warning"></i>
+                                                                         @endif
+                                                                     @endfor
+                                                                 </div>
+                                                                 <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $review->created_at->diffForHumans() }}</small>
                                                              </div>
 
                                                          </div>
 
-                                                        <h5>
+                                                        <h5 style="">
                                                             {{ $review->translations->first()->title ?? 'Review' }}
                                                         </h5>
 
-                                                        <p>
+                                                        <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                                             {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
                                                         </p>
 
@@ -1552,7 +1561,70 @@
                                                 @endforeach
 
                                             </div>
-                                        </div>
+                                        </div>                                        <!-- Recent discussions box -->
+                                        <div class="main_feature_lg mt-4">
+                                            <div class="feture_box review-breakdown-box">
+                                                <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                                    <h2 class="size22 big-bld m-0">Recent discussions</h2>
+                                                    <a href="#sectionDiscussions" class="view-review-link">
+                                                        View all discussions
+                                                    </a>
+                                                </div>
+
+                                                <!-- Static discussions data using exact same classes and structure -->
+                                                <div class="sidebar-review-card" style="margin-bottom: 20px;">
+                                                    <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                                        <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+                                                            <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                                <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
+                                                            </div>
+                                                            <div>
+                                                                <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">Marc L.</h6>
+                                                                <div style="font-size: 12px; color: #777; margin-top: 2px;">
+                                                                    Product Manager • Small Business (1-50 emp.)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                                                            <small class="text-muted" style="font-size: 11px; white-space: nowrap;">2 hours ago</small>
+                                                        </div>
+                                                    </div>
+
+                                                    <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                                        Is there a free tier for API access or is it trial only?
+                                                    </h5>
+                                                    <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
+                                                        We are looking to integrate this into our workflow and want to test the latency over a few weeks...
+                                                    </p>
+                                                </div>
+
+                                                <div class="sidebar-review-card" style="margin-bottom: 0;">
+                                                    <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                                        <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+                                                            <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                                <span style="color: white; font-weight: bold; font-size: 20px;">S</span>
+                                                            </div>
+                                                            <div>
+                                                                <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">Sarah J.</h6>
+                                                                <div style="font-size: 12px; color: #777; margin-top: 2px;">
+                                                                    CTO • Mid-Market (51-1000 emp.)
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                                                            <small class="text-muted" style="font-size: 11px; white-space: nowrap;">1 day ago</small>
+                                                        </div>
+                                                    </div>
+
+                                                    <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                                        How does the performance compare to alternatives in large datasets?
+                                                    </h5>
+                                                    <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
+                                                        We noticed some latency spikes during queries with more than 10k items. Anyone else facing this?
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div></div>
                                     </div>
                                 </div>
 
@@ -2741,7 +2813,7 @@
                                     .review-sidebar-sticky {
                                         position: sticky !important;
                                         position: -webkit-sticky !important;
-                                        top: 180px !important;
+                                        top: 100px !important;
                                         height: fit-content !important;
                                         z-index: 10;
                                     }
@@ -3146,6 +3218,10 @@
                 </div>
 
 
+            </div>
+            <!-- <div id="sectionDiscussions" class="mt-5" style="border-top: 1px solid #eee; padding-top: 30px;"> -->
+            <div id="sectionDiscussions">
+                <!-- Reddit-style Discussions section placeholder -->
             </div>
             <div class="mt-5">
                 <section class="subs_sec light p_50 d-none" id="section16">
