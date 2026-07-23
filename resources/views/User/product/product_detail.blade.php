@@ -1529,15 +1529,15 @@
                                                                       </div>
                                                                   @endif
 
-                                                                   <div>
-                                                                       <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
-                                                                       <div style="font-size: 12px; color: #777; margin-top: 2px;">
-                                                                           {{ $review->user->job_title ?? '' }}
-                                                                           @if($review->user && $review->user->company_size)
-                                                                               {{ $review->user->job_title ? ' • ' : '' }}{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}
-                                                                           @endif
-                                                                       </div>
-                                                                   </div>
+                                                                    <div>
+                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                        @if($review->user && $review->user->job_title)
+                                                                            <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
+                                                                        @endif
+                                                                        @if($review->user && $review->user->company_size)
+                                                                            <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</div>
+                                                                        @endif
+                                                                    </div>
                                                               </div>
 
                                                              <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
