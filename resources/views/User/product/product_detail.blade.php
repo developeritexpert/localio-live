@@ -3070,20 +3070,45 @@
                                                     User reviews
                                                 </h2>
 
-                                                <div class="overall-rating-box" style="background-color: #fff; border-radius: 12px; padding: 24px; border: 1px solid #06498b1a; box-shadow: 0 8px 24px rgb(141 143 144 / 28%); margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                                                    <span style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 12px;">{{ number_format($averageRating, 1) }}</span>
-                                                    <div class="overall-stars" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 0;">
-                                                        @for ($j = 1; $j <= 5; $j++)
-                                                            @if ($j <= floor($averageRating))
-                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                            @elseif ($j - 0.5 <= $averageRating)
-                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                            @else
-                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
-                                                            @endif
-                                                        @endfor
+                                                <div class="user-reviews-summary-card p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                                    {{-- Rating Number & Stars --}}
+                                                    <div class="d-flex flex-column align-items-start mb-3">
+                                                        <span style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
+                                                        <div class="d-flex align-items-center gap-1 mb-1">
+                                                            @for ($j = 1; $j <= 5; $j++)
+                                                                @if ($j <= floor($averageRating))
+                                                                    <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                                                @elseif ($j - 0.5 <= $averageRating)
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                                                @else
+                                                                    <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                        <span style="font-size: 13px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
                                                     </div>
-                                                    <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
+
+                                                    {{-- Review Breakdown Title --}}
+                                                    <h5 style="font-size: 15px; font-weight: 700; color: #1e3050; margin-top: 18px; margin-bottom: 14px;">Review breakdown</h5>
+
+                                                    {{-- Breakdown Progress Bars --}}
+                                                    <div class="mb-3">
+                                                        @foreach ($criteria as $criterion)
+                                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                                            <span style="font-size: 13px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
+                                                            <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                                <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px; border-radius: 4px;"></progress>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #334155; margin-left: 8px; min-width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                            </div>
+                                                        </div>
+                                                        @endforeach
+                                                    </div>
+
+                                                    {{-- Recommended by users --}}
+                                                    <div class="pt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
+                                                        <span style="font-weight: 600; color: #1e3050; font-size: 13.5px;">Recommended by users</span>
+                                                        <strong style="color: #06498b; font-size: 15px;">{{ $recommendPercent }}%</strong>
+                                                    </div>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->
@@ -3141,7 +3166,7 @@
                                                         onclick="openLoginModal()" 
                                                     @endauth
                                                     style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
-                                                >Write review</a>
+                                                ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
                                             </div>
 
                                             <div id="reviews-list-container">
