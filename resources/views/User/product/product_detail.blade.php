@@ -721,6 +721,12 @@
                 border: 1px solid rgb(0, 0, 0);
                 border-radius: 6px !important;
             }
+            section#section-compare {
+                padding: 40px 20px !important;
+            }
+            a.view-more-link:hover {
+                text-decoration: underline !important;
+            }
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -920,6 +926,7 @@
                                 // ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section9', 'label' => 'Alternatives'],
                                 ['id' => 'section15' , 'label' => 'FAQs'],  
+                                ['id' => 'section-compare', 'label' => 'Compare'],
 
                                 ['id' => 'section14', 'label' => "Reviews"],
                                 ['id' => 'sectionDiscussions', 'label' => "Discussions"],
@@ -2557,8 +2564,86 @@
                                 </div>
                             </section>
 
+                            <!-- Compare Section -->
+                            @php
+                                $bName = $business->translations->first()->name ?? 'Business';
+                                $catTrans = $business->category->translation ?? null;
+                                $catName = $catTrans->name ?? 'providers';
+                                $compSlug = $catTrans->comparison_slug ?? 'compare';
+                            @endphp
+                            <section class="compare-section p_50 light" id="section-compare" style="background-color: #f9fafb !important;">
+                                <div class="container">
+                                    <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
+                                        <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+                                            Compare {{ $bName }}
+                                        </h2>
+                                        <p style="font-size: 15px; color: #64748b; margin: 0;">
+                                            See how {{ $bName }} compares to other {{ $catName }} providers.
+                                        </p>
+                                    </div>
+
+                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000" style="display: flex; justify-content: space-between; gap: 1px;">
+                                        @forelse($peerComparisons as $peer)
+                                            @php
+                                                $peerName = $peer->translations->first()->name ?? 'Business';
+                                                $peerRating = $peer->average_rating ?? 0;
+                                                $seoUrl = route('product-comparison.seo', [
+                                                    'locale' => app()->getLocale(),
+                                                    'comparison_slug' => $compSlug,
+                                                    'comparison_businesses' => Str::slug($bName) . '-vs-' . Str::slug($peerName)
+                                                ]);
+                                            @endphp
+                                            <div class="col-lg-6 col-md-6 col-12 p-0" style="width: 49%;">
+                                                <a href="{{ $seoUrl }}" class="comparison-card-link text-decoration-none" style="display: block; color: inherit;">
+                                                    <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: all 0.2s ease;" onmouseover="this.style.boxShadow='0 6px 12px rgba(0,0,0,0.08)'; this.style.borderColor='#cbd5e1';" onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.03)'; this.style.borderColor='#e2e8f0';">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <!-- Business A -->
+                                                            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                                <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                                                                <div style="min-width: 0;">
+                                                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $bName }}</div>
+                                                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                                        <span>{{ number_format($averageRating, 1) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- VS -->
+                                                            <div class="px-2 fw-normal text-muted flex-shrink-0" style="font-size: 22px; font-family: sans-serif; color: #000000 !important;">VS</div>
+
+                                                            <!-- Business B -->
+                                                            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                                <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                                                                <div style="min-width: 0;">
+                                                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $peerName }}</div>
+                                                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                                        <span>{{ number_format($peerRating, 1) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        @empty
+                                            <div class="col-12 text-muted p-0">No comparisons available for this business yet.</div>
+                                        @endforelse
+                                    </div>
+
+                                    @if(count($peerComparisons) > 0)
+                                        <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
+                                            <a href="{{ route('business.all_comparisons', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug]) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                View more comparisons
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </section>
+
                             {{-- busines bar --}}
-                            <section class="about_asn_2 light pt-0 p_50">
+                            <section class="about_asn_2 light pt-0 p_50 d-none">
 
                                 <div class="about_asn_content">
                                     <div class="hd_content asan-text-para">

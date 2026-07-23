@@ -249,6 +249,30 @@ class ProductController extends Controller
         ->orderByDesc('average_rating')
         ->limit(3)
         ->get();
+
+        $peerComparisons = Business::where('category_id', $business->category_id)
+            ->where('id', '!=', $business->id)
+            ->where('status', 1)
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])
+            ->withCount([
+                'reviews as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(rating),0)'));
+                }
+            ])
+            ->limit(4)
+            ->get();
         $link = $business->websites->first()->website_url ?? $business->affiliate_link ?? $business->permanent_url ?? '#';
         $reviews = Review::where('business_id', $business->id)->get();
 
@@ -310,7 +334,8 @@ class ProductController extends Controller
             'ourReviews',
             'trustpilotReviews',
             'criteria',
-            'recommendPercent'
+            'recommendPercent',
+            'peerComparisons'
         ));
     }
 
@@ -614,6 +639,46 @@ class ProductController extends Controller
         return response()->json(['success' => 'Item removed'], 200);
     }
 
+
+    public function allBusinessComparisons($locale, $business_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $business = Business::whereHas('translations', function ($q) use ($business_slug, $lang_id) {
+            $q->where('slug', $business_slug)->where('lang_id', $lang_id);
+        })->with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'reviews' => fn($q) => $q->where('status', 'active'),
+        ])->firstOrFail();
+
+        $businessRating = $business->reviews->count() > 0 ? round($business->reviews->avg('rating'), 1) : 0;
+
+        $peerComparisons = Business::where('category_id', $business->category_id)
+            ->where('id', '!=', $business->id)
+            ->where('status', 1)
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])
+            ->withCount([
+                'reviews as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(rating),0)'));
+                }
+            ])
+            ->paginate(12);
+
+        return view('User.product.all_comparisons', compact('business', 'businessRating', 'peerComparisons'));
+    }
 
     // Key Feature Review Controller
     public function storeFeatureReview(Request $request)
