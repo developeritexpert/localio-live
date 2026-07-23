@@ -210,7 +210,7 @@ header {
 .banner_content_inner {
   width: 100%;
   max-width: 816px;
-  margin-bottom: 96px;
+  /* margin-bottom: 96px; */
 }
 
 .banner_image_col {
@@ -1706,7 +1706,7 @@ global classes */
 
 .asn_dv {
   background: #06498b08;
-  padding: 15px 0px;
+  /* padding: 15px 0px; */
 }
 
 .asn_dv_contnt .frst_rw {
@@ -2973,7 +2973,7 @@ select:focus {
 }
 
 .auto-choice-btn .cta_orange {
-  padding: 11px 45px;
+  padding: 8px 45px;
 }
 
 .auto-choice-btn .cta_orange:hover {
@@ -3049,7 +3049,7 @@ select:focus {
   /* border-radius: 0 70px 70px 0; */
   /* padding: 16px 35px; */
   color: #002347;
-  border-top: 1px solid #06498b;
+  border-top: 1px solid #06498b1a;
   /* margin-top: 30px; */
 }
 
@@ -3776,7 +3776,7 @@ header.drk_header {
 }
 
 .altr-rgt-div .progress-bar {
-  /* border: none; */
+
   border-color: #a9a9a9;
 }
 
@@ -5458,11 +5458,11 @@ footer .footer-wrp .foot-col {
   gap: 5px;
 }
 
-.auto-choice-rgt .automotive-card:nth-child(2),
+/* .auto-choice-rgt .automotive-card:nth-child(2),
 .auto-choice-rgt .automotive-card:nth-child(3),
 .auto-choice-rgt .automotive-card:nth-child(4) {
   border: 1px solid #06498b;
-}
+} */
 
 .auto-choice-rgt .automotive-card:hover {
   background: #06498b08;
@@ -8516,6 +8516,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active {
   /* background-color: #06498b0d; */
   color: #003f7d;
+  font-weight: 500;
 }
 
 /* 9oct2025 end  */
@@ -9268,7 +9269,7 @@ footer .foot-row-lft {
 }
 
 .asn_main_sec_2 .fixed-div .Tab-outerlnk #table-of-content ul li a {
-  font-weight: 400;
+  /* font-weight: 400; */
   font-size: 12px;
 }
 
@@ -9281,6 +9282,7 @@ header .sec_head {
   display: flex;
   flex-direction: column;
   height: auto;
+  background-color: #fff;
 }
 
 .product_integra_sec .start-from {
@@ -9329,6 +9331,7 @@ footer .foot-row-lft .foot-logo p {
 
 }
 
+.most-populr-sec .popular-category-tab-btn:hover,
 .most-populr-sec .popular-category-tab-btn.active {
   border-color: #002347 !important;
 }
@@ -9364,7 +9367,7 @@ footer .foot-row-lft .foot-logo p {
 
 .product_integra_sec .sftware-alternative-pck .asn-rating h6 {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .product_integra_sec .sftware-alternative-pck .ans_lft {
@@ -9431,5 +9434,69 @@ header .sec_head {
 }
 
 .blue-chkbox {
-  padding: 20px;
+  padding: 10px 20px;
+}
+
+/* 23-july-26  */
+.cate_bnr_sec .search-box i,
+.home_bnr_sec .search-box i {
+  padding: 15px 22px;
+
+}
+
+.revie_img_sec .view-review-link:hover {
+  text-decoration: underline !important;
+}
+
+.top_rate_pg .top-auto-choice {
+  padding-top: 0;
+}
+
+.top_rate_pg .learn_mre_btn:hover {
+  text-decoration: underline !important;
+}
+
+.top_rate_pg .auto-choice-lft .fa-star {
+  font-size: 13px;
+}
+
+.top_rate_pg .auto-choice-lft .form-check .filter1,
+.top_rate_pg .auto-choice-lft .form-check .filter2 {
+  font-size: 13px;
+}
+
+.top-automotive-sec .choice_img img {
+  height: 48px;
+  max-width: 48px;
+}
+
+.top_rated_org_sec .right_tool_sec {
+  margin-top: 0 !important;
+}
+
+.blue-chkbox label {
+  font-size: 13px;
+  font-weight: 400 !important;
+}
+
+.blue-chkbox label::before {
+  height: 16px !important;
+  width: 16px !important;
+  margin-right: 5px;
+  padding: 5px;
+}
+
+.blue-chkbox input:checked+label:after {
+  top: 5px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+}
+
+.revie_left_rgt_sec .progress-bar::-webkit-progress-bar {
+  background: #fff !important;
+}
+
+.revie_img_sec .top_review_bx {
+  border-bottom: 1px solid #f0f0f0;
 }

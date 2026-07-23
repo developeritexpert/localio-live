@@ -918,13 +918,13 @@
                 .most-popular-g2-layout {
                     margin-top: 20px;
                 }
-                .popular-categories-sidebar {
+                /* .popular-categories-sidebar {
                     background: #fff;
                     padding: 24px;
                     border-radius: 16px;
                     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
                     border: 1px solid rgba(0, 0, 0, 0.05);
-                }
+                } */
                 .popular-categories-title {
                     font-size: 24px !important;
                     font-weight: 600 !important;
@@ -968,7 +968,7 @@
                     /* background-color: #fff8f6 !important; */
                     /* border-left-color: #F9633B !important; */
                     /* font-weight: 700 !important;   */
-                    text-decoration:underline;                                  
+                    /* text-decoration:underline;                                   */
                 }
                 .category-icon-wrapper {
                     display: flex !important;
@@ -1162,9 +1162,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="header_button_col">
                         <div class="Header_buttons">
                             @if (!auth()->user())
-                            <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}"
+                            <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
                                 class="cta cta_trans">{{ $headerContent['login_btn_lable'] ?? 'Login' }}</a>
-                            <a href="{{ route('register', ['locale' => session('lang_code', 'en-us')]) }}"
+                            <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
                                 class="cta cta_orange wht-t-org-btn">{{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}</a>
                             @else
                             <x-user-profile />
@@ -1966,6 +1966,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     @csrf
 
                                     <input type="hidden" name="url_intended" id="url_intended" value="">
+                                    <input type="hidden" name="is_modal" value="1">
 
                                     <div class="form-group">
                                     <x-google-input type="text" name="email" id="emailAddress" label="Email"  :attributes="['autocomplete' => 'off']" />
@@ -2024,19 +2025,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     const icon = this.querySelector('i');
                     if (!icon || !passwordInput) return;
 
-
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
 
                     // Use setTimeout to avoid DOM/reactive reversion
                     setTimeout(() => {
                         passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
                         icon.classList.toggle('fa-eye', isPassword);
                         icon.classList.toggle('fa-eye-slash', !isPassword);
-
-
                     }, 0);
                 });
-
-
             }
 
             // ✅ Form validation (scoped to modal form only)

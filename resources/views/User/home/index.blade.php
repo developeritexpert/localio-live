@@ -113,7 +113,7 @@
                                             <span class="category-icon-wrapper">
                                                 <img src="{{ $category->media ? asset($category->media->dir_path . '/' . $category->media->file_name) : asset('images/no-image.png') }}" alt="" class="category-btn-icon">
                                             </span>
-                                            <span class="category-btn-text">{{ $category->translations->name }}</span>
+                                            <span class="category-btn-text">View all {{ $category->translations->name }}</span>
                                         </button>
                                     @endif
                                 @endforeach

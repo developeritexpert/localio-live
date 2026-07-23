@@ -459,10 +459,12 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     Route::get('/', [ViewController::class, 'home'])->name('home');
+    Route::get('/sign-in', [AuthenticationController::class, 'index'])->name('sign-in');
     Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
     Route::get('/register', [AuthenticationController::class, 'index'])->name('register');
-    Route::get('/register/details', [AuthenticationController::class, 'registerDetailsForm'])->name('register.details');
-    Route::post('/register/details', [AuthenticationController::class, 'registerDetailsStore'])->name('register.details.store');
+    Route::get('/sign-in/details', [AuthenticationController::class, 'registerDetailsForm'])->name('register.details');
+    Route::post('/sign-in/details', [AuthenticationController::class, 'registerDetailsStore'])->name('register.details.store');
+    Route::post('/clear-registration-session', [AuthenticationController::class, 'clearRegistrationSession'])->name('clear.registration.session');
     // Vendor Register Route
     // Route::get('/vendor-register', [AuthenticationController::class, 'vendorRegisterForm'])->name('vendor-register');
     // End Vendor Register Route
@@ -487,6 +489,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/top-rated-products/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
     Route::get('/Exclusive-Businesses-Deals', [ProductController::class, 'ExclusiveBusinessDeals'])->name('exclusive-business-deals');
     Route::get('/product-comparison', [ProductController::class, 'productComparison'])->name('product-comparison');
+    Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
     Route::post('/remove-from-comparison/{productId?}', [ProductController::class, 'removeFromComparison'])->name('remove-from-comparison');
     Route::post('/clear-comparison', [ProductController::class, 'clearComparison'])->name('clear-comparison');
 

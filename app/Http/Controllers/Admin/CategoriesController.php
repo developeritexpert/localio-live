@@ -236,7 +236,7 @@ class CategoriesController extends Controller
                     'description'  => $validate['description'],
                     'slug'         => $slug,
                     'comparison_slug' => $validate['comparison_slug'] ?? null,
-                    'is_important' => $request->boolean('is_parent') ? 0 : ($request->has('is_important') ? 1 : 0),
+                    'is_important' => $request->has('is_important') ? 1 : 0,
                 ]
             );
 

@@ -43,10 +43,11 @@
                                     @else
                                         {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                     @endif
-                                </h6>
-                                <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title ?? 'User' }}</p>
+                                @if($review->user && $review->user->job_title)
+                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title }}</p>
+                                @endif
                                 @if($review->user && $review->user->company_size)
-                                <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                 @endif
                             </div>
                         </div>
@@ -72,9 +73,9 @@
                                     @endfor
                                 </div>
                             </div>
-                            <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
+                            <!-- <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
                                 {{ number_format($review->rating, 1) }}
-                            </div>
+                            </div> -->
                         </div>
 
                         <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
@@ -83,7 +84,7 @@
                     </div>
 
                     <!-- Bottom right actions (Report flag) -->
-                    <div class="review-actions-bottom-right" style="position: absolute; bottom: 24px; right: 24px;">
+                    <div class="review-actions-bottom-right" style="display:flex; justify-content: end;">
                         <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" title="Report this review" style="color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#e53e3e';" onmouseout="this.style.color='#a0aec0';">
                             <i class="fas fa-flag"></i>
                         </a>
@@ -142,10 +143,11 @@
                                         @else
                                             {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                         @endif
-                                    </h6>
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title ?? 'User' }}</p>
+                                    @if($review->user && $review->user->job_title)
+                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title }}</p>
+                                    @endif
                                     @if($review->user && $review->user->company_size)
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -232,10 +234,11 @@
                                     @else
                                         {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                     @endif
-                                </h6>
-                                <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title ?? 'User' }}</p>
+                                @if($review->user && $review->user->job_title)
+                                    <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title }}</p>
+                                @endif
                                 @if($review->user && $review->user->company_size)
-                                <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                    <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                 @endif
                             </div>
                         </div>

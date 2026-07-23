@@ -13,15 +13,15 @@
             margin-bottom: 15px;
         }
         section.top-automotive-sec.top_rate_pg.light {
-           margin-top: 4rem !important;
+           margin-top: 120px !important;
         }
         /* View details button – match height of Visit website */
         .auto-choice-btn .cta_outline {
-            padding: 10px 16px !important;
+            padding: 8px 16px !important;
             height: auto !important;
-            min-height: 44px !important;
+            /* min-height: 44px !important; */
             box-sizing: border-box !important;
-            line-height: 1.4 !important;
+            line-height: 1.5 !important;
         }
         .automotive-card .blue-chkbox {
             bottom: 0 !important;
@@ -141,7 +141,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                         Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                     </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +154,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                 <div class="col-md-12">
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
-                                        <h3 class="fw-semibold text-dark mb-3">
+                                        <h3 class="fw-semibold text-dark mb-2">
                                             {{ static_text('user_rating') }}</h3>
 
                                         <div class="form-check">
@@ -181,7 +181,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                     <link rel="stylesheet"
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
-                                    <div class="filter-section mt-4 mb-4 pb-3 border-bottom pric_rnge">
+                                    <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
                                         <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
 
                                         <div class="price-slider-container">
@@ -231,7 +231,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                         ->where('language_id', $lang_id)
                                                                         ->first()->name ?? $option->name;
                                                             @endphp
-                                                            <div class="form-check" style="margin-bottom: 8px;">
+                                                            <div class="form-check" style="margin-bottom: 5px;">
                                                                 <input type="checkbox" class="form-check-input"
                                                                     wire:model.live="selectedOptions"
                                                                     value="{{ $option->id }}"
@@ -239,7 +239,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                     style="margin-right: 8px; cursor: pointer;">
                                                                 <label class="form-check-label"
                                                                     for="option-{{ $option->id }}"
-                                                                    style="font-size: 14px; color: #555; cursor: pointer;">
+                                                                    style="font-size: 13px; color: #555; cursor: pointer;">
                                                                     {{ $optionName }}
                                                                 </label>
                                                             </div>
@@ -252,7 +252,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                         ->where('language_id', $lang_id)
                                                                         ->first()->name ?? $option->name;
                                                             @endphp
-                                                            <div class="form-check" style="margin-bottom: 8px;">
+                                                            <div class="form-check" style="margin-bottom: 5px;">
                                                                 <input type="radio" class="form-check-input"
                                                                     name="filter_{{ $filter->id }}"
                                                                     wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
@@ -263,7 +263,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                     style="margin-right: 8px; cursor: pointer;">
                                                                 <label class="form-check-label"
                                                                     for="option-{{ $option->id }}"
-                                                                    style="font-size: 14px; color: #555; cursor: pointer;">
+                                                                    style="font-size: 13px; color: #555; cursor: pointer;">
                                                                     {{ $optionName }}
                                                                 </label>
                                                             </div>
@@ -470,7 +470,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 @endphp
                                                 <div class="card-compare-m">
                                                     @if($isBestValue)
-                                                        <div style="margin-bottom: 20px;">
+                                                        <div style="margin-bottom: 25px;">
                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
                                                                 <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
                                                             </span>
@@ -620,12 +620,12 @@ section.top-automotive-sec.top_rate_pg.light {
 
                                                             <!-- Price -->
                                                             @if ($startingPrice)
-                                                                <div class="text-center mt-4 w-100" style=" border:1px solid #06498b1a; padding: 15px 25px; border-radius: 8px;">
-                                                                    <h6 style="font-size: 13px; color: #1e3050; font-weight: 700; margin-bottom: 4px;">Starting price</h6>
-                                                                    <h3 style="font-weight: 700; color: #1e3050; font-size: 20px; margin-bottom: 2px;">
+                                                                <div class="text-center mt-4 w-100" style="  padding: 15px 25px; border-radius: 8px;">
+                                                                    <h6 style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">Starting price</h6>
+                                                                    <h3 style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
                                                                         {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
                                                                     </h3>
-                                                                    <p style="font-size: 11px; color: #666; margin-bottom: 0;">Flat Rate, Per One_time</p>
+                                                                    <p style="font-size: 11px; color: #444444; margin-bottom: 0;">Flat Rate, Per One_time</p>
                                                                 </div>
                                                             @endif
                                                         </div>
@@ -746,7 +746,7 @@ section.top-automotive-sec.top_rate_pg.light {
         </div>
             <livewire:compare-bar />
     </section>
-    <section class="subs_sec light ">
+    <section class="subs_sec light top_rated_org_sec ">
         {{-- <div class="container">
             <div class="subs_content">
                 <h2 data-aos="fade-up" data-aos-duration="1000">{{ static_text('top_rated_mail_section_titile') }}

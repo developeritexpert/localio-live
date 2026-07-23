@@ -44,12 +44,13 @@
             @if ($filterId) data-filter-id="{{ $filterId }}" @endif
             @if ($wireModel) wire:model.defer="{{ $wireModel }}" @endif
             onfocus="this.parentNode.classList.add('active')"
+            onchange="if(this.value){ this.parentNode.classList.add('active'); } else if(!{{ $alwaysActive ? 'true' : 'false' }}){ this.parentNode.classList.remove('active'); }"
             @if (! $alwaysActive && !$multiple)
                 onblur="if(!this.value) this.parentNode.classList.remove('active')"
             @endif
         >
             @if (!$multiple)
-                <option value="">{{ $placeholder ?: 'Select ' . $label }}</option>
+                <option value="" selected disabled hidden></option>
             @endif
 
             @if (!empty($options))
@@ -120,6 +121,12 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.input-box input, .input-box select').forEach((el) => {
+                if (el.value) {
+                    el.closest('.input-box')?.classList.add('active');
+                }
+            });
+
             document.addEventListener('input', function (e) {
                 const input = e.target;
                 const inputBox = input.closest('.input-box');

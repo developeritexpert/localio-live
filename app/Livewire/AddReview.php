@@ -27,6 +27,16 @@ class AddReview extends Component
     #[On('openReviewModal')]
     public function openReviewModal($businessId, $recommend = null)
     {
+        if (!Auth::check()) {
+            session([
+                'pending_review_business_id' => $businessId,
+                'pending_review_recommend'   => $recommend,
+                'register_from_modal'        => true,
+            ]);
+            $this->dispatch('show-login-modal');
+            return;
+        }
+
         $this->reset(['rating', 'comment', 'title2', 'pros', 'cons', 'criteriaRatings', 'recommend', 'step', 'reviewId']);
         $this->businessId = $businessId;
         

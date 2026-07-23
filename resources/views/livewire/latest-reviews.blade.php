@@ -70,6 +70,9 @@
                                                 @if ($user && $user->job_title)
                                                     <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
                                                 @endif
+                                                @if ($user && $user->company_size)
+                                                    <div class="user-company-size" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ static_text('company_size_' . $user->company_size) ?: $user->company_size }}</div>
+                                                @endif
                                             </div>
                                         </div>
 

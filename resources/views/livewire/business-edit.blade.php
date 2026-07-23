@@ -33,12 +33,32 @@
     {{-- @if ($businessId) --}}
         <form wire:submit.prevent="{{ $businessId ? 'updateBusiness' : 'storeBusiness' }}" method="POST"
             enctype="multipart/form-data">
-            @csrf
-            {{-- <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn btn-sm btn-secondary" wire:click="fullAutoFill">
-                    Full AI Autofill
-                </button>
-            </div> --}}
+            @if (session()->has('error'))
+                <div class="alert alert-danger alert-icon alert-dismissible mb-3" role="alert">
+                    <em class="icon ni ni-cross-circle"></em>
+                    <strong>Error:</strong> {{ session('error') }}
+                    <button class="close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            @if (session()->has('success'))
+                <div class="alert alert-success alert-icon alert-dismissible mb-3" role="alert">
+                    <em class="icon ni ni-check-circle"></em>
+                    <strong>Success:</strong> {{ session('success') }}
+                    <button class="close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger mb-3" role="alert">
+                    <h6 class="alert-heading fw-bold mb-1"><em class="icon ni ni-alert-circle me-1"></em> Please fix the following errors:</h6>
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="row">
                 <div class="col-md-8">
@@ -429,6 +449,12 @@
                             </div>
                             
                             <div class="row mt-3">
+                                <div class="col-12 mb-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Pros & Cons Introduction Text</label>
+                                        <textarea class="form-control" rows="3" wire:model.live="pro_cons_intro" placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                                    </div>
+                                </div>
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label class="form-label">Pros & Cons Summary Text</label>
@@ -504,8 +530,9 @@
                                     <div class="d-flex justify-content-between mb-3">
                                         <a href="#" class="btn btn-link text-center"><span><b>View
                                                     Page</b></span></a>
-                                        <button type="submit" class="btn btn-primary btn-localio">
-                                            <span>{{ $businessId ? 'Update' : 'Save' }}</span>
+                                        <button type="submit" class="btn btn-primary btn-localio" wire:loading.attr="disabled">
+                                            <span wire:loading.remove>{{ $businessId ? 'Update' : 'Save' }}</span>
+                                            <span wire:loading><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...</span>
                                         </button>
                                     </div>
                                     <div class="form-group">

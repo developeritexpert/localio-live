@@ -9,7 +9,7 @@
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">Sign In or Create an Account</h2>
+                    <h2 class="text-center">Sign in or create an account</h2>
                     <p class="text-center">Continue with Google or use your email and password.</p>
                 </div>
                 <div class="scl_login">
@@ -50,7 +50,7 @@
                     <div class="form-row align-items-center">
                         <div class="col frgt_btn text-right">
                             <a href="{{ route('recover-password') }}" class="small"  onmouseover="this.style.color='#f9633b'"
-                            onmouseout="this.style.color='#06498b'" style="margin-top: -6px;">{{ static_text('forgot_password') }}</a>
+                            onmouseout="this.style.color='#06498b'" style="margin-top: -6px;">Forgot password?</a>
                         </div>
                     </div>
                     <div class="accor-btn">

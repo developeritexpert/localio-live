@@ -119,7 +119,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12" id="important_category_group" style="display: {{ (!isset($category) || $category->parent_id === null) ? 'none' : 'block' }}">
+                        <div class="col-md-12" id="important_category_group">
                             <div class="form-group">
                                 <label class="form-label d-block" for="is_important">
                                     Important Category
@@ -135,7 +135,7 @@
                                         {{ isset($category_data) && $category_data['is_important'] == 1 ? 'checked' : '' }}
                                     >
                                     <label class="form-check-label" for="is_important">
-                                        Mark as Important
+                                        Mark as Important (Header Navigation)
                                     </label>
                                 </div>
                             </div>
@@ -222,16 +222,11 @@
             function toggleParentDropdown() {
                 if (isParentCheckbox && isParentCheckbox.checked) {
                     parentCategoryGroup.style.display = 'none';
-                    importantCategoryGroup.style.display = 'none';
                     if (parentCategorySelect) {
                         parentCategorySelect.value = '';
                     }
-                    if (importantCategoryCheckbox) {
-                        importantCategoryCheckbox.checked = false;
-                    }
                 } else {
                     parentCategoryGroup.style.display = 'block';
-                    importantCategoryGroup.style.display = 'block';
                 }
             }
 
