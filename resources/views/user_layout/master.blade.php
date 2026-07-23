@@ -1966,6 +1966,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     @csrf
 
                                     <input type="hidden" name="url_intended" id="url_intended" value="">
+                                    <input type="hidden" name="is_modal" value="1">
 
                                     <div class="form-group">
                                     <x-google-input type="text" name="email" id="emailAddress" label="Email"  :attributes="['autocomplete' => 'off']" />
@@ -2024,19 +2025,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     const icon = this.querySelector('i');
                     if (!icon || !passwordInput) return;
 
-
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
 
                     // Use setTimeout to avoid DOM/reactive reversion
                     setTimeout(() => {
                         passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
                         icon.classList.toggle('fa-eye', isPassword);
                         icon.classList.toggle('fa-eye-slash', !isPassword);
-
-
                     }, 0);
                 });
-
-
             }
 
             // ✅ Form validation (scoped to modal form only)

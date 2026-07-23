@@ -131,6 +131,101 @@
     </script>
 
         @livewire('add-review')
+        @if(session()->has('register_profile_needed'))
+            @php
+                $pendingEmail = session('register_email', '');
+                $pendingFirstName = session('register_first_name', '');
+                $pendingLastName = session('register_last_name', '');
+                session()->forget('register_profile_needed');
+            @endphp
+            <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[99999] d-flex align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto;" onclick="if(event.target === this) dismissProfileModal();">
+                <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 440px; width: 100%; padding: 44px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
+                    <button type="button" id="close-profile-modal-btn" onclick="event.preventDefault(); event.stopPropagation(); dismissProfileModal();" aria-label="Close modal" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; background: transparent; font-size: 22px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+                        ✕
+                    </button>
+
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2" style="color: #002655; font-size: 22px;">Create your profile</h3>
+                        <p class="text-muted m-0" style="font-size: 13.5px;">Please provide a few more details to set up your account.</p>
+                    </div>
+
+                    <form class="register_form" action="{{ route('register.details.store', ['locale'=> getCurrentLocale()]) }}" method="post" id="modalRegisterDetailsForm">
+                        @csrf
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="text" name="first_name" id="modalFirstName" class="form-control" placeholder="First name" value="{{ old('first_name', $pendingFirstName) }}" required>
+                                    <label for="modalFirstName">First name</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="text" name="last_name" id="modalLastName" class="form-control" placeholder="Last name" value="{{ old('last_name', $pendingLastName) }}" required>
+                                    <label for="modalLastName">Last name</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" name="job_title" id="modalJobTitle" class="form-control" placeholder="Job title" value="{{ old('job_title') }}" required>
+                            <label for="modalJobTitle">Job title</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select name="company_size" id="modalCompanySize" class="form-select" required>
+                                <option value="" selected disabled hidden></option>
+                                <option value="1" {{ old('company_size') == '1' ? 'selected' : '' }}>Freelance / Solo</option>
+                                <option value="2" {{ old('company_size') == '2' ? 'selected' : '' }}>Small Business (1-50 emp.)</option>
+                                <option value="3" {{ old('company_size') == '3' ? 'selected' : '' }}>Mid-Market (51-1000 emp.)</option>
+                                <option value="4" {{ old('company_size') == '4' ? 'selected' : '' }}>Enterprise (&gt;1000 emp.)</option>
+                            </select>
+                            <label for="modalCompanySize">Company size</label>
+                        </div>
+
+                        <div class="accor-btn mt-4">
+                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script>
+                function dismissProfileModal() {
+                    const modal = document.getElementById('register-profile-modal');
+                    if (modal) {
+                        modal.style.setProperty('display', 'none', 'important');
+                        modal.remove();
+                    }
+                    fetch("{{ route('clear.registration.session', ['locale' => getCurrentLocale()]) }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        }
+                    }).catch(err => console.error(err));
+                }
+                document.addEventListener('DOMContentLoaded', function() {
+                    const btn = document.getElementById('close-profile-modal-btn');
+                    if (btn) {
+                        btn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dismissProfileModal();
+                        });
+                    }
+                });
+            </script>
+        @elseif(auth()->check() && session()->has('pending_review_business_id'))
+            @php
+                $pendingBusId = session('pending_review_business_id');
+                $pendingRec = session('pending_review_recommend');
+                session()->forget(['pending_review_business_id', 'pending_review_recommend']);
+            @endphp
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                });
+            </script>
+        @endif
         <style>
 
              /* Responsive CSS for Gallery Modal */

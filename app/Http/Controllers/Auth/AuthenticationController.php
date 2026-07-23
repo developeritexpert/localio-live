@@ -72,11 +72,19 @@ class AuthenticationController extends Controller
 
     $user = User::where('email', $request->email)->first();
     if (!$user) {
+        $isFromModal = $request->has('is_modal') || session('register_from_modal');
         session([
             'register_email' => $request->email,
             'register_password' => $request->password,
             'register_is_google' => false,
+            'register_from_modal' => $isFromModal,
         ]);
+
+        if ($isFromModal) {
+            session(['register_profile_needed' => true]);
+            return redirect()->back();
+        }
+
         $lang = app()->getLocale() ?? session('lang_code', 'en-us');
         return redirect()->to("/{$lang}/sign-in/details");
     }
@@ -171,8 +179,10 @@ class AuthenticationController extends Controller
         if ($user) {
             Auth::login($user);
 
+            $isFromModal = session('register_from_modal', false);
+
             // Clear session data
-            session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google']);
+            session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google', 'register_from_modal', 'register_profile_needed']);
 
             // Create token and store in session
             $token = $user->createToken('user_token')->plainTextToken;
@@ -181,10 +191,20 @@ class AuthenticationController extends Controller
                 'user_id' => $user->id,
             ]);
 
-            return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')])->with('success', 'Successfully registered!');
+            if ($isFromModal) {
+                return redirect()->back()->with('success', 'Successfully registered!');
+            }
+
+            return redirect()->intended(route('user-dashboard', ['locale' => session('lang_code', 'en-us')]))->with('success', 'Successfully registered!');
         } else {
             return redirect()->back()->withErrors(['error' => 'Registration failed']);
         }
+    }
+
+    public function clearRegistrationSession()
+    {
+        session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google', 'register_from_modal', 'register_profile_needed', 'pending_review_business_id', 'pending_review_recommend']);
+        return response()->json(['status' => 'success']);
     }
 
     public function register()
