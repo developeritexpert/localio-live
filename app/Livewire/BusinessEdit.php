@@ -136,6 +136,7 @@ class BusinessEdit extends Component
     ];
     public $newOfferingImages = []; // Array of temporary UploadedFile objects
 
+    public $pro_cons_intro = '';
     public $pro_cons_summary = '';
 
 
@@ -1021,6 +1022,7 @@ class BusinessEdit extends Component
             array_pad($existingCons, 3, '')
         );
         
+        $this->pro_cons_intro = $business->pro_cons_intro ?? '';
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
 
         // Load existing Offerings (restricted to one for now)
@@ -1437,7 +1439,7 @@ class BusinessEdit extends Component
                 'string',
                 'max:191',
                 Rule::unique('business_translations', 'name')
-                    ->where('lang_id', $this->lang_id)
+                    ->where('lang_id', $this->languages_supported ?? 1)
                     ->ignore($this->businessId, 'business_id'),
             ],
             'affiliate_partner' => 'nullable|string|max:191',
@@ -1484,6 +1486,8 @@ class BusinessEdit extends Component
             'secondary_keywords' => 'nullable|string|max:1000',
             'long_tail_keywords' => 'nullable|string|max:1000',
             'high_intent_keywords' => 'nullable|string|max:1000',
+            'pro_cons_intro' => 'nullable|string',
+            'pro_cons_summary' => 'nullable|string',
         ];
     }
 
@@ -1539,6 +1543,7 @@ class BusinessEdit extends Component
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
             'status' => (bool)$this->status,
+            'pro_cons_intro' => $this->pro_cons_intro,
             'pro_cons_summary' => $this->pro_cons_summary
         ]);
     }
@@ -1607,6 +1612,7 @@ class BusinessEdit extends Component
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
             'status' => (bool)$this->status,
+            'pro_cons_intro' => $this->pro_cons_intro,
             'pro_cons_summary' => $this->pro_cons_summary
         ]);
     }

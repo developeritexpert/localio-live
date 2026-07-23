@@ -1027,7 +1027,18 @@
 
                                         {{-- PROS & CONS SECTION --}}
                                         @if($business->proCons->count() > 0)
-                                        <div class="col-lg-12 mt-4 mb-4">
+                                        <div class="col-lg-12 mt-5 mb-4">
+                                            <div class="pros-cons-header mb-3">
+                                                <h3 style="font-weight: 700; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
+                                                    {{ $business->translations->first()->name ?? 'Business' }} pros and cons
+                                                </h3>
+                                                @if(!empty($business->pro_cons_intro))
+                                                    <p class="text-muted" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
+                                                        {{ $business->pro_cons_intro }}
+                                                    </p>
+                                                @endif
+                                            </div>
+
                                             <div class="row g-4">
                                                 <div class="col-md-6">
                                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
@@ -1061,8 +1072,8 @@
                                                 </div>
                                             </div>
                                             @if(!empty($business->pro_cons_summary))
-                                            <div class="mt-3 text-muted" style="font-size: 14px;">
-                                                <em>{{ $business->pro_cons_summary }}</em>
+                                            <div class="mt-3">
+                                                <p>{{ $business->pro_cons_summary }}</p>
                                             </div>
                                             @endif
                                         </div>

@@ -28,6 +28,7 @@ class Business extends Model
         'secondary_keywords',
         'long_tail_keywords',
         'high_intent_keywords',
+        'pro_cons_intro',
         'pro_cons_summary',
     ];
     protected $casts = [
