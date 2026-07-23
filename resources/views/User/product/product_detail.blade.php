@@ -136,11 +136,10 @@
                 $pendingEmail = session('register_email', '');
                 $pendingFirstName = session('register_first_name', '');
                 $pendingLastName = session('register_last_name', '');
-                session()->forget('register_profile_needed');
             @endphp
-            <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[99999] d-flex align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto;" onclick="if(event.target === this) dismissProfileModal();">
-                <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 440px; width: 100%; padding: 44px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
-                    <button type="button" id="close-profile-modal-btn" onclick="event.preventDefault(); event.stopPropagation(); dismissProfileModal();" aria-label="Close modal" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; background: transparent; font-size: 22px; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+            <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[9999] d-flex align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto;">
+                <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 440px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
+                    <button type="button" id="close-profile-modal-btn" onclick="document.getElementById('register-profile-modal').style.display='none';" aria-label="Close modal" style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
                         ✕
                     </button>
 
@@ -189,27 +188,13 @@
                 </div>
             </div>
             <script>
-                function dismissProfileModal() {
-                    const modal = document.getElementById('register-profile-modal');
-                    if (modal) {
-                        modal.style.setProperty('display', 'none', 'important');
-                        modal.remove();
-                    }
-                    fetch("{{ route('clear.registration.session', ['locale' => getCurrentLocale()]) }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        }
-                    }).catch(err => console.error(err));
-                }
                 document.addEventListener('DOMContentLoaded', function() {
                     const btn = document.getElementById('close-profile-modal-btn');
                     if (btn) {
                         btn.addEventListener('click', function(e) {
                             e.preventDefault();
-                            e.stopPropagation();
-                            dismissProfileModal();
+                            const modal = document.getElementById('register-profile-modal');
+                            if (modal) modal.style.display = 'none';
                         });
                     }
                 });
@@ -909,7 +894,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted  hide-on-sticky" style="color: #666; font-size: 17px; font-weight:500; margin-bottom:0;">Real reviews, community discussions & alternatives</p>
+                                            <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -1415,21 +1400,20 @@
                                             <div class="feture_box review-breakdown-card">
 
                                                 {{-- Header & Overall Rating --}}
-                                                <div class="review-header-box" style="display: flex; justify-content: space-between; align-items: flex-start;
-                                                 margin-bottom: 25px; padding-bottom:15px;     border-bottom: 1px solid #06498b1a ">
+                                                <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom:15px;">
                                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                                         <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1;">
                                                             {{ number_format($averageRating,1) }}
                                                         </span>
 
-                                                        <div class="rating-stars" style="margin-top: 4px; margin-bottom:0; display: flex; gap: 4px;">
+                                                        <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
+                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
                                                                 @elseif ($i - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                                                 @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 20px;"></i>
+                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                                                 @endif
                                                             @endfor
                                                         </div>
@@ -1467,13 +1451,13 @@
                                                 </div>
 
                                                 <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @else
@@ -2413,7 +2397,7 @@
                                                 </div>
 
                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <h6 class="fw_700 mb-3" style="color: #002655; font-size: 14px;">Review breakdown</h6>
+                                                    <h6 class=" mb-3" style="color: #002347; font-size: 12px; font-weight:600">Review breakdown</h6>
                                                     @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                         <p class="m-0" style="font-size: 12px; color: #555;">{{ $criterion->name }}</p>
@@ -2427,8 +2411,8 @@
                                                     @endforeach
 
                                                     <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                        <span style="font-weight: 600; color: #002655; font-size: 12px;">Recommended by users</span>
-                                                        <strong style="color: #06498b; font-size: 14px;">{{ $recommendPercent }}%</strong>
+                                                        <span style="font-weight: 600; color: #002347; font-size: 12px;">Recommended by users</span>
+                                                        <strong style="color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
                                                     </div>
                                                 </div>
 
@@ -2526,7 +2510,7 @@
                                                     </div>
 
                                                     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                        <h6 class="fw_700 mb-3" style="color: #002655; font-size: 14px;">Review breakdown</h6>
+                                                        <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                             <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
                                                             <div class="prgs_br d-flex align-items-center">
@@ -3184,11 +3168,11 @@
                                                         <div class="d-flex align-items-center gap-1 mb-1">
                                                             @for ($j = 1; $j <= 5; $j++)
                                                                 @if ($j <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
                                                                 @elseif ($j - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                                                 @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                                                 @endif
                                                             @endfor
                                                         </div>
@@ -3196,7 +3180,7 @@
                                                     </div>
 
                                                     {{-- Review Breakdown Title --}}
-                                                    <h5 style="font-size: 15px; font-weight: 700; color: #1e3050; margin-top: 18px; margin-bottom: 14px;">Review breakdown</h5>
+                                                    <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-top: 18px; margin-bottom: 14px;">Review breakdown</h5>
 
                                                     {{-- Breakdown Progress Bars --}}
                                                     <div class="mb-3">
@@ -3213,8 +3197,8 @@
 
                                                     {{-- Recommended by users --}}
                                                     <div class="pt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                        <span style="font-weight: 600; color: #1e3050; font-size: 13.5px;">Recommended by users</span>
-                                                        <strong style="color: #06498b; font-size: 15px;">{{ $recommendPercent }}%</strong>
+                                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                        <strong style="color: #002347; font-size: 15px;">{{ $recommendPercent }}%</strong>
                                                     </div>
                                                 </div>
 

@@ -73,9 +73,9 @@
                                     @endfor
                                 </div>
                             </div>
-                            <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
+                            <!-- <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
                                 {{ number_format($review->rating, 1) }}
-                            </div>
+                            </div> -->
                         </div>
 
                         <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
@@ -84,7 +84,7 @@
                     </div>
 
                     <!-- Bottom right actions (Report flag) -->
-                    <div class="review-actions-bottom-right" style="position: absolute; bottom: 24px; right: 24px;">
+                    <div class="review-actions-bottom-right" style="display:flex; justify-content: end;">
                         <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" title="Report this review" style="color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#e53e3e';" onmouseout="this.style.color='#a0aec0';">
                             <i class="fas fa-flag"></i>
                         </a>

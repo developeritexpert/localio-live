@@ -3776,7 +3776,7 @@ header.drk_header {
 }
 
 .altr-rgt-div .progress-bar {
-  /* border: none; */
+
   border-color: #a9a9a9;
 }
 
@@ -9434,7 +9434,7 @@ header .sec_head {
 }
 
 .blue-chkbox {
-  padding:10px 20px;
+  padding: 10px 20px;
 }
 
 /* 23-july-26  */
@@ -9469,24 +9469,34 @@ header .sec_head {
   height: 48px;
   max-width: 48px;
 }
+
 .top_rated_org_sec .right_tool_sec {
-margin-top:0 !important;
+  margin-top: 0 !important;
 }
 
-.blue-chkbox label{
-    font-size:13px;
-    font-weight: 400 !important;
+.blue-chkbox label {
+  font-size: 13px;
+  font-weight: 400 !important;
 }
 
 .blue-chkbox label::before {
   height: 16px !important;
-  width:16px !important;
+  width: 16px !important;
   margin-right: 5px;
   padding: 5px;
 }
- .blue-chkbox input:checked+label:after {
-   top: 5px;
-   left: 6px;
-   width: 5px;
-    height: 10px;
+
+.blue-chkbox input:checked+label:after {
+  top: 5px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+}
+
+.revie_left_rgt_sec .progress-bar::-webkit-progress-bar {
+  background: #fff !important;
+}
+
+.revie_img_sec .top_review_bx {
+  border-bottom: 1px solid #f0f0f0;
 }
