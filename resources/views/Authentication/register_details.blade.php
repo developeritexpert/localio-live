@@ -9,7 +9,7 @@
         <div class="container">
             <div class="contact_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="hd_text">
-                    <h2 class="text-center">Create your Profile</h2>
+                    <h2 class="text-center">Create your profile</h2>
                     <p class="text-center">Please provide a few more details to set up your account.</p>
                 </div>
                 
@@ -29,14 +29,14 @@
                         <!-- First Name Input Field -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <x-google-input type="text" name="first_name" label="First Name" id="firstName" value="{{ old('first_name', $firstName) }}"/>
+                                <x-google-input type="text" name="first_name" label="first name" id="firstName" value="{{ old('first_name', $firstName) }}"/>
                             </div>
                         </div>
 
                         <!-- Last Name Input Field -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <x-google-input type="text" name="last_name" label="Last Name" id="lastName" value="{{ old('last_name', $lastName) }}"/>
+                                <x-google-input type="text" name="last_name" label="Last name" id="lastName" value="{{ old('last_name', $lastName) }}"/>
                             </div>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group form-group_m">
-                                <x-google-input type="text" name="job_title" label="Job Title" id="jobTitle" value="{{ old('job_title') }}" />
+                                <x-google-input type="text" name="job_title" label="Job title" id="jobTitle" value="{{ old('job_title') }}" />
                             </div>
                         </div>
                     </div>
@@ -52,20 +52,18 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group form-group_m">
-                                <label for="companySize" style="font-weight: 500; margin-bottom: 5px; display: block; color: #495057;">Company Type/Size</label>
-                                <select name="company_size" id="companySize" class="form-control" style="border: 1px solid #ced4da; border-radius: 4px; height: 50px; padding: 10px 15px; color: #495057; width: 100%;">
-                                    <option value="" disabled {{ old('company_size') ? '' : 'selected' }}>Select Company Type/Size</option>
-                                    <option value="1" {{ old('company_size') == '1' ? 'selected' : '' }}>Freelance / Solo</option>
-                                    <option value="2" {{ old('company_size') == '2' ? 'selected' : '' }}>Small Business (1-50 emp.)</option>
-                                    <option value="3" {{ old('company_size') == '3' ? 'selected' : '' }}>Mid-Market (51-1000 emp.)</option>
-                                    <option value="4" {{ old('company_size') == '4' ? 'selected' : '' }}>Enterprise (&gt;1000 emp.)</option>
-                                </select>
+                                <x-google-input type="select" name="company_size" id="companySize" label="Company size" :options="[
+                                    '1' => 'Freelance / Solo',
+                                    '2' => 'Small Business (1-50 emp.)',
+                                    '3' => 'Mid-Market (51-1000 emp.)',
+                                    '4' => 'Enterprise (>1000 emp.)'
+                                ]" :value="old('company_size')" placeholder="Select Company size" />
                             </div>
                         </div>
                     </div>
 
                     <div class="accor-btn" style="margin-top: 25px;">
-                        <button type="submit" class="cta cta_white register_details_btn" style="width: 100%;">Sign Up</button>
+                        <button type="submit" class="cta cta_white register_details_btn" style="width: 100%;">Sign up</button>
                     </div>
                 </form>
             </div>

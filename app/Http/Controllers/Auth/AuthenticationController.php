@@ -78,7 +78,7 @@ class AuthenticationController extends Controller
             'register_is_google' => false,
         ]);
         $lang = app()->getLocale() ?? session('lang_code', 'en-us');
-        return redirect()->to("/{$lang}/register/details");
+        return redirect()->to("/{$lang}/sign-in/details");
     }
 
     if (Auth::attempt($credentials)) {

@@ -459,10 +459,11 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     Route::get('/', [ViewController::class, 'home'])->name('home');
+    Route::get('/sign-in', [AuthenticationController::class, 'index'])->name('sign-in');
     Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
     Route::get('/register', [AuthenticationController::class, 'index'])->name('register');
-    Route::get('/register/details', [AuthenticationController::class, 'registerDetailsForm'])->name('register.details');
-    Route::post('/register/details', [AuthenticationController::class, 'registerDetailsStore'])->name('register.details.store');
+    Route::get('/sign-in/details', [AuthenticationController::class, 'registerDetailsForm'])->name('register.details');
+    Route::post('/sign-in/details', [AuthenticationController::class, 'registerDetailsStore'])->name('register.details.store');
     // Vendor Register Route
     // Route::get('/vendor-register', [AuthenticationController::class, 'vendorRegisterForm'])->name('vendor-register');
     // End Vendor Register Route
