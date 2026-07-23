@@ -919,6 +919,8 @@
                                 // ['id' => 'section9', 'label' => "Software like"],
                                 // ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section9', 'label' => 'Alternatives'],
+                                ['id' => 'section15' , 'label' => 'FAQs'],  
+
                                 ['id' => 'section14', 'label' => "Reviews"],
                                 ['id' => 'sectionDiscussions', 'label' => "Discussions"],
                                 
@@ -950,7 +952,7 @@
                                 // ['id' => 'section3', 'label' => "Pricing"],
                                 // ['id' => 'section4', 'label' => "Pros & cons"],
                                 // ['id' => 'features' , 'label' => 'Features'],
-                                ['id' => 'section15' , 'label' => 'FAQs'],  
+                                // ['id' => 'section15' , 'label' => 'FAQs'],  
                                 // ['id' => 'softweretopic', 'label' => 'Software Topic'],
                                 // ['id' => 'business-integration', 'label' => 'Integration']
 
@@ -1534,32 +1536,32 @@
                                                                         @if($review->user && $review->user->job_title)
                                                                             <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
                                                                         @endif
-                                                                        @if($review->user && $review->user->company_size)
-                                                                            <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</div>
-                                                                        @endif
                                                                     </div>
                                                               </div>
 
-                                                             <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
-                                                                 <div class="rating-stars">
-                                                                     @for($i=1;$i<=5;$i++)
-                                                                         @if($i<=floor($review->rating))
-                                                                             <i class="fas fa-star text-warning"></i>
-                                                                         @elseif($i-0.5<=$review->rating)
-                                                                             <i class="fas fa-star-half-alt text-warning"></i>
-                                                                         @else
-                                                                             <i class="far fa-star text-warning"></i>
-                                                                         @endif
-                                                                     @endfor
-                                                                 </div>
-                                                                 <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $review->created_at->diffForHumans() }}</small>
-                                                             </div>
+                                                              <div style="text-align: right; flex-shrink: 0;">
+                                                                  <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $review->created_at->diffForHumans() }}</small>
+                                                              </div>
 
                                                          </div>
 
-                                                        <h5 style="">
+                                                        <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 700; color: #1e3050;">
                                                             {{ $review->translations->first()->title ?? 'Review' }}
                                                         </h5>
+
+                                                        <div class="rating-stars-wrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                                            <div class="rating-stars">
+                                                                @for($i=1;$i<=5;$i++)
+                                                                    @if($i<=floor($review->rating))
+                                                                        <i class="fas fa-star text-warning" style="font-size: 12px !important;"></i>
+                                                                    @elseif($i-0.5<=$review->rating)
+                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 12px !important;"></i>
+                                                                    @else
+                                                                        <i class="far fa-star text-warning" style="font-size: 12px !important;"></i>
+                                                                    @endif
+                                                                @endfor
+                                                            </div>
+                                                        </div>
 
                                                         <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                                             {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
@@ -2245,72 +2247,7 @@
 
                             <!-- section software-like -->
                             {{-- faq --}}
-                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15">
-                                <div class="container">
-                                    <div class="faq-inner">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <div class="d-flex flex-column w-auto">
-                                                    {{-- <h2>Frequently Asked Questions (FAQs)</h2>
-                                                    <p>
-                                                        Find quick answers to the most common questions about using Localio
-                                                        to discover, filter, and connect with the best local businesses and
-                                                        products.
-                                                    </p> --}}
-
-                                                    @php
-                                                    use App\Models\StaticContentKey;
-
-                                                    $faq_title = StaticContentKey::where('key', 'faq_title')->first();
-                                                    $faq_description = StaticContentKey::where('key', 'faq_description')->first();
-                                                    //dd($faq_title, $faq_description);
-                                                @endphp
-
-                                                    <h2>{{ $faq_title?->default_value ?? '' }}</h2>
-                                                    <p>{{ $faq_description?->default_value ?? '' }}</p>
-
-
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-8">
-                                                <div class="faq-accor">
-                                                    <div class="accordion" id="accordionExample">
-                                                        @forelse ($business->faqs as $index => $faq)
-                                                            @php $translation = $faq->translations->first(); @endphp
-                                                            @if ($translation)
-                                                                <div class="accordion-item">
-                                                                    <h2 class="accordion-header"
-                                                                        id="heading{{ $index }}">
-                                                                        <button
-                                                                            class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
-                                                                            type="button" data-bs-toggle="collapse"
-                                                                            data-bs-target="#collapse{{ $index }}"
-                                                                            aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                                                            aria-controls="collapse{{ $index }}">
-                                                                            <span>{{ $translation->question }}</span>
-                                                                        </button>
-                                                                    </h2>
-                                                                    <div id="collapse{{ $index }}"
-                                                                        class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
-                                                                        aria-labelledby="heading{{ $index }}"
-                                                                        data-bs-parent="#accordionExample">
-                                                                        <div class="accordion-body">
-                                                                            {{ $translation->answer }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        @empty
-                                                            <p>No FAQs available for this business.</p>
-                                                        @endforelse
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
+                            
 
                             <section class="software-like p_50 product_integra_sec " id="section9">
                                 <div class="sftwre-like-innr">
@@ -2552,7 +2489,73 @@
 
                             </section>
 
+                            {{-- faq --}}
+                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15">
+                                <div class="container">
+                                    <div class="faq-inner">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="d-flex flex-column w-auto">
+                                                    {{-- <h2>Frequently Asked Questions (FAQs)</h2>
+                                                    <p>
+                                                        Find quick answers to the most common questions about using Localio
+                                                        to discover, filter, and connect with the best local businesses and
+                                                        products.
+                                                    </p> --}}
 
+                                                    @php
+                                                    use App\Models\StaticContentKey;
+
+                                                    $faq_title = StaticContentKey::where('key', 'faq_title')->first();
+                                                    $faq_description = StaticContentKey::where('key', 'faq_description')->first();
+                                                    //dd($faq_title, $faq_description);
+                                                @endphp
+
+                                                    <h2>{{ $faq_title?->default_value ?? '' }}</h2>
+                                                    <p>{{ $faq_description?->default_value ?? '' }}</p>
+
+
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-8">
+                                                <div class="faq-accor">
+                                                    <div class="accordion" id="accordionExample">
+                                                        @forelse ($business->faqs as $index => $faq)
+                                                            @php $translation = $faq->translations->first(); @endphp
+                                                            @if ($translation)
+                                                                <div class="accordion-item">
+                                                                    <h2 class="accordion-header"
+                                                                        id="heading{{ $index }}">
+                                                                        <button
+                                                                            class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
+                                                                            type="button" data-bs-toggle="collapse"
+                                                                            data-bs-target="#collapse{{ $index }}"
+                                                                            aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                                                            aria-controls="collapse{{ $index }}">
+                                                                            <span>{{ $translation->question }}</span>
+                                                                        </button>
+                                                                    </h2>
+                                                                    <div id="collapse{{ $index }}"
+                                                                        class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                                        aria-labelledby="heading{{ $index }}"
+                                                                        data-bs-parent="#accordionExample">
+                                                                        <div class="accordion-body">
+                                                                            {{ $translation->answer }}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        @empty
+                                                            <p>No FAQs available for this business.</p>
+                                                        @endforelse
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
 
                             {{-- busines bar --}}
                             <section class="about_asn_2 light pt-0 p_50">
