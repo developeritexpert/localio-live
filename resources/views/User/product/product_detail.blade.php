@@ -668,7 +668,7 @@
     display:flex;
     align-items:center;
     gap:12px;
-    margin-bottom:20px;
+    /* margin-bottom:20px; */
 }
 
 .overall-rating-number{
@@ -785,7 +785,7 @@
 }
 
 .thre_revi_rgt .feture_box  h2 {
-    font-size: 16px !important;
+    font-size: 14px !important;
 }
 /* Rating hidden in normal view, visible only in sticky scroll header */
 .main-view-rating-hide {
@@ -909,7 +909,7 @@
                                                     :wire:key="'wishlist-'.$business->id" />
 
                                             </div>
-                                            <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
+                                            <p class="text-muted  hide-on-sticky" style="color: #666; font-size: 17px; font-weight:500; margin-bottom:0;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -1415,20 +1415,21 @@
                                             <div class="feture_box review-breakdown-card">
 
                                                 {{-- Header & Overall Rating --}}
-                                                <div class="review-header-box" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                                                <div class="review-header-box" style="display: flex; justify-content: space-between; align-items: flex-start;
+                                                 margin-bottom: 25px; padding-bottom:15px;     border-bottom: 1px solid #06498b1a ">
                                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                                         <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1;">
                                                             {{ number_format($averageRating,1) }}
                                                         </span>
 
-                                                        <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                                        <div class="rating-stars" style="margin-top: 4px; margin-bottom:0; display: flex; gap: 4px;">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                    <i class="fas fa-star text-warning" style="font-size: 20px;"></i>
                                                                 @elseif ($i - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 20px;"></i>
                                                                 @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                    <i class="far fa-star text-warning" style="font-size: 20px;"></i>
                                                                 @endif
                                                             @endfor
                                                         </div>
@@ -1461,12 +1462,12 @@
                                                 </div>
 
                                                 <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Recommended by users</span>
-                                                    <strong style="color: #06498b; font-size: 16px;">{{ $recommendPercent }}%</strong>
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                    <strong style="color: #002347; font-size: 16px;">{{ $recommendPercent }}%</strong>
                                                 </div>
 
                                                 <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
                                                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
@@ -1476,10 +1477,10 @@
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @else
-                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 36px; height: 36px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#053b70';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @endauth
