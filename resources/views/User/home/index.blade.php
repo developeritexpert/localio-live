@@ -210,12 +210,12 @@
 
                                                              <!-- Short Description -->
                                                              @if(!empty($business->translations->first()->short_description))
-                                                                 <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                 <div class="mb-3 mt-4 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
                                                                      {{ $business->translations->first()->short_description }}
                                                                  </div>
                                                              @endif
 
-                                                            <div class="slider_content_sec my-3">
+                                                            <div class="slider_content_sec my-4">
                                                                 <div class="main_feature_lg">
                                                                     <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto;">
                                                                         <ul class="list-unstyled" style="margin: 0; padding: 0;">
@@ -547,7 +547,7 @@
             <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
                 <div class="otr_rgtool">
                     <h2>Join the Localio community</h2>
-                    <p class="text-white size16 mt-2" style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                    <p class="text-white size16 " style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
                 </div>
                 <div class="right-tool-pack">
                     <div class="row">

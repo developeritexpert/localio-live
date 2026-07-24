@@ -773,11 +773,11 @@ header .search-box input {
 }
 
 .right_tool_sec .tool-crd-bdy {
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 .right_tool_sec .right-tool-pack {
-  padding-top: 20px;
+  padding-top: 40px;
   padding-bottom: 30px;
 }
 
@@ -1428,7 +1428,7 @@ textarea:focus-visible {
 .bubble-wrp {
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: -40px;
   border-radius: 130px;
   overflow: hidden;
 }
@@ -6454,7 +6454,7 @@ button.cta.cta_white.register_btn {
 .fixed-div {
   -webkit-animation: fadeIn 0.75s ease-out forwards;
   animation: fadeIn 0.75s ease-out forwards;
-  background-color: #f5f5f5;
+  background-color: #fffcfc;
   position: fixed;
   top: 130px;
   left: 0;
@@ -8516,7 +8516,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active {
   /* background-color: #06498b0d; */
   color: #003f7d;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* 9oct2025 end  */
@@ -9031,14 +9031,14 @@ section.revie_img_sec {
 
 .top-automotive-sec.top_rate_pg #filterAccordion .filter-section {
   border-bottom: 1px solid #dee2e6;
-  margin-bottom: 10px;
-  padding-bottom: 15px
+  margin-bottom: 8px;
+  padding-bottom: 8px
 }
 
 .top_rate_pg .pric_rnge {
   border-top: 1px solid #dee2e6;
-  margin-top: 10px;
-  padding-top: 15px
+  margin-block: 8px !important;
+  padding-block: 8px !important;
 }
 
 @media (max-width: 575px) {
@@ -9324,6 +9324,7 @@ footer .foot-row-lft .foot-logo p {
 
 .home_bnr_sec {
   padding-bottom: 60px;
+  overflow: hidden;
 }
 
 .most-populr-sec .popular-category-tab-btn {
@@ -9375,13 +9376,13 @@ footer .foot-row-lft .foot-logo p {
 }
 
 .product_integra_sec .sftwre-alt-btn a {
-  border: 1.5px solid #06498b;
-  color: #06498b;
-  background-color: transparent;
+  color: #fff !important;
+  background-color: #06498b;
+  border: none;
 }
 
 .product_integra_sec .sftwre-alt-btn a:hover {
-  background-color: #06498b !important;
+  background-color: #f9633b !important;
   color: #fff !important;
 }
 
@@ -9438,8 +9439,7 @@ header .sec_head {
 }
 
 /* 23-july-26  */
-.cate_bnr_sec .search-box i,
-.home_bnr_sec .search-box i {
+.cate_bnr_sec .search-box i {
   padding: 15px 22px;
 
 }
@@ -9457,12 +9457,12 @@ header .sec_head {
 }
 
 .top_rate_pg .auto-choice-lft .fa-star {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .top_rate_pg .auto-choice-lft .form-check .filter1,
 .top_rate_pg .auto-choice-lft .form-check .filter2 {
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .top-automotive-sec .choice_img img {
@@ -9499,4 +9499,97 @@ header .sec_head {
 
 .revie_img_sec .top_review_bx {
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* 24-july-26  */
+.home_bnr_sec .search-box i {
+  padding: 15px 30px;
+}
+
+.right_tool_sec .otr_rgtool h2 {
+  margin-bottom: 0;
+}
+
+.product_integra_sec .start-from h3 span {
+  font-weight: 600;
+}
+
+.product_integra_sec .start-from small {
+  font-size: 12px !important;
+  color: #444444 !important;
+}
+
+.compare-section .comparison-box {
+  background-color: #06498b08 !important;
+}
+
+.crm_sec.revie_left_rgt_sec .user-reviews-summary-card>h5 {
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.compare-section#section-compare .container>div:last-child {
+  display: flex;
+  justify-content: center;
+}
+
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button {
+  border-color: #002347 !important;
+  color: #002347 !important;
+  transition: unset !important;
+}
+
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover {
+  background-color: #002347 !important;
+  color: #fff !important;
+}
+
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button:first-child:hover i {
+  color: #fff !important;
+}
+
+.cate_bnr_sec {
+  overflow: hidden;
+}
+
+.top_rate_pg #filterAccordion .form-check label {
+  font-size: 12px !important;
+}
+
+.top_rate_pg .automotive-card {
+  background: unset !important;
+}
+
+.top_rate_pg .automotive-card .auto-choice-hd {
+  margin-bottom: 15px !important;
+}
+
+.top_rate_pg .slider_content_sec {
+  margin-top: 5px !important;
+}
+
+.auto-choice-rgt .btn-pages button.pagination-arrow {
+  background-color: transparent;
+
+}
+
+.auto-choice-rgt .btn-pages button.pagination-arrow i {
+  color: #002347 !important;
+}
+
+.auto-choice-rgt .btn-pages button.pagination-arrow:hover i {
+  color: #fff !important;
+}
+
+.top-automotive-sec.cat_pg {
+  margin-top: 125px !important;
+}
+
+.top-automotive-sec.cat_pg .top-auto-choice {
+  padding-top: 0 !important;
+}
+
+.asn_main_sec .frst_rw .asn-rating p {
+  font-weight: 600;
+  color:#444444 !important;
 }
