@@ -129,6 +129,12 @@ public function imageMedia()
     {
         return $this->hasMany(BusinessCategoryTopic::class, 'category_id');
     }
+    public function top_businesses()
+{
+    return $this->hasMany(Business::class, 'category_id')
+        ->where('status', 1)
+        ->limit(3);
+}
     
 
 

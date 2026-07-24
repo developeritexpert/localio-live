@@ -32,15 +32,25 @@ class CategoryController extends Controller
         if ($categoriesContents->isEmpty()) {
             $categoriesContents = CategoryPageContent::where('lang_id', 1)->where('type', 'text')->pluck('meta_value', 'meta_key');
         }
-        $categories = Category::whereHas('translations', function ($query) use ($lang_id) {
-            $query->where('lang_id', $lang_id);
-        })
-        ->with([
-            'translations',
-            'iconMedia:id,dir_path,file_name',
-            'imageMedia:id,dir_path,file_name',
-        ])
-        ->get();
+        // $categories = Category::whereHas('translations', function ($query) use ($lang_id) {
+        //     $query->where('lang_id', $lang_id);
+        // })
+        // ->with([
+        //     'translations',
+        //     'iconMedia:id,dir_path,file_name',
+        //     'imageMedia:id,dir_path,file_name',
+        // ])
+        // ->get();
+        // $categories = Category::onlyParents()
+        // ->where('status', 1)
+        // ->with('translations', 'imageMedia')
+        // ->get();
+        $categories = Category::onlyParents()
+    ->where('status', 1)
+    ->withCount('subCategories')
+    ->orderByDesc('sub_categories_count')
+    ->with('translations', 'imageMedia')
+    ->get();
 
 
         // dd($categories);
