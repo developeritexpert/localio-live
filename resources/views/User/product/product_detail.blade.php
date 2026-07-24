@@ -1,3 +1,5 @@
+
+
 @extends('user_layout.master')
 @section('body_class', 'product-page-body')
 
@@ -212,6 +214,9 @@
             </script>
         @endif
         <style>
+            .transparency-banner{
+                position:  !important;
+            }
 
              /* Responsive CSS for Gallery Modal */
              #imageGalleryModal .modal-dialog {
@@ -435,6 +440,9 @@
     padding: 0;
 }
 
+    .transparency-banner{
+        position:relative !important;
+    } 
 .asan-slider.asan-slider-btm.slider-nav .slick-list {
     width: 100%;
 }
@@ -1630,7 +1638,7 @@
                                                                   @endif
 
                                                                     <div>
-                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
                                                                         @if($review->user && $review->user->job_title)
                                                                             <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
                                                                         @endif
@@ -1643,7 +1651,7 @@
 
                                                          </div>
 
-                                                        <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 700; color: #1e3050;">
+                                                        <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: #1e3050;">
                                                             {{ $review->translations->first()->title ?? 'Review' }}
                                                         </h5>
 
@@ -1687,7 +1695,7 @@
                                                                 <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
                                                             </div>
                                                             <div>
-                                                                <h6 style="margin: 0; font-size: 14px; font-weight: 700; color: #1e3050;">Marc L.</h6>
+                                                                <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">Marc L.</h6>
                                                                 <div style="font-size: 12px; color: #777; margin-top: 2px;">
                                                                     Product Manager • Small Business (1-50 emp.)
                                                                 </div>
@@ -3164,7 +3172,7 @@
                                                 <div class="user-reviews-summary-card p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
                                                     {{-- Rating Number & Stars --}}
                                                     <div class="d-flex flex-column align-items-start mb-3">
-                                                        <span style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
+                                                        <span style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
                                                         <div class="d-flex align-items-center gap-1 mb-1">
                                                             @for ($j = 1; $j <= 5; $j++)
                                                                 @if ($j <= floor($averageRating))
@@ -3176,7 +3184,7 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
-                                                        <span style="font-size: 13px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
+                                                        <span style="font-size: 14px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
                                                     </div>
 
                                                     {{-- Review Breakdown Title --}}

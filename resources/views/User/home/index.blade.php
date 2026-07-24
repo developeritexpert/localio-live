@@ -110,9 +110,9 @@
                                             role="tab" 
                                             aria-controls="v-pills-{{ $category->id }}" 
                                             aria-selected="{{ $isActive ? 'true' : 'false' }}">
-                                            <span class="category-icon-wrapper">
+                                            {{-- <span class="category-icon-wrapper">
                                                 <img src="{{ $category->media ? asset($category->media->dir_path . '/' . $category->media->file_name) : asset('images/no-image.png') }}" alt="" class="category-btn-icon">
-                                            </span>
+                                            </span> --}}
                                             <span class="category-btn-text">View all {{ $category->translations->name }}</span>
                                         </button>
                                     @endif

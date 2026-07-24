@@ -951,7 +951,7 @@
                     color: #4a5568 !important;
                     font-size: 16px !important;
                     font-weight: 600 !important;
-                    padding: 12px 0 !important;
+                    padding: 12px 0  5px!important;
                     display: flex !important;
                     align-items: center !important;
                     gap: 12px !important;
