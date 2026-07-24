@@ -9447,12 +9447,12 @@ div#learnMoreModal button.modal-close {
 .auto-choice-rgt .btn-pages button {
   border: 1px solid #06498b1a;
   background-color: transparent;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 100%;
   font-weight: 500;
-  width: 59px;
-  height: 59px;
-  color: #000;
+  width: 45px;
+  height: 45px;
+  color: #002347;
 }
 
 .auto-choice-rgt .btn-pages button i {
@@ -9464,8 +9464,7 @@ div#learnMoreModal button.modal-close {
   color: #fff;
 }
 
-.auto-choice-rgt .btn-pages button:hover,
-.auto-choice-rgt .btn-pages button.pagination-arrow {
+.auto-choice-rgt .btn-pages button:hover{
   transform: unset;
   background-color: #f9633b;
   color: #fff;
@@ -9483,9 +9482,9 @@ div#learnMoreModal button.modal-close {
   background-color: #f9633b;
 }
 
-.auto-choice-rgt .btn-pages button.pagination-arrow {
+/* .auto-choice-rgt .btn-pages button.pagination-arrow {
   background-color: #06498b;
-}
+} */
 
 .auto-choice-rgt .btn-pages button.pagination-arrow i {
   color: #fff;
@@ -10218,7 +10217,7 @@ html {
 
 .price-input .currency {
   position: absolute;
-  left: 10px;
+  left: 5px;
   top: 50%;
   transform: translateY(-50%);
   color: #666;
