@@ -126,11 +126,11 @@ section.top-automotive-sec.top_rate_pg.light {
                     <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-Rated Products</h1>
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                                <!-- <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                    Learn more from our team about Website Builder Software pricing features and benefits in our <a href="#" style="color: #06498b; font-weight: 600; text-decoration: none;">Website Builder Buyers Guide</a>
-                                </p> -->
+                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                    Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
+                                </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">

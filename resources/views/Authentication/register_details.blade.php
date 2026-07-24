@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="accor-btn mt-4">
-                        <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
+                        <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign up</button>
                     </div>
                 </form>
             </div>
@@ -91,7 +91,7 @@
                         <!-- First Name Input Field -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <x-google-input type="text" name="first_name" label="first name" id="firstName" value="{{ old('first_name', $firstName) }}"/>
+                                <x-google-input type="text" name="first_name" label="First name" id="firstName" value="{{ old('first_name', $firstName) }}"/>
                             </div>
                         </div>
 
@@ -125,7 +125,7 @@
                     </div>
 
                     <div class="accor-btn" style="margin-top: 25px;">
-                        <button type="submit" class="cta cta_white register_details_btn" style="width: 100%;">Sign up</button>
+                        <button type="submit" class="cta cta_white register_details_btn" style="width: 100%; text-transform: none;">Sign up</button>
                     </div>
                 </form>
             </div>
