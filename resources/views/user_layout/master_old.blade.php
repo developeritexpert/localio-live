@@ -2513,36 +2513,6 @@ document.addEventListener('DOMContentLoaded', function () {
     <!-- Category Sidebar Drawer (Amazon Style) -->
     <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
     <div class="category-sidebar" id="categories-sidebar">
-        <div class="category-sidebar-header">
-    @if(Auth::check())
-        <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
-            @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
-                <img src="{{ asset(Auth::user()->profile_image) }}"
-                     alt="Profile"
-                     class="profile-circle"
-                     style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-            @else
-                <div class="profile-circle"
-                     style="width:40px; height:40px; border-radius:50%; background:#f76b1c; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <span style="color:#fff; font-weight:bold; font-size:18px;">
-                        {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
-                    </span>
-                </div>
-            @endif
-
-            <span class="ms-2">Hello {{ Auth::user()->first_name }}</span>
-        </a>
-    @else
-        <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
-            <i class="fa-solid fa-circle-user avatar-icon"></i>
-            <span>Hello sign in</span>
-        </a>
-    @endif
-
-    <button class="category-sidebar-close" id="categories-sidebar-close">
-        <i class="fa-solid fa-xmark"></i>
-    </button>
-</div>
         {{-- <div class="category-sidebar-header">
             @if(Auth::check())
                 <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
@@ -2579,7 +2549,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="sidebar-menu-divider"></div> -->
                     
                     <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title">Categories</h3>
+                        <h3 class="sidebar-section-title">Shop by Category</h3>
                         <ul class="sidebar-menu-list">
                             @foreach($sidebarCategories as $cat)
                                 @if($cat->translation)

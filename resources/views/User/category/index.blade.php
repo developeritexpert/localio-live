@@ -237,7 +237,7 @@
     .sfwr_sec.cat_page_secs {
     padding-top: 50px;
     margin-top: 125px;
-}
+    }
 </style>
 {{-- <section class="banner_sec help-cntr-bnr inr-bnr dark cate_bnr_sec" style="background-color: #003F7D;">
     <div class="bubble-wrp">

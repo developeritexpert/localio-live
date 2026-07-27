@@ -500,7 +500,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
     //TermAndConditionController
     Route::get('/privacy-policy', [TermAndConditionController::class, 'privacyPolicy'])->name('privacy-policy');
-    Route::get('/terms-condition', [TermAndConditionController::class, 'termsCondtion'])->name('terms-condition');
+    Route::get('/Terms-of-service', [TermAndConditionController::class, 'termsCondtion'])->name('terms-condition');
 
     // SiteMetaPages Controller
     Route::get('/expert-guides', [MetaPagesController::class, 'expertGuide'])->name('expert-guide');

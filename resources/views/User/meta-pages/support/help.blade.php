@@ -53,7 +53,7 @@
                                 </div>
                             </a>
                         </div>
-                        <div class="col-lg-6 col-md-6 col-sm-6" data-aos="fade-up" data-aos-duration="1000">
+                        {{-- <div class="col-lg-6 col-md-6 col-sm-6" data-aos="fade-up" data-aos-duration="1000">
                             <a href="{{ route('FaqsShow') }}">
                                 <div class="hlp-you-box" style="height: 100%;">
                                     <div class="hlp-you-img">
@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                             </a>
-                        </div>
+                        </div> --}}
 
                     </div>
                 </div>
