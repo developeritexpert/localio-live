@@ -1302,9 +1302,9 @@
     padding: 11px 24px;
   }
 
-  .automotive-card {
+  /* .automotive-card {
     padding: 35px 30px;
-  }
+  } */
 
   .starting-price span {
     font-size: 25px;
@@ -2319,9 +2319,9 @@
     padding: 20px 0;
   }
 
-  .automotive-card {
+  /* .automotive-card {
     padding: 30px;
-  }
+  } */
 
   .xclusve-wrp .slick-prev {
     left: -35px;
@@ -3137,9 +3137,9 @@
     padding: 13px 15px;
   }
 
-  .automotive-card {
+  /* .automotive-card {
     padding: 25px;
-  }
+  } */
 
   .automotive-pagination {
     padding-top: 20px;
@@ -4878,6 +4878,9 @@ div#learnMoreModal button.modal-close {
 }
 
 @media (max-width: 768px) {
+  .automotive-card {
+    padding-bottom:0 !important;
+}
   .modal-content {
     padding: 20px;
     margin: 10px;
@@ -12597,15 +12600,15 @@ textarea#message {
 /* 1 oct  */
 
 .user_img img {
-  max-width: 50px;
-  min-width: 50px;
+  /* max-width: 50px; */
+  /* min-width: 50px; */
   height: 50px;
 }
 
 .user_img img {
   width: 50px;
   height: 50px;
-  min-width: 50px;
+  /* min-width: 50px; */
   object-fit: cover;
 }
 
@@ -12722,6 +12725,9 @@ textarea#message {
   .popular-categories-sidebar {
     overflow-x: scroll;
   }
+  .top-automotive-sec .auto-choice-lft {
+    padding-right: 0;
+}
 
 }
 
