@@ -139,7 +139,7 @@
                 $pendingFirstName = session('register_first_name', '');
                 $pendingLastName = session('register_last_name', '');
             @endphp
-            <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[9999] d-flex align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto;">
+            <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[9999] d-none align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto;">
                 <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 440px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
                     <button type="button" id="close-profile-modal-btn" onclick="document.getElementById('register-profile-modal').style.display='none';" aria-label="Close modal" style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
                         ✕
