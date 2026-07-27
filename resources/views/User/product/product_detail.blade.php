@@ -144,6 +144,7 @@
                     <button type="button" id="close-profile-modal-btn" onclick="document.getElementById('register-profile-modal').style.display='none';" aria-label="Close modal" style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
                         ✕
                     </button>
+                    
 
                     <div class="text-center mb-4">
                         <h3 class="fw-bold mb-2" style="color: #002655; font-size: 22px;">Create your profile</h3>

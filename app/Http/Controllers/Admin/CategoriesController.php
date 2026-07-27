@@ -106,7 +106,7 @@ class CategoriesController extends Controller
 
     public function add_process(Request $request)
     {
-        // dd($request->all());
+
         $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
         $isNewCategory = !$request->category_id;
         
@@ -114,12 +114,8 @@ class CategoriesController extends Controller
             'name' => [
                 'required',
                 'min:3',
-                'max:255',
-                Rule::unique('category_translations', 'name')
-                    ->where(function ($query) use ($language_id) {
-                        return $query->where('lang_id', $language_id);
-                    })
-                    ->ignore($request->category_id),
+                'max:255'
+                
             ],
             'title' => 'nullable|string|max:255',
             'comparison_slug' => 'nullable|string|max:255',
@@ -135,22 +131,23 @@ class CategoriesController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         $validator->after(function ($validator) use ($request) {
-            $is_parent = $request->boolean('is_parent');
+            // $is_parent = $request->boolean('is_parent');
+            $is_parent = $request->has('is_parent');
             $parent_id = $request->parent_id;
             $category_id = null;
 
+
+
             if ($request->category_id) {
-                $categoryTranslation = CategoryTranslation::find($request->category_id);
+                // $categoryTranslation = CategoryTranslation::find($request->category_id);
+                 $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)->first();
                 if ($categoryTranslation) {
                     $category_id = $categoryTranslation->category_id;
                 }
+
             }
 
-            if (!$is_parent) {
-                if (empty($parent_id)) {
-                    $validator->errors()->add('parent_id', 'The parent category field is required when not a parent category.');
-                    return;
-                }
+            if (!$is_parent) {               
 
                 if ($category_id && $parent_id == $category_id) {
                     $validator->errors()->add('parent_id', 'A category cannot be its own parent.');
@@ -163,7 +160,7 @@ class CategoriesController extends Controller
                 }
 
                 if ($category_id) {
-                    $category = Category::find($category_id);
+                    $category = Category::find($request->category_id);
                     if ($category) {
                         if ($category->subCategories()->where('id', $parent_id)->exists()) {
                             $validator->errors()->add('parent_id', 'Circular reference detected: The selected parent category is a sub-category of this category.');
@@ -187,7 +184,14 @@ class CategoriesController extends Controller
             }
         });
 
+                // dd($request->all());
+
+
         if ($validator->fails()) {
+
+                // dd($validator->errors()->toArray());
+
+
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
@@ -195,12 +199,12 @@ class CategoriesController extends Controller
 
         $category_id = null;
         if ($request->category_id) {
-            $categoryTranslation = CategoryTranslation::where('id', $request->category_id)->first();
+            $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)->first();
             if ($categoryTranslation) {
                 $category_id = $categoryTranslation->category_id;
             }
         }
-        $category = $category_id ? Category::find($category_id) : new Category();
+        $category = $category_id ? Category::find($request->category_id) : new Category();
         if (!$category) {
             $category = new Category();
         }
@@ -213,8 +217,8 @@ class CategoriesController extends Controller
         }
         if ($request->hasFile('category_icon')) {
             $mediaIcon = $this->mediaservice->uploadMedia($request->file('category_icon'), 'category/icon');
-            $category->category_icon = $mediaIcon->id;
-        }
+            $category->category_icon = $mediaIcon->id;  
+        }       
         $category->save();
         if ($category) {
             $slug = Str::slug($validate['name']);
@@ -241,8 +245,8 @@ class CategoriesController extends Controller
             );
 
             // Handle rating criteria
-            $submittedExistingCriteria = $request->input('existing_rating_criteria', []);
-            $submittedNewCriteria = $request->input('new_rating_criteria', []);
+            $submittedExistingCriteria = $request->input('existing_rating_criteria', []) ?? null;
+            $submittedNewCriteria = $request->input('new_rating_criteria', []) ?? null;
             
             // Delete criteria not in the submitted list
             $existingIds = array_keys($submittedExistingCriteria);

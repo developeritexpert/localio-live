@@ -41,13 +41,13 @@
 
                                 @endif
                             @endforeach
-                            <div class="btn-holder">
+                            {{-- <div class="btn-holder">
 
                                 <a class="view-all" href="{{ route('FaqsShow') }}">{{ static_text('view_more') }}
                                 </a>
 
 
-                               </div>
+                               </div> --}}
                         @else
                             {{-- <!-- Display this if no FAQs have translations -->
                             <div class="accordion-item" data-aos="fade-up" data-aos-duration="1000">
