@@ -160,7 +160,12 @@ class AuthenticationController extends Controller
             'last_name' => 'required|string|max:255',
             'job_title' => 'required|string|max:255',
             'company_size' => 'required|string|max:255',
-        ]);
+            'accept_terms' => 'accepted',
+            'promotional_emails' => 'nullable|boolean',
+        ],[
+                'accept_terms.accepted' => 'You must agree to the Terms of service and Privacy policy.',
+            ]);
+                
 
         $country_code = Language::where('lang_code', session('lang_code'))->first();
 
@@ -171,6 +176,7 @@ class AuthenticationController extends Controller
         $user->password = Hash::make($password);
         $user->job_title = $request->job_title;
         $user->company_size = $request->company_size;
+        $user->promotional_emails = $request->boolean('promotional_emails');
         $user->country_id = $country_code ? $country_code->country_id : null;
         $user->user_type = 'user';
         $user->status = 'active';

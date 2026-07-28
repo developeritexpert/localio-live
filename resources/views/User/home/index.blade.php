@@ -113,7 +113,7 @@
                                             {{-- <span class="category-icon-wrapper">
                                                 <img src="{{ $category->media ? asset($category->media->dir_path . '/' . $category->media->file_name) : asset('images/no-image.png') }}" alt="" class="category-btn-icon">
                                             </span> --}}
-                                            <span class="category-btn-text">View all {{ $category->translations->name }}</span>
+                                            <span class="category-btn-text">{{ $category->translations->name }}</span>
                                         </button>
                                     @endif
                                 @endforeach
@@ -140,7 +140,7 @@
                                         <!-- Top Row: See all Category link -->
                                         <div class="see-all-category-container d-flex justify-content-end align-items-center">
                                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
-                                                See all {{ $category->translations->name }} Software
+                                                View all {{ $category->translations->name }}
                                             </a>
                                         </div>
 

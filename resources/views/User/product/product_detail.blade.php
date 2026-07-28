@@ -2682,7 +2682,7 @@
                                         </p>
                                     </div>
 
-                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000" style="display: flex; justify-content: space-between; gap: 1px;">
+                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000" style="display: flex; justify-content: space-between; ">
                                         @forelse($peerComparisons as $peer)
                                             @php
                                                 $peerName = $peer->translations->first()->name ?? 'Business';
@@ -2693,7 +2693,7 @@
                                                     'comparison_businesses' => Str::slug($bName) . '-vs-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
-                                            <div class="col-lg-6 col-md-6 col-12 p-0" style="width: 49%;">
+                                            <div class="col-lg-6  col-12 " >
                                                 <a href="{{ $seoUrl }}" class="comparison-card-link text-decoration-none" style="display: block; color: inherit;">
                                                     <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: all 0.2s ease;" onmouseover="this.style.boxShadow='0 6px 12px rgba(0,0,0,0.08)'; this.style.borderColor='#cbd5e1';" onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.03)'; this.style.borderColor='#e2e8f0';">
                                                         <div class="d-flex align-items-center justify-content-between">
@@ -3111,10 +3111,10 @@
                                         .ans_lft {
                                             gap: 0px 12px;
                                         }
-                                        .asn-img img {
+                                        /* .asn-img img {
                                             width: 55px !important;
                                             height: 55px !important;
-                                        }
+                                        } */
                                         .review_text.size18 {
                                             font-size: 15px !important;
                                         }

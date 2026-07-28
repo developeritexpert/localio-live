@@ -37,10 +37,10 @@
             width: 100% !important;
         }
         @media (max-width: 768px) {
-            .automotive-card {
+            /* .automotive-card {
                 padding-bottom: 20px !important;
-            }
-            .automotive-card .blue-chkbox {
+            } */
+            /* .automotive-card .blue-chkbox {
                 position: relative !important;
                 bottom: auto !important;
                 right: auto !important;
@@ -50,7 +50,7 @@
                 text-align: center !important;
                 margin-top: 15px !important;
                 padding: 12px 15px !important;
-            }
+            } */
             .automotive-card .blue-chkbox label {
                 display: inline-flex !important;
                 align-items: center !important;
@@ -123,7 +123,7 @@ section.top-automotive-sec.top_rate_pg.light {
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
-                    <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
+                    <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
