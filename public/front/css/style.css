@@ -5448,9 +5448,9 @@ footer .footer-wrp .foot-col {
   transition: all 0.3s ease-in-out;
 }
 
-.auto-choice-rgt .automotive-card:first-child {
+/* .auto-choice-rgt .automotive-card:first-child {
   border: 1px solid #06498b !important;
-}
+} */
 
 .auto-choice-btn a {
   display: flex;
@@ -9727,3 +9727,18 @@ section.right_tool_sec .otr_rgtool h2 {
     background: #edf6ed !important;
 }
 
+/* 28-july-26  */
+.most-populr-sec .row{
+margin-top:0;
+}
+.top_rate_pg  .verified-insights-card{
+background-color:transparent !important;
+}
+
+.top_rate_pg .top-rated-heading-block {
+    border-bottom: 1px solid #e8eef6 !important;
+}
+.top_rate_pg .top-rated-heading-block {
+background-color:#06498b08;
+padding:10px 5px;
+}
