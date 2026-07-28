@@ -1034,6 +1034,18 @@
                     }
                 }
 
+                .policy-link {
+                        color: #06498b;
+                        text-decoration: underline;
+                        text-underline-offset: 2px;
+                        font-weight: 500;
+                    }
+
+                    .policy-link:hover {
+                        color: #003F7D;
+                        text-decoration: underline;
+                    }
+
     </style>
 
 </head>
@@ -2535,31 +2547,14 @@ document.addEventListener('DOMContentLoaded', function () {
     @else
         <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
             <i class="fa-solid fa-circle-user avatar-icon"></i>
-            <span>Hello sign in</span>
+            <span>Hello, sign in</span>
         </a>
     @endif
 
     <button class="category-sidebar-close" id="categories-sidebar-close">
         <i class="fa-solid fa-xmark"></i>
     </button>
-</div>
-        {{-- <div class="category-sidebar-header">
-            @if(Auth::check())
-                <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
-                    <i class="fa-solid fa-circle-user avatar-icon"></i>
-                    <span>Hello {{ Auth::user()->first_name }}</span>
-                </a>
-            @else
-                <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
-                    <i class="fa-solid fa-circle-user avatar-icon"></i>
-                    <span>Hello sign in</span>
-                </a>
-            @endif
-            <button class="category-sidebar-close" id="categories-sidebar-close">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div> --}}
-        
+</div>        
         
         <div class="category-sidebar-viewport">
             <div class="category-sidebar-panels-container" id="sidebar-panels-container">
@@ -2601,7 +2596,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
                             <div class="sub-panel-back">
                                 <a href="javascript:void(0);" class="back-to-main-btn">
-                                    <i class="fa-solid fa-arrow-left me-2"></i> Main Menu
+                                    <i class="fa-solid fa-arrow-left me-2"></i> All categories
                                 </a>
                             </div>
                             <div class="sidebar-menu-divider"></div>

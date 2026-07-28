@@ -649,4 +649,3 @@ Route::group(['prefix' => '{locale?}'], function () {
 
 
 
-

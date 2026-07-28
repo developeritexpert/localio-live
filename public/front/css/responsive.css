@@ -2476,8 +2476,8 @@
 
   .about_asn_content .asn_dv.asv_blue .asn-img img,
   .asn_dv_contnt .asn-img img {
-    height: 70px;
-    width: 70px;
+    height: 100%;
+    width: 100%;
   }
 
   .trial-avil .asn-rating p {
@@ -3827,8 +3827,8 @@
 
   .faq-accor .accordion-button::after,
   .faq-accor .accordion-button:not(.collapsed)::after {
-    height: 28px;
-    width: 28px;
+    height: 20px;
+    width: 20px;
     font-size: 12px;
   }
 
@@ -4879,8 +4879,9 @@ div#learnMoreModal button.modal-close {
 
 @media (max-width: 768px) {
   .automotive-card {
-    padding-bottom:0 !important;
-}
+    padding-bottom: 0 !important;
+  }
+
   .modal-content {
     padding: 20px;
     margin: 10px;
@@ -9467,7 +9468,7 @@ div#learnMoreModal button.modal-close {
   color: #fff;
 }
 
-.auto-choice-rgt .btn-pages button:hover{
+.auto-choice-rgt .btn-pages button:hover {
   transform: unset;
   background-color: #f9633b;
   color: #fff;
@@ -12725,10 +12726,27 @@ textarea#message {
   .popular-categories-sidebar {
     overflow-x: scroll;
   }
+
   .top-automotive-sec .auto-choice-lft {
     padding-right: 0;
-}
+  }
 
+  /*================ 28-july-26  =====================*/
+  .most-populr-sec .popular-categories-sidebar {
+    padding: 0 !important;
+  }
+
+  .most-populr-sec .popular-categories-nav {
+    gap: 20px !important;
+  }
+
+  .product_sec .inner_banner_sec {
+    margin-bottom: 15px;
+  }
+
+  .sfwr_sec.cat_page_secs {
+    margin-top: 75px !important;
+  }
 }
 
 @media (max-width:767px) {
@@ -12799,6 +12817,46 @@ textarea#message {
     scrollbar-color: #f9633b #f1f1f1;
   }
 
+  /*================== 28-july-26====================  */
+  .home_bnr_sec .search-box i {
+    padding: 13px 26px;
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .frst_rw>div {
+    width: 50%;
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .frst_rw>div .top-pro-btn {
+    display: flex;
+    justify-content: end;
+  }
+
+  #section1 .asn_dv .asn_dv_contnt .div_prent_ever {
+    width: 100%;
+  }
+
+  #section-compare .comparison-box>div {
+    flex-direction: column;
+    align-items: start !important;
+    gap: 15px;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  #section-compare .comparison-box>div .fw-normal {
+    margin-inline: auto;
+  }
+
+  .sfwr_sec.cat_page_secs {
+    margin-top: 65px !important;
+  }
+
 }
 
 
@@ -12808,7 +12866,7 @@ textarea#message {
   }
 
   #pvc_section h5 {
-    font-size: 26px;
+    font-size: 20px;
   }
 
   #pvc_section {
@@ -12851,7 +12909,7 @@ textarea#message {
   }
 
   .asn_main_sec .an_lkd h1 {
-    font-size: 22px !important;
+    font-size: 24px !important;
   }
 
   .product_sec .container-fluid,
@@ -13031,6 +13089,58 @@ textarea#message {
     min-width: unset;
   }
 
+  /*==================== 28-july-26 ================ */
+  .home_bnr_sec .search-box i {
+    padding: 9px 20px;
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
+    flex-wrap: wrap;
+  }
+
+  .asn_main_sec_2 .asn_dv.fixed-div .frst_rw>div {
+    width: 100%;
+  }
+
+  .asn_main_sec .asn_dv_contnt .top-pro-btn.tp_visit {
+    margin-top: 0 !important;
+  }
+
+  .asn_main_sec .top-pro-btn .cta.cta_orange {
+    padding: 10px 20px;
+  }
+
+  .sfwr_sec.cat_page_secs {
+    padding-top: 40px !important;
+  }
+
+  .asn_main_sec .frst_rw .asn-rating p {
+    font-size: 14px !important;
+  }
+
+  .asn_main_sec .asn_dv.fixed-div .asn-rating {
+    width: 100%;
+  }
+
+  .asn_main_sec .asn_dv.fixed-div .an_lkd {
+    justify-content: space-between
+  }
+
+  div#login-modal .modal-content {
+    max-width: 95% !important;
+    padding: 30px 20px !important;
+    margin: 0 !important;
+  }
+  #login-modal .modal-content .close-btn {
+    top: 10px;
+    right: 10px;  
+}
+  div#login-modal .modal-content h2{
+    font-size: 22px !important;
+  }
+  .top-automotive-sec .auto-choice-card .card-compare-m {
+    padding: 20px;
+}
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */
@@ -13090,8 +13200,8 @@ textarea#message {
   margin-bottom: 0 !important;
 }
 
-@media (max-width:420px) {
+/* @media (max-width:420px) {
   .transparency-banner .inr-trans {
     padding: 5px 10px;
   }
-}
+} */

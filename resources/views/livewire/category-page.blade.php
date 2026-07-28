@@ -144,7 +144,7 @@
                 grid-template-columns: 1fr !important;
                 gap: 8px 0px !important;
             }
-            .automotive-card .blue-chkbox {
+            /* .automotive-card .blue-chkbox {
                 position: relative !important;
                 bottom: auto !important;
                 right: auto !important;
@@ -154,7 +154,7 @@
                 text-align: center !important;
                 margin-top: 15px !important;
                 padding: 12px 15px !important;
-            }
+            } */
             .key-feature-price {
                 flex-direction: column !important;
                 align-items: stretch !important;

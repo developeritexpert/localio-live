@@ -123,6 +123,62 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="form-check mb-3">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="accept_terms"
+                                    id="acceptTerms"
+                                    value="1"
+                                    {{ old('accept_terms') ? 'checked' : '' }}
+                                    required
+                                >
+                                {{-- <label class="form-check-label" for="acceptTerms">
+                                    I agree to the
+                                    <a href="{{ route('terms-condition', ['locale' => getCurrentLocale()]) }}" target="_blank">
+                                        Terms of service
+                                    </a>
+                                    and acknowledge the
+                                    <a href="{{ route('privacy-policy', ['locale' => getCurrentLocale()]) }}" target="_blank">
+                                        Privacy policy
+                                    </a>.
+                                </label> --}}
+                                <label class="form-check-label" for="acceptTerms">
+                                    I agree to the
+                                    <a href="{{ route('terms-condition', ['locale' => getCurrentLocale()]) }}"
+                                    target="_blank"
+                                    class="policy-link">
+                                        Terms of service
+                                    </a>
+                                    and acknowledge the
+                                    <a href="{{ route('privacy-policy', ['locale' => getCurrentLocale()]) }}"
+                                    target="_blank"
+                                    class="policy-link">
+                                        Privacy policy
+                                    </a>.
+                                </label>
+                                @error('accept_terms')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="promotional_emails"
+                                    id="promotionalEmails"
+                                    value="1"
+                                    {{ old('promotional_emails') ? 'checked' : '' }}
+                                >
+                                <label class="form-check-label" for="promotionalEmails">
+                                    I'd like to receive promotional emails from Localio. I can unsubscribe at any time.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="accor-btn" style="margin-top: 25px;">
                         <button type="submit" class="cta cta_white register_details_btn" style="width: 100%; text-transform: none;">Sign up</button>

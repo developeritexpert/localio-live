@@ -30,6 +30,7 @@ class User extends Authenticatable
         'job_title',
         'industry',
         'company_size',
+        'promotional_emails',
         'status',
         'business_id', // Added to allow mass assignment of business_id
     ];

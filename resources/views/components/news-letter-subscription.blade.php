@@ -1,6 +1,6 @@
 @guest
 <!-- section right-tool -->
-<section class="right_tool_sec dark p_80" style="margin-top: 50px; position: relative;">
+<section class="right_tool_sec dark p_80" style="position: relative;">
     <div class="container">
         <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
             <div class="otr_rgtool">
