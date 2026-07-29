@@ -141,6 +141,70 @@
                             </div>
                         </div>
 
+                        <!-- Homepage Section Settings -->
+                        <div class="col-md-12 mt-4">
+                            <div class="card card-bordered bg-light">
+                                <div class="card-inner">
+                                    <h5 class="title mb-3"><i class="fa fa-home text-primary me-2"></i> Homepage "Most Popular Categories" Settings</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label d-block" for="show_on_homepage">Show on Homepage</label>
+                                                <div class="form-check form-switch">
+                                                    <input
+                                                        class="form-check-input"
+                                                        type="checkbox"
+                                                        id="show_on_homepage"
+                                                        name="show_on_homepage"
+                                                        value="1"
+                                                        {{ isset($category) && $category->show_on_homepage ? 'checked' : '' }}
+                                                    >
+                                                    <label class="form-check-label" for="show_on_homepage">
+                                                        Display in Homepage "Most Popular Categories" section
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label" for="homepage_order">Display Order</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" class="form-control" id="homepage_order" name="homepage_order"
+                                                        value="{{ isset($category) ? ($category->homepage_order ?? 0) : old('homepage_order', 0) }}" min="0" placeholder="0" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label" for="homepage_product_limit">Product Display Limit</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="number" class="form-control" id="homepage_product_limit" name="homepage_product_limit"
+                                                        value="{{ isset($category) ? ($category->homepage_product_limit ?? 6) : old('homepage_product_limit', 6) }}" min="1" max="50" placeholder="6" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label" for="homepage_link_text">Homepage Side/Top Link Name ("View All" Link Text)</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="homepage_link_text" name="homepage_link_text"
+                                                        value="{{ isset($category_data) ? ($category_data['homepage_link_text'] ?? '') : old('homepage_link_text') }}"
+                                                        placeholder="e.g. View all project management software, View web hosting services, etc." />
+                                                </div>
+                                                <small class="form-text text-muted">Custom text displayed at the top right of this category section on the homepage. Leave empty to use default ("View all [Category Name] software").</small>
+                                                @error('homepage_link_text')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="form-label" for="image">Upload Image</label>

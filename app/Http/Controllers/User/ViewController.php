@@ -40,27 +40,45 @@ class ViewController extends Controller
             $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
         }
 
-        $categories = Category::whereHas('businesses.reviews') // only include categories with reviewed businesses
-        ->with([
-            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'businesses.translations' => function ($query) use ($lang_id) {
-                $query->where('lang_id', $lang_id);
-            },
-            'businesses.reviews'
-        ])
-        ->get()
-        ->map(function ($category) {
-            // Combine all ratings across all businesses
-            $ratings = $category->businesses->flatMap->reviews->pluck('rating');
-            $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
-            return $category;
-        })
-        ->sortByDesc('average_rating') // sort by calculated average
-        ->values()
-        ->take(10);
+        $homepageCategories = Category::where('show_on_homepage', 1)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'businesses.translations' => function ($query) use ($lang_id) {
+                    $query->where('lang_id', $lang_id);
+                },
+                'businesses.reviews'
+            ])
+            ->orderBy('homepage_order', 'asc')
+            ->get();
+
+        if ($homepageCategories->isEmpty()) {
+            $categories = Category::whereHas('businesses.reviews') // fallback: only include categories with reviewed businesses
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'businesses.translations' => function ($query) use ($lang_id) {
+                        $query->where('lang_id', $lang_id);
+                    },
+                    'businesses.reviews'
+                ])
+                ->get()
+                ->map(function ($category) {
+                    // Combine all ratings across all businesses
+                    $ratings = $category->businesses->flatMap->reviews->pluck('rating');
+                    $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
+                    return $category;
+                })
+                ->sortByDesc('average_rating') // sort by calculated average
+                ->values()
+                ->take(10);
+        } else {
+            $categories = $homepageCategories;
+        }
 
 
         $categories->each(function ($category) use ($lang_id) {
+            $limit = $category->homepage_product_limit ?? 6;
+            if ($limit <= 0) $limit = 6;
+
             $businesses = $category->businesses()
                 ->where(function ($query) {
                     $query->where('active_all_countries', 1)
@@ -78,7 +96,7 @@ class ViewController extends Controller
                     'usps',
                 ])
                 ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC') // ⭐ FIX: handle nulls
-                ->take(6)
+                ->take($limit)
                 ->get();
 
             $category->setRelation('businesses', $businesses);

@@ -42,8 +42,17 @@ class SiteContentController extends Controller
         //     $allHomeContents = homeContent::where('lang_id', $lang_id)->get();
         // }
         $homeContents = HomeContent::where('type', 'file')->Where('lang_id', $lang_id)->get();
-        // dd($allHomeContents,$homeContents);
-        return view('Admin.site-content.home_page', compact('allHomeContents', 'homeContents'));
+        $homepageCategories = \App\Models\Category::where('show_on_homepage', 1)
+            ->with(['translation' => fn($q) => $q->where('lang_id', $lang_id)])
+            ->orderBy('homepage_order', 'asc')
+            ->get();
+
+        $allCategories = \App\Models\Category::whereNotNull('parent_id')
+            ->where('parent_id', '>', 0)
+            ->with(['translation' => fn($q) => $q->where('lang_id', $lang_id)])
+            ->get();
+
+        return view('Admin.site-content.home_page', compact('allHomeContents', 'homeContents', 'homepageCategories', 'allCategories'));
     }
     public function updateLangFile(Request $request)
     {
@@ -166,7 +175,6 @@ class SiteContentController extends Controller
             $homeContent->meta_value = $request->get('permanent_url');
             $homeContent->save();
         } else {
-            // Create if it does not exist
             HomeContent::create([
                 'meta_key' => 'permanent_url',
                 'meta_value' => $request->get('permanent_url'),
@@ -174,6 +182,38 @@ class SiteContentController extends Controller
             ]);
         }
     }
+
+    // Handle homepage categories configuration
+    if ($request->has('category_config')) {
+        $catConfigs = $request->input('category_config', []);
+        $redis_lang_code = Redis::get('admin_lang_code');
+        $redis_lang = Language::where('lang_code', $redis_lang_code)->first();
+        $currentLangId = $redis_lang ? $redis_lang->id : getCurrentLanguageID();
+
+        $submittedCatIds = array_keys($catConfigs);
+        \App\Models\Category::whereNotIn('id', $submittedCatIds)->update(['show_on_homepage' => 0]);
+
+        foreach ($catConfigs as $catId => $config) {
+            $category = \App\Models\Category::find($catId);
+            if ($category) {
+                $category->update([
+                    'show_on_homepage' => 1,
+                    'homepage_order' => isset($config['homepage_order']) ? (int)$config['homepage_order'] : 0,
+                    'homepage_product_limit' => isset($config['homepage_product_limit']) ? (int)$config['homepage_product_limit'] : 6,
+                ]);
+
+                if (isset($config['homepage_link_text'])) {
+                    $catTrans = \App\Models\CategoryTranslation::where('category_id', $catId)
+                        ->where('lang_id', $currentLangId)
+                        ->first();
+                    if ($catTrans) {
+                        $catTrans->update(['homepage_link_text' => $config['homepage_link_text']]);
+                    }
+                }
+            }
+        }
+    }
+
     return redirect()->back()->with('success', 'Home content updated successfully.');
 }
 

@@ -118,6 +118,10 @@ class CategoriesController extends Controller
                 
             ],
             'title' => 'nullable|string|max:255',
+            'homepage_link_text' => 'nullable|string|max:255',
+            'show_on_homepage' => 'nullable',
+            'homepage_order' => 'nullable|integer',
+            'homepage_product_limit' => 'nullable|integer|min:1|max:50',
             'comparison_slug' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
             'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
@@ -210,6 +214,9 @@ class CategoriesController extends Controller
         }
 
         $category->parent_id = $request->boolean('is_parent') ? null : $request->parent_id;
+        $category->show_on_homepage = $request->has('show_on_homepage') ? 1 : 0;
+        $category->homepage_order = (int) ($request->input('homepage_order', 0) ?? 0);
+        $category->homepage_product_limit = (int) ($request->input('homepage_product_limit', 6) ?? 6);
 
         if ($request->hasFile('image')) {
             $media = $this->mediaservice->uploadMedia($request->file('image'), 'category/images');
@@ -237,6 +244,7 @@ class CategoriesController extends Controller
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
                     'title'        => $validate['title'] ?? null,
+                    'homepage_link_text' => $validate['homepage_link_text'] ?? null,
                     'description'  => $validate['description'],
                     'slug'         => $slug,
                     'comparison_slug' => $validate['comparison_slug'] ?? null,

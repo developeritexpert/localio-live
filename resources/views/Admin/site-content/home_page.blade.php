@@ -718,8 +718,174 @@
                                                                 value="{{ $val->meta_value ?? '' }}" />
                                                         </div>
                                                     </div>
-                                @endif
+                                 @endif
                                 @endforeach
+
+                                        <!-- Homepage Categories Management Card (Wide Left Column) -->
+                                        <div class="col-md-12 mt-4">
+                                            <div class="card border">
+                                                <div class="card-header mt-3">
+                                                    Homepage Categories & Custom "View All" Side Link Names
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="text-muted small mb-3">Select which categories appear on the homepage, specify their display order, product limit, and custom side link text (e.g. <em>"View all project management software"</em>, <em>"View web hosting services"</em>).</p>
+
+                                                    <!-- Category Selector / Picker -->
+                                                    <div class="row g-2 mb-3 align-items-center bg-light p-2 rounded">
+                                                        <div class="col-md-8">
+                                                            <select id="category_select_picker" class="form-select form-control">
+                                                                <option value="">-- Choose Category to Add to Homepage --</option>
+                                                                @if(isset($allCategories))
+                                                                    @foreach($allCategories as $catItem)
+                                                                        @if(!$catItem->parent_id) @continue @endif
+                                                                        @php
+                                                                            $cTrans = $catItem->translation ?? $catItem->translations ?? ($catItem->categoryTranslations ? $catItem->categoryTranslations->first() : null);
+                                                                        @endphp
+                                                                        <option value="{{ $catItem->id }}" data-name="{{ e($cTrans->name ?? 'Category #' . $catItem->id) }}">
+                                                                            {{ $cTrans->name ?? 'Category #' . $catItem->id }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @endif
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button type="button" class="btn btn-primary w-100" id="btn_add_category_to_homepage">
+                                                                <i class="fa fa-plus me-1"></i> Add Category to Homepage
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Active Homepage Categories Table -->
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-hover align-middle mb-0" id="homepage_categories_table">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th>Category Name</th>
+                                                                    <th style="width: 100px;">Order</th>
+                                                                    <th style="width: 100px;">Limit</th>
+                                                                    <th>Custom Side Link Name ("View All" Text)</th>
+                                                                    <th style="width: 70px;" class="text-center">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="homepage_categories_tbody">
+                                                                @if(isset($homepageCategories) && $homepageCategories->isNotEmpty())
+                                                                    @foreach($homepageCategories as $cat)
+                                                                        @php
+                                                                            $catTranslation = $cat->translation ?? $cat->translations ?? ($cat->categoryTranslations ? $cat->categoryTranslations->first() : null);
+                                                                            $catName = $catTranslation->name ?? 'Category #' . $cat->id;
+                                                                        @endphp
+                                                                        <tr id="cat_row_{{ $cat->id }}">
+                                                                            <td>
+                                                                                <strong>{{ $catName }}</strong>
+                                                                                <input type="hidden" name="category_config[{{ $cat->id }}][id]" value="{{ $cat->id }}">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" class="form-control form-control-sm"
+                                                                                    name="category_config[{{ $cat->id }}][homepage_order]"
+                                                                                    value="{{ $cat->homepage_order ?? 0 }}" min="0">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="number" class="form-control form-control-sm"
+                                                                                    name="category_config[{{ $cat->id }}][homepage_product_limit]"
+                                                                                    value="{{ $cat->homepage_product_limit ?? 6 }}" min="1" max="50">
+                                                                            </td>
+                                                                            <td>
+                                                                                <input type="text" class="form-control form-control-sm"
+                                                                                    name="category_config[{{ $cat->id }}][homepage_link_text]"
+                                                                                    value="{{ $catTranslation->homepage_link_text ?? '' }}"
+                                                                                    placeholder="View all {{ strtolower($catName) }} software">
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <button type="button" class="btn btn-sm btn-outline-danger remove-cat-btn" onclick="removeHomepageCategoryRow({{ $cat->id }})">
+                                                                                    <i class="fa fa-trash"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endforeach
+                                                                @else
+                                                                    <tr id="empty_cats_row">
+                                                                        <td colspan="5" class="text-center py-4 text-muted">
+                                                                            <i class="fa fa-info-circle text-info me-1"></i> No homepage categories selected yet. Select a category from the dropdown above and click "Add Category to Homepage".
+                                                                        </td>
+                                                                    </tr>
+                                                                @endif
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            var addBtn = document.getElementById('btn_add_category_to_homepage');
+                                            var selectPicker = document.getElementById('category_select_picker');
+                                            var tbody = document.getElementById('homepage_categories_tbody');
+
+                                            if (addBtn && selectPicker && tbody) {
+                                                addBtn.addEventListener('click', function() {
+                                                    var selectedId = selectPicker.value;
+                                                    if (!selectedId) {
+                                                        alert('Please select a category first.');
+                                                        return;
+                                                    }
+
+                                                    var selectedOption = selectPicker.options[selectPicker.selectedIndex];
+                                                    var catName = selectedOption.getAttribute('data-name') || selectedOption.text;
+
+                                                    if (document.getElementById('cat_row_' + selectedId)) {
+                                                        alert('This category is already added to the homepage list below.');
+                                                        return;
+                                                    }
+
+                                                    var emptyRow = document.getElementById('empty_cats_row');
+                                                    if (emptyRow) {
+                                                        emptyRow.remove();
+                                                    }
+
+                                                    var tr = document.createElement('tr');
+                                                    tr.id = 'cat_row_' + selectedId;
+                                                    tr.innerHTML = `
+                                                        <td>
+                                                            <strong>` + catName + `</strong>
+                                                            <input type="hidden" name="category_config[` + selectedId + `][id]" value="` + selectedId + `">
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm"
+                                                                name="category_config[` + selectedId + `][homepage_order]"
+                                                                value="0" min="0">
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm"
+                                                                name="category_config[` + selectedId + `][homepage_product_limit]"
+                                                                value="6" min="1" max="50">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="category_config[` + selectedId + `][homepage_link_text]"
+                                                                value=""
+                                                                placeholder="View all ` + catName.toLowerCase() + ` software">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeHomepageCategoryRow(` + selectedId + `)">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    `;
+
+                                                    tbody.appendChild(tr);
+                                                    selectPicker.value = '';
+                                                });
+                                            }
+                                        });
+
+                                        function removeHomepageCategoryRow(catId) {
+                                            var row = document.getElementById('cat_row_' + catId);
+                                            if (row) {
+                                                row.remove();
+                                            }
+                                        }
+                                        </script>
                                 </div>
                                 </div>
                                 </div>
@@ -842,7 +1008,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                        @endforeach
+                                         @endforeach
 
                                     </div>
                                 </div>
