@@ -31,6 +31,8 @@ class SiteLanguagesController extends Controller
             'lang_code' => 'required|alpha_dash|unique:languages,lang_code|string|max:255',
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:languages,id',
+            'faq_slug' => 'nullable|string|max:255',
+            'alternatives_slug' => 'nullable|string|max:255',
             'status' => 'nullable|in:0,1',
             'is_active_translation' => 'nullable|boolean',
             'is_valid_language_code' => 'nullable|boolean',
@@ -40,6 +42,8 @@ class SiteLanguagesController extends Controller
         $language->lang_code = $request->lang_code;
         $language->country_id = $request->country_id;
         $language->base_language_id = $request->base_language_id;
+        $language->faq_slug = $request->faq_slug ?? 'faqs';
+        $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->status = $request->status ?? 1;
         // $language->is_active_translation = $request->is_active_translation ?? 0;
         $language->save();
@@ -63,23 +67,19 @@ class SiteLanguagesController extends Controller
             'lang_code' => 'required|string|unique:languages,lang_code,' . $id . ',id',
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:languages,id',
+            'faq_slug' => 'nullable|string|max:255',
+            'alternatives_slug' => 'nullable|string|max:255',
             'status' => 'nullable|in:0,1',
             'is_active_translation' => 'nullable|boolean',
         ]);
-    
-        // 🔍 Check if lang_code is valid using the helper
-        $translated = website_translator('test', $request->lang_code);
-        dd($translated);
-    
-        if (empty($translated)) {
-            return back()->withErrors(['lang_code' => 'Invalid language code.'])->withInput();
-        }
     
         $language = Language::findOrFail($id);
         $language->name = $request->name;
         $language->lang_code = $request->lang_code;
         $language->country_id = $request->country_id;
         $language->base_language_id = $request->base_language_id;
+        $language->faq_slug = $request->faq_slug ?? 'faqs';
+        $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->status = $request->status ?? $language->status;
         $language->save();
     

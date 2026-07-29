@@ -38,7 +38,7 @@
                             @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search...'])
                         </div>
                     </div>
-                    <div class="banner_image_col">
+                    <div class="banner_image_col d-none">
                         <div class="banner_image">
                             @if (isset($headerImage))
                                 <img src="{{ asset($headerImage->meta_value) }}" alt="{{ $headerImage->meta_key }}">
@@ -140,7 +140,7 @@
                                         <!-- Top Row: See all Category link -->
                                         <div class="see-all-category-container d-flex justify-content-end align-items-center">
                                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
-                                                View all {{ $category->translations->name }}
+                                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
                                             </a>
                                         </div>
 
@@ -148,8 +148,7 @@
                                         <div class="row g-4 justify-content-start">
                                             @php
                                                 $businesses = $category->businesses
-                                                    ->sortByDesc('reviews_avg_rating')
-                                                    ->take(6); // limit to 6 to show 2 per row
+                                                    ->sortByDesc('reviews_avg_rating');
                                             @endphp
 
                                             @foreach ($businesses as $index => $business)
@@ -202,7 +201,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="rate_box">
-                                                                            {{ $avgRating }} | {{ $ratingsCount }} Reviews
+                                                                            {{ $avgRating }} | {{ $ratingsCount }} reviews
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -210,7 +209,7 @@
 
                                                              <!-- Short Description -->
                                                              @if(!empty($business->translations->first()->short_description))
-                                                                 <div class="mb-3 mt-4 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                 <div class="mt-4 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
                                                                      {{ $business->translations->first()->short_description }}
                                                                  </div>
                                                              @endif

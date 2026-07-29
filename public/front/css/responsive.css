@@ -6603,9 +6603,9 @@ div#learnMoreModal button.modal-close {
     max-width: 120px;
   }
 
-  .con_table {
+  /* .con_table {
     padding: 50px 0px;
-  }
+  } */
 
   .inner_table2 {
     position: sticky;
@@ -9259,11 +9259,12 @@ div#learnMoreModal button.modal-close {
   align-items: center;
 }
 
+/* 
 .drop_menu .dropdown-menu .dropdown-item {
   border: 0px;
   padding: 16px 25px;
   color: #05498b !important;
-}
+} */
 
 .drop_menu .dropdown-menu .dropdown-item i {
   min-width: 23px;
@@ -9470,7 +9471,7 @@ div#learnMoreModal button.modal-close {
 
 .auto-choice-rgt .btn-pages button:hover {
   transform: unset;
-  background-color: #f9633b;
+  background-color: #06498b;
   color: #fff;
 }
 
@@ -9483,7 +9484,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .auto-choice-rgt .btn-pages button.pagination-arrow:hover {
-  background-color: #f9633b;
+  background-color: #06498b;
 }
 
 /* .auto-choice-rgt .btn-pages button.pagination-arrow {
@@ -10274,8 +10275,8 @@ html {
   height: 40px;
   border: none;
   border-radius: 50%;
-  background-color: #f8f9fa;
-  color: #6c757d;
+  border: 1px solid #06498b;
+  color: #002347;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -10284,14 +10285,16 @@ html {
 }
 
 .pagination-btn:hover {
-  background-color: #e9ecef;
-  color: #495057;
+  background-color: #06498b;
+  border-color: #06498b;
+  color: #fff;
   transform: translateY(-1px);
 }
 
 .pagination-btn.active {
-  background-color: #007bff;
+  background-color: #06498b !important;
   color: white;
+  border-color: #06498b;
 }
 
 .pagination-btn.disabled {
@@ -10737,9 +10740,9 @@ body:has(.fixed_sigup) .fixed_sigup {
   max-width: 120px;
 }
 
-.con_table {
+/* .con_table {
   padding: 50px 0px;
-}
+} */
 
 .inner_table2 {
   position: sticky;
@@ -12626,6 +12629,10 @@ textarea#message {
 }
 
 @media (max-width:991px) {
+  .banner_sec.home_bnr_sec {
+    padding: 180px 0 80px;
+  }
+
   #pvc_section {
     padding: 120px 0px !important;
   }
@@ -12747,6 +12754,11 @@ textarea#message {
   .sfwr_sec.cat_page_secs {
     margin-top: 75px !important;
   }
+
+  .write-review-hero {
+    margin-top: 70px;
+    padding: 80px 20px 60px;
+  }
 }
 
 @media (max-width:767px) {
@@ -12857,6 +12869,9 @@ textarea#message {
     margin-top: 65px !important;
   }
 
+  .banner_sec.home_bnr_sec {
+    padding: 140px 0 60px;
+  }
 }
 
 
@@ -13131,16 +13146,29 @@ textarea#message {
     padding: 30px 20px !important;
     margin: 0 !important;
   }
+
   #login-modal .modal-content .close-btn {
     top: 10px;
-    right: 10px;  
-}
-  div#login-modal .modal-content h2{
+    right: 10px;
+  }
+
+  div#login-modal .modal-content h2 {
     font-size: 22px !important;
   }
+
   .top-automotive-sec .auto-choice-card .card-compare-m {
     padding: 20px;
-}
+  }
+
+  .banner_sec.home_bnr_sec {
+    padding: 110px 0 50px;
+  }
+
+  .write-review-hero {
+    margin-top: 70px;
+    padding: 50px 20px;
+  }
+
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */

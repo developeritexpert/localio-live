@@ -3,16 +3,21 @@
 namespace App\Livewire;
 
 use App\Models\Business;
+use App\Models\Category;
 use App\Models\Log;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class TopRatedProduct extends Component
+class BusinessAlternatives extends Component
 {
     use WithPagination;
 
+    public $businessId;
+    public $business;
+    public $businessName;
+    public $subCategoryIds = [];
     public $lang_id;
     public $ratingCounts = [];
     public $filters = [];
@@ -30,7 +35,7 @@ class TopRatedProduct extends Component
     public $perPage = 4;
     public $page = 1;
     public $categorySlug = null;
-    // Configure URL parameters - page is now path-based, not query string
+
     protected $queryString = [
         'selectedOptions' => ['except' => []],
         'searchTerm' => ['except' => ''],
@@ -38,13 +43,37 @@ class TopRatedProduct extends Component
         'minPrice' => ['except' => 0],
         'maxPrice' => ['except' => 10000],
     ];
-    public function mount($initialPage = 1, $category = null)
+
+    public function mount($businessId, $initialPage = 1)
     {
+        $this->businessId = $businessId;
         $this->page = (int) $initialPage;
-        $this->categorySlug = $category;
         $this->lang_id = getCurrentLanguageID();
 
-        // Load filters using all products
+        $this->business = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', $this->lang_id),
+            'products.categories'
+        ])->findOrFail($businessId);
+
+        $this->businessName = $this->business->translations->first()?->name ?? 'Business';
+
+        // Get sub-categories
+        $categoryIds = [$this->business->category_id];
+        $productCategoryIds = $this->business->products
+            ->flatMap(fn($product) => $product->categories->pluck('id'))
+            ->toArray();
+        $allCategoryIds = array_unique(array_filter(array_merge($categoryIds, $productCategoryIds)));
+
+        $this->subCategoryIds = Category::whereIn('id', $allCategoryIds)
+            ->whereNotNull('parent_id')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($this->subCategoryIds) && $this->business->category_id) {
+            $this->subCategoryIds = [$this->business->category_id];
+        }
+
+        // Load filters using all products of these sub-categories
         $allProducts = Product::with([
             'filterOptions.filterOption.filter.translations' => fn($q) => $q->where('language_id', $this->lang_id),
             'filterOptions.filterOption.translations' => fn($q) => $q->where('language_id', $this->lang_id),
@@ -53,6 +82,9 @@ class TopRatedProduct extends Component
             ->where('lang_id', $this->lang_id)
             ->whereHas('translations', function ($q) {
                 $q->where('lang_id', $this->lang_id);
+            })
+            ->whereHas('categories', function($cq) {
+                $cq->whereIn('categories.id', $this->subCategoryIds);
             })
             ->get();
 
@@ -86,29 +118,75 @@ class TopRatedProduct extends Component
         ]);
     }
 
-    /**
-     * Load default filter options and add them to selectedOptions
-     */
+    protected function buildFilters($products)
+    {
+        $filters = collect();
+
+        foreach ($products as $product) {
+            foreach ($product->filterOptions as $prodOption) {
+                if ($prodOption->filterOption && $prodOption->filterOption->filter) {
+                    $filter = $prodOption->filterOption->filter;
+
+                    if (!$filters->has($filter->id)) {
+                        $filter->options = collect();
+                        $filters->put($filter->id, $filter);
+                    }
+
+                    $option = $prodOption->filterOption;
+                    $existingFilter = $filters->get($filter->id);
+
+                    if (!$existingFilter->options->has($option->id)) {
+                        $existingFilter->options->put($option->id, $option);
+                    }
+                }
+            }
+        }
+
+        return $filters->values();
+    }
+
+    protected function initializePriceRange()
+    {
+        $lang_id = $this->lang_id;
+        $maxPrice = Product::whereHas('categories', function($cq) {
+                $cq->whereIn('categories.id', $this->subCategoryIds);
+            })
+            ->where('lang_id', $lang_id)
+            ->whereHas('prices')
+            ->with('prices')
+            ->get()
+            ->flatMap(function ($product) {
+                return $product->prices->map(function ($price) {
+                    return $price->price;
+                });
+            })
+            ->max();
+
+        if ($maxPrice) {
+            $this->maxPriceValue = (int) ceil($maxPrice);
+            $this->maxPrice = $this->maxPriceValue;
+            $this->dynamicMaxPrice = $this->maxPriceValue;
+        } else {
+            $this->maxPriceValue = 10000;
+            $this->maxPrice = 10000;
+            $this->dynamicMaxPrice = 10000;
+        }
+    }
+
     protected function loadDefaultFilterOptions()
     {
-        // Don't set defaults if URL parameters already exist
         if (!empty($this->selectedOptions)) {
             return;
         }
 
         foreach ($this->filters as $filter) {
-            // Get filter type
             $filterType = $filter->filterType ? $filter->filterType->slug : 'checkbox';
-
-            // Find default options
             $defaultOptions = $filter->options->where('is_default', true);
 
             if ($defaultOptions->isNotEmpty()) {
-                // For radio and dropdown, only select the first default option
                 if (in_array($filterType, ['radio', 'dropdown']) && $defaultOptions->count() > 0) {
                     $this->selectedOptions[] = $defaultOptions->first()->id;
                 } else {
-                    // For checkbox, toggle, color - select all default options
                     foreach ($defaultOptions as $option) {
                         $this->selectedOptions[] = $option->id;
                     }
@@ -116,6 +194,7 @@ class TopRatedProduct extends Component
             }
         }
     }
+
     public function previousPage()
     {
         if ($this->page > 1) {
@@ -160,22 +239,12 @@ class TopRatedProduct extends Component
     public function getCleanUrl($page)
     {
         $locale = app()->getLocale();
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
+        $businessSlug = $this->business->translations->first()->slug;
 
-        if ($page > 1) {
-            if ($this->categorySlug) {
-                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug . '/' . $page;
-            } else {
-                $url = '/' . $locale . '/top-rated-products/' . $page;
-            }
-        } else {
-            if ($this->categorySlug) {
-                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug;
-            } else {
-                $url = '/' . $locale . '/top-rated-products';
-            }
-        }
+        $url = '/' . $locale . '/' . $businessSlug . '/' . $expectedAlternativesSlug;
 
-        // Append filter query params
         $queryParams = [];
         if (!empty($this->selectedRatings)) $queryParams['selectedRatings'] = $this->selectedRatings;
         if (!empty($this->selectedOptions)) $queryParams['selectedOptions'] = $this->selectedOptions;
@@ -185,9 +254,9 @@ class TopRatedProduct extends Component
 
         return empty($queryParams) ? $url : $url . '?' . http_build_query($queryParams);
     }
+
     protected function initializeActiveFilters()
     {
-        // Initialize activeFilters with filter names (similar to CategoryPage)
         foreach ($this->filters as $filter) {
             $filterName = $filter->translations->first() ? $filter->translations->first()->name : $filter->name;
             $filterType = $filter->filterType ? $filter->filterType->slug : 'checkbox';
@@ -196,81 +265,53 @@ class TopRatedProduct extends Component
                 'name' => $filterName,
                 'type' => $filterType,
                 'options' => [],
-                'display_order' => $filter->display_order ?? 1 // Fallback order if not set
+                'display_order' => $filter->display_order ?? 1
             ];
         }
-        // Sort activeFilters by display_order
         uasort($this->activeFilters, function ($a, $b) {
             return ($a['display_order'] ?? 1) <=> ($b['display_order'] ?? 1);
         });
     }
 
-    // public function calculateRatingCounts()
-    // {
-    //     // Initialize counts for all ratings
-    //     $this->ratingCounts = [
-    //         5 => 0,
-    //         4 => 0,
-    //         3 => 0,
-    //         2 => 0,
-    //         1 => 0
-    //     ];
-
-    //     // Get all businesses with their reviews
-    //     $businesses = Business::with([
-    //         'reviews' => function ($q) {
-    //             $q->where('status', 'active');
-    //         }
-    //     ])
-    //         ->whereHas('languages', function ($query) {
-    //             $query->where('language_id', $this->lang_id);
-    //         })
-    //         ->where(function ($query) {
-    //             $query->where('active_all_countries', 1)
-    //                 ->orWhere(function ($q) {
-    //                     $q->where('active_all_countries', 0)
-    //                         ->whereHas('countries', function ($countryQuery) {
-    //                             $countryQuery->where('country_id', getCurrentCountry());
-    //                         });
-    //                 });
-    //         })
-    //         ->withAvg(['reviews as avg_rating' => function ($q) {
-    //             $q->where('status', 'active');
-    //         }], 'rating')
-    //         ->orderByDesc('avg_rating')
-    //         ->get();
-
-
-    //     // Count businesses for each rating level
-    //     foreach ($businesses as $business) {
-    //         $avgRating = $business->reviews->avg('rating');
-    //         if ($avgRating) {
-    //             foreach ([5, 4, 3, 2, 1] as $rating) {
-    //                 if ($avgRating >= $rating) {
-    //                     $this->ratingCounts[$rating]++;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     public function calculateRatingCounts()
     {
-        // Reset counts
         $this->ratingCounts = [
-            5 => 0,
-            4 => 0,
-            3 => 0,
-            2 => 0,
-            1 => 0
+            5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0
         ];
 
-        // Use the same filtered businesses that are returned by getProductsProperty()
-        $businesses = $this->getProductsProperty()->getCollection(); // Get raw collection from paginator
+        $businesses = Business::with([
+            'reviews' => function ($q) {
+                $q->where('status', 'active');
+            }
+        ])
+            ->whereHas('languages', function ($query) {
+                $query->where('language_id', $this->lang_id);
+            })
+            ->where('id', '!=', $this->businessId)
+            ->where(function ($query) {
+                $query->whereIn('category_id', $this->subCategoryIds)
+                    ->orWhereHas('products', function($pq) {
+                        $pq->whereHas('categories', function($cq) {
+                            $cq->whereIn('categories.id', $this->subCategoryIds);
+                        });
+                    });
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                    ->orWhere(function ($q) {
+                        $q->where('active_all_countries', 0)
+                            ->whereHas('countries', function ($countryQuery) {
+                                $countryQuery->where('country_id', getCurrentCountry());
+                            });
+                    });
+            })
+            ->withAvg(['reviews as avg_rating' => function ($q) {
+                $q->where('status', 'active');
+            }], 'rating')
+            ->get();
 
         foreach ($businesses as $business) {
             $avgRating = $business->reviews->avg('rating');
-
             if ($avgRating) {
                 foreach ([5, 4, 3, 2, 1] as $rating) {
                     if ($avgRating >= $rating) {
@@ -281,58 +322,32 @@ class TopRatedProduct extends Component
         }
     }
 
-
-    protected function initializePriceRange()
+    public function setPriceRange($data)
     {
-        // Get min and max prices from database to set slider boundaries
-        $priceStats = \App\Models\ProductPrice::selectRaw('MIN(price) as min_price, MAX(price) as max_price')
-            ->first();
-
-        if ($priceStats) {
-            // Set the dynamic maximum price (ensure it's a number and not zero)
-            $this->maxPriceValue = max(ceil($priceStats->max_price), 100);
-
-            // Allow URL parameters to override defaults
-            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : floor($priceStats->min_price);
-            $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : $this->maxPriceValue;
+        if (is_array($data) && isset($data['min']) && isset($data['max'])) {
+            $this->minPrice = (int)$data['min'];
+            $this->maxPrice = (int)$data['max'];
+            $this->isPriceFilterActive = true;
+            $this->resetPage();
         }
-    }
-
-    protected function buildFilters($products)
-    {
-        $filters = collect();
-
-        foreach ($products as $product) {
-            foreach ($product->filterOptions as $productFilterOption) {
-                $option = $productFilterOption->filterOption;
-                if (!$option || !$option->filter) {
-                    continue;
-                }
-
-                $filter = $option->filter;
-
-                if (!$filters->has($filter->id)) {
-                    $filter->loadMissing([
-                        'translations' => fn($q) => $q->where('language_id', $this->lang_id),
-                        'options.translations' => fn($q) => $q->where('language_id', $this->lang_id),
-                        'filterType',
-                    ]);
-                    $filters->put($filter->id, $filter);
-                }
-            }
-        }
-
-        return $filters->sortBy('display_order')->values();
     }
 
     public function getProductsProperty()
     {
-        // Start with businesses query
         $query = Business::whereHas('translations', function ($q) {
             $q->where('lang_id', $this->lang_id);
         })->whereHas('languages', function ($query) {
             $query->where('language_id', $this->lang_id);
         })
+            ->where('id', '!=', $this->businessId)
+            ->where(function ($query) {
+                $query->whereIn('category_id', $this->subCategoryIds)
+                    ->orWhereHas('products', function($pq) {
+                        $pq->whereHas('categories', function($cq) {
+                            $cq->whereIn('categories.id', $this->subCategoryIds);
+                        });
+                    });
+            })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
                     ->orWhere(function ($q) {
@@ -363,9 +378,9 @@ class TopRatedProduct extends Component
             ->withAvg(['reviews as avg_rating' => function ($q) {
                 $q->where('status', 'active');
             }], 'rating')
-            ->orderByDesc('avg_rating') // Order by rating high to low
-            ->orderBy('id'); // Secondary sort for consistent pagination
-        // Apply search filter if exists
+            ->orderByDesc('avg_rating')
+            ->orderBy('id');
+
         if (!empty($this->searchTerm)) {
             $query->whereHas('translations', function ($q) {
                 $q->where('lang_id', $this->lang_id)
@@ -374,7 +389,7 @@ class TopRatedProduct extends Component
                     });
             });
         }
-        // Apply rating filter if selected
+
         if (!empty($this->selectedRatings)) {
             $query->whereHas('reviews', function ($q) {
                 $q->select('business_id')
@@ -384,7 +399,6 @@ class TopRatedProduct extends Component
             });
         }
 
-        // Group selected options by filter ID for more accurate filtering
         $groupedOptions = [];
         foreach ($this->selectedOptions as $optionId) {
             foreach ($this->filters as $filter) {
@@ -404,7 +418,6 @@ class TopRatedProduct extends Component
             }
         }
 
-        // Apply filter options - using subqueries for proper filtering of business products
         foreach ($groupedOptions as $filterId => $filterData) {
             $query->whereHas('products', function ($productQuery) use ($filterId, $filterData) {
                 $productQuery->whereHas('filterOptions', function ($optionQuery) use ($filterId, $filterData) {
@@ -418,12 +431,10 @@ class TopRatedProduct extends Component
 
         $businesses->each(function ($business) {
             if ($business->icon_id && !file_exists(public_path($business->icon_id))) {
-                \Log::warning("Business icon missing: {$business->icon_id} for business ID: {$business->id}");
                 $business->icon_id = null;
             }
         });
 
-        // Filter businesses by price range
         $filtered = $businesses->filter(function ($business) {
             $validPrices = $business->products->flatMap(function ($product) {
                 return $product->prices;
@@ -445,10 +456,9 @@ class TopRatedProduct extends Component
         });
 
         $filtered = $filtered->sortByDesc(function ($business) {
-            return $business->avg_rating ?? 0; // Use 0 for businesses without ratings
-        })->values(); // Reset array keys
+            return $business->avg_rating ?? 0;
+        })->values();
 
-        // Count results
         $totalCount = $filtered->count();
         $this->productsCount = $totalCount;
         $this->noMatchingProducts = $totalCount === 0;
@@ -477,14 +487,13 @@ class TopRatedProduct extends Component
 
         return $paginator;
     }
+
     public function updateActiveFilters()
     {
-        // Reset active filter options
         foreach ($this->activeFilters as $filterId => $data) {
             $this->activeFilters[$filterId]['options'] = [];
         }
 
-        // Update selected options in active filters
         foreach ($this->selectedOptions as $optionId) {
             foreach ($this->filters as $filter) {
                 foreach ($filter->options as $option) {
@@ -502,12 +511,9 @@ class TopRatedProduct extends Component
 
     protected function getListeners()
     {
-        return [
-            'set-price-range' => 'setPriceRange',
-        ];
+        return [];
     }
 
-    // Livewire lifecycle hooks for updates
     public function updatedSearchTerm()
     {
         $this->resetPage();
@@ -527,36 +533,8 @@ class TopRatedProduct extends Component
         $this->dispatch('scroll-to-middle');
     }
 
-    public function updatedMinPrice()
-    {
-        $this->isPriceFilterActive = true;
-
-        // Make sure minPrice doesn't exceed maxPrice
-        if ($this->minPrice > $this->maxPrice) {
-            $this->minPrice = $this->maxPrice;
-        }
-
-        $this->resetPage();
-        $this->dispatch('scroll-to-middle');
-    }
-
-    public function updatedMaxPrice()
-    {
-        $this->isPriceFilterActive = true;
-
-        // Make sure maxPrice is not less than minPrice
-        if ($this->maxPrice < $this->minPrice) {
-            $this->maxPrice = $this->minPrice;
-        }
-
-        $this->resetPage();
-        $this->dispatch('scroll-to-middle');
-    }
-
-    // Filter operations
     public function toggleFilterOption($optionId)
     {
-        // Find option and get filter type
         $filterType = null;
         $filterId = null;
 
@@ -570,50 +548,41 @@ class TopRatedProduct extends Component
             }
         }
 
-        // Handle based on filter type
         switch ($filterType) {
             case 'radio':
-                // For radio buttons, unselect other options from the same filter
                 $this->selectedOptions = array_filter($this->selectedOptions, function ($id) use ($filterId) {
                     $filter = $this->filters->firstWhere('id', $filterId);
                     if (!$filter) return true;
 
                     foreach ($filter->options as $option) {
                         if ($option->id == $id) {
-                            return false; // Remove if this option belongs to the same filter
+                            return false;
                         }
                     }
                     return true;
                 });
-                // Add the selected option
                 $this->selectedOptions[] = $optionId;
                 break;
 
             case 'dropdown':
-                // First, remove any existing selection for this filter
-                // Remove existing selections for this filter only
                 $this->selectedOptions = array_filter($this->selectedOptions, function ($id) use ($filterId) {
                     $filter = $this->filters->firstWhere('id', $filterId);
                     if (!$filter) return true;
 
                     foreach ($filter->options as $option) {
                         if ($option->id == $id) {
-                            return false; // Remove if this option belongs to the same filter
+                            return false;
                         }
                     }
                     return true;
                 });
-                // Then add the new selection
                 $this->selectedOptions[$filterId] = $optionId;
                 break;
 
             case 'toggle':
-                // Toggle works like checkbox
             case 'color':
-                // Color selection works like checkbox too
             case 'checkbox':
             default:
-                // For checkbox, toggle the selection
                 if (in_array($optionId, $this->selectedOptions)) {
                     $this->selectedOptions = array_diff($this->selectedOptions, [$optionId]);
                 } else {
@@ -622,7 +591,6 @@ class TopRatedProduct extends Component
                 break;
         }
 
-        // Update active filters display
         $this->updateActiveFilters();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
@@ -651,30 +619,29 @@ class TopRatedProduct extends Component
         $this->isPriceFilterActive = false;
         $this->initializePriceRange();
 
-        // Reset active filters
         foreach ($this->activeFilters as $filterId => $data) {
             $this->activeFilters[$filterId]['options'] = [];
         }
 
-        // Re-load default filter options
         $this->loadDefaultFilterOptions();
-
-        // Update active filters with defaults
         $this->updateActiveFilters();
-
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-        return redirect()->route('top-rated-product', [
-            'locale' => getCurrentLocale(), // or app()->getLocale()
-        ]);
-        
+
+        $locale = app()->getLocale();
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
+        $businessSlug = $this->business->translations->first()->slug;
+
+        return redirect()->to('/' . $locale . '/' . $businessSlug . '/' . $expectedAlternativesSlug);
     }
+
     public function render()
     {
-        return view('livewire.top-rated-product', [
+        return view('livewire.business-alternatives', [
             'products' => $this->products,
             'filters' => $this->filters,
-            'lang_id' => getCurrentLanguageID(),
+            'lang_id' => $this->lang_id,
         ]);
     }
 }

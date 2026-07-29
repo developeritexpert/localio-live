@@ -126,10 +126,12 @@ section.top-automotive-sec.top_rate_pg.light {
                     <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                    {{ __('messages.business_alternatives_title', ['business' => $businessName]) !== 'messages.business_alternatives_title' ? __('messages.business_alternatives_title', ['business' => $businessName]) : $businessName . ' alternatives' }}
+                                </h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                    Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
+                                    {{ __('messages.business_alternatives_description', ['business' => $businessName]) !== 'messages.business_alternatives_description' ? __('messages.business_alternatives_description', ['business' => $businessName]) : 'Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.' }}
                                 </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">

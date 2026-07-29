@@ -459,6 +459,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     Route::get('/', [ViewController::class, 'home'])->name('home');
+    Route::get('/write-review', [ViewController::class, 'writeReviewPage'])->name('write-review');
     Route::get('/sign-in', [AuthenticationController::class, 'index'])->name('sign-in');
     Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
     Route::get('/register', [AuthenticationController::class, 'index'])->name('register');
@@ -478,20 +479,28 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
     // Category Controller
     Route::get('/categories', [CategoryController::class, 'index'])->name('category');
+    Route::get('/categories/{slug}/{page}', [CategoryController::class, 'categoryDetail'])->where('page', '[0-9]+')->name('category.detail.page');
     Route::get('/categories/{slug}', [CategoryController::class, 'categoryDetail'])->name('category.detail');
     
 
 
     // Product Controller
-    Route::get('/software/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
-    Route::get('/product', [ProductController::class, 'productDetail'])->name('product');
-    Route::get('/products/{id}', [ProductController::class, 'productDetail'])->name('user.product_detail');
+    Route::get('/top-rated-products/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');
+    Route::get('/top-rated-products/{category}/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.category-page');
     Route::get('/top-rated-products/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
     Route::get('/Exclusive-Businesses-Deals', [ProductController::class, 'ExclusiveBusinessDeals'])->name('exclusive-business-deals');
     Route::get('/product-comparison', [ProductController::class, 'productComparison'])->name('product-comparison');
     Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
     Route::post('/remove-from-comparison/{productId?}', [ProductController::class, 'removeFromComparison'])->name('remove-from-comparison');
     Route::post('/clear-comparison', [ProductController::class, 'clearComparison'])->name('clear-comparison');
+
+    // 301 Redirects for Legacy Product URLs
+    Route::get('/products/{slug}', function ($locale, $slug) {
+        return redirect()->to('/' . $locale . '/' . $slug, 301);
+    });
+    Route::get('/software/{slug}', function ($locale, $slug) {
+        return redirect()->to('/' . $locale . '/' . $slug, 301);
+    });
 
     // Key Feature review Route
     Route::post('/feature/review/store', [ProductController::class, 'storeFeatureReview'])
@@ -548,85 +557,59 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     // Route::get('/review/transalation',[ViewController::class, 'ReviewTranslation'])->name('review.translation');
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
         ->name('review.translation');
-    //user-dashboard
-});
-Route::group(['prefix' => '{locale?}', 'middleware' => ['User']], function () {
-    Route::get('/user-dashboard', [UserDashboardController::class, 'userAccount'])->name('user-dashboard');
-    Route::get('/user-dashboard/product', [UserDashboardController::class, 'userProduct'])->name('user-product');
-    Route::get('/user-dashboard/profile', [UserDashboardController::class, 'userProfile'])->name('user-profile');
-    Route::get('/user-dashboard/review', [UserDashboardController::class, 'userReview'])->name('user-review');
-    Route::get('/user-dashboard/reward', [UserDashboardController::class, 'userReward'])->name('user-reward');
-    Route::get('/user-dashboard/deals', [UserDashboardController::class, 'userDeal'])->name('user-deal');
-    Route::get('/user-dashboard/support', [UserDashboardController::class, 'userSupport'])->name('user-support');
-    Route::get('/user-dashboard/support/{id}',[UserDashboardController::class,'supportView'])->name('user-support-view');
 
-    Route::get('/user-dashboard/change-password', [UserDashboardController::class, 'userChangePassword'])->name('user-change-password');
-    Route::post('/user-dashboard-configuration-update', [UserDashboardController::class, 'updatePassword'])->name('user-updatePassword');
-    
-    Route::get('/user-dashboard/email-preferences', [UserDashboardController::class, 'userEmailPreferences'])->name('user-email-preferences');
-    Route::post('/user-dashboard-configuration-email-prefernce-update', [UserDashboardController::class, 'updateEmailPreferences'])
-        ->name('user.email-preferences.update');
+    // User Dashboard Routes
+    Route::group(['middleware' => ['User']], function () {
+        Route::get('/user-dashboard', [UserDashboardController::class, 'userAccount'])->name('user-dashboard');
+        Route::get('/user-dashboard/product', [UserDashboardController::class, 'userProduct'])->name('user-product');
+        Route::get('/user-dashboard/profile', [UserDashboardController::class, 'userProfile'])->name('user-profile');
+        Route::get('/user-dashboard/review', [UserDashboardController::class, 'userReview'])->name('user-review');
+        Route::get('/user-dashboard/reward', [UserDashboardController::class, 'userReward'])->name('user-reward');
+        Route::get('/user-dashboard/deals', [UserDashboardController::class, 'userDeal'])->name('user-deal');
+        Route::get('/user-dashboard/support', [UserDashboardController::class, 'userSupport'])->name('user-support');
+        Route::get('/user-dashboard/support/{id}',[UserDashboardController::class,'supportView'])->name('user-support-view');
 
-});
+        Route::get('/user-dashboard/change-password', [UserDashboardController::class, 'userChangePassword'])->name('user-change-password');
+        Route::post('/user-dashboard-configuration-update', [UserDashboardController::class, 'updatePassword'])->name('user-updatePassword');
+        
+        Route::get('/user-dashboard/email-preferences', [UserDashboardController::class, 'userEmailPreferences'])->name('user-email-preferences');
+        Route::post('/user-dashboard-configuration-email-prefernce-update', [UserDashboardController::class, 'updateEmailPreferences'])
+            ->name('user.email-preferences.update');
+    });
 
-Route::group(['prefix' => '{locale?}', 'middleware' => ['vendor']], function () {
-    // Route::get('/vendor-dashboard', [HomeController::class, 'index'])
-    //     ->name('vendor-dashboard');
-    Route::get('/vendor-overview', [HomeController::class, 'dash'])
-        ->name('vendor-overview');
+    // Vendor Dashboard Routes
+    Route::group(['middleware' => ['vendor']], function () {
+        Route::get('/vendor-overview', [HomeController::class, 'dash'])->name('vendor-overview');
+        Route::get('/vendor-product-offers', [HomeController::class, 'productOffer'])->name('vendor-product-offer');
+        Route::get('/vendor-add-new-list', [HomeController::class, 'addList'])->name('vendor-add-new-list');
+        Route::get('/vendor-advertising', [HomeController::class, 'advertising'])->name('vendor-advertising');
+        Route::get('/vendor-analytics-reports', [HomeController::class, 'analytic'])->name('vendor-analytics');
+        Route::get('/vendor-campaign', [HomeController::class, 'compaign'])->name('vendor-campaign');
+        Route::get('/vendor-my-listing', [HomeController::class, 'myListing'])->name('vendor-my-listing');
+        Route::get('/vendor-managing-campaign', [HomeController::class, 'm_Campaign'])->name('vendor-managing-campaign');
+        Route::get('/vendor-review', [HomeController::class, 'review'])->name('vendor-review');
+        Route::get('/vendor-review-managment', [HomeController::class, 'reviewManagment'])->name('vendor-review-managment');
+        Route::get('/vendor-edit-list', [HomeController::class, 'editList'])->name('vendor-edit-list');
+        Route::get('/vendor-profile', [HomeController::class, 'vendorProfile'])->name('vendor-profile');
+        Route::get('/vendor-total-product-listing', [HomeController::class, 'allProduct'])->name('vendor-total-product');
+        Route::get('/vendor-add-product/{product_id?}', [HomeController::class, 'addProduct'])->name('vendor-add-product');
+        Route::get('/vendor-profile-view', [HomeController::class, 'businessView'])->name('vendor-business-view');
+        Route::get('/vendor-dashboard/configuration', [HomeController::class, 'vendorConfiguration'])->name('vendor-configuration');
+        Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
+    });
 
+    // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
+    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
+        ->where('comparison_businesses', '.*-vs-.*')
+        ->name('product-comparison.seo');
 
+    Route::get('/{business_slug}/{second_segment}', [ViewController::class, 'handleBusinessSubPage']);
+    Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
+    Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
 
-    Route::get('/vendor-product-offers', [HomeController::class, 'productOffer'])
-        ->name('vendor-product-offer');
-
-
-    Route::get('/vendor-add-new-list', [HomeController::class, 'addList'])
-        ->name('vendor-add-new-list');
-
-    Route::get('/vendor-advertising', [HomeController::class, 'advertising'])
-        ->name('vendor-advertising');
-
-    Route::get('/vendor-analytics-reports', [HomeController::class, 'analytic'])
-        ->name('vendor-analytics');
-
-    Route::get('/vendor-campaign', [HomeController::class, 'compaign'])
-        ->name('vendor-campaign');
-
-
-
-    Route::get('/vendor-my-listing', [HomeController::class, 'myListing'])
-        ->name('vendor-my-listing');
-
-    Route::get('/vendor-managing-campaign', [HomeController::class, 'm_Campaign'])
-        ->name('vendor-managing-campaign');
-
-    Route::get('/vendor-my-listing', [HomeController::class, 'myListing'])
-        ->name('vendor-my-listing');
-
-    Route::get('/vendor-review', [HomeController::class, 'review'])
-        ->name('vendor-review');
-
-    Route::get('/vendor-review-managment', [HomeController::class, 'reviewManagment'])
-        ->name('vendor-review-managment');
-
-
-    Route::get('/vendor-edit-list', [HomeController::class, 'editList'])
-        ->name('vendor-edit-list');
-    Route::get('/vendor-profile', [HomeController::class, 'vendorProfile'])->name('vendor-profile');
-
-    // Vendor Product
-    Route::get('/vendor-total-product-listing', [HomeController::class, 'allProduct'])->name('vendor-total-product');
-
-    Route::get('/vendor-add-product/{product_id?}', [HomeController::class, 'addProduct'])->name('vendor-add-product');
-
-    // visit user
-    Route::get('/vendor-profile-view', [HomeController::class, 'businessView'])->name('vendor-business-view');
-
-    //vendor configuration route
-    Route::get('/vendor-dashboard/configuration', [HomeController::class, 'vendorConfiguration'])->name('vendor-configuration');
-    Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
-
+    // Dynamic 1-Segment Catch-all Routes (Must be at the VERY END of localized group)
+    Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
+    Route::get('/{id}', [ProductController::class, 'productDetail'])->name('user.product_detail');
 });
 
 
@@ -640,11 +623,6 @@ Route::get('/refresh-csrf', function () {
 
 // Ad tracking handling
 Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
-
-// Dynamic SEO Routes (Must be at the very bottom of the file to act as absolute fallbacks)
-Route::group(['prefix' => '{locale?}'], function () {
-    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
-});
 
 
 

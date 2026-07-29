@@ -11,9 +11,9 @@
                     <!-- Top right actions (Date & Copy link) -->
                     <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
                         <span style="font-size: 13px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
-                        <a href="javascript:void(0)" onclick="copyToClipboard('{{ url()->current() }}#review-{{ $review->id }}')" title="Copy link to review" style="color: #a0aec0; transition: color 0.2s; font-size: 15px;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
+                        <!-- <a href="javascript:void(0)" onclick="copyToClipboard('{{ url()->current() }}#review-{{ $review->id }}')" title="Copy link to review" style="color: #a0aec0; transition: color 0.2s; font-size: 15px;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
                             <i class="fas fa-link"></i>
-                        </a>
+                        </a> -->
                     </div>
 
                     <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
@@ -44,10 +44,10 @@
                                         {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                     @endif
                                 @if($review->user && $review->user->job_title)
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title }}</p>
+                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;  font-weight:500;">{{ $review->user->job_title }}</p>
                                 @endif
                                 @if($review->user && $review->user->company_size)
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                 @endif
                             </div>
                         </div>
@@ -84,9 +84,12 @@
                     </div>
 
                     <!-- Bottom right actions (Report flag) -->
-                    <div class="review-actions-bottom-right" style="display:flex; justify-content: end;">
-                        <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" title="Report this review" style="color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#e53e3e';" onmouseout="this.style.color='#a0aec0';">
+                    <div class="review-actions-bottom-right" style="display:flex; justify-content: end; gap:10px;">
+                        <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" title="Report this review" style="color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
                             <i class="fas fa-flag"></i>
+                        </a>
+                        <a href="javascript:void(0)" onclick="copyToClipboard('{{ url()->current() }}#review-{{ $review->id }}')" title="Copy link to review" style="color: #a0aec0; transition: color 0.2s; font-size: 15px;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
+                            <i class="fas fa-link"></i>
                         </a>
                     </div>
                 </div>
@@ -144,10 +147,10 @@
                                             {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                         @endif
                                     @if($review->user && $review->user->job_title)
-                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ $review->user->job_title }}</p>
+                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ $review->user->job_title }}</p>
                                     @endif
                                     @if($review->user && $review->user->company_size)
-                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -185,7 +188,7 @@
 
                         <!-- Bottom right actions (Report flag) -->
                         <div class="review-actions-bottom-right" style="position: absolute; bottom: 24px; right: 24px;">
-                            <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" title="Report this review" style="color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#e53e3e';" onmouseout="this.style.color='#a0aec0';">
+                            <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" title="Report this review" style="color: #a0aec0; transition: color 0.2s;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
                                 <i class="fas fa-flag"></i>
                             </a>
                         </div>

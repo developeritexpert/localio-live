@@ -86,6 +86,32 @@
                                 @enderror
                             </div>
                         </div>
+                        <!-- FAQ URL Slug Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="faq_slug">FAQ URL Slug (e.g. faqs, preguntas-frecuentes)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="faq_slug" name="faq_slug"
+                                        value="{{ old('faq_slug', 'faqs') }}" placeholder="faqs" />
+                                </div>
+                                @error('faq_slug')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- Alternatives URL Slug Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="alternatives_slug">Alternatives URL Slug (e.g. alternatives, alternativas)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="alternatives_slug" name="alternatives_slug"
+                                        value="{{ old('alternatives_slug', 'alternatives') }}" placeholder="alternatives" />
+                                </div>
+                                @error('alternatives_slug')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <!-- Status Toggle with Dynamic Text -->
                         <div class="col-md-6">
                             <div class="form-group">

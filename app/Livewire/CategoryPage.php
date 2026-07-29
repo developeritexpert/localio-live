@@ -39,8 +39,9 @@ class CategoryPage extends Component
     // Results properties
     public $productsCount = 0;
     public $noMatchingProducts = false;
+    public $page = 1;
 
-    // Configure URL parameters
+    // Configure URL parameters - page is now path-based
     protected $queryString = [
         'selectedOptions' => ['except' => []],
         'searchTerm' => ['except' => ''],
@@ -49,9 +50,10 @@ class CategoryPage extends Component
         'maxPrice' => ['except' => 2000],
     ];
 
-    public function mount($slug)
+    public function mount($slug, $initialPage = 1)
     {
         $this->slug = $slug;
+        $this->page = (int) $initialPage;
         $this->lang_id = getCurrentLanguageID();
         $this->country_id= getCurrentCountry();
         // Get category data
@@ -85,6 +87,11 @@ class CategoryPage extends Component
         // Update active filters if there are URL parameters
         if (!empty($this->selectedOptions)) {
             $this->updateActiveFilters();
+        }
+
+        // Set the page in the paginator
+        if ($this->page > 1) {
+            $this->setPage($this->page);
         }
 
         // Check if this is a parent category
@@ -352,15 +359,20 @@ class CategoryPage extends Component
         $this->noMatchingProducts = $totalCount === 0;
 
         // Paginate manually using Laravel collection
-        $page = request()->get('page', 1);
+        $currentPage = max(1, $this->page);
         $perPage = 10;
-        $paginated = $filtered->forPage($page, $perPage)->values();
+        $maxPage = max(1, ceil($totalCount / $perPage));
+        if ($currentPage > $maxPage) {
+            $currentPage = $maxPage;
+            $this->page = $currentPage;
+        }
+        $paginated = $filtered->forPage($currentPage, $perPage)->values();
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
             $paginated,
             $totalCount,
             $perPage,
-            $page,
+            $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
         );
     }
@@ -551,10 +563,67 @@ class CategoryPage extends Component
         
     }
 
+    public function previousPage()
+    {
+        if ($this->page > 1) {
+            $this->page--;
+            $this->setPage($this->page);
+            $this->dispatchPaginationUrl();
+            $this->dispatch('scroll-to-middle');
+        }
+    }
+
+    public function nextPage()
+    {
+        $perPage = 10;
+        $totalPages = ceil($this->productsCount / $perPage);
+        if ($this->page < $totalPages) {
+            $this->page++;
+            $this->setPage($this->page);
+            $this->dispatchPaginationUrl();
+            $this->dispatch('scroll-to-middle');
+        }
+    }
+
+    public function gotoPage($page)
+    {
+        $this->page = (int) $page;
+        $this->setPage($this->page);
+        $this->dispatchPaginationUrl();
+        $this->dispatch('scroll-to-middle');
+    }
+
+    public function dispatchPaginationUrl()
+    {
+        $this->dispatch('update-pagination-url', url: $this->getCleanUrl($this->page));
+    }
+
+    public function getCleanUrl($page)
+    {
+        $locale = app()->getLocale();
+
+        if ($page > 1) {
+            $url = '/' . $locale . '/categories/' . $this->slug . '/' . $page;
+        } else {
+            $url = '/' . $locale . '/categories/' . $this->slug;
+        }
+
+        // Append filter query params
+        $queryParams = [];
+        if (!empty($this->selectedRatings)) $queryParams['selectedRatings'] = $this->selectedRatings;
+        if (!empty($this->selectedOptions)) $queryParams['selectedOptions'] = $this->selectedOptions;
+        if ($this->searchTerm !== '') $queryParams['searchTerm'] = $this->searchTerm;
+        if ($this->minPrice != 0) $queryParams['minPrice'] = $this->minPrice;
+        if ($this->maxPrice != 2000) $queryParams['maxPrice'] = $this->maxPrice;
+
+        return empty($queryParams) ? $url : $url . '?' . http_build_query($queryParams);
+    }
+
     public function render()
     {
         return view('livewire.category-page', [
-            'products' => $this->products
+            'products' => $this->products,
+            'lang_id' => getCurrentLanguageID(),
         ]);
     }
 }

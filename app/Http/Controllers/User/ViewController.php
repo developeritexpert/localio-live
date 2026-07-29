@@ -40,27 +40,45 @@ class ViewController extends Controller
             $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
         }
 
-        $categories = Category::whereHas('businesses.reviews') // only include categories with reviewed businesses
-        ->with([
-            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'businesses.translations' => function ($query) use ($lang_id) {
-                $query->where('lang_id', $lang_id);
-            },
-            'businesses.reviews'
-        ])
-        ->get()
-        ->map(function ($category) {
-            // Combine all ratings across all businesses
-            $ratings = $category->businesses->flatMap->reviews->pluck('rating');
-            $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
-            return $category;
-        })
-        ->sortByDesc('average_rating') // sort by calculated average
-        ->values()
-        ->take(10);
+        $homepageCategories = Category::where('show_on_homepage', 1)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'businesses.translations' => function ($query) use ($lang_id) {
+                    $query->where('lang_id', $lang_id);
+                },
+                'businesses.reviews'
+            ])
+            ->orderBy('homepage_order', 'asc')
+            ->get();
+
+        if ($homepageCategories->isEmpty()) {
+            $categories = Category::whereHas('businesses.reviews') // fallback: only include categories with reviewed businesses
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'businesses.translations' => function ($query) use ($lang_id) {
+                        $query->where('lang_id', $lang_id);
+                    },
+                    'businesses.reviews'
+                ])
+                ->get()
+                ->map(function ($category) {
+                    // Combine all ratings across all businesses
+                    $ratings = $category->businesses->flatMap->reviews->pluck('rating');
+                    $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
+                    return $category;
+                })
+                ->sortByDesc('average_rating') // sort by calculated average
+                ->values()
+                ->take(10);
+        } else {
+            $categories = $homepageCategories;
+        }
 
 
         $categories->each(function ($category) use ($lang_id) {
+            $limit = $category->homepage_product_limit ?? 6;
+            if ($limit <= 0) $limit = 6;
+
             $businesses = $category->businesses()
                 ->where(function ($query) {
                     $query->where('active_all_countries', 1)
@@ -78,7 +96,7 @@ class ViewController extends Controller
                     'usps',
                 ])
                 ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC') // ⭐ FIX: handle nulls
-                ->take(6)
+                ->take($limit)
                 ->get();
 
             $category->setRelation('businesses', $businesses);
@@ -385,6 +403,153 @@ class ViewController extends Controller
         return response()->json([
             'review' => $translation,
         ]);
+    }
+
+    public function businessFaqs(Request $request, $locale, $business_slug, $faq_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $expectedSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+
+        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if (!$businessTranslation) {
+            // Try fallback matching without lang constraint
+            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
+        }
+
+        if (!$businessTranslation) {
+            abort(404, 'Business not found');
+        }
+
+        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'faqs' => function ($query) use ($lang_id) {
+                    $query->where('status', 1)
+                        ->orderBy('position', 'asc')
+                        ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
+                },
+            ])->firstOrFail();
+
+        $activeReviews = $business->reviews;
+        $ratingCount = $activeReviews->count();
+        $averageRating = $ratingCount > 0 ? $activeReviews->avg('rating') : 0;
+
+        return view('User.product.business_faqs', compact('business', 'averageRating', 'ratingCount', 'expectedSlug'));
+    }
+
+    public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
+    {
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+        $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
+
+        if ($second_segment === $expectedAlternativesSlug) {
+            return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
+        }
+
+        if ($second_segment === $expectedFaqSlug) {
+            return $this->businessFaqs($request, $locale, $business_slug, $second_segment);
+        }
+
+        abort(404);
+    }
+
+    public function businessAlternatives(Request $request, $locale, $business_slug, $alternatives_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if (!$businessTranslation) {
+            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
+        }
+
+        if (!$businessTranslation) {
+            abort(404, 'Business not found');
+        }
+
+        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            ])->firstOrFail();
+
+        return view('User.product.business_alternatives', compact('business'));
+    }
+
+    public function writeReviewPage(Request $request, $locale)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        // 1. Trending Businesses: top 8 businesses by active reviews count and average rating
+        $trendingBusinesses = \App\Models\Business::where('status', 1)
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])
+            ->withCount(['reviews as active_reviews_count' => function ($query) {
+                $query->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($query) {
+                $query->where('status', 'active');
+            }], 'rating')
+            ->orderByDesc('active_reviews_count')
+            ->orderByDesc('average_rating')
+            ->take(8)
+            ->get();
+
+        // 2. Recently Reviewed: 8 businesses that have active reviews, ordered by review date
+        $recentBusinessIds = \App\Models\Review::where('status', 'active')
+            ->orderByDesc('created_at')
+            ->pluck('business_id')
+            ->unique()
+            ->take(8)
+            ->toArray();
+
+        $recentlyReviewed = \App\Models\Business::whereIn('id', $recentBusinessIds)
+            ->where('status', 1)
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active')->orderByDesc('created_at'),
+            ])
+            ->withCount(['reviews as active_reviews_count' => function ($query) {
+                $query->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($query) {
+                $query->where('status', 'active');
+            }], 'rating')
+            ->get()
+            ->sortBy(function ($business) use ($recentBusinessIds) {
+                return array_search($business->id, $recentBusinessIds);
+            })
+            ->values();
+
+        return view('User.product.write_review_landing', compact('trendingBusinesses', 'recentlyReviewed'));
     }
 
 }

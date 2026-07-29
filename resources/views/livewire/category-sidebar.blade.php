@@ -12,7 +12,7 @@
                 <div class="col-lg-3 mb-4">
 
                     <div class="parent-cat-sidebar">
-<h2 style="font-size: 32px; font-weight: 700; color: #06498b; margin-bottom: 20px; text-align: left;">All Categories</h2>
+<h2 style="font-size: 32px; font-weight: 700; color: #06498b; margin-bottom: 20px; text-align: left;">All categories</h2>
 
                         <ul>
                             @foreach ($categories as $category)
