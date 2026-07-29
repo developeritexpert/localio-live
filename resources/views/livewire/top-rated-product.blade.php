@@ -659,19 +659,21 @@ section.top-automotive-sec.top_rate_pg.light {
                                 <div class="btn-pages">
                                     {{-- Previous Button (only if there's a previous page) --}}
                                     @if ($currentPage > 1)
-                                        <button
-                                            wire:click="previousPage"
+                                        <a
+                                            href="{{ $this->getCleanUrl($currentPage - 1) }}"
+                                            wire:click.prevent="previousPage"
                                             class="pagination-btn pagination-arrow">
                                             <i class="fa-solid fa-chevron-left"></i>
-                                        </button>
+                                        </a>
                                     @endif
 
                                     {{-- First Page --}}
                                     @if ($startPage > 1)
-                                        <button
-                                            wire:click="gotoPage(1)"
+                                        <a
+                                            href="{{ $this->getCleanUrl(1) }}"
+                                            wire:click.prevent="gotoPage(1)"
                                             class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}"
-                                        >1</button>
+                                        >1</a>
 
                                         @if ($showLeftDots)
                                             <span class="pagination-dots">...</span>
@@ -680,10 +682,11 @@ section.top-automotive-sec.top_rate_pg.light {
 
                                     {{-- Page Numbers --}}
                                     @for ($page = $startPage; $page <= $endPage; $page++)
-                                        <button
-                                            wire:click="gotoPage({{ $page }})"
+                                        <a
+                                            href="{{ $this->getCleanUrl($page) }}"
+                                            wire:click.prevent="gotoPage({{ $page }})"
                                             class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}"
-                                        >{{ $page }}</button>
+                                        >{{ $page }}</a>
                                     @endfor
 
                                     {{-- Last Page --}}
@@ -692,19 +695,21 @@ section.top-automotive-sec.top_rate_pg.light {
                                             <span class="pagination-dots">...</span>
                                         @endif
 
-                                        <button
-                                            wire:click="gotoPage({{ $lastPage }})"
+                                        <a
+                                            href="{{ $this->getCleanUrl($lastPage) }}"
+                                            wire:click.prevent="gotoPage({{ $lastPage }})"
                                             class="pagination-btn {{ $currentPage == $lastPage ? 'active' : '' }}"
-                                        >{{ $lastPage }}</button>
+                                        >{{ $lastPage }}</a>
                                     @endif
 
                                     {{-- Next Button (only if there's a next page) --}}
                                     @if ($currentPage < $lastPage)
-                                        <button
-                                            wire:click="nextPage"
+                                        <a
+                                            href="{{ $this->getCleanUrl($currentPage + 1) }}"
+                                            wire:click.prevent="nextPage"
                                             class="pagination-btn pagination-arrow next">
                                             <i class="fa-solid fa-chevron-right"></i>
-                                        </button>
+                                        </a>
                                     @endif
                                 </div>
                             @endif
@@ -850,6 +855,10 @@ section.top-automotive-sec.top_rate_pg.light {
                 top: offset,
                 behavior: 'smooth'
             });
+        });
+        // Update browser URL when pagination changes
+        window.addEventListener('update-pagination-url', function(event) {
+            window.history.pushState(null, '', event.detail.url);
         });
     </script>
 

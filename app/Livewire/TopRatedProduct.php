@@ -29,17 +29,19 @@ class TopRatedProduct extends Component
     public $maxPriceValue = 10000;
     public $perPage = 4;
     public $page = 1;
-    // Configure URL parameters to match CategoryPage
+    public $categorySlug = null;
+    // Configure URL parameters - page is now path-based, not query string
     protected $queryString = [
         'selectedOptions' => ['except' => []],
         'searchTerm' => ['except' => ''],
         'selectedRatings' => ['except' => []],
         'minPrice' => ['except' => 0],
         'maxPrice' => ['except' => 10000],
-        'page' => ['except' => 1],
     ];
-    public function mount()
+    public function mount($initialPage = 1, $category = null)
     {
+        $this->page = (int) $initialPage;
+        $this->categorySlug = $category;
         $this->lang_id = getCurrentLanguageID();
 
         // Load filters using all products
@@ -71,6 +73,11 @@ class TopRatedProduct extends Component
         // Update active filters if there are URL parameters or default options
         if (!empty($this->selectedOptions)) {
             $this->updateActiveFilters();
+        }
+
+        // Set the page in the paginator
+        if ($this->page > 1) {
+            $this->setPage($this->page);
         }
 
         // Dispatch price range event only once during mount
@@ -113,7 +120,8 @@ class TopRatedProduct extends Component
     {
         if ($this->page > 1) {
             $this->page--;
-            $this->setPage($this->page); // Add this line
+            $this->setPage($this->page);
+            $this->dispatchPaginationUrl();
             $this->dispatch('scroll-to-middle');
         }
     }
@@ -123,7 +131,8 @@ class TopRatedProduct extends Component
         $totalPages = ceil($this->productsCount / $this->perPage);
         if ($this->page < $totalPages) {
             $this->page++;
-            $this->setPage($this->page); // Add this line
+            $this->setPage($this->page);
+            $this->dispatchPaginationUrl();
             $this->dispatch('scroll-to-middle');
         }
     }
@@ -131,13 +140,50 @@ class TopRatedProduct extends Component
     public function gotoPage($page)
     {
         $this->page = $page;
-        $this->setPage($this->page); // Add this line
+        $this->setPage($this->page);
+        $this->dispatchPaginationUrl();
         $this->dispatch('scroll-to-middle');
     }
 
     private function resetPage()
     {
+        $this->page = 1;
+        $this->dispatchPaginationUrl();
         $this->dispatch('scroll-to-middle');
+    }
+
+    public function dispatchPaginationUrl()
+    {
+        $this->dispatch('update-pagination-url', url: $this->getCleanUrl($this->page));
+    }
+
+    public function getCleanUrl($page)
+    {
+        $locale = app()->getLocale();
+
+        if ($page > 1) {
+            if ($this->categorySlug) {
+                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug . '/' . $page;
+            } else {
+                $url = '/' . $locale . '/top-rated-products/' . $page;
+            }
+        } else {
+            if ($this->categorySlug) {
+                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug;
+            } else {
+                $url = '/' . $locale . '/top-rated-products';
+            }
+        }
+
+        // Append filter query params
+        $queryParams = [];
+        if (!empty($this->selectedRatings)) $queryParams['selectedRatings'] = $this->selectedRatings;
+        if (!empty($this->selectedOptions)) $queryParams['selectedOptions'] = $this->selectedOptions;
+        if ($this->searchTerm !== '') $queryParams['searchTerm'] = $this->searchTerm;
+        if ($this->minPrice != 0) $queryParams['minPrice'] = $this->minPrice;
+        if ($this->maxPrice != $this->maxPriceValue) $queryParams['maxPrice'] = $this->maxPrice;
+
+        return empty($queryParams) ? $url : $url . '?' . http_build_query($queryParams);
     }
     protected function initializeActiveFilters()
     {
