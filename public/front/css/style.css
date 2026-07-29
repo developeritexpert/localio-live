@@ -8467,7 +8467,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   bottom: 0;
   width: 100% !important;
   height: 3px;
-  background: #06498b;
+  background: #002347;
   opacity: 0;
   /* transition: width 0.3s ease; */
 }
@@ -8515,7 +8515,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 .asn_dv .Tab-outerlnk #table-of-content ul li a:hover,
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active {
   /* background-color: #06498b0d; */
-  color: #003f7d;
+  color: #002347;
   font-weight: 600;
 }
 
@@ -9630,12 +9630,13 @@ header .sec_head {
   color: #f9633b !important;
 }
 
-.most-populr-sec .popular-category-tab-btn span:hover {
+/* .most-populr-sec .popular-category-tab-btn span:hover {
   border-color: #002347 !important;
-}
-
+} */
+.most-populr-sec .popular-category-tab-btn span:hover,
 .most-populr-sec .popular-category-tab-btn.active span {
   border-color: #f9633b !important;
+  color: #f9633b !important;
 }
 
 .most-populr-sec {
@@ -9658,7 +9659,7 @@ section.right_tool_sec .otr_rgtool h2 {
   margin-bottom: 6px !important;
 }
 
-.product_sec .inner_banner_sec,
+
 .revie_img_sec {
   background-color: #06498b08 !important;
 }
@@ -9687,12 +9688,12 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .revie_left_rgt_sec .review-sidebar-sticky .filter-by-title-row {
-  margin-top: 35px !important;
+  margin-top: 40px !important;
 }
 
-.blue-chkbox label::before {
+/* .blue-chkbox label::before {
   background-color: #06498b1a;
-}
+} */
 
 .top_rate_pg .automotive-card .inn_h {
   margin-bottom: 0 !important;
@@ -9718,27 +9719,73 @@ section.right_tool_sec .otr_rgtool h2 {
 .top-automotive-sec .auto-choice-lft {
   padding-right: 20px;
 }
+
 .crm_sec.revie_left_rgt_sec .progress-bar,
-.revie_img_sec .prgs_br .progress-bar{
-    border:none !important;
+.revie_img_sec .prgs_br .progress-bar {
+  border: none !important;
 }
-.crm_sec.revie_left_rgt_sec .progress-bar::-webkit-progress-bar ,
+
+.crm_sec.revie_left_rgt_sec .progress-bar::-webkit-progress-bar,
 .revie_img_sec .prgs_br .progress-bar::-webkit-progress-bar {
-    background: #edf6ed !important;
+  background: #edf6ed !important;
 }
 
 /* 28-july-26  */
-.most-populr-sec .row{
-margin-top:0;
-}
-.top_rate_pg  .verified-insights-card{
-background-color:transparent !important;
+.most-populr-sec .row {
+  margin-top: 0;
 }
 
 .top_rate_pg .top-rated-heading-block {
-    border-bottom: 1px solid #e8eef6 !important;
+  border-bottom: 1px solid #e8eef6 !important;
 }
+
 .top_rate_pg .top-rated-heading-block {
-background-color:#06498b08;
-padding:10px 5px;
+  background-color: #fdfdfd;
+  padding: 10px 5px;
+}
+
+/* 29-july-26 */
+
+.product_sec .inner_banner_sec {
+  background-color: #fdfdfd;
+}
+
+.sec_head .hdr_info .usr_profile {
+  display: flex;
+  align-items: center;
+}
+
+.asn_main_sec .asn_dv {
+  background-color: #4444440d;
+}
+
+.asn_main_sec .asn_dv.fixed-div {
+  background-color: #fffcfc;
+}
+
+.modal-dialog .modal-body .btn:hover {
+  background-color: #f9633b !important;
+}
+
+.modal-dialog .modal-body .btn {
+  transition: unset !important;
+}
+
+.sec_head .drop_menu .dropdown-menu .dropdown-item {
+  border: 0px;
+  padding: 10px 20px;
+  color: #002347 !important;
+  font-size: 14px;
+}
+.sec_head  .drop_menu .dropdown-menu .dropdown-item i {
+    color: #002347!important;
+}
+.sec_head .dropdown-menu .user_detail {   
+    padding: 20px;    
+}
+.sec_head .user_detail h5 {
+    font-size: 18px;
+}
+.sec_head .dropdown-menu .user_detail p {
+   font-size: 14px;
 }

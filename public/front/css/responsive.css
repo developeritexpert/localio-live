@@ -9258,12 +9258,12 @@ div#learnMoreModal button.modal-close {
   display: flex;
   align-items: center;
 }
-
+/* 
 .drop_menu .dropdown-menu .dropdown-item {
   border: 0px;
   padding: 16px 25px;
   color: #05498b !important;
-}
+} */
 
 .drop_menu .dropdown-menu .dropdown-item i {
   min-width: 23px;
@@ -9470,7 +9470,7 @@ div#learnMoreModal button.modal-close {
 
 .auto-choice-rgt .btn-pages button:hover {
   transform: unset;
-  background-color: #f9633b;
+  background-color: #06498b;
   color: #fff;
 }
 
@@ -9483,7 +9483,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .auto-choice-rgt .btn-pages button.pagination-arrow:hover {
-  background-color: #f9633b;
+  background-color: #06498b;
 }
 
 /* .auto-choice-rgt .btn-pages button.pagination-arrow {
