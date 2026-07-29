@@ -60,8 +60,8 @@ class CategoryController extends Controller
             'categories', 'categoriesContents', 'categoryImages', 'backgroundImage', 'headerImage',
         ));
     }
-     public function categoryDetail($lang_code,$slug){
-       return view('User.category.category_detail', compact('slug'));
+     public function categoryDetail($lang_code, $slug, $page = null){
+       return view('User.category.category_detail', compact('slug', 'page'));
      }
 
 

@@ -478,11 +478,14 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
     // Category Controller
     Route::get('/categories', [CategoryController::class, 'index'])->name('category');
+    Route::get('/categories/{slug}/{page}', [CategoryController::class, 'categoryDetail'])->where('page', '[0-9]+')->name('category.detail.page');
     Route::get('/categories/{slug}', [CategoryController::class, 'categoryDetail'])->name('category.detail');
     
 
 
     // Product Controller
+    Route::get('/top-rated-products/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');
+    Route::get('/top-rated-products/{category}/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.category-page');
     Route::get('/top-rated-products/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
     Route::get('/Exclusive-Businesses-Deals', [ProductController::class, 'ExclusiveBusinessDeals'])->name('exclusive-business-deals');
     Route::get('/product-comparison', [ProductController::class, 'productComparison'])->name('product-comparison');

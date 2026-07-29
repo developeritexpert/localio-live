@@ -339,9 +339,13 @@ class ProductController extends Controller
         ));
     }
 
-    public function topRatedProduct($lang, $category_slug = null)
+    public function topRatedProduct($lang, $category = null, $page = null)
     {
-        return view('User.product.top_rated_product');
+        if (is_numeric($category)) {
+            $page = (int)$category;
+            $category = null;
+        }
+        return view('User.product.top_rated_product', compact('category', 'page'));
     }
     public function ExclusiveBusinessDeals(){
         return view('User.product.exclusive_business_deals');

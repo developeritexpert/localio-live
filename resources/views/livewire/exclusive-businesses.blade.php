@@ -594,7 +594,9 @@
                                                     Save {{ $maxDiscountPercentage }}%
                                                 </div>
                                             </div>
-                                            <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
+                                             <div style="width: 100%;">
+                                                 <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
+                                             </div>
                                         </div>
                                     @endforeach
                                 @endif

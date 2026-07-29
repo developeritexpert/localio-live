@@ -202,15 +202,16 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 </div>
                                             </div>
 
-                                            <div id="priceRangeSlider2" data-max-price="{{ $maxPriceValue }}"
+                                            <div id="priceRangeSlider2" data-max-price="{{ $maxPriceValue ?? $maxPrice ?? 10000 }}"
                                                 style="margin-top: 20px;" wire:ignore></div>
                                         </div>
                                     </div>
-                                    <div class="accordion" id="filterAccordion" style="border: none; width: 100%;">
+                                    <div class="accordion d-none" id="filterAccordion" style="border: none; width: 100%;">
                                         @foreach ($filters as $filter)
                                             @php
+                                                $currentLangId = $lang_id ?? getCurrentLanguageID();
                                                 $filterName =
-                                                    $filter->translations->where('language_id', $lang_id)->first()
+                                                    $filter->translations->where('language_id', $currentLangId)->first()
                                                         ->name ?? $filter->name;
                                                 $filterType = $filter->filterType
                                                     ? $filter->filterType->slug
@@ -434,9 +435,11 @@ section.top-automotive-sec.top_rate_pg.light {
                                         @endforeach
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        @if ($products->count())
+                       
+                </div>
+                
+             </div>
+              @if ($products->count())
                             <div class="auto-choice-rgt ">
                                 <!-- Product Count and Sort -->
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -566,9 +569,6 @@ section.top-automotive-sec.top_rate_pg.light {
                                                             </div>
 
                                                             <!-- Compare Checkbox -->
-                                                            <!-- <div style=" max-width: max-content; ">
-                                                                <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
-                                                            </div> -->
                                                         </div>
 
                                                         <!-- Right Column -->
@@ -631,16 +631,16 @@ section.top-automotive-sec.top_rate_pg.light {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div style="width: 100%;">
                                                     <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
                                                 </div>
                                             </div>
                                         </div>
-                                    @endforeach
+                                @endforeach
                                 @endif
                                 <!-- Pagination Links -->
                                 @php
-                                $currentPage = $this->page ?? 1;
+                                $currentPage = $products->currentPage();
                                 $lastPage = $products->lastPage() ?? 1;
                                 $maxVisible = 7;
 
@@ -741,8 +741,6 @@ section.top-automotive-sec.top_rate_pg.light {
                                 </div>
                             </div> --}}
                         @endif
-                </div>
-             </div>
         </div>
             <livewire:compare-bar />
     </section>

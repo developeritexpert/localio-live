@@ -628,6 +628,7 @@ class TopRatedProduct extends Component
         return view('livewire.top-rated-product', [
             'products' => $this->products,
             'filters' => $this->filters,
+            'lang_id' => getCurrentLanguageID(),
         ]);
     }
 }

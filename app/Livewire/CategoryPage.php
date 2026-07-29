@@ -554,7 +554,8 @@ class CategoryPage extends Component
     public function render()
     {
         return view('livewire.category-page', [
-            'products' => $this->products
+            'products' => $this->products,
+            'lang_id' => getCurrentLanguageID(),
         ]);
     }
 }
