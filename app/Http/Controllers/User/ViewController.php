@@ -484,6 +484,74 @@ class ViewController extends Controller
         return view('User.product.business_alternatives', compact('business'));
     }
 
+    public function writeReviewPage(Request $request, $locale)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        // 1. Trending Businesses: top 8 businesses by active reviews count and average rating
+        $trendingBusinesses = \App\Models\Business::where('status', 1)
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])
+            ->withCount(['reviews as active_reviews_count' => function ($query) {
+                $query->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($query) {
+                $query->where('status', 'active');
+            }], 'rating')
+            ->orderByDesc('active_reviews_count')
+            ->orderByDesc('average_rating')
+            ->take(8)
+            ->get();
+
+        // 2. Recently Reviewed: 8 businesses that have active reviews, ordered by review date
+        $recentBusinessIds = \App\Models\Review::where('status', 'active')
+            ->orderByDesc('created_at')
+            ->pluck('business_id')
+            ->unique()
+            ->take(8)
+            ->toArray();
+
+        $recentlyReviewed = \App\Models\Business::whereIn('id', $recentBusinessIds)
+            ->where('status', 1)
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active')->orderByDesc('created_at'),
+            ])
+            ->withCount(['reviews as active_reviews_count' => function ($query) {
+                $query->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($query) {
+                $query->where('status', 'active');
+            }], 'rating')
+            ->get()
+            ->sortBy(function ($business) use ($recentBusinessIds) {
+                return array_search($business->id, $recentBusinessIds);
+            })
+            ->values();
+
+        return view('User.product.write_review_landing', compact('trendingBusinesses', 'recentlyReviewed'));
+    }
+
 }
 
 

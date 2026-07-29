@@ -2695,3 +2695,27 @@ header.main_dhdr {
 .user_dashbord a.nav-link {
   transition-duration: 0s !important;
 }
+
+.main_dhdr .drop_menu .dropdown-menu .dropdown-item {
+  border: 0px;
+  padding: 10px 20px;
+  color: #002347 !important;
+  font-size: 14px;
+}
+
+.main_dhdr .drop_menu .dropdown-menu .dropdown-item i {
+  color: #002347 !important;
+}
+
+.main_dhdr .dropdown-menu .user_detail {
+  padding: 20px;
+}
+
+.main_dhdr .user_detail h5 {
+  font-size: 18px;
+  color: #002347;
+}
+
+.main_dhdr .dropdown-menu .user_detail p {
+  font-size: 14px;
+}

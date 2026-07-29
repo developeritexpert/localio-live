@@ -4265,4 +4265,25 @@
     </div>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('write_review')) {
+                // Remove the parameter from the address bar for clean UX
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+
+                @auth
+                    setTimeout(() => {
+                        Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });
+                    }, 500);
+                @else
+                    setTimeout(() => {
+                        openLoginModal();
+                    }, 500);
+                @endauth
+            }
+        });
+    </script>
+
 @endsection

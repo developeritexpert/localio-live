@@ -12754,6 +12754,11 @@ textarea#message {
   .sfwr_sec.cat_page_secs {
     margin-top: 75px !important;
   }
+
+  .write-review-hero {
+    margin-top: 70px;
+    padding: 80px 20px 60px;
+  }
 }
 
 @media (max-width:767px) {
@@ -13157,6 +13162,11 @@ textarea#message {
 
   .banner_sec.home_bnr_sec {
     padding: 110px 0 50px;
+  }
+
+  .write-review-hero {
+    margin-top: 70px;
+    padding: 50px 20px;
   }
 
 }

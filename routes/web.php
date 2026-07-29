@@ -459,6 +459,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     Route::get('/', [ViewController::class, 'home'])->name('home');
+    Route::get('/write-review', [ViewController::class, 'writeReviewPage'])->name('write-review');
     Route::get('/sign-in', [AuthenticationController::class, 'index'])->name('sign-in');
     Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
     Route::get('/register', [AuthenticationController::class, 'index'])->name('register');

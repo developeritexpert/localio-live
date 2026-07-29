@@ -1,0 +1,102 @@
+@extends('user_layout.master')
+
+@section('content')
+<!-- Hero Section -->
+<section class="write-review-hero text-center  text-white" style="background-color:#fdfdfd;">
+    <div class="container">
+        <h1 class="fw-bold mb-3" style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size:25px !important">Find the software and services you use and want to review</h1>
+        <p class="text-white-50 mb-5 mx-auto" style="font-size: 15px; color: #444 !important; margin-bottom: 0;">
+            Our community is a place for professionals to help one another find the best business solutions.
+        </p>
+        
+        @livewire('write-review-search')
+    </div>
+</section>
+
+<!-- Content Lists -->
+<section class="write-review-lists py-5 bg-light" style="background-color: #f9fafb  !important;">
+    <div class="container">
+        
+        <!-- Trending Section -->
+        <div class="mb-5">
+            <h2 class="fw-bold mb-4" style="color: #002347; font-size: 24px;">Trending Software & Services</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @foreach($trendingBusinesses as $business)
+                    @php
+                        $ratingAvg = $business->reviews->avg('rating');
+                        $count = $business->reviews->where('status', 'active')->count();
+                    @endphp
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; transition: transform 0.2s; background: #fff;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'">
+                            <div style="width: 70px; height: 70px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
+                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 80%; max-height: 80%; object-fit: contain;">
+                            </div>
+                            <h4 class="fw-bold mb-2 text-truncate w-100" style="color: #1e3050; font-size: 16px;">
+                                {{ $business->translations->first()->name ?? 'Unnamed' }}
+                            </h4>
+                            <div class="d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 4px;">
+                                <div class="text-warning d-flex gap-1" style="font-size: 12px; color: #ff9d28 !important;">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($ratingAvg))
+                                            <i class="fas fa-star"></i>
+                                        @elseif ($i - 0.5 <= $ratingAvg)
+                                            <i class="fas fa-star-half-alt"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-muted ms-1" style="font-size: 12px;">({{ $count }})</span>
+                            </div>
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition: all 0.2s; border: 1px solid #06498b; color: #002347; background: transparent;" onmouseover="this.style.backgroundColor='#06498b'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#002347';">
+                                Review
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Recently Reviewed Section -->
+        <div>
+            <h2 class="fw-bold mb-4" style="color: #002347; font-size: 24px;">Recently Reviewed</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @foreach($recentlyReviewed as $business)
+                    @php
+                        $ratingAvg = $business->reviews->avg('rating');
+                        $count = $business->reviews->where('status', 'active')->count();
+                    @endphp
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; transition: transform 0.2s; background: #fff;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'">
+                            <div style="width: 70px; height: 70px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
+                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 80%; max-height: 80%; object-fit: contain;">
+                            </div>
+                            <h4 class="fw-bold mb-2 text-truncate w-100" style="color: #1e3050; font-size: 16px;">
+                                {{ $business->translations->first()->name ?? 'Unnamed' }}
+                            </h4>
+                            <div class="d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 4px;">
+                                <div class="text-warning d-flex gap-1" style="font-size: 12px; color: #ff9d28 !important;">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($ratingAvg))
+                                            <i class="fas fa-star"></i>
+                                        @elseif ($i - 0.5 <= $ratingAvg)
+                                            <i class="fas fa-star-half-alt"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-muted ms-1" style="font-size: 12px;">({{ $count }})</span>
+                            </div>
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition: all 0.2s; border: 1px solid #06498b; color: #002347; background: transparent;" onmouseover="this.style.backgroundColor='#06498b'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#002347';">
+                                Review
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+    </div>
+</section>
+@endsection

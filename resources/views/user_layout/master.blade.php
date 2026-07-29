@@ -1175,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                          <div class="header_button_col">
                         <div class="Header_buttons">
                             @if (!auth()->user())
-                            <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
+                            <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
                                 class="cta cta_trans">{{ $headerContent['login_btn_lable'] ?? 'Login' }}</a>
                             <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
                                 class="cta cta_orange wht-t-org-btn">{{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}</a>
