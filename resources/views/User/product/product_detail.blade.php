@@ -917,7 +917,7 @@
                                                     @endfor
                                                 </div>
                                                 <span style="font-size: 14px; font-weight: 500; color: #555;">
-                                                    {{ number_format($averageRating, 1) }} | {{ $ratingCount }} {{ $ratingCount === 1 ? 'Review' : 'Reviews' }}
+                                                    {{ number_format($averageRating, 1) }} | {{ $ratingCount }} {{ $ratingCount === 1 ? 'review' : 'reviews' }}
                                                 </span>
                                             </div>
                                         </div>
@@ -2704,39 +2704,44 @@
                                                     'comparison_businesses' => Str::slug($bName) . '-vs-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
-                                            <div class="col-lg-6  col-12 " >
-                                                <a href="{{ $seoUrl }}" class="comparison-card-link text-decoration-none" style="display: block; color: inherit;">
-                                                    <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03); transition: all 0.2s ease;" onmouseover="this.style.boxShadow='0 6px 12px rgba(0,0,0,0.08)'; this.style.borderColor='#cbd5e1';" onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.03)'; this.style.borderColor='#e2e8f0';">
-                                                        <div class="d-flex align-items-center justify-content-between">
-                                                            <!-- Business A -->
-                                                            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                                                <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
-                                                                <div style="min-width: 0;">
-                                                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $bName }}</div>
-                                                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                                        <span>{{ number_format($averageRating, 1) }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- VS -->
-                                                            <div class="px-2 fw-normal text-muted flex-shrink-0" style="font-size: 22px; font-family: sans-serif; color: #000000 !important;">VS</div>
-
-                                                            <!-- Business B -->
-                                                            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                                                <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
-                                                                <div style="min-width: 0;">
-                                                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $peerName }}</div>
-                                                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                                        <span>{{ number_format($peerRating, 1) }}</span>
-                                                                    </div>
+                                            <div class="col-lg-6 col-12">
+                                                <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <!-- Business A -->
+                                                        <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                            <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                                                            <div style="min-width: 0;">
+                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $bName }}</div>
+                                                                <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                                                    <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                                    <span>{{ number_format($averageRating, 1) }}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <!-- VS -->
+                                                        <div class="px-2 fw-normal text-muted flex-shrink-0" style="font-size: 22px; font-family: sans-serif; color: #000000 !important;">VS</div>
+
+                                                        <!-- Business B -->
+                                                        <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                                            <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                                                            <div style="min-width: 0;">
+                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $peerName }}</div>
+                                                                <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                                                    <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                                    <span>{{ number_format($peerRating, 1) }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Compare Button (Only Clickable Link) -->
+                                                        <div class="flex-shrink-0 ms-2">
+                                                            <a href="{{ $seoUrl }}" class="cta cta_outline text-decoration-none" style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                                Compare
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                </a>
+                                                </div>
                                             </div>
                                         @empty
                                             <div class="col-12 text-muted p-0">No comparisons available for this business yet.</div>

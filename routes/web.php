@@ -554,6 +554,11 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
         ->name('review.translation');
 
+    // Product Comparison SEO Route
+    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
+        ->where('comparison_businesses', '.*-vs-.*')
+        ->name('product-comparison.seo');
+
     // Business All FAQs Page Route
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
 
@@ -652,11 +657,6 @@ Route::get('/refresh-csrf', function () {
 
 // Ad tracking handling
 Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
-
-// Dynamic SEO Routes (Must be at the very bottom of the file to act as absolute fallbacks)
-Route::group(['prefix' => '{locale?}'], function () {
-    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])->name('product-comparison.seo');
-});
 
 
 
