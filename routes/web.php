@@ -554,6 +554,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
         ->name('review.translation');
 
+    // Business All FAQs Page Route
+    Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
+
     // Clean Business / Product Detail Page Route (Top-level /{locale}/{slug})
     Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
     Route::get('/{id}', [ProductController::class, 'productDetail'])->name('user.product_detail');

@@ -2434,8 +2434,7 @@
                                                 </div>
 
                                                 <div class="sftwre-alt-btn pt-2">
-                                                    <a href="{{ $business->getTrackedUrl() }}"
-                                                        target="_blank"
+                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug]) }}"
                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                         style=" color: #002347; border-radius: 25px; padding: 10px 20px; font-weight:500; text-decoration: none; font-size: 14px; ">
                                                          View details
@@ -2571,8 +2570,7 @@
                                                     </div>
 
                                                     <div class="sftwre-alt-btn pt-2">
-                                                        <a href="{{ $altbusiness->getTrackedUrl() }}"
-                                                            target="_blank"
+                                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}"
                                                             class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                             style="  border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                             View details 
@@ -2587,12 +2585,13 @@
                                     </div>
                                 </div>
 
-                                {{-- <div class="sft_btm">
-                          <a class="cta"
-                            onclick="changeCategory('{{ $business->category->translation()->first()->slug }}')">View
-                            All
-                            Alternatives</a>
-                            </div> --}}
+                                <div class="text-center mt-4">
+                                    <a href="{{ route('business.all_comparisons', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug]) }}"
+                                       class="view-more-link"
+                                       style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
+                                        View more alternatives <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
 
                             </section>
 
@@ -2627,7 +2626,7 @@
                                             <div class="col-lg-8">
                                                 <div class="faq-accor">
                                                     <div class="accordion" id="accordionExample">
-                                                        @forelse ($business->faqs as $index => $faq)
+                                                        @forelse ($business->faqs->take(10) as $index => $faq)
                                                             @php $translation = $faq->translations->first(); @endphp
                                                             @if ($translation)
                                                                 <div class="accordion-item">
@@ -2656,6 +2655,18 @@
                                                             <p>No FAQs available for this business.</p>
                                                         @endforelse
 
+                                                    </div>
+
+                                                    @php
+                                                        $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
+                                                        $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
+                                                    @endphp
+                                                    <div class="mt-4 text-center">
+                                                        <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
+                                                           class="view-more-link"
+                                                           style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                            View more FAQs <i class="fa-solid fa-arrow-right ms-1"></i>
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>

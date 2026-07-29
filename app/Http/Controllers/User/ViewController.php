@@ -405,6 +405,44 @@ class ViewController extends Controller
         ]);
     }
 
+    public function businessFaqs(Request $request, $locale, $business_slug, $faq_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $expectedSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+
+        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if (!$businessTranslation) {
+            // Try fallback matching without lang constraint
+            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
+        }
+
+        if (!$businessTranslation) {
+            abort(404, 'Business not found');
+        }
+
+        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'faqs' => function ($query) use ($lang_id) {
+                    $query->where('status', 1)
+                        ->orderBy('position', 'asc')
+                        ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
+                },
+            ])->firstOrFail();
+
+        $activeReviews = $business->reviews;
+        $ratingCount = $activeReviews->count();
+        $averageRating = $ratingCount > 0 ? $activeReviews->avg('rating') : 0;
+
+        return view('User.product.business_faqs', compact('business', 'averageRating', 'ratingCount', 'expectedSlug'));
+    }
+
 }
 
 
