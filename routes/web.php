@@ -602,7 +602,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
         ->where('comparison_businesses', '.*-vs-.*')
         ->name('product-comparison.seo');
 
+    Route::get('/{business_slug}/{second_segment}', [ViewController::class, 'handleBusinessSubPage']);
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
+    Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
 
     // Dynamic 1-Segment Catch-all Routes (Must be at the VERY END of localized group)
     Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');

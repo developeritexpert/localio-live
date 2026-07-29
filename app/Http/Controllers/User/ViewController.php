@@ -443,6 +443,47 @@ class ViewController extends Controller
         return view('User.product.business_faqs', compact('business', 'averageRating', 'ratingCount', 'expectedSlug'));
     }
 
+    public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
+    {
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+        $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
+
+        if ($second_segment === $expectedAlternativesSlug) {
+            return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
+        }
+
+        if ($second_segment === $expectedFaqSlug) {
+            return $this->businessFaqs($request, $locale, $business_slug, $second_segment);
+        }
+
+        abort(404);
+    }
+
+    public function businessAlternatives(Request $request, $locale, $business_slug, $alternatives_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if (!$businessTranslation) {
+            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
+        }
+
+        if (!$businessTranslation) {
+            abort(404, 'Business not found');
+        }
+
+        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            ])->firstOrFail();
+
+        return view('User.product.business_alternatives', compact('business'));
+    }
+
 }
 
 

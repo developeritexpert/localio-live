@@ -32,6 +32,7 @@ class SiteLanguagesController extends Controller
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:languages,id',
             'faq_slug' => 'nullable|string|max:255',
+            'alternatives_slug' => 'nullable|string|max:255',
             'status' => 'nullable|in:0,1',
             'is_active_translation' => 'nullable|boolean',
             'is_valid_language_code' => 'nullable|boolean',
@@ -42,6 +43,7 @@ class SiteLanguagesController extends Controller
         $language->country_id = $request->country_id;
         $language->base_language_id = $request->base_language_id;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
+        $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->status = $request->status ?? 1;
         // $language->is_active_translation = $request->is_active_translation ?? 0;
         $language->save();
@@ -66,6 +68,7 @@ class SiteLanguagesController extends Controller
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:languages,id',
             'faq_slug' => 'nullable|string|max:255',
+            'alternatives_slug' => 'nullable|string|max:255',
             'status' => 'nullable|in:0,1',
             'is_active_translation' => 'nullable|boolean',
         ]);
@@ -76,6 +79,7 @@ class SiteLanguagesController extends Controller
         $language->country_id = $request->country_id;
         $language->base_language_id = $request->base_language_id;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
+        $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->status = $request->status ?? $language->status;
         $language->save();
     
