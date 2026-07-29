@@ -79,12 +79,18 @@ class AddReview extends Component
         $this->step = 2;
     }
 
-    public function goToStep3()
+    public function submitStep2()
     {
         $this->validate([
             'title2'  => 'required|string|max:500',
             'comment' => 'required|string|max:1000',
         ]);
+
+        // Save review record in DB immediately so it persists even if user aborts at step 3
+        $this->createReviewRecord($this->pros, $this->cons);
+
+        $this->dispatch('alert', ['type' => 'success', 'message' => 'Review submitted successfully.']);
+        // Advance to step 3 without dispatching review-submitted (which triggers page reload)
         $this->step = 3;
     }
 
@@ -100,20 +106,29 @@ class AddReview extends Component
             'cons' => 'nullable|string',
         ]);
 
-        $this->createReviewRecord($this->pros, $this->cons);
+        if ($this->reviewId) {
+            $review = Review::find($this->reviewId);
+            if ($review && $review->translations->first()) {
+                $review->translations->first()->update([
+                    'pros' => $this->pros ?? '',
+                    'cons' => $this->cons ?? '',
+                ]);
+            }
+        } else {
+            $this->createReviewRecord($this->pros, $this->cons);
+        }
 
-        $this->dispatch('alert', ['type' => 'success', 'message' => 'Review submitted successfully.']);
+        $this->dispatch('alert', ['type' => 'success', 'message' => 'Review updated successfully.']);
         $this->show = false;
         $this->dispatch('review-submitted');
     }
 
-    public function skipOptional()
+    public function closeModal()
     {
-        $this->createReviewRecord('', '');
-
-        $this->dispatch('alert', ['type' => 'success', 'message' => 'Review submitted successfully.']);
         $this->show = false;
-        $this->dispatch('review-submitted');
+        if ($this->reviewId) {
+            $this->dispatch('review-submitted');
+        }
     }
 
     protected function createReviewRecord($pros, $cons)
@@ -132,7 +147,15 @@ class AddReview extends Component
                 $this->dispatch('alert', ['type' => 'error', 'message' => 'Your review has been disabled by the administrator.']);
                 return;
             }
-            $this->dispatch('alert', ['type' => 'error', 'message' => 'You have already submitted a review for this business.']);
+            $this->reviewId = $existingReview->id;
+            if ($existingReview->translations->first()) {
+                $existingReview->translations->first()->update([
+                    'title'       => $this->title2,
+                    'description' => $this->comment,
+                    'pros'        => $pros ?? '',
+                    'cons'        => $cons ?? '',
+                ]);
+            }
             return;
         }
 
@@ -152,6 +175,8 @@ class AddReview extends Component
             'rating'      => $avg_rating,
             'recommend'   => (bool)$this->recommend,
         ]);
+
+        $this->reviewId = $review->id;
 
         // Save individual criteria ratings
         foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
