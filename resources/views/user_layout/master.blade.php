@@ -2312,7 +2312,7 @@ document.addEventListener('DOMContentLoaded', function () {
         function changeProducts(ProductId) {
             let langCode = "{{ session('lang_code', 'en-us') }}";
             let url = new URL(window.location.href);
-            url.pathname = `/${langCode}/products/${ProductId}`;
+            url.pathname = `/${langCode}/${ProductId}`;
             window.location.href = url.href;
         }
 

@@ -483,15 +483,20 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     // Product Controller
-    Route::get('/software/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
-    Route::get('/product', [ProductController::class, 'productDetail'])->name('product');
-    Route::get('/products/{id}', [ProductController::class, 'productDetail'])->name('user.product_detail');
     Route::get('/top-rated-products/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
     Route::get('/Exclusive-Businesses-Deals', [ProductController::class, 'ExclusiveBusinessDeals'])->name('exclusive-business-deals');
     Route::get('/product-comparison', [ProductController::class, 'productComparison'])->name('product-comparison');
     Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
     Route::post('/remove-from-comparison/{productId?}', [ProductController::class, 'removeFromComparison'])->name('remove-from-comparison');
     Route::post('/clear-comparison', [ProductController::class, 'clearComparison'])->name('clear-comparison');
+
+    // 301 Redirects for Legacy Product URLs
+    Route::get('/products/{slug}', function ($locale, $slug) {
+        return redirect()->to('/' . $locale . '/' . $slug, 301);
+    });
+    Route::get('/software/{slug}', function ($locale, $slug) {
+        return redirect()->to('/' . $locale . '/' . $slug, 301);
+    });
 
     // Key Feature review Route
     Route::post('/feature/review/store', [ProductController::class, 'storeFeatureReview'])
@@ -548,6 +553,10 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     // Route::get('/review/transalation',[ViewController::class, 'ReviewTranslation'])->name('review.translation');
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
         ->name('review.translation');
+
+    // Clean Business / Product Detail Page Route (Top-level /{locale}/{slug})
+    Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
+    Route::get('/{id}', [ProductController::class, 'productDetail'])->name('user.product_detail');
     //user-dashboard
 });
 Route::group(['prefix' => '{locale?}', 'middleware' => ['User']], function () {
