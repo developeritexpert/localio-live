@@ -9323,7 +9323,7 @@ footer .foot-row-lft .foot-logo p {
 }
 
 .home_bnr_sec {
-  padding-bottom: 60px;
+  /* padding-bottom: 60px; */
   overflow: hidden;
 }
 
@@ -9661,7 +9661,8 @@ section.right_tool_sec .otr_rgtool h2 {
 
 
 .revie_img_sec {
-  background-color: #06498b08 !important;
+  background-color: #fdfdfd !important;
+  padding-bottom: 50px;
 }
 
 .product_integra_sec .sftware-alternative-pck .start-from h6 {
@@ -9777,15 +9778,41 @@ section.right_tool_sec .otr_rgtool h2 {
   color: #002347 !important;
   font-size: 14px;
 }
-.sec_head  .drop_menu .dropdown-menu .dropdown-item i {
-    color: #002347!important;
+
+.sec_head .drop_menu .dropdown-menu .dropdown-item i {
+  color: #002347 !important;
 }
-.sec_head .dropdown-menu .user_detail {   
-    padding: 20px;    
+
+.sec_head .dropdown-menu .user_detail {
+  padding: 20px;
 }
+
 .sec_head .user_detail h5 {
-    font-size: 18px;
+  font-size: 18px;
 }
+
 .sec_head .dropdown-menu .user_detail p {
-   font-size: 14px;
+  font-size: 14px;
+}
+
+.top-automotive-sec .pagination-arrow {
+  background-color: transparent !important;
+  color: #002347 !important;
+}
+
+.top-automotive-sec .pagination-arrow:hover {
+  background-color: #06498b !important;
+  color: #fff !important;
+}
+
+.top-automotive-sec .start-comparing-btn {
+  border-radius: 30px;
+}
+
+.banner_sec.home_bnr_sec {
+  padding: 250px 0 120px;
+}
+
+.banner_sec.home_bnr_sec .banner_row .banner_text_col {
+  width: unset;
 }

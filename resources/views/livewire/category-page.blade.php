@@ -583,7 +583,7 @@
                                                 style="margin-top: 20px;" wire:ignore></div>
                                         </div>
                                     </div>
-                                    <div class="accordion d-none" id="filterAccordion" style="border: none; width: 100%;">
+                                    <div class="accordion" id="filterAccordion" style="border: none; width: 100%;">
                                         @foreach ($filters as $filter)
                                             @php
                                                 $currentLangId = $lang_id ?? getCurrentLanguageID();

@@ -1,6 +1,6 @@
 <div>
     @if($show)
-        <div class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">
+        <div class="modal show d-block mod_detail_pg" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">
             <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
                     
@@ -91,8 +91,8 @@
 
                                          <hr class="my-3">
 
-                                         <div class="d-flex justify-content-end mt-3">
-                                             <button type="button" class="btn px-4 py-2 text-white fw-bold w-100 w-sm-auto" wire:click="goToStep2" style="background-color: #06498b; border-radius: 30px; font-size: 13px; transition: background 0.2s;">
+                                         <div class="d-flex  mt-3">
+                                             <button type="button" class="btn  text-white  w-100 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px;  font-weight:500; max-width:180px; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
                                                  Continue <i class="fas fa-arrow-right ms-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -117,10 +117,10 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-semibold w-50 w-sm-auto" wire:click="setStep(1)" style="border-radius: 30px; font-size: 13px; color: #4a5568 !important; border: 1px solid #cbd5e0 !important; background-color: #ffffff !important; transition: all 0.2s;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary  w-50 w-sm-auto" wire:click="setStep(1)" style=" font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff ; ">
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn px-4 py-2 text-white fw-bold w-50 w-sm-auto" wire:click="submitStep2" style="background-color: #06498b; border-radius: 30px; font-size: 13px; transition: background 0.2s;">
+                                             <button type="button" class="btn text-white  w-50 w-sm-auto" wire:click="submitStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
                                                  Submit review <i class="fas fa-paper-plane ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -147,10 +147,10 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-semibold w-50 w-sm-auto" wire:click="setStep(2)" style="border-radius: 30px; font-size: 13px; color: #4a5568 !important; border: 1px solid #cbd5e0 !important; background-color: #ffffff !important; transition: all 0.2s;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary  w-50 w-sm-auto" wire:click="setStep(2)" style=" padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff ; ">
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn px-4 py-2 text-white fw-bold w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="background-color: #06498b; border-radius: 30px; font-size: 13px; transition: background 0.2s;">
+                                             <button type="button" class="btn  text-white  w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
                                                  Submit review <i class="fas fa-paper-plane ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -262,7 +262,7 @@
             .form-floating > textarea:not(:placeholder-shown) ~ label {
                 opacity: 1 !important;
                 transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem) !important;
-                color: #06498b !important;
+                color: #80868b !important;
                 font-weight: 600 !important;
                 background-color: #ffffff !important;
                 padding: 0 4px !important;
@@ -279,11 +279,15 @@
                 border: 1px solid #cbd5e0 !important;
                 font-size: 13px !important;
             }
-            .form-floating > .form-control:focus,
+            .modal-dialog .modal-body  .out_ln_btn:hover{
+              background-color:#06498b !important;
+              color:#fff !important;
+            }
+            /* .form-floating > .form-control:focus,
             .form-floating > textarea:focus {
                 border-color: #06498b !important;
                 box-shadow: 0 0 0 3px rgba(6, 73, 139, 0.15) !important;
-            }
+            } */
             @media (max-width: 991.98px) {
                 .modal-dialog {
                     margin: 10px;

@@ -1760,10 +1760,10 @@
 
         <!-- section whatis -->
         <div class="con_table pb-0 all_sec_wrp" id="section2">
-            <div class="container">
+            <div class="">
 
-                <div class="row pt-0 ">
-                    <div class="col-lg-12">
+                <div class=" ">
+                    <div class="">
                         <div class="inner_table_1">
                             <section class="is-asana light">
 
@@ -2357,6 +2357,7 @@
                             
 
                             <section class="software-like p_50 product_integra_sec " id="section9">
+                               <div class="container">
                                 <div class="sftwre-like-innr">
                                     <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
                                         {{-- <h2>Software like {{ $business->translations->first()->name }}</h2> --}}
@@ -2592,11 +2593,11 @@
                                         View more alternatives <i class="fa-solid fa-arrow-right ms-1"></i>
                                     </a>
                                 </div>
-
+                               </div>
                             </section>
 
                             {{-- faq --}}
-                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15">
+                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15" style="background-color:#fdfdfd;">
                                 <div class="container">
                                     <div class="faq-inner">
                                         <div class="row">
@@ -3020,7 +3021,8 @@
 
 
                             <!-- scetion crm sec -->
-                            <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important;">
+                            <section class="crm_sec revie_left_rgt_sec" id="section14" style="overflow: visible !important; background-color:#fdfdfd;">
+                               <div class="container">
                                 <style>
                                     .review-sidebar-sticky {
                                         position: sticky !important;
@@ -3201,7 +3203,7 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
-                                                        <span style="font-size: 14px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
+                                                        <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
                                                     </div>
 
                                                     {{-- Review Breakdown Title --}}
@@ -3370,6 +3372,7 @@
                                 </script>     
 
                                 </div>
+                              </div>
                             </section>
                         </div>
                     </div>
