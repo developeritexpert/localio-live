@@ -315,7 +315,7 @@ class ExclusiveBusinesses extends Component
             $this->maxPriceValue = max(ceil($priceStats->max_price), 100);
 
             // Allow URL parameters to override defaults
-            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : floor($priceStats->min_price);
+            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : 0;
             $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : $this->maxPriceValue;
         }
     }

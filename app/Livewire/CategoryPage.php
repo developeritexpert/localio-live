@@ -150,7 +150,7 @@ class CategoryPage extends Component
 
         if ($priceStats) {
             // Set initial values and boundaries
-            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : floor($priceStats->min_price);
+            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : 0;
             $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : ceil($priceStats->max_price);
         }
     }
