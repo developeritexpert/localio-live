@@ -4,13 +4,22 @@
             <div class="review-card" data-review-id="{{ $review->id }}">
                 <div class="r-crd-hd">
                     <div class="crd-img">
-                        @if($review->user && $review->user->profile_image)
-                            <img src="{{ asset($review->user->profile_image) }}" class="img-fluid profile-circle"
-                                 style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;" alt="User Image">
-                        @else
-                            <img src="{{ dimage() }}" class="img-fluid profile-circle"
-                                 style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;" alt="Default Image">
-                        @endif
+                        @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                    <img src="{{ asset($review->user->profile_image) }}"
+                                        class="img-fluid profile-circle"
+                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                        alt="User Image">
+                                @else
+                                    <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
+                                        <span style="color: white; font-weight: bold; font-size: 20px;">
+                                            @if ($review->user && $review->user->user_type === 'admin')
+                                                {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                            @else
+                                                {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endif
                     </div>
                     <div class="crd-img-txt">
                         <h6>

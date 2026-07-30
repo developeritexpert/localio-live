@@ -17,10 +17,10 @@
 @endphp
 
 <!-- Upper Header Section ( identical to business details page header, without in-page navigation) -->
-<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f8fafc; color: #1e3050;  border-bottom: 1px solid #e2e8f0;">
+<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #fdfdfd; color: #1e3050;  border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
-        <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 14px; margin-bottom:0;">
                     <li class="breadcrumb-item">
