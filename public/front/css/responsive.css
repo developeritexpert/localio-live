@@ -12759,6 +12759,14 @@ textarea#message {
     margin-top: 70px;
     padding: 80px 20px 60px;
   }
+
+  /* 30-july-36  */
+  .user_revew_sec,
+  .comparsn_bnr_sec {
+    padding: 35px 0 20px;
+    margin-top: 70px;
+  }
+
 }
 
 @media (max-width:767px) {
@@ -12872,6 +12880,11 @@ textarea#message {
   .banner_sec.home_bnr_sec {
     padding: 140px 0 60px;
   }
+
+  /* 30-july-26  */
+  .comparsn_bnr_sec .col-md-4 {
+    margin-top: 20px;
+  }
 }
 
 
@@ -12924,7 +12937,7 @@ textarea#message {
   }
 
   .asn_main_sec .an_lkd h1 {
-    font-size: 24px !important;
+    font-size: 22px !important;
   }
 
   .product_sec .container-fluid,
@@ -13185,6 +13198,32 @@ textarea#message {
   .most-populr-sec .popular-categories-title {
     margin-bottom: 15px !important;
   }
+
+  .user_revew_sec .top_head,
+  .comparsn_bnr_sec .top_head {
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: start !important;
+  }
+
+  .all_comparisons_sec .cmpr_bx {
+    flex-direction: column;
+    gap: 20px;
+    align-items: start !important;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .all_comparisons_sec .cmpr_bx .vs_txt {
+    margin-inline: auto;
+  }
+  .wishlist {
+    flex: 0 0 34px !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+}
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */
