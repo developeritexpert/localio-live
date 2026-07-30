@@ -552,7 +552,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     // Clean FAQ route with optional slug
     Route::get('/questions-answers/{slug?}', [ViewController::class, 'Faqs'])->name('FaqsShow');
 
-    Route::get('/{slug}/all-review/', [ViewController::class, 'allReview'])->name('ReviewShow');
     //Review Transalation route
     // Route::get('/review/transalation',[ViewController::class, 'ReviewTranslation'])->name('review.translation');
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
@@ -606,6 +605,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/{business_slug}/{second_segment}', [ViewController::class, 'handleBusinessSubPage']);
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
     Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
+    Route::get('/{slug}/{reviews_slug}', [ViewController::class, 'allReview'])->name('ReviewShow');
 
     // Dynamic 1-Segment Catch-all Routes (Must be at the VERY END of localized group)
     Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');

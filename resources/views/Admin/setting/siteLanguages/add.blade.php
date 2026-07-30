@@ -112,6 +112,19 @@
                                 @enderror
                             </div>
                         </div>
+                        <!-- Reviews URL Slug Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="reviews_slug">Reviews URL Slug (e.g. reviews, resenas, all-review)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="reviews_slug" name="reviews_slug"
+                                        value="{{ old('reviews_slug', 'reviews') }}" placeholder="reviews" />
+                                </div>
+                                @error('reviews_slug')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <!-- Status Toggle with Dynamic Text -->
                         <div class="col-md-6">
                             <div class="form-group">

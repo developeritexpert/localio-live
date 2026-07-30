@@ -2245,9 +2245,11 @@
                                                 </div>
                                             @endforeach
 
-                                            <div class="btm-bttn light">
+                                                @php
+                                                    $rSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
+                                                @endphp
                                                 <a class="cta cta_white"
-                                                    href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
+                                                    href="{{ route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug, 'reviews_slug' => $rSlug]) }}">View
                                                     All Reviews</a>
                                             </div>
                                         @else

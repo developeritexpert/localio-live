@@ -183,6 +183,7 @@ class StaticContentController extends Controller
                     'reset_filter',
                     'localio_commissions_message',
                     'vs_keyword',
+                    'business_reviews_subheadline',
                 ],
             ],
             'help' => [

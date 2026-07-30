@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Language extends Model
 {
     use HasFactory;
-    protected $fillable = ['lang_code', 'name', 'base_language_id', 'country_id', 'status', 'is_active_translation', 'is_valid_language_code', 'faq_slug', 'alternatives_slug'];
+    protected $fillable = ['lang_code', 'name', 'base_language_id', 'country_id', 'status', 'is_active_translation', 'is_valid_language_code', 'faq_slug', 'alternatives_slug', 'reviews_slug'];
 
     public function categoryTranslations()
     {
