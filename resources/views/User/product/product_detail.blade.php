@@ -133,76 +133,8 @@
     </script>
 
         @livewire('add-review')
-        @if(session()->has('register_profile_needed'))
-            @php
-                $pendingEmail = session('register_email', '');
-                $pendingFirstName = session('register_first_name', '');
-                $pendingLastName = session('register_last_name', '');
-            @endphp
-            <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[9999] d-none align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto;">
-                <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 440px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
-                    <button type="button" id="close-profile-modal-btn" onclick="document.getElementById('register-profile-modal').style.display='none';" aria-label="Close modal" style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
-                        ✕
-                    </button>
-                    
-
-                    <div class="text-center mb-4">
-                        <h3 class="fw-bold mb-2" style="color: #002655; font-size: 22px;">Create your profile</h3>
-                        <p class="text-muted m-0" style="font-size: 13.5px;">Please provide a few more details to set up your account.</p>
-                    </div>
-
-                    <form class="register_form" action="{{ route('register.details.store', ['locale'=> getCurrentLocale()]) }}" method="post" id="modalRegisterDetailsForm">
-                        @csrf
-                        <div class="row g-2 mb-3">
-                            <div class="col-6">
-                                <div class="form-floating">
-                                    <input type="text" name="first_name" id="modalFirstName" class="form-control" placeholder="First name" value="{{ old('first_name', $pendingFirstName) }}" required>
-                                    <label for="modalFirstName">First name</label>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-floating">
-                                    <input type="text" name="last_name" id="modalLastName" class="form-control" placeholder="Last name" value="{{ old('last_name', $pendingLastName) }}" required>
-                                    <label for="modalLastName">Last name</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input type="text" name="job_title" id="modalJobTitle" class="form-control" placeholder="Job title" value="{{ old('job_title') }}" required>
-                            <label for="modalJobTitle">Job title</label>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <select name="company_size" id="modalCompanySize" class="form-select" required>
-                                <option value="" selected disabled hidden></option>
-                                <option value="1" {{ old('company_size') == '1' ? 'selected' : '' }}>Freelance / Solo</option>
-                                <option value="2" {{ old('company_size') == '2' ? 'selected' : '' }}>Small Business (1-50 emp.)</option>
-                                <option value="3" {{ old('company_size') == '3' ? 'selected' : '' }}>Mid-Market (51-1000 emp.)</option>
-                                <option value="4" {{ old('company_size') == '4' ? 'selected' : '' }}>Enterprise (&gt;1000 emp.)</option>
-                            </select>
-                            <label for="modalCompanySize">Company size</label>
-                        </div>
-
-                        <div class="accor-btn mt-4">
-                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const btn = document.getElementById('close-profile-modal-btn');
-                    if (btn) {
-                        btn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const modal = document.getElementById('register-profile-modal');
-                            if (modal) modal.style.display = 'none';
-                        });
-                    }
-                });
-            </script>
-        @elseif(auth()->check() && session()->has('pending_review_business_id'))
+       
+        @if(auth()->check() && session()->has('pending_review_business_id'))
             @php
                 $pendingBusId = session('pending_review_business_id');
                 $pendingRec = session('pending_review_recommend');
@@ -2245,9 +2177,11 @@
                                                 </div>
                                             @endforeach
 
-                                            <div class="btm-bttn light">
+                                                @php
+                                                    $rSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
+                                                @endphp
                                                 <a class="cta cta_white"
-                                                    href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}">View
+                                                    href="{{ route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug, 'reviews_slug' => $rSlug]) }}">View
                                                     All Reviews</a>
                                             </div>
                                         @else
@@ -2371,88 +2305,22 @@
 
                                         <div class="sftware-alternative d-flex" data-aos="fade-up"
                                             data-aos-duration="1000">
-                                            <div class="sftware-alternative-pck" data-aos="fade-up"
-                                                data-aos-duration="1000"
-                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug]) }}'; }"
-                                                style="cursor: pointer; padding: 25px 20px;">
-                                                <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <div class="asn-img">
-                                                        <img
-                                                            src="{{ asset($business->icon_id ?? 'front/img/sftare-img1.svg') }}">
-                                                    </div>
-                                                    <div class="asn-rating">
-                                                        <h6 class="m-0 fw_700">{{ $business->translations->first()->name }}</h6>
-                                                        @php
-                                                            $ratingCount = $business->reviews
-                                                                ->where('status', 'active')
-                                                                ->count();
-                                                        @endphp
-                                                        <div class="overall-rating-header d-flex align-items-center mt-2 flex-wrap" style="gap: 5px;">
-                                                            <div class="rating-stars" style="display: flex; gap: 2px;">
-                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                    @if ($i <= floor($averageRating))
-                                                                        <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
-                                                                    @elseif ($i - 0.5 <= $averageRating)
-                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 12px;"></i>
-                                                                    @else
-                                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
-                                                                    @endif
-                                                                @endfor
-                                                            </div>
-                                                            <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 500;">
-                                                                {{ number_format($averageRating, 1) }} | {{ $ratingCount }} Reviews
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <h6 class=" mb-3" style="color: #002347; font-size: 12px; font-weight:600">Review breakdown</h6>
-                                                    @foreach ($criteria as $criterion)
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">{{ $criterion->name }}</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $criterion->average_rating * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $criterion->average_rating }}/5</span>
-                                                        </div>
-                                                    </div>
-                                                    @endforeach
-
-                                                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                        <span style="font-weight: 600; color: #002347; font-size: 12px;">Recommended by users</span>
-                                                        <strong style="color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
-                                                    </div>
-                                                </div>
-
-                                                <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                    <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
-                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
-                                                        <span>{{ $currency }}{{ $startingPrice }}</span>
-                                                    </h3>
-                                                    <small class="text-muted" style="font-size: 13px;">{{ $additional_info }}</small>
-                                                </div>
-
-                                                <div class="sftwre-alt-btn pt-2">
-                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug]) }}"
-                                                        class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                        style=" color: #002347; border-radius: 25px; padding: 10px 20px; font-weight:500; text-decoration: none; font-size: 14px; ">
-                                                         View details
-                                                    </a>
-                                                </div>
-                                            </div>
-
                                             @foreach ($alternativeBusiness as $altbusiness)
+                                                @if ($altbusiness->id == $business->id)
+                                                    @continue
+                                                @endif
                                                 <div class="sftware-alternative-pck" data-aos="fade-up"
                                                     data-aos-duration="1000"
                                                     onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}'; }"
                                                     style="cursor: pointer; padding: 25px 20px;">
                                                     @php
+                                                        $startingPrice = 'N/A';
+                                                        $currency = '$';
+                                                        $additional_info = 'NA';
                                                         $price = getBusinessesWithStartingPrice($altbusiness);
                                                         if (!empty($price) && isset($price[0]['starting_price'])) {
                                                             $businessprice = $price[0]['starting_price'];
-                                                            $startingPrice = $businessprice['amount'];
+                                                            $startingPrice = $businessprice['amount'] ?? 'N/A';
                                                             $currency = $businessprice['currency'] ?? '$';
                                                             $timeUnit = ucfirst($businessprice['time_unit'] ?? 'month');
                                                             $additional_info =
@@ -2594,7 +2462,7 @@
                                     <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                        class="view-more-link"
                                        style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
-                                        View more alternatives <i class="fa-solid fa-arrow-right ms-1"></i>
+                                        View more alternatives
                                     </a>
                                 </div>
                                </div>
@@ -2670,7 +2538,7 @@
                                                         <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
                                                            class="view-more-link"
                                                            style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                            View more FAQs <i class="fa-solid fa-arrow-right ms-1"></i>
+                                                            View more FAQs
                                                         </a>
                                                     </div>
                                                 </div>
@@ -2703,10 +2571,15 @@
                                             @php
                                                 $peerName = $peer->translations->first()->name ?? 'Business';
                                                 $peerRating = $peer->average_rating ?? 0;
+                                                $vsKey = static_text('vs_keyword');
+                                                if (empty($vsKey) || $vsKey === 'vs_keyword') {
+                                                    $vsKey = 'vs';
+                                                }
+                                                $vsKey = Str::slug($vsKey);
                                                 $seoUrl = route('product-comparison.seo', [
                                                     'locale' => app()->getLocale(),
                                                     'comparison_slug' => $compSlug,
-                                                    'comparison_businesses' => Str::slug($bName) . '-vs-' . Str::slug($peerName)
+                                                    'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
                                             <div class="col-lg-6 col-12">
@@ -2754,8 +2627,12 @@
                                     </div>
 
                                     @if(count($peerComparisons) > 0)
+                                        @php
+                                            $cCompSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
+                                            $bSlugStr = $business->translations->first()->slug ?? $business->slug;
+                                        @endphp
                                         <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
-                                            <a href="{{ route('business.all_comparisons', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug]) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                            <a href="{{ url(app()->getLocale() . '/' . $bSlugStr . '/' . $cCompSlug) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                                 View more comparisons
                                             </a>
                                         </div>

@@ -392,17 +392,25 @@ class ProductController extends Controller
             abort(404);
         }
 
-        // The user specified that "vs" is defined by country in general.
-        $vs_keyword = __('messages.vs') !== 'messages.vs' ? __('messages.vs') : 'vs'; 
+        // The "vs" keyword is defined per country/language in site content
+        $vs_keyword = static_text('vs_keyword');
+        if (empty($vs_keyword) || $vs_keyword === 'vs_keyword') {
+            $vs_keyword = 'vs';
+        }
+        $vs_keyword = \Illuminate\Support\Str::slug($vs_keyword);
         
-        // In case translation doesn't match the url for some reason, default to standard -vs- fallback
         $separator = "-{$vs_keyword}-";
         
-        if (strpos($comparison_businesses, $separator) === false) {
-            $separator = "-vs-";
+        if (strpos($comparison_businesses, $separator) !== false) {
+            $slugs = explode($separator, $comparison_businesses);
+        } else {
+            // Regex fallback to split by -vs- or -<any-vs-word>-
+            if (preg_match('/^(.*?)-([a-zA-Z0-9]+)-(.*?)$/', $comparison_businesses, $matches)) {
+                $slugs = [$matches[1], $matches[3]];
+            } else {
+                $slugs = explode('-vs-', $comparison_businesses);
+            }
         }
-        
-        $slugs = explode($separator, $comparison_businesses);
         
         if (count($slugs) != 2) {
             abort(404); // Invalid format
@@ -653,6 +661,9 @@ class ProductController extends Controller
         })->with([
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
             'category.translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->where('status', 'active'),
         ])->firstOrFail();
 

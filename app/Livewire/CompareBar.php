@@ -64,7 +64,11 @@ class CompareBar extends Component
                     $slug1 = $businesses[0]->translations->first()->slug;
                     $slug2 = $businesses[1]->translations->first()->slug;
                     
-                    $vs_keyword = __('messages.vs') !== 'messages.vs' ? __('messages.vs') : 'vs'; 
+                    $vs_keyword = static_text('vs_keyword');
+                    if (empty($vs_keyword) || $vs_keyword === 'vs_keyword') {
+                        $vs_keyword = 'vs';
+                    }
+                    $vs_keyword = \Illuminate\Support\Str::slug($vs_keyword);
                     $comparisonBusinesses = "{$slug1}-{$vs_keyword}-{$slug2}";
                     
                     // Clear the session so the comparison bar doesn't stick around after successful navigation

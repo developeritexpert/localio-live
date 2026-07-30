@@ -284,11 +284,7 @@ class ViewController extends Controller
         $activeCategory ??= $faqCategories->first();
 
         return view('User.faq.faq', compact('faqCategories', 'activeCategory'));
-    }
-
-
-
-    public function allReview(Request $request, $locale, $slug)
+    }    public function allReview(Request $request, $locale, $slug)
     {
         $lang_id = getCurrentLanguageID();
 
@@ -298,15 +294,64 @@ class ViewController extends Controller
             ->first();
 
         if (!$businessTranslation) {
+            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $slug)->first();
+        }
+
+        if (!$businessTranslation) {
             abort(404, 'Business not found');
         }
 
-        $business = $businessTranslation->business; // Get actual Business model
+        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
+            ])->firstOrFail();
 
         // Calculate average rating based on active reviews
-        $averageRating = $business->reviews->where('status', 'active')->count() > 0
-            ? $business->reviews->where('status', 'active')->avg('rating')
-            : 0;
+        $allReviews = Review::where('business_id', $business->id)->get();
+        $activeReviews = $allReviews->where('status', 'active');
+        $ratingCount = $activeReviews->count();
+        $averageRating = $ratingCount > 0 ? round($activeReviews->avg('rating'), 1) : 0;
+
+        // Dynamic Rating Criteria Breakdown
+        $criteria = $business->category ? $business->category->ratingCriteria : collect();
+        foreach ($criteria as $criterion) {
+            $totalScore = 0;
+            $count = 0;
+            foreach ($activeReviews as $review) {
+                $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+                    ->where('criteria_id', $criterion->id)
+                    ->first();
+                if ($ratingRecord) {
+                    $totalScore += $ratingRecord->rating;
+                    $count++;
+                } else {
+                    $legacyVal = null;
+                    if ($criterion->name === 'Ease of Use') {
+                        $legacyVal = $review->ease_of_use_rating;
+                    } elseif ($criterion->name === 'Customer Service') {
+                        $legacyVal = $review->customer_service_rating;
+                    } elseif ($criterion->name === 'Features') {
+                        $legacyVal = $review->exclusive_service_rating;
+                    } elseif ($criterion->name === 'Value for Money') {
+                        $legacyVal = $review->value_for_money_rating;
+                    }
+                    if (!is_null($legacyVal)) {
+                        $totalScore += $legacyVal;
+                        $count++;
+                    }
+                }
+            }
+            $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
+        }
+
+        if ($ratingCount > 0) {
+            $recommendCount = $activeReviews->where('recommend', 1)->count();
+            $recommendPercent = round(($recommendCount / $ratingCount) * 100);
+        } else {
+            $recommendPercent = 0;
+        }
 
         // Build reviews query
         $reviewsQuery = Review::with([
@@ -376,7 +421,7 @@ class ViewController extends Controller
             return view('User.review.partials.reviews_list', compact('reviews', 'business'))->render();
         }
 
-        return view('User.review.user_review2', compact('totalReviews', 'ratingsCount', 'reviews', 'business', 'averageRating'));
+        return view('User.review.user_review2', compact('totalReviews', 'ratingsCount', 'reviews', 'business', 'averageRating', 'ratingCount', 'criteria', 'recommendPercent'));
     }
 
     //Review Transalation function
@@ -448,6 +493,8 @@ class ViewController extends Controller
         $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
         $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
+        $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
+        $expectedComparisonsSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
 
         if ($second_segment === $expectedAlternativesSlug) {
             return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
@@ -455,6 +502,14 @@ class ViewController extends Controller
 
         if ($second_segment === $expectedFaqSlug) {
             return $this->businessFaqs($request, $locale, $business_slug, $second_segment);
+        }
+
+        if ($second_segment === $expectedReviewsSlug || $second_segment === 'reviews' || $second_segment === 'all-review') {
+            return $this->allReview($request, $locale, $business_slug);
+        }
+
+        if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
+            return app(\App\Http\Controllers\User\ProductController::class)->allBusinessComparisons($locale, $business_slug);
         }
 
         abort(404);

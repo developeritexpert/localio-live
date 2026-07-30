@@ -23,6 +23,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="clear-session-url" content="{{ route('clear.register.session') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
 
@@ -1039,12 +1041,28 @@
                         text-decoration: underline;
                         text-underline-offset: 2px;
                         font-weight: 500;
+                        /* font-size:13px; */
+
                     }
 
                     .policy-link:hover {
-                        color: #003F7D;
+                        color: #F9633B;
                         text-decoration: underline;
+                        /* font-size:13px; */
+
                     }
+                     .contact_sec .form-check-label{
+                        font-size:13px;
+                        }
+
+                      
+                     #register-profile-modal .form-check-label{
+                        font-size:13px;
+                        }
+                        #register-profile-modal .form-check-label a:hover{
+                            color:#F9633B;
+                        }
+
 
     </style>
 
@@ -1177,8 +1195,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             @if (!auth()->user())
                             <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
                                 class="cta cta_trans">{{ $headerContent['login_btn_lable'] ?? 'Login' }}</a>
-                            <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
-                                class="cta cta_orange wht-t-org-btn">{{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}</a>
+                            <a href="javascript:void(0);"
+                                onclick="openLoginModal()"
+                                class="cta cta_orange wht-t-org-btn">
+                                    {{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}
+                                </a>
+
                             @else
                             <x-user-profile />
                             <!-- <a href="{{ url('/logout') }}"
@@ -2025,6 +2047,149 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
     </div>
+
+    <!-- register model pop up 30-07-2026 -->
+    @if(session()->has('register_profile_needed'))
+            @php
+                $pendingEmail = session('register_email', '');
+                $pendingFirstName = session('register_first_name', '');
+                $pendingLastName = session('register_last_name', '');
+
+            @endphp
+                <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[9999] align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; display: flex;">
+                    <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 620px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
+                    <button type="button" id="close-profile-modal-btn" aria-label="Close modal" 
+                        style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
+                        ✕
+                    </button>
+                    
+
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2" style="color: #002655; font-size: 22px;">Create your profile</h3>
+                        <p class="text-muted m-0" style="font-size: 13.5px;">Please provide a few more details to set up your account.</p>
+                    </div>
+
+                    <form class="register_form" action="{{ route('register.details.store', ['locale'=> getCurrentLocale()]) }}" method="post" id="modalRegisterDetailsForm">
+                        @csrf
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="text" name="first_name" id="modalFirstName" class="form-control" placeholder="First name" value="{{ old('first_name', $pendingFirstName) }}" required>
+                                    <label for="modalFirstName">First name</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="text" name="last_name" id="modalLastName" class="form-control" placeholder="Last name" value="{{ old('last_name', $pendingLastName) }}" required>
+                                    <label for="modalLastName">Last name</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" name="job_title" id="modalJobTitle" class="form-control" placeholder="Job title" value="{{ old('job_title') }}" required>
+                            <label for="modalJobTitle">Job title</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select name="company_size" id="modalCompanySize" class="form-select" required>
+                                <option value="" selected disabled hidden></option>
+                                <option value="1" {{ old('company_size') == '1' ? 'selected' : '' }}>Freelance / Solo</option>
+                                <option value="2" {{ old('company_size') == '2' ? 'selected' : '' }}>Small Business (1-50 emp.)</option>
+                                <option value="3" {{ old('company_size') == '3' ? 'selected' : '' }}>Mid-Market (51-1000 emp.)</option>
+                                <option value="4" {{ old('company_size') == '4' ? 'selected' : '' }}>Enterprise (&gt;1000 emp.)</option>
+                            </select>
+                            <label for="modalCompanySize">Company size</label>
+                        </div>
+                         <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="form-check mb-3">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="accept_terms"
+                                    id="acceptTerms"
+                                    value="1"
+                                    {{ old('accept_terms') ? 'checked' : '' }}
+                                    required
+                                >
+                                
+                                <label class="form-check-label" for="acceptTerms">
+                                    I agree to the
+                                    <a href="{{ route('terms-condition', ['locale' => getCurrentLocale()]) }}"
+                                    target="_blank"
+                                    class="policy-link">
+                                        Terms of service
+                                    </a>
+                                    and acknowledge the
+                                    <a href="{{ route('privacy-policy', ['locale' => getCurrentLocale()]) }}"
+                                    target="_blank"
+                                    class="policy-link">
+                                        Privacy policy
+                                    </a>.
+                                </label>
+                                @error('accept_terms')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="promotional_emails"
+                                    id="promotionalEmails"
+                                    value="1"
+                                    {{ old('promotional_emails') ? 'checked' : '' }}
+                                >
+                                <label class="form-check-label" for="promotionalEmails">
+                                    I'd like to receive promotional emails from Localio. I can unsubscribe at any time.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="accor-btn mt-4">
+                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const closeBtn = document.getElementById('close-profile-modal-btn');
+
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function () {
+                            const modal = document.getElementById('register-profile-modal');
+                            if (modal) {
+                                modal.style.display = 'none';
+                            }
+
+                            const url = document.querySelector('meta[name="clear-session-url"]').content;
+                            const token = document.querySelector('meta[name="csrf-token"]').content;
+
+                            fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': token
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Session cleared:', data);
+                            })
+                            .catch(error => {
+                                console.error('Error clearing session:', error);
+                            });
+                        });
+                    }
+                });
+            </script>
+            @endif
+
+    <!-- register model pop end here -->
     @stack('scripts')
  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>

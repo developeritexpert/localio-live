@@ -4,31 +4,28 @@
             <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
                     
-                    <!-- Top header with Left Headline & Right Business Info / Close Button -->
+                    <!-- Top header with Left Headline & Business Info / Close Button -->
                     <div class="modal-header border-0 px-3 pt-3 pb-2 px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <!-- Left Top Headline -->
-                        <div>
+                        <!-- Left Top: Company Info & Headline -->
+                        <div class="d-flex flex-column gap-1">
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
+                                    <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <span class="fw-bold" style="color: #002655; font-size: 14px;">{{ $businessName }}</span>
+                            </div>
                             <h4 class="m-0 fw-bold header-title-responsive" style="color: #002655; font-size: 18px; line-height:1.2 !important;">
                                 Share your experience
                             </h4>
-                            <span class="text-muted" style="font-size: 13px;">
-                                Help other users make better buying decisions
-                            </span>
                         </div>
 
-                        <!-- Right Top Company Info + Close Button -->
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <div style="width: 36px; height: 36px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
-                                    <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                                <span class="fw-bold" style="color: #002655; font-size: 15px;">{{ $businessName }}</span>
-                            </div>
+                        <!-- Right Top: Close Button -->
+                        <div>
                             <button type="button" class="btn-close" wire:click="closeModal" style="box-shadow: none; font-size: 12px;"></button>
                         </div>
                     </div>
 
-                    <div class="modal-body p-3 p-md-4">
+                    <div class="modal-body p-3 p-md-4 pt-2">
                         <div class="row g-4">
                             
                             <!-- Left Column: Review Form Wizard -->
@@ -51,7 +48,7 @@
                                                      </label>
                                                      <div class="d-flex align-items-center gap-1 star-rating mt-1" data-rating-name="criteria_{{ $cId }}">
                                                          @for ($i = 1; $i <= 5; $i++)
-                                                             <i class="fa fa-star star-item {{ $i <= $value ? 'filled' : '' }}"
+                                                             <i class="star-item {{ $i <= $value ? 'fas fa-star filled' : 'far fa-star' }}"
                                                                 data-value="{{ $i }}"
                                                                 wire:click="$set('criteriaRatings.{{ $cId }}', {{ $i }})"
                                                                 style="cursor: pointer; transition: all 0.15s ease-in-out;"></i>
@@ -91,8 +88,8 @@
 
                                          <hr class="my-3">
 
-                                         <div class="d-flex  mt-3">
-                                             <button type="button" class="btn  text-white  w-100 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px;  font-weight:500; max-width:180px; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
+                                         <div class="d-flex justify-content-center mt-4">
+                                             <button type="button" class="btn text-white w-100" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; max-width:200px; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
                                                  Continue <i class="fas fa-arrow-right ms-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -161,7 +158,7 @@
 
                             <!-- Right Column: Sidebar Progress Panel -->
                             <div class="col-lg-4 ps-lg-4 d-none d-lg-block">
-                                <div class="p-4 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 10px;">
+                                <div class="p-3 p-md-4 rounded-3 mt-0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 0;">
                                     <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Review progress</h5>
                                     
                                     <div class="d-flex flex-column gap-3">
@@ -207,14 +204,15 @@
 
                                     <!-- Tips Section (Dynamic according to Step) -->
                                     <div class="mt-4 pt-3 border-top" style="font-size: 12px; color: #64748b; line-height: 1.5;">
-                                        <div class="mb-1" style="font-weight: 600; color: #002347;">
-                                            <i class="fas fa-lightbulb text-warning me-1"></i> Tips for writing reviews:
-                                        </div>
                                         @if($step === 1)
-                                            <div class="fw-bold text-dark mt-1">Rate honestly</div>
+                                            <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly:
+                                            </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Your ratings should reflect your overall experience with this business.</p>
                                         @elseif($step === 2)
-                                            <div class="fw-bold text-dark mt-1">Be specific</div>
+                                            <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Be specific:
+                                            </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Include details that may help others make an informed decision.</p>
                                         @elseif($step === 3)
                                             <div class="fw-bold text-dark mt-1">What stood out?</div>
@@ -224,13 +222,6 @@
                                 </div>
                             </div>
 
-                        </div>
-
-                        <!-- Bottom Disclaimer -->
-                        <div class="mt-4 pt-3 border-top text-center">
-                            <p class="m-0 text-muted" style="font-size: 11px; line-height: 1.4;">
-                                By submitting this review, you confirm that it is based on your own genuine experience and that, to the best of your knowledge, the information provided is accurate.
-                            </p>
                         </div>
 
                     </div>
@@ -247,14 +238,14 @@
                 background-color: #06498b;
                 border-color: #06498b;
             }
-            .star-item {
-                color: #ffe896 !important;
-                font-size: 16px !important;
+            .star-rating .star-item {
+                color: #70757a !important;
+                font-size: 22px !important;
                 margin-right: 4px;
             }
-            .star-item.filled,
-            .star-item.js-hovered {
-                color: #ffb300 !important;
+            .star-rating .star-item.filled,
+            .star-rating .star-item.js-hovered {
+                color: #fbbc04 !important;
             }
             .form-floating > .form-control:focus ~ label,
             .form-floating > .form-control:not(:placeholder-shown) ~ label,
@@ -279,15 +270,13 @@
                 border: 1px solid #cbd5e0 !important;
                 font-size: 13px !important;
             }
-            .modal-dialog .modal-body  .out_ln_btn:hover{
+            .modal-dialog .modal-body .out_ln_btn:hover{
               background-color:#06498b !important;
               color:#fff !important;
             }
-            /* .form-floating > .form-control:focus,
-            .form-floating > textarea:focus {
-                border-color: #06498b !important;
-                box-shadow: 0 0 0 3px rgba(6, 73, 139, 0.15) !important;
-            } */
+            .modal-body{
+                line-height: 1;
+            }
             @media (max-width: 991.98px) {
                 .modal-dialog {
                     margin: 10px;
@@ -298,13 +287,57 @@
                 }
             }
             @media (max-width: 575.98px) {
-                .star-item {
-                    font-size: 20px !important;
+                .star-rating .star-item {
+                    font-size: 22px !important;
                 }
                 .header-title-responsive {
                     font-size: 14px !important;
                 }
             }
         </style>
+
+        <script>
+            (function() {
+                function setupStarHovers() {
+                    document.querySelectorAll('.star-rating').forEach(function(group) {
+                        const stars = group.querySelectorAll('.star-item');
+                        stars.forEach(function(star, index) {
+                            star.onmouseenter = function() {
+                                stars.forEach(function(s, idx) {
+                                    if (idx <= index) {
+                                        s.classList.remove('far');
+                                        s.classList.add('fas', 'js-hovered');
+                                    } else {
+                                        s.classList.remove('fas', 'js-hovered');
+                                        s.classList.add('far');
+                                    }
+                                });
+                            };
+                        });
+                        group.onmouseleave = function() {
+                            stars.forEach(function(s) {
+                                s.classList.remove('js-hovered');
+                                if (s.classList.contains('filled')) {
+                                    s.classList.remove('far');
+                                    s.classList.add('fas');
+                                } else {
+                                    s.classList.remove('fas');
+                                    s.classList.add('far');
+                                }
+                            });
+                        };
+                    });
+                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', setupStarHovers);
+                } else {
+                    setupStarHovers();
+                }
+                document.addEventListener('livewire:load', setupStarHovers);
+                if (window.Livewire) {
+                    Livewire.hook('message.processed', setupStarHovers);
+                }
+            })();
+        </script>
     @endif
 </div>

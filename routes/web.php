@@ -552,7 +552,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     // Clean FAQ route with optional slug
     Route::get('/questions-answers/{slug?}', [ViewController::class, 'Faqs'])->name('FaqsShow');
 
-    Route::get('/{slug}/all-review/', [ViewController::class, 'allReview'])->name('ReviewShow');
     //Review Transalation route
     // Route::get('/review/transalation',[ViewController::class, 'ReviewTranslation'])->name('review.translation');
     Route::post('/review/translation', [ViewController::class, 'ReviewTranslation'])
@@ -600,12 +599,14 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
     // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
     Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
-        ->where('comparison_businesses', '.*-vs-.*')
+        ->where('comparison_businesses', '.*-.*-.*')
         ->name('product-comparison.seo');
 
     Route::get('/{business_slug}/{second_segment}', [ViewController::class, 'handleBusinessSubPage']);
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
     Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
+    Route::get('/{slug}/{reviews_slug}', [ViewController::class, 'allReview'])->name('ReviewShow');
+    Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
 
     // Dynamic 1-Segment Catch-all Routes (Must be at the VERY END of localized group)
     Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
@@ -623,6 +624,11 @@ Route::get('/refresh-csrf', function () {
 
 // Ad tracking handling
 Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
+
+Route::post('/clear-register-session', function () {
+    session()->forget(['register_profile_needed', 'register_email', 'register_first_name', 'register_last_name']);
+    return response()->json(['success' => true]);
+})->name('clear.register.session');
 
 
 

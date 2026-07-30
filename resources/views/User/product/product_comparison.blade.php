@@ -441,9 +441,15 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div class="view-review">
-                                                <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}" class="cta cta_white">View All Reviews</a>
-                                            </div>
+                                             <div class="view-review">
+                                                 @php
+                                                     $curLang = getCurrentLocale();
+                                                     $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
+                                                     $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
+                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+                                                 @endphp
+                                                 <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="cta cta_white">View All Reviews</a>
+                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -485,9 +491,15 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div class="view-review">
-                                                <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}" class="cta cta_white">View Reviews</a>
-                                            </div>
+                                             <div class="view-review">
+                                                 @php
+                                                     $curLang = getCurrentLocale();
+                                                     $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
+                                                     $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
+                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+                                                 @endphp
+                                                 <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="cta cta_white">View Reviews</a>
+                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
@@ -529,9 +541,15 @@
                                                     </div>
                                                 @endif
                                             </div>
-                                            <div class="view-review">
-                                                <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}" class="cta cta_white">View Reviews</a>
-                                            </div>
+                                             <div class="view-review">
+                                                 @php
+                                                     $curLang = getCurrentLocale();
+                                                     $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
+                                                     $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
+                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+                                                 @endphp
+                                                 <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="cta cta_white">View Reviews</a>
+                                             </div>
                                         </div>
                                     @endforeach
                                 </div>

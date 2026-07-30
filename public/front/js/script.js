@@ -17,6 +17,17 @@ $(document).ready(function () {
    });
 });
 
+// top-rated-page input check js 
+$(document).on('click', '.blue-chkbox', function (e) {
+   // Ignore clicks directly on the checkbox or its label
+   if ($(e.target).is('input, label')) {
+      return;
+   }
+   const checkbox = $(this).find('input[type="checkbox"]');
+   // Trigger a real click so Livewire updates correctly
+   checkbox.trigger('click');
+});
+
 
 // header dropdown at mobile js
 
@@ -485,11 +496,3 @@ window.onload = checkScroll;
 //     }
 //   });
 
-
-// top-rated-page input chexk js 
-$('.blue-chkbox').on('click', function (e) {
-   if (!$(e.target).is('input')) {
-      const checkbox = $(this).find('input[type="checkbox"]');
-      checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
-   }
-});

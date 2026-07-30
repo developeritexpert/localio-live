@@ -95,8 +95,14 @@
                 </div>
             @endforeach
         @endif
+        @php
+            $currentLangCode = getCurrentLocale();
+            $langObj = \App\Models\Language::where('lang_code', $currentLangCode)->first();
+            $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
+            $bSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+        @endphp
         <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
-            <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}"
+            <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
                 style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">View more reviews</a>
         </div>
     </div>
@@ -197,7 +203,7 @@
             @endforeach
         @endif
         <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
-            <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}"
+            <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
                 style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View all reviews</a>
         </div>
     </div>
@@ -275,7 +281,7 @@
             @endforeach
         @endif
         <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
-            <a href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug]) }}"
+            <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
                 style="font-size: 16px; font-weight: 600; color: #06498b; text-decoration: none;">View all reviews</a>
         </div>
     </div>

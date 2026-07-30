@@ -182,6 +182,9 @@ class StaticContentController extends Controller
                     'no_prod_mach_fil',
                     'reset_filter',
                     'localio_commissions_message',
+                    'vs_keyword',
+                    'business_reviews_subheadline',
+                    'business_comparisons_subheadline',
                 ],
             ],
             'help' => [

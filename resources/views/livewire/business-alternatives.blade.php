@@ -1,5 +1,8 @@
 <div>
     <style>
+        .view-review-link:hover {
+            text-decoration: underline !important;
+        }
         .top-rated-heading-block h1 {
             font-size: 28px !important;
             font-weight: 700;
@@ -134,16 +137,117 @@ section.top-automotive-sec.top_rate_pg.light {
                                     {{ __('messages.business_alternatives_description', ['business' => $businessName]) !== 'messages.business_alternatives_description' ? __('messages.business_alternatives_description', ['business' => $businessName]) : 'Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.' }}
                                 </p>
                             </div>
+                            @php
+                                $activeReviews = ($business->reviews ?? collect())->where('status', 'active');
+                                $bReviewCount = $activeReviews->count();
+                                $bAvgRating = $bReviewCount > 0 ? round($activeReviews->avg('rating'), 1) : 0;
+
+                                // Dynamic Rating Criteria Breakdown (Identical to ProductDetails & Reviews Page)
+                                $bCriteria = $business->category ? $business->category->ratingCriteria : collect();
+                                foreach ($bCriteria as $criterion) {
+                                    $totalScore = 0;
+                                    $count = 0;
+                                    foreach ($activeReviews as $review) {
+                                        $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+                                            ->where('criteria_id', $criterion->id)
+                                            ->first();
+                                        if ($ratingRecord) {
+                                            $totalScore += $ratingRecord->rating;
+                                            $count++;
+                                        } else {
+                                            $legacyVal = null;
+                                            if ($criterion->name === 'Ease of Use') {
+                                                $legacyVal = $review->ease_of_use_rating;
+                                            } elseif ($criterion->name === 'Customer Service') {
+                                                $legacyVal = $review->customer_service_rating;
+                                            } elseif ($criterion->name === 'Features') {
+                                                $legacyVal = $review->exclusive_service_rating;
+                                            } elseif ($criterion->name === 'Value for Money') {
+                                                $legacyVal = $review->value_for_money_rating;
+                                            }
+                                            if (!is_null($legacyVal)) {
+                                                $totalScore += $legacyVal;
+                                                $count++;
+                                            }
+                                        }
+                                    }
+                                    $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
+                                }
+
+                                // Recommendation percentage (Identical to ProductDetails & Reviews Page)
+                                if ($bReviewCount > 0) {
+                                    $recommendCount = $activeReviews->where('recommend', 1)->count();
+                                    $bRecommendPercent = round(($recommendCount / $bReviewCount) * 100);
+                                } else {
+                                    $bRecommendPercent = 100;
+                                }
+
+                                // Reviews URL
+                                $langObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
+                                $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
+                                $bSlug = $business->translations->first()->slug ?? $business->slug;
+                                $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
+                            @endphp
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
-                                    <div class="d-flex align-items-center mb-2" style="gap: 8px;">
-                                        <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                <div class="p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
+                                    <!-- Title Row with Logo, Business Name, Wishlist & View all reviews link -->
+                                    <div class="d-flex align-items-start justify-content-between mb-3 gap-2">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div style="width: 44px; height: 44px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: contain;">
+                                            </div>
+                                            <div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <h4 style="margin: 0; font-size: 17px; font-weight: 700; color: #1e3050;">{{ $businessName }}</h4>
+                                                    <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-alt-card-'.$business->id" />
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 13px; color: #64748b;">
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        @for ($j = 1; $j <= 5; $j++)
+                                                            @if ($j <= floor($bAvgRating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
+                                                            @elseif ($j - 0.5 <= $bAvgRating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 12px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 12px;"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <span style="font-weight: 600; color: #334155;">{{ number_format($bAvgRating, 1) }}</span>
+                                                    <span>|</span>
+                                                    <span>{{ $bReviewCount }} {{ $bReviewCount == 1 ? 'Review' : 'Reviews' }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <a class="view-review-link" href="{{ $reviewsUrl }}" style="font-size: 13px; font-weight: 600; color: #002655; text-decoration: none; white-space: nowrap;">View all reviews</a>
+                                        </div>
                                     </div>
-                                    <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
-                                    </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+
+                                    <!-- Criteria Breakdown -->
+                                    @if(count($bCriteria) > 0)
+                                        <h5 style="font-size: 13.5px; font-weight: 700; color: #1e3050; margin-top: 16px; margin-bottom: 12px;">Review breakdown</h5>
+                                        <div class="mb-3">
+                                            @foreach ($bCriteria as $criterion)
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">{{ $criterion->name }}</span>
+                                                    <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                        <div class="progress rounded-pill flex-grow-1 mx-2" style="height: 6px; background-color: #e2e8f0;">
+                                                            <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #22c55e;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                        </div>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #475569; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if($bRecommendPercent > 0)
+                                        <div class="pt-3 border-top d-flex align-items-center justify-content-between">
+                                            <span style="font-size: 13px; font-weight: 600; color: #1e3050;">Recommended by users</span>
+                                            <span style="font-size: 14px; font-weight: 700; color: #1e3050;">{{ $bRecommendPercent }}%</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
