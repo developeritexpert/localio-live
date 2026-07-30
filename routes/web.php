@@ -625,6 +625,11 @@ Route::get('/refresh-csrf', function () {
 // Ad tracking handling
 Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
 
+Route::post('/clear-register-session', function () {
+    session()->forget(['register_profile_needed', 'register_email', 'register_first_name', 'register_last_name']);
+    return response()->json(['success' => true]);
+})->name('clear.register.session');
+
 
 
 
