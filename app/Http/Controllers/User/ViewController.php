@@ -494,6 +494,7 @@ class ViewController extends Controller
         $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
         $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
+        $expectedComparisonsSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
 
         if ($second_segment === $expectedAlternativesSlug) {
             return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
@@ -505,6 +506,10 @@ class ViewController extends Controller
 
         if ($second_segment === $expectedReviewsSlug || $second_segment === 'reviews' || $second_segment === 'all-review') {
             return $this->allReview($request, $locale, $business_slug);
+        }
+
+        if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
+            return app(\App\Http\Controllers\User\ProductController::class)->allBusinessComparisons($locale, $business_slug);
         }
 
         abort(404);

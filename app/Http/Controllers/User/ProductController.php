@@ -661,6 +661,9 @@ class ProductController extends Controller
         })->with([
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
             'category.translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->where('status', 'active'),
         ])->firstOrFail();
 

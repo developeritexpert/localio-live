@@ -2695,8 +2695,12 @@
                                     </div>
 
                                     @if(count($peerComparisons) > 0)
+                                        @php
+                                            $cCompSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
+                                            $bSlugStr = $business->translations->first()->slug ?? $business->slug;
+                                        @endphp
                                         <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
-                                            <a href="{{ route('business.all_comparisons', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug]) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                            <a href="{{ url(app()->getLocale() . '/' . $bSlugStr . '/' . $cCompSlug) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                                 View more comparisons
                                             </a>
                                         </div>

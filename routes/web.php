@@ -606,6 +606,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
     Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
     Route::get('/{slug}/{reviews_slug}', [ViewController::class, 'allReview'])->name('ReviewShow');
+    Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
 
     // Dynamic 1-Segment Catch-all Routes (Must be at the VERY END of localized group)
     Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');

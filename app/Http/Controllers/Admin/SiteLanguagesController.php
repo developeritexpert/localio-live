@@ -34,6 +34,7 @@ class SiteLanguagesController extends Controller
             'faq_slug' => 'nullable|string|max:255',
             'alternatives_slug' => 'nullable|string|max:255',
             'reviews_slug' => 'nullable|string|max:255',
+            'comparisons_slug' => 'nullable|string|max:255',
             'status' => 'nullable|in:0,1',
             'is_active_translation' => 'nullable|boolean',
             'is_valid_language_code' => 'nullable|boolean',
@@ -46,6 +47,7 @@ class SiteLanguagesController extends Controller
         $language->faq_slug = $request->faq_slug ?? 'faqs';
         $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->reviews_slug = $request->reviews_slug ?? 'reviews';
+        $language->comparisons_slug = $request->comparisons_slug ?? 'comparisons';
         $language->status = $request->status ?? 1;
         // $language->is_active_translation = $request->is_active_translation ?? 0;
         $language->save();
@@ -72,6 +74,7 @@ class SiteLanguagesController extends Controller
             'faq_slug' => 'nullable|string|max:255',
             'alternatives_slug' => 'nullable|string|max:255',
             'reviews_slug' => 'nullable|string|max:255',
+            'comparisons_slug' => 'nullable|string|max:255',
             'status' => 'nullable|in:0,1',
             'is_active_translation' => 'nullable|boolean',
         ]);
@@ -84,6 +87,7 @@ class SiteLanguagesController extends Controller
         $language->faq_slug = $request->faq_slug ?? 'faqs';
         $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->reviews_slug = $request->reviews_slug ?? 'reviews';
+        $language->comparisons_slug = $request->comparisons_slug ?? 'comparisons';
         $language->status = $request->status ?? $language->status;
         $language->save();
     

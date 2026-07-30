@@ -125,6 +125,19 @@
                                 @enderror
                             </div>
                         </div>
+                        <!-- Comparisons URL Slug Field -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="comparisons_slug">Comparisons URL Slug (e.g. comparisons, comparativas)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="comparisons_slug" name="comparisons_slug"
+                                        value="{{ old('comparisons_slug', 'comparisons') }}" placeholder="comparisons" />
+                                </div>
+                                @error('comparisons_slug')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <!-- Status Toggle with Dynamic Text -->
                         <div class="col-md-6">
                             <div class="form-group">
