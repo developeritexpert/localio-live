@@ -2637,10 +2637,15 @@
                                             @php
                                                 $peerName = $peer->translations->first()->name ?? 'Business';
                                                 $peerRating = $peer->average_rating ?? 0;
+                                                $vsKey = static_text('vs_keyword');
+                                                if (empty($vsKey) || $vsKey === 'vs_keyword') {
+                                                    $vsKey = 'vs';
+                                                }
+                                                $vsKey = Str::slug($vsKey);
                                                 $seoUrl = route('product-comparison.seo', [
                                                     'locale' => app()->getLocale(),
                                                     'comparison_slug' => $compSlug,
-                                                    'comparison_businesses' => Str::slug($bName) . '-vs-' . Str::slug($peerName)
+                                                    'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
                                             <div class="col-lg-6 col-12">

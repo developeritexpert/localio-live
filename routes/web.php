@@ -600,7 +600,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
     // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
     Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
-        ->where('comparison_businesses', '.*-vs-.*')
+        ->where('comparison_businesses', '.*-.*-.*')
         ->name('product-comparison.seo');
 
     Route::get('/{business_slug}/{second_segment}', [ViewController::class, 'handleBusinessSubPage']);
