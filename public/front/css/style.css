@@ -6759,7 +6759,7 @@ ul#pills-tab {
 }
 
 .review-section h2 {
-  font-size: 38px !important;
+  /* font-size: 38px !important; */
   color: #002347;
 }
 
@@ -7017,7 +7017,7 @@ ul#pills-tab {
   }
 
   .crd-img-txt h6 {
-    font-size: 16px !important;
+    font-size: 14px !important;
   }
 
   .review-bnnr .banner_content_inner p {
@@ -9834,4 +9834,10 @@ section.right_tool_sec .otr_rgtool h2 {
 .user_img.drop_menu .dropdown-menu .user_detail .user_img img {
   max-width: 45px;
   max-height: 45px;
+}
+
+.user_revew_sec,
+.comparsn_bnr_sec {
+  padding: 35px 0 20px;
+  margin-top: 130px;
 }

@@ -17,12 +17,12 @@
 @endphp
 
 <!-- Upper Header Section ( identical to business details page header, without in-page navigation) -->
-<section class="banner_sec help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2" style="background-color: #f8fafc; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
+<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f8fafc; color: #1e3050;  border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0" style="background: transparent; padding: 0; font-size: 14px;">
+                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 14px; margin-bottom:0;">
                     <li class="breadcrumb-item">
                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" style="color: #64748b; text-decoration: none;">All</a>
                     </li>
@@ -52,15 +52,15 @@
         </div>
 
         <!-- Business Header Row -->
-        <div class="row align-items-center justify-content-between g-3 mt-1">
+        <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class="d-flex align-items-center gap-3">
+                <div class="top_head d-flex align-items-center gap-3">
                     <!-- Business Icon -->
-                    <div class="asn-img" style="width: 64px; height: 64px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class=" an_lkd d-flex align-items-center gap-2 ">
                             <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
                                 {{ $bName }} Comparisons
                             </h1>
@@ -72,7 +72,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-12 text-md-end text-start">
+            <div class="col-md-4 col-12 text-md-end text-start ">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
@@ -112,9 +112,9 @@
                 <div class="col-lg-6 col-12">
                     <a href="{{ $seoUrl }}" style="text-decoration: none; color: inherit; display: block;">
                         <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: all 0.2s;" onmouseover="this.style.boxShadow='0 8px 20px rgba(0,0,0,0.06)'; this.style.borderColor='#cbd5e0';" onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.03)'; this.style.borderColor='#e2e8f0';">
-                            <div class="d-flex align-items-center justify-content-between">
+                            <div class=" cmpr_bx d-flex align-items-center justify-content-between">
                                 <!-- Business A -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                <div class=" d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                     <div style="width: 42px; height: 42px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                                     </div>
@@ -128,12 +128,12 @@
                                 </div>
 
                                 <!-- VS Keyword -->
-                                <div class="px-3 fw-bold text-center flex-shrink-0" style="font-size: 15px; color: #1e3050; font-family: sans-serif;">
+                                <div class="vs_txt px-3 fw-bold text-center flex-shrink-0" style="font-size: 15px; color: #1e3050; font-family: sans-serif;">
                                     {{ strtoupper($vsKey) }}
                                 </div>
 
                                 <!-- Business B (Peer) -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
+                                <div class="  d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
                                     <div style="width: 42px; height: 42px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                         <img src="{{ asset($peer->icon_id ?? 'no-image.png') }}" alt="{{ $peerName }}" style="width: 100%; height: 100%; object-fit: contain;">
                                     </div>

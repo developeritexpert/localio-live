@@ -6,10 +6,10 @@
                     <div class="crd-img">
                         @if($review->user && $review->user->profile_image)
                             <img src="{{ asset($review->user->profile_image) }}" class="img-fluid profile-circle"
-                                 style="width: 65px; height: 65px; object-fit: cover; border-radius: 50%;" alt="User Image">
+                                 style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;" alt="User Image">
                         @else
                             <img src="{{ dimage() }}" class="img-fluid profile-circle"
-                                 style="width: 65px; height: 65px; object-fit: cover; border-radius: 50%;" alt="Default Image">
+                                 style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;" alt="Default Image">
                         @endif
                     </div>
                     <div class="crd-img-txt">
