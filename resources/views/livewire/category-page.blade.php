@@ -400,7 +400,7 @@
                         <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
                             <div class="row align-items-start">
                                 <div class="col-md-8 text-start">
-                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 32px;">Best {{ $category->translations->name ?? 'Software' }}</h1>
+                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px;">Best {{ $category->translations->name ?? 'Software' }}</h1>
                                     <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                         See more below to select the best {{ $category->translations->name ?? 'software' }}.
                                     </p>
@@ -519,9 +519,28 @@
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
-                            <div class="cat-heading-block">
-                                <h1>{{ $category->translations->name ?? 'Products' }}</h1>
-                                <p>{{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }} <br><span style="font-size: 0.9em; color: #555; font-weight: 500;"><i class="fa fa-info-circle me-1"></i>Select up to 2 products to compare</span></p>
+                            <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
+                                <div class="row align-items-start">
+                                    <div class="col-md-8 text-start">
+                                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                        <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                        <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                            {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 mt-4 mt-md-0 text-start">
+                                        <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                            <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+                                                <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
+                                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                            </div>
+                                            <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                                Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                            </p>
+                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
@@ -1152,140 +1171,71 @@
             @endif
         <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Initialize slider after Livewire is ready
-                if (typeof window.Livewire !== 'undefined') {
-                    // For Livewire 3
-                    document.addEventListener('livewire:initialized', function() {
-                        initPriceSlider();
-                    });
-                } else {
-                    // For Livewire 2 or fallback
-                    window.addEventListener('livewire:load', function() {
-                        initPriceSlider();
-                    });
+            function initPriceSlider() {
+                setTimeout(() => {
+                    const slider = document.getElementById('priceRangeSlider2');
+                    const minInput = document.getElementById('minPriceInput2');
+                    const maxInput = document.getElementById('maxPriceInput2');
+                    // Get the dynamic maximum price from the data attribute
+                    const maxPriceValue = slider && slider.dataset.maxPrice ? parseInt(slider.dataset.maxPrice) : 10000;
 
-                    // Fallback if neither event fires
-                    setTimeout(initPriceSlider, 500);
-                }
+                    if (!slider || !minInput || !maxInput || typeof noUiSlider === 'undefined') {
+                        console.warn("Slider init failed.");
+                        return;
+                    }
 
-                function initPriceSlider() {
-                    const slider = document.getElementById('priceRangeSlider');
-                    if (!slider || typeof noUiSlider === 'undefined') return;
-
-                    // Always clean up existing slider
                     if (slider.noUiSlider) {
                         slider.noUiSlider.destroy();
                     }
 
-                    // Find the Livewire component
-                    const wireEl = slider.closest('[wire\\:id]');
-                    if (!wireEl) return;
-
-                    const wireId = wireEl.getAttribute('wire:id');
-                    if (!wireId) return;
-
-                    // Get component reference - works with both Livewire 2 and 3
-                    let component;
-                    if (window.Livewire) {
-                        component = window.Livewire.find ? window.Livewire.find(wireId) : window.Livewire.get(wireId);
-                    }
-
-                    if (!component) return;
-
-                    // Get current values from component - compatible with both Livewire versions
-                    const getComponentValue = (prop) => {
-                        // Try Livewire 3 method first
-                        if (typeof component.get === 'function') {
-                            return component.get(prop);
-                        }
-                        // Fallback to direct property access (Livewire 2)
-                        return component[prop];
-                    };
-
-                    const minValue = parseInt(getComponentValue('minPrice')) || 0;
-                    const maxValue = parseInt(getComponentValue('maxPrice')) || 2000;
-
-                    // Create slider with current values
                     noUiSlider.create(slider, {
-                        start: [minValue, maxValue],
+                        start: [parseInt(minInput.value) || 0, parseInt(maxInput.value) || maxPriceValue],
                         connect: true,
                         range: {
-                            'min': 0,
-                            'max': 2000
+                            min: 0,
+                            max: maxPriceValue
                         },
-                        step: 50
+                        step: Math.max(1, Math.floor(maxPriceValue / 100)) // Dynamic step based on max price
                     });
 
-                    // Prevent multiple rapid updates
-                    let updateTimeout;
-
-                    // Update internal values but don't trigger Livewire yet
                     slider.noUiSlider.on('update', function(values) {
                         const min = Math.round(values[0]);
                         const max = Math.round(values[1]);
-
-                        // Just update the input fields visually
-                        if (document.getElementById('minPriceInput')) {
-                            document.getElementById('minPriceInput').value = min;
-                        }
-
-                        if (document.getElementById('maxPriceInput')) {
-                            document.getElementById('maxPriceInput').value = max;
-                        }
+                        minInput.value = min;
+                        maxInput.value = max;
                     });
 
-                    // Only when slider interaction ends, update Livewire once
-                    slider.noUiSlider.on('end', function(values) {
-                        clearTimeout(updateTimeout);
-
-                        updateTimeout = setTimeout(() => {
-                            const min = Math.round(values[0]);
-                            const max = Math.round(values[1]);
-
-                            // Get fresh component reference - works with both Livewire versions
-                            let freshComponent;
-                            if (window.Livewire) {
-                                freshComponent = window.Livewire.find ? window.Livewire.find(wireId) :
-                                    window.Livewire.get(wireId);
-                            }
-
-                            if (freshComponent) {
-                                // Version-agnostic way to call Livewire method
-                                if (typeof freshComponent.call === 'function') {
-                                    // Livewire 3
-                                    freshComponent.call('setPriceRange', min, max);
-                                } else if (typeof freshComponent.setPriceRange === 'function') {
-                                    // Livewire 2
-                                    freshComponent.setPriceRange(min, max);
-                                }
-                            }
-                        }, 300);
+                    slider.noUiSlider.on('change', function() {
+                        minInput.dispatchEvent(new Event('input', {
+                            bubbles: true
+                        }));
+                        maxInput.dispatchEvent(new Event('input', {
+                            bubbles: true
+                        }));
                     });
-                }
 
-                // Re-initialize slider on Livewire updates
-                let pendingInit = false;
+                    minInput.addEventListener('change', function() {
+                        slider.noUiSlider.set([this.value, null]);
+                    });
 
-                // For Livewire 3
-                document.addEventListener('livewire:update', function() {
-                    handleUpdate();
-                });
+                    maxInput.addEventListener('change', function() {
+                        slider.noUiSlider.set([null, this.value]);
+                    });
+                }, 100); // slight delay to ensure DOM is updated
+            }
 
-                // For Livewire 2
-                window.addEventListener('livewire:update', function() {
-                    handleUpdate();
-                });
+            document.addEventListener('DOMContentLoaded', initPriceSlider);
+            document.addEventListener('livewire:load', initPriceSlider);
 
-                function handleUpdate() {
-                    if (!pendingInit) {
-                        pendingInit = true;
-                        setTimeout(() => {
-                            initPriceSlider();
-                            pendingInit = false;
-                        }, 200);
+            // Set up a listener for Livewire events that might update max price
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('set-price-range', (data) => {
+                    const slider = document.getElementById('priceRangeSlider2');
+                    if (slider && data.maxPrice) {
+                        slider.dataset.maxPrice = data.maxPrice;
+                        initPriceSlider();
                     }
-                }
+                });
             });
         </script>
         <script>

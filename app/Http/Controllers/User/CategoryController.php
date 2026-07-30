@@ -46,11 +46,19 @@ class CategoryController extends Controller
         // ->with('translations', 'imageMedia')
         // ->get();
         $categories = Category::onlyParents()
-    ->where('status', 1)
-    ->withCount('subCategories')
-    ->orderByDesc('sub_categories_count')
-    ->with('translations', 'imageMedia')
-    ->get();
+            ->where('status', 1)
+            ->where(function ($q) {
+                $q->has('subCategories')->orWhereHas('businesses');
+            })
+            ->whereHas('translations', function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+            })
+            ->withCount('subCategories')
+            ->orderByDesc('sub_categories_count')
+            ->with(['translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            }, 'imageMedia'])
+            ->get();
 
 
         // dd($categories);
