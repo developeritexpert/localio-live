@@ -11,9 +11,7 @@
                             <h4 class="m-0 fw-bold header-title-responsive" style="color: #002655; font-size: 18px; line-height:1.2 !important;">
                                 Share your experience
                             </h4>
-                            <span class="text-muted" style="font-size: 13px;">
-                                Help other users make better buying decisions
-                            </span>
+                        
                         </div>
 
                         <!-- Right Top Company Info + Close Button -->
@@ -207,14 +205,19 @@
 
                                     <!-- Tips Section (Dynamic according to Step) -->
                                     <div class="mt-4 pt-3 border-top" style="font-size: 12px; color: #64748b; line-height: 1.5;">
-                                        <div class="mb-1" style="font-weight: 600; color: #002347;">
-                                            <i class="fas fa-lightbulb text-warning me-1"></i> Tips for writing reviews:
-                                        </div>
+                                        <!-- <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                            <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly:
+                                        </div> -->
                                         @if($step === 1)
-                                            <div class="fw-bold text-dark mt-1">Rate honestly</div>
+                                            <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly:
+                                            </div>
+                                            <!-- <div class="fw-bold text-dark mt-1">Rate honestly</div> -->
                                             <p class="m-0 text-muted" style="font-size: 11px;">Your ratings should reflect your overall experience with this business.</p>
                                         @elseif($step === 2)
-                                            <div class="fw-bold text-dark mt-1">Be specific</div>
+                                            <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Be specific:
+                                            </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Include details that may help others make an informed decision.</p>
                                         @elseif($step === 3)
                                             <div class="fw-bold text-dark mt-1">What stood out?</div>
@@ -227,11 +230,11 @@
                         </div>
 
                         <!-- Bottom Disclaimer -->
-                        <div class="mt-4 pt-3 border-top text-center">
+                        <!-- <div class="mt-4 pt-3 border-top text-center">
                             <p class="m-0 text-muted" style="font-size: 11px; line-height: 1.4;">
                                 By submitting this review, you confirm that it is based on your own genuine experience and that, to the best of your knowledge, the information provided is accurate.
                             </p>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>
@@ -282,6 +285,9 @@
             .modal-dialog .modal-body  .out_ln_btn:hover{
               background-color:#06498b !important;
               color:#fff !important;
+            }
+            .modal-body{
+                line-height: 1;
             }
             /* .form-floating > .form-control:focus,
             .form-floating > textarea:focus {

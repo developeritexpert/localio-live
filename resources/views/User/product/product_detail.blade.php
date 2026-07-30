@@ -2371,88 +2371,22 @@
 
                                         <div class="sftware-alternative d-flex" data-aos="fade-up"
                                             data-aos-duration="1000">
-                                            <div class="sftware-alternative-pck" data-aos="fade-up"
-                                                data-aos-duration="1000"
-                                                onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug]) }}'; }"
-                                                style="cursor: pointer; padding: 25px 20px;">
-                                                <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <div class="asn-img">
-                                                        <img
-                                                            src="{{ asset($business->icon_id ?? 'front/img/sftare-img1.svg') }}">
-                                                    </div>
-                                                    <div class="asn-rating">
-                                                        <h6 class="m-0 fw_700">{{ $business->translations->first()->name }}</h6>
-                                                        @php
-                                                            $ratingCount = $business->reviews
-                                                                ->where('status', 'active')
-                                                                ->count();
-                                                        @endphp
-                                                        <div class="overall-rating-header d-flex align-items-center mt-2 flex-wrap" style="gap: 5px;">
-                                                            <div class="rating-stars" style="display: flex; gap: 2px;">
-                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                    @if ($i <= floor($averageRating))
-                                                                        <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
-                                                                    @elseif ($i - 0.5 <= $averageRating)
-                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 12px;"></i>
-                                                                    @else
-                                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
-                                                                    @endif
-                                                                @endfor
-                                                            </div>
-                                                            <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 500;">
-                                                                {{ number_format($averageRating, 1) }} | {{ $ratingCount }} Reviews
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                    <h6 class=" mb-3" style="color: #002347; font-size: 12px; font-weight:600">Review breakdown</h6>
-                                                    @foreach ($criteria as $criterion)
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; color: #555;">{{ $criterion->name }}</p>
-                                                        <div class="prgs_br d-flex align-items-center">
-                                                            <progress class="progress-bar"
-                                                                value="{{ $criterion->average_rating * 20 }}"
-                                                                max="100"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $criterion->average_rating }}/5</span>
-                                                        </div>
-                                                    </div>
-                                                    @endforeach
-
-                                                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                        <span style="font-weight: 600; color: #002347; font-size: 12px;">Recommended by users</span>
-                                                        <strong style="color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
-                                                    </div>
-                                                </div>
-
-                                                <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                    <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
-                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
-                                                        <span>{{ $currency }}{{ $startingPrice }}</span>
-                                                    </h3>
-                                                    <small class="text-muted" style="font-size: 13px;">{{ $additional_info }}</small>
-                                                </div>
-
-                                                <div class="sftwre-alt-btn pt-2">
-                                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug]) }}"
-                                                        class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                        style=" color: #002347; border-radius: 25px; padding: 10px 20px; font-weight:500; text-decoration: none; font-size: 14px; ">
-                                                         View details
-                                                    </a>
-                                                </div>
-                                            </div>
-
                                             @foreach ($alternativeBusiness as $altbusiness)
+                                                @if ($altbusiness->id == $business->id)
+                                                    @continue
+                                                @endif
                                                 <div class="sftware-alternative-pck" data-aos="fade-up"
                                                     data-aos-duration="1000"
                                                     onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}'; }"
                                                     style="cursor: pointer; padding: 25px 20px;">
                                                     @php
+                                                        $startingPrice = 'N/A';
+                                                        $currency = '$';
+                                                        $additional_info = 'NA';
                                                         $price = getBusinessesWithStartingPrice($altbusiness);
                                                         if (!empty($price) && isset($price[0]['starting_price'])) {
                                                             $businessprice = $price[0]['starting_price'];
-                                                            $startingPrice = $businessprice['amount'];
+                                                            $startingPrice = $businessprice['amount'] ?? 'N/A';
                                                             $currency = $businessprice['currency'] ?? '$';
                                                             $timeUnit = ucfirst($businessprice['time_unit'] ?? 'month');
                                                             $additional_info =
@@ -2594,7 +2528,7 @@
                                     <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                        class="view-more-link"
                                        style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
-                                        View more alternatives <i class="fa-solid fa-arrow-right ms-1"></i>
+                                        View more alternatives
                                     </a>
                                 </div>
                                </div>
@@ -2670,7 +2604,7 @@
                                                         <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
                                                            class="view-more-link"
                                                            style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                            View more FAQs <i class="fa-solid fa-arrow-right ms-1"></i>
+                                                            View more FAQs
                                                         </a>
                                                     </div>
                                                 </div>
