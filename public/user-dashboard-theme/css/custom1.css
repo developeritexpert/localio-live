@@ -501,7 +501,7 @@ footer.ds_ftr {
 
 .dropdown-menu .user_detail .user_name {
   width: 100%;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 
 .drop_menu .dropdown-menu .dash-icon {
@@ -2718,4 +2718,9 @@ header.main_dhdr {
 
 .main_dhdr .dropdown-menu .user_detail p {
   font-size: 14px;
+}
+
+.dropdown-menu .user_detail .user_img img {
+  max-width: 45px;
+  max-height: 45px;
 }

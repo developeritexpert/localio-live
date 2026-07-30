@@ -3686,7 +3686,7 @@
   }
 
   .foot-col h6 {
-    font-size: 20px;
+    font-size: 14px;
   }
 
   .slick-prev,
@@ -5082,8 +5082,8 @@ div#learnMoreModal button.modal-close {
 }
 
 .dropdown-menu .user_detail .user_img {
-  min-width: 45px;
-  height: 45px;
+  /* min-width: 45px; */
+  /* height: 45px; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9224,8 +9224,8 @@ div#learnMoreModal button.modal-close {
 }
 
 .dropdown-menu .user_detail .user_img {
-  min-width: 45px;
-  height: 45px;
+  /* min-width: 45px; */
+  /* height: 45px; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9238,7 +9238,7 @@ div#learnMoreModal button.modal-close {
 
 .dropdown-menu .user_detail .user_name {
   width: 100%;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 
 .user_detail h5 {
@@ -11549,8 +11549,8 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 
   .about_asn_content .asn_dv.asv_blue .asn-img img,
   .asn_dv_contnt .asn-img img {
-    height: 60px;
-    width: 60px;
+    height: 50px;
+    width: 50px;
   }
 
   .compare-information>div {
@@ -12610,8 +12610,8 @@ textarea#message {
 }
 
 .user_img img {
-  width: 50px;
-  height: 50px;
+  /* width: 50px;
+  height: 50px; */
   /* min-width: 50px; */
   object-fit: cover;
 }
@@ -13169,6 +13169,22 @@ textarea#message {
     padding: 50px 20px;
   }
 
+  .top_rate_pg .top-rated-heading-block h1 {
+    font-size: 24px !important;
+
+  }
+
+  .most-populr-sec .popular-category-tab-btn span {
+    font-size: 14px !important;
+  }
+
+  .most-populr-sec .inn_h .sl_main h6.head {
+    font-size: 15px !important;
+  }
+
+  .most-populr-sec .popular-categories-title {
+    margin-bottom: 15px !important;
+  }
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */

@@ -3685,6 +3685,7 @@ header.drk_header {
 
 .progress-bar::-webkit-progress-value {
   background: #21ac21;
+  border-radius: 8px !important;
 }
 
 .progress-bar::-moz-progress-bar {
@@ -8851,7 +8852,7 @@ section.revie_img_sec {
   }
 
   .most-populr-sec .inn_h .sl_main h6.head {
-    font-size: 17px !important;
+    /* font-size: 17px !important; */
     font-weight: 700 !important;
     color: #0f172a !important;
     line-height: 1.25 !important;
@@ -9714,7 +9715,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .sfwr_sec .top-product-info .fa-star {
-  font-size: 12px !important;
+  font-size: 11px !important;
 }
 
 .top-automotive-sec .auto-choice-lft {
@@ -9757,11 +9758,11 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .asn_main_sec .asn_dv {
-  background-color: #4444440d;
+  background-color: #fdfdfd;
 }
 
 .asn_main_sec .asn_dv.fixed-div {
-  background-color: #fffcfc;
+  background-color: #f7f9fb;
 }
 
 .modal-dialog .modal-body .btn:hover {
@@ -9808,6 +9809,8 @@ section.right_tool_sec .otr_rgtool h2 {
 
 .top-automotive-sec .start-comparing-btn {
   border-radius: 30px;
+  font-size: 14px;
+  padding: 12px 25px;
 }
 
 .banner_sec.home_bnr_sec {
@@ -9821,4 +9824,14 @@ section.right_tool_sec .otr_rgtool h2 {
 .write-review-hero {
   margin-top: 120px;
   padding: 100px 20px 60px;
+}
+
+/* 30-july-26  */
+.crm_sec.revie_left_rgt_sec .review-star-box .progress-fill {
+  border-radius: 8px;
+}
+
+.user_img.drop_menu .dropdown-menu .user_detail .user_img img {
+  max-width: 45px;
+  max-height: 45px;
 }
