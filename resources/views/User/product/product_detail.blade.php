@@ -1039,7 +1039,7 @@
                                     <div class="row sld_rw">
                                         <div class="col-lg-12">
                                             <div class="is-asana-lft">
-                                                <h2>What is {{ $business->translations->first()->name }}</h2>
+                                                <h2>{{ !empty($business->translations->first()->description_title) ? $business->translations->first()->description_title : 'What is ' . ($business->translations->first()->name ?? '') }}</h2>
                                                 <div class="is_text">
                                                     {!! $business->translations->first()->description !!}
                                                 </div>
@@ -1051,7 +1051,7 @@
                                         <div class="col-lg-12 mt-5 mb-4">
                                             <div class="pros-cons-header mb-3">
                                                 <h3 style="font-weight: 700; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
-                                                    {{ $business->translations->first()->name ?? 'Business' }} pros and cons
+                                                    {{ !empty($business->translations->first()->pro_cons_headline) ? $business->translations->first()->pro_cons_headline : (($business->translations->first()->name ?? 'Business') . ' pros and cons') }}
                                                 </h3>
                                                 @if(!empty($business->pro_cons_intro))
                                                     <p class="text-muted" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">

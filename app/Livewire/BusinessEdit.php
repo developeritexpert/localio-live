@@ -59,6 +59,7 @@ class BusinessEdit extends Component
 
     // Form fields
     public $name = '';
+    public $description_title = '';
     public $website_url = '';
     public $websiteUrls = [''];
     public $affiliate_partner = '';
@@ -78,13 +79,12 @@ class BusinessEdit extends Component
     public $meta_title = '';
     public $meta_description = '';
     public $selected_category = null;
-
+    public $selected_secondary_categories = [];
 
     // Category features
     public $categoryFeatures = [];
     public $categoryFeaturesEnglish = [];
     public $selectedFeatures = [];
-
 
     // File uploads
     public $iconError = null;
@@ -95,13 +95,12 @@ class BusinessEdit extends Component
     public $image_id = null;
 
     // New property for multiple Business image upload
-    public $business_images = []; //Add this to fix the error
+    public $business_images = [];
 
     public $new_business_images = [];
 
     // FAQ
     public $pageMode;
-
 
     public $showFAQSection = false;
     public $selectedBusinessForFAQ = null;
@@ -113,8 +112,9 @@ class BusinessEdit extends Component
     public $faqEditId;
     public $editingFAQ;
 
-    // USPs
+    // USPs (up to 6)
     public $businessUsps = [
+        ['text' => ''],
         ['text' => ''],
         ['text' => ''],
         ['text' => ''],
@@ -134,8 +134,9 @@ class BusinessEdit extends Component
     public $businessOfferings = [
         ['headline' => '', 'top_text' => '', 'bottom_text' => '', 'image' => null]
     ];
-    public $newOfferingImages = []; // Array of temporary UploadedFile objects
+    public $newOfferingImages = [];
 
+    public $pro_cons_headline = '';
     public $pro_cons_intro = '';
     public $pro_cons_summary = '';
 
@@ -931,8 +932,32 @@ class BusinessEdit extends Component
             $country = collect($this->countries)->firstWhere('id', $countryId);
             $this->selectedCountryName = $country ? $country->name : null;
 
+            if ($country && !empty($country->language_id)) {
+                $this->lang_id = $country->language_id;
+            }
+
             if ($this->businessId) {
                 $this->loadCountrySpecificData($countryId);
+
+                $business = Business::with('translations')->find($this->businessId);
+                if ($business) {
+                    $translation = $business->translations->firstWhere('lang_id', $this->lang_id)
+                        ?? $business->translations->first();
+                    if ($translation) {
+                        $this->name = $translation->name ?? '';
+                        $this->description_title = $translation->description_title ?? '';
+                        $this->business_description = $translation->description ?? '';
+                        $this->short_description = $translation->short_description ?? '';
+                        $this->after_image_description = $translation->after_image_description ?? '';
+                        $this->pro_cons_headline = $translation->pro_cons_headline ?? '';
+                        $this->headquaters = $translation->headquarters ?? '';
+                        $this->support_options = $translation->support_options ?? '';
+                        $this->primary_keywords = $translation->primary_keywords ?? '';
+                        $this->secondary_keywords = $translation->secondary_keywords ?? '';
+                        $this->long_tail_keywords = $translation->long_tail_keywords ?? '';
+                        $this->high_intent_keywords = $translation->high_intent_keywords ?? '';
+                    }
+                }
             }
         }
     }
@@ -1001,11 +1026,11 @@ class BusinessEdit extends Component
 
         $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings'])->findOrFail($id);
 
-        // Load existing USPs into the form slots (pad to 5 empty slots)
+        // Load existing USPs into the form slots (pad to 6 empty slots)
         $existingUsps = $business->usps->pluck('text')->toArray();
         $this->businessUsps = array_map(
             fn($text) => ['text' => $text],
-            array_pad($existingUsps, 5, '')
+            array_pad($existingUsps, 6, '')
         );
 
         // Load existing Pros
@@ -1049,6 +1074,7 @@ class BusinessEdit extends Component
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
         $this->selected_category = $business->category_id ?? null;
+        $this->selected_secondary_categories = $business->secondary_category_ids ?? [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
             $this->loadCategoryFeatures($this->selected_category);
@@ -1059,6 +1085,8 @@ class BusinessEdit extends Component
             ?? $business->translations->first();
         $this->status = (int) $business->status;
         $this->name = $translation->name ?? '';
+        $this->description_title = $translation->description_title ?? '';
+        $this->pro_cons_headline = $translation->pro_cons_headline ?? '';
         $this->affiliate_partner = $business->affiliate_partner;
         $this->affiliate_link = $business->affiliate_link;
         $this->is_affiliate = (bool) $business->is_affiliate ?? '';
@@ -1368,7 +1396,7 @@ class BusinessEdit extends Component
 
     public function addUsp()
     {
-        if (count($this->businessUsps) < 5) {
+        if (count($this->businessUsps) < 6) {
             $this->businessUsps[] = ['text' => ''];
         }
     }
@@ -1535,6 +1563,7 @@ class BusinessEdit extends Component
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'category_id' => $this->selected_category,
+            'secondary_category_ids' => $this->selected_secondary_categories,
             'active_all_countries' => $this->active_all_countries,
             'icon_id' => $iconPath,
             'image_id' => $imagePath,
@@ -1550,11 +1579,13 @@ class BusinessEdit extends Component
 
     protected function createBusinessTranslation($business)
     {
+        $targetLang = $this->lang_id ?? 1;
         $slug = Str::slug($this->name);
         $business->translations()->create([
             'name' => $this->name,
+            'description_title' => $this->description_title,
             'slug' => $slug,
-            'lang_id' => $this->languages_supported,
+            'lang_id' => $targetLang,
             'headquarters' => $this->headquaters,
             'support_options' => $this->support_options,
             'description' => $this->business_description,
@@ -1564,6 +1595,7 @@ class BusinessEdit extends Component
             'secondary_keywords' => $this->secondary_keywords,
             'long_tail_keywords' => $this->long_tail_keywords,
             'high_intent_keywords' => $this->high_intent_keywords,
+            'pro_cons_headline' => $this->pro_cons_headline,
             'status' => 1
         ]);
     }
@@ -1605,6 +1637,7 @@ class BusinessEdit extends Component
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'category_id' => $this->selected_category,
+            'secondary_category_ids' => $this->selected_secondary_categories,
             'active_all_countries' => $this->active_all_countries,
             'icon_id' => $iconPath,
             'image_id' => $imagePath,
@@ -1619,11 +1652,13 @@ class BusinessEdit extends Component
 
     protected function updateBusinessTranslation($business)
     {
+        $targetLang = $this->lang_id ?? 1;
         $slug = Str::slug($this->name);
         $business->translations()->updateOrCreate(
-            ['business_id' => $business->id, 'lang_id' => $this->languages_supported],
+            ['business_id' => $business->id, 'lang_id' => $targetLang],
             [
                 'name' => $this->name,
+                'description_title' => $this->description_title,
                 'slug' => $slug,
                 'headquarters' => $this->headquaters,
                 'support_options' => $this->support_options,
@@ -1634,6 +1669,7 @@ class BusinessEdit extends Component
                 'secondary_keywords' => $this->secondary_keywords,
                 'long_tail_keywords' => $this->long_tail_keywords,
                 'high_intent_keywords' => $this->high_intent_keywords,
+                'pro_cons_headline' => $this->pro_cons_headline,
                 'status' => 1
             ]
         );

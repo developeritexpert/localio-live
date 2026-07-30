@@ -40,8 +40,8 @@
                 </button>
             </div>
 
-            <div class="row">
-                <div class="col-md-8">
+            <div class="row g-gs">
+                <div class="col-lg-8">
                     <!-- Business Name Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
@@ -62,6 +62,11 @@
                     <!-- Business Description Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Business description title</label>
+                                <input type="text" class="form-control" wire:model.live="description_title" placeholder="e.g. What is {{ $name ?: 'this business' }}" />
+                            </div>
+
                             <div class="form-group d-flex justify-content-between align-items-center">
                                 <label class="form-label">Business description</label>
                                 <button type="button" class="btn btn-sm btn-secondary"
@@ -176,8 +181,7 @@
                                 <label class="form-label">Pricing Options</label>
                             </div>
                             <div wire:ignore>
-                                <select class="form-control pricing-options" multiple
-                                    wire:model="selectedPricingOptions">
+                                <select class="form-control select2 pricing-options" multiple style="width:100%;">
                                     @foreach ($pricingOptions as $pricingOption)
                                         <option value="{{ $pricingOption->id }}"
                                             {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
@@ -186,9 +190,8 @@
                                     @endforeach
                                 </select>
                             </div>
-                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
                             @error('selectedPricingOptions')
-                                <div class="text-danger">{{ $message }}</div>
+                                <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -470,7 +473,7 @@
 
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="row g-3">
@@ -516,10 +519,10 @@
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3 position-relative">
-                                        <label class="form-label">Business Category</label>
+                                        <label class="form-label">Main Business Category <small class="text-muted">(Sub-category for breadcrumb)</small></label>
                                         <div class="position-relative">
                                             <select class="form-control pe-5" wire:model.live="selected_category">
-                                                <option value=''>Select Category</option>
+                                                <option value=''>Select Main Sub-category</option>
                                                 @if (isset($categories))
                                                     @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">
@@ -534,6 +537,21 @@
                                         @error('selected_category')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Other Sub-categories</label>
+                                        <div wire:ignore>
+                                            <select class="form-control select2 secondary-categories" multiple style="width: 100%;">
+                                                @if (isset($categories))
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}" {{ in_array($category->id, $selected_secondary_categories ?? []) ? 'selected' : '' }}>
+                                                            {{ $category->categoryTranslations->first()->name ?? $category->id }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 11px;">Select secondary sub-categories for this business</small>
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3">
@@ -1699,6 +1717,8 @@
     @endif
 
 </div>
+
+@push('scripts')
 <script>
     document.addEventListener('livewire:init', function() {
         // Main initialization with sufficient delay for DOM to be ready
@@ -1757,24 +1777,39 @@
      * Initialize all Select2 elements on the page
      */
     function initAllSelect2() {
-        $('.features, .pricing-options, .lang-supported').select2();
-
-        $('.features').on('change', function() {
-            let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selectedFeatures',
-                data);
+        $('.pricing-options').select2({
+            placeholder: 'Select pricing option(s)',
+            allowClear: true,
+            width: '100%'
         });
 
-        $('.pricing-options').on('change', function() {
-            let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set(
-                'selectedPricingOptions', data);
+        $('.secondary-categories').select2({
+            placeholder: 'Select secondary sub-category(ies)',
+            allowClear: true,
+            width: '100%'
         });
 
-        $('.lang-supported').on('change', function() {
+        $('.features').select2();
+
+        $('.features').off('change').on('change', function() {
+            let data = $(this).val() || [];
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selectedFeatures', data);
+        });
+
+        $('.pricing-options').off('change').on('change', function() {
+            let data = $(this).val() || [];
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selectedPricingOptions', data);
+        });
+
+        $('.secondary-categories').off('change').on('change', function() {
+            let data = $(this).val() || [];
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selected_secondary_categories', data);
+        });
+
+        $('.lang-supported').select2();
+        $('.lang-supported').off('change').on('change', function() {
             let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('lang_supported',
-                data);
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('lang_supported', data);
         });
     }
 
@@ -1982,9 +2017,6 @@
         }
     }
 </script>
-@push('scripts')
-
-
 
 <script>
     document.addEventListener('livewire:init', () => {

@@ -78,6 +78,9 @@ class BusinessForm extends Component
     public $meta_title = '';
     public $meta_description = '';
     public $selected_category = null;
+    public $selected_secondary_categories = [];
+    public $description_title = '';
+    public $pro_cons_headline = '';
 
 
     // Category features
@@ -978,8 +981,32 @@ class BusinessForm extends Component
             $country = collect($this->countries)->firstWhere('id', $countryId);
             $this->selectedCountryName = $country ? $country->name : null;
 
+            if ($country && !empty($country->language_id)) {
+                $this->lang_id = $country->language_id;
+            }
+
             if ($this->businessId) {
                 $this->loadCountrySpecificData($countryId);
+
+                $business = Business::with('translations')->find($this->businessId);
+                if ($business) {
+                    $translation = $business->translations->firstWhere('lang_id', $this->lang_id)
+                        ?? $business->translations->first();
+                    if ($translation) {
+                        $this->name = $translation->name ?? '';
+                        $this->description_title = $translation->description_title ?? '';
+                        $this->business_description = $translation->description ?? '';
+                        $this->short_description = $translation->short_description ?? '';
+                        $this->after_image_description = $translation->after_image_description ?? '';
+                        $this->pro_cons_headline = $translation->pro_cons_headline ?? '';
+                        $this->headquaters = $translation->headquarters ?? '';
+                        $this->support_options = $translation->support_options ?? '';
+                        $this->primary_keywords = $translation->primary_keywords ?? '';
+                        $this->secondary_keywords = $translation->secondary_keywords ?? '';
+                        $this->long_tail_keywords = $translation->long_tail_keywords ?? '';
+                        $this->high_intent_keywords = $translation->high_intent_keywords ?? '';
+                    }
+                }
             }
         }
     }
@@ -1058,6 +1085,7 @@ class BusinessForm extends Component
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
         $this->selected_category = $business->category_id ?? null;
+        $this->selected_secondary_categories = $business->secondary_category_ids ?? [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
             $this->loadCategoryFeatures($this->selected_category);
@@ -1068,6 +1096,8 @@ class BusinessForm extends Component
             ?? $business->translations->first();
         $this->status = (int) $business->status;
         $this->name = $translation->name ?? '';
+        $this->description_title = $translation->description_title ?? '';
+        $this->pro_cons_headline = $translation->pro_cons_headline ?? '';
         $this->affiliate_partner = $business->affiliate_partner;
         $this->affiliate_link = $business->affiliate_link;
         $this->is_affiliate =(bool) $business->is_affiliate ?? '';
@@ -1391,6 +1421,7 @@ class BusinessForm extends Component
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'category_id' => $this->selected_category,
+            'secondary_category_ids' => $this->selected_secondary_categories,
             'active_all_countries' => $this->active_all_countries,
             'icon_id' => $iconPath,
             'image_id' => $imagePath,
@@ -1404,11 +1435,13 @@ class BusinessForm extends Component
 
     protected function createBusinessTranslation($business)
     {
+        $targetLang = $this->lang_id ?? 1;
         $slug = Str::slug($this->name);
         $business->translations()->create([
             'name' => $this->name,
+            'description_title' => $this->description_title,
             'slug' => $slug,
-            'lang_id' => $this->languages_supported,
+            'lang_id' => $targetLang,
             'headquarters' => $this->headquaters,
             'support_options' => $this->support_options,
             'description' => $this->business_description,
@@ -1418,6 +1451,7 @@ class BusinessForm extends Component
             'secondary_keywords' => $this->secondary_keywords,
             'long_tail_keywords' => $this->long_tail_keywords,
             'high_intent_keywords' => $this->high_intent_keywords,
+            'pro_cons_headline' => $this->pro_cons_headline,
             'status' => 1
         ]);
     }
@@ -1459,6 +1493,7 @@ class BusinessForm extends Component
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'category_id' => $this->selected_category,
+            'secondary_category_ids' => $this->selected_secondary_categories,
             'active_all_countries' => $this->active_all_countries,
             'icon_id' => $iconPath,
             'image_id' => $imagePath,
@@ -1471,11 +1506,13 @@ class BusinessForm extends Component
 
     protected function updateBusinessTranslation($business)
     {
+        $targetLang = $this->lang_id ?? 1;
         $slug = Str::slug($this->name);
         $business->translations()->updateOrCreate(
-            ['business_id' => $business->id, 'lang_id' => $this->languages_supported],
+            ['business_id' => $business->id, 'lang_id' => $targetLang],
             [
                 'name' => $this->name,
+                'description_title' => $this->description_title,
                 'slug' => $slug,
                 'headquarters' => $this->headquaters,
                 'support_options' => $this->support_options,
@@ -1486,6 +1523,7 @@ class BusinessForm extends Component
                 'secondary_keywords' => $this->secondary_keywords,
                 'long_tail_keywords' => $this->long_tail_keywords,
                 'high_intent_keywords' => $this->high_intent_keywords,
+                'pro_cons_headline' => $this->pro_cons_headline,
                 'status' => 1
             ]
         );

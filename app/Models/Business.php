@@ -14,6 +14,7 @@ class Business extends Model
         'status',
         'meta_description',
         'category_id',
+        'secondary_category_ids',
         'permanent_url',
         'affiliate_link',
         'active_all_countries',
@@ -33,9 +34,8 @@ class Business extends Model
     ];
     protected $casts = [
         'is_affiliate' => 'integer',
-
         'business_images' => 'array',
-
+        'secondary_category_ids' => 'array',
     ];
 
     protected $table = 'businesses';
@@ -78,6 +78,14 @@ class Business extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+    public function secondaryCategories()
+    {
+        $ids = $this->secondary_category_ids ?? [];
+        if (empty($ids)) {
+            return collect();
+        }
+        return Category::whereIn('id', $ids)->get();
     }
     public function products()
     {

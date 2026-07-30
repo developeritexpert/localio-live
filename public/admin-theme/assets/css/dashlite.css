@@ -34933,7 +34933,7 @@ li {
 }
 
 .gap-2 {
-  height: 0.75rem;
+  height: 2rem;
 }
 
 .gap-3 {
@@ -49287,8 +49287,9 @@ div#DataTables_Table_0_wrapper .drodown .dropdown a::before {
   }
 
 }
+
 @media(max-width:575px) {
-.nk-header-fixed+.nk-content {
+  .nk-header-fixed+.nk-content {
     overflow: hidden;
-}
+  }
 }

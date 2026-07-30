@@ -11,6 +11,7 @@ class BusinessTranslation extends Model
     protected $table = 'business_translations';
     protected $fillable = [
         'name',
+        'description_title',
         'lang_id',
         'description',
         'short_description',
@@ -24,6 +25,7 @@ class BusinessTranslation extends Model
         'secondary_keywords',
         'long_tail_keywords',
         'high_intent_keywords',
+        'pro_cons_headline',
     ];
 
     public function business()

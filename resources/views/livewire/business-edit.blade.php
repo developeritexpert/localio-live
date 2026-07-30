@@ -1,3 +1,4 @@
+<div class="business-edit-wrapper">
 <div class="nk-block nk-block-lg">
     <div class="nk-block-head nk-block-head-sm">
         <div class="nk-block-between">
@@ -60,8 +61,25 @@
                 </div>
             @endif
 
-            <div class="row">
-                <div class="col-md-8">
+            <!-- Country / Region Translation Switcher (Top Center) -->
+            <div class="d-flex justify-content-end mb-4">
+                <div class="card card-bordered p-3 text-center shadow-sm" style="min-width: 340px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e0;">
+                    <label class="form-label fw-bold mb-1" style="color: #1e3050; font-size: 15px;">
+                        <em class="icon ni ni-globe me-1"></em> Country / Region
+                    </label>
+                    <select class="form-select" wire:change="updateSelectedCountry($event.target.value)">
+                        @foreach($countries as $cntry)
+                            <option value="{{ $cntry->id }}" {{ $selectedCountry == $cntry->id ? 'selected' : '' }}>
+                                {{ $cntry->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted mt-1" style="font-size: 11.5px;">Select country/region to view & edit localized content</small>
+                </div>
+            </div>
+
+            <div class="row g-gs">
+                <div class="col-lg-8">
                     <!-- Business Name Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
@@ -82,12 +100,13 @@
                     <!-- Business Description Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Business description title</label>
+                                <input type="text" class="form-control" wire:model.live="description_title" placeholder="e.g. What is {{ $name ?: 'this business' }}" />
+                            </div>
+
                             <div class="form-group d-flex justify-content-between align-items-center">
                                 <label class="form-label">Business description</label>
-                                {{-- <button type="button" class="btn btn-sm btn-secondary"
-                                wire:click="setFieldIdAndOpenModal('description', 1000, {{ $businessId ?? 'null' }})">
-                                    AI Autofill
-                                </button> --}}
                             </div>
 
                             <!-- If you're using Alpine.js -->
@@ -128,7 +147,7 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Short Description (for USP section)</label>
+                                <label class="form-label">Short description (for preview boxes)</label>
                             </div>
                             <div class="form-group">
                                 <textarea class="form-control @error('short_description') is-invalid @enderror"
@@ -140,127 +159,6 @@
                         </div>
                     </div>
 
-
-                    <!-- Pricing Options Section -->
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Pricing Options</label>
-                            </div>
-                            <div wire:ignore>
-                                <select class="form-control pricing-options" multiple
-                                    wire:model="selectedPricingOptions">
-                                    @foreach ($pricingOptions as $pricingOption)
-                                        @php
-                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
-                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
-                                        @endphp
-                                        <option value="{{ $pricingOption->id }}"
-                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
-                                            {{ $prisingTranslation->name ?? "" }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
-                            @error('selectedPricingOptions')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Category Features Section -->
-                    @if (!empty($categoryFeatures))
-                        <div class="card card-bordered mb-3">
-                            <div class="card-inner">
-                                <div class="form-group">
-                                    <label class="form-label">Business Features</label>
-                                    <div wire:ignore>
-                                        <select id="features-select" class="form-control features" multiple>
-                                            @foreach ($categoryFeatures as $feature)
-                                                @php
-                                                    $translation = $feature->translations->firstWhere('lang_id', $lang_id)
-                                                        ?? $feature->translations->firstWhere('lang_id', 1);
-                                                @endphp
-
-                                                <option value="{{ $feature->id }}"
-                                                    {{ in_array($feature->id, $selectedFeatures ?? []) ? 'selected' : '' }}>
-                                                    {{ $translation->name ?? 'Unnamed Feature' }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    @error('selectedFeatures')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-            {{-- business images --}}
-            <div class="card card-bordered mb-3">
-                <div class="card-inner">
-                    <div class="form-group mb-3">
-                        <label class="form-label">
-                            Upload Business Images <small>(Max 5) - Currently: {{ count($business_images) + count($new_business_images) }}/5</small>
-                        </label>
-
-                        <input
-                            type="file"
-                            class="form-control"
-                            wire:model="new_business_images"
-                            multiple
-                            accept="image/*"
-                            @if(count($business_images) >= 5) disabled @endif
-                        >
-
-                        {{-- Show validation error --}}
-                        @error('new_business_images')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Preview Existing Images --}}
-                    @if(count($business_images) > 0)
-                        <h6>Saved Images:</h6>
-                        <div class="row">
-                            @foreach ($business_images as $key => $image)
-                                <div class="col-4 mb-2 position-relative">
-                                    <img src="{{ asset($image) }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                                    <button wire:click="RemoveBusniessImage({{ $key }})" type="button"
-                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
-                                        &times;
-                                    </button>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    {{-- Preview New Uploaded Images --}}
-                    @if(count($new_business_images) > 0)
-                        <h6>New Images to Save:</h6>
-                        <div class="row">
-                            @foreach ($new_business_images as $key => $image)
-                                <div class="col-4 mb-2 position-relative">
-                                    <img src="{{ $image->temporaryUrl() }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                                    <button wire:click="removeNewImage({{ $key }})" type="button"
-                                        class="btn btn-sm btn-warning position-absolute top-0 end-0 m-1">
-                                        &times;
-                                    </button>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <div class="text-end mt-4">
-                        <button wire:click="BusinessImageSave" class="btn btn-primary"
-                            @if(count($new_business_images) == 0) disabled @endif>
-                            Save Business Images
-                        </button>
-                    </div>
-                </div>
-            </div>
 
 
 
@@ -376,13 +274,13 @@
                             <div class="form-group d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <label class="form-label mb-0"><strong>Key Selling Points (USPs)</strong></label>
-                                    <p class="text-muted small mb-0">Up to 5 short bullet points shown with ✓ on the product page.</p>
+                                    <p class="text-muted small mb-0">Up to 6 short bullet points shown with ✓ on the product page.</p>
                                 </div>
                             </div>
 
                             @foreach ($businessUsps as $index => $usp)
                                 <div class="d-flex align-items-center mb-2 gap-2">
-                                    <span class="text-success fw-bold me-1" style="font-size:18px;">✓</span>
+                                    <span class="text-success fw-bold me-1 flex-shrink-0" style="font-size:18px;">✓</span>
                                     <input
                                         type="text"
                                         class="form-control"
@@ -390,22 +288,23 @@
                                         placeholder="e.g. Free domain & SSL certificate"
                                         maxlength="255"
                                     />
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removeUsp({{ $index }})" title="Remove">
+                                    <button type="button" class="btn btn-sm btn-icon btn-danger flex-shrink-0" wire:click="removeUsp({{ $index }})" title="Remove" style="width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;">
                                         <em class="icon ni ni-trash"></em>
                                     </button>
                                 </div>
                             @endforeach
 
-                            @if (count($businessUsps) < 5)
+                            @if (count($businessUsps) < 6)
                                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addUsp">
                                     <em class="icon ni ni-plus"></em> Add USP
                                 </button>
                             @else
-                                <p class="text-muted small mt-2 mb-0">Maximum of 5 USPs reached.</p>
+                                <p class="text-muted small mt-2 mb-0">Maximum of 6 USPs reached.</p>
                             @endif
                         </div>
                     </div>
 
+                    <!-- Pros & Cons Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -414,15 +313,25 @@
                                     <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business.</p>
                                 </div>
                             </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Pros & cons headline</label>
+                                <input type="text" class="form-control" wire:model.live="pro_cons_headline" placeholder="e.g. {{ $name ?: 'Business' }} pros and cons" />
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label">Pros & cons introduction</label>
+                                <textarea class="form-control" rows="3" wire:model.live="pro_cons_intro" placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                            </div>
                             
                             <div class="row">
                                 <div class="col-md-6">
                                     <h6 class="title mb-3">Pros</h6>
                                     @foreach ($businessPros as $index => $pro)
                                         <div class="d-flex align-items-center mb-2 gap-2">
-                                            <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
+                                            <span class="text-success fw-bold me-1 flex-shrink-0" style="font-size:18px;">+</span>
                                             <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
-                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
+                                            <button type="button" class="btn btn-sm btn-icon btn-danger flex-shrink-0" wire:click="removePro({{ $index }})" title="Remove" style="width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;">
                                                 <em class="icon ni ni-trash"></em>
                                             </button>
                                         </div>
@@ -435,9 +344,9 @@
                                     <h6 class="title mb-3">Cons</h6>
                                     @foreach ($businessCons as $index => $con)
                                         <div class="d-flex align-items-center mb-2 gap-2">
-                                            <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
+                                            <span class="text-danger fw-bold me-1 flex-shrink-0" style="font-size:18px;">-</span>
                                             <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
-                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
+                                            <button type="button" class="btn btn-sm btn-icon btn-danger flex-shrink-0" wire:click="removeCon({{ $index }})" title="Remove" style="width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;">
                                                 <em class="icon ni ni-trash"></em>
                                             </button>
                                         </div>
@@ -448,45 +357,36 @@
                                 </div>
                             </div>
                             
-                            <div class="row mt-3">
-                                <div class="col-12 mb-3">
-                                    <div class="form-group">
-                                        <label class="form-label">Pros & Cons Introduction Text</label>
-                                        <textarea class="form-control" rows="3" wire:model.live="pro_cons_intro" placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label class="form-label">Pros & Cons Summary Text</label>
-                                        <textarea class="form-control" rows="3" wire:model.live="pro_cons_summary" placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
-                                    </div>
-                                </div>
+                            <div class="form-group mt-4">
+                                <label class="form-label">Pros & cons ending text</label>
+                                <textarea class="form-control" rows="3" wire:model.live="pro_cons_summary" placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Description of products/services Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <label class="form-label mb-0"><strong>Offered Products or Services</strong></label>
+                                    <label class="form-label mb-0"><strong>Description of products/services</strong></label>
                                     <p class="text-muted small mb-0">Summarize offered products with a headline, images, and text.</p>
                                 </div>
                             </div>
                             
                             <div class="border p-3 mb-3 rounded">
-                                <div class="form-group mb-3 mt-3">
-                                    <label class="form-label">Headline</label>
-                                    <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does Bluehost offer?">
+                                <div class="form-group mb-3 mt-1">
+                                    <label class="form-label">Products/services headline</label>
+                                    <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does {{ $name ?: 'this business' }} offer?">
                                 </div>
                                 
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Top Text</label>
+                                    <label class="form-label">Products/services introduction</label>
                                     <textarea class="form-control" rows="3" wire:model.live="businessOfferings.0.top_text" placeholder="Introduction text above the image..."></textarea>
                                 </div>
                                 
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Description (After Image)</label>
+                                    <label class="form-label">Products/services ending text</label>
                                     <div wire:ignore x-data="{
                                         editor: null,
                                         init() {
@@ -520,9 +420,78 @@
                         </div>
                     </div>
 
-                </div>
+                                {{-- business images --}}
+            <!-- business images start -->
+            <div class="card card-bordered mb-3">
+                <div class="card-inner">
+                    <div class="form-group mb-3">
+                        <label class="form-label">
+                            Upload Business Images <small>(Max 5) - Currently: {{ count($business_images) + count($new_business_images) }}/5</small>
+                        </label>
 
-                <div class="col-md-4">
+                        <input
+                            type="file"
+                            class="form-control"
+                            wire:model="new_business_images"
+                            multiple
+                            accept="image/*"
+                            @if(count($business_images) >= 5) disabled @endif
+                        >
+
+                        {{-- Show validation error --}}
+                        @error('new_business_images')
+                            <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Preview Existing Images --}}
+                    @if(count($business_images) > 0)
+                        <h6>Saved Images:</h6>
+                        <div class="row">
+                            @foreach ($business_images as $key => $image)
+                                <div class="col-4 mb-2 position-relative">
+                                    <img src="{{ asset($image) }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
+                                    <button wire:click="RemoveBusniessImage({{ $key }})" type="button"
+                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
+                                        &times;
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Preview New Uploaded Images --}}
+                    @if(count($new_business_images) > 0)
+                        <h6>New Images to Save:</h6>
+                        <div class="row">
+                            @foreach ($new_business_images as $key => $image)
+                                <div class="col-4 mb-2 position-relative">
+                                    <img src="{{ $image->temporaryUrl() }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
+                                    <button wire:click="removeNewImage({{ $key }})" type="button"
+                                        class="btn btn-sm btn-warning position-absolute top-0 end-0 m-1">
+                                        &times;
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="text-end mt-4">
+                        <button wire:click="BusinessImageSave" class="btn btn-primary"
+                            @if(count($new_business_images) == 0) disabled @endif>
+                            Save Business Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- end business images -->
+
+            </div>
+<!-- here this is section of redirect url -->
+                    <div class="col-lg-4 card card-bordered mb-3">
+
+                    <!-- save part start here -->
+                <div class="card card-bordered mb-3">
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="row g-3">
@@ -569,10 +538,10 @@
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3 position-relative">
-                                        <label class="form-label">Business Category</label>
+                                        <label class="form-label">Main Business Category <small class="text-muted">(Sub-category for breadcrumb)</small></label>
                                         <div class="position-relative">
                                             <select class="form-control pe-5" wire:model.live="selected_category">
-                                                <option value=''>Select Category</option>
+                                                <option value=''>Select Main Sub-category</option>
                                                 @if (isset($categories))
                                                     @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">
@@ -588,7 +557,51 @@
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Other Sub-categories</label>
+                                        <div wire:ignore>
+                                            <select class="form-control select2 secondary-categories" multiple style="width: 100%;">
+                                                @if (isset($categories))
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}" {{ in_array($category->id, $selected_secondary_categories ?? []) ? 'selected' : '' }}>
+                                                            {{ $category->categoryTranslations->first()->name ?? $category->id }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 11px;">Select secondary sub-categories for this business</small>
+                                    </div>
                                     <hr class="my-3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pricing Options Box (Right Column) -->
+                        <div class="card card-bordered mb-3">
+                            <div class="card-inner">
+                                <div class="form-group mb-2">
+                                    <label class="form-label"><strong>Pricing Options</strong></label>
+                                </div>
+                                <div wire:ignore>
+                                    <select class="form-control select2 pricing-options" multiple style="width: 100%;">
+                                        @foreach ($pricingOptions as $pricingOption)
+                                            @php
+                                                $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
+                                                    ?? $pricingOption->translations->firstwhere('lang_id' , 1);
+                                            @endphp
+                                            <option value="{{ $pricingOption->id }}"
+                                                {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
+                                                {{ $prisingTranslation->name ?? "" }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('selectedPricingOptions')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                                     <div class="form-group mt-3">
                                         <label class="form-label">Permanent Link</label>
                                         <div class="permanent-link-container @error('permanentUrlSlug') is-invalid @enderror"
@@ -760,13 +773,10 @@
 
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        <!-- here end card -->
 
+                    <!-- save part end here -->
 
-                    
-
-                    <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="row g-3">
                                 <div class="col-md-12">
@@ -906,6 +916,8 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- here is save part section -->
                             <div class="card card-bordered mb-3" style="border:none; ">
                                 <div class="card-inner p-0 mt-2">
                                     <!-- Add URL Form -->
@@ -995,7 +1007,6 @@
                                                                         <div class="affiliate-link-edit">
                                                                             <div class="row g-2 align-items-center">
                                                                                 <!-- Input + Toggle Section -->
-                                                                                <!-- Input + Toggle Section -->
                                                                                 <div class="col-md-9" x-data="{ tempAffiliate: @entangle('editIsAffiliate') }">
                                                                                     <!-- URL Input -->
                                                                                     <div class="url-input-wrapper">
@@ -1056,9 +1067,6 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-
-
-
                                                                     @else
                                                                         <!-- Display Mode -->
                                                                         <div class="row align-items-center">
@@ -1072,14 +1080,6 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="col-md-3">
-                                                                                {{-- @php
-                                                                                    $isAffiliate = is_array($urlInfo) ? $urlInfo['is_affiliate'] ?? false : false;
-                                                                                @endphp
-                                                                                @if ($isAffiliate)
-                                                                                    <span class="badge bg-success">
-                                                                        <i class="fas fa-handshake me-1"></i>Affiliate
-                                                                    </span>
-                                                                                @endif --}}
                                                                             </div>
                                                                             {{-- delelte url --}}
                                                                             <div class="col-md-3 d-flex justify-content-end ">
@@ -1089,7 +1089,6 @@
                                                                                     <i class="fas fa-edit"></i>
                                                                                 </button>
                                                                                 <button type="button" class="btn btn-outline-danger btn-sm"
-                                                                                    {{-- wire:click="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})" --}}
                                                                                     wire:loading.attr="disabled"
                                                                                     wire:target="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})"
                                                                                     title="Remove URL"
@@ -1114,148 +1113,117 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                                    <!-- Media Upload Section -->
 
-                                    <div class="card card-bordered mb-3">
-                                        <div class="card-inner">
-                                            <div class="form-group">
-                                                <label class="form-label">Business Icon</label>
-                                                <input type="file"
-                                                    class="form-control @error('icon_file') is-invalid @enderror"
-                                                    wire:model.live="icon_file" />
+                            <!-- Media Upload Section -->
+                            <div class="card card-bordered mb-3">
+                                <div class="card-inner">
+                                    <div class="form-group">
+                                        <label class="form-label">Business Icon</label>
+                                        <input type="file"
+                                            class="form-control @error('icon_file') is-invalid @enderror"
+                                            wire:model.live="icon_file" />
 
-                                                @if ($iconError)
-                                                    <div class="text-danger">{{ $iconError }}</div>
-                                                @elseif ($icon_file)
-                                                    <div class="text-success">Icon selected:
-                                                        {{ $icon_file->getClientOriginalName() }}</div>
-                                                    <img src="{{ $icon_file->temporaryUrl() }}"
-                                                        class="img-thumbnail mt-2" width="100"
-                                                        alt="New Icon Preview">
-                                                @elseif($editMode && $icon_id)
-                                                    <img src="{{ asset($icon_id) }}" class="img-thumbnail mt-2"
-                                                        width="100" alt="Existing Icon Preview">
-                                                @endif
+                                        @if ($iconError)
+                                            <div class="text-danger">{{ $iconError }}</div>
+                                        @elseif ($icon_file)
+                                            <div class="text-success">Icon selected:
+                                                {{ $icon_file->getClientOriginalName() }}</div>
+                                            <img src="{{ $icon_file->temporaryUrl() }}"
+                                                class="img-thumbnail mt-2" width="100"
+                                                alt="New Icon Preview">
+                                        @elseif($editMode && $icon_id)
+                                            <img src="{{ asset($icon_id) }}" class="img-thumbnail mt-2"
+                                                width="100" alt="Existing Icon Preview">
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Business Image</label>
+                                        <input type="file" class="form-control"
+                                            @error('image_file') is-invalid @enderror"
+                                            wire:model.live="image_file" />
+
+                                        @if ($imageError)
+                                            <div class="text-danger">{{ $imageError }}</div>
+                                        @elseif ($image_file)
+                                            <div class="text-success">Image selected:
+                                                {{ $image_file->getClientOriginalName() }}</div>
+                                            <img src="{{ $image_file->temporaryUrl() }}"
+                                                class="img-thumbnail mt-2" width="100"
+                                                alt="New Image Preview">
+                                        @elseif($editMode && $image_id)
+                                            <img src="{{ asset($image_id) }}" class="img-thumbnail mt-2"
+                                                width="100" alt="Existing Image Preview">
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SEO Optimization Section -->
+                            <div class="card card-bordered mb-3">
+                                <div class="card-inner">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <div class="form-group d-flex justify-content-between align-items-center">
+                                                <label class="form-label">SEO Optimization</label>
                                             </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Business Image</label>
-                                                <input type="file" class="form-control"
-                                                    @error('image_file') is-invalid @enderror"
-                                                    wire:model.live="image_file" />
+                                            <div class="form-group mt-3">
+                                                <label class="form-label">Meta Title</label>
+                                                <input type="text" class="form-control"
+                                                    @error('meta_title') is-invalid @enderror" wire:model.live="meta_title" />
+                                                @error('meta_title')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
 
-                                                @if ($imageError)
-                                                    <div class="text-danger">{{ $imageError }}</div>
-                                                @elseif ($image_file)
-                                                    <div class="text-success">Image selected:
-                                                        {{ $image_file->getClientOriginalName() }}</div>
-                                                    <img src="{{ $image_file->temporaryUrl() }}"
-                                                        class="img-thumbnail mt-2" width="100"
-                                                        alt="New Image Preview">
-                                                @elseif($editMode && $image_id)
-                                                    <img src="{{ asset($image_id) }}" class="img-thumbnail mt-2"
-                                                        width="100" alt="Existing Image Preview">
-                                                @endif
+                                            <div class="form-group mt-3">
+                                                <label class="form-label">Meta Description</label>
+                                                <textarea class="form-control" @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
+                                                    rows="4"></textarea>
+                                                @error('meta_description')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            <div class="form-group mt-3">
+                                                <label class="form-label">Primary Keywords <span class="text-muted">(1-2 keywords)</span></label>
+                                                <textarea class="form-control @error('primary_keywords') is-invalid @enderror" wire:model.live="primary_keywords"
+                                                    rows="2" placeholder="Enter 1-2 main keywords separated by commas"></textarea>
+                                                @error('primary_keywords')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+
+                                            <div class="form-group mt-3">
+                                                <label class="form-label">Secondary Keywords <span class="text-muted">(5-10 keywords)</span></label>
+                                                <textarea class="form-control @error('secondary_keywords') is-invalid @enderror" wire:model.live="secondary_keywords"
+                                                    rows="3" placeholder="Enter 5-10 secondary keywords separated by commas"></textarea>
+                                                @error('secondary_keywords')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
-
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <div class="form-group d-flex justify-content-between align-items-center">
-                                        <label class="form-label">SEO Optimization</label>
-                                        {{-- <button type="button" class="btn btn-sm btn-secondary"
-
-                                            wire:click="setFieldIdAndOpenModal('meta', 1002, {{ $businessId ?? 'null' }})"
-                                            >
-                                            AI Autofill
-                                        </button> --}}
-
-
-
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <label class="form-label">Meta Title</label>
-                                        <input type="text" class="form-control"
-                                            @error('meta_title') is-invalid @enderror" wire:model.live="meta_title" />
-                                        @error('meta_title')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mt-3">
-                                        <label class="form-label">Meta Description</label>
-                                        <textarea class="form-control" @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
-                                            rows="4"></textarea>
-                                        @error('meta_description')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <!-- SEO Keywords Section -->
-                                    <div class="form-group mt-3">
-                                        <label class="form-label">Primary Keywords <span class="text-muted">(1-2
-                                                keywords)</span></label>
-                                        <textarea class="form-control @error('primary_keywords') is-invalid @enderror" wire:model.live="primary_keywords"
-                                            rows="2" placeholder="Enter 1-2 main keywords separated by commas"></textarea>
-                                        @error('primary_keywords')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mt-3">
-                                        <label class="form-label">Secondary Keywords <span class="text-muted">(5-10
-                                                keywords)</span></label>
-                                        <textarea class="form-control @error('secondary_keywords') is-invalid @enderror" wire:model.live="secondary_keywords"
-                                            rows="3" placeholder="Enter 5-10 secondary keywords separated by commas"></textarea>
-                                        @error('secondary_keywords')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    {{-- <div class="form-group mt-3">
-                                        <label class="form-label">Long-Tail Keywords <span class="text-muted">(5-10
-                                                keywords)</span></label>
-                                        <textarea class="form-control @error('long_tail_keywords') is-invalid @enderror" wire:model.live="long_tail_keywords"
-                                            rows="3" placeholder="Enter 5-10 long-tail keywords separated by commas"></textarea>
-                                        @error('long_tail_keywords')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group mt-3">
-                                        <label class="form-label">High-Intent Keywords <span class="text-muted">(5-10
-                                                keywords)</span></label>
-                                        <textarea class="form-control @error('high_intent_keywords') is-invalid @enderror"
-                                            wire:model.live="high_intent_keywords" rows="3"
-                                            placeholder="Enter 5-10 high-intent keywords separated by commas"></textarea>
-                                        @error('high_intent_keywords')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div> --}}
-
-                                    <hr class="my-3">
                                 </div>
                             </div>
-                        </div>
-                    </div>
+
                 </div>
+                <!-- here it end redirect section part -->
 
-                <livewire:admin.business-ai-modal />
+
+                        <!-- </div> -->
+                    </div>
+<!-- place here after this cmnt -->
+
+                                  <livewire:admin.business-ai-modal />
         </form>
-    {{-- @else
-        <div>Add business form here</div>
-
-    @endif --}}
-
-
+        
 </div>
 
 
+</div>
+</div>
 
+@push('scripts')
 <script>
     document.addEventListener('livewire:init', function() {
         // Main initialization with sufficient delay for DOM to be ready
@@ -1315,19 +1283,32 @@
      * Initialize all Select2 elements on the page
      */
     function initAllSelect2() {
-
-        $('.pricing-options, .lang-supported').select2();
-
-        $('.pricing-options').on('change', function() {
-            let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set(
-                'selectedPricingOptions', data);
+        $('.pricing-options').select2({
+            placeholder: 'Select pricing option(s)',
+            allowClear: true,
+            width: '100%'
         });
 
-        $('.lang-supported').on('change', function() {
+        $('.secondary-categories').select2({
+            placeholder: 'Select secondary sub-category(ies)',
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('.pricing-options').off('change').on('change', function() {
+            let data = $(this).val() || [];
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selectedPricingOptions', data);
+        });
+
+        $('.secondary-categories').off('change').on('change', function() {
+            let data = $(this).val() || [];
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selected_secondary_categories', data);
+        });
+
+        $('.lang-supported').select2();
+        $('.lang-supported').off('change').on('change', function() {
             let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('lang_supported',
-                data);
+            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('lang_supported', data);
         });
     }
 
@@ -1487,7 +1468,7 @@
         }
     }
 </script>
-@push('scripts')
+
 <script>
     document.addEventListener('livewire:init', () => {
         class BusinessFAQReorderManager {
