@@ -186,6 +186,7 @@ class StaticContentController extends Controller
                     'business_reviews_subheadline',
                     'business_faqs_subheadline',
                     'business_comparisons_subheadline',
+                    'business_alternatives_subheadline',
                 ],
             ],
             'help' => [

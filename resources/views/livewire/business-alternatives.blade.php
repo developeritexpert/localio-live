@@ -15,9 +15,9 @@
             border-bottom: 2px solid #e8eef6;
             margin-bottom: 15px;
         }
-        section.top-automotive-sec.top_rate_pg.light {
+        /* section.top-automotive-sec.top_rate_pg.light {
            margin-top: 120px !important;
-        }
+        } */
         /* View details button – match height of Visit website */
         .auto-choice-btn .cta_outline {
             padding: 8px 16px !important;
@@ -122,10 +122,11 @@ section.top-automotive-sec.top_rate_pg.light {
         }
     </style>
 
-    <section class="top-automotive-sec top_rate_pg light  ">
+    <section class="top-automotive-sec top_rate_pg light" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
+                    @if(empty($hasUpperHeader))
                     <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
@@ -137,6 +138,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                     {{ __('messages.business_alternatives_description', ['business' => $businessName]) !== 'messages.business_alternatives_description' ? __('messages.business_alternatives_description', ['business' => $businessName]) : 'Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.' }}
                                 </p>
                             </div>
+                    @endif
                             @php
                                 $activeReviews = ($business->reviews ?? collect())->where('status', 'active');
                                 $bReviewCount = $activeReviews->count();
