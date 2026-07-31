@@ -83,7 +83,7 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Business Description</label>
+                                <label class="form-label">Business description</label>
                                 {{-- <button type="button" class="btn btn-sm btn-secondary"
                                 wire:click="setFieldIdAndOpenModal('description', 1000, {{ $businessId ?? 'null' }})">
                                     AI Autofill
@@ -128,7 +128,7 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Short Description (for USP section)</label>
+                                <label class="form-label">Short description (for preview boxes)</label>
                             </div>
                             <div class="form-group">
                                 <textarea class="form-control @error('short_description') is-invalid @enderror"
@@ -390,7 +390,7 @@
                                         placeholder="e.g. Free domain & SSL certificate"
                                         maxlength="255"
                                     />
-                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removeUsp({{ $index }})" title="Remove">
+                                    <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeUsp({{ $index }})" title="Remove">
                                         <em class="icon ni ni-trash"></em>
                                     </button>
                                 </div>
@@ -422,7 +422,7 @@
                                         <div class="d-flex align-items-center mb-2 gap-2">
                                             <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
                                             <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
-                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
+                                            <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
                                                 <em class="icon ni ni-trash"></em>
                                             </button>
                                         </div>
@@ -437,7 +437,7 @@
                                         <div class="d-flex align-items-center mb-2 gap-2">
                                             <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
                                             <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
-                                            <button type="button" class="btn btn-sm btn-outline-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
+                                            <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
                                                 <em class="icon ni ni-trash"></em>
                                             </button>
                                         </div>

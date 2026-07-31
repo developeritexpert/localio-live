@@ -17,12 +17,12 @@
 @endphp
 
 <!-- Upper Header Section ( identical to business details page header, without in-page navigation) -->
-<section class="banner_sec help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2" style="background-color: #f8fafc; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #fdfdfd; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
-        <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0" style="background: transparent; padding: 0; font-size: 14px;">
+                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 14px; margin-bottom:0;">
                     <li class="breadcrumb-item">
                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" style="color: #64748b; text-decoration: none;">All</a>
                     </li>
@@ -52,15 +52,15 @@
         </div>
 
         <!-- Business Header Row -->
-        <div class="row align-items-center justify-content-between g-3 mt-1">
+        <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class="d-flex align-items-center gap-3">
+                <div class=" top_head d-flex align-items-center gap-3">
                     <!-- Business Icon -->
-                    <div class="asn-img" style="width: 64px; height: 64px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
                                 {{ $bName }} {{ $reviewsWord }} reviews
                             </h1>
@@ -82,7 +82,7 @@
 </section>
 
 <!-- Review Content Section -->
-<section class="review-section py-5" style="background-color: #ffffff; overflow: visible !important;">
+<section class="review-section reviw_sec_new py-5" style="background-color: #ffffff; overflow: visible !important;">
     <style>
         .review-sidebar-sticky {
             position: sticky !important;
@@ -100,6 +100,71 @@
         }
         .clear-filters-btn:hover {
             text-decoration: underline;
+        }
+        .reviw_sec_new .rgt_sde button:hover {
+            text-decoration:underline !important;
+        }
+       .reviw_sec_new .crd-img-txt h6 {
+        font-size: 15px !important;
+        font-weight: 600;
+        }
+
+        .reviw_sec_new .crd-img-txt {
+        flex:1;
+        display: flex;
+        justify-content: space-between;
+        }  
+        .reviw_sec_new  .r-crd-hd {
+            width: 100%;
+            gap:12px;
+            align-items:start;
+        }        
+         .reviw_sec_new  .star-list  i{
+            font-size:14px;
+         }      
+         .review-cntnt-btm .review-card:last-child {
+        margin-bottom: 0 !important;
+        }
+
+        .review-cntnt-btm .review-text {
+        font-size: 14px;
+        color: #444 !important;
+        }
+
+        .crd-stars {
+        gap: 4px;
+        }
+
+        .crd-stars span {
+        position: unset !important;
+        }
+
+        .review-cntnt-btm .btn-toggle-translation {
+        color: #002347 !important;
+
+        }
+
+        .review-cntnt-btm .btn-toggle-translation:hover {
+        text-decoration: underline;
+        }
+
+        .review-prompt-banner button:hover {
+        background-color: #06498b !important;
+        border-color: #06498b !important;
+        color: #fff !important;
+        }
+
+        .review-prompt-banner button:first-child:hover i {
+        color: #fff !important;
+        }
+
+        .review-prompt-banner button {
+            border-color: #06498b !important;
+            transition: unset !important;
+            color: #06498b !important;
+        }
+        .reviw_sec_new .filt_box li i.text-warning{
+            color:#4a4a4a !important;
         }
         @media (max-width: 991px) {
             .review-sidebar-sticky {
@@ -120,7 +185,7 @@
                 </div>
                 <div>
                     <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Have you used {{ $bName }} before?</h4>
-                    <p style="margin: 0; font-size: 14px; color: #64748b;">Answer a few questions to help the community.</p>
+                    <p style="margin: 0; font-size: 14px; color: #666;">Answer a few questions to help the community.</p>
                 </div>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
@@ -167,7 +232,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <span style="font-size: 14px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
+                            <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
                         </div>
 
                         <!-- Criteria Breakdown -->
@@ -190,14 +255,14 @@
 
                         @if(isset($recommendPercent) && $recommendPercent > 0)
                             <div class="pt-3 border-top d-flex align-items-center justify-content-between">
-                                <span style="font-size: 13.5px; font-weight: 600; color: #1e3050;">Recommended by users</span>
-                                <span style="font-size: 15px; font-weight: 700; color: #1e3050;">{{ $recommendPercent }}%</span>
+                                <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
+                                <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recommendPercent }}%</span>
                             </div>
                         @endif
                     </div>
 
                     <!-- Filter by Rating Section -->
-                    <div class="p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
+                    <div class="filt_box p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                             <span style="font-size: 15px; font-weight: 700; color: #1e3050;">Filter by rating</span>
                             <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span>
@@ -212,11 +277,11 @@
                                 <li style="display: flex; align-items: center; margin-bottom: 12px; gap: 8px;">
                                     <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0; accent-color: #0056b3;">
                                     <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
-                                        <span style="display: inline-flex; align-items: center; width: 45px; font-size: 13.5px; color: #475569; flex-shrink: 0;">
+                                        <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #666; flex-shrink: 0;">
                                             <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
                                         </span>
                                         <div style="flex-grow: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
-                                            <div style="width: {{ $percent }}%; height: 100%; background: #475569; border-radius: 3px;"></div>
+                                            <div style="width: {{ $percent }}%; height: 100%; background: #4a4a4a; border-radius: 3px;"></div>
                                         </div>
                                         <span style="font-size: 13px; color: #94a3b8; min-width: 30px; text-align: right; flex-shrink: 0;">({{ $count }})</span>
                                     </label>
@@ -231,7 +296,7 @@
             <!-- Right Column (Reviews List Container) -->
             <div class="col-lg-8 col-12">
                 <!-- Sorting Bar & Write Review Button -->
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom">
+                <div class="rgt_sde d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 pb-2 border-bottom">
                     <form method="GET" id="sort-form" class="d-flex align-items-center gap-2 m-0">
                         <label for="rating-select" style="font-size: 14.5px; font-weight: 600; color: #475569; margin: 0; white-space: nowrap;">Sort by:</label>
                         <select class="form-select form-select-sm" id="rating-select" name="sort" style="padding: 6px 32px 6px 12px; font-size: 14px; border-radius: 8px; cursor: pointer; width: auto; min-width: 140px; border: 1px solid #cbd5e0; color: #1e3050; font-weight: 500;">
@@ -244,12 +309,14 @@
 
                     <div>
                         @auth
-                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                <i class="fas fa-pen" style="font-size: 12px;"></i> Write review
+                        <i class="fas fa-pen" style="font-size: 12px; color:#002347;"></i>
+                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding:0;">
+                                 Write review
                             </button>
                         @else
-                            <button onclick="openLoginModal()" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                <i class="fas fa-pen" style="font-size: 12px;"></i> Write review
+                        <i class="fas fa-pen" style="font-size: 12px; color:#002347;"></i>
+                            <button onclick="openLoginModal()" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding:0;">
+                                 Write review
                             </button>
                         @endauth
                     </div>

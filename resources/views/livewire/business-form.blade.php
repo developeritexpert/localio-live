@@ -63,7 +63,7 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Business Description</label>
+                                <label class="form-label">Business description</label>
                                 <button type="button" class="btn btn-sm btn-secondary"
                                 wire:click="setFieldIdAndOpenModal('description', 1000, {{ $businessId ?? 'null' }})">
 
