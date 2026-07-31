@@ -644,6 +644,10 @@
 }
 
 @media only screen and (max-width: 991px) {
+  .user_dashbord .dashboard_lft {
+    top: 40px;
+  }
+
   .user_dashbord>div>.col-lg-9 {
     max-width: 100%;
     flex: 0 0 100%;

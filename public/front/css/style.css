@@ -5559,7 +5559,7 @@ i.white-heart {
 header .sec_head {
   position: fixed;
   width: 100%;
-  background-color: #003f7d;
+  background-color: #06498b;
 }
 
 header .search_logo {
@@ -9836,6 +9836,10 @@ section.right_tool_sec .otr_rgtool h2 {
   max-height: 45px;
 }
 
+
+.sec_head .container-fluid {
+padding-inline:30px;
+}
 .user_revew_sec,
 .comparsn_bnr_sec {
   padding: 35px 0 20px;
