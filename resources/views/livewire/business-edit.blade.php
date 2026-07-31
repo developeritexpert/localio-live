@@ -891,18 +891,21 @@
 
                                    <div class="affilates-div">
                                              <div class="affiliate-link-display" x-show="!editing" @click="startEdit()" style="cursor: pointer;">
-                                                <div class="url-display-wrapper">
+                                                <div class="url-display-wrapper d-flex align-items-center justify-content-between">
                                                     <span class="url-text" x-text="tempUrl || 'Enter redirect URL'"
                                                         :title="tempUrl"></span>
-                                                    <div class="affiliate-indicator m icon ni ni-edit btn btn-sm btn-info">
-                                                        <template x-if="tempAffiliate">
-                                                            <i class="fas fa-check-circle text-success"
-                                                                title="Affiliate Link"></i>
-                                                        </template>
-                                                        <template x-if="!tempAffiliate">
-                                                            <i class="fas fa-exclamation-triangle text-warning"
-                                                                title="Non-Affiliate Link"></i>
-                                                        </template>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div class="affiliate-indicator">
+                                                            <template x-if="tempAffiliate">
+                                                                <i class="fas fa-check-circle text-success"
+                                                                    title="Affiliate Link"></i>
+                                                            </template>
+                                                            <template x-if="!tempAffiliate">
+                                                                <i class="fas fa-exclamation-triangle text-warning"
+                                                                    title="Non-Affiliate Link"></i>
+                                                            </template>
+                                                        </div>
+                                                        <em class="icon ni ni-edit text-primary fs-5 btn btn-info" title="Edit"></em>
                                                     </div>
                                                 </div>
                                              </div>
@@ -921,13 +924,13 @@
                                                  </div>
 
                                                  <!-- Toggle Switch - Only visible while editing -->
-                                                 <div class="affiliate-toggle-section m-0">
-                                                     <div class="affiliate-toggle">
-                                                         <label class="form-check-label me-2">
+                                                 <div class="affiliate-toggle-section m-0 mt-2 d-flex align-items-center justify-content-between" style="height: 3rem; z-index: 1;">
+                                                     <div class="affiliate-toggle d-flex align-items-center">
+                                                         <label class="form-check-label me-2 mb-0">
                                                              Affiliate
                                                          </label>
-                                                       <div class="label_from_box">
-                                                           <div class="form-check form-switch">
+                                                       <div class="label_from_box d-flex align-items-center">
+                                                           <div class="form-check form-switch m-0">
                                                              <input class="form-check-input" type="checkbox"
                                                                  x-model="tempAffiliate" id="affiliateToggle">
                                                          </div>
@@ -943,24 +946,20 @@
                                                          </div>
                                                        </div>
                                                      </div>
+
+                                                     <!-- Save / Cancel Buttons (Visible only while editing) -->
+                                                     <div class="save-cancel-buttons d-flex align-items-center gap-1">
+                                                         <button type="button" class="btn btn-sm btn-success px-2 py-1" @click="saveEdit()" title="Save" style="width: 100%; margin-left: -9rem;">
+                                                             <em class="icon ni ni-save me-1"></em> Save
+                                                         </button>
+                                                         <button type="button" class="btn btn-sm btn-secondary px-2 py-1" @click="cancelEdit()" title="Cancel"  style="width: 100%; margin-left: 0rem;">
+                                                             <em class="icon ni ni-cross me-1"></em> Cancel
+                                                         </button>
+                                                     </div>
                                                  </div>
                                              </div>
                                    </div>
 
-                                            <!-- Edit Controls -->
-                                            <div class="edit-controls" style="top: 10% !important;">
-                                                <i class=" edit-pencil text-primary fs-5 icon ni ni-edit" x-show="!editing"
-                                                    @click.stop="startEdit()" style="cursor: pointer;"></i>
-
-                                                <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
-                                                    <button type="button" class="btn icon ni ni-save btn-success" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-icon btn-secondary icon ni ni-cross" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         @error('affiliate_link')
