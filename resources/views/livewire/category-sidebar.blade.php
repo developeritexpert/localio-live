@@ -4,17 +4,21 @@
             <div class="row gy-4">
                 <div class="col-lg-3 mb-4">
                     <div class="parent-cat-sidebar">
-                        <h4 style="margin-bottom: 15px; text-align: left; cursor: pointer;"
-                            wire:click="selectAllCategories"
-                            wire:loading.class="cat_loading"
-                            wire:target="selectAllCategories">
-                            <a href="javascript:void(0)"
-                               style="font-size: 18px; font-weight: 700; color: {{ is_null($selectedCategoryId) ? '#002347' : '#002347' }}; text-decoration: none; transition: color 0.2s;"
-                               onmouseover="this.style.color='#002347'"
-                               onmouseout="this.style.color='{{ is_null($selectedCategoryId) ? '#002347' : '#002347' }}'">
+                        @if(is_null($selectedCategoryId))
+                            <h4 style="margin-bottom: 15px; text-align: left; font-size: 18px; font-weight: 700; color: #002347;">
                                 All categories
-                            </a>
-                        </h4>
+                            </h4>
+                        @else
+                            <div style="margin-bottom: 15px; text-align: left;">
+                                <a href="javascript:void(0)"
+                                   wire:click="selectAllCategories"
+                                   wire:loading.class="cat_loading"
+                                   wire:target="selectAllCategories"
+                                   style="font-size: 14px; font-weight: 600; color: #06498b; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-arrow-left" style="font-size: 12px;"></i> All categories
+                                </a>
+                            </div>
+                        @endif
 
                         <ul>
                             @foreach ($categories as $category)
