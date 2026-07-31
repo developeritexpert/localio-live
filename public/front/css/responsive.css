@@ -11238,23 +11238,23 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 }
 
 .usr_profile {
-  height: 50px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
-  width: 50px;
-  min-width: 50px;
+  width: 40px;
+  min-width: 40px;
 }
 
 .drop_menu:hover .dropdown-menu {
   overflow: hidden;
 }
 
-.user_img.drop_menu {
+/* .user_img.drop_menu {
   flex: 0 0 60px;
-}
+} */
 
 .user_img.drop_menu {
-  flex: 0 0 50px;
+  flex: 0 0 40px;
 }
 
 .category-list_a li {

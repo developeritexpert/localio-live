@@ -5559,7 +5559,7 @@ i.white-heart {
 header .sec_head {
   position: fixed;
   width: 100%;
-  background-color: #003f7d;
+  background-color: #06498b;
 }
 
 header .search_logo {
@@ -9834,4 +9834,9 @@ section.right_tool_sec .otr_rgtool h2 {
 .user_img.drop_menu .dropdown-menu .user_detail .user_img img {
   max-width: 45px;
   max-height: 45px;
+}
+
+
+.sec_head .container-fluid {
+padding-inline:30px;
 }

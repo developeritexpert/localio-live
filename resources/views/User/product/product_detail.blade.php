@@ -1,6 +1,6 @@
 
-
 @extends('user_layout.master')
+
 @section('body_class', 'product-page-body')
 
 @section('meta_title', isset($business->translations->first()->name) && isset($business->translations->first()->name) ?
