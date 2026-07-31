@@ -731,6 +731,9 @@
                                                         <p class="text-center text-muted my-2">No countries found</p>
                                                     @else
                                                         @foreach ($countries as $country)
+                                                            @php
+                                                                $displayName = $country->name . ($country->language ? ' – ' . $country->language->name : '');
+                                                            @endphp
                                                             <div class="form-check py-1 border-bottom">
                                                                 <input type="checkbox"
                                                                     wire:click="toggleCountrySelection({{ $country->id }})"
@@ -739,7 +742,7 @@
                                                                     {{ in_array($country->id, $selectedCountries) ? 'checked' : '' }}>
                                                                 <label class="form-check-label w-100"
                                                                      for="country_{{ $country->id }}">
-                                                                    {{ $country->name }}
+                                                                    {{ $displayName }}
                                                                 </label>
                                                             </div>
                                                         @endforeach
@@ -761,17 +764,18 @@
                                                                             'id',
                                                                             $countryId,
                                                                         );
+                                                                        $selectedDisplayName = $selectedCountry ? ($selectedCountry->name . ($selectedCountry->language ? ' – ' . $selectedCountry->language->name : '')) : '';
                                                                     @endphp
                                                                     @if ($selectedCountry)
                                                                         <span
                                                                             class="badge bg-primary position-relative m-1"
                                                                             style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
-                                                                            {{ $selectedCountry->name }}
+                                                                            {{ $selectedDisplayName }}
                                                                             <button type="button"
                                                                                 wire:click="toggleCountrySelection({{ $countryId }})"
                                                                                 class="btn-close btn-close-white position-absolute"
                                                                                 style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
-                                                                                title="Remove {{ $selectedCountry->name }}">
+                                                                                title="Remove {{ $selectedDisplayName }}">
                                                                             </button>
                                                                         </span>
                                                                     @endif
@@ -1039,14 +1043,15 @@
                                     @if (!empty($countryWebsiteUrls))
                                         <div class="country-urls-list">
                                             @foreach ($countryWebsiteUrls as $countryId => $urlData)
-                                                @php
-                                                    $country = collect($countries)->firstWhere('id', $countryId);
-                                                @endphp
-                                                @if ($country)
-                                                    <div class="country-url-group mb-4">
-                                                        <div class="d-flex align-items-center mb-2">
-                                                            <h6 class="mb-0 me-2">{{ $country->name }}</h6>
-                                                        </div>
+                                                 @php
+                                                     $country = collect($countries)->firstWhere('id', $countryId);
+                                                     $countryDisplayName = $country ? ($country->name . ($country->language ? ' – ' . $country->language->name : '')) : '';
+                                                 @endphp
+                                                 @if ($country)
+                                                     <div class="country-url-group mb-4">
+                                                         <div class="d-flex align-items-center mb-2">
+                                                             <h6 class="mb-0 me-2">{{ $countryDisplayName }}</h6>
+                                                         </div>
 
                                                         @if (is_array($urlData) || is_object($urlData))
                                                             @foreach ((array) $urlData as $index => $urlInfo)

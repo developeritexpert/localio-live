@@ -237,7 +237,7 @@ class BusinessEdit extends Component
             }
         }
 
-        $this->countries = Country::all();
+        $this->countries = Country::with('language')->get();
 
         if ($this->selected_category) {
             $this->loadCategoryFeatures($this->selected_category);
@@ -885,7 +885,7 @@ class BusinessEdit extends Component
 
     protected function loadCountries()
     {
-        $this->countries = Country::all();
+        $this->countries = Country::with('language')->get();
     }
 
     protected function loadBusinesses()
@@ -900,10 +900,13 @@ class BusinessEdit extends Component
 
     public function updatedCountrySearch()
     {
-        $this->countries = Country::when($this->countrySearch, function ($query) {
-            $query->where('name', 'like', '%' . $this->countrySearch . '%');
-        })
-            ->select('id', 'name')
+        $this->countries = Country::with('language')
+            ->when($this->countrySearch, function ($query) {
+                $query->where('name', 'like', '%' . $this->countrySearch . '%')
+                    ->orWhereHas('language', function ($q) {
+                        $q->where('name', 'like', '%' . $this->countrySearch . '%');
+                    });
+            })
             ->get();
     }
     public function toggleCountrySelection($countryId)
