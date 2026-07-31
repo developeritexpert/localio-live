@@ -78,6 +78,7 @@ class BusinessEdit extends Component
     public $meta_title = '';
     public $meta_description = '';
     public $selected_category = null;
+    public $selected_sub_categories = [];
 
 
     // Category features
@@ -999,7 +1000,7 @@ class BusinessEdit extends Component
         $this->addbusiness = false;
         $this->businessId = $id;
 
-        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings'])->findOrFail($id);
+        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings', 'subCategories'])->findOrFail($id);
 
         // Load existing USPs into the form slots (pad to 5 empty slots)
         $existingUsps = $business->usps->pluck('text')->toArray();
@@ -1049,6 +1050,7 @@ class BusinessEdit extends Component
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
         $this->selected_category = $business->category_id ?? null;
+        $this->selected_sub_categories = $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
             $this->loadCategoryFeatures($this->selected_category);
@@ -1519,6 +1521,7 @@ class BusinessEdit extends Component
             'is_affiliate_partner' => 'boolean',
             'newWebsiteUrl' => 'nullable|url',
             'selectedPricingOptions' => 'nullable|array',
+            'selected_sub_categories' => 'nullable|array',
             'selectedFeatures' => 'nullable|array',
             'primary_keywords' => 'nullable|string|max:500',
             'secondary_keywords' => 'nullable|string|max:1000',
@@ -1685,6 +1688,9 @@ class BusinessEdit extends Component
         // Sync pricing options
         $business->pricingOptions()->sync($this->selectedPricingOptions);
 
+
+        // Sync sub categories
+        $business->subCategories()->sync($this->selected_sub_categories ?? []);
 
         // Sync features
         $business->features()->sync($this->selectedFeatures);

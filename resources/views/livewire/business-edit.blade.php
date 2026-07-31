@@ -563,7 +563,7 @@
                                      @php
                                         $langId = session('lang_id', 1);
 
-                                        $subCategories = \App\Models\Category::whereNull('parent_id')
+                                        $subCategories = \App\Models\Category::whereNotNull('parent_id')
                                             ->whereHas('translations', function ($query) use ($langId) {
                                                 $query->where('lang_id', $langId);
                                             })
@@ -598,7 +598,7 @@
                                     <div class="form-group mt-3">
                                         <label class="form-label">Business Sub Categories</label>
 
-                                        <select name="sub_categories[]" class="form-control" multiple size="8">
+                                        <select wire:model="selected_sub_categories" class="form-control" multiple size="8">
                                             @foreach($subCategories as $category)
                                                 <option value="{{ $category->id }}">
                                                     {{ $category->translations->name ?? $category->id }}

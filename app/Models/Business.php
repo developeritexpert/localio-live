@@ -79,6 +79,10 @@ class Business extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+    public function subCategories()
+    {
+        return $this->belongsToMany(Category::class, 'business_sub_category', 'business_id', 'category_id');
+    }
     public function products()
     {
         return $this->belongsToMany(Product::class, 'business_product');
