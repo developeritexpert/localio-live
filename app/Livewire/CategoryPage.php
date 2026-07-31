@@ -62,6 +62,8 @@ class CategoryPage extends Component
                 ->where('lang_id', $this->lang_id);
         })->with(['translations' => function ($query) {
             $query->where('lang_id', $this->lang_id);
+        }, 'parent.translations' => function ($query) {
+            $query->where('lang_id', $this->lang_id);
         }])->firstOrFail();
 
         // Clear comparison session if switching to a different category

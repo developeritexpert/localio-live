@@ -385,6 +385,15 @@
                                                style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
                                                onmouseout="this.style.color=''">All</a>
                                         </li>
+                                        @if($category->parent)
+                                            <li class="breadcrumb-item">
+                                                <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                                   style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
+                                                   onmouseout="this.style.color=''">
+                                                    {{ $category->parent->translations->name ?? 'Main Category' }}
+                                                </a>
+                                            </li>
+                                        @endif
                                         <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
                                             {{ $category->translations->name ?? 'Category' }}
                                         </li>
@@ -518,6 +527,36 @@
                 <section class="top-automotive-sec cat_pg light">
                 <div class="top-auto-btm">
                     <div class="container">
+                        <!-- Breadcrumbs Navigation for Subcategory Page -->
+                        <div class="row align-items-center mb-3">
+                            <div class="col-8">
+                                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                    <ol class="breadcrumb m-0" style="background: transparent; padding: 0;">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
+                                               style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
+                                               onmouseout="this.style.color=''">All</a>
+                                        </li>
+                                        @if($category->parent)
+                                            <li class="breadcrumb-item">
+                                                <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                                   style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
+                                                   onmouseout="this.style.color=''">
+                                                    {{ $category->parent->translations->name ?? 'Main Category' }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                        <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
+                                            {{ $category->translations->name ?? 'Category' }}
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <x-social-icon />
+                            </div>
+                        </div>
+
                         <div class="top-auto-choice">
                             <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
                                 <div class="row align-items-start">

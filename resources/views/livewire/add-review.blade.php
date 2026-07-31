@@ -88,9 +88,12 @@
 
                                          <hr class="my-3">
 
-                                         <div class="d-flex justify-content-center mt-4">
-                                             <button type="button" class="btn text-white w-100" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; max-width:200px; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
-                                                 Continue <i class="fas fa-arrow-right ms-2" style="font-size: 11px;"></i>
+                                         <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="closeModal" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
+                                                 Cancel
+                                             </button>
+                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
+                                                 Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -118,7 +121,7 @@
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn text-white  w-50 w-sm-auto" wire:click="submitStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
-                                                 Submit review <i class="fas fa-paper-plane ms-1 ms-sm-2" style="font-size: 11px;"></i>
+                                                 Submit review <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -148,7 +151,7 @@
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn  text-white  w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
-                                                 Submit review <i class="fas fa-paper-plane ms-1" style="font-size: 11px;"></i>
+                                                 Submit pros & cons <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -206,12 +209,12 @@
                                     <div class="mt-4 pt-3 border-top" style="font-size: 12px; color: #64748b; line-height: 1.5;">
                                         @if($step === 1)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
-                                                <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly:
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly
                                             </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Your ratings should reflect your overall experience with this business.</p>
                                         @elseif($step === 2)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
-                                                <i class="fas fa-lightbulb text-warning me-1"></i> Be specific:
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Be specific
                                             </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Include details that may help others make an informed decision.</p>
                                         @elseif($step === 3)
