@@ -594,6 +594,8 @@
 
                 <!-- <div class="hdr_ryt">
                     <div class="hdr_info"> -->
+                        <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
+                            class="cta cta_trans">Write review</a>
                         <x-user-profile/>
                     <!-- </div>
                 </div> -->

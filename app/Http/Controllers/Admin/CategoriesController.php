@@ -104,10 +104,190 @@ class CategoriesController extends Controller
         return view('Admin.categories.add', compact('category_data', 'category', 'category_image_url', 'category_icon_url', 'parentCategories', 'hasSubcategories', 'hasItems', 'rating_criteria'));
     }
 
-    public function add_process(Request $request)
+    // public function add_process(Request $request)
+    // {
+
+    //     $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
+    //     $isNewCategory = !$request->category_id;
+        
+    //     $rules = [
+    //         'name' => [
+    //             'required',
+    //             'min:3',
+    //             'max:255'
+                
+    //         ],
+    //         'title' => 'nullable|string|max:255',
+    //         'homepage_link_text' => 'nullable|string|max:255',
+    //         'show_on_homepage' => 'nullable',
+    //         'homepage_order' => 'nullable|integer',
+    //         'homepage_product_limit' => 'nullable|integer|min:1|max:50',
+    //         'comparison_slug' => 'nullable|string|max:255',
+    //         'description' => 'required|string|min:10',
+    //         'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
+    //         'category_icon' => $isNewCategory
+    //         ? 'required|mimes:svg,png,jpg,jpeg,webp|max:2048'
+    //         : 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
+    //         'is_parent' => 'nullable',
+    //         'parent_id' => 'nullable|required_without:is_parent|exists:categories,id',
+    //     ];
+
+    //     $validator = Validator::make($request->all(), $rules);
+
+    //     $validator->after(function ($validator) use ($request) {
+    //         // $is_parent = $request->boolean('is_parent');
+    //         $is_parent = $request->has('is_parent');
+    //         $parent_id = $request->parent_id;
+    //         $category_id = null;
+
+
+
+    //         if ($request->category_id) {
+    //             // $categoryTranslation = CategoryTranslation::find($request->category_id);
+    //              $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)->first();
+    //             if ($categoryTranslation) {
+    //                 $category_id = $categoryTranslation->category_id;
+    //             }
+
+    //         }
+
+    //         if (!$is_parent) {               
+
+    //             if ($category_id && $parent_id == $category_id) {
+    //                 $validator->errors()->add('parent_id', 'A category cannot be its own parent.');
+    //                 return;
+    //             }
+
+    //             $parentCategory = Category::find($parent_id);
+    //             if ($parentCategory && $parentCategory->parent_id !== null) {
+    //                 $validator->errors()->add('parent_id', 'The selected parent category must not be a sub-category itself.');
+    //             }
+
+    //             if ($category_id) {
+    //                 $category = Category::find($request->category_id);
+    //                 if ($category) {
+    //                     if ($category->subCategories()->where('id', $parent_id)->exists()) {
+    //                         $validator->errors()->add('parent_id', 'Circular reference detected: The selected parent category is a sub-category of this category.');
+    //                     }
+    //                     if ($category->subCategories()->exists()) {
+    //                         $validator->errors()->add('is_parent', 'This category cannot be converted to a sub-category because it contains active sub-categories.');
+    //                     }
+    //                 }
+    //             }
+    //         } else {
+    //             if ($category_id) {
+    //                 $category = Category::find($category_id);
+    //                 if ($category && $category->parent_id !== null) {
+    //                     $hasBusinesses = $category->businesses()->exists();
+    //                     $hasProducts = $category->products()->exists();
+    //                     if ($hasBusinesses || $hasProducts) {
+    //                         $validator->errors()->add('is_parent', 'This category cannot be converted to a parent category because it contains active businesses or products.');
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     });
+
+    //             // dd($request->all());
+
+
+    //     if ($validator->fails()) {
+
+    //             // dd($validator->errors()->toArray());
+
+
+    //         return redirect()->back()->withErrors($validator)->withInput();
+    //     }
+
+    //     $validate = $validator->validated();
+
+    //     $category_id = null;
+    //     if ($request->category_id) {
+    //         $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)->first();
+    //         if ($categoryTranslation) {
+    //             $category_id = $categoryTranslation->category_id;
+    //         }
+    //     }
+    //     $category = $category_id ? Category::find($request->category_id) : new Category();
+    //     if (!$category) {
+    //         $category = new Category();
+    //     }
+
+    //     $category->parent_id = $request->boolean('is_parent') ? null : $request->parent_id;
+    //     $category->show_on_homepage = $request->has('show_on_homepage') ? 1 : 0;
+    //     $category->homepage_order = (int) ($request->input('homepage_order', 0) ?? 0);
+    //     $category->homepage_product_limit = (int) ($request->input('homepage_product_limit', 6) ?? 6);
+
+    //     if ($request->hasFile('image')) {
+    //         $media = $this->mediaservice->uploadMedia($request->file('image'), 'category/images');
+    //         $category->image = $media->id;
+    //     }
+    //     if ($request->hasFile('category_icon')) {
+    //         $mediaIcon = $this->mediaservice->uploadMedia($request->file('category_icon'), 'category/icon');
+    //         $category->category_icon = $mediaIcon->id;  
+    //     }       
+    //     $category->save();
+    //     if ($category) {
+    //         $slug = Str::slug($validate['name']);
+    //         $originalSlug = $slug;
+    //         $count = 1;
+    //         while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->where('category_id', '!=', $category->id)->exists()) {
+    //             $slug = $originalSlug . '-' . $count++;
+    //         }
+    //        CategoryTranslation::updateOrCreate(
+    //             [
+    //                 'lang_id' => (int) $language_id,
+    //                 'category_id' => $category->id
+    //             ],
+    //             [
+    //                 'category_id'  => $category->id,
+    //                 'lang_id'      => $language_id,
+    //                 'name'         => $validate['name'],
+    //                 'title'        => $validate['title'] ?? null,
+    //                 'homepage_link_text' => $validate['homepage_link_text'] ?? null,
+    //                 'description'  => $validate['description'],
+    //                 'slug'         => $slug,
+    //                 'comparison_slug' => $validate['comparison_slug'] ?? null,
+    //                 'is_important' => $request->has('is_important') ? 1 : 0,
+    //             ]
+    //         );
+
+    //         // Handle rating criteria
+    //         $submittedExistingCriteria = $request->input('existing_rating_criteria', []) ?? null;
+    //         $submittedNewCriteria = $request->input('new_rating_criteria', []) ?? null;
+            
+    //         // Delete criteria not in the submitted list
+    //         $existingIds = array_keys($submittedExistingCriteria);
+    //         $category->ratingCriteria()->whereNotIn('id', $existingIds)->delete();
+
+    //         // Update existing criteria (preserves historical reviews!)
+    //         foreach ($submittedExistingCriteria as $criteriaId => $name) {
+    //             if (trim($name) !== '') {
+    //                 CategoryRatingCriteria::where('id', $criteriaId)->where('category_id', $category->id)->update(['name' => trim($name)]);
+    //             }
+    //         }
+
+    //         // Add new criteria
+    //         foreach ($submittedNewCriteria as $name) {
+    //             if (trim($name) !== '') {
+    //                 CategoryRatingCriteria::create([
+    //                     'category_id' => $category->id,
+    //                     'name' => trim($name)
+    //                 ]);
+    //             }
+    //         }
+
+    //         return redirect()->route('categories')->with('success', 'Category saved successfully');
+    //     } else {
+    //         return redirect()->route('categories')->with('error', 'Failed to save the category.');
+    //     }
+    // }
+    /** new code 31-07-2026 */
+     public function add_process(Request $request)
     {
 
         $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
+        // dd($request->all());
         $isNewCategory = !$request->category_id;
         
         $rules = [
@@ -118,10 +298,6 @@ class CategoriesController extends Controller
                 
             ],
             'title' => 'nullable|string|max:255',
-            'homepage_link_text' => 'nullable|string|max:255',
-            'show_on_homepage' => 'nullable',
-            'homepage_order' => 'nullable|integer',
-            'homepage_product_limit' => 'nullable|integer|min:1|max:50',
             'comparison_slug' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
             'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
@@ -135,16 +311,13 @@ class CategoriesController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         $validator->after(function ($validator) use ($request) {
-            // $is_parent = $request->boolean('is_parent');
             $is_parent = $request->has('is_parent');
             $parent_id = $request->parent_id;
-            $category_id = null;
 
 
 
             if ($request->category_id) {
-                // $categoryTranslation = CategoryTranslation::find($request->category_id);
-                 $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)->first();
+                $categoryTranslation = CategoryTranslation::find($request->category_id);
                 if ($categoryTranslation) {
                     $category_id = $categoryTranslation->category_id;
                 }
@@ -174,27 +347,10 @@ class CategoriesController extends Controller
                         }
                     }
                 }
-            } else {
-                if ($category_id) {
-                    $category = Category::find($category_id);
-                    if ($category && $category->parent_id !== null) {
-                        $hasBusinesses = $category->businesses()->exists();
-                        $hasProducts = $category->products()->exists();
-                        if ($hasBusinesses || $hasProducts) {
-                            $validator->errors()->add('is_parent', 'This category cannot be converted to a parent category because it contains active businesses or products.');
-                        }
-                    }
-                }
             }
         });
 
-                // dd($request->all());
-
-
         if ($validator->fails()) {
-
-                // dd($validator->errors()->toArray());
-
 
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -203,20 +359,25 @@ class CategoriesController extends Controller
 
         $category_id = null;
         if ($request->category_id) {
-            $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)->first();
+            $categoryTranslation = CategoryTranslation::find($request->category_id);
             if ($categoryTranslation) {
                 $category_id = $categoryTranslation->category_id;
             }
         }
-        $category = $category_id ? Category::find($request->category_id) : new Category();
+            // dd($Category_ID);
+
+        $category = Category::find($category_id);
+
+            // dumb($category->array());
+            // dd($category->toArray());
+            // dump($request->category_id);
+
+
         if (!$category) {
             $category = new Category();
         }
 
-        $category->parent_id = $request->boolean('is_parent') ? null : $request->parent_id;
-        $category->show_on_homepage = $request->has('show_on_homepage') ? 1 : 0;
-        $category->homepage_order = (int) ($request->input('homepage_order', 0) ?? 0);
-        $category->homepage_product_limit = (int) ($request->input('homepage_product_limit', 6) ?? 6);
+        $category->parent_id = $request->parent_id ?? null;
 
         if ($request->hasFile('image')) {
             $media = $this->mediaservice->uploadMedia($request->file('image'), 'category/images');
@@ -234,21 +395,23 @@ class CategoriesController extends Controller
             while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->where('category_id', '!=', $category->id)->exists()) {
                 $slug = $originalSlug . '-' . $count++;
             }
+            // dump($category->id);
+            // dump($language_id);
+            // dd();
            CategoryTranslation::updateOrCreate(
                 [
                     'lang_id' => (int) $language_id,
-                    'category_id' => $category->id
+                    'category_id' => $category_id
                 ],
                 [
                     'category_id'  => $category->id,
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
                     'title'        => $validate['title'] ?? null,
-                    'homepage_link_text' => $validate['homepage_link_text'] ?? null,
                     'description'  => $validate['description'],
                     'slug'         => $slug,
                     'comparison_slug' => $validate['comparison_slug'] ?? null,
-                    'is_important' => $request->has('is_important') ? 1 : 0,
+                    'is_important' => $request->has('is_important') ?? 0,
                 ]
             );
 

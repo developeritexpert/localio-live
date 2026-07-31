@@ -1202,6 +1202,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </a>
 
                             @else
+                            <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
+                                class="cta cta_trans">Write review</a>
                             <x-user-profile />
                             <!-- <a href="{{ url('/logout') }}"
                                         class="cta cta_orange">{{ $headerContent['sign_out_btn_lable'] ?? 'Sign out' }}</a> -->
