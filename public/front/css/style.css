@@ -3414,12 +3414,12 @@ input:-webkit-autofill:active {
   border-radius: 4px;
   line-height: 20px;
   min-width: 88px;
-  transition: 250ms;
+
 }
 
 .btn:hover {
   background: #ddd;
-  transition: 250ms;
+
 }
 
 .btn:focus {
@@ -3429,14 +3429,14 @@ input:-webkit-autofill:active {
 .btn-primary {
   background: #1a73e8;
   color: #fff;
-  transition: 250ms;
+
 }
 
 .btn-primary:hover {
   background: #287ae6;
   box-shadow: 0 1px 1px 0 rgba(66, 133, 244, 0.45),
     0 1px 3px 1px rgba(66, 133, 244, 0.3);
-  transition: 250ms;
+  
 }
 
 .pull-right {
@@ -7737,7 +7737,7 @@ input:checked~.toggle-dot {
   border-color: #ddd;
   color: #666;
   font-size: 12px;
-  transition: all 0.3s;
+  /* transition: all 0.3s; */
 }
 
 .quick-price-filters .btn-outline-secondary:hover,
@@ -8513,10 +8513,11 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   padding: 5px 15px !important;
 }
 
-.asn_dv .Tab-outerlnk #table-of-content ul li a:hover,
-.asn_dv .Tab-outerlnk #table-of-content ul li a.active {
-  /* background-color: #06498b0d; */
+.asn_dv .Tab-outerlnk #table-of-content ul li a:hover {
   color: #002347;
+}
+
+.asn_dv .Tab-outerlnk #table-of-content ul li a.active {
   font-weight: 600;
 }
 
@@ -9759,6 +9760,7 @@ section.right_tool_sec .otr_rgtool h2 {
 
 .asn_main_sec .asn_dv {
   background-color: #fdfdfd;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .asn_main_sec .asn_dv.fixed-div {
@@ -9811,6 +9813,7 @@ section.right_tool_sec .otr_rgtool h2 {
   border-radius: 30px;
   font-size: 14px;
   padding: 12px 25px;
+  transition: unset !important;
 }
 
 .banner_sec.home_bnr_sec {
@@ -9838,10 +9841,63 @@ section.right_tool_sec .otr_rgtool h2 {
 
 
 .sec_head .container-fluid {
-padding-inline:30px;
+  padding-inline: 30px;
 }
+
 .user_revew_sec,
 .comparsn_bnr_sec {
   padding: 35px 0 20px;
-  margin-top: 130px;
+  margin-top: 125px;
+}
+
+/* 31-july-26  */
+.product_sec li.breadcrumb-item.active {
+  color: #002347 !important;
+  font-weight: 500 !important;
+}
+
+.user_revew_sec li.breadcrumb-item {
+  font-size: 13px;
+}
+
+.user_revew_sec .asn_dv {
+  border-bottom: none;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: "/";
+}
+
+.user_revew_sec .breadcrumb .breadcrumb-item a:hover {
+  text-decoration: underline !important;
+}
+
+.user_revew_sec .breadcrumb .breadcrumb-item.active a:hover,
+.inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item.active a:hover {
+  color: #002347 !important;
+
+}
+
+.asn_main_sec .new-visit-anc .cta.cta_orange {
+  padding: 12px 26px;
+  width: unset;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: #ff5722;
+}
+
+.asn_main_sec .new-visit-anc .cta.cta_orange:hover {
+  background-color: #06498b;
+}
+
+.revie_left_rgt_sec .review-row-prod-inr .col-lg-8>div:first-child {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+.revie_left_rgt_sec .review_detl{
+    background-color:#f7f9fb !important;
+}
+
+.revie_left_rgt_sec .review-star-box .progress-box{
+max-width:100%;
 }

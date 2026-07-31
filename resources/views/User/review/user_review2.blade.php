@@ -17,7 +17,7 @@
 @endphp
 
 <!-- Upper Header Section ( identical to business details page header, without in-page navigation) -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #fdfdfd; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
@@ -73,7 +73,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-12 text-md-end text-start">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
@@ -241,12 +241,12 @@
                             <div class="mb-3">
                                 @foreach ($criteria as $criterion)
                                     <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span style="font-size: 13.5px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
+                                        <span style="font-size: 13px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
                                         <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                            <div class="progress rounded-pill flex-grow-1 mx-2" style="height: 6px; background-color: #e2e8f0;">
-                                                <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #22c55e;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                            <div class="progress rounded-pill flex-grow-1 mx-2" style="height: 8px; background-color: #e2e8f0;">
+                                                <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #21ac21;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                             </div>
-                                            <span style="font-size: 12.5px; font-weight: 600; color: #475569; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                            <span style="font-size: 12px; font-weight: 600; color: #334155; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
                                         </div>
                                     </div>
                                 @endforeach
