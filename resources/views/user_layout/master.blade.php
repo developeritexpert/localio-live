@@ -1867,7 +1867,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="footer-langs-container">
                                     @foreach ($languages as $language)
                                     <li>
-                                        <a href="{{ route('set-site-languages', ['lang_id' => $language->id]) }}">
+                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}">
                                             {{ $language->name }}
                                         </a>
                                     </li>

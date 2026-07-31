@@ -29,40 +29,45 @@ class AddLocaleAutomatically
         // Fetch valid language codes from the database
         $validLocales = Language::pluck('lang_code')->toArray();
     
-        // Get the language from the session (if set)
-        $sessionLangCode = session('lang_code');
-    
-        // If session has a valid language code, use it
-        if ($sessionLangCode && in_array($sessionLangCode, $validLocales)) {
-            App::setLocale($sessionLangCode);
-    
-            // Check if the URL already starts with the lang code
-            $firstSegment = $request->segment(1);
-            if ($firstSegment !== $sessionLangCode) {
-                // Redirect with language prefix
-                $pathWithoutLang = ltrim($request->getRequestUri(), '/');
-                return redirect()->to("/" . $sessionLangCode . '/' . $pathWithoutLang);
+        // 1. If first URL segment is a valid language code, update session and locale to match URL
+        $firstSegment = strtolower($request->segment(1));
+        if ($firstSegment && in_array($firstSegment, $validLocales)) {
+            $langObj = Language::where('lang_code', $firstSegment)->first();
+            if ($langObj) {
+                App::setLocale($firstSegment);
+                session([
+                    'lang_code' => $firstSegment,
+                    'lang_id'   => $langObj->id,
+                    'lang_name' => ucfirst($langObj->name),
+                ]);
+                Cookie::queue('lang_code', $firstSegment, 60 * 24 * 30);
+                Cookie::queue('lang_id', $langObj->id, 60 * 24 * 30);
             }
-    
             return $next($request);
         }
-    
-        // Otherwise, set and store the default language
+
+        // 2. If session has a valid language code, use it to prefix request
+        $sessionLangCode = session('lang_code');
+        if ($sessionLangCode && in_array($sessionLangCode, $validLocales)) {
+            App::setLocale($sessionLangCode);
+            $pathWithoutLang = ltrim($request->getRequestUri(), '/');
+            return redirect()->to("/" . $sessionLangCode . ($pathWithoutLang ? '/' . $pathWithoutLang : ''));
+        }
+
+        // 3. Fallback default language (en-us)
         $defaultLanguage = Language::where('lang_code', 'en-us')->first();
         $langCode = $defaultLanguage->lang_code ?? 'en-us';
-       
+        $langId = $defaultLanguage->id ?? 1;
+
         App::setLocale($langCode);
         session([
             'lang_code' => $langCode,
+            'lang_id'   => $langId,
             'lang_name' => ucfirst($defaultLanguage->name ?? 'English'),
         ]);
-        
-        // Check if the URL already starts with lang code before redirecting
-        $firstSegment = $request->segment(1);
-        if ($firstSegment !== $langCode) {
-            $pathWithoutLang = ltrim($request->getRequestUri(), '/');
-            return redirect()->to("/" . $langCode . '/' . $pathWithoutLang);
-        }
+
+        $pathWithoutLang = ltrim($request->getRequestUri(), '/');
+        return redirect()->to("/" . $langCode . ($pathWithoutLang ? '/' . $pathWithoutLang : ''));
     
         return $next($request);
     }
