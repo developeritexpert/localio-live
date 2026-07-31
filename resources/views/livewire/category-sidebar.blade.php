@@ -4,17 +4,21 @@
             <div class="row gy-4">
                 <div class="col-lg-3 mb-4">
                     <div class="parent-cat-sidebar">
-                        <h4 style="margin-bottom: 15px; text-align: left; cursor: pointer;"
-                            wire:click="selectAllCategories"
-                            wire:loading.class="cat_loading"
-                            wire:target="selectAllCategories">
-                            <a href="javascript:void(0)"
-                               style="font-size: 18px; font-weight: 700; color: {{ is_null($selectedCategoryId) ? '#e56b46' : '#002347' }}; text-decoration: none; transition: color 0.2s;"
-                               onmouseover="this.style.color='#e56b46'"
-                               onmouseout="this.style.color='{{ is_null($selectedCategoryId) ? '#e56b46' : '#002347' }}'">
+                        @if(is_null($selectedCategoryId))
+                            <h4 style="margin-bottom: 15px; text-align: left; font-size: 18px; font-weight: 700; color: #002347;">
                                 All categories
-                            </a>
-                        </h4>
+                            </h4>
+                        @else
+                            <div style="margin-bottom: 15px; text-align: left;">
+                                <a href="javascript:void(0)"
+                                   wire:click="selectAllCategories"
+                                   wire:loading.class="cat_loading"
+                                   wire:target="selectAllCategories"
+                                   style="font-size: 14px; font-weight: 600; color: #06498b; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-arrow-left" style="font-size: 12px;"></i> All categories
+                                </a>
+                            </div>
+                        @endif
 
                         <ul>
                             @foreach ($categories as $category)
@@ -120,10 +124,10 @@
                                         <div class="top-product-info min-w-0">
                                             <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
                                                 {{ $bizName }}
-                                                <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span>
+                                                <!-- <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span> -->
                                             </h6>
                                             <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                                <div class="d-flex" style="color: #ffb300;">
+                                                <div class="d-flex" style="color: #ffc107;">
                                                     @php $rating = round($business->average_rating); @endphp
                                                     @for($i = 1; $i <= 5; $i++)
                                                         @if($i <= $rating)

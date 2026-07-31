@@ -12,6 +12,7 @@ class BusinessTranslation extends Model
     protected $fillable = [
         'name',
         'lang_id',
+        'description_title',
         'description',
         'short_description',
         'after_image_description',

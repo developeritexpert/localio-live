@@ -1,36 +1,31 @@
-
 <div class="nk-block nk-block-lg">
     <div class="nk-block-head nk-block-head-sm">
         <div class="nk-block-between">
             <div class="nk-block-head-content">
                 <h3 class="nk-block-title page-title">Business</h3>
             </div>
-
-            {{-- 👇 Naya center block - Country/Region switcher --}}
-            <div class="nk-block-head-content">
-                <div class="form-group position-relative mb-0" style="min-width: 220px;">
-                    <div class="position-relative">
-                        <select
-                            class="form-control @error('languages_supported') is-invalid @enderror pe-5"
-                            wire:model.live="languages_supported">
-                            <option value="">Select Region</option>
-                            @foreach ($languages as $language)
-                                <option value="{{ $language->id }}">{{ $language->name }}</option>
-                            @endforeach
-                        </select>
-                        <i class="fa fa-chevron-down position-absolute"
-                            style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                    </div>
-                    @error('languages_supported')
-                        <div class="text-danger small">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            {{-- 👆 Naya block yahan tak --}}
-
             <div class="nk-block-head-content">
                 <div class="toggle-wrap nk-block-tools-toggle">
-                    ...
+                    <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu">
+                        <em class="icon ni ni-more-v"></em>
+                    </a>
+                    {{-- @if ($addbusiness)
+                        <div class="toggle-expand-content" data-content="pageMenu">
+                            <ul class="nk-block-tools g-3">
+                                <li class="nk-block-tools-opt">
+                                    <a href="#" class="toggle btn btn-icon btn-primary d-md-none">
+                                        <em class="icon ni ni-plus"></em>
+                                    </a>
+                                    @if (getCurrentLanguageID() === 1)
+                                        <button wire:click="showAddForm"
+                                            class="btn btn-primary d-none d-md-inline-flex btn-localio">
+                                            <span>Add Businesses</span>
+                                        </button>
+                                    @endif
+                                </li>
+                            </ul>
+                        </div>
+                    @endif --}}
                 </div>
             </div>
         </div>
@@ -87,15 +82,6 @@
                     <!-- Business Description Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Business description title</label>
-                                <input type="text" class="form-control @error('description_title') is-invalid @enderror"
-                                    wire:model.live="description_title" placeholder="e.g. What is {{ $name ?: 'Business Name' }}" />
-                                @error('description_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <div class="form-group d-flex justify-content-between align-items-center">
                                 <label class="form-label">Business description</label>
                                 {{-- <button type="button" class="btn btn-sm btn-secondary"
@@ -154,9 +140,129 @@
                         </div>
                     </div>
 
-                    
 
-                  
+                    <!-- Pricing Options Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Pricing Options</label>
+                            </div>
+                            <div wire:ignore>
+                                <select class="form-control pricing-options" multiple
+                                    wire:model="selectedPricingOptions">
+                                    @foreach ($pricingOptions as $pricingOption)
+                                        @php
+                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
+                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
+                                        @endphp
+                                        <option value="{{ $pricingOption->id }}"
+                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
+                                            {{ $prisingTranslation->name ?? "" }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
+                            @error('selectedPricingOptions')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Category Features Section -->
+                    @if (!empty($categoryFeatures))
+                        <div class="card card-bordered mb-3">
+                            <div class="card-inner">
+                                <div class="form-group">
+                                    <label class="form-label">Business Features</label>
+                                    <div wire:ignore>
+                                        <select id="features-select" class="form-control features" multiple>
+                                            @foreach ($categoryFeatures as $feature)
+                                                @php
+                                                    $translation = $feature->translations->firstWhere('lang_id', $lang_id)
+                                                        ?? $feature->translations->firstWhere('lang_id', 1);
+                                                @endphp
+
+                                                <option value="{{ $feature->id }}"
+                                                    {{ in_array($feature->id, $selectedFeatures ?? []) ? 'selected' : '' }}>
+                                                    {{ $translation->name ?? 'Unnamed Feature' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('selectedFeatures')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+            {{-- business images --}}
+            <div class="card card-bordered mb-3">
+                <div class="card-inner">
+                    <div class="form-group mb-3">
+                        <label class="form-label">
+                            Upload Business Images <small>(Max 5) - Currently: {{ count($business_images) + count($new_business_images) }}/5</small>
+                        </label>
+
+                        <input
+                            type="file"
+                            class="form-control"
+                            wire:model="new_business_images"
+                            multiple
+                            accept="image/*"
+                            @if(count($business_images) >= 5) disabled @endif
+                        >
+
+                        {{-- Show validation error --}}
+                        @error('new_business_images')
+                            <div class="text-danger mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Preview Existing Images --}}
+                    @if(count($business_images) > 0)
+                        <h6>Saved Images:</h6>
+                        <div class="row">
+                            @foreach ($business_images as $key => $image)
+                                <div class="col-4 mb-2 position-relative">
+                                    <img src="{{ asset($image) }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
+                                    <button wire:click="RemoveBusniessImage({{ $key }})" type="button"
+                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
+                                        &times;
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    {{-- Preview New Uploaded Images --}}
+                    @if(count($new_business_images) > 0)
+                        <h6>New Images to Save:</h6>
+                        <div class="row">
+                            @foreach ($new_business_images as $key => $image)
+                                <div class="col-4 mb-2 position-relative">
+                                    <img src="{{ $image->temporaryUrl() }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
+                                    <button wire:click="removeNewImage({{ $key }})" type="button"
+                                        class="btn btn-sm btn-warning position-absolute top-0 end-0 m-1">
+                                        &times;
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="text-end mt-4">
+                        <button wire:click="BusinessImageSave" class="btn btn-primary"
+                            @if(count($new_business_images) == 0) disabled @endif>
+                            Save Business Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
 
                 @if ($categoryTopics && $categoryTopics->count())
                 <div class="card card-bordered mb-3">
@@ -270,7 +376,7 @@
                             <div class="form-group d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <label class="form-label mb-0"><strong>Key Selling Points (USPs)</strong></label>
-                                    <p class="text-muted small mb-0">Up to 6 short bullet points shown with ✓ on the product page.</p>
+                                    <p class="text-muted small mb-0">Up to 5 short bullet points shown with ✓ on the product page.</p>
                                 </div>
                             </div>
 
@@ -290,159 +396,97 @@
                                 </div>
                             @endforeach
 
-                            @if (count($businessUsps) < 6)
+                            @if (count($businessUsps) < 5)
                                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addUsp">
                                     <em class="icon ni ni-plus"></em> Add USP
                                 </button>
                             @else
-                                <p class="text-muted small mt-2 mb-0">Maximum of 6 USPs reached.</p>
+                                <p class="text-muted small mt-2 mb-0">Maximum of 5 USPs reached.</p>
                             @endif
                         </div>
                     </div>
-
-                <div class="card card-bordered mb-3">
-
-                    <div class="card-inner">
-                        <div class="col-12 mb-4">
-                            <div class="form-group">
-                                <label class="form-label">Pros & cons headline</label>
-                                <input type="text"
-                                    class="form-control"
-                                    wire:model.live="pro_cons_headline"
-                                    placeholder="Enter headline...">
-                            </div>
-                        </div>
-
-                        <div class="row">
-
-                            <!-- Introduction -->
-                            <div class="col-12 mb-4">
-                                <div class="form-group">
-                                    <label class="form-label">Pros & cons introduction</label>
-                                    <textarea class="form-control" rows="3"
-                                        wire:model.live="pro_cons_intro"
-                                        placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Heading -->
-                            <div class="col-12 mb-3">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <label class="form-label mb-1">
-                                            <strong>Pros & Cons</strong>
-                                        </label>
-                                        <p class="text-muted small mb-0">
-                                            Add Pros (green +) and Cons (red -) for this business.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Pros -->
-                            <div class="col-md-6 mb-3">
-                                <div class="border rounded p-3 h-100">
-
-                                    <h6 class="title mb-3">Pros</h6>
-
-                                    @foreach ($businessPros as $index => $pro)
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <span class="text-success fw-bold" style="font-size:18px;">+</span>
-
-                                            <input type="text"
-                                                class="form-control"
-                                                wire:model.live="businessPros.{{ $index }}.text"
-                                                placeholder="e.g. Excellent customer support">
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-danger"
-                                                    wire:click="removePro({{ $index }})"
-                                                    title="Remove">
-                                                <em class="icon ni ni-trash"></em>
-                                            </button>
-                                        </div>
-                                    @endforeach
-
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary mt-2"
-                                            wire:click="addPro">
-                                        <em class="icon ni ni-plus"></em> Add Pro
-                                    </button>
-
-                                </div>
-                            </div>
-
-                            <!-- Cons -->
-                            <div class="col-md-6 mb-3">
-                                <div class="border rounded p-3 h-100">
-
-                                    <h6 class="title mb-3">Cons</h6>
-
-                                    @foreach ($businessCons as $index => $con)
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <span class="text-danger fw-bold" style="font-size:18px;">-</span>
-
-                                            <input type="text"
-                                                class="form-control"
-                                                wire:model.live="businessCons.{{ $index }}.text"
-                                                placeholder="e.g. Limited basic plan">
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-danger"
-                                                    wire:click="removeCon({{ $index }})"
-                                                    title="Remove">
-                                                <em class="icon ni ni-trash"></em>
-                                            </button>
-                                        </div>
-                                    @endforeach
-
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary mt-2"
-                                            wire:click="addCon">
-                                        <em class="icon ni ni-plus"></em> Add Con
-                                    </button>
-
-                                </div>
-                            </div>
-
-                            <!-- Summary -->
-                            <div class="col-12 mt-2">
-                                <div class="form-group">
-                                    <label class="form-label">Pros & cons ending text</label>
-                                    <textarea class="form-control"
-                                            rows="3"
-                                            wire:model.live="pro_cons_summary"
-                                            placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
 
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <label class="form-label mb-0"><strong>Description of products/services</strong></label>
+                                    <label class="form-label mb-0"><strong>Pros & Cons</strong></label>
+                                    <p class="text-muted small mb-0">Add Pros (green +) and Cons (red -) for this business.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="title mb-3">Pros</h6>
+                                    @foreach ($businessPros as $index => $pro)
+                                        <div class="d-flex align-items-center mb-2 gap-2">
+                                            <span class="text-success fw-bold me-1" style="font-size:18px;">+</span>
+                                            <input type="text" class="form-control" wire:model.live="businessPros.{{ $index }}.text" placeholder="e.g. Excellent customer support" />
+                                            <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removePro({{ $index }})" title="Remove">
+                                                <em class="icon ni ni-trash"></em>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addPro">
+                                        <em class="icon ni ni-plus"></em> Add Pro
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="title mb-3">Cons</h6>
+                                    @foreach ($businessCons as $index => $con)
+                                        <div class="d-flex align-items-center mb-2 gap-2">
+                                            <span class="text-danger fw-bold me-1" style="font-size:18px;">-</span>
+                                            <input type="text" class="form-control" wire:model.live="businessCons.{{ $index }}.text" placeholder="e.g. Limited basic plan" />
+                                            <button type="button" class="btn btn-sm btn-danger ms-1" wire:click="removeCon({{ $index }})" title="Remove">
+                                                <em class="icon ni ni-trash"></em>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addCon">
+                                        <em class="icon ni ni-plus"></em> Add Con
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-12 mb-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Pros & Cons Introduction Text</label>
+                                        <textarea class="form-control" rows="3" wire:model.live="pro_cons_intro" placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Pros & Cons Summary Text</label>
+                                        <textarea class="form-control" rows="3" wire:model.live="pro_cons_summary" placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <label class="form-label mb-0"><strong>Offered Products or Services</strong></label>
                                     <p class="text-muted small mb-0">Summarize offered products with a headline, images, and text.</p>
                                 </div>
                             </div>
                             
                             <div class="border p-3 mb-3 rounded">
                                 <div class="form-group mb-3 mt-3">
-                                    <label class="form-label">Products/services headline</label>
+                                    <label class="form-label">Headline</label>
                                     <input type="text" class="form-control" wire:model.live="businessOfferings.0.headline" placeholder="e.g. What does Bluehost offer?">
                                 </div>
                                 
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Products/services introduction</label>
+                                    <label class="form-label">Top Text</label>
                                     <textarea class="form-control" rows="3" wire:model.live="businessOfferings.0.top_text" placeholder="Introduction text above the image..."></textarea>
                                 </div>
                                 
                                 <div class="form-group mb-3">
-                                    <label class="form-label">Products/services ending text</label>
+                                    <label class="form-label">Description (After Image)</label>
                                     <div wire:ignore x-data="{
                                         editor: null,
                                         init() {
@@ -476,71 +520,6 @@
                         </div>
                     </div>
 
-                         {{-- business images --}}
-            <div class="card card-bordered mb-3">
-                <div class="card-inner">
-                    <div class="form-group mb-3">
-                        <label class="form-label">
-                            Upload Business Images <small>(Max 5) - Currently: {{ count($business_images) + count($new_business_images) }}/5</small>
-                        </label>
-
-                        <input
-                            type="file"
-                            class="form-control"
-                            wire:model="new_business_images"
-                            multiple
-                            accept="image/*"
-                            @if(count($business_images) >= 5) disabled @endif
-                        >
-
-                        {{-- Show validation error --}}
-                        @error('new_business_images')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Preview Existing Images --}}
-                    @if(count($business_images) > 0)
-                        <h6>Saved Images:</h6>
-                        <div class="row">
-                            @foreach ($business_images as $key => $image)
-                                <div class="col-4 mb-2 position-relative">
-                                    <img src="{{ asset($image) }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                                    <button wire:click="RemoveBusniessImage({{ $key }})" type="button"
-                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
-                                        &times;
-                                    </button>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    {{-- Preview New Uploaded Images --}}
-                    @if(count($new_business_images) > 0)
-                        <h6>New Images to Save:</h6>
-                        <div class="row">
-                            @foreach ($new_business_images as $key => $image)
-                                <div class="col-4 mb-2 position-relative">
-                                    <img src="{{ $image->temporaryUrl() }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                                    <button wire:click="removeNewImage({{ $key }})" type="button"
-                                        class="btn btn-sm btn-warning position-absolute top-0 end-0 m-1">
-                                        &times;
-                                    </button>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <div class="text-end mt-4">
-                        <button wire:click="BusinessImageSave" class="btn btn-primary"
-                            @if(count($new_business_images) == 0) disabled @endif>
-                            Save Business Images
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-
                 </div>
 
                 <div class="col-md-4">
@@ -568,19 +547,26 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                     @php
-                                        $langId = session('lang_id', 1);
-
-                                        $subCategories = \App\Models\Category::whereNotNull('parent_id')
-                                            ->whereHas('translations', function ($query) use ($langId) {
-                                                $query->where('lang_id', $langId);
-                                            })
-                                            ->with(['translations' => function ($query) use ($langId) {
-                                                $query->where('lang_id', $langId);
-                                            }])
-                                            ->get();
-                                    @endphp
+                                    <hr class="my-3">
+                                    <div class="form-group position-relative">
+                                        <label class="form-label">Country/Region</label>
+                                        <div class="position-relative">
+                                            <select
+                                                class="form-control @error('languages_supported') is-invalid @enderror pe-5"
+                                                wire:model.live="languages_supported">
+                                                <option value="">Select Region</option>
+                                                @foreach ($languages as $language)
+                                                    <option value="{{ $language->id }}">{{ $language->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <i class="fa fa-chevron-down position-absolute"
+                                                style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                                        </div>
+                                        @error('languages_supported')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3 position-relative">
                                         <label class="form-label">Business Category</label>
@@ -588,7 +574,7 @@
                                             <select class="form-control pe-5" wire:model.live="selected_category">
                                                 <option value=''>Select Category</option>
                                                 @if (isset($categories))
-                                                    @foreach ($subCategories as $category)
+                                                    @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">
                                                             {{ $category->categoryTranslations->first()->name ?? $category->id }}
                                                         </option>
@@ -601,23 +587,6 @@
                                         @error('selected_category')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
-                                    </div>
-                                    {{-- All sub-category --}}
-
-                                    <div class="form-group mt-3">
-                                        <label class="form-label">Business Sub Categories</label>
-
-                                        <select wire:model="selected_sub_categories" class="form-control" multiple size="8">
-                                            @foreach($subCategories as $category)
-                                                <option value="{{ $category->id }}">
-                                                    {{ $category->translations->name ?? $category->id }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-
-                                        <small class="text-muted">
-                                            Hold <strong>Ctrl</strong> (Windows/Linux) or <strong>⌘ Command</strong> (Mac) to select multiple sub-categories.
-                                        </small>
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3">
@@ -661,21 +630,21 @@
                                                 <input type="text" class="permanent-link-input url-editable"
                                                     x-model="tempValue" x-ref="input" @keydown.enter="saveEdit()"
                                                     @keydown.escape="cancelEdit()">
-                                                
-                                                <!-- Edit Controls -->
-                                             <div class="edit-controls" style="top: 10% !important;">
-                                                 <em class="icon ni ni-edit text-primary fs-5" x-show="!editing"
-                                                     @click.stop="startEdit()" style="cursor: pointer;" title="Edit"></em>
+                                            </div>
 
-                                                 <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
-                                                     <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                         <em class="icon ni ni-save" style="font-size:14px;"></em>
-                                                     </button>
-                                                     <button type="button" class="btn btn-sm btn-icon btn-danger rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                         <em class="icon ni ni-cross" style="font-size:14px;"></em>
-                                                     </button>
-                                                 </div>
-                                             </div>
+                                            <div class="edit-controls">
+                                                <i class="fas fa-pencil-alt edit-pencil" x-show="!editing"
+                                                    @click="startEdit()" style="cursor: pointer;"></i>
+
+                                                <div class="save-cancel-buttons" x-show="editing"
+                                                    style="display: none;">
+                                                    <button type="button" class="save-btn" @click="saveEdit()">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="cancel-btn" @click="cancelEdit()">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -731,9 +700,6 @@
                                                         <p class="text-center text-muted my-2">No countries found</p>
                                                     @else
                                                         @foreach ($countries as $country)
-                                                            @php
-                                                                $displayName = $country->name . ($country->language ? ' – ' . $country->language->name : '');
-                                                            @endphp
                                                             <div class="form-check py-1 border-bottom">
                                                                 <input type="checkbox"
                                                                     wire:click="toggleCountrySelection({{ $country->id }})"
@@ -742,7 +708,7 @@
                                                                     {{ in_array($country->id, $selectedCountries) ? 'checked' : '' }}>
                                                                 <label class="form-check-label w-100"
                                                                      for="country_{{ $country->id }}">
-                                                                    {{ $displayName }}
+                                                                    {{ $country->name }}
                                                                 </label>
                                                             </div>
                                                         @endforeach
@@ -764,18 +730,17 @@
                                                                             'id',
                                                                             $countryId,
                                                                         );
-                                                                        $selectedDisplayName = $selectedCountry ? ($selectedCountry->name . ($selectedCountry->language ? ' – ' . $selectedCountry->language->name : '')) : '';
                                                                     @endphp
                                                                     @if ($selectedCountry)
                                                                         <span
                                                                             class="badge bg-primary position-relative m-1"
                                                                             style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
-                                                                            {{ $selectedDisplayName }}
+                                                                            {{ $selectedCountry->name }}
                                                                             <button type="button"
                                                                                 wire:click="toggleCountrySelection({{ $countryId }})"
                                                                                 class="btn-close btn-close-white position-absolute"
                                                                                 style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
-                                                                                title="Remove {{ $selectedDisplayName }}">
+                                                                                title="Remove {{ $selectedCountry->name }}">
                                                                             </button>
                                                                         </span>
                                                                     @endif
@@ -800,55 +765,25 @@
 
 
                     
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Pricing Options</label>
-                            </div>
-                            <div wire:ignore>
-                                <select class="form-control pricing-options" multiple
-                                    wire:model="selectedPricingOptions">
-                                    @foreach ($pricingOptions as $pricingOption)
-                                        @php
-                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
-                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
-                                        @endphp
-                                        <option value="{{ $pricingOption->id }}"
-                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
-                                            {{ $prisingTranslation->name ?? "" }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
-                            @error('selectedPricingOptions')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="row g-3">
                                 <div class="col-md-12">
 
-                                    
-
-
                                     <div class="form-group">
 
                                         <div class="boxbtn_dlex d-flex justify-content-between mb-2 align-items-center">
                                             <label class="form-label m-0">Redirect URL</label>
-                                            <div class="d-flex justify-content-between align-items-center ">
-                                                @if (!empty($selectedCountries))
-                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                        wire:click="showAddUrlForm" style="background: #F9633B;">
-                                                        <i class="fas fa-plus me-1"></i>Add URL
-                                                    </button>
-                                                @endif
-                                            </div>
+                                        <div class="d-flex justify-content-between align-items-center ">
+                                            @if (!empty($selectedCountries))
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    wire:click="showAddUrlForm" style="background: #F9633B;">
+                                                    <i class="fas fa-plus me-1"></i>Add URL
+                                                </button>
+                                            @endif
                                         </div>
-
-                                        
+                                        </div>
 
                                         <div class="affiliate-link-container affiliate-link-container_2 @error('affiliate_link') is-invalid @enderror"
                                             x-data="{
@@ -889,13 +824,50 @@
                                                 }
                                             }">
 
+                                            <!-- Display Mode -->
                                    <div class="affilates-div">
-                                             <div class="affiliate-link-display" x-show="!editing" @click="startEdit()" style="cursor: pointer;">
-                                                <div class="url-display-wrapper d-flex align-items-center justify-content-between">
+                                             <div class="affiliate-link-display" x-show="!editing">
+                                                <div class="url-display-wrapper">
                                                     <span class="url-text" x-text="tempUrl || 'Enter redirect URL'"
                                                         :title="tempUrl"></span>
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <div class="affiliate-indicator">
+                                                    <div class="affiliate-indicator m">
+                                                        <template x-if="tempAffiliate">
+                                                            <i class="fas fa-check-circle text-success"
+                                                                title="Affiliate Link"></i>
+                                                        </template>
+                                                        <template x-if="!tempAffiliate">
+                                                            <i class="fas fa-exclamation-triangle text-warning"
+                                                                title="Non-Affiliate Link"></i>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Edit Mode -->
+                                            <div class="affiliate-link-edit" x-show="editing" style="display: none;">
+                                                <div class="url-input-wrapper">
+                                                    <input type="url" class="form-control affiliate-link-input"
+                                                        x-model="tempUrl" x-ref="urlInput"
+                                                        placeholder="https://example.com/redirect-link"
+                                                        @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
+
+                                                    <!-- Validation Error Display -->
+                                                    <div x-show="validationError" class="text-danger small mt-1"
+                                                        x-text="validationError"></div>
+                                                </div>
+
+                                                <!-- Toggle Switch - Only visible while editing -->
+                                                <div class="affiliate-toggle-section m-0">
+                                                    <div class="affiliate-toggle">
+                                                        <label class="form-check-label me-2">
+                                                            Affiliate
+                                                        </label>
+                                                      <div class="label_from_box">
+                                                          <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                x-model="tempAffiliate" id="affiliateToggle">
+                                                        </div>
+                                                        <div class="affiliate-indicator-toggle ms-2">
                                                             <template x-if="tempAffiliate">
                                                                 <i class="fas fa-check-circle text-success"
                                                                     title="Affiliate Link"></i>
@@ -905,61 +877,27 @@
                                                                     title="Non-Affiliate Link"></i>
                                                             </template>
                                                         </div>
-                                                        <em class="icon ni ni-edit text-primary fs-5 btn btn-info" title="Edit"></em>
+                                                      </div>
                                                     </div>
                                                 </div>
-                                             </div>
-
-                                             <!-- Edit Mode -->
-                                             <div class="affiliate-link-edit" x-show="editing" style="display: none;">
-                                                 <div class="url-input-wrapper">
-                                                     <input type="url" class="form-control affiliate-link-input"
-                                                         x-model="tempUrl" x-ref="urlInput"
-                                                         placeholder="https://example.com/redirect-link"
-                                                         @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
-
-                                                     <!-- Validation Error Display -->
-                                                     <div x-show="validationError" class="text-danger small mt-1"
-                                                         x-text="validationError"></div>
-                                                 </div>
-
-                                                 <!-- Toggle Switch - Only visible while editing -->
-                                                 <div class="affiliate-toggle-section m-0 mt-2 d-flex align-items-center justify-content-between" style="height: 3rem; z-index: 1;">
-                                                     <div class="affiliate-toggle d-flex align-items-center">
-                                                         <label class="form-check-label me-2 mb-0">
-                                                             Affiliate
-                                                         </label>
-                                                       <div class="label_from_box d-flex align-items-center">
-                                                           <div class="form-check form-switch m-0">
-                                                             <input class="form-check-input" type="checkbox"
-                                                                 x-model="tempAffiliate" id="affiliateToggle">
-                                                         </div>
-                                                         <div class="affiliate-indicator-toggle ms-2">
-                                                             <template x-if="tempAffiliate">
-                                                                 <i class="fas fa-check-circle text-success"
-                                                                     title="Affiliate Link"></i>
-                                                             </template>
-                                                             <template x-if="!tempAffiliate">
-                                                                 <i class="fas fa-exclamation-triangle text-warning"
-                                                                     title="Non-Affiliate Link"></i>
-                                                             </template>
-                                                         </div>
-                                                       </div>
-                                                     </div>
-
-                                                     <!-- Save / Cancel Buttons (Visible only while editing) -->
-                                                     <div class="save-cancel-buttons d-flex align-items-center gap-1">
-                                                         <button type="button" class="btn btn-sm btn-success px-2 py-1" @click="saveEdit()" title="Save" style="width: 100%; margin-left: -9rem;">
-                                                             <em class="icon ni ni-save me-1"></em> Save
-                                                         </button>
-                                                         <button type="button" class="btn btn-sm btn-secondary px-2 py-1" @click="cancelEdit()" title="Cancel"  style="width: 100%; margin-left: 0rem;">
-                                                             <em class="icon ni ni-cross me-1"></em> Cancel
-                                                         </button>
-                                                     </div>
-                                                 </div>
-                                             </div>
+                                            </div>
                                    </div>
 
+                                            <!-- Edit Controls -->
+                                            <div class="edit-controls">
+                                                <i class="fas fa-pencil-alt edit-pencil" x-show="!editing"
+                                                    @click="startEdit()" style="cursor: pointer;"></i>
+
+                                                <div class="save-cancel-buttons" x-show="editing"
+                                                    style="display: none;">
+                                                    <button type="button" class="save-btn" @click="saveEdit()">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="cancel-btn" @click="cancelEdit()">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         @error('affiliate_link')
@@ -1017,7 +955,7 @@
                                                         </span>
                                                     </label>
                                                 </div>
-                                                
+
                                                 <div>
                                                     <button type="button" class="btn btn-secondary btn-sm me-2" wire:click="cancelAddUrl">
                                                         Cancel
@@ -1040,15 +978,14 @@
                                     @if (!empty($countryWebsiteUrls))
                                         <div class="country-urls-list">
                                             @foreach ($countryWebsiteUrls as $countryId => $urlData)
-                                                 @php
-                                                     $country = collect($countries)->firstWhere('id', $countryId);
-                                                     $countryDisplayName = $country ? ($country->name . ($country->language ? ' – ' . $country->language->name : '')) : '';
-                                                 @endphp
-                                                 @if ($country)
-                                                     <div class="country-url-group mb-4">
-                                                         <div class="d-flex align-items-center mb-2">
-                                                             <h6 class="mb-0 me-2">{{ $countryDisplayName }}</h6>
-                                                         </div>
+                                                @php
+                                                    $country = collect($countries)->firstWhere('id', $countryId);
+                                                @endphp
+                                                @if ($country)
+                                                    <div class="country-url-group mb-4">
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <h6 class="mb-0 me-2">{{ $country->name }}</h6>
+                                                        </div>
 
                                                         @if (is_array($urlData) || is_object($urlData))
                                                             @foreach ((array) $urlData as $index => $urlInfo)
@@ -1179,31 +1116,50 @@
                             </div>
                         </div>
                     </div>
-                                      <!-- Media Upload Section -->
+                                    <!-- Media Upload Section -->
 
-                                     <div class="card card-bordered mb-3">
-                                         <div class="card-inner">
-                                             <div class="form-group">
-                                                 <label class="form-label">Business Icon (SVG)</label>
-                                                 <input type="file"
-                                                     class="form-control @error('icon_file') is-invalid @enderror"
-                                                     wire:model.live="icon_file" accept=".svg,.png" />
+                                    <div class="card card-bordered mb-3">
+                                        <div class="card-inner">
+                                            <div class="form-group">
+                                                <label class="form-label">Business Icon</label>
+                                                <input type="file"
+                                                    class="form-control @error('icon_file') is-invalid @enderror"
+                                                    wire:model.live="icon_file" />
 
-                                                 @if ($iconError)
-                                                     <div class="text-danger">{{ $iconError }}</div>
-                                                 @elseif ($icon_file)
-                                                     <div class="text-success">Icon selected:
-                                                         {{ $icon_file->getClientOriginalName() }}</div>
-                                                     <img src="{{ $icon_file->temporaryUrl() }}"
-                                                         class="img-thumbnail mt-2" width="100"
-                                                         alt="New Icon Preview">
-                                                 @elseif($editMode && $icon_id)
-                                                     <img src="{{ asset($icon_id) }}" class="img-thumbnail mt-2"
-                                                         width="100" alt="Existing Icon Preview">
-                                                 @endif
-                                             </div>
-                                         </div>
-                                     </div>
+                                                @if ($iconError)
+                                                    <div class="text-danger">{{ $iconError }}</div>
+                                                @elseif ($icon_file)
+                                                    <div class="text-success">Icon selected:
+                                                        {{ $icon_file->getClientOriginalName() }}</div>
+                                                    <img src="{{ $icon_file->temporaryUrl() }}"
+                                                        class="img-thumbnail mt-2" width="100"
+                                                        alt="New Icon Preview">
+                                                @elseif($editMode && $icon_id)
+                                                    <img src="{{ asset($icon_id) }}" class="img-thumbnail mt-2"
+                                                        width="100" alt="Existing Icon Preview">
+                                                @endif
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Business Image</label>
+                                                <input type="file" class="form-control"
+                                                    @error('image_file') is-invalid @enderror"
+                                                    wire:model.live="image_file" />
+
+                                                @if ($imageError)
+                                                    <div class="text-danger">{{ $imageError }}</div>
+                                                @elseif ($image_file)
+                                                    <div class="text-success">Image selected:
+                                                        {{ $image_file->getClientOriginalName() }}</div>
+                                                    <img src="{{ $image_file->temporaryUrl() }}"
+                                                        class="img-thumbnail mt-2" width="100"
+                                                        alt="New Image Preview">
+                                                @elseif($editMode && $image_id)
+                                                    <img src="{{ asset($image_id) }}" class="img-thumbnail mt-2"
+                                                        width="100" alt="Existing Image Preview">
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
 
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">

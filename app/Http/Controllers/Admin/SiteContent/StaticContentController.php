@@ -184,7 +184,9 @@ class StaticContentController extends Controller
                     'localio_commissions_message',
                     'vs_keyword',
                     'business_reviews_subheadline',
+                    'business_faqs_subheadline',
                     'business_comparisons_subheadline',
+                    'business_alternatives_subheadline',
                 ],
             ],
             'help' => [

@@ -5719,7 +5719,7 @@ div#learnMoreModal button.modal-close {
     border-color: #ddd;
     color: #666;
     font-size: 12px;
-    transition: all 0.3s;
+    /* transition: all 0.3s; */
   }
 
   .quick-price-filters .btn-outline-secondary:hover,
@@ -11238,23 +11238,23 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 }
 
 .usr_profile {
-  height: 50px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
-  width: 50px;
-  min-width: 50px;
+  width: 40px;
+  min-width: 40px;
 }
 
 .drop_menu:hover .dropdown-menu {
   overflow: hidden;
 }
 
-.user_img.drop_menu {
+/* .user_img.drop_menu {
   flex: 0 0 60px;
-}
+} */
 
 .user_img.drop_menu {
-  flex: 0 0 50px;
+  flex: 0 0 40px;
 }
 
 .category-list_a li {
@@ -11319,7 +11319,8 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 }
 
 #section1 .asn_dv .asn_dv_contnt .div_prent_ever {
-  width: calc(100% - 100px);
+  /* width: calc(100% - 100px); */
+  flex: 1;
 }
 
 .frst_re_2 {
@@ -12108,7 +12109,7 @@ textarea#message {
   margin: 0 !important;
   max-width: 100% !important;
   max-height: 90px !important;
-  margin-top: 10px !important;
+  /* margin-top: 10px !important; */
   min-height: 90px !important;
   height: 100% !important;
   border: 1px solid #fff;
@@ -12767,6 +12768,10 @@ textarea#message {
     margin-top: 70px;
   }
 
+  .top-rated-heading-sec {
+    margin-top: 70px !important;
+  }
+
 }
 
 @media (max-width:767px) {
@@ -13217,13 +13222,14 @@ textarea#message {
   .all_comparisons_sec .cmpr_bx .vs_txt {
     margin-inline: auto;
   }
+
   .wishlist {
     flex: 0 0 34px !important;
     width: 34px !important;
     height: 34px !important;
     min-width: 34px !important;
     min-height: 34px !important;
-}
+  }
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */

@@ -64,6 +64,7 @@ class BusinessEdit extends Component
     public $affiliate_partner = '';
     public $affiliate_link = '';
     public $is_affiliate_partner = false;
+    public $description_title = '';
     public $business_description = '';
     public $short_description = '';
     public $after_image_description = '';
@@ -78,6 +79,7 @@ class BusinessEdit extends Component
     public $meta_title = '';
     public $meta_description = '';
     public $selected_category = null;
+    public $selected_sub_categories = [];
 
 
     // Category features
@@ -235,7 +237,7 @@ class BusinessEdit extends Component
             }
         }
 
-        $this->countries = Country::all();
+        $this->countries = Country::with('language')->get();
 
         if ($this->selected_category) {
             $this->loadCategoryFeatures($this->selected_category);
@@ -883,7 +885,7 @@ class BusinessEdit extends Component
 
     protected function loadCountries()
     {
-        $this->countries = Country::all();
+        $this->countries = Country::with('language')->get();
     }
 
     protected function loadBusinesses()
@@ -898,10 +900,13 @@ class BusinessEdit extends Component
 
     public function updatedCountrySearch()
     {
-        $this->countries = Country::when($this->countrySearch, function ($query) {
-            $query->where('name', 'like', '%' . $this->countrySearch . '%');
-        })
-            ->select('id', 'name')
+        $this->countries = Country::with('language')
+            ->when($this->countrySearch, function ($query) {
+                $query->where('name', 'like', '%' . $this->countrySearch . '%')
+                    ->orWhereHas('language', function ($q) {
+                        $q->where('name', 'like', '%' . $this->countrySearch . '%');
+                    });
+            })
             ->get();
     }
     public function toggleCountrySelection($countryId)
@@ -999,7 +1004,7 @@ class BusinessEdit extends Component
         $this->addbusiness = false;
         $this->businessId = $id;
 
-        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings'])->findOrFail($id);
+        $business = Business::with(['translations', 'languages', 'countries', 'websites', 'pricingOptions', 'features', 'usps', 'proCons', 'offerings', 'subCategories'])->findOrFail($id);
 
         // Load existing USPs into the form slots (pad to 5 empty slots)
         $existingUsps = $business->usps->pluck('text')->toArray();
@@ -1049,6 +1054,7 @@ class BusinessEdit extends Component
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
         $this->selected_category = $business->category_id ?? null;
+        $this->selected_sub_categories = $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
             $this->loadCategoryFeatures($this->selected_category);
@@ -1074,6 +1080,7 @@ class BusinessEdit extends Component
         $this->year_found = $business->year_found;
         $this->languages_supported = $business->languages_supported;
         $this->support_options = $translation->support_options ?? '';
+        $this->description_title = $translation->description_title ?? '';
         $this->business_description = $translation->description ?? '';
         $this->short_description = $translation->short_description ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
@@ -1368,7 +1375,7 @@ class BusinessEdit extends Component
 
     public function addUsp()
     {
-        if (count($this->businessUsps) < 5) {
+        if (count($this->businessUsps) < 6) {
             $this->businessUsps[] = ['text' => ''];
         }
     }
@@ -1430,6 +1437,50 @@ class BusinessEdit extends Component
             );
         }
     }
+    public function updatedLanguagesSupported($value)
+{
+    if (!$value) {
+        return;
+    }
+
+    // Sirf edit mode mein hi translation switch karo
+    if (!$this->businessId) {
+        return;
+    }
+
+    $business = Business::with('translations')->find($this->businessId);
+
+    if (!$business) {
+        return;
+    }
+
+    // Us language ki translation dhundo — agar nahi mili to empty rakho
+    // taaki naya translation manually likha ja sake
+    $translation = $business->translations->firstWhere('lang_id', $value);
+
+    $this->name                     = $translation->name ?? '';
+    $this->headquaters               = $translation->headquarters ?? '';
+    $this->support_options           = $translation->support_options ?? '';
+    $this->description_title         = $translation->description_title ?? '';
+    $this->business_description      = $translation->description ?? '';
+    $this->short_description         = $translation->short_description ?? '';
+    $this->after_image_description   = $translation->after_image_description ?? '';
+    $this->primary_keywords          = $translation->primary_keywords ?? '';
+    $this->secondary_keywords        = $translation->secondary_keywords ?? '';
+    $this->long_tail_keywords        = $translation->long_tail_keywords ?? '';
+    $this->high_intent_keywords      = $translation->high_intent_keywords ?? '';
+
+    // CKEditor fields (business_description, after_image_description) ko
+    // visually refresh karne ke liye JS event bhejo
+    $this->dispatch('languageSwitched');
+
+    if (!$translation) {
+        $this->dispatch('notify', [
+            'message' => 'No translation exists for this language yet — you can create one.',
+            'type' => 'info'
+        ]);
+    }
+}
 
     protected function getValidationRules()
     {
@@ -1456,11 +1507,7 @@ class BusinessEdit extends Component
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
-            'selected_category' => ['required', 'exists:categories,id', function($attribute, $value, $fail) {
-                if (\App\Models\Category::where('id', $value)->whereNull('parent_id')->exists()) {
-                    $fail('The selected category must be a sub-category.');
-                }
-            }],
+            'description_title' => 'nullable|string|max:255',
             'business_description' => 'nullable|string',
             'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
@@ -1481,6 +1528,7 @@ class BusinessEdit extends Component
             'is_affiliate_partner' => 'boolean',
             'newWebsiteUrl' => 'nullable|url',
             'selectedPricingOptions' => 'nullable|array',
+            'selected_sub_categories' => 'nullable|array',
             'selectedFeatures' => 'nullable|array',
             'primary_keywords' => 'nullable|string|max:500',
             'secondary_keywords' => 'nullable|string|max:1000',
@@ -1557,6 +1605,7 @@ class BusinessEdit extends Component
             'lang_id' => $this->languages_supported,
             'headquarters' => $this->headquaters,
             'support_options' => $this->support_options,
+            'description_title' => $this->description_title,
             'description' => $this->business_description,
             'short_description' => $this->short_description,
             'after_image_description' => $this->after_image_description,
@@ -1627,6 +1676,7 @@ class BusinessEdit extends Component
                 'slug' => $slug,
                 'headquarters' => $this->headquaters,
                 'support_options' => $this->support_options,
+                'description_title' => $this->description_title,
                 'description' => $this->business_description,
                 'short_description' => $this->short_description,
                 'after_image_description' => $this->after_image_description,
@@ -1647,6 +1697,9 @@ class BusinessEdit extends Component
         // Sync pricing options
         $business->pricingOptions()->sync($this->selectedPricingOptions);
 
+
+        // Sync sub categories
+        $business->subCategories()->sync($this->selected_sub_categories ?? []);
 
         // Sync features
         $business->features()->sync($this->selectedFeatures);

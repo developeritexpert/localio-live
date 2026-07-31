@@ -24,4 +24,9 @@ class Country extends Model
             ->withPivot('status')
             ->withTimestamps();
     }
+
+    public function language()
+    {
+        return $this->hasOne(Language::class, 'country_id');
+    }
 }

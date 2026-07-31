@@ -8,13 +8,22 @@
             color: #002347 !important;
             
         }
-        .top-rated-heading-block{
-            border-bottom: 2px solid #e8eef6;
-            margin-bottom: 15px;
-        }
+     
         section.top-automotive-sec.top_rate_pg.light {
-           margin-top: 120px !important;
+           margin-top: 0 !important;
+           padding-top:0 !important;
         }
+        .top-rated-heading-sec{
+             margin-top: 120px ;
+           padding-top:50px !important;
+           background-color:#fdfdfd;
+           border-bottom: 2px solid #e8eef6;
+           margin-bottom: 25px;
+        }
+         .top-rated-heading-sec .row {
+            padding-bottom:20px;
+            
+         }
         /* View details button – match height of Visit website */
         .auto-choice-btn .cta_outline {
             padding: 8px 16px !important;
@@ -111,19 +120,16 @@
                 font-size: 24px;
             }
             .top-auto-choice {
-    padding-top: 0;
-}
-section.top-automotive-sec.top_rate_pg.light {
-    margin-top: 55px !important;
-}
+                padding-top: 0;
+            }
+            section.top-automotive-sec.top_rate_pg.light {
+                margin-top: 0 !important;
+            }
         }
     </style>
-
-    <section class="top-automotive-sec top_rate_pg light  ">
-        <div class="top-auto-btm">
-            <div class="container">
-                <div class="top-auto-choice">
-                    <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
+    <section class="top-rated-heading-sec">
+       <div class="container">
+            <div class="top-rated-heading-block">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
@@ -146,6 +152,35 @@ section.top-automotive-sec.top_rate_pg.light {
                             </div>
                         </div>
                     </div>
+       </div>
+    </section>
+    <section class="top-automotive-sec top_rate_pg light  ">
+        <div class="top-auto-btm">
+            <div class="container">
+                <div class="top-auto-choice">
+                    <!-- <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
+                        <div class="row align-items-start">
+                            <div class="col-md-8 text-start">
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
+                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                    Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
+                                </p>
+                            </div>
+                            <div class="col-md-4 mt-4 mt-md-0 text-start">
+                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                    <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+                                        <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                    </div>
+                                    <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                    </p>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
                             <div class="container">

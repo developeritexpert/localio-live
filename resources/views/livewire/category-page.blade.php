@@ -1,5 +1,23 @@
 <div>
     <style>
+
+    li.breadcrumb-item.active {
+    color:#002347 !important;
+    font-weight:500;
+    }
+    li.breadcrumb-item:hover{
+        color:unset !important;
+        text-decoration:underline !important;
+    }
+        .top-rated-heading-sec {
+            margin-top: 120px;
+            padding-top: 50px !important;
+            background-color: #fdfdfd;
+            border-bottom: 2px solid #e8eef6;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+        }
+
         /* Toggle switch styling */
           .cat-heading-block h1 {
                 /* font-size: 24px; */
@@ -61,7 +79,8 @@
         /* Page top padding so content clears the fixed navbar */
         .top-automotive-sec.cat_pg {
             /* padding-top: 160px !important; */
-            margin-top: 125px !important;
+            /* margin-top: 125px !important; */
+            padding-top:0 !important;
         }
 
         /* Category heading block */
@@ -178,6 +197,7 @@
         <div>
             @if($isParentCategory)
                 <style>
+                    
                     /* Parent Category UI Styles */
                     .parent-cat-sidebar {
                         border: 1px solid #e8eef6;
@@ -385,6 +405,15 @@
                                                style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
                                                onmouseout="this.style.color=''">All</a>
                                         </li>
+                                        @if($category->parent)
+                                            <li class="breadcrumb-item">
+                                                <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                                   style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
+                                                   onmouseout="this.style.color=''">
+                                                    {{ $category->parent->translations->name ?? 'Main Category' }}
+                                                </a>
+                                            </li>
+                                        @endif
                                         <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
                                             {{ $category->translations->name ?? 'Category' }}
                                         </li>
@@ -515,11 +544,66 @@
                 </section>
             @else
                 <!-- section top-rated automaotive -->
+    <section class="top-rated-heading-sec">
+       <div class="container">
+                                <div class="row align-items-center mb-3">
+                                    <div class="col-8">
+                                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                            <ol class="breadcrumb m-0" style="background: transparent;padding: 0;display: flex;align-items: center;">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
+                                               style="color: inherit; text-decoration: none; font-size: 13px;" 
+                                               onmouseout="this.style.color=''">All</a>
+                                        </li>
+                                        @if($category->parent)
+                                            <li class="breadcrumb-item">
+                                                <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                                   style="color: inherit; text-decoration: none; font-size: 13px;"
+                                                   onmouseout="this.style.color=''">
+                                                    {{ $category->parent->translations->name ?? 'Main Category' }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                        <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
+                                            {{ $category->translations->name ?? 'Category' }}
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <x-social-icon />
+                            </div>
+                        </div>
+            <div class="top-rated-heading-block">
+                        <div class="row align-items-start">
+                            <div class="col-md-8 text-start">
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                    {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
+                                </p>
+                            </div>
+                            <div class="col-md-4 mt-4 mt-md-0 text-start">
+                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                    <div class="d-flex align-items-center mb-2" style="gap: 8px;">
+                                        <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                    </div>
+                                    <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                    </p>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+       </div>
+    </section>
                 <section class="top-automotive-sec cat_pg light">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
-                            <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
+                            <!-- <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
                                 <div class="row align-items-start">
                                     <div class="col-md-8 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
@@ -541,7 +625,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
                             <div class="container">
@@ -855,7 +939,7 @@
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore>
+                                    <div class="d-none" wire:ignore>
                                         <x-social-icon/>
                                     </div>
                                 </div>

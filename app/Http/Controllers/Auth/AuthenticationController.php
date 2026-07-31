@@ -113,7 +113,7 @@ class AuthenticationController extends Controller
 
             // Redirect to intended if set
             if(session()->has('url.intended')) {
-                return redirect()->intended()->with('success', 'Successfully logged in!');
+                return redirect()->intended();
             }
 
 
@@ -121,9 +121,9 @@ class AuthenticationController extends Controller
             case 'admin':
                 return redirect()->route('admin_dashboard')->with('success', 'Welcome Admin!');
             case 'user':
-                return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')])->with('success-login', 'Successfully logged in!');
+                return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')]);
             case 'vendor':
-                return redirect()->route('vendor-overview', ['locale' => session('lang_code', 'en-us')])->with('success', 'Welcome, Vendor!');
+                return redirect()->route('vendor-overview', ['locale' => session('lang_code', 'en-us')]);
             default:
                 Auth::logout();
                 return redirect()->route('login')->with('error', 'Invalid email or password');

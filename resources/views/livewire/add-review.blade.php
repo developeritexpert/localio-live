@@ -5,9 +5,9 @@
                 <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
                     
                     <!-- Top header with Left Headline & Business Info / Close Button -->
-                    <div class="modal-header border-0 px-3 pt-3 pb-2 px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="modal-header border-0 px-3 pt-3 pb-0  px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:0;">
                         <!-- Left Top: Company Info & Headline -->
-                        <div class="d-flex flex-column gap-1">
+                        <div class="d-flex flex-column gap-3">
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
                                     <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -33,7 +33,7 @@
                                 
                                 @if($step === 1)
                                     <!-- Step 1: Overall Ratings and Recommendation -->
-                                    <div class="step-content" wire:key="step-1">
+                                    <div class="step-content " wire:key="step-1">
                                         <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Overall ratings</h5>
                                         
                                          <div class="row">
@@ -88,19 +88,22 @@
 
                                          <hr class="my-3">
 
-                                         <div class="d-flex justify-content-center mt-4">
-                                             <button type="button" class="btn text-white w-100" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; max-width:200px; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
-                                                 Continue <i class="fas fa-arrow-right ms-2" style="font-size: 11px;"></i>
+                                         <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="closeModal" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
+                                                 Cancel
+                                             </button>
+                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
+                                                 Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
 
                                 @elseif($step === 2)
                                     <!-- Step 2: Title and Review -->
-                                    <div class="step-content" wire:key="step-2">
+                                    <div class="step-content step2" wire:key="step-2">
                                         <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Write your review</h5>
 
-                                        <div class="form-floating mb-3">
+                                        <div class="form-floating text-inpt mb-3">
                                             <input type="text" id="title2" class="form-control" wire:model.defer="title2" placeholder="Title">
                                             <label for="title2">Title</label>
                                             @error('title2') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
@@ -118,7 +121,7 @@
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn text-white  w-50 w-sm-auto" wire:click="submitStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
-                                                 Submit review <i class="fas fa-paper-plane ms-1 ms-sm-2" style="font-size: 11px;"></i>
+                                                 Submit review <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -148,7 +151,7 @@
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn  text-white  w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
-                                                 Submit review <i class="fas fa-paper-plane ms-1" style="font-size: 11px;"></i>
+                                                 Submit pros & cons <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -157,7 +160,7 @@
                             </div>
 
                             <!-- Right Column: Sidebar Progress Panel -->
-                            <div class="col-lg-4 ps-lg-4 d-none d-lg-block">
+                            <div class="col-lg-4 ps-lg-4 d-none d-lg-block" style="margin-top:0;">
                                 <div class="p-3 p-md-4 rounded-3 mt-0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 0;">
                                     <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Review progress</h5>
                                     
@@ -206,12 +209,12 @@
                                     <div class="mt-4 pt-3 border-top" style="font-size: 12px; color: #64748b; line-height: 1.5;">
                                         @if($step === 1)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
-                                                <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly:
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly
                                             </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Your ratings should reflect your overall experience with this business.</p>
                                         @elseif($step === 2)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
-                                                <i class="fas fa-lightbulb text-warning me-1"></i> Be specific:
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Be specific
                                             </div>
                                             <p class="m-0 text-muted" style="font-size: 11px;">Include details that may help others make an informed decision.</p>
                                         @elseif($step === 3)
@@ -230,6 +233,17 @@
         </div>
         
         <style>
+            .step-content.step2 .text-inpt>.form-control:not(:placeholder-shown){
+                padding:12px 20px !important;
+            
+            }
+            .step-content.step2  .form-floating.text-inpt>.form-control{
+                height: unset !important;
+                min-height: unset !important;
+                padding:12px 20px !important;
+            }
+
+
             .modal-content .step-content .step_3_btn:hover{
                 text-decoration:underline !important;
                 background-color:unset;

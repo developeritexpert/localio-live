@@ -1,5 +1,7 @@
 @section('title', 'User Dashboard | Localio')
 @extends('user_dashboard_layout.master')
+{{-- @extends('user_layout.master') --}}
+
 
 @section('content')
 
