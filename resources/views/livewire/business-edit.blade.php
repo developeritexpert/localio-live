@@ -663,19 +663,19 @@
                                                     @keydown.escape="cancelEdit()">
                                                 
                                                 <!-- Edit Controls -->
-                                                <div class="edit-controls"  style="top: 20% !important;">
-                                                    <i class="fas fa-pencil-alt edit-pencil text-primary fs-5" x-show="!editing"
-                                                        @click="startEdit()" style="cursor: pointer;"></i>
+                                             <div class="edit-controls" style="top: 10% !important;">
+                                                 <em class="icon ni ni-edit text-primary fs-5" x-show="!editing"
+                                                     @click.stop="startEdit()" style="cursor: pointer;" title="Edit"></em>
 
-                                                    <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
-                                                        <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                 <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
+                                                     <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
+                                                         <em class="icon ni ni-save" style="font-size:14px;"></em>
+                                                     </button>
+                                                     <button type="button" class="btn btn-sm btn-icon btn-danger rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
+                                                         <em class="icon ni ni-cross" style="font-size:14px;"></em>
+                                                     </button>
+                                                 </div>
+                                             </div>
                                             </div>
                                         </div>
 
@@ -894,7 +894,7 @@
                                                 <div class="url-display-wrapper">
                                                     <span class="url-text" x-text="tempUrl || 'Enter redirect URL'"
                                                         :title="tempUrl"></span>
-                                                    <div class="affiliate-indicator m">
+                                                    <div class="affiliate-indicator m icon ni ni-edit btn btn-sm btn-info">
                                                         <template x-if="tempAffiliate">
                                                             <i class="fas fa-check-circle text-success"
                                                                 title="Affiliate Link"></i>
@@ -949,14 +949,14 @@
 
                                             <!-- Edit Controls -->
                                             <div class="edit-controls" style="top: 10% !important;">
-                                                <i class="fas fa-pencil-alt edit-pencil text-primary fs-5" x-show="!editing"
+                                                <i class=" edit-pencil text-primary fs-5 icon ni ni-edit" x-show="!editing"
                                                     @click.stop="startEdit()" style="cursor: pointer;"></i>
 
                                                 <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
-                                                    <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
+                                                    <button type="button" class="btn icon ni ni-save btn-success" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
                                                         <i class="fas fa-check"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
+                                                    <button type="button" class="btn btn-sm btn-icon btn-secondary icon ni ni-cross" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </div>
