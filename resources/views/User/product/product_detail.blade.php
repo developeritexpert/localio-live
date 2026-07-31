@@ -1388,7 +1388,7 @@
 
                                                 <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                    <strong style="color: #002347; font-size: 16px;">{{ $recommendPercent }}%</strong>
+                                                    <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
                                                 </div>
 
                                                 <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
@@ -3078,37 +3078,41 @@
                                                     {{-- Recommended by users --}}
                                                     <div class="pt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
                                                         <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                        <strong style="color: #002347; font-size: 15px;">{{ $recommendPercent }}%</strong>
+                                                        <strong style="color: #002347; font-size: 14px; font-weight:600">{{ $recommendPercent }}%</strong>
                                                     </div>
                                                 </div>
 
                                                 <!-- Filter by Rating Title Row -->
-                                                <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
-                                                    <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
-                                                </div>
+                                                <div class="wrap-review-filter">
 
-                                                <!-- Star Breakdown Checkboxes -->
-                                                <div class="review-star-box">
-                                                    <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
-                                                        @for ($i = 5; $i >= 1; $i--)
-                                                            @php
-                                                                $count = $ratingCounts[$i] ?? 0;
-                                                                $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
-                                                            @endphp
-                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
-                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
-                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
-                                                                    <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #555; flex-shrink: 0;">
-                                                                        <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
-                                                                    </span>
-                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
-                                                                        <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
-                                                                    </div>
-                                                                    <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
-                                                                </label>
-                                                            </li>               
-                                                        @endfor
-                                                    </ul>
+                                                    <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+                                                        <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
+                                                        <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear</span>
+                                                    </div>
+
+                                                    <!-- Star Breakdown Checkboxes -->
+                                                    <div class="review-star-box">
+                                                        <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
+                                                            @for ($i = 5; $i >= 1; $i--)
+                                                                @php
+                                                                    $count = $ratingCounts[$i] ?? 0;
+                                                                    $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+                                                                @endphp
+                                                                <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
+                                                                    <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
+                                                                    <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
+                                                                        <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #555; flex-shrink: 0;">
+                                                                            <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
+                                                                        </span>
+                                                                        <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
+                                                                            <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
+                                                                        </div>
+                                                                        <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
+                                                                    </label>
+                                                                </li>               
+                                                            @endfor
+                                                        </ul>
+                                                    </div>
                                                 </div>
 
                                              </div>

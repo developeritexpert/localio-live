@@ -12768,6 +12768,10 @@ textarea#message {
     margin-top: 70px;
   }
 
+  .top-rated-heading-sec {
+    margin-top: 70px !important;
+  }
+
 }
 
 @media (max-width:767px) {
@@ -13218,13 +13222,14 @@ textarea#message {
   .all_comparisons_sec .cmpr_bx .vs_txt {
     margin-inline: auto;
   }
+
   .wishlist {
     flex: 0 0 34px !important;
     width: 34px !important;
     height: 34px !important;
     min-width: 34px !important;
     min-height: 34px !important;
-}
+  }
 }
 
 /* Custom Category Accordion Cards Buttons Responsiveness */

@@ -129,8 +129,8 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
     .top-product-card:hover {
-        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        transform: translateY(-3px);
+            box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
+        /* transform: translateY(-3px); */
         border-color: #d1def0;
     }
     .top-product-logo {

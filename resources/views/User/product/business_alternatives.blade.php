@@ -24,7 +24,7 @@
         <!-- Breadcrumb & Social Share Row -->
         <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 14px; margin-bottom:0;">
+                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" style="color: #64748b; text-decoration: none;">All</a>
                     </li>
@@ -75,7 +75,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 87, 34, 0.25);" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;    " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>

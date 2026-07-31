@@ -127,7 +127,7 @@
                                                 <!-- <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span> -->
                                             </h6>
                                             <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                                <div class="d-flex" style="color: #ffb300;">
+                                                <div class="d-flex" style="color: #ffc107;">
                                                     @php $rating = round($business->average_rating); @endphp
                                                     @for($i = 1; $i <= 5; $i++)
                                                         @if($i <= $rating)

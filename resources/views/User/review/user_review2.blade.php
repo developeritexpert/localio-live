@@ -20,9 +20,9 @@
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
-        <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
+        <div class=" d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 14px; margin-bottom:0;">
+                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
                         <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" style="color: #64748b; text-decoration: none;">All</a>
                     </li>
@@ -213,7 +213,7 @@
                 <div class="review-sidebar-sticky">
                     
                     <h2 style="font-size: 20px; font-weight: 700; color: #1e3050; margin-bottom: 16px;">
-                        User reviews
+                        All user reviews
                     </h2>
 
                     <!-- Rating Summary Card -->
@@ -265,7 +265,7 @@
                     <div class="filt_box p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                             <span style="font-size: 15px; font-weight: 700; color: #1e3050;">Filter by rating</span>
-                            <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear &times;</span>
+                            <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear</span>
                         </div>
 
                         <ul style="list-style: none; padding: 0; margin: 0;">

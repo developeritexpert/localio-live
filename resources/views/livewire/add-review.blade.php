@@ -5,9 +5,9 @@
                 <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
                     
                     <!-- Top header with Left Headline & Business Info / Close Button -->
-                    <div class="modal-header border-0 px-3 pt-3 pb-2 px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="modal-header border-0 px-3 pt-3 pb-0  px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:0;">
                         <!-- Left Top: Company Info & Headline -->
-                        <div class="d-flex flex-column gap-1">
+                        <div class="d-flex flex-column gap-3">
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
                                     <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -33,7 +33,7 @@
                                 
                                 @if($step === 1)
                                     <!-- Step 1: Overall Ratings and Recommendation -->
-                                    <div class="step-content" wire:key="step-1">
+                                    <div class="step-content " wire:key="step-1">
                                         <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Overall ratings</h5>
                                         
                                          <div class="row">
@@ -100,10 +100,10 @@
 
                                 @elseif($step === 2)
                                     <!-- Step 2: Title and Review -->
-                                    <div class="step-content" wire:key="step-2">
+                                    <div class="step-content step2" wire:key="step-2">
                                         <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Write your review</h5>
 
-                                        <div class="form-floating mb-3">
+                                        <div class="form-floating text-inpt mb-3">
                                             <input type="text" id="title2" class="form-control" wire:model.defer="title2" placeholder="Title">
                                             <label for="title2">Title</label>
                                             @error('title2') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
@@ -160,7 +160,7 @@
                             </div>
 
                             <!-- Right Column: Sidebar Progress Panel -->
-                            <div class="col-lg-4 ps-lg-4 d-none d-lg-block">
+                            <div class="col-lg-4 ps-lg-4 d-none d-lg-block" style="margin-top:0;">
                                 <div class="p-3 p-md-4 rounded-3 mt-0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 0;">
                                     <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Review progress</h5>
                                     
@@ -233,6 +233,17 @@
         </div>
         
         <style>
+            .step-content.step2 .text-inpt>.form-control:not(:placeholder-shown){
+                padding:12px 20px !important;
+            
+            }
+            .step-content.step2  .form-floating.text-inpt>.form-control{
+                height: unset !important;
+                min-height: unset !important;
+                padding:12px 20px !important;
+            }
+
+
             .modal-content .step-content .step_3_btn:hover{
                 text-decoration:underline !important;
                 background-color:unset;

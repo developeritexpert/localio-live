@@ -592,13 +592,13 @@
                 <livewire:user.search-bar placeholder="Search..." />
 
 
-                <!-- <div class="hdr_ryt">
-                    <div class="hdr_info"> -->
+                 <div class="header_button_col">
+                    <div class="Header_buttons">
                         <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
                             class="cta cta_trans">Write review</a>
                         <x-user-profile/>
-                    <!-- </div>
-                </div> -->
+                     </div>
+                </div>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <div class="left_menu">
                         <ul class="menu">

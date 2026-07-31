@@ -2750,7 +2750,37 @@ header .menu li.menu-item a {
 .main_dhdr nav.navbar {
   row-gap: 15px !important;
 }
+
 .user_dashbord .dashboard_lft {
   position: sticky;
   top: 90px;
+}
+
+.Header_buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0px 16px;
+}
+
+.Header_buttons .cta {
+  padding: 11px 28px;
+  min-width: 155px;
+  width: 100%;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 600;
+  border-width: 1px;
+  font-size: 14px;
+  display: flex;
+  border: 1px solid #fff;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+  color: #fff;
+}
+
+.Header_buttons .cta:hover {
+  background-color: #fff;
+  color: #06498b;
 }

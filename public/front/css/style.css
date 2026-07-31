@@ -3436,7 +3436,7 @@ input:-webkit-autofill:active {
   background: #287ae6;
   box-shadow: 0 1px 1px 0 rgba(66, 133, 244, 0.45),
     0 1px 3px 1px rgba(66, 133, 244, 0.3);
-  
+
 }
 
 .pull-right {
@@ -6852,19 +6852,28 @@ ul#pills-tab {
 }
 
 .pagination-wrap .page-link {
-  border: 1px solid #06498b1a !important;
+  border: 1px solid #06498b !important;
   border-radius: 100% !important;
-  color: #6e7485;
+  color: #06498b;
   padding: 0;
-  height: 35px;
-  width: 35px;
+  height: 40px;
+  width: 40px;
+  font-size: 14px;
+  font-weight: 500;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: unset !important;
 }
 
-.page-item.active .page-link {
-  background-color: #06498b;
+.pagination .page-item.disabled .page-link {
+  background-color: #fff;
+}
+
+.pagination .page-item:hover .page-link,
+.pagination .page-item.active .page-link {
+  background-color: #06498b !important;
+  color: #fff !important;
 }
 
 .pagination-wrap .pagination {
@@ -9583,9 +9592,9 @@ header .sec_head {
   color: #fff !important;
 }
 
-.top-automotive-sec.cat_pg {
+/* .top-automotive-sec.cat_pg {
   margin-top: 125px !important;
-}
+} */
 
 .top-automotive-sec.cat_pg .top-auto-choice {
   padding-top: 0 !important;
@@ -9690,9 +9699,9 @@ section.right_tool_sec .otr_rgtool h2 {
   color: #fff !important;
 }
 
-.revie_left_rgt_sec .review-sidebar-sticky .filter-by-title-row {
+/* .revie_left_rgt_sec .review-sidebar-sticky .filter-by-title-row {
   margin-top: 40px !important;
-}
+} */
 
 /* .blue-chkbox label::before {
   background-color: #06498b1a;
@@ -9894,10 +9903,21 @@ section.right_tool_sec .otr_rgtool h2 {
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 8px;
 }
-.revie_left_rgt_sec .review_detl{
-    background-color:#f7f9fb !important;
+
+.revie_left_rgt_sec .review_detl {
+  background-color: #f7f9fb !important;
 }
 
-.revie_left_rgt_sec .review-star-box .progress-box{
-max-width:100%;
+.revie_left_rgt_sec .review-star-box .progress-box {
+  max-width: 100%;
+}
+
+/* ------------ */
+.revie_left_rgt_sec .wrap-review-filter {
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-top: 40px;
 }
