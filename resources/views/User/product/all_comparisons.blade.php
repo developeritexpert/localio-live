@@ -62,7 +62,7 @@
                     <div>
                         <div class=" an_lkd d-flex align-items-center gap-2 ">
                             <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
-                                {{ $bName }} Comparisons
+                               Compare {{ $bName }} 
                             </h1>
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
