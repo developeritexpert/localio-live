@@ -9,9 +9,9 @@
                             wire:loading.class="cat_loading"
                             wire:target="selectAllCategories">
                             <a href="javascript:void(0)"
-                               style="font-size: 18px; font-weight: 700; color: {{ is_null($selectedCategoryId) ? '#e56b46' : '#002347' }}; text-decoration: none; transition: color 0.2s;"
-                               onmouseover="this.style.color='#e56b46'"
-                               onmouseout="this.style.color='{{ is_null($selectedCategoryId) ? '#e56b46' : '#002347' }}'">
+                               style="font-size: 18px; font-weight: 700; color: {{ is_null($selectedCategoryId) ? '#002347' : '#002347' }}; text-decoration: none; transition: color 0.2s;"
+                               onmouseover="this.style.color='#002347'"
+                               onmouseout="this.style.color='{{ is_null($selectedCategoryId) ? '#002347' : '#002347' }}'">
                                 All categories
                             </a>
                         </h4>
@@ -120,7 +120,7 @@
                                         <div class="top-product-info min-w-0">
                                             <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
                                                 {{ $bizName }}
-                                                <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span>
+                                                <!-- <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span> -->
                                             </h6>
                                             <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
                                                 <div class="d-flex" style="color: #ffb300;">
