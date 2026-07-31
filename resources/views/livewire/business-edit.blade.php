@@ -1180,50 +1180,31 @@
                             </div>
                         </div>
                     </div>
-                                    <!-- Media Upload Section -->
+                                      <!-- Media Upload Section -->
 
-                                    <div class="card card-bordered mb-3">
-                                        <div class="card-inner">
-                                            <div class="form-group">
-                                                <label class="form-label">Business Icon</label>
-                                                <input type="file"
-                                                    class="form-control @error('icon_file') is-invalid @enderror"
-                                                    wire:model.live="icon_file" />
+                                     <div class="card card-bordered mb-3">
+                                         <div class="card-inner">
+                                             <div class="form-group">
+                                                 <label class="form-label">Business Icon (SVG)</label>
+                                                 <input type="file"
+                                                     class="form-control @error('icon_file') is-invalid @enderror"
+                                                     wire:model.live="icon_file" accept=".svg,.png" />
 
-                                                @if ($iconError)
-                                                    <div class="text-danger">{{ $iconError }}</div>
-                                                @elseif ($icon_file)
-                                                    <div class="text-success">Icon selected:
-                                                        {{ $icon_file->getClientOriginalName() }}</div>
-                                                    <img src="{{ $icon_file->temporaryUrl() }}"
-                                                        class="img-thumbnail mt-2" width="100"
-                                                        alt="New Icon Preview">
-                                                @elseif($editMode && $icon_id)
-                                                    <img src="{{ asset($icon_id) }}" class="img-thumbnail mt-2"
-                                                        width="100" alt="Existing Icon Preview">
-                                                @endif
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="form-label">Business Image</label>
-                                                <input type="file" class="form-control"
-                                                    @error('image_file') is-invalid @enderror"
-                                                    wire:model.live="image_file" />
-
-                                                @if ($imageError)
-                                                    <div class="text-danger">{{ $imageError }}</div>
-                                                @elseif ($image_file)
-                                                    <div class="text-success">Image selected:
-                                                        {{ $image_file->getClientOriginalName() }}</div>
-                                                    <img src="{{ $image_file->temporaryUrl() }}"
-                                                        class="img-thumbnail mt-2" width="100"
-                                                        alt="New Image Preview">
-                                                @elseif($editMode && $image_id)
-                                                    <img src="{{ asset($image_id) }}" class="img-thumbnail mt-2"
-                                                        width="100" alt="Existing Image Preview">
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
+                                                 @if ($iconError)
+                                                     <div class="text-danger">{{ $iconError }}</div>
+                                                 @elseif ($icon_file)
+                                                     <div class="text-success">Icon selected:
+                                                         {{ $icon_file->getClientOriginalName() }}</div>
+                                                     <img src="{{ $icon_file->temporaryUrl() }}"
+                                                         class="img-thumbnail mt-2" width="100"
+                                                         alt="New Icon Preview">
+                                                 @elseif($editMode && $icon_id)
+                                                     <img src="{{ asset($icon_id) }}" class="img-thumbnail mt-2"
+                                                         width="100" alt="Existing Icon Preview">
+                                                 @endif
+                                             </div>
+                                         </div>
+                                     </div>
 
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
