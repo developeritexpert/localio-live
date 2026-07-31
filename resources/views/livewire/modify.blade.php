@@ -1,36 +1,33 @@
 
+
 <div class="nk-block nk-block-lg">
     <div class="nk-block-head nk-block-head-sm">
         <div class="nk-block-between">
             <div class="nk-block-head-content">
                 <h3 class="nk-block-title page-title">Business</h3>
             </div>
-
-            {{-- 👇 Naya center block - Country/Region switcher --}}
-            <div class="nk-block-head-content">
-                <div class="form-group position-relative mb-0" style="min-width: 220px;">
-                    <div class="position-relative">
-                        <select
-                            class="form-control @error('languages_supported') is-invalid @enderror pe-5"
-                            wire:model.live="languages_supported">
-                            <option value="">Select Region</option>
-                            @foreach ($languages as $language)
-                                <option value="{{ $language->id }}">{{ $language->name }}</option>
-                            @endforeach
-                        </select>
-                        <i class="fa fa-chevron-down position-absolute"
-                            style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                    </div>
-                    @error('languages_supported')
-                        <div class="text-danger small">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            {{-- 👆 Naya block yahan tak --}}
-
             <div class="nk-block-head-content">
                 <div class="toggle-wrap nk-block-tools-toggle">
-                    ...
+                    <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu">
+                        <em class="icon ni ni-more-v"></em>
+                    </a>
+                    {{-- @if ($addbusiness)
+                        <div class="toggle-expand-content" data-content="pageMenu">
+                            <ul class="nk-block-tools g-3">
+                                <li class="nk-block-tools-opt">
+                                    <a href="#" class="toggle btn btn-icon btn-primary d-md-none">
+                                        <em class="icon ni ni-plus"></em>
+                                    </a>
+                                    @if (getCurrentLanguageID() === 1)
+                                        <button wire:click="showAddForm"
+                                            class="btn btn-primary d-none d-md-inline-flex btn-localio">
+                                            <span>Add Businesses</span>
+                                        </button>
+                                    @endif
+                                </li>
+                            </ul>
+                        </div>
+                    @endif --}}
                 </div>
             </div>
         </div>
@@ -145,9 +142,63 @@
                         </div>
                     </div>
 
-                    
 
-                  
+                    <!-- Pricing Options Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Pricing Options</label>
+                            </div>
+                            <div wire:ignore>
+                                <select class="form-control pricing-options" multiple
+                                    wire:model="selectedPricingOptions">
+                                    @foreach ($pricingOptions as $pricingOption)
+                                        @php
+                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
+                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
+                                        @endphp
+                                        <option value="{{ $pricingOption->id }}"
+                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
+                                            {{ $prisingTranslation->name ?? "" }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
+                            @error('selectedPricingOptions')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Category Features Section -->
+                    @if (!empty($categoryFeatures))
+                        <div class="card card-bordered mb-3">
+                            <div class="card-inner">
+                                <div class="form-group">
+                                    <label class="form-label">Business Features</label>
+                                    <div wire:ignore>
+                                        <select id="features-select" class="form-control features" multiple>
+                                            @foreach ($categoryFeatures as $feature)
+                                                @php
+                                                    $translation = $feature->translations->firstWhere('lang_id', $lang_id)
+                                                        ?? $feature->translations->firstWhere('lang_id', 1);
+                                                @endphp
+
+                                                <option value="{{ $feature->id }}"
+                                                    {{ in_array($feature->id, $selectedFeatures ?? []) ? 'selected' : '' }}>
+                                                    {{ $translation->name ?? 'Unnamed Feature' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @error('selectedFeatures')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                 @if ($categoryTopics && $categoryTopics->count())
                 <div class="card card-bordered mb-3">
@@ -261,7 +312,7 @@
                             <div class="form-group d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <label class="form-label mb-0"><strong>Key Selling Points (USPs)</strong></label>
-                                    <p class="text-muted small mb-0">Up to 6 short bullet points shown with ✓ on the product page.</p>
+                                    <p class="text-muted small mb-0">Up to 5 short bullet points shown with ✓ on the product page.</p>
                                 </div>
                             </div>
 
@@ -281,12 +332,12 @@
                                 </div>
                             @endforeach
 
-                            @if (count($businessUsps) < 6)
+                            @if (count($businessUsps) < 5)
                                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" wire:click="addUsp">
                                     <em class="icon ni ni-plus"></em> Add USP
                                 </button>
                             @else
-                                <p class="text-muted small mt-2 mb-0">Maximum of 6 USPs reached.</p>
+                                <p class="text-muted small mt-2 mb-0">Maximum of 5 USPs reached.</p>
                             @endif
                         </div>
                     </div>
@@ -559,19 +610,27 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                     @php
-                                        $langId = session('lang_id', 1);
-
-                                        $subCategories = \App\Models\Category::whereNull('parent_id')
-                                            ->whereHas('translations', function ($query) use ($langId) {
-                                                $query->where('lang_id', $langId);
-                                            })
-                                            ->with(['translations' => function ($query) use ($langId) {
-                                                $query->where('lang_id', $langId);
-                                            }])
-                                            ->get();
-                                    @endphp
+                                    <hr class="my-3">
+                                    <div class="form-group position-relative">
+                                        <label class="form-label">Country/Region</label>
+                                        <div class="position-relative">
+                                            <select
+                                                class="form-control @error('languages_supported') is-invalid @enderror pe-5"
+                                                wire:model.live="languages_supported">
+                                                <option value="">Select Region</option>
+                                                @foreach ($languages as $language)
+                                                    <option value="{{ $language->id }}">{{ $language->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <i class="fa fa-chevron-down position-absolute"
+                                                style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                                        </div>
+                                        @error('languages_supported')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3 position-relative">
                                         <label class="form-label">Business Category</label>
@@ -579,7 +638,7 @@
                                             <select class="form-control pe-5" wire:model.live="selected_category">
                                                 <option value=''>Select Category</option>
                                                 @if (isset($categories))
-                                                    @foreach ($subCategories as $category)
+                                                    @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">
                                                             {{ $category->categoryTranslations->first()->name ?? $category->id }}
                                                         </option>
@@ -594,6 +653,18 @@
                                         @enderror
                                     </div>
                                     {{-- All sub-category --}}
+                                    @php
+                                        $langId = session('lang_id', 1);
+
+                                        $subCategories = \App\Models\Category::whereNull('parent_id')
+                                            ->whereHas('translations', function ($query) use ($langId) {
+                                                $query->where('lang_id', $langId);
+                                            })
+                                            ->with(['translations' => function ($query) use ($langId) {
+                                                $query->where('lang_id', $langId);
+                                            }])
+                                            ->get();
+                                    @endphp
 
                                     <div class="form-group mt-3">
                                         <label class="form-label">Business Sub Categories</label>
@@ -787,55 +858,25 @@
 
 
                     
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Pricing Options</label>
-                            </div>
-                            <div wire:ignore>
-                                <select class="form-control pricing-options" multiple
-                                    wire:model="selectedPricingOptions">
-                                    @foreach ($pricingOptions as $pricingOption)
-                                        @php
-                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
-                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
-                                        @endphp
-                                        <option value="{{ $pricingOption->id }}"
-                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
-                                            {{ $prisingTranslation->name ?? "" }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
-                            @error('selectedPricingOptions')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="row g-3">
                                 <div class="col-md-12">
 
-                                    
-
-
                                     <div class="form-group">
 
                                         <div class="boxbtn_dlex d-flex justify-content-between mb-2 align-items-center">
                                             <label class="form-label m-0">Redirect URL</label>
-                                            <div class="d-flex justify-content-between align-items-center ">
-                                                @if (!empty($selectedCountries))
-                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                        wire:click="showAddUrlForm" style="background: #F9633B;">
-                                                        <i class="fas fa-plus me-1"></i>Add URL
-                                                    </button>
-                                                @endif
-                                            </div>
+                                        <div class="d-flex justify-content-between align-items-center ">
+                                            @if (!empty($selectedCountries))
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    wire:click="showAddUrlForm" style="background: #F9633B;">
+                                                    <i class="fas fa-plus me-1"></i>Add URL
+                                                </button>
+                                            @endif
                                         </div>
-
-                                        
+                                        </div>
 
                                         <div class="affiliate-link-container affiliate-link-container_2 @error('affiliate_link') is-invalid @enderror"
                                             x-data="{
@@ -1007,7 +1048,7 @@
                                                         </span>
                                                     </label>
                                                 </div>
-                                                
+
                                                 <div>
                                                     <button type="button" class="btn btn-secondary btn-sm me-2" wire:click="cancelAddUrl">
                                                         Cancel

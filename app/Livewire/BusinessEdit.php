@@ -1368,7 +1368,7 @@ class BusinessEdit extends Component
 
     public function addUsp()
     {
-        if (count($this->businessUsps) < 5) {
+        if (count($this->businessUsps) < 6) {
             $this->businessUsps[] = ['text' => ''];
         }
     }
@@ -1430,6 +1430,49 @@ class BusinessEdit extends Component
             );
         }
     }
+    public function updatedLanguagesSupported($value)
+{
+    if (!$value) {
+        return;
+    }
+
+    // Sirf edit mode mein hi translation switch karo
+    if (!$this->businessId) {
+        return;
+    }
+
+    $business = Business::with('translations')->find($this->businessId);
+
+    if (!$business) {
+        return;
+    }
+
+    // Us language ki translation dhundo — agar nahi mili to empty rakho
+    // taaki naya translation manually likha ja sake
+    $translation = $business->translations->firstWhere('lang_id', $value);
+
+    $this->name                     = $translation->name ?? '';
+    $this->headquaters               = $translation->headquarters ?? '';
+    $this->support_options           = $translation->support_options ?? '';
+    $this->business_description      = $translation->description ?? '';
+    $this->short_description         = $translation->short_description ?? '';
+    $this->after_image_description   = $translation->after_image_description ?? '';
+    $this->primary_keywords          = $translation->primary_keywords ?? '';
+    $this->secondary_keywords        = $translation->secondary_keywords ?? '';
+    $this->long_tail_keywords        = $translation->long_tail_keywords ?? '';
+    $this->high_intent_keywords      = $translation->high_intent_keywords ?? '';
+
+    // CKEditor fields (business_description, after_image_description) ko
+    // visually refresh karne ke liye JS event bhejo
+    $this->dispatch('languageSwitched');
+
+    if (!$translation) {
+        $this->dispatch('notify', [
+            'message' => 'No translation exists for this language yet — you can create one.',
+            'type' => 'info'
+        ]);
+    }
+}
 
     protected function getValidationRules()
     {
@@ -1456,11 +1499,6 @@ class BusinessEdit extends Component
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
-            'selected_category' => ['required', 'exists:categories,id', function($attribute, $value, $fail) {
-                if (\App\Models\Category::where('id', $value)->whereNull('parent_id')->exists()) {
-                    $fail('The selected category must be a sub-category.');
-                }
-            }],
             'business_description' => 'nullable|string',
             'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
