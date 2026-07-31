@@ -661,20 +661,20 @@
                                                 <input type="text" class="permanent-link-input url-editable"
                                                     x-model="tempValue" x-ref="input" @keydown.enter="saveEdit()"
                                                     @keydown.escape="cancelEdit()">
-                                            </div>
+                                                
+                                                <!-- Edit Controls -->
+                                                <div class="edit-controls"  style="top: 20% !important;">
+                                                    <i class="fas fa-pencil-alt edit-pencil text-primary fs-5" x-show="!editing"
+                                                        @click="startEdit()" style="cursor: pointer;"></i>
 
-                                            <div class="edit-controls">
-                                                <i class="fas fa-pencil-alt edit-pencil" x-show="!editing"
-                                                    @click="startEdit()" style="cursor: pointer;"></i>
-
-                                                <div class="save-cancel-buttons" x-show="editing"
-                                                    style="display: none;">
-                                                    <button type="button" class="save-btn" @click="saveEdit()">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                    <button type="button" class="cancel-btn" @click="cancelEdit()">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
+                                                    <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
+                                                        <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -889,9 +889,8 @@
                                                 }
                                             }">
 
-                                            <!-- Display Mode -->
                                    <div class="affilates-div">
-                                             <div class="affiliate-link-display" x-show="!editing">
+                                             <div class="affiliate-link-display" x-show="!editing" @click="startEdit()" style="cursor: pointer;">
                                                 <div class="url-display-wrapper">
                                                     <span class="url-text" x-text="tempUrl || 'Enter redirect URL'"
                                                         :title="tempUrl"></span>
@@ -906,59 +905,58 @@
                                                         </template>
                                                     </div>
                                                 </div>
-                                            </div>
+                                             </div>
 
-                                            <!-- Edit Mode -->
-                                            <div class="affiliate-link-edit" x-show="editing" style="display: none;">
-                                                <div class="url-input-wrapper">
-                                                    <input type="url" class="form-control affiliate-link-input"
-                                                        x-model="tempUrl" x-ref="urlInput"
-                                                        placeholder="https://example.com/redirect-link"
-                                                        @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
+                                             <!-- Edit Mode -->
+                                             <div class="affiliate-link-edit" x-show="editing" style="display: none;">
+                                                 <div class="url-input-wrapper">
+                                                     <input type="url" class="form-control affiliate-link-input"
+                                                         x-model="tempUrl" x-ref="urlInput"
+                                                         placeholder="https://example.com/redirect-link"
+                                                         @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
 
-                                                    <!-- Validation Error Display -->
-                                                    <div x-show="validationError" class="text-danger small mt-1"
-                                                        x-text="validationError"></div>
-                                                </div>
+                                                     <!-- Validation Error Display -->
+                                                     <div x-show="validationError" class="text-danger small mt-1"
+                                                         x-text="validationError"></div>
+                                                 </div>
 
-                                                <!-- Toggle Switch - Only visible while editing -->
-                                                <div class="affiliate-toggle-section m-0">
-                                                    <div class="affiliate-toggle">
-                                                        <label class="form-check-label me-2">
-                                                            Affiliate
-                                                        </label>
-                                                      <div class="label_from_box">
-                                                          <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                x-model="tempAffiliate" id="affiliateToggle">
-                                                        </div>
-                                                        <div class="affiliate-indicator-toggle ms-2">
-                                                            <template x-if="tempAffiliate">
-                                                                <i class="fas fa-check-circle text-success"
-                                                                    title="Affiliate Link"></i>
-                                                            </template>
-                                                            <template x-if="!tempAffiliate">
-                                                                <i class="fas fa-exclamation-triangle text-warning"
-                                                                    title="Non-Affiliate Link"></i>
-                                                            </template>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                 <!-- Toggle Switch - Only visible while editing -->
+                                                 <div class="affiliate-toggle-section m-0">
+                                                     <div class="affiliate-toggle">
+                                                         <label class="form-check-label me-2">
+                                                             Affiliate
+                                                         </label>
+                                                       <div class="label_from_box">
+                                                           <div class="form-check form-switch">
+                                                             <input class="form-check-input" type="checkbox"
+                                                                 x-model="tempAffiliate" id="affiliateToggle">
+                                                         </div>
+                                                         <div class="affiliate-indicator-toggle ms-2">
+                                                             <template x-if="tempAffiliate">
+                                                                 <i class="fas fa-check-circle text-success"
+                                                                     title="Affiliate Link"></i>
+                                                             </template>
+                                                             <template x-if="!tempAffiliate">
+                                                                 <i class="fas fa-exclamation-triangle text-warning"
+                                                                     title="Non-Affiliate Link"></i>
+                                                             </template>
+                                                         </div>
+                                                       </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
                                    </div>
 
                                             <!-- Edit Controls -->
-                                            <div class="edit-controls">
-                                                <i class="fas fa-pencil-alt edit-pencil" x-show="!editing"
-                                                    @click="startEdit()" style="cursor: pointer;"></i>
+                                            <div class="edit-controls" style="top: 10% !important;">
+                                                <i class="fas fa-pencil-alt edit-pencil text-primary fs-5" x-show="!editing"
+                                                    @click.stop="startEdit()" style="cursor: pointer;"></i>
 
-                                                <div class="save-cancel-buttons" x-show="editing"
-                                                    style="display: none;">
-                                                    <button type="button" class="save-btn" @click="saveEdit()">
+                                                <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
+                                                    <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
                                                         <i class="fas fa-check"></i>
                                                     </button>
-                                                    <button type="button" class="cancel-btn" @click="cancelEdit()">
+                                                    <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </div>
