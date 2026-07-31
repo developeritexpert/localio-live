@@ -1039,7 +1039,7 @@
                                     <div class="row sld_rw">
                                         <div class="col-lg-12">
                                             <div class="is-asana-lft">
-                                                <h2>What is {{ $business->translations->first()->name }}</h2>
+                                                <h2>{{ $business->translations->first()->description_title ?: ('What is ' . ($business->translations->first()->name ?? '')) }}</h2>
                                                 <div class="is_text">
                                                     {!! $business->translations->first()->description !!}
                                                 </div>

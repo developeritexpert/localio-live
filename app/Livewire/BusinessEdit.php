@@ -64,6 +64,7 @@ class BusinessEdit extends Component
     public $affiliate_partner = '';
     public $affiliate_link = '';
     public $is_affiliate_partner = false;
+    public $description_title = '';
     public $business_description = '';
     public $short_description = '';
     public $after_image_description = '';
@@ -1076,6 +1077,7 @@ class BusinessEdit extends Component
         $this->year_found = $business->year_found;
         $this->languages_supported = $business->languages_supported;
         $this->support_options = $translation->support_options ?? '';
+        $this->description_title = $translation->description_title ?? '';
         $this->business_description = $translation->description ?? '';
         $this->short_description = $translation->short_description ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
@@ -1456,6 +1458,7 @@ class BusinessEdit extends Component
     $this->name                     = $translation->name ?? '';
     $this->headquaters               = $translation->headquarters ?? '';
     $this->support_options           = $translation->support_options ?? '';
+    $this->description_title         = $translation->description_title ?? '';
     $this->business_description      = $translation->description ?? '';
     $this->short_description         = $translation->short_description ?? '';
     $this->after_image_description   = $translation->after_image_description ?? '';
@@ -1501,6 +1504,7 @@ class BusinessEdit extends Component
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
+            'description_title' => 'nullable|string|max:255',
             'business_description' => 'nullable|string',
             'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
@@ -1598,6 +1602,7 @@ class BusinessEdit extends Component
             'lang_id' => $this->languages_supported,
             'headquarters' => $this->headquaters,
             'support_options' => $this->support_options,
+            'description_title' => $this->description_title,
             'description' => $this->business_description,
             'short_description' => $this->short_description,
             'after_image_description' => $this->after_image_description,
@@ -1668,6 +1673,7 @@ class BusinessEdit extends Component
                 'slug' => $slug,
                 'headquarters' => $this->headquaters,
                 'support_options' => $this->support_options,
+                'description_title' => $this->description_title,
                 'description' => $this->business_description,
                 'short_description' => $this->short_description,
                 'after_image_description' => $this->after_image_description,

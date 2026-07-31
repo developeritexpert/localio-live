@@ -87,6 +87,15 @@
                     <!-- Business Description Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Business description title</label>
+                                <input type="text" class="form-control @error('description_title') is-invalid @enderror"
+                                    wire:model.live="description_title" placeholder="e.g. What is {{ $name ?: 'Business Name' }}" />
+                                @error('description_title')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="form-group d-flex justify-content-between align-items-center">
                                 <label class="form-label">Business description</label>
                                 {{-- <button type="button" class="btn btn-sm btn-secondary"
