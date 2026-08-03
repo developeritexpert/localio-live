@@ -350,6 +350,202 @@
                         </div>
                     </div>
 
+                    <!-- Alternatives Page Description Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Alternatives page title</label>
+                                <input type="text" class="form-control @error('alternatives_title') is-invalid @enderror"
+                                    wire:model.live="alternatives_title" placeholder="e.g. Best {{ $name ?: 'Business Name' }} Alternatives" />
+                                @error('alternatives_title')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Alternatives page description</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.alternatives_description = editor.getData();
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor"
+                                        class="form-control @error('alternatives_description') is-invalid @enderror"
+                                        wire:model.live="alternatives_description"
+                                        rows="5">
+                                    </textarea>
+                                    @error('alternatives_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Page Description Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Reviews page title</label>
+                                <input type="text" class="form-control @error('reviews_title') is-invalid @enderror"
+                                    wire:model.live="reviews_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Reviews & Ratings" />
+                                @error('reviews_title')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Reviews page description</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_description = editor.getData();
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor"
+                                        class="form-control @error('reviews_description') is-invalid @enderror"
+                                        wire:model.live="reviews_description"
+                                        rows="5">
+                                    </textarea>
+                                    @error('reviews_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQs Page Description Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">FAQs page title</label>
+                                <input type="text" class="form-control @error('faqs_title') is-invalid @enderror"
+                                    wire:model.live="faqs_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Frequently Asked Questions" />
+                                @error('faqs_title')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">FAQs page description</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.faqs_description = editor.getData();
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor"
+                                        class="form-control @error('faqs_description') is-invalid @enderror"
+                                        wire:model.live="faqs_description"
+                                        rows="5">
+                                    </textarea>
+                                    @error('faqs_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Page Description Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Comparison page title</label>
+                                <input type="text" class="form-control @error('comparison_title') is-invalid @enderror"
+                                    wire:model.live="comparison_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Comparison" />
+                                @error('comparison_title')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Comparison page description</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.comparison_description = editor.getData();
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor"
+                                        class="form-control @error('comparison_description') is-invalid @enderror"
+                                        wire:model.live="comparison_description"
+                                        rows="5">
+                                    </textarea>
+                                    @error('comparison_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="col-md-4">

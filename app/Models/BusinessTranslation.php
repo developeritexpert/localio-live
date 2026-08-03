@@ -25,6 +25,14 @@ class BusinessTranslation extends Model
         'secondary_keywords',
         'long_tail_keywords',
         'high_intent_keywords',
+        'alternatives_title',
+        'alternatives_description',
+        'reviews_title',
+        'reviews_description',
+        'faqs_title',
+        'faqs_description',
+        'comparison_title',
+        'comparison_description',
     ];
 
     public function business()
