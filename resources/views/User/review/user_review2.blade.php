@@ -9,11 +9,45 @@
     $catSlug = $catTrans->slug ?? $business->category->slug ?? null;
     $parentCatName = $parentCatTrans->name ?? '';
     $parentCatSlug = $parentCatTrans->slug ?? $business->category->parent->slug ?? null;
-    $bName = $business->translations->first()->name ?? 'Business';
+    $bTranslation = $business->translations->firstWhere('language_id', $lang_id) ?? $business->translations->first();
+    $bName = $bTranslation->name ?? 'Business';
     $reviewsWord = static_text('reviews_word') !== 'reviews_word' ? static_text('reviews_word') : 'reviews';
     $subHeadline = static_text('business_reviews_subheadline') !== 'business_reviews_subheadline' 
         ? static_text('business_reviews_subheadline') 
         : 'Real reviews, community discussions & alternatives';
+
+    $reviewsTitle1 = !empty($bTranslation->reviews_title) ? $bTranslation->reviews_title : "What is {$bName}";
+    $reviewsDesc1 = $bTranslation->reviews_description ?? '';
+    $reviewsTitle2 = !empty($bTranslation->reviews_title_2) ? $bTranslation->reviews_title_2 : "What is {$bName}";
+    $reviewsDesc2 = $bTranslation->reviews_description_2 ?? '';
+
+    // Pros & Cons extraction logic from business reviews
+    $pros = collect();
+    $cons = collect();
+    $activeReviews = $business->reviews->where('status', 'active');
+    foreach ($activeReviews as $rev) {
+        $rTrans = $rev->translations->where('language_id', $lang_id)->first() ?? $rev->translations->first();
+        if ($rTrans) {
+            if (!empty($rTrans->pros)) {
+                $pItems = array_filter(array_map('trim', explode(',', strip_tags($rTrans->pros))));
+                foreach ($pItems as $pi) { $pros->push($pi); }
+            }
+            if (!empty($rTrans->cons)) {
+                $cItems = array_filter(array_map('trim', explode(',', strip_tags($rTrans->cons))));
+                foreach ($cItems as $ci) { $cons->push($ci); }
+            }
+        }
+    }
+    $pros = $pros->unique()->take(3);
+    $cons = $cons->unique()->take(3);
+
+    // Fallbacks if no pros/cons exist
+    if ($pros->isEmpty()) {
+        $pros = collect(['Wide range of IT services', 'Strong focus on innovation', 'Professional project management']);
+    }
+    if ($cons->isEmpty()) {
+        $cons = collect(['Enterprise services can be expensive', 'Initial consultation may take time', 'Custom projects require detailed requirements']);
+    }
 @endphp
 
 <!-- Upper Header Section ( identical to business details page header, without in-page navigation) -->
@@ -23,9 +57,6 @@
         <div class=" d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" style="color: #64748b; text-decoration: none;">All</a>
-                    </li>
                     @if($parentCatName)
                         <li class="breadcrumb-item">
                             @if($parentCatSlug)
@@ -36,14 +67,20 @@
                         </li>
                     @endif
                     @if($catName)
-                        <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                        <li class="breadcrumb-item">
                             @if($catSlug)
-                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #1e3050; font-weight: 500; text-decoration: none;">{{ $catName }}</a>
+                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
                             @else
-                                {{ $catName }}
+                                <span style="color: #64748b;">{{ $catName }}</span>
                             @endif
                         </li>
                     @endif
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                        Reviews
+                    </li>
                 </ol>
             </nav>
             <div class="inside_sec_text">
@@ -76,6 +113,93 @@
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Overview & Pros/Cons Top Showcase Section -->
+<section class="overview-showcase-sec py-5" style="">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Left Column: Titles and Descriptions -->
+            <div class="col-lg-7 col-12">
+                <div class="mb-5">
+                    <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">{{ $reviewsTitle1 }}</h2>
+                    <div style="font-size: 14.5px; color: #475569; line-height: 1.7;">
+                        @if(!empty($reviewsDesc1))
+                            {!! $reviewsDesc1 !!}
+                        @else
+                            <p style="margin-bottom: 0;">{{ $bName }} is a trusted technology service provider dedicated to helping businesses streamline operations, improve productivity, and strengthen their online presence. From custom software development and website design to cloud solutions and IT consulting, the company delivers tailored services that match the unique goals of each client.</p>
+                        @endif
+                    </div>
+                </div>
+
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">{{ $reviewsTitle2 }}</h2>
+                    <div style="font-size: 14.5px; color: #475569; line-height: 1.7;">
+                        @if(!empty($reviewsDesc2))
+                            {!! $reviewsDesc2 !!}
+                        @else
+                            <p style="margin-bottom: 0;">{{ $bName }} is a trusted technology service provider dedicated to helping businesses streamline operations, improve productivity, and strengthen their online presence. From custom software development and website design to cloud solutions and IT consulting, the company delivers tailored services that match the unique goals of each client.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Rating Widget, Pros, and Cons -->
+            <div class="col-lg-5 col-12 d-flex flex-column gap-4">
+                <!-- Compact Rating Card -->
+                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div>
+                            <span style="font-size: 38px; font-weight: 700; color: #0f172a; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                            <div class="d-flex align-items-center gap-1 my-2">
+                                @for ($j = 1; $j <= 5; $j++)
+                                    @if ($j <= floor($averageRating))
+                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                    @elseif ($j - 0.5 <= $averageRating)
+                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                    @else
+                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            <span style="font-size: 13px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
+                        </div>
+                        <a href="#reviews-list-container" style="font-size: 13.5px; font-weight: 600; color: #0284c7; text-decoration: none;">View all reviews</a>
+                    </div>
+                </div>
+
+                <!-- Pros Card -->
+                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
+                    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Pros</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
+                        @foreach($pros as $pro)
+                            <li style="display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #334155; font-weight: 500;">
+                                <span style="width: 22px; height: 22px; border-radius: 50%; background: #22c55e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                                {{ $pro }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <!-- Cons Card -->
+                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
+                    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Cons</h3>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
+                        @foreach($cons as $con)
+                            <li style="display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #334155; font-weight: 500;">
+                                <span style="width: 22px; height: 22px; border-radius: 50%; background: #ef4444; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">
+                                    <i class="fas fa-minus"></i>
+                                </span>
+                                {{ $con }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -265,7 +389,7 @@
                     <div class="filt_box p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                             <span style="font-size: 15px; font-weight: 700; color: #1e3050;">Filter by rating</span>
-                            <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear</span>
+                            <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear filter</span>
                         </div>
 
                         <ul style="list-style: none; padding: 0; margin: 0;">

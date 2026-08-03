@@ -231,7 +231,8 @@ header {
 header .search-box i {
   top: 50%;
   right: 5px;
-  background: #f9633b;
+  /* background: #f9633b; */
+  background-color: #ff5722;
   color: #fff;
   border-radius: 960px;
   width: 60px;
@@ -350,8 +351,8 @@ div#navbarSupportedContent {
 }
 
 .cta.cta_orange {
-  background-color: #f9633b;
-  border-color: #f9633b;
+  background-color: #ff5722;
+  border-color: #ff5722;
 }
 
 .cta.cta_orange:hover {
@@ -1471,7 +1472,8 @@ textarea:focus-visible {
   font-size: 18px;
   color: #fff;
   cursor: pointer;
-  background: #f9633b;
+  /* background: #f9633b; */
+  background-color: #ff5722;
   /* padding: 11px 22px; */
   padding: 12px 22px 12px 22px;
   border-radius: 110px;
@@ -1577,7 +1579,7 @@ textarea:focus-visible {
   color: #fff;
   content: "\2b";
   font-family: "fontAwesome";
-  background-color: #f9633b;
+  background-color: #003f7d;
   height: 37px;
   width: 37px;
   font-size: 15px !important;
@@ -3434,8 +3436,8 @@ input:-webkit-autofill:active {
 
 .btn-primary:hover {
   background: #287ae6;
-  box-shadow: 0 1px 1px 0 rgba(66, 133, 244, 0.45),
-    0 1px 3px 1px rgba(66, 133, 244, 0.3);
+  /* box-shadow: 0 1px 1px 0 rgba(66, 133, 244, 0.45),
+    0 1px 3px 1px rgba(66, 133, 244, 0.3); */
 
 }
 
@@ -3684,16 +3686,17 @@ header.drk_header {
 }
 
 .progress-bar::-webkit-progress-value {
-  background: #21ac21;
+  /* background: #21ac21; */
+  background: #2CC464;
   border-radius: 8px !important;
 }
 
 .progress-bar::-moz-progress-bar {
-  background: #21ac21;
+  background: #2CC464;
 }
 
 .progress-bar::-ms-fill {
-  background: #21ac21;
+  background: #2CC464;
 }
 
 .altr-mid-hd {
@@ -8447,7 +8450,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a {
   font-weight: 400;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 /* .asn_dv .Tab-outerlnk #table-of-content ul li a{
@@ -8643,9 +8646,9 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .wht-t-org-btn:hover {
-  background-color: #f9633b !important;
+  background-color: #ff5722 !important;
   color: #fff !important;
-  border-color: #f9633b !important;
+  border-color: #ff5722 !important;
 
 }
 
@@ -8655,7 +8658,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .blue_t_org_btn:hover {
-  background-color: #f9633b !important;
+  background-color: #ff5722 !important;
 }
 
 .business-features .feature-section .feature-card .feature-content {
@@ -8691,17 +8694,17 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .sftware-alternative-pck progress::-webkit-progress-value {
-  background: #41B06E !important;
+  background: #2CC464 !important;
   border-radius: 4px;
 }
 
 .sftware-alternative-pck progress::-moz-progress-bar {
-  background: #41B06E !important;
+  background: #2CC464 !important;
   border-radius: 4px;
 }
 
 .sftware-alternative-pck progress::-ms-fill {
-  background: #41B06E !important;
+  background: #2CC464 !important;
   border-radius: 4px;
 }
 
@@ -9388,12 +9391,12 @@ footer .foot-row-lft .foot-logo p {
 
 .product_integra_sec .sftwre-alt-btn a {
   color: #fff !important;
-  background-color: #06498b;
+  background-color: #003f7d;
   border: none;
 }
 
 .product_integra_sec .sftwre-alt-btn a:hover {
-  background-color: #f9633b !important;
+  background-color: #ff5722 !important;
   color: #fff !important;
 }
 
@@ -9768,7 +9771,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .asn_main_sec .asn_dv {
-  background-color: #fdfdfd;
+  background-color: #f7f9fb;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -9919,5 +9922,53 @@ section.right_tool_sec .otr_rgtool h2 {
   border-radius: 15px;
   background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-top: 40px;
+  margin-top: 25px;
+}
+
+/*============== 3-Aug-26 ============*/
+.top-rated-heading-sec .learn_mre_btn:hover {
+  text-decoration: underline !important;
+}
+
+/* star color */
+.fa-star-half-alt.text-warning,
+.fa-star.text-warning {
+  color: #ff5722 !important;
+}
+
+.crm_sec.revie_left_rgt_sec .progress-bar::-webkit-progress-value {
+  background: #2CC464;
+}
+
+.product_integra_sec .over-rate-progress .progress-bar::-webkit-progress-value {
+  background: #2CC464 !important;
+}
+
+.top-product-card>div:last-child a:last-child:hover {
+  background-color: #06498b !important;
+}
+
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover i {
+  color: #fff !important;
+}
+
+.compare-section #section-compare {
+  background-color: #f7f9fb !important;
+}
+
+.top-rated-heading-sec h1 {
+  font-size: 28px !important;
+}
+
+.top-automotive-sec.cat_pg {
+  background-color: #fdfdfd;
+}
+
+
+.faq-accor .accordion-button:hover::after,
+.faq-accor .accordion-button:not(.collapsed):hover::after {
+    background-color: #ff5722 !important;
+}
+.asn_main_sec .btn{
+transition:unset !important;
 }

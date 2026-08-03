@@ -104,7 +104,7 @@
         </div>
         <div class="card card-bordered card-preview">
             <div class="card-inner">
-                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
+                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false" data-order="[]">
                     @if ($categories->isEmpty())
                         <div class="text-center">
                             <button class="btn btn-primary btn-localio">No data found</button>
@@ -112,8 +112,10 @@
                     @else
                         <thead>
                             <tr class="nk-tb-item nk-tb-head">
-                                <th class="nk-tb-col"><span class="sub-text">Name</span></th>
+                                <th class="nk-tb-col"><span class="sub-text">Translated Name</span></th>
+                                <th class="nk-tb-col"><span class="sub-text">Name (English)</span></th>
                                 <th class="nk-tb-col"><span class="sub-text">Type</span></th>
+                                <th class="nk-tb-col"><span class="sub-text">Country Status</span></th>
                                 <th class="nk-tb-col tb-tnx-action">
                                     <span>Action</span>
                                 </th>
@@ -121,24 +123,73 @@
                         </thead>
                         <tbody>
                             @foreach ($categories as $category)
-                                <tr class="nk-tb-item">
+                                @php
+                                    $isParent = ($category->parent_id === null);
+                                @endphp
+                                <tr class="nk-tb-item {{ $isParent ? 'bg-lighter' : '' }}">
                                     <td class="nk-tb-col">
                                         <div class="user-card">
                                             <div class="user-info">
-                                                <span class="tb-lead">{{ $category->name ?? '' }}</span>
+                                                @if($isParent)
+                                                    @if($siteLanguage == $englishLangId)
+                                                        <span class="tb-lead fw-bold text-dark fs-15px">{{ $category->english_name }}</span>
+                                                    @else
+                                                        @if(!empty($category->translated_name))
+                                                            <span class="tb-lead fw-bold text-dark fs-15px">{{ $category->translated_name }}</span>
+                                                        @else
+                                                            <span class="badge badge-dim bg-outline-warning">Not Translated</span>
+                                                        @endif
+                                                    @endif
+                                                @else
+                                                    <div class="ps-3 d-flex align-items-center">
+                                                        <span class="text-muted me-1 fw-bold fs-14px">↳</span>
+                                                        @if($siteLanguage == $englishLangId)
+                                                            <span class="tb-lead text-body">{{ $category->english_name }}</span>
+                                                        @else
+                                                            @if(!empty($category->translated_name))
+                                                                <span class="tb-lead text-body">{{ $category->translated_name }}</span>
+                                                            @else
+                                                                <span class="badge badge-dim bg-outline-warning">Not Translated</span>
+                                                            @endif
+                                                        @endif
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
                                     <td class="nk-tb-col">
-                                        @if($category->category->parent_id === null)
+                                        <div class="user-card">
+                                            <div class="user-info">
+                                                @if($isParent)
+                                                    <span class="tb-lead fw-bold text-dark fs-15px">{{ $category->english_name }}</span>
+                                                @else
+                                                    <div class="ps-3 d-flex align-items-center">
+                                                        <span class="text-muted me-1 fw-bold fs-14px">↳</span>
+                                                        <span class="tb-lead text-body">{{ $category->english_name }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        @if($isParent)
                                             <span class="badge badge-dim bg-primary">Parent Category</span>
                                         @else
                                             @php
-                                                $parentTranslation = $category->category->parent ? ($category->category->parent->translations()->where('lang_id', $category->lang_id)->first() 
-                                                    ?? $category->category->parent->translations()->first()) : null;
+                                                $parentTranslation = $category->parent ? ($category->parent->categoryTranslations->where('lang_id', $siteLanguage)->first() 
+                                                    ?? $category->parent->categoryTranslations->where('lang_id', $englishLangId)->first()) : null;
                                             @endphp
                                             <span class="badge badge-dim bg-outline-info">Sub-category (of {{ $parentTranslation->name ?? 'Unknown' }})</span>
                                         @endif
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input category-country-status-toggle" 
+                                                   type="checkbox" 
+                                                   data-category-id="{{ $category->id }}" 
+                                                   data-lang-id="{{ $siteLanguage }}" 
+                                                   {{ $category->is_active_for_country ? 'checked' : '' }}>
+                                        </div>
                                     </td>
                                     <td class="nk-tb-col nk-tb-col-tools">
                                         <ul class="nk-tb-actions gx-1">
@@ -149,34 +200,23 @@
                                                     <div class="dropdown-menu dropdown-menu-end"
                                                         style="list-style: none; padding: 0; margin: 0; height:auto; overflow:hidden !important;">
                                                         <ul class="link-list-opt no-bdr">
-                                                            <li><a
-                                                                    href="{{route('add-category',$category->id)}}"><em
-                                                                        class="icon ni ni-edit-fill" ></em><span>Edit</span></a>
+                                                            @if($category->translation_id)
+                                                                <li><a href="{{ route('add-category', $category->translation_id) }}"><em class="icon ni ni-edit-fill" ></em><span>Edit</span></a></li>
+                                                            @endif
+
+                                                            <li><a href="{{ route('add-topic-category', $category->id) }}"><em class="icon ni ni-contact"></em><span>Business Topics</span></a></li>
+
+                                                            @if($category->translation_id)
+                                                                <li class="removeConfermation" data-url="{{ route('admin-remove-categories', $category->translation_id) }}">
+                                                                    <a href="{{ route('admin-remove-categories', $category->translation_id) }}"><em class="icon ni ni-trash-fill"></em><span>Delete</span></a>
+                                                                </li>
+                                                            @endif
+
+                                                            <li>
+                                                                <a onclick="openCategoryTranslateModal({{ $category->id }}, '{{ addslashes($category->english_name) }}')">
+                                                                    <em class="icon ni ni-globe"></em> Translations
+                                                                </a>
                                                             </li>
-
-                                                            <li><a
-                                                                href="{{route('add-topic-category',$category->category->id)}}"><em class="icon ni ni-contact"></em>
-                                                                <span>Business Topics</span></a>
-                                                            </li>
-
-                                                            <li class="removeConfermation"
-                                                            data-url="{{  route('admin-remove-categories',$category->id) }}">
-                                                                <a
-                                                                href="{{ route('admin-remove-categories',$category->id)}}"><em
-                                                                class="icon ni ni-trash-fill"></em><span>Delete</span></a>
-                                                              </li>
-
-                                                        {{-- Add Transalate --}}
-                                                         {{-- @php
-                                                            dd($category->lang_id);
-                                                        @endphp --}}
-
-                                                        <li>
-                                                            <a onclick="openCategoryTranslateModal({{ $category->category->id }}, '{{ $category->name }}')">
-                                                                <em class="icon ni ni-globe"></em> Translations
-                                                            </a>
-                                                        </li>
-
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -312,7 +352,47 @@ $('#btnStartTranslation').on('click', function () {
 
 
     <script>
+        if (typeof $.fn.dataTable !== 'undefined') {
+            $.fn.dataTable.defaults.ordering = false;
+            $.fn.dataTable.defaults.order = [];
+        }
+
         $(document).ready(function() {
+            if (typeof $.fn.dataTable !== 'undefined') {
+                $.fn.dataTable.defaults.ordering = false;
+                $.fn.dataTable.defaults.order = [];
+            }
+
+            $('.category-country-status-toggle').on('change', function () {
+                const categoryId = $(this).data('category-id');
+                const langId = $(this).data('lang-id');
+                const status = $(this).is(':checked') ? 1 : 0;
+                const $toggle = $(this);
+
+                $.ajax({
+                    url: "{{ route('admin.toggle-category-status') }}",
+                    type: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    data: {
+                        category_id: categoryId,
+                        lang_id: langId,
+                        status: status
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            NioApp.Toast(response.message || 'Category status updated successfully!', 'success', { position: 'top-right' });
+                        } else {
+                            $toggle.prop('checked', !status);
+                            NioApp.Toast('Failed to update category status.', 'error', { position: 'top-right' });
+                        }
+                    },
+                    error: function () {
+                        $toggle.prop('checked', !status);
+                        NioApp.Toast('Something went wrong while updating category status.', 'error', { position: 'top-right' });
+                    }
+                });
+            });
+
             $('#name').on('input', function() {
                 let name = $(this).val().toLowerCase();
                 let slug = name.replace(/\s+/g, "-");

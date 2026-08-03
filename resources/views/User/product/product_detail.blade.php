@@ -10,6 +10,16 @@
         $images = is_array($business->business_images)
             ? $business->business_images
             : json_decode($business->business_images ?? '[]', true);
+
+        if (empty($images) && !empty($business->screenshot_urls)) {
+            $urls = is_array($business->screenshot_urls)
+                ? $business->screenshot_urls
+                : json_decode($business->screenshot_urls ?? '[]', true);
+            $urls = array_values(array_filter((array)$urls));
+            if (!empty($urls)) {
+                $images = $urls;
+            }
+        }
     @endphp
     <!-- Modal script driver (Declared early to prevent race conditions on render) -->
 
@@ -23,7 +33,10 @@
             console.log("updateModalImage called with index:", index);
             currentModalIndex = parseInt(index, 10);
             if (currentModalIndex >= 0 && currentModalIndex < modalImages.length) {
-                let imgUrl = '{{ asset("") }}' + modalImages[currentModalIndex].replace(/^\/+/, '');
+                let rawImg = modalImages[currentModalIndex];
+                let imgUrl = (rawImg.startsWith('http://') || rawImg.startsWith('https://'))
+                    ? rawImg
+                    : '{{ asset("") }}' + rawImg.replace(/^\/+/, '');
                 console.log("Updating modal active image src to:", imgUrl);
                 let activeImg = document.getElementById('modalActiveImg');
                 if (activeImg) {
@@ -1164,6 +1177,17 @@
                                             $images = is_array($business->business_images)
                                                 ? $business->business_images
                                                 : json_decode($business->business_images ?? '[]', true);
+
+                                            // Fallback to screenshot_urls if no business_images are uploaded
+                                            if (empty($images) && !empty($business->screenshot_urls)) {
+                                                $urls = is_array($business->screenshot_urls)
+                                                    ? $business->screenshot_urls
+                                                    : json_decode($business->screenshot_urls ?? '[]', true);
+                                                $urls = array_values(array_filter((array)$urls));
+                                                if (!empty($urls)) {
+                                                    $images = $urls;
+                                                }
+                                            }
                                         @endphp
 
                                          @if (!empty($images))
@@ -1173,8 +1197,11 @@
                                                         <!-- Main Slider -->
                                                         <div class="col-md-12 asan-slider slider-for">
                                                             @foreach ($images as $index => $image)
+                                                                @php
+                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
+                                                                @endphp
                                                                 <div class="asan-slider-inr" style="cursor: pointer;">
-                                                                    <img src="{{ asset($image) }}"
+                                                                    <img src="{{ $imgSrc }}"
                                                                         onclick="openGallery({{ $index }})"
                                                                         alt="Business Image {{ $index + 1 }}"
                                                                         style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
@@ -1186,8 +1213,11 @@
                                                         <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
                                                             style="margin-top: 15px !important;">
                                                             @foreach ($images as $index => $image)
+                                                                @php
+                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
+                                                                @endphp
                                                                 <div style="padding: 0 5px; cursor: pointer;">
-                                                                    <img src="{{ asset($image) }}"
+                                                                    <img src="{{ $imgSrc }}"
                                                                         alt="Thumbnail {{ $index + 1 }}"
                                                                         style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
                                                                 </div>
@@ -1195,6 +1225,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
                                          @endif
 
                                          <script>
@@ -1226,7 +1257,8 @@
 
                                     </div>
                                 </div>
-                            </div>
+                            <!-- </div> -->
+                            <!-- image right side end here -->
                             <div class="thre_revi_rgt">
                                 <!-- <div class="lcl_text" style="margin-bottom: 20px;">
                                     <p class="sml_text">{{ static_text('localio_commissions_message') }}
@@ -1375,7 +1407,7 @@
                                                 <div class="review-progress-list ">
                                                     @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                        <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                                         <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                             <progress class="progress-bar w-100"
                                                                 value="{{ $criterion->average_rating * 20 }}"
@@ -1418,40 +1450,40 @@
                                         <div class="innr_price_trail">
 
                                             <div class="main_feature_sm">
-    <div class="feture_box str_prc_box">
+                                                <div class="feture_box str_prc_box">
 
-        <h6 class="starting-price-title">
-            Starting price
-        </h6>
+                                                    <h6 class="starting-price-title">
+                                                        Starting price
+                                                    </h6>
 
-        @if ($startingPrice)
-            <h2 class="starting-price-value">
-                {{ $currency }}{{ $startingPrice }}
-            </h2>
-        @else
-            <h2 class="starting-price-value">
-                {{ $currency }}9
-            </h2>
-        @endif
+                                                    @if ($startingPrice)
+                                                        <h2 class="starting-price-value">
+                                                            {{ $currency }}{{ $startingPrice }}
+                                                        </h2>
+                                                    @else
+                                                        <h2 class="starting-price-value">
+                                                            {{ $currency }}9
+                                                        </h2>
+                                                    @endif
 
-        <p class="starting-price-text">
-            Flat Rate, Per {{ ucfirst($timeUnit) }}
-        </p>
+                                                    <p class="starting-price-text">
+                                                        Flat Rate, Per {{ ucfirst($timeUnit) }}
+                                                    </p>
 
-        <a href="{{ $business->getTrackedUrl() }}"
-            data-track="{{ json_encode([
-                'type' => 'click',
-                'business_id' => $business->id,
-                'action' => 'view_pricing',
-                'label' => 'View pricing',
-            ]) }}"
-            target="_blank"
-            class="starting-price-link">
-            View pricing
-        </a>
+                                                    <a href="{{ $business->getTrackedUrl() }}"
+                                                        data-track="{{ json_encode([
+                                                            'type' => 'click',
+                                                            'business_id' => $business->id,
+                                                            'action' => 'view_pricing',
+                                                            'label' => 'View pricing',
+                                                        ]) }}"
+                                                        target="_blank"
+                                                        class="starting-price-link">
+                                                        View pricing
+                                                    </a>
 
-    </div>
-</div>
+                                                </div>
+                                            </div>
 
                                             <div class="main_feature_sm">
                                                 <div class="fre_trail feture_box size22">
@@ -2361,7 +2393,7 @@
                                                     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                         <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                            <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
+                                                            <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
                                                             <div class="prgs_br d-flex align-items-center">
                                                                 <progress class="progress-bar"
                                                                     value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}"
@@ -2554,7 +2586,7 @@
                                                     'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-6 col-12">
                                                 <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <!-- Business A -->
@@ -2585,7 +2617,7 @@
                                                         </div>
 
                                                         <!-- Compare Button (Only Clickable Link) -->
-                                                        <div class="flex-shrink-0 ms-2">
+                                                        <div class="flex-shrink-0  cmpre_btn" >
                                                             <a href="{{ $seoUrl }}" class="cta cta_outline text-decoration-none" style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
                                                                 Compare
                                                             </a>

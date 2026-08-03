@@ -19,6 +19,7 @@ class Business extends Model
         'active_all_countries',
         'icon_id',
         'business_images',
+        'screenshot_urls',
         'image_id',
         'year_found',
         'languages_supported',
@@ -33,9 +34,8 @@ class Business extends Model
     ];
     protected $casts = [
         'is_affiliate' => 'integer',
-
         'business_images' => 'array',
-
+        'screenshot_urls' => 'array',
     ];
 
     protected $table = 'businesses';

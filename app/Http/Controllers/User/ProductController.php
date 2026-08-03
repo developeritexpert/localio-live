@@ -667,7 +667,46 @@ class ProductController extends Controller
             'reviews' => fn($q) => $q->where('status', 'active'),
         ])->firstOrFail();
 
-        $businessRating = $business->reviews->count() > 0 ? round($business->reviews->avg('rating'), 1) : 0;
+        $totalReviews = $business->reviews->count();
+        $averageRating = $totalReviews > 0 ? round($business->reviews->avg('rating'), 1) : 0;
+        $businessRating = $averageRating;
+        
+        $recommendCount = $business->reviews->where('recommend', 1)->count();
+        $recommendPercent = $totalReviews > 0 ? round(($recommendCount / $totalReviews) * 100) : 0;
+
+        $reviews = Review::where('business_id', $business->id)->get();
+        $activeReviews = $reviews->where('status', 'active');
+        $criteria = $business->category ? $business->category->ratingCriteria : collect();
+
+        foreach ($criteria as $criterion) {
+            $totalScore = 0;
+            $count = 0;
+            foreach ($activeReviews as $review) {
+                $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+                    ->where('criteria_id', $criterion->id)
+                    ->first();
+                if ($ratingRecord) {
+                    $totalScore += $ratingRecord->rating;
+                    $count++;
+                } else {
+                    $legacyVal = null;
+                    if ($criterion->name === 'Ease of Use') {
+                        $legacyVal = $review->ease_of_use_rating;
+                    } elseif ($criterion->name === 'Customer Service') {
+                        $legacyVal = $review->customer_service_rating;
+                    } elseif ($criterion->name === 'Features') {
+                        $legacyVal = $review->exclusive_service_rating;
+                    } elseif ($criterion->name === 'Value for Money') {
+                        $legacyVal = $review->value_for_money_rating;
+                    }
+                    if (!is_null($legacyVal)) {
+                        $totalScore += $legacyVal;
+                        $count++;
+                    }
+                }
+            }
+            $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
+        }
 
         $peerComparisons = Business::where('category_id', $business->category_id)
             ->where('id', '!=', $business->id)
@@ -685,14 +724,9 @@ class ProductController extends Controller
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'reviews' => fn($q) => $q->where('status', 'active'),
             ])
-            ->withCount([
-                'reviews as average_rating' => function ($query) {
-                    $query->select(DB::raw('coalesce(avg(rating),0)'));
-                }
-            ])
             ->paginate(12);
 
-        return view('User.product.all_comparisons', compact('business', 'businessRating', 'peerComparisons'));
+        return view('User.product.all_comparisons', compact('business', 'businessRating', 'peerComparisons', 'criteria', 'averageRating', 'totalReviews', 'recommendPercent'));
     }
 
     // Key Feature Review Controller

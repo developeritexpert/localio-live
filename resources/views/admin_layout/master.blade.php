@@ -93,6 +93,11 @@
                                                 <span class="nk-menu-text">All Businesses </span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('business.images.livewire') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Business Images</span>
+                                            </a>
+                                        </li>
                                         {{-- <li class="nk-menu-item">
                                             <a href="{{ route('business') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">All Businesses (old)</span>

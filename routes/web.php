@@ -93,9 +93,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/categories/add-category-topic-process', [CategoriesController::class, 'storeTopic'])->name('store-topic-category');
     Route::post('/admin-dashboard/categories/topics/update', [CategoriesController::class, 'updateTopic'])->name('update-topic-category');
     Route::get('/admin-dashboard/categories/topics/delete', [CategoriesController::class, 'deleteTopic'])->name('delete-topic-category');
-    // add language change Route
     Route::get('/admin-dashboard/categories/set-category-language/{lang_id}', [CategoriesController::class, 'setLanguage'])
     ->name('set-category-language');
+    Route::post('/admin-dashboard/categories/toggle-status', [CategoriesController::class, 'toggleStatus'])->name('admin.toggle-category-status');
 
 
 
@@ -104,6 +104,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     // Route::get('admin-dashboard/businesses', [AdminBusinessController::class, 'business'])->name('business');
 
     Route::get('admin-dashboard/businesses/listing', [AdminBusinessController::class, 'BusinessListingLivewire'])->name('business.listing.livewire');
+    Route::get('admin-dashboard/businesses/images', [AdminBusinessController::class, 'BusinessImagesLivewire'])->name('business.images.livewire');
 
     Route::get('admin-dashboard/businesses/edit/{id?}', [AdminBusinessController::class, 'EditBusiness'])->name('edit.business');
 

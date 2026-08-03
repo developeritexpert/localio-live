@@ -3559,6 +3559,8 @@
     left: 0 !important;
   }
 
+
+
 }
 
 @media only screen and (max-width: 575px) {
@@ -10819,7 +10821,7 @@ div#table-of-content h6 {
 
 
 #compareBar button:hover {
-  background-color: #f9633b;
+  background-color: #ff5722;
 }
 
 .category-list_a>li {
@@ -12890,6 +12892,18 @@ textarea#message {
   .comparsn_bnr_sec .col-md-4 {
     margin-top: 20px;
   }
+
+  .revie_img_sec .prgs_br {
+    max-width: 100% !important;
+  }
+
+  .revie_img_sec .prgs_br .progress-bar {
+    max-width: 100%;
+  }
+
+  #section-compare .cmpre_btn {
+    margin-inline: auto !important;
+  }
 }
 
 
@@ -13229,6 +13243,10 @@ textarea#message {
     height: 34px !important;
     min-width: 34px !important;
     min-height: 34px !important;
+  }
+
+  section#section-compare {
+    padding: 40px 0 !important;
   }
 }
 
