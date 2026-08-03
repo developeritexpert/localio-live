@@ -8450,7 +8450,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a {
   font-weight: 400;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 /* .asn_dv .Tab-outerlnk #table-of-content ul li a{
@@ -9771,7 +9771,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .asn_main_sec .asn_dv {
-  background-color: #fdfdfd;
+  background-color: #f7f9fb;
   border-bottom: 1px solid #e2e8f0;
 }
 
