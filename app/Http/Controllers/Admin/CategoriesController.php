@@ -29,24 +29,28 @@ class CategoriesController extends Controller
     }
 
 
-        public function index(Request $request)
+    public function index(Request $request)
     {
         $locale = session('category_lang_code', 'en-us');
         App::setLocale($locale);
 
-        $siteLanguage = Language::where('lang_code', $locale)->value('id');
-        $categories = collect();
+        $siteLanguage = Language::where('lang_code', $locale)->value('id') ?? 1;
+        $englishLangId = Language::where('lang_code', 'en-us')->value('id') ?? 1;
 
-        if ($siteLanguage) {
-            $categories = CategoryTranslation::where('lang_id', $siteLanguage)->get();
-            // defult language set
-            if ($categories->isEmpty() && $locale !== 'en-us') {
-                $englishLangId = Language::where('lang_code', 'en-us')->value('id');
-                $categories = CategoryTranslation::where('lang_id', $englishLangId)->get();
-            }
+        $categories = Category::with(['parent', 'subCategories', 'categoryTranslations'])->get();
+
+        foreach ($categories as $category) {
+            $englishTrans = $category->categoryTranslations->where('lang_id', $englishLangId)->first()
+                ?? $category->categoryTranslations->first();
+            $selectedTrans = $category->categoryTranslations->where('lang_id', $siteLanguage)->first();
+
+            $category->english_name = $englishTrans ? $englishTrans->name : 'Unnamed Category';
+            $category->translated_name = $selectedTrans ? $selectedTrans->name : null;
+            $category->translation_id = $selectedTrans ? $selectedTrans->id : ($englishTrans ? $englishTrans->id : null);
+            $category->is_active_for_country = $selectedTrans ? ($selectedTrans->status ?? 1) : 1;
         }
 
-        return view('Admin.categories.index', compact('categories', 'siteLanguage'));
+        return view('Admin.categories.index', compact('categories', 'siteLanguage', 'englishLangId'));
     }
 
     public function setLanguage($lang_id)
@@ -660,4 +664,42 @@ class CategoriesController extends Controller
         }
     }
 
+    public function toggleStatus(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'lang_id' => 'required|exists:languages,id',
+            'status' => 'required|in:0,1',
+        ]);
+
+        $categoryTranslation = CategoryTranslation::where('category_id', $request->category_id)
+            ->where('lang_id', $request->lang_id)
+            ->first();
+
+        if (!$categoryTranslation) {
+            $englishLangId = Language::where('lang_code', 'en-us')->value('id') ?? 1;
+            $englishTrans = CategoryTranslation::where('category_id', $request->category_id)
+                ->where('lang_id', $englishLangId)
+                ->first();
+
+            $categoryTranslation = CategoryTranslation::create([
+                'category_id' => $request->category_id,
+                'lang_id' => $request->lang_id,
+                'status' => (int) $request->status,
+                'name' => $englishTrans ? $englishTrans->name : 'Category #' . $request->category_id,
+                'description' => $englishTrans ? $englishTrans->description : '',
+                'slug' => $englishTrans ? ($englishTrans->slug . '-' . $request->lang_id) : ('category-' . $request->category_id . '-' . $request->lang_id),
+            ]);
+        } else {
+            $categoryTranslation->status = (int) $request->status;
+            $categoryTranslation->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $categoryTranslation->status,
+            'message' => 'Category status updated successfully for this country.',
+        ]);
+    }
 }
+
