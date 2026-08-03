@@ -501,7 +501,7 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">Comparison page title</label>
+                                <label class="form-label">Comparison page title 1</label>
                                 <input type="text" class="form-control @error('comparison_title') is-invalid @enderror"
                                     wire:model.live="comparison_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Comparison" />
                                 @error('comparison_title')
@@ -509,29 +509,26 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Comparison page description</label>
-                            </div>
-
-                            <div wire:ignore x-data="{
-                                editor: null,
-                                init() {
-                                    this.$nextTick(() => {
-                                        ClassicEditor
-                                            .create(this.$refs.editor)
-                                            .then(editor => {
-                                                this.editor = editor;
-                                                editor.model.document.on('change:data', () => {
-                                                    this.$wire.comparison_description = editor.getData();
+                            <div class="form-group mb-3">
+                                <label class="form-label">Comparison page description 1</label>
+                                <div wire:ignore x-data="{
+                                    editor: null,
+                                    init() {
+                                        this.$nextTick(() => {
+                                            ClassicEditor
+                                                .create(this.$refs.editor)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    editor.model.document.on('change:data', () => {
+                                                        this.$wire.comparison_description = editor.getData();
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error(error);
                                                 });
-                                            })
-                                            .catch(error => {
-                                                console.error(error);
-                                            });
-                                    });
-                                }
-                            }">
-                                <div class="form-group">
+                                        });
+                                    }
+                                }">
                                     <textarea
                                         x-ref="editor"
                                         class="form-control @error('comparison_description') is-invalid @enderror"
@@ -539,6 +536,47 @@
                                         rows="5">
                                     </textarea>
                                     @error('comparison_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Comparison page title 2</label>
+                                <input type="text" class="form-control @error('comparison_title_2') is-invalid @enderror"
+                                    wire:model.live="comparison_title_2" placeholder="e.g. Detailed comparison for {{ $name ?: 'Business Name' }}" />
+                                @error('comparison_title_2')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Comparison page description 2</label>
+                                <div wire:ignore x-data="{
+                                    editor: null,
+                                    init() {
+                                        this.$nextTick(() => {
+                                            ClassicEditor
+                                                .create(this.$refs.editor2)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    editor.model.document.on('change:data', () => {
+                                                        this.$wire.comparison_description_2 = editor.getData();
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error(error);
+                                                });
+                                        });
+                                    }
+                                }">
+                                    <textarea
+                                        x-ref="editor2"
+                                        class="form-control @error('comparison_description_2') is-invalid @enderror"
+                                        wire:model.live="comparison_description_2"
+                                        rows="5">
+                                    </textarea>
+                                    @error('comparison_description_2')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>

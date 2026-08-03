@@ -27,12 +27,20 @@ class BusinessTranslation extends Model
         'high_intent_keywords',
         'alternatives_title',
         'alternatives_description',
+        'alternatives_title_2',
+        'alternatives_description_2',
         'reviews_title',
         'reviews_description',
+        'reviews_title_2',
+        'reviews_description_2',
         'faqs_title',
         'faqs_description',
+        'faqs_title_2',
+        'faqs_description_2',
         'comparison_title',
         'comparison_description',
+        'comparison_title_2',
+        'comparison_description_2',
     ];
 
     public function business()
