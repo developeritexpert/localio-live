@@ -10,6 +10,16 @@
         $images = is_array($business->business_images)
             ? $business->business_images
             : json_decode($business->business_images ?? '[]', true);
+
+        if (empty($images) && !empty($business->screenshot_urls)) {
+            $urls = is_array($business->screenshot_urls)
+                ? $business->screenshot_urls
+                : json_decode($business->screenshot_urls ?? '[]', true);
+            $urls = array_values(array_filter((array)$urls));
+            if (!empty($urls)) {
+                $images = $urls;
+            }
+        }
     @endphp
     <!-- Modal script driver (Declared early to prevent race conditions on render) -->
 
@@ -23,7 +33,10 @@
             console.log("updateModalImage called with index:", index);
             currentModalIndex = parseInt(index, 10);
             if (currentModalIndex >= 0 && currentModalIndex < modalImages.length) {
-                let imgUrl = '{{ asset("") }}' + modalImages[currentModalIndex].replace(/^\/+/, '');
+                let rawImg = modalImages[currentModalIndex];
+                let imgUrl = (rawImg.startsWith('http://') || rawImg.startsWith('https://'))
+                    ? rawImg
+                    : '{{ asset("") }}' + rawImg.replace(/^\/+/, '');
                 console.log("Updating modal active image src to:", imgUrl);
                 let activeImg = document.getElementById('modalActiveImg');
                 if (activeImg) {
@@ -1164,6 +1177,17 @@
                                             $images = is_array($business->business_images)
                                                 ? $business->business_images
                                                 : json_decode($business->business_images ?? '[]', true);
+
+                                            // Fallback to screenshot_urls if no business_images are uploaded
+                                            if (empty($images) && !empty($business->screenshot_urls)) {
+                                                $urls = is_array($business->screenshot_urls)
+                                                    ? $business->screenshot_urls
+                                                    : json_decode($business->screenshot_urls ?? '[]', true);
+                                                $urls = array_values(array_filter((array)$urls));
+                                                if (!empty($urls)) {
+                                                    $images = $urls;
+                                                }
+                                            }
                                         @endphp
 
                                          @if (!empty($images))
@@ -1173,8 +1197,11 @@
                                                         <!-- Main Slider -->
                                                         <div class="col-md-12 asan-slider slider-for">
                                                             @foreach ($images as $index => $image)
+                                                                @php
+                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
+                                                                @endphp
                                                                 <div class="asan-slider-inr" style="cursor: pointer;">
-                                                                    <img src="{{ asset($image) }}"
+                                                                    <img src="{{ $imgSrc }}"
                                                                         onclick="openGallery({{ $index }})"
                                                                         alt="Business Image {{ $index + 1 }}"
                                                                         style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
@@ -1186,8 +1213,11 @@
                                                         <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
                                                             style="margin-top: 15px !important;">
                                                             @foreach ($images as $index => $image)
+                                                                @php
+                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
+                                                                @endphp
                                                                 <div style="padding: 0 5px; cursor: pointer;">
-                                                                    <img src="{{ asset($image) }}"
+                                                                    <img src="{{ $imgSrc }}"
                                                                         alt="Thumbnail {{ $index + 1 }}"
                                                                         style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
                                                                 </div>
@@ -1195,6 +1225,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
                                          @endif
 
                                          <script>

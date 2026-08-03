@@ -104,6 +104,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     // Route::get('admin-dashboard/businesses', [AdminBusinessController::class, 'business'])->name('business');
 
     Route::get('admin-dashboard/businesses/listing', [AdminBusinessController::class, 'BusinessListingLivewire'])->name('business.listing.livewire');
+    Route::get('admin-dashboard/businesses/images', [AdminBusinessController::class, 'BusinessImagesLivewire'])->name('business.images.livewire');
 
     Route::get('admin-dashboard/businesses/edit/{id?}', [AdminBusinessController::class, 'EditBusiness'])->name('edit.business');
 

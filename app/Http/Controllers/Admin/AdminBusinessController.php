@@ -37,6 +37,11 @@ class AdminBusinessController extends Controller
         return view('Admin.business.index_listing');
     }
 
+    public function BusinessImagesLivewire(){
+
+        return view('Admin.business.index_images');
+    }
+
 
     public function EditBusiness($id = null){
         // dd('business Id ' , $id);

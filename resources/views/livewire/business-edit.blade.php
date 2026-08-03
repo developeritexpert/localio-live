@@ -350,71 +350,6 @@
                         </div>
                     </div>
 
-                         {{-- business images --}}
-            <div class="card card-bordered mb-3">
-                <div class="card-inner">
-                    <div class="form-group mb-3">
-                        <label class="form-label">
-                            Upload Business Images <small>(Max 5) - Currently: {{ count($business_images) + count($new_business_images) }}/5</small>
-                        </label>
-
-                        <input
-                            type="file"
-                            class="form-control"
-                            wire:model="new_business_images"
-                            multiple
-                            accept="image/*"
-                            @if(count($business_images) >= 5) disabled @endif
-                        >
-
-                        {{-- Show validation error --}}
-                        @error('new_business_images')
-                            <div class="text-danger mt-1">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    {{-- Preview Existing Images --}}
-                    @if(count($business_images) > 0)
-                        <h6>Saved Images:</h6>
-                        <div class="row">
-                            @foreach ($business_images as $key => $image)
-                                <div class="col-4 mb-2 position-relative">
-                                    <img src="{{ asset($image) }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                                    <button wire:click="RemoveBusniessImage({{ $key }})" type="button"
-                                        class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1">
-                                        &times;
-                                    </button>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    {{-- Preview New Uploaded Images --}}
-                    @if(count($new_business_images) > 0)
-                        <h6>New Images to Save:</h6>
-                        <div class="row">
-                            @foreach ($new_business_images as $key => $image)
-                                <div class="col-4 mb-2 position-relative">
-                                    <img src="{{ $image->temporaryUrl() }}" class="img-thumbnail" style="height: 100px; object-fit: cover;">
-                                    <button wire:click="removeNewImage({{ $key }})" type="button"
-                                        class="btn btn-sm btn-warning position-absolute top-0 end-0 m-1">
-                                        &times;
-                                    </button>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <div class="text-end mt-4">
-                        <button wire:click="BusinessImageSave" class="btn btn-primary"
-                            @if(count($new_business_images) == 0) disabled @endif>
-                            Save Business Images
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-
                 </div>
 
                 <div class="col-md-4">
@@ -622,7 +557,7 @@
                                                                     {{ in_array($country->id, $selectedCountries) ? 'checked' : '' }}>
                                                                 <label class="form-check-label w-100"
                                                                      for="country_{{ $country->id }}">
-                                                                    {{ $langName ?? $cleanCountryName ?? '' }}
+                                                                    {{ $displayName }}
                                                                 </label>
                                                             </div>
                                                         @endforeach
@@ -658,12 +593,12 @@
                                                                         <span
                                                                             class="badge bg-primary position-relative m-1"
                                                                             style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
-                                                                            {{ $langName ?? $cleanCountryName ?? '' }}
+                                                                            {{ $selectedDisplayName }}
                                                                             <button type="button"
                                                                                 wire:click="toggleCountrySelection({{ $countryId }})"
                                                                                 class="btn-close btn-close-white position-absolute"
                                                                                 style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
-                                                                                title="Remove {{ $langName ?? $cleanCountryName ?? '' }}">
+                                                                                title="Remove {{ $selectedDisplayName }}">
                                                                             </button>
                                                                         </span>
                                                                     @endif
