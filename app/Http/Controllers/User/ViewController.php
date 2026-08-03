@@ -462,7 +462,6 @@ class ViewController extends Controller
             ->first();
 
         if (!$businessTranslation) {
-            // Try fallback matching without lang constraint
             $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
         }
 
@@ -474,18 +473,84 @@ class ViewController extends Controller
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'reviews' => fn($q) => $q->where('status', 'active'),
+                'products' => fn($q) => $q->with(['prices']),
                 'faqs' => function ($query) use ($lang_id) {
                     $query->where('status', 1)
                         ->orderBy('position', 'asc')
                         ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)]);
                 },
+                'usps',
             ])->firstOrFail();
 
         $activeReviews = $business->reviews;
-        $ratingCount = $activeReviews->count();
-        $averageRating = $ratingCount > 0 ? $activeReviews->avg('rating') : 0;
+        $totalReviews = $activeReviews->count();
+        $averageRating = $totalReviews > 0 ? round($activeReviews->avg('rating'), 1) : 0;
+        $recommendCount = $activeReviews->where('recommend', 1)->count();
+        $recommendPercent = $totalReviews > 0 ? round(($recommendCount / $totalReviews) * 100) : 0;
 
-        return view('User.product.business_faqs', compact('business', 'averageRating', 'ratingCount', 'expectedSlug'));
+        // Calculate Criteria ratings
+        $criteria = $business->category ? $business->category->ratingCriteria : collect();
+        foreach ($criteria as $criterion) {
+            $totalScore = 0;
+            $count = 0;
+            foreach ($activeReviews as $review) {
+                $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+                    ->where('criteria_id', $criterion->id)
+                    ->first();
+                if ($ratingRecord) {
+                    $totalScore += $ratingRecord->rating;
+                    $count++;
+                } else {
+                    $legacyVal = null;
+                    if ($criterion->name === 'Ease of Use') {
+                        $legacyVal = $review->ease_of_use_rating;
+                    } elseif ($criterion->name === 'Customer Service') {
+                        $legacyVal = $review->customer_service_rating;
+                    } elseif ($criterion->name === 'Features') {
+                        $legacyVal = $review->exclusive_service_rating;
+                    } elseif ($criterion->name === 'Value for Money') {
+                        $legacyVal = $review->value_for_money_rating;
+                    }
+                    if (!is_null($legacyVal)) {
+                        $totalScore += $legacyVal;
+                        $count++;
+                    }
+                }
+            }
+            $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
+        }
+
+        // Starting Price
+        $startingPrice = null;
+        $currency = '$';
+        $timeUnit = 'Month';
+        $additional_info = 'NA';
+        $price = getBusinessesWithStartingPrice($business);
+        if (!empty($price) && isset($price[0]['starting_price'])) {
+            $bPrice = $price[0]['starting_price'];
+            $startingPrice = $bPrice['amount'];
+            $currency = $bPrice['currency'] ?? '$';
+            $timeUnit = ucfirst($bPrice['time_unit'] ?? 'month');
+            $additional_info = $bPrice['additional_info'] ?? 'NA';
+        }
+
+        // Top Highlighted Reviews
+        $topReviews = Review::with([
+            'user',
+            'translations' => fn($q) => $q->where('language_id', $lang_id)
+        ])
+            ->where('business_id', $business->id)
+            ->where('status', 'active')
+            ->orderByDesc('rating')
+            ->orderByDesc('created_at')
+            ->take(2)
+            ->get();
+
+        return view('User.product.business_faqs', compact(
+            'business', 'averageRating', 'totalReviews', 'recommendPercent', 
+            'criteria', 'startingPrice', 'currency', 'timeUnit', 'additional_info', 
+            'topReviews', 'expectedSlug'
+        ));
     }
 
     public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
