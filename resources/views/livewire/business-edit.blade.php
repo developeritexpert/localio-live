@@ -445,6 +445,52 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <hr class="preview-hr my-4">
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Reviews page title 2</label>
+                                <input type="text" class="form-control @error('reviews_title_2') is-invalid @enderror"
+                                    wire:model.live="reviews_title_2" placeholder="e.g. {{ $name ?: 'Business Name' }} Additional Reviews Info" />
+                                @error('reviews_title_2')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Reviews page description 2</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_description_2 = editor.getData();
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor"
+                                        class="form-control @error('reviews_description_2') is-invalid @enderror"
+                                        wire:model.live="reviews_description_2"
+                                        rows="5">
+                                    </textarea>
+                                    @error('reviews_description_2')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
 
