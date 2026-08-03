@@ -177,28 +177,34 @@
 
             .mobile-sidebar-body .menu_section .section_heading {
                 color: #fff !important;
-                padding-left: 20px;
+                padding-left: 18px;
                 margin: 0 !important;
-                font-size: 18px !important;
-                font-weight: 600 !important;
+                font-size: 15px !important;
+                font-weight: 700 !important;
                 letter-spacing: 0.5px;
                 text-transform: uppercase;
             }
 
-            .mobile-sidebar-body .section_divider {
+            /* .mobile-sidebar-body .section_divider {
                 margin: 8px auto 15px !important;
                 width: 90% !important;
                 border-color: rgba(255, 255, 255, 0.1) !important;
-            }
+            } */
+
+                .mobile-sidebar-body .section_divider {
+                    margin: 8px auto 5px !important;
+                    width: 90% !important;
+                    border-color: #ffffff33 !important;
+                }
 
             .mobile-sidebar-body .flat_list {
-                padding: 0 20px;
+                padding: 0 25px;
                 margin: 0;
                 list-style: none;
             }
 
             .mobile-sidebar-body .flat_list li {
-                padding: 10px 0 !important;
+                padding: 8px 0 !important;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             }
 
@@ -207,9 +213,11 @@
             }
 
             .mobile-sidebar-body .flat_list li a {
-                color: rgba(255, 255, 255, 0.8) !important;
+                color: #fff !important;
+                
                 text-decoration: none;
                 font-size: 15px;
+                font-weight: 500 !important;
                 transition: all 0.2s ease;
                 display: block;
             }
@@ -1240,6 +1248,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span class="bar"></span>
                             <span class="bar"></span>
                             <span class="bar"></span>
+                            
                         </button>
                         <?php
 
@@ -1324,38 +1333,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         @endforeach
                                                                             
 
-                                        {{-- @foreach($categories as $category)
-                                                <li class="menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
-                                                    <a href="{{ route('category.detail', [
-                                                        'locale' => app()->getLocale(),
-                                                        'slug' => $category->translation->slug
-                                                    ]) }}">
-                                                        {{ $category->translation->name }}
-                                                    </a>
-                                                </li>
-                                        @endforeach --}}
-                                         {{-- @foreach($categories as $category)
-                                            <li class="menu-item">
-                                                <a href="{{ route('category.show', $category->slug) }}">
-                                                    {{ $category->name }}
-                                                </a>
-                                            </li>
-                                        @endforeach --}}
-                                        {{-- <li class=" menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
-                                            <a href="#">{{ $headerContent['exclusive'] ?? 'Exclusive Deals' }}</a>
-                                            <span class="dropdown_toggle"><i class="fa-solid fa-chevron-down"></i></span>
-                                            <ul
-                                                class="dropdown_menu dropdown_menu--animated dropdown_menu-6 mob-drp-contnt">
-
-                                                <div class="dropdown-ul-inner">
-                                                    <div class="oter_dropul">
-                                                        <div class="row">
-                                                            <livewire:deals-search />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </ul>
-                                        </li> --}}
+                        
                                     </ul>
                                 </div>
                                 <div class="close_btn_mobile">
@@ -1377,149 +1355,383 @@ document.addEventListener('DOMContentLoaded', function () {
                                     @endif
                                 </div>
                             </div>
+                            <style>
+                                @media (max-width: 991px) {
 
-                            <div id="phone_screen" class="mobile_display">
-                                <!-- Profile Icon -->
-                                @guest                                   
-                                <div class="d-flex justify-content-end align-items-center">
-                                    <img src="{{ asset('front/img/Vector.svg') }}" alt="Profile" class="profile-icon"
-                                        data-bs-toggle="offcanvas" data-bs-target="#profileOffcanvas" aria-controls="profileOffcanvas">
-                                </div>
-                                @endguest
-                                @auth
+                                        /* Backdrop */
+                                        .msp_backdrop {
+                                            position: fixed;
+                                            top: 0;
+                                            left: 0;
+                                            width: 100%;
+                                            height: 100%;
+                                            background: rgba(0, 0, 0, 0.5);
+                                            z-index: 1040;
+                                            opacity: 0;
+                                            visibility: hidden;
+                                            transition: opacity 0.3s ease;
+                                        }
+
+                                        .msp_backdrop.msp_active {
+                                            opacity: 1;
+                                            visibility: visible;
+                                        }
+
+                                        /* Sliding Panel */
+                                        .msp_panel {
+                                            position: fixed;
+                                            top: 0;
+                                            right: 0;
+                                            width: 300px;
+                                            max-width: 85%;
+                                            height: 100%;
+                                            background-color: #002347;
+                                            color: #ffffff;
+                                            z-index: 1050;
+                                            transform: translateX(100%);
+                                            transition: transform 0.3s ease;
+                                            overflow-y: auto;
+                                            text-align: left;
+                                        }
+
+                                        .msp_panel.msp_active {
+                                            transform: translateX(0);
+                                        }
+
+                                        /* Header */
+                                        .msp_panel_header {
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: space-between;
+                                            padding: 16px 20px;
+                                            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                        }
+
+                                        .msp_brand img {
+                                            max-height: 32px;
+                                        }
+
+                                        .msp_close_btn {
+                                            background: transparent;
+                                            border: none;
+                                            padding: 6px;
+                                            cursor: pointer;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                        }
+
+                                        .msp_close_btn svg path {
+                                            fill: #ffffff;
+                                        }
+
+
+                                        .msp_panel_body {
+                                            padding: 20px 0;
+                                        }
+
+                                        .msp_intro {
+                                            padding: 0 25px 20px;
+                                        }
+
+                                        .msp_title {
+                                            color: #fff !important;
+                                            font-size: 20px !important;
+                                            font-weight: 700 !important;
+                                            margin: 0 0 8px !important;
+                                        }
+
+                                        .msp_subtitle {
+                                            color: rgba(255, 255, 255, 0.7) !important;
+                                            font-size: 13px;
+                                            margin: 0 0 18px !important;
+                                            line-height: 1.4;
+                                        }
+
+                                        .msp_buttons {
+                                            display: flex;
+                                            flex-direction: column;
+                                            gap: 10px;
+                                        }
+                                        .msp_buttons a{
+                                            border-radius:70px;
+                                        }
+
+
+                                        .msp_btn {
+                                            flex: 1;
+                                            text-align: center;
+                                            padding: 10px 12px;
+                                            border-radius: 4px;
+                                            font-size: 14px;
+                                            font-weight: 600;
+                                            text-decoration: none;
+                                            transition: all 0.2s ease;
+                                        }
+
+                                        .msp_btn_outline {
+                                            border: 1px solid #fff;
+                                            color: #fff !important;
+                                            background: transparent;
+                                        }
+
+                                        .msp_btn_outline:hover {
+                                            border-color: #Fff;
+                                            color: #003f7d !important;
+                                            background-color:#fff;
+                                        }
+
+                                        .msp_btn_solid {
+                                            background-color: #fff;
+                                            color: #003f7d !important;
+                                            border: 1px solid #fff;
+                                        }
+
+                                        .msp_btn_solid:hover {
+                                            background-color: #ff5722;
+                                            border-color: #ff5722;
+                                            color: #fff !important;
+                                        }
+
+                                        .msp_divider {
+                                            margin: 10px !important;
+                                            border-color: rgb(255 255 255 / 18%) !important;
+                                        }
+
+                                        .msp_links_section {
+                                            padding: 0 25px;
+                                            margin-bottom: 25px;
+                                        }
+
+                                        .msp_links_section:last-child {
+                                            margin-bottom: 0;
+                                        }
+
+                                        .msp_links_heading {
+                                            color: #fff !important;
+                                            margin: 0 0 10px !important;
+                                            font-size: 15px !important;
+                                            font-weight: 700 !important;
+                                            letter-spacing: 0.5px;
+                                            text-transform: uppercase;
+                                        }
+
+                                        .msp_link_list {
+                                            padding: 0;
+                                            margin: 0;
+                                            list-style: none;
+                                        }
+
+                                        .msp_link_list li {
+                                            padding: 8px 0 !important;
+                                            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                                        }
+
+                                        .msp_link_list li:last-child {
+                                            border-bottom: none;
+                                        }
+
+                                        .msp_link_list li a {
+                                            color: #fff !important;
+                                            text-decoration: none;
+                                            font-size: 15px;
+                                            font-weight: 500 !important;
+                                            transition: all 0.2s ease;
+                                            display: block;
+                                        }
+
+                                        .msp_link_list li a:hover {
+                                            color: #F9633B !important;
+                                            padding-left: 5px;
+                                        }
+
+                                    }
+
                                     
-                                 <div class="user_img drop_menu">
-                                    <div class="usr_profile">
-                                        @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
-                                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 40px; height: 40px; object-fit: cover; flex-shrink: 0;'>
-                                        @else
-                                        <div class="profile-circle" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 50%; background-color: #f76b1c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <span style="color: white; font-weight: bold; font-size: 18px; line-height: 1; margin-top: 2px;">
-                                                {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
-                                            </span>
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <div class="dropdown-menu dropdown-menu-right" style="margin-right: 20px;">
-                                        <div class="dropdown-main ">
-                                            <div class="user_detail">
-                                                <div class="user_img">
-                                                    @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
-                                                    <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
-                                                    @else
-                                                    <div class="profile-circle" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                        <span style="color: white; font-weight: bold; font-size: 20px; line-height: 1; margin-top: 2px;">
-                                                            {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
-                                                        </span>
-                                                    </div>
-                                                    @endif
-                                                </div>
-                                                <div class="user_name">
-                                                    <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
-                                                    <p>{{ Auth::user()->email }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="dash-icon">
-                                                @if(Auth::user()->user_type ==='user')
-                                                <a class="dropdown-item"
-                                                    href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa-solid fa-envelope-open-text"></i></i>Dashboard
-                                                </a>
-                                                @elseif(Auth::user()->user_type ==='vendor')
-                                                <a class="dropdown-item"
-                                                    href="{{ route('vendor-overview', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa-solid fa-envelope-open-text"></i></i>Dashboard
-                                                </a>
-                                                @endif
+   
+                            </style>
 
-                                            </div>
+                    <div id="phone_screen" class="mobile_display">
+                        <!-- Profile Icon -->
+                        @guest
+                        <div class="d-flex justify-content-end align-items-center">
+                            <img src="{{ asset('front/img/Vector.svg') }}" alt="Profile" class="profile-icon"
+                                onclick="msp_openPanel()">
+                        </div>
+                        @endguest
 
-                                            <div class="dash-icon">
-                                                @if(Auth::user()->user_type ==='user')
-                                                <a class="dropdown-item"
-                                                    href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa fa-user"></i>My discussions</a>
-                                                @elseif(Auth::user()->user_type ==='vendor')
-                                                <a class="dropdown-item"
-                                                    href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa fa-user"></i>My Profile</a>
-                                                @endif
-                                            </div>
-
-                                            @if(Auth::user()->user_type ==='user')
-                                            <div class="dash-icon">
-                                                <a class="dropdown-item"
-                                                    href="{{ route('user-support', ['locale' => app()->getLocale()]) }}">
-                                                    <i class="fa-solid fa-headset"></i>Support
-                                                </a>
+                        @auth
+                        <div class="user_img drop_menu">
+                            <div class="usr_profile">
+                                @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                                <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style='border-radius: 50%; width: 40px; height: 40px; object-fit: cover; flex-shrink: 0;'>
+                                @else
+                                <div class="profile-circle" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; border-radius: 50%; background-color: #f76b1c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <span style="color: white; font-weight: bold; font-size: 18px; line-height: 1; margin-top: 2px;">
+                                        {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                    </span>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="dropdown-menu dropdown-menu-right" style="margin-right: 20px;">
+                                <div class="dropdown-main">
+                                    <div class="user_detail">
+                                        <div class="user_img">
+                                            @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                                            <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style='border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
+                                            @else
+                                            <div class="profile-circle" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <span style="color: white; font-weight: bold; font-size: 20px; line-height: 1; margin-top: 2px;">
+                                                    {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                                </span>
                                             </div>
                                             @endif
-
-                                            <div class="dash-icon">
-
-                                                @if(Auth::user()->user_type ==='user')
-                                                <a class="dropdown-item"
-                                                href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-key"></i>Change Password</a>
-                                                </div>
-                                            <div class="dash-icon">
-                                                <a class="dropdown-item"
-                                                href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-envelope"></i>Email Preferences</a>
-                                                @elseif(Auth::user()->user_type ==='vendor')
-                                                <a class="dropdown-item"
-                                                    href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
-                                                @endif
-                                                </div>
-
-                                            <div class="dash-icon">
-                                                <a class="dropdown-item" href="{{ route('logout') }}"><i
-                                                        class="fa fa-power-off"></i>Sign Out</a>
-                                            </div>
+                                        </div>
+                                        <div class="user_name">
+                                            <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
+                                            <p>{{ Auth::user()->email }}</p>
                                         </div>
                                     </div>
+
+                                    <div class="dash-icon">
+                                        @if(Auth::user()->user_type === 'user')
+                                        <a class="dropdown-item" href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa-solid fa-envelope-open-text"></i>Dashboard
+                                        </a>
+                                        @elseif(Auth::user()->user_type === 'vendor')
+                                        <a class="dropdown-item" href="{{ route('vendor-overview', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa-solid fa-envelope-open-text"></i>Dashboard
+                                        </a>
+                                        @endif
+                                    </div>
+
+                                    <div class="dash-icon">
+                                        @if(Auth::user()->user_type === 'user')
+                                        <a class="dropdown-item" href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa fa-user"></i>My discussions
+                                        </a>
+                                        @elseif(Auth::user()->user_type === 'vendor')
+                                        <a class="dropdown-item" href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa fa-user"></i>My Profile
+                                        </a>
+                                        @endif
+                                    </div>
+
+                                    @if(Auth::user()->user_type === 'user')
+                                    <div class="dash-icon">
+                                        <a class="dropdown-item" href="{{ route('user-support', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa-solid fa-headset"></i>Support
+                                        </a>
+                                    </div>
+                                    @endif
+
+                                    <div class="dash-icon">
+                                        @if(Auth::user()->user_type === 'user')
+                                        <a class="dropdown-item" href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa-solid fa-key"></i>Change Password
+                                        </a>
+                                        @endif
+                                    </div>
+
+                                    <div class="dash-icon">
+                                        @if(Auth::user()->user_type === 'user')
+                                        <a class="dropdown-item" href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa-solid fa-envelope"></i>Email Preferences
+                                        </a>
+                                        @elseif(Auth::user()->user_type === 'vendor')
+                                        <a class="dropdown-item" href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}">
+                                            <i class="fa-solid fa-gear"></i>Configuration
+                                        </a>
+                                        @endif
+                                    </div>
+
+                                    <div class="dash-icon">
+                                        <a class="dropdown-item" href="{{ route('logout') }}">
+                                            <i class="fa fa-power-off"></i>Sign Out
+                                        </a>
+                                    </div>
                                 </div>
-                                @endauth
+                            </div>
+                        </div>
+                        @endauth
 
+                        <!-- Custom Mobile Profile Panel -->
+                        <div class="msp_backdrop" id="mspBackdrop" onclick="msp_closePanel()"></div>
 
+                        <div class="msp_panel" id="mspPanel">
 
-                                <!-- Offcanvas Profile Dropdown -->
-                                <div class="offcanvas offcanvas-end" tabindex="-1" id="profileOffcanvas" aria-labelledby="offcanvasLabel">
-                                    <div class="offcanvas-header">
-                                        <div class="search_logo_2">
-                                <div class="logo_col">
-                                    <!-- <a href="{{ url('/' ?? '') }}" class="brand"><img src="{{ asset('front/img/logo.svg') }}"></a>               -->
+                            <div class="msp_panel_header">
+                                <div class="msp_logo_col">
                                     @if (isset($headerLogo) && $headerLogo)
-                                    <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                            src="{{ asset($headerLogo->meta_value) }}"
-                                            alt="{{ $headerLogo->meta_key }}"></a>
+                                    <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="msp_brand">
+                                        <img src="{{ asset($headerLogo->meta_value) }}" alt="{{ $headerLogo->meta_key }}">
+                                    </a>
                                     @else
-                                    <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand"><img
-                                            src="{{ asset('front/img/logo.svg') }}"></a>
+                                    <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="msp_brand">
+                                        <img src="{{ asset('front/img/logo.svg') }}">
+                                    </a>
                                     @endif
                                 </div>
+
+                                <button type="button" class="msp_close_btn" onclick="msp_closePanel()" aria-label="Close">
+                                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.9819 0.490874L9.99988 7.50855L16.9815 0.527235C17.1357 0.363097 17.3215 0.231792 17.5277 0.141194C17.7339 0.0505961 17.9562 0.00257135 18.1815 0C18.6637 0 19.1261 0.191544 19.4671 0.532495C19.808 0.873445 19.9996 1.33587 19.9996 1.81805C20.0038 2.04095 19.9625 2.26236 19.8781 2.4687C19.7936 2.67504 19.6679 2.86195 19.5087 3.01796L12.4362 9.99928L19.5087 17.0715C19.8083 17.3646 19.9841 17.7616 19.9996 18.1805C19.9996 18.6627 19.808 19.1251 19.4671 19.4661C19.1261 19.807 18.6637 19.9986 18.1815 19.9986C17.9497 20.0082 17.7186 19.9695 17.5026 19.885C17.2866 19.8005 17.0906 19.672 16.9269 19.5077L9.99988 12.49L3.00009 19.4895C2.84646 19.6482 2.66294 19.7748 2.4601 19.8622C2.25727 19.9496 2.03914 19.9959 1.8183 19.9986C1.3361 19.9986 0.873656 19.807 0.532691 19.4661C0.191726 19.1251 0.000173751 18.6627 0.000173751 18.1805C-0.00406521 17.9576 0.0372916 17.7362 0.121706 17.5299C0.206121 17.3235 0.331813 17.1366 0.491068 16.9806L7.56359 9.99928L0.491068 2.92706C0.191413 2.63392 0.0156999 2.23695 0.000173751 1.81805C0.000173751 1.33587 0.191726 0.873445 0.532691 0.532495C0.873656 0.191544 1.3361 0 1.8183 0C2.25465 0.00545415 2.67282 0.181805 2.9819 0.490874Z" fill="white"/>
+                                    </svg>
+                                </button>
                             </div>
 
+                            <div class="msp_panel_body">
 
-                                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close">
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M2.9819 0.490874L9.99988 7.50855L16.9815 0.527235C17.1357 0.363097 17.3215 0.231792 17.5277 0.141194C17.7339 0.0505961 17.9562 0.00257135 18.1815 0C18.6637 0 19.1261 0.191544 19.4671 0.532495C19.808 0.873445 19.9996 1.33587 19.9996 1.81805C20.0038 2.04095 19.9625 2.26236 19.8781 2.4687C19.7936 2.67504 19.6679 2.86195 19.5087 3.01796L12.4362 9.99928L19.5087 17.0715C19.8083 17.3646 19.9841 17.7616 19.9996 18.1805C19.9996 18.6627 19.808 19.1251 19.4671 19.4661C19.1261 19.807 18.6637 19.9986 18.1815 19.9986C17.9497 20.0082 17.7186 19.9695 17.5026 19.885C17.2866 19.8005 17.0906 19.672 16.9269 19.5077L9.99988 12.49L3.00009 19.4895C2.84646 19.6482 2.66294 19.7748 2.4601 19.8622C2.25727 19.9496 2.03914 19.9959 1.8183 19.9986C1.3361 19.9986 0.873656 19.807 0.532691 19.4661C0.191726 19.1251 0.000173751 18.6627 0.000173751 18.1805C-0.00406521 17.9576 0.0372916 17.7362 0.121706 17.5299C0.206121 17.3235 0.331813 17.1366 0.491068 16.9806L7.56359 9.99928L0.491068 2.92706C0.191413 2.63392 0.0156999 2.23695 0.000173751 1.81805C0.000173751 1.33587 0.191726 0.873445 0.532691 0.532495C0.873656 0.191544 1.3361 0 1.8183 0C2.25465 0.00545415 2.67282 0.181805 2.9819 0.490874Z" fill="white"/>
-                                            </svg>
-                                        </button>
+                                <div class="msp_intro">
+                                    <h2 class="msp_title">Get Started!</h2>
+                                    <p class="msp_subtitle">Create an Account and Secure Your Exclusive Logo Today.</p>
+
+                                    <div class="msp_buttons">
+                                        <a href="{{ route('login') }}" class="msp_btn msp_btn_outline">Write a review</a>
+                                        <a href="{{ route('register') }}" class="msp_btn msp_btn_solid">Sign in</a>
                                     </div>
-                                     <div class="offcanvas-body">
-                                     <h2>Get Started!</h2>
-
-                        <p>Create an Account and Secure Your Exclusive Logo Today. </p>
-
-                         <div class="Header_buttons">
-                                                        <a href="{{route('login')}}" class="cta cta_trans">Login</a>
-                            <a href="{{route('register')}}" class="cta cta_orange">Sign Up</a>
-                                                    </div>
                                 </div>
 
-                                    </div>
 
+                                <div class="msp_links_section">
+                                    <h4 class="msp_links_heading">Company</h4>
+                                    <hr class="msp_divider">
+
+                                    <ul class="msp_link_list">
+                                        <li><a href="#">Who we are</a></li>
+                                        <li><a href="#">Privacy policy</a></li>
+                                        <li><a href="#">Terms & conditions</a></li>
+                                    </ul>
+                                </div>
+
+
+
+                                <div class="msp_links_section">
+                                    <h4 class="msp_links_heading">Help</h4>
+                                    <hr class="msp_divider">
+                                    <ul class="msp_link_list">
+                                        <li><a href="#">Contact</a></li>
+                                        <li><a href="#">FAQs</a></li>
+                                    </ul>
+                                </div>
 
                             </div>
+                        </div>
+                    </div>
+
+                <script>
+                    function msp_openPanel() {
+                        document.getElementById('mspPanel').classList.add('msp_active');
+                        document.getElementById('mspBackdrop').classList.add('msp_active');
+                        document.body.style.overflow = 'hidden';
+                    }
+
+                    function msp_closePanel() {
+                        document.getElementById('mspPanel').classList.remove('msp_active');
+                        document.getElementById('mspBackdrop').classList.remove('msp_active');
+                        document.body.style.overflow = '';
+                    }
+                </script>
 
 
 
@@ -1547,63 +1759,34 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
-
                             <div class="mobile-sidebar-body">
 
                                 {{-- Categories: flat list, no dropdown, top 3 only --}}
                                 <div class="menu_section">
-                                    <h4 class="section_heading">{{ $headerContent['Categories'] ?? 'Categories' }}</h4>
+                                    <h4 class="section_heading">{{ $headerContent['Categories'] ?? 'All Categories' }}</h4>
                                     <hr class="section_divider">
-                                    <ul class="flat_list">
-                                        @foreach($categories->take(3) as $category)
-                                            @php
-                                                $translation = $category->translation ?? $category->translations->first();
-                                            @endphp
-                                            @if($translation)
-                                                <li>
-                                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $translation->slug]) }}">
-                                                        {{ $translation->name }}
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </div>
 
-                                {{-- Top Rated Products: flat list, no dropdown, top 3 only --}}
-                                <div class="menu_section">
-                                    <h4 class="section_heading">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</h4>
-                                    <hr class="section_divider">
-                                    <ul class="flat_list">
-                                        @foreach($mobileBusinesses as $business)
-                                            @php
-                                                $translation = $business->translations->first();
-                                            @endphp
-                                            @if($translation)
-                                                <li>
-                                                    <a href="javascript:void(0);" onclick="changeProducts('{{ $translation->slug }}')">
-                                                        {{ $translation->name }}
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        @endforeach
-                                    </ul>
-                                </div>
-
-                                {{-- Information --}}
-                                <div class="menu_section">
-                                    <h3 class="section_heading">Information</h3>
-                                    <hr class="section_divider">
                                     <ul class="flat_list">
                                         <li>
-                                            <a href="{{ route('contact', ['locale' => session('lang_code', 'en-us')]) }}">
-                                                {{-- {{ $headerContent['expert_guide'] ?? 'Expert Guides' }} --}}
-                                                Contact Us
+                                            <a href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">
+                                                {{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}
                                             </a>
                                         </li>
-                                        
+                                        @foreach($categories as $category)
+                                            <li>
+                                                <a href="{{ route('category.detail', [
+                                                    'locale' => app()->getLocale(),
+                                                    'slug' => $category->translation->slug
+                                                ]) }}">
+                                                    {{ $category->translation->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
                                     </ul>
-                                </div>
+
+                                </div>      
+
+                               
                             </div>
 
                         </div>
@@ -2719,7 +2902,39 @@ document.addEventListener('DOMContentLoaded', function () {
                             <li>
                                 <a href="{{ route('top-rated-product', ['locale' => app()->getLocale()]) }}">
                                      Bestsellers / Top Rated
-                                </a>
+                                </a><!-- Category Sidebar Drawer (Amazon Style) -->
+    <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
+    <div class="category-sidebar" id="categories-sidebar">
+        <div class="category-sidebar-header">
+    @if(Auth::check())
+        <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
+            @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                <img src="{{ asset(Auth::user()->profile_image) }}"
+                     alt="Profile"
+                     class="profile-circle"
+                     style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+            @else
+                <div class="profile-circle"
+                     style="width:40px; height:40px; border-radius:50%; background:#f76b1c; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <span style="color:#fff; font-weight:bold; font-size:18px;">
+                        {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                    </span>
+                </div>
+            @endif
+
+            <span class="ms-2">Hello {{ Auth::user()->first_name }}</span>
+        </a>
+    @else
+        <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
+            <i class="fa-solid fa-circle-user avatar-icon"></i>
+            <span>Hello, sign in</span>
+        </a>
+    @endif
+
+    <button class="category-sidebar-close" id="categories-sidebar-close">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>        
                             </li>
                         </ul>
                     </div>
