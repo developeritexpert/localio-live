@@ -35,9 +35,6 @@
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" style="color: #64748b; text-decoration: none;">All</a>
-                    </li>
                     @if($parentCatName)
                         <li class="breadcrumb-item">
                             @if($parentCatSlug)
@@ -48,14 +45,22 @@
                         </li>
                     @endif
                     @if($catName)
-                        <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                        <li class="breadcrumb-item">
                             @if($catSlug)
-                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #1e3050; font-weight: 500; text-decoration: none;">{{ $catName }}</a>
+                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
                             @else
-                                {{ $catName }}
+                                <span style="color: #64748b;">{{ $catName }}</span>
                             @endif
                         </li>
                     @endif
+                    @if($business)
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+                        </li>
+                    @endif
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                        Comparison
+                    </li>
                 </ol>
             </nav>
             <div class="inside_sec_text">
@@ -153,8 +158,8 @@
                             </div>
                             <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} reviews</div>
                         </div>
-                        <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
-                            View all reviews
+                        <a href="#grid-comparisons-section" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                            View all comparisons
                         </a>
                     </div>
 
