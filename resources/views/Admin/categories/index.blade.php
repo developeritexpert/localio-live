@@ -104,7 +104,7 @@
         </div>
         <div class="card card-bordered card-preview">
             <div class="card-inner">
-                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
+                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false" data-order="[]">
                     @if ($categories->isEmpty())
                         <div class="text-center">
                             <button class="btn btn-primary btn-localio">No data found</button>
@@ -123,18 +123,36 @@
                         </thead>
                         <tbody>
                             @foreach ($categories as $category)
-                                <tr class="nk-tb-item">
+                                @php
+                                    $isParent = ($category->parent_id === null);
+                                @endphp
+                                <tr class="nk-tb-item {{ $isParent ? 'bg-lighter' : '' }}">
                                     <td class="nk-tb-col">
                                         <div class="user-card">
                                             <div class="user-info">
-                                                @if($siteLanguage == $englishLangId)
-                                                    <span class="tb-lead fw-bold">{{ $category->english_name }}</span>
-                                                @else
-                                                    @if(!empty($category->translated_name))
-                                                        <span class="tb-lead fw-bold text-primary">{{ $category->translated_name }}</span>
+                                                @if($isParent)
+                                                    @if($siteLanguage == $englishLangId)
+                                                        <span class="tb-lead fw-bold text-dark fs-15px">{{ $category->english_name }}</span>
                                                     @else
-                                                        <span class="badge badge-dim bg-outline-warning">Not Translated</span>
+                                                        @if(!empty($category->translated_name))
+                                                            <span class="tb-lead fw-bold text-dark fs-15px">{{ $category->translated_name }}</span>
+                                                        @else
+                                                            <span class="badge badge-dim bg-outline-warning">Not Translated</span>
+                                                        @endif
                                                     @endif
+                                                @else
+                                                    <div class="ps-3 d-flex align-items-center">
+                                                        <span class="text-muted me-1 fw-bold fs-14px">↳</span>
+                                                        @if($siteLanguage == $englishLangId)
+                                                            <span class="tb-lead text-body">{{ $category->english_name }}</span>
+                                                        @else
+                                                            @if(!empty($category->translated_name))
+                                                                <span class="tb-lead text-body">{{ $category->translated_name }}</span>
+                                                            @else
+                                                                <span class="badge badge-dim bg-outline-warning">Not Translated</span>
+                                                            @endif
+                                                        @endif
+                                                    </div>
                                                 @endif
                                             </div>
                                         </div>
@@ -142,12 +160,19 @@
                                     <td class="nk-tb-col">
                                         <div class="user-card">
                                             <div class="user-info">
-                                                <span class="tb-lead">{{ $category->english_name }}</span>
+                                                @if($isParent)
+                                                    <span class="tb-lead fw-bold text-dark fs-15px">{{ $category->english_name }}</span>
+                                                @else
+                                                    <div class="ps-3 d-flex align-items-center">
+                                                        <span class="text-muted me-1 fw-bold fs-14px">↳</span>
+                                                        <span class="tb-lead text-body">{{ $category->english_name }}</span>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
                                     <td class="nk-tb-col">
-                                        @if($category->parent_id === null)
+                                        @if($isParent)
                                             <span class="badge badge-dim bg-primary">Parent Category</span>
                                         @else
                                             @php
@@ -327,7 +352,17 @@ $('#btnStartTranslation').on('click', function () {
 
 
     <script>
+        if (typeof $.fn.dataTable !== 'undefined') {
+            $.fn.dataTable.defaults.ordering = false;
+            $.fn.dataTable.defaults.order = [];
+        }
+
         $(document).ready(function() {
+            if (typeof $.fn.dataTable !== 'undefined') {
+                $.fn.dataTable.defaults.ordering = false;
+                $.fn.dataTable.defaults.order = [];
+            }
+
             $('.category-country-status-toggle').on('change', function () {
                 const categoryId = $(this).data('category-id');
                 const langId = $(this).data('lang-id');

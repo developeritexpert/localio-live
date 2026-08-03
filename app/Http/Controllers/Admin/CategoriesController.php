@@ -37,9 +37,9 @@ class CategoriesController extends Controller
         $siteLanguage = Language::where('lang_code', $locale)->value('id') ?? 1;
         $englishLangId = Language::where('lang_code', 'en-us')->value('id') ?? 1;
 
-        $categories = Category::with(['parent', 'subCategories', 'categoryTranslations'])->get();
+        $allCategories = Category::with(['parent', 'subCategories', 'categoryTranslations'])->get();
 
-        foreach ($categories as $category) {
+        foreach ($allCategories as $category) {
             $englishTrans = $category->categoryTranslations->where('lang_id', $englishLangId)->first()
                 ?? $category->categoryTranslations->first();
             $selectedTrans = $category->categoryTranslations->where('lang_id', $siteLanguage)->first();
@@ -49,6 +49,27 @@ class CategoriesController extends Controller
             $category->translation_id = $selectedTrans ? $selectedTrans->id : ($englishTrans ? $englishTrans->id : null);
             $category->is_active_for_country = $selectedTrans ? ($selectedTrans->status ?? 1) : 1;
         }
+
+        // Group categories hierarchically: Parent categories followed by their sub-categories
+        $orderedCategories = collect();
+        $parentCategories = $allCategories->whereNull('parent_id')->sortBy('english_name');
+
+        foreach ($parentCategories as $parent) {
+            $orderedCategories->push($parent);
+            $subCategories = $allCategories->where('parent_id', $parent->id)->sortBy('english_name');
+            foreach ($subCategories as $sub) {
+                $orderedCategories->push($sub);
+            }
+        }
+
+        // Append any orphan sub-categories if any exist
+        $addedIds = $orderedCategories->pluck('id')->toArray();
+        $orphanCategories = $allCategories->whereNotIn('id', $addedIds)->sortBy('english_name');
+        foreach ($orphanCategories as $orphan) {
+            $orderedCategories->push($orphan);
+        }
+
+        $categories = $orderedCategories;
 
         return view('Admin.categories.index', compact('categories', 'siteLanguage', 'englishLangId'));
     }
