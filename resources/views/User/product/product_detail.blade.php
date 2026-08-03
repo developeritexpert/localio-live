@@ -1407,7 +1407,7 @@
                                                 <div class="review-progress-list ">
                                                     @foreach ($criteria as $criterion)
                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                        <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                                         <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                             <progress class="progress-bar w-100"
                                                                 value="{{ $criterion->average_rating * 20 }}"
@@ -2393,7 +2393,7 @@
                                                     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                         <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                            <p class="m-0" style="font-size: 14px; color: #555;">Ease of Use</p>
+                                                            <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
                                                             <div class="prgs_br d-flex align-items-center">
                                                                 <progress class="progress-bar"
                                                                     value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}"
@@ -2586,7 +2586,7 @@
                                                     'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
-                                            <div class="col-lg-4 col-12">
+                                            <div class="col-lg-6 col-12">
                                                 <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                                                     <div class="d-flex align-items-center justify-content-between">
                                                         <!-- Business A -->
@@ -2617,7 +2617,7 @@
                                                         </div>
 
                                                         <!-- Compare Button (Only Clickable Link) -->
-                                                        <div class="flex-shrink-0 ms-2">
+                                                        <div class="flex-shrink-0  cmpre_btn" >
                                                             <a href="{{ $seoUrl }}" class="cta cta_outline text-decoration-none" style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
                                                                 Compare
                                                             </a>
