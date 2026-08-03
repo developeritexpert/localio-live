@@ -557,7 +557,8 @@
                                                                     {{ in_array($country->id, $selectedCountries) ? 'checked' : '' }}>
                                                                 <label class="form-check-label w-100"
                                                                      for="country_{{ $country->id }}">
-                                                                    {{ $displayName }}
+                                                                    <!-- {{ $displayName }} -->
+                                                                    {{ $langName ?? $cleanCountryName ?? '' }}
                                                                 </label>
                                                             </div>
                                                         @endforeach
@@ -593,12 +594,13 @@
                                                                         <span
                                                                             class="badge bg-primary position-relative m-1"
                                                                             style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
-                                                                            {{ $selectedDisplayName }}
+                                                                            <!-- {{ $selectedDisplayName }} -->
+                                                                            {{ $langName ?? $cleanCountryName ?? '' }}
                                                                             <button type="button"
                                                                                 wire:click="toggleCountrySelection({{ $countryId }})"
                                                                                 class="btn-close btn-close-white position-absolute"
                                                                                 style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
-                                                                                title="Remove {{ $selectedDisplayName }}">
+                                                                                title="Remove {{ $langName ?? $cleanCountryName ?? '' }}">
                                                                             </button>
                                                                         </span>
                                                                     @endif
