@@ -1257,7 +1257,8 @@
 
                                     </div>
                                 </div>
-                            </div>
+                            <!-- </div> -->
+                            <!-- image right side end here -->
                             <div class="thre_revi_rgt">
                                 <!-- <div class="lcl_text" style="margin-bottom: 20px;">
                                     <p class="sml_text">{{ static_text('localio_commissions_message') }}
@@ -1449,40 +1450,40 @@
                                         <div class="innr_price_trail">
 
                                             <div class="main_feature_sm">
-    <div class="feture_box str_prc_box">
+                                                <div class="feture_box str_prc_box">
 
-        <h6 class="starting-price-title">
-            Starting price
-        </h6>
+                                                    <h6 class="starting-price-title">
+                                                        Starting price
+                                                    </h6>
 
-        @if ($startingPrice)
-            <h2 class="starting-price-value">
-                {{ $currency }}{{ $startingPrice }}
-            </h2>
-        @else
-            <h2 class="starting-price-value">
-                {{ $currency }}9
-            </h2>
-        @endif
+                                                    @if ($startingPrice)
+                                                        <h2 class="starting-price-value">
+                                                            {{ $currency }}{{ $startingPrice }}
+                                                        </h2>
+                                                    @else
+                                                        <h2 class="starting-price-value">
+                                                            {{ $currency }}9
+                                                        </h2>
+                                                    @endif
 
-        <p class="starting-price-text">
-            Flat Rate, Per {{ ucfirst($timeUnit) }}
-        </p>
+                                                    <p class="starting-price-text">
+                                                        Flat Rate, Per {{ ucfirst($timeUnit) }}
+                                                    </p>
 
-        <a href="{{ $business->getTrackedUrl() }}"
-            data-track="{{ json_encode([
-                'type' => 'click',
-                'business_id' => $business->id,
-                'action' => 'view_pricing',
-                'label' => 'View pricing',
-            ]) }}"
-            target="_blank"
-            class="starting-price-link">
-            View pricing
-        </a>
+                                                    <a href="{{ $business->getTrackedUrl() }}"
+                                                        data-track="{{ json_encode([
+                                                            'type' => 'click',
+                                                            'business_id' => $business->id,
+                                                            'action' => 'view_pricing',
+                                                            'label' => 'View pricing',
+                                                        ]) }}"
+                                                        target="_blank"
+                                                        class="starting-price-link">
+                                                        View pricing
+                                                    </a>
 
-    </div>
-</div>
+                                                </div>
+                                            </div>
 
                                             <div class="main_feature_sm">
                                                 <div class="fre_trail feture_box size22">
