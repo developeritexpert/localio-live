@@ -285,7 +285,7 @@
             .form-floating > textarea:focus ~ label,
             .form-floating > textarea:not(:placeholder-shown) ~ label {
                 opacity: 1 !important;
-                transform: scale(0.85) translateY(-0.75rem) translateX(0.15rem) !important;
+                transform: scale(0.85) translateY(-6px) translateX(0.15rem) !important;
                 color: #80868b !important;
                 font-weight: 600 !important;
                 background-color: #ffffff !important;

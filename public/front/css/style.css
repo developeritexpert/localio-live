@@ -3673,7 +3673,7 @@ header.drk_header {
 .progress-bar {
   border-radius: 160px;
   height: 8px;
-  border: 1px solid #21ac21;
+  /* border: 1px solid #21ac21; */
 }
 
 .poplr-progress .prgs_br {
@@ -9987,6 +9987,7 @@ section.right_tool_sec .otr_rgtool h2 {
 section.top-automotive-sec.top_rate_pg {
   background-color: #fdfdfd;
 }
+
 .top-rated-heading-sec .breadcrumb-item a,
 .asn_main_sec .breadcrumb-item a {
   color: #212529 !important;
@@ -10003,6 +10004,12 @@ section.top-automotive-sec.top_rate_pg {
 .write_revw_sec .card .box-btn:hover {
   background-color: #ff5722 !important;
 }
-.review-prompt-banner button:hover i{
-    color: #fff !important;
+
+.review-prompt-banner button:hover i {
+  color: #fff !important;
+}
+
+.progress-bar::-webkit-progress-bar {
+  background-color: #e2e8f0 !important;
+  border: none !important;
 }

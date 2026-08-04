@@ -180,9 +180,11 @@ header {
 	position: relative;
 	right: -100px;
 }
-header .search-box i{
-    padding: 8px 30px;
-  }
+
+header .search-box i {
+	padding: 8px 30px;
+}
+
 header ul.menu {
 	padding: 0px;
 	margin: 0px;
@@ -318,7 +320,7 @@ div#navbarSupportedContent {
 	padding: 10px 28px;
 	min-width: 155px;
 	font-size: 16px;
-font-weight: 600;
+	font-weight: 600;
 }
 
 .cta.cta_white {
@@ -1914,7 +1916,7 @@ global classes */
 	text-align: center;
 	white-space: nowrap;
 	background-color: bisque;
-	border: 1px solid #21ac21;
+	/* border: 1px solid #21ac21; */
 	border-radius: 25px;
 	height: 10px;
 }
@@ -3036,8 +3038,8 @@ select:focus {
 
 .key-feature-price {
 	justify-content: space-around;
-    gap: 0px;
-    padding-bottom: 30px;
+	gap: 0px;
+	padding-bottom: 30px;
 }
 
 .automotive-card .inn_sl_hed {
@@ -3290,7 +3292,7 @@ header.drk_header {
 .progress-bar {
 	border-radius: 160px;
 	height: 10px;
-	border: 1px solid #21ac21;
+	/* border: 1px solid #21ac21; */
 }
 
 .poplr-progress .prgs_br {
@@ -5168,69 +5170,70 @@ header .search_logo .search-box {
 .ft-btm-lft p {
 	margin-bottom: 0;
 }
+
 .hlp-you-box:hover .hlp-you-img {
 	background-color: #06498b;
 }
-.hlp-you-box:hover  img {
+
+.hlp-you-box:hover img {
 	filter: brightness(0) invert(1);
 }
 
 /* 14nov2024  */
 
 .search-box i:hover {
-    background-color: #06498b;
+	background-color: #06498b;
 	color: #fff;
 }
 
 
 .star-rating .star-item {
-    transition: transform 0.2s ease, color 0.2s ease;
+	transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .star-rating .star-item:hover {
-    transform: scale(1.2);
-    color: #ffc107 !important; /* Highlight color on hover */
+	transform: scale(1.2);
+	color: #ffc107 !important;
+	/* Highlight color on hover */
 }
 
 /* Highlight all stars before hovered one */
 .star-rating .star-item {
-    opacity: 0.3;
-    transition: opacity 0.2s ease;
+	opacity: 0.3;
+	transition: opacity 0.2s ease;
 }
 
 .star-rating .star-item.filled {
-    opacity: 1;
+	opacity: 1;
 }
 
 /* Hover effect */
 .star-rating:hover .star-item {
-    opacity: 0.3;
+	opacity: 0.3;
 }
 
 .star-rating:hover .star-item:hover,
-.star-rating:hover .star-item:hover ~ .star-item {
-    opacity: 0.3; /* right of hovered star dimmed */
+.star-rating:hover .star-item:hover~.star-item {
+	opacity: 0.3;
+	/* right of hovered star dimmed */
 }
 
-.star-rating:hover .star-item:hover ~ .star-item {
-    opacity: 0.3;
+.star-rating:hover .star-item:hover~.star-item {
+	opacity: 0.3;
 }
 
 .star-rating:hover .star-item:hover,
 .star-rating:hover .star-item:nth-child(-n + var(--hover-value)) {
-    opacity: 1;
+	opacity: 1;
 }
 
 /* Hover left stars stay filled */
 .star-rating:hover .star-item:hover,
 .star-rating:hover .star-item:nth-child(-n + 5):hover {
-    opacity: 1;
+	opacity: 1;
 }
 
 /* shiwani css */
 .banner_sec.help-cntr-bnr.top-auto-bnr.dark .inside_text p a {
-    font-weight: 700;
+	font-weight: 700;
 }
-
-
-

@@ -53,13 +53,8 @@
                             @endif
                         </li>
                     @endif
-                    @if($business)
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
-                        </li>
-                    @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
-                        Comparison
+                        {{ $bName }} Comparisons
                     </li>
                 </ol>
             </nav>
