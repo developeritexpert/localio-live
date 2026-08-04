@@ -5,8 +5,7 @@
                 <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
                     
                     <!-- Top header with Left Headline & Business Info / Close Button -->
-                    <div class="modal-header border-0 px-3 pt-3 pb-0  px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:0;">
-                        <!-- Left Top: Company Info & Headline -->
+                    <!-- <div class="modal-header border-0 px-3 pt-3 pb-0  px-md-4 pt-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:0;">
                         <div class="d-flex flex-column gap-3">
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
@@ -19,18 +18,42 @@
                             </h4>
                         </div>
 
-                        <!-- Right Top: Close Button -->
                         <div>
                             <button type="button" class="btn-close" wire:click="closeModal" style="box-shadow: none; font-size: 12px;"></button>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="modal-body p-3 p-md-4 pt-2">
+                        <div>
+                            <button type="button" class="btn-close" wire:click="closeModal" style="box-shadow: none; font-size: 12px;"></button>
+                        </div>
                         <div class="row g-4">
                             
                             <!-- Left Column: Review Form Wizard -->
                             <div class="col-12 col-lg-8 review-left-col pe-lg-4">
-                                
+                                <div class="modal-header border-0  p-0  d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:20px;">
+                                    <div class="d-flex flex-column gap-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
+                                                <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            </div>
+                                            <span class="fw-bold" style="color: #002655; font-size: 14px;">{{ $businessName }}</span>
+                                        </div>
+                                        <h2 class="m-0 fw-bold header-title-responsive" style="color: #002655; font-size: 22px; line-height:1.2 !important;">
+                                            @if($step === 3)
+                                                Pros & cons (optional)
+                                            @else 
+                                                @if($step === 2)
+                                                    Write your review
+                                                @else
+                                                    Share your experience
+                                                @endif
+                                            @endif
+                                        </h2>
+                                    </div>
+
+                                    
+                                </div>
                                 @if($step === 1)
                                     <!-- Step 1: Overall Ratings and Recommendation -->
                                     <div class="step-content " wire:key="step-1">
@@ -101,7 +124,6 @@
                                 @elseif($step === 2)
                                     <!-- Step 2: Title and Review -->
                                     <div class="step-content step2" wire:key="step-2">
-                                        <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Write your review</h5>
 
                                         <div class="form-floating text-inpt mb-3">
                                             <input type="text" id="title2" class="form-control" wire:model.defer="title2" placeholder="Title">
@@ -129,9 +151,6 @@
                                 @elseif($step === 3)
                                     <!-- Step 3: Pros & Cons (Optional) -->
                                     <div class="step-content" wire:key="step-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <h5 class="m-0" style="color: #002347; font-weight:600; font-size: 14px;">Pros & cons (optional)</h5>
-                                        </div>
 
                                         <div class="form-floating mb-3">
                                             <textarea id="pros" class="form-control" wire:model.defer="pros" placeholder="Pros (What you liked)" style="height: 100px;"></textarea>
@@ -160,11 +179,11 @@
                             </div>
 
                             <!-- Right Column: Sidebar Progress Panel -->
-                            <div class="col-lg-4 ps-lg-4 d-none d-lg-block" style="margin-top:0;">
+                            <div class="col-lg-4   d-lg-block" style="display:flex !important; align-items:center;">
                                 <div class="p-3 p-md-4 rounded-3 mt-0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 0;">
-                                    <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Review progress</h5>
+                                    <!-- <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Review progress</h5> -->
                                     
-                                    <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex flex-column gap-3 d-none">
                                         <!-- Step 1 Indicator -->
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="d-flex align-items-center justify-content-center fw-bold" style="width: 26px; height: 26px; border-radius: 50%; font-size: 12px;
@@ -206,7 +225,7 @@
                                     </div>
 
                                     <!-- Tips Section (Dynamic according to Step) -->
-                                    <div class="mt-4 pt-3 border-top" style="font-size: 12px; color: #64748b; line-height: 1.5;">
+                                    <div class="" style="font-size: 12px; color: #64748b; line-height: 1.5;">
                                         @if($step === 1)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
                                                 <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly
@@ -259,7 +278,7 @@
             }
             .star-rating .star-item.filled,
             .star-rating .star-item.js-hovered {
-                color: #fbbc04 !important;
+                color: #ff5722 !important;
             }
             .form-floating > .form-control:focus ~ label,
             .form-floating > .form-control:not(:placeholder-shown) ~ label,
@@ -290,17 +309,23 @@
             }
             .modal-body{
                 line-height: 1;
+                position: relative;
             }
             .modal-content .modal-header {
                 position: relative;
             }
 
-            .modal-content button.btn-close {
-                padding: 0;
+          .modal-content button.btn-close {
+                padding: 10px;
                 position: absolute;
-                top: 25px;
-                right: 25px;
+                z-index: 99;
+                top: 20px;
+                right: 20px;
+                border-radius: 50%;
             }
+             .modal-content button.btn-close:hover{
+                background-color:#f3f4f6;
+             }
             @media (max-width: 991.98px) {
                 .modal-dialog {
                     margin: 10px;
