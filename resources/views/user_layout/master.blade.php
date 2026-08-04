@@ -1547,8 +1547,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                     }
 
-                                    
-   
                             </style>
 
                     <div id="phone_screen" class="mobile_display">
@@ -1687,8 +1685,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <p class="msp_subtitle">Create an Account and Secure Your Exclusive Logo Today.</p>
 
                                     <div class="msp_buttons">
-                                        <a href="{{ route('login') }}" class="msp_btn msp_btn_outline">Write a review</a>
-                                        <a href="{{ route('register') }}" class="msp_btn msp_btn_solid">Sign in</a>
+                                        <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}" class="msp_btn msp_btn_outline">Write a review</a>
+                                        <a href="javascript:void(0);"
+                                            onclick="openLoginModal()"
+                                            class="cta cta_orange wht-t-org-btn">
+                                                Sign in
+                                            </a>
+
                                     </div>
                                 </div>
 
@@ -1698,9 +1701,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <hr class="msp_divider">
 
                                     <ul class="msp_link_list">
-                                        <li><a href="#">Who we are</a></li>
-                                        <li><a href="#">Privacy policy</a></li>
-                                        <li><a href="#">Terms & conditions</a></li>
+                                        <li><a href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">Who we are</a></li>
+                                        <li><a href="{{ route('privacy-policy', ['locale' => session('lang_code', 'en-us')]) }}">Privacy policy</a></li>
+                                        <li><a href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">Terms & conditions</a></li>
                                     </ul>
                                 </div>
 
@@ -1710,8 +1713,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <h4 class="msp_links_heading">Help</h4>
                                     <hr class="msp_divider">
                                     <ul class="msp_link_list">
-                                        <li><a href="#">Contact</a></li>
-                                        <li><a href="#">FAQs</a></li>
+                                        <li><a href="{{ route('contact', ['locale' => session('lang_code', 'en-us')]) }}">Contact</a></li>
+                                        <li><a href="{{ route('FaqsShow', ['locale' => session('lang_code', 'en-us')]) }}">FAQs</a></li>
                                     </ul>
                                 </div>
 
@@ -1734,7 +1737,188 @@ document.addEventListener('DOMContentLoaded', function () {
                 </script>
 
 
+                    <style>
+                        /* Explicitly hide on desktop, same pattern as .mobile-sidebar */
+                        @media (min-width: 992px) {
+                            .mobile-cat-panel,
+                            .mobile-cat-overlay {
+                                display: none !important;
+                            }
+                        }
 
+                        @media (max-width: 991px) {
+
+                            .section_heading_link {
+                                display: block;
+                                text-decoration: none;
+                            }
+
+                            .section_heading_link .section_heading {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                cursor: pointer;
+                            }
+
+                            .section_heading_link .fa-chevron-right {
+                                font-size: 13px;
+                                color: rgba(255, 255, 255, 0.6);
+                            }
+
+                            /* Overlay */
+                            .mobile-cat-overlay {
+                                position: fixed;
+                                inset: 0;
+                                background: rgba(0, 0, 0, 0.5);
+                                opacity: 0;
+                                visibility: hidden;
+                                transition: 0.3s;
+                                z-index: 100001;
+                            }
+
+                            .mobile-cat-overlay.active {
+                                opacity: 1;
+                                visibility: visible;
+                            }
+
+                            /* Panel: now slides in from the LEFT — same edge as .mobile-sidebar */
+                            .mobile-cat-panel {
+                                position: fixed;
+                                top: 0;
+                                left: -320px;
+                                width: 320px;
+                                max-width: 85%;
+                                height: 100vh;
+                                background: #002347;
+                                z-index: 100002; /* higher than .mobile-sidebar so it sits above it */
+                                transition: left 0.3s ease;
+                                overflow-y: auto;
+                                box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+                            }
+
+                            .mobile-cat-panel.active {
+                                left: 0;
+                            }
+
+                            .mobile-cat-panel-header {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 20px;
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                            }
+
+                            .mobile-cat-panel-title {
+                                color: #fff !important;
+                                font-size: 16px !important;
+                                font-weight: 700 !important;
+                                margin: 0 !important;
+                                text-transform: uppercase;
+                            }
+
+                            .mobile-cat-back {
+                                border: none;
+                                background: none;
+                                color: #fff !important;
+                                font-size: 15px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                            }
+
+                            .mobile-cat-back:hover {
+                                color: #F9633B !important;
+                            }
+
+                            .mobile-cat-close {
+                                border: none;
+                                background: none;
+                                color: #fff !important;
+                                font-size: 22px;
+                                cursor: pointer;
+                            }
+
+                            .mobile-cat-close:hover {
+                                color: #F9633B !important;
+                            }
+
+                            .mobile-cat-panel-body {
+                                padding: 10px 0;
+                            }
+
+                            .mobile-cat-list {
+                                list-style: none;
+                                margin: 0;
+                                padding: 0;
+                            }
+
+                            .mobile-cat-item {
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                            }
+
+                            .mobile-cat-toggle {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 14px 20px;
+                                color: #fff !important;
+                                font-size: 15px;
+                                font-weight: 600 !important;
+                                text-decoration: none;
+                                cursor: pointer;
+                            }
+
+                            .mobile-cat-toggle:hover {
+                                color: #F9633B !important;
+                            }
+
+                            .mobile-cat-arrow {
+                                font-size: 12px;
+                                transition: transform 0.25s ease;
+                                color: rgba(255, 255, 255, 0.6);
+                            }
+
+                            .mobile-cat-toggle.active .mobile-cat-arrow {
+                                transform: rotate(180deg);
+                                color: #F9633B;
+                            }
+
+                            .mobile-cat-sublist {
+                                list-style: none;
+                                margin: 0;
+                                padding: 0 20px;
+                                max-height: 0;
+                                overflow: hidden;
+                                transition: max-height 0.3s ease;
+                                background: rgba(255, 255, 255, 0.03);
+                            }
+
+                            .mobile-cat-sublist li {
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                            }
+
+                            .mobile-cat-sublist li:last-child {
+                                border-bottom: none;
+                            }
+
+                            .mobile-cat-sublist li a {
+                                display: block;
+                                padding: 10px 0;
+                                color: rgba(255, 255, 255, 0.85) !important;
+                                font-size: 14px;
+                                font-weight: 500 !important;
+                                text-decoration: none;
+                                transition: color 0.2s ease;
+                            }
+
+                            .mobile-cat-sublist li a:hover {
+                                color: #F9633B !important;
+                                padding-left: 5px;
+                            }
+                        }
+                    </style>
 
 
                         <!-- mobile nav -->
@@ -1759,11 +1943,17 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <i class="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
+
                             <div class="mobile-sidebar-body">
 
-                                {{-- Categories: flat list, no dropdown, top 3 only --}}
+                                {{-- Categories heading is now clickable -> opens right-side panel --}}
                                 <div class="menu_section">
-                                    <h4 class="section_heading">{{ $headerContent['Categories'] ?? 'All Categories' }}</h4>
+                                    <a href="javascript:void(0);" id="open-mobile-cat-panel" class="section_heading_link">
+                                        <h4 class="section_heading">
+                                            {{ $headerContent['Categories'] ?? 'All Categories' }}
+                                            <i class="fa-solid fa-chevron-right ms-2"></i>
+                                        </h4>
+                                    </a>
                                     <hr class="section_divider">
 
                                     <ul class="flat_list">
@@ -1783,15 +1973,111 @@ document.addEventListener('DOMContentLoaded', function () {
                                             </li>
                                         @endforeach
                                     </ul>
+                                </div>
 
-                                </div>      
-
-                               
                             </div>
 
                         </div>
 
                         <div class="mobile-sidebar-overlay"></div>
+                        <div class="mobile-cat-overlay" id="mobile-cat-overlay"></div>
+                            <div class="mobile-cat-panel" id="mobile-cat-panel">
+
+                                <div class="mobile-cat-panel-header">
+                                    <button class="mobile-cat-back" id="mobile-cat-back">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                        {{ $headerContent['Categories'] ?? 'All Categories' }}
+                                    </button>
+                                    <button class="mobile-cat-close" id="mobile-cat-close">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+
+                                <div class="mobile-cat-panel-body">
+                                    <ul class="mobile-cat-list">
+                                        @foreach($sidebarCategories as $cat)
+                                            @if($cat->translation)
+                                                <li class="mobile-cat-item">
+                                                    <a href="javascript:void(0);" class="mobile-cat-toggle" data-target="mobile-cat-sub-{{ $cat->id }}">
+                                                        {{ $cat->translation->name }}
+                                                        <i class="fa-solid fa-chevron-down mobile-cat-arrow"></i>
+                                                    </a>
+
+                                                    <ul class="mobile-cat-sublist" id="mobile-cat-sub-{{ $cat->id }}">
+                                                        @foreach($cat->subCategories as $subCat)
+                                                            @if($subCat->translation)
+                                                                <li>
+                                                                    <a href="{{ route('category.detail', [
+                                                                        'locale' => app()->getLocale(),
+                                                                        'slug' => $subCat->translation->slug
+                                                                    ]) }}">
+                                                                        {{ $subCat->translation->name }}
+                                                                    </a>
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </div>
+
+                            </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+
+                            const openBtn   = document.getElementById('open-mobile-cat-panel');
+                            const closeBtn  = document.getElementById('mobile-cat-close');
+                            const backBtn   = document.getElementById('mobile-cat-back');
+                            const overlay   = document.getElementById('mobile-cat-overlay');
+                            const panel     = document.getElementById('mobile-cat-panel');
+                            const toggles   = document.querySelectorAll('.mobile-cat-toggle');
+
+                            if (openBtn) {
+                                openBtn.addEventListener('click', function () {
+                                    panel.classList.add('active');
+                                    overlay.classList.add('active');
+                                    document.body.style.overflow = 'hidden';
+                                });
+                            }
+
+                            function closeCatPanel() {
+                                panel.classList.remove('active');
+                                overlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            }
+
+                            if (closeBtn) closeBtn.addEventListener('click', closeCatPanel);
+                            if (backBtn) backBtn.addEventListener('click', closeCatPanel);
+                            if (overlay) overlay.addEventListener('click', closeCatPanel);
+
+                            toggles.forEach(function (toggle) {
+                                toggle.addEventListener('click', function () {
+                                    const targetId = this.getAttribute('data-target');
+                                    const sublist  = document.getElementById(targetId);
+                                    const isActive = this.classList.contains('active');
+
+                                    toggles.forEach(function (t) {
+                                        if (t !== toggle) {
+                                            t.classList.remove('active');
+                                            const otherSublist = document.getElementById(t.getAttribute('data-target'));
+                                            if (otherSublist) otherSublist.style.maxHeight = null;
+                                        }
+                                    });
+
+                                    if (isActive) {
+                                        toggle.classList.remove('active');
+                                        sublist.style.maxHeight = null;
+                                    } else {
+                                        toggle.classList.add('active');
+                                        sublist.style.maxHeight = sublist.scrollHeight + 'px';
+                                    }
+                                });
+                            });
+
+                        });
+                    </script>
                     </nav>
                 </div>
             </div>
@@ -2939,7 +3225,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </ul>
                     </div>
                     
-                    <div class="sidebar-menu-divider"></div> -->
+                    {{-- <div class="sidebar-menu-divider"></div> --}}
                     
                     <div class="sidebar-menu-section">
                         <h3 class="sidebar-section-title">Categories</h3>
@@ -3301,7 +3587,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         function observe() {
-            const target = document.body;
+            const target = document.body;   
             observer.observe(target, {
                 childList: true,
                 subtree: true
@@ -3312,3 +3598,4 @@ document.addEventListener('DOMContentLoaded', function () {
     </script>
 </body>
 </html>
+{{-- mass determation--}}
