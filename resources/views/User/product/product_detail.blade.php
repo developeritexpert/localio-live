@@ -1375,7 +1375,7 @@
                                                 {{-- Header & Overall Rating --}}
                                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom:15px;">
                                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
-                                                        <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1;">
+                                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                                             {{ number_format($averageRating,1) }}
                                                         </span>
 
@@ -3076,7 +3076,7 @@
                                                 <div class="user-reviews-summary-card p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
                                                     {{-- Rating Number & Stars --}}
                                                     <div class="d-flex flex-column align-items-start mb-3">
-                                                        <span style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
+                                                        <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
                                                         <div class="d-flex align-items-center gap-1 mb-1">
                                                             @for ($j = 1; $j <= 5; $j++)
                                                                 @if ($j <= floor($averageRating))

@@ -10,10 +10,10 @@
         text-decoration:underline !important;
     }
         .top-rated-heading-sec {
-            margin-top: 120px;
-            padding-top: 50px !important;
-            background-color: #fdfdfd;
-            border-bottom: 2px solid #e8eef6;
+            margin-top: 125px;
+            padding-top: 25px !important;
+            background-color: #f7f9fb;
+            border-bottom: 1px solid #e8eef6;
             margin-bottom: 25px;
             padding-bottom: 15px;
         }
@@ -393,7 +393,7 @@
                     }
                 </style>
                 
-                <section class="top-automotive-sec cat_pg light" style="margin-top: 6rem !important;">
+                <section class="top-automotive-sec  cat_pg light" >
                     <div class="container">
                         <!-- Breadcrumbs and Share Button Row -->
                         <div class="row align-items-center mb-3">
