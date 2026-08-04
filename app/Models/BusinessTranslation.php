@@ -41,6 +41,14 @@ class BusinessTranslation extends Model
         'comparison_description',
         'comparison_title_2',
         'comparison_description_2',
+        'alternatives_meta_title',
+        'alternatives_meta_description',
+        'reviews_meta_title',
+        'reviews_meta_description',
+        'faqs_meta_title',
+        'faqs_meta_description',
+        'comparison_meta_title',
+        'comparison_meta_description',
     ];
 
     public function business()
