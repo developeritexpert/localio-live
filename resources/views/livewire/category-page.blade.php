@@ -14,7 +14,7 @@
             padding-top: 25px !important;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e8eef6;
-            margin-bottom: 25px;
+            /* margin-bottom: 25px; */
             padding-bottom: 15px;
         }
 
@@ -599,7 +599,7 @@
                     </div>
        </div>
     </section>
-                <section class="top-automotive-sec cat_pg light">
+                <section class="top-automotive-sec cat_pg light" style="padding-top:25px !important;">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
