@@ -6,6 +6,8 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Business;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BusinessImages extends Component
@@ -106,25 +108,82 @@ class BusinessImages extends Component
         }
 
         foreach ($urls as $idx => $targetUrl) {
-            if (empty(trim($targetUrl))) continue;
+            $targetUrl = trim($targetUrl);
+            if (empty($targetUrl)) continue;
+
+            if (!preg_match("~^(?:f|ht)tps?://~i", $targetUrl)) {
+                $targetUrl = "https://" . $targetUrl;
+            }
 
             $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.webp';
             $fullPath = $destinationDir . '/' . $filename;
 
-            // Generate an optimized dummy preview image representing the screenshot
-            $this->createDummyScreenshot($fullPath, $targetUrl, $idx + 1);
-            $generatedImages[] = 'business_images/' . $filename;
+            $captured = $this->captureRealScreenshot($fullPath, $targetUrl);
+            if ($captured) {
+                $generatedImages[] = 'business_images/' . $filename;
+            }
         }
 
         if (!empty($generatedImages)) {
-            $this->currentImages = $generatedImages;
+            $this->currentImages = array_merge($this->currentImages, $generatedImages);
             $this->newUploads = [];
-            session()->flash('modal_success', 'Screenshots generated & optimized successfully!');
+            session()->flash('modal_success', 'Real website screenshots generated successfully!');
         } else {
-            session()->flash('modal_error', 'No valid URLs found to take screenshots.');
+            session()->flash('modal_error', 'Could not capture screenshots. Please verify the URL or try uploading images manually.');
         }
 
         $this->isTakingScreenshots = false;
+    }
+
+    private function captureRealScreenshot($savePath, $url)
+    {
+        // Remove trailing slash for cleaner API query
+        $cleanUrl = trim($url);
+
+        $services = [
+            // Provider 1: thum.io
+            "https://image.thum.io/get/width/1200/crop/800/noanimate/" . $cleanUrl,
+            // Provider 2: wordpress.com mshots
+            "https://s0.wp.com/mshots/v1/" . urlencode($cleanUrl) . "?w=1200&h=800",
+            // Provider 3: microlink screenshot
+            "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false"
+        ];
+
+        foreach ($services as $serviceUrl) {
+            try {
+                if (str_contains($serviceUrl, 'microlink.io')) {
+                    $response = Http::withoutVerifying()->timeout(15)->get($serviceUrl);
+                    if ($response->successful()) {
+                        $json = $response->json();
+                        $imgUrl = $json['data']['screenshot']['url'] ?? null;
+                        if ($imgUrl) {
+                            $imgResponse = Http::withoutVerifying()->timeout(15)->get($imgUrl);
+                            if ($imgResponse->successful() && strlen($imgResponse->body()) > 3000) {
+                                file_put_contents($savePath, $imgResponse->body());
+                                return true;
+                            }
+                        }
+                    }
+                } else {
+                    $response = Http::withoutVerifying()
+                        ->withHeaders([
+                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                        ])
+                        ->timeout(15)
+                        ->get($serviceUrl);
+
+                    if ($response->successful() && strlen($response->body()) > 3000) {
+                        file_put_contents($savePath, $response->body());
+                        return true;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning("Screenshot provider failed ({$serviceUrl}): " . $e->getMessage());
+                continue;
+            }
+        }
+
+        return false;
     }
 
     private function createDummyScreenshot($path, $url, $number)

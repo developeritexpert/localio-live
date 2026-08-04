@@ -23,6 +23,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="clear-session-url" content="{{ route('clear.register.session') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
 
@@ -1034,6 +1036,34 @@
                     }
                 }
 
+                .policy-link {
+                        color: #06498b;
+                        text-decoration: underline;
+                        text-underline-offset: 2px;
+                        font-weight: 500;
+                        /* font-size:13px; */
+
+                    }
+
+                    .policy-link:hover {
+                        color: #F9633B;
+                        text-decoration: underline;
+                        /* font-size:13px; */
+
+                    }
+                     .contact_sec .form-check-label{
+                        font-size:13px;
+                        }
+
+                      
+                     #register-profile-modal .form-check-label{
+                        font-size:13px;
+                        }
+                        #register-profile-modal .form-check-label a:hover{
+                            color:#F9633B;
+                        }
+
+
     </style>
 
 </head>
@@ -1163,11 +1193,17 @@ document.addEventListener('DOMContentLoaded', function () {
                          <div class="header_button_col">
                         <div class="Header_buttons">
                             @if (!auth()->user())
-                            <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
+                            <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
                                 class="cta cta_trans">{{ $headerContent['login_btn_lable'] ?? 'Login' }}</a>
-                            <a href="{{ route('sign-in', ['locale' => session('lang_code', 'en-us')]) }}"
-                                class="cta cta_orange wht-t-org-btn">{{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}</a>
+                            <a href="javascript:void(0);"
+                                onclick="openLoginModal()"
+                                class="cta cta_orange wht-t-org-btn">
+                                    {{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}
+                                </a>
+
                             @else
+                            <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
+                                class="cta cta_trans">Write review</a>
                             <x-user-profile />
                             <!-- <a href="{{ url('/logout') }}"
                                         class="cta cta_orange">{{ $headerContent['sign_out_btn_lable'] ?? 'Sign out' }}</a> -->
@@ -1204,6 +1240,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <span class="bar"></span>
                             <span class="bar"></span>
                             <span class="bar"></span>
+                            
                         </button>
                         <?php
 
@@ -1277,16 +1314,16 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</a>
                                         </li>
                                         @foreach($categories as $category)
-    <li class="menu-item">
-        <a href="{{ route('category.detail', [
-            'locale' => app()->getLocale(),
-            'slug' => $category->translation->slug
-        ]) }}">
-            {{ $category->translation->name }}
-        </a>
-    </li>
-@endforeach
-                                    
+                                            <li class="menu-item">
+                                                <a href="{{ route('category.detail', [
+                                                    'locale' => app()->getLocale(),
+                                                    'slug' => $category->translation->slug
+                                                ]) }}">
+                                                    {{ $category->translation->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                                                            
 
                                         {{-- @foreach($categories as $category)
                                                 <li class="menu-item cat_menu_item dropdown dropdown-6 mobile-drop">
@@ -1322,20 +1359,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </li> --}}
                                     </ul>
                                 </div>
-                                {{-- <div class="right_menu">
-                                    <ul>
-                                        <li style="cursor: pointer">
-                                            <a
-                                                href="{{ route('expert-guide', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['expert_guide'] ?? 'Expert Guides' }}</a>
-                                        </li>
-                                        <li style="cursor: pointer">
-                                            <a
-                                                href="{{ route('help-center', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['help_center'] ?? 'Help Center' }}</a>
-                                        </li>
-                                    </ul>
-                                </div> --}}
-
-
                                 <div class="close_btn_mobile">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M2.9819 0.490874L9.99988 7.50855L16.9815 0.527235C17.1357 0.363097 17.3215 0.231792 17.5277 0.141194C17.7339 0.0505961 17.9562 0.00257135 18.1815 0C18.6637 0 19.1261 0.191544 19.4671 0.532495C19.808 0.873445 19.9996 1.33587 19.9996 1.81805C20.0038 2.04095 19.9625 2.26236 19.8781 2.4687C19.7936 2.67504 19.6679 2.86195 19.5087 3.01796L12.4362 9.99928L19.5087 17.0715C19.8083 17.3646 19.9841 17.7616 19.9996 18.1805C19.9996 18.6627 19.808 19.1251 19.4671 19.4661C19.1261 19.807 18.6637 19.9986 18.1815 19.9986C17.9497 20.0082 17.7186 19.9695 17.5026 19.885C17.2866 19.8005 17.0906 19.672 16.9269 19.5077L9.99988 12.49L3.00009 19.4895C2.84646 19.6482 2.66294 19.7748 2.4601 19.8622C2.25727 19.9496 2.03914 19.9959 1.8183 19.9986C1.3361 19.9986 0.873656 19.807 0.532691 19.4661C0.191726 19.1251 0.000173751 18.6627 0.000173751 18.1805C-0.00406521 17.9576 0.0372916 17.7362 0.121706 17.5299C0.206121 17.3235 0.331813 17.1366 0.491068 16.9806L7.56359 9.99928L0.491068 2.92706C0.191413 2.63392 0.0156999 2.23695 0.000173751 1.81805C0.000173751 1.33587 0.191726 0.873445 0.532691 0.532495C0.873656 0.191544 1.3361 0 1.8183 0C2.25465 0.00545415 2.67282 0.181805 2.9819 0.490874Z" fill="white"/>
@@ -1420,7 +1443,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 @elseif(Auth::user()->user_type ==='vendor')
                                                 <a class="dropdown-item"
                                                     href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}"><i
-                                                        class="fa fa-user"></i>My Profile</a>
+                                                        class="fa fa-user"></i>My profile</a>
                                                 @endif
                                             </div>
 
@@ -1437,11 +1460,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                                 @if(Auth::user()->user_type ==='user')
                                                 <a class="dropdown-item"
-                                                href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-key"></i>Change Password</a>
+                                                href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-key"></i>Change password</a>
                                                 </div>
                                             <div class="dash-icon">
                                                 <a class="dropdown-item"
-                                                href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-envelope"></i>Email Preferences</a>
+                                                href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-envelope"></i>Email preferences</a>
                                                 @elseif(Auth::user()->user_type ==='vendor')
                                                 <a class="dropdown-item"
                                                     href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}"><i class="fa-solid fa-gear"></i>Configuration</a>
@@ -1450,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                             <div class="dash-icon">
                                                 <a class="dropdown-item" href="{{ route('logout') }}"><i
-                                                        class="fa fa-power-off"></i>Sign Out</a>
+                                                        class="fa fa-power-off"></i>Sign out</a>
                                             </div>
                                         </div>
                                     </div>
@@ -1845,7 +1868,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="footer-langs-container">
                                     @foreach ($languages as $language)
                                     <li>
-                                        <a href="{{ route('set-site-languages', ['lang_id' => $language->id]) }}">
+                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}">
                                             {{ $language->name }}
                                         </a>
                                     </li>
@@ -2013,6 +2036,149 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
     </div>
+
+    <!-- register model pop up 30-07-2026 -->
+    @if(session()->has('register_profile_needed'))
+            @php
+                $pendingEmail = session('register_email', '');
+                $pendingFirstName = session('register_first_name', '');
+                $pendingLastName = session('register_last_name', '');
+
+            @endphp
+                <div id="register-profile-modal" class="modal-overlay fixed inset-0 z-[9999] align-items-center justify-content-center p-3" style="background: rgba(0, 0, 0, 0.5); position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow-y: auto; display: flex;">
+                    <div class="modal-content bg-white shadow-lg relative border-0 my-auto" style="max-width: 620px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
+                    <button type="button" id="close-profile-modal-btn" aria-label="Close modal" 
+                        style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
+                        ✕
+                    </button>
+                    
+
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2" style="color: #002655; font-size: 22px;">Create your profile</h3>
+                        <p class="text-muted m-0" style="font-size: 13.5px;">Please provide a few more details to set up your account.</p>
+                    </div>
+
+                    <form class="register_form" action="{{ route('register.details.store', ['locale'=> getCurrentLocale()]) }}" method="post" id="modalRegisterDetailsForm">
+                        @csrf
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="text" name="first_name" id="modalFirstName" class="form-control" placeholder="First name" value="{{ old('first_name', $pendingFirstName) }}" required>
+                                    <label for="modalFirstName">First name</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating">
+                                    <input type="text" name="last_name" id="modalLastName" class="form-control" placeholder="Last name" value="{{ old('last_name', $pendingLastName) }}" required>
+                                    <label for="modalLastName">Last name</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" name="job_title" id="modalJobTitle" class="form-control" placeholder="Job title" value="{{ old('job_title') }}" required>
+                            <label for="modalJobTitle">Job title</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select name="company_size" id="modalCompanySize" class="form-select" required>
+                                <option value="" selected disabled hidden></option>
+                                <option value="1" {{ old('company_size') == '1' ? 'selected' : '' }}>Freelance / Solo</option>
+                                <option value="2" {{ old('company_size') == '2' ? 'selected' : '' }}>Small Business (1-50 emp.)</option>
+                                <option value="3" {{ old('company_size') == '3' ? 'selected' : '' }}>Mid-Market (51-1000 emp.)</option>
+                                <option value="4" {{ old('company_size') == '4' ? 'selected' : '' }}>Enterprise (&gt;1000 emp.)</option>
+                            </select>
+                            <label for="modalCompanySize">Company size</label>
+                        </div>
+                         <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="form-check mb-3">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="accept_terms"
+                                    id="acceptTerms"
+                                    value="1"
+                                    {{ old('accept_terms') ? 'checked' : '' }}
+                                    required
+                                >
+                                
+                                <label class="form-check-label" for="acceptTerms">
+                                    I agree to the
+                                    <a href="{{ route('terms-condition', ['locale' => getCurrentLocale()]) }}"
+                                    target="_blank"
+                                    class="policy-link">
+                                        Terms of service
+                                    </a>
+                                    and acknowledge the
+                                    <a href="{{ route('privacy-policy', ['locale' => getCurrentLocale()]) }}"
+                                    target="_blank"
+                                    class="policy-link">
+                                        Privacy policy
+                                    </a>.
+                                </label>
+                                @error('accept_terms')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="promotional_emails"
+                                    id="promotionalEmails"
+                                    value="1"
+                                    {{ old('promotional_emails') ? 'checked' : '' }}
+                                >
+                                <label class="form-check-label" for="promotionalEmails">
+                                    I'd like to receive promotional emails from Localio. I can unsubscribe at any time.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="accor-btn mt-4">
+                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const closeBtn = document.getElementById('close-profile-modal-btn');
+
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function () {
+                            const modal = document.getElementById('register-profile-modal');
+                            if (modal) {
+                                modal.style.display = 'none';
+                            }
+
+                            const url = document.querySelector('meta[name="clear-session-url"]').content;
+                            const token = document.querySelector('meta[name="csrf-token"]').content;
+
+                            fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': token
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Session cleared:', data);
+                            })
+                            .catch(error => {
+                                console.error('Error clearing session:', error);
+                            });
+                        });
+                    }
+                });
+            </script>
+            @endif
+
+    <!-- register model pop end here -->
     @stack('scripts')
  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
@@ -2513,23 +2679,36 @@ document.addEventListener('DOMContentLoaded', function () {
     <!-- Category Sidebar Drawer (Amazon Style) -->
     <div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
     <div class="category-sidebar" id="categories-sidebar">
-        {{-- <div class="category-sidebar-header">
-            @if(Auth::check())
-                <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
-                    <i class="fa-solid fa-circle-user avatar-icon"></i>
-                    <span>Hello {{ Auth::user()->first_name }}</span>
-                </a>
+        <div class="category-sidebar-header">
+    @if(Auth::check())
+        <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
+            @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                <img src="{{ asset(Auth::user()->profile_image) }}"
+                     alt="Profile"
+                     class="profile-circle"
+                     style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;">
             @else
-                <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
-                    <i class="fa-solid fa-circle-user avatar-icon"></i>
-                    <span>Hello sign in</span>
-                </a>
+                <div class="profile-circle"
+                     style="width:40px; height:40px; border-radius:50%; background:#f76b1c; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <span style="color:#fff; font-weight:bold; font-size:18px;">
+                        {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                    </span>
+                </div>
             @endif
-            <button class="category-sidebar-close" id="categories-sidebar-close">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div> --}}
-        
+
+            <span class="ms-2">Hello {{ Auth::user()->first_name }}</span>
+        </a>
+    @else
+        <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
+            <i class="fa-solid fa-circle-user avatar-icon"></i>
+            <span>Hello, sign in</span>
+        </a>
+    @endif
+
+    <button class="category-sidebar-close" id="categories-sidebar-close">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>        
         
         <div class="category-sidebar-viewport">
             <div class="category-sidebar-panels-container" id="sidebar-panels-container">
@@ -2549,7 +2728,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="sidebar-menu-divider"></div> -->
                     
                     <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title">Shop by Category</h3>
+                        <h3 class="sidebar-section-title">Categories</h3>
                         <ul class="sidebar-menu-list">
                             @foreach($sidebarCategories as $cat)
                                 @if($cat->translation)
@@ -2571,7 +2750,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
                             <div class="sub-panel-back">
                                 <a href="javascript:void(0);" class="back-to-main-btn">
-                                    <i class="fa-solid fa-arrow-left me-2"></i> Main Menu
+                                    <i class="fa-solid fa-arrow-left me-2"></i> All categories
                                 </a>
                             </div>
                             <div class="sidebar-menu-divider"></div>

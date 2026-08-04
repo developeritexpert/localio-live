@@ -1375,7 +1375,7 @@
                                                 {{-- Header & Overall Rating --}}
                                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom:15px;">
                                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
-                                                        <span class="overall-rating-number" style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1;">
+                                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                                             {{ number_format($averageRating,1) }}
                                                         </span>
 
@@ -1577,45 +1577,73 @@
                                                 <div class="main_feature_lg">
                                             <div class="feture_box review-breakdown-box">
 
-                                                 <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-                                                     <h2 class="size22 big-bld m-0">Popular comparisons</h2>
-                                                     <a href="#section-compare" class="view-review-link">
-                                                         View all comparisons
+                                                 <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
+                                                     <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
+                                                     <a href="#section14" class="view-review-link">
+                                                         View all reviews
                                                      </a>
                                                  </div>
 
-                                                 <div class="popular-comparisons-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px;">
-                                                     @php
-                                                         $vsKeyVal = static_text('vs_keyword');
-                                                         if (empty($vsKeyVal) || $vsKeyVal === 'vs_keyword') {
-                                                             $vsKeyVal = 'vs';
-                                                         }
-                                                         $vsSlug = Str::slug($vsKeyVal);
-                                                         $peersList = isset($peerComparisons) ? $peerComparisons : (isset($peerBusinesses) ? $peerBusinesses : collect([]));
-                                                         $currentBizName = isset($businessName) ? $businessName : (isset($business->translations) && $business->translations->first() ? $business->translations->first()->name : 'Business');
-                                                     @endphp
-                                                     @forelse($peersList->take(5) as $peerBiz)
-                                                         @php
-                                                             $peerName = $peerBiz->translations->first()->name ?? 'Business';
-                                                             $compSeoUrl = route('product-comparison.seo', [
-                                                                 'locale' => app()->getLocale(),
-                                                                 'comparison_slug' => $comparison_slug ?? 'compare',
-                                                                 'comparison_businesses' => Str::slug($currentBizName) . '-' . $vsSlug . '-' . Str::slug($peerName)
-                                                             ]);
-                                                         @endphp
-                                                         <div>
-                                                             <a href="{{ $compSeoUrl }}" style="font-size: 14.5px; font-weight: 600; color: #06498b; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#f26522'; this.style.textDecoration='underline';" onmouseout="this.style.color='#06498b'; this.style.textDecoration='none';">
-                                                                 {{ $currentBizName }} {{ strtoupper($vsKeyVal) }} {{ $peerName }}
-                                                             </a>
+                                                  @foreach($topReviews->take(2) as $review)
+                                                      <div class="sidebar-review-card" style="margin-bottom: 20px;">
+
+                                                          <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+
+                                                              <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+
+                                                                  @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                      <img src="{{ asset($review->user->profile_image) }}"
+                                                                          class="rounded-circle"
+                                                                          width="45"
+                                                                          height="45">
+                                                                  @else
+                                                                      <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                                          <span style="color: white; font-weight: bold; font-size: 20px;">{{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}</span>
+                                                                      </div>
+                                                                  @endif
+
+                                                                    <div>
+                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                        @if($review->user && $review->user->job_title)
+                                                                            <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
+                                                                        @endif
+                                                                    </div>
+                                                              </div>
+
+                                                              <div style="text-align: right; flex-shrink: 0;">
+                                                                  <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $review->created_at->diffForHumans() }}</small>
+                                                              </div>
+
                                                          </div>
-                                                     @empty
-                                                         <p class="text-muted m-0" style="font-size: 13px;">No comparisons available.</p>
-                                                     @endforelse
-                                                 </div>
+
+                                                        <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: #1e3050;">
+                                                            {{ $review->translations->first()->title ?? 'Review' }}
+                                                        </h5>
+
+                                                        <div class="rating-stars-wrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                                            <div class="rating-stars">
+                                                                @for($i=1;$i<=5;$i++)
+                                                                    @if($i<=floor($review->rating))
+                                                                        <i class="fas fa-star text-warning" style="font-size: 12px !important;"></i>
+                                                                    @elseif($i-0.5<=$review->rating)
+                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 12px !important;"></i>
+                                                                    @else
+                                                                        <i class="far fa-star text-warning" style="font-size: 12px !important;"></i>
+                                                                    @endif
+                                                                @endfor
+                                                            </div>
+                                                        </div>
+
+                                                        <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
+                                                            {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
+                                                        </p>
+
+                                                    </div>
+                                                @endforeach
 
                                             </div>
                                         </div>                                        <!-- Recent discussions box -->
-                                        <div class="main_feature_lg mt-4">
+                                        <div class="main_feature_lg">
                                             <div class="feture_box review-breakdown-box">
                                                 <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                                     <h2 class="size22 big-bld m-0">Recent discussions</h2>
@@ -3076,7 +3104,7 @@
                                                 <div class="user-reviews-summary-card p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
                                                     {{-- Rating Number & Stars --}}
                                                     <div class="d-flex flex-column align-items-start mb-3">
-                                                        <span style="font-size: 48px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
+                                                        <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
                                                         <div class="d-flex align-items-center gap-1 mb-1">
                                                             @for ($j = 1; $j <= 5; $j++)
                                                                 @if ($j <= floor($averageRating))
@@ -3119,7 +3147,7 @@
 
                                                     <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
                                                         <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
-                                                        <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear</span>
+                                                        <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear filter</span>
                                                     </div>
 
                                                     <!-- Star Breakdown Checkboxes -->

@@ -5,7 +5,7 @@
                 <div class="col-lg-3 mb-4">
                     <div class="parent-cat-sidebar">
                         @if(is_null($selectedCategoryId))
-                            <h4 style="margin-bottom: 15px; text-align: left; font-size: 18px; font-weight: 700; color: #002347;">
+                            <h4 style="margin-bottom: 15px; text-align: left; font-size: 18px; font-weight: 700; color:#797C7F ">
                                 All categories
                             </h4>
                         @else
@@ -14,7 +14,7 @@
                                    wire:click="selectAllCategories"
                                    wire:loading.class="cat_loading"
                                    wire:target="selectAllCategories"
-                                   style="font-size: 14px; font-weight: 600; color: #06498b; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                   style="font-size: 14px; font-weight: 600; color: #797C7F; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
                                     <i class="fas fa-arrow-left" style="font-size: 12px;"></i> All categories
                                 </a>
                             </div>
@@ -151,7 +151,7 @@
                                         <a href="{{ $business->getTrackedUrl() }}"
                                            target="_blank"
                                            class="btn py-1 px-2 fw-semibold w-50 text-white"
-                                           style="background-color: #f26522; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition: background 0.2s;">
+                                           style="background-color: #ff5722; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition:unset !important;">
                                             Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
                                         </a>
                                     </div>

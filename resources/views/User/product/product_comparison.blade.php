@@ -1,12 +1,40 @@
 @extends('user_layout.master')
 @section('content')
+@php
+    $firstBiz = isset($businesses[0]) ? $businesses[0] : null;
+    $parentCat = $firstBiz && $firstBiz->category && $firstBiz->category->parent ? $firstBiz->category->parent : null;
+    $cat = $firstBiz && $firstBiz->category ? $firstBiz->category : null;
+
+    $parentCatName = $parentCat->translation->name ?? $parentCat->translations->first()->name ?? null;
+    $parentCatSlug = $parentCat->translation->slug ?? $parentCat->translations->first()->slug ?? null;
+
+    $catName = $cat->translation->name ?? $cat->translations->first()->name ?? null;
+    $catSlug = $cat->translation->slug ?? $cat->translations->first()->slug ?? null;
+@endphp
     <section class="inner_banner_sec cmpari_inner">
         <div class="container">
             <div class="inner_banr_content">
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        {{-- <li class="breadcrumb-item"><a href="#">Automotive</a></li> --}}
-                        <li class="breadcrumb-item active" aria-current="page">
+                    <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
+                        @if($parentCatName)
+                            <li class="breadcrumb-item">
+                                @if($parentCatSlug)
+                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $parentCatSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $parentCatName }}</a>
+                                @else
+                                    <span style="color: #64748b;">{{ $parentCatName }}</span>
+                                @endif
+                            </li>
+                        @endif
+                        @if($catName)
+                            <li class="breadcrumb-item">
+                                @if($catSlug)
+                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
+                                @else
+                                    <span style="color: #64748b;">{{ $catName }}</span>
+                                @endif
+                            </li>
+                        @endif
+                        <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
                             @if (count($businesses) >= 2)
                                 {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}
                             @else

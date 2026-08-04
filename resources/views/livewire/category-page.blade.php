@@ -10,11 +10,11 @@
         text-decoration:underline !important;
     }
         .top-rated-heading-sec {
-            margin-top: 120px;
-            padding-top: 50px !important;
-            background-color: #fdfdfd;
-            border-bottom: 2px solid #e8eef6;
-            margin-bottom: 25px;
+            margin-top: 125px;
+            padding-top: 25px !important;
+            background-color: #f7f9fb;
+            border-bottom: 1px solid #e8eef6;
+            /* margin-bottom: 25px; */
             padding-bottom: 15px;
         }
 
@@ -393,7 +393,7 @@
                     }
                 </style>
                 
-                <section class="top-automotive-sec cat_pg light" style="margin-top: 6rem !important;">
+                <section class="top-automotive-sec  cat_pg light" >
                     <div class="container">
                         <!-- Breadcrumbs and Share Button Row -->
                         <div class="row align-items-center mb-3">
@@ -435,7 +435,7 @@
                                     </p>
                                 </div>
                                 <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                    <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                    <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                         <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                             <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                             <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
@@ -584,7 +584,7 @@
                                 </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                         <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
@@ -599,7 +599,7 @@
                     </div>
        </div>
     </section>
-                <section class="top-automotive-sec cat_pg light">
+                <section class="top-automotive-sec cat_pg light" style="padding-top:25px !important;">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
