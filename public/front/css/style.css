@@ -2066,8 +2066,8 @@ global classes */
   color: #fff;
   text-align: center;
   white-space: nowrap;
-  background-color: #21ac21;
-  border: 1px solid #21ac21;
+  background-color: #e2e8f0;
+  /* border: 1px solid #21ac21; */
   border-radius: 25px;
   height: 10px;
   max-width: 70%;
@@ -3672,7 +3672,7 @@ header.drk_header {
 
 .progress-bar {
   border-radius: 160px;
-  height: 10px;
+  height: 8px;
   border: 1px solid #21ac21;
 }
 
@@ -8684,12 +8684,14 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .product_integra_sec .over-rate-progress .progress-bar {
-  border-color: #edf6ed;
+  border: none !important;
+  border-color: unset;
+
 }
 
 .sftware-alternative-pck progress::-webkit-progress-bar,
 .sftware-alternative-pck .progress-bar {
-  background-color: #edf6ed;
+  background-color: #e2e8f0 !important;
   border-radius: 4px;
 }
 
@@ -8774,7 +8776,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 
 .product_sec .container-fluid,
 .asn_main_sec_2 .container-fluid {
-  max-width: 1440px;
+  max-width: 1470px;
   margin-inline: auto;
 }
 
@@ -9508,7 +9510,7 @@ header .sec_head {
 }
 
 .revie_left_rgt_sec .progress-bar::-webkit-progress-bar {
-  background: #fff !important;
+  background: #e2e8f0 !important;
 }
 
 .revie_img_sec .top_review_bx {
@@ -9649,8 +9651,8 @@ header .sec_head {
 } */
 .most-populr-sec .popular-category-tab-btn span:hover,
 .most-populr-sec .popular-category-tab-btn.active span {
-  border-color: #f9633b !important;
-  color: #f9633b !important;
+  border-color: #ff5722 !important;
+  color: #ff5722 !important;
 }
 
 .most-populr-sec {
@@ -9762,7 +9764,7 @@ section.right_tool_sec .otr_rgtool h2 {
 /* 29-july-26 */
 
 .product_sec .inner_banner_sec {
-  background-color: #fdfdfd;
+  background-color: #f7f9fb;
 }
 
 .sec_head .hdr_info .usr_profile {
@@ -9858,7 +9860,7 @@ section.right_tool_sec .otr_rgtool h2 {
 
 .user_revew_sec,
 .comparsn_bnr_sec {
-  padding: 35px 0 20px;
+  padding: 19px 0;
   margin-top: 125px;
 }
 
@@ -9961,14 +9963,46 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .top-automotive-sec.cat_pg {
-  background-color: #fdfdfd;
+  background-color: #f7f9fb;
 }
 
 
 .faq-accor .accordion-button:hover::after,
 .faq-accor .accordion-button:not(.collapsed):hover::after {
-    background-color: #ff5722 !important;
+  background-color: #ff5722 !important;
 }
-.asn_main_sec .btn{
-transition:unset !important;
+
+.asn_main_sec .btn {
+  transition: unset !important;
+}
+
+.fa-star {
+  color: #FF5700 !important;
+}
+
+.asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after {
+  height: 2px !important;
+}
+
+section.top-automotive-sec.top_rate_pg {
+  background-color: #fdfdfd;
+}
+.top-rated-heading-sec .breadcrumb-item a,
+.asn_main_sec .breadcrumb-item a {
+  color: #212529 !important;
+}
+
+.asn_main_sec .breadcrumb .breadcrumb-item a:hover {
+  text-decoration: underline !important;
+}
+
+.write_revw_sec .card:hover {
+  box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
+}
+
+.write_revw_sec .card .box-btn:hover {
+  background-color: #ff5722 !important;
+}
+.review-prompt-banner button:hover i{
+    color: #fff !important;
 }

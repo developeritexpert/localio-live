@@ -291,6 +291,16 @@
             .modal-body{
                 line-height: 1;
             }
+            .modal-content .modal-header {
+                position: relative;
+            }
+
+            .modal-content button.btn-close {
+                padding: 0;
+                position: absolute;
+                top: 25px;
+                right: 25px;
+            }
             @media (max-width: 991.98px) {
                 .modal-dialog {
                     margin: 10px;

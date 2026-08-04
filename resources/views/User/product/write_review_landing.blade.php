@@ -14,7 +14,7 @@
 </section>
 
 <!-- Content Lists -->
-<section class="write-review-lists py-5 bg-light" style="background-color: #f9fafb  !important;">
+<section class="write-review-lists  write_revw_sec py-5 bg-light" style="background-color: #f9fafb  !important;">
     <div class="container">
         
         <!-- Trending Section -->
@@ -27,7 +27,7 @@
                         $count = $business->reviews->where('status', 'active')->count();
                     @endphp
                     <div class="col">
-                        <div class="card h-100 border-0 shadow-sm p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; transition: transform 0.2s; background: #fff;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'">
+                        <div class="card h-100   p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; background: #fff;  border: 1px solid #e2e8f0; border-radius:15px;"onmouseout="this.style.transform='none'">
                             <div style="width: 70px; height: 70px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
                                 <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 80%; max-height: 80%; object-fit: contain;">
                             </div>
@@ -48,7 +48,7 @@
                                 </div>
                                 <span class="text-muted ms-1" style="font-size: 12px;">({{ $count }})</span>
                             </div>
-                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition: all 0.2s; border: 1px solid #06498b; color: #002347; background: transparent;" onmouseover="this.style.backgroundColor='#06498b'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#002347';">
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2  fw-semibold" style="border-radius: 20px; font-size: 14px;  background-color:#003f7d; color: #fff; transition:unset !important;">
                                 Review
                             </a>
                         </div>
@@ -67,7 +67,7 @@
                         $count = $business->reviews->where('status', 'active')->count();
                     @endphp
                     <div class="col">
-                        <div class="card h-100 border-0 shadow-sm p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; transition: transform 0.2s; background: #fff;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'">
+                        <div class="card h-100 p-4 text-center d-flex flex-column align-items-center" style="border-radius: 15px; border:1px solid #e2e8f0; transition:unset !important; background: #fff;" >
                             <div style="width: 70px; height: 70px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
                                 <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 80%; max-height: 80%; object-fit: contain;">
                             </div>
@@ -88,7 +88,7 @@
                                 </div>
                                 <span class="text-muted ms-1" style="font-size: 12px;">({{ $count }})</span>
                             </div>
-                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition: all 0.2s; border: 1px solid #06498b; color: #002347; background: transparent;" onmouseover="this.style.backgroundColor='#06498b'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#002347';">
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;" >
                                 Review
                             </a>
                         </div>

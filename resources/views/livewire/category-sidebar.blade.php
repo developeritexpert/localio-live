@@ -151,7 +151,7 @@
                                         <a href="{{ $business->getTrackedUrl() }}"
                                            target="_blank"
                                            class="btn py-1 px-2 fw-semibold w-50 text-white"
-                                           style="background-color: #f26522; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition: background 0.2s;">
+                                           style="background-color: #ff5722; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition:unset !important;">
                                             Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
                                         </a>
                                     </div>

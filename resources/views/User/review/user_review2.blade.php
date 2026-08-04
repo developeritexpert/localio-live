@@ -51,7 +51,7 @@
 @endphp
 
 <!-- Upper Header Section ( identical to business details page header, without in-page navigation) -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; padding: 25px 0 35px 0; border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class=" d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
@@ -344,7 +344,7 @@
                     <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
                         <!-- Average Rating Number & Stars -->
                         <div class="d-flex flex-column align-items-start mb-3">
-                            <span style="font-size: 48px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 8px;">{{ number_format($averageRating, 1) }}</span>
+                            <span style="font-size: 42px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 8px;">{{ number_format($averageRating, 1) }}</span>
                             <div class="d-flex align-items-center gap-1 mb-1">
                                 @for ($j = 1; $j <= 5; $j++)
                                     @if ($j <= floor($averageRating))

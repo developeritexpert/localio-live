@@ -16,8 +16,8 @@
         .top-rated-heading-sec{
              margin-top: 120px ;
            padding-top:50px !important;
-           background-color:#fdfdfd;
-           border-bottom: 2px solid #e8eef6;
+           background-color:#f7f9fb;
+           border-bottom: 1px solid #e2e8f0;
            margin-bottom: 25px;
         }
          .top-rated-heading-sec .row {
