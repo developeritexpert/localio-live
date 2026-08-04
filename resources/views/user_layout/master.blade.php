@@ -1610,7 +1610,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </a>
                                         @elseif(Auth::user()->user_type === 'vendor')
                                         <a class="dropdown-item" href="{{ route('vendor-profile', ['locale' => app()->getLocale()]) }}">
-                                            <i class="fa fa-user"></i>My Profile
+                                            <i class="fa fa-user"></i>My profile
                                         </a>
                                         @endif
                                     </div>
@@ -1626,7 +1626,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <div class="dash-icon">
                                         @if(Auth::user()->user_type === 'user')
                                         <a class="dropdown-item" href="{{ route('user-change-password', ['locale' => app()->getLocale()]) }}">
-                                            <i class="fa-solid fa-key"></i>Change Password
+                                            <i class="fa-solid fa-key"></i>Change password
                                         </a>
                                         @endif
                                     </div>
@@ -1634,7 +1634,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <div class="dash-icon">
                                         @if(Auth::user()->user_type === 'user')
                                         <a class="dropdown-item" href="{{ route('user-email-preferences', ['locale' => app()->getLocale()]) }}">
-                                            <i class="fa-solid fa-envelope"></i>Email Preferences
+                                            <i class="fa-solid fa-envelope"></i>Email preferences
                                         </a>
                                         @elseif(Auth::user()->user_type === 'vendor')
                                         <a class="dropdown-item" href="{{ route('vendor-configuration', ['locale' => app()->getLocale()]) }}">
@@ -1645,7 +1645,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                     <div class="dash-icon">
                                         <a class="dropdown-item" href="{{ route('logout') }}">
-                                            <i class="fa fa-power-off"></i>Sign Out
+                                            <i class="fa fa-power-off"></i>Sign out
                                         </a>
                                     </div>
                                 </div>

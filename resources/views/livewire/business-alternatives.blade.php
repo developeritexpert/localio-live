@@ -567,7 +567,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore>
+                                    <div wire:ignore class="d-none">
                                         <x-social-icon/>
                                     </div>
                                 </div>
