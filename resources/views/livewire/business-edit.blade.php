@@ -731,20 +731,104 @@
                                     </div>
                                     {{-- All sub-category --}}
 
-                                    <div class="form-group mt-3">
+                                    <div class="form-group mt-3" x-data="{
+                                        search: '',
+                                        toggleCategory(id) {
+                                            let selected = [...$wire.selected_sub_categories];
+                                            let index = selected.indexOf(id);
+                                            if (index > -1) {
+                                                selected.splice(index, 1);
+                                            } else {
+                                                selected.push(id);
+                                            }
+                                            $wire.set('selected_sub_categories', selected);
+                                        },
+                                        selectAll(ids) {
+                                            $wire.set('selected_sub_categories', ids);
+                                        },
+                                        clearAll() {
+                                            $wire.set('selected_sub_categories', []);
+                                        }
+                                    }">
                                         <label class="form-label">Secondary sub-categories</label>
+                                        
+                                        @php
+                                            $allSubCatIds = $subCategories->pluck('id')->toArray();
+                                            $subCatMap = [];
+                                            foreach ($subCategories as $cat) {
+                                                $subCatMap[$cat->id] = $cat->translations->name ?? $cat->categoryTranslations->first()->name ?? 'Category #' . $cat->id;
+                                            }
+                                        @endphp
 
-                                        <select wire:model="selected_sub_categories" class="form-control" multiple size="8">
-                                            @foreach($subCategories as $category)
-                                                <option value="{{ $category->id }}">
-                                                    {{ $category->translations->name ?? $category->id }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <!-- Search & Bulk Control Buttons -->
+                                        <div class="row mb-2">
+                                            <div class="col-md-12">
+                                                <div class="input-group">
+                                                    <input type="text" x-model="search" class="form-control" placeholder="Search sub-categories...">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-primary btn-sm" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
+                                                            Select All
+                                                        </button>
+                                                        <button class="btn btn-outline-danger btn-sm" @click="clearAll()" type="button">
+                                                            Clear All
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        <small class="text-muted">
-                                            Hold <strong>Ctrl</strong> (Windows/Linux) or <strong>⌘ Command</strong> (Mac) to select multiple sub-categories.
-                                        </small>
+                                        <!-- Scrollable List of Checkboxes -->
+                                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto; ">
+                                            @if($subCategories->isEmpty())
+                                                <p class="text-center text-muted my-2">No sub-categories found</p>
+                                            @else
+                                                @foreach($subCategories as $category)
+                                                    @php
+                                                        $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
+                                                    @endphp
+                                                    <div class="form-check py-1 border-bottom"
+                                                         x-show="'{{ strtolower(addslashes($catName)) }}'.includes(search.toLowerCase())">
+                                                        <input type="checkbox"
+                                                            id="subcat_{{ $category->id }}"
+                                                            class="form-check-input"
+                                                            :checked="$wire.selected_sub_categories.includes({{ $category->id }})"
+                                                            @change="toggleCategory({{ $category->id }})">
+                                                        <label class="form-check-label w-100" for="subcat_{{ $category->id }}">
+                                                            {{ $catName }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+
+                                        <!-- Selected Sub-Categories Display Badges -->
+                                        <div class="mt-2">
+                                            <label class="form-label">Selected Sub-categories:
+                                                <span class="badge bg-primary" x-text="$wire.selected_sub_categories.length"></span>
+                                            </label>
+                                            <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto; height: 150px;">
+                                                <template x-if="$wire.selected_sub_categories && $wire.selected_sub_categories.length > 0">
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        @php
+                                                            $subCatJsMap = json_encode($subCatMap);
+                                                        @endphp
+                                                        <template x-for="catId in $wire.selected_sub_categories" :key="catId">
+                                                            <span class="badge bg-primary position-relative m-1" style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
+                                                                <span x-text="({{ $subCatJsMap }})[catId] || ('Category #' + catId)"></span>
+                                                                <button type="button"
+                                                                    @click="toggleCategory(catId)"
+                                                                    class="btn-close btn-close-white position-absolute"
+                                                                    style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
+                                                                    aria-label="Remove"></button>
+                                                            </span>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                                <template x-if="!$wire.selected_sub_categories || $wire.selected_sub_categories.length === 0">
+                                                    <p class="text-center text-muted my-1 mb-0 small">No sub-categories selected</p>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3">
@@ -1383,7 +1467,7 @@
                                     </div>
 
                                     <!-- SEO Keywords Section -->
-                                    <div class="form-group mt-3">
+                                    <div class="form-group mt-3 d-none">
                                         <label class="form-label">Primary Keywords <span class="text-muted">(1-2
                                                 keywords)</span></label>
                                         <textarea class="form-control @error('primary_keywords') is-invalid @enderror" wire:model.live="primary_keywords"
@@ -1393,7 +1477,7 @@
                                         @enderror
                                     </div>
 
-                                    <div class="form-group mt-3">
+                                    <div class="form-group mt-3  d-none">
                                         <label class="form-label">Secondary Keywords <span class="text-muted">(5-10
                                                 keywords)</span></label>
                                         <textarea class="form-control @error('secondary_keywords') is-invalid @enderror" wire:model.live="secondary_keywords"
