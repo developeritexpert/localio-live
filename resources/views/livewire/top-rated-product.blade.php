@@ -15,12 +15,12 @@
         }
         .top-rated-heading-sec{
              margin-top: 120px ;
-           padding-top:50px !important;
+           padding-top:30px !important;
            background-color:#f7f9fb;
            border-bottom: 1px solid #e2e8f0;
            /* margin-bottom: 25px; */
         }
-         .top-rated-heading-sec .row {
+         .top-rated-heading-sec .padd-row {
             padding-bottom:20px;
             
          }
@@ -45,6 +45,19 @@
             gap: 8px 45px !important;
             width: 100% !important;
         }
+        .top-rated-heading-sec .breadcrumb-item a:hover{
+            text-decoration:underline !important;
+        }
+
+
+        .form-check-input {           
+            margin-top: 0;           
+        }
+         .price-separator,
+        .price-input input {
+            font-size: 12px;
+        }
+    
         @media (max-width: 768px) {
             /* .automotive-card {
                 padding-bottom: 20px !important;
@@ -129,13 +142,13 @@
     </style>
     <section class="top-rated-heading-sec">
        <div class="container">
-            <div class="row align-items-center mb-3">
+            <div class=" bread_row row align-items-center mb-3">
                 <div class="col-8">
                     <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
                         <ol class="breadcrumb m-0" style="background: transparent; padding: 0; display: flex; align-items: center;">
                             <li class="breadcrumb-item">
                                 <a href="{{ route('category', ['locale' => app()->getLocale()]) }}"
-                                   style="color: inherit; text-decoration: underline; font-size: 13px;">All</a>
+                                   style="color: inherit; text-decoration: none; font-size: 13px;">All</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #002347; font-weight: 500;">
                                 Top-rated products
@@ -148,7 +161,7 @@
                 </div>
             </div>
             <div class="top-rated-heading-block">
-                        <div class="row align-items-start">
+                        <div class="padd-row row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>

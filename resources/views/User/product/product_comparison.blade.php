@@ -141,7 +141,7 @@
                                                             $valueForMoneyPercent = $valueForMoney * 20;
                                                         @endphp
                                                         <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                            <div class="progress-bar" style="height: 6px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
                                                         <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
                                                     </div>
@@ -154,7 +154,7 @@
                                                             $easeOfUsePercent = $easeOfUse * 20;
                                                         @endphp
                                                         <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                            <div class="progress-bar" style="height: 6px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
                                                         <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
                                                     </div>
@@ -167,7 +167,7 @@
                                                             $featuresPercent = $featuresRating * 20;
                                                         @endphp
                                                         <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                            <div class="progress-bar" style="height: 6px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
                                                         <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
                                                     </div>

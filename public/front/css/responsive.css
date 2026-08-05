@@ -10258,7 +10258,7 @@ html {
 }
 
 .automotive-card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
 }
 
 .custom-pagination-wrapper {
@@ -10290,7 +10290,7 @@ html {
   background-color: #174889;
   border-color: #174889;
   color: #fff;
-  transform: translateY(-1px);
+
 }
 
 .pagination-btn.active {
@@ -12750,9 +12750,9 @@ textarea#message {
     gap: 20px !important;
   }
 
-  .product_sec .inner_banner_sec {
+  /* .product_sec .inner_banner_sec {
     margin-bottom: 15px;
-  }
+  } */
 
   .sfwr_sec.cat_page_secs {
     margin-top: 75px !important;

@@ -3034,11 +3034,11 @@ select:focus {
 
 .automotive-card {
   position: relative;
-  border: 1px solid #06498b1a;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
   margin-bottom: 30px;
   padding: 0;
-  box-shadow: 0px 34px 74px 0px #0023470f;
+  /* box-shadow: 0px 34px 74px 0px #0023470f; */
 }
 
 .text-choice {
@@ -3051,7 +3051,7 @@ select:focus {
   /* border-radius: 0 70px 70px 0; */
   /* padding: 16px 35px; */
   color: #002347;
-  border-top: 1px solid #06498b1a;
+  border-top: 1px solid #e2e8f0;
   /* margin-top: 30px; */
 }
 
@@ -3713,7 +3713,7 @@ header.drk_header {
 }
 
 .populr-alternative {
-  background-color: #06498b08;
+  /* background-color: #06498b08; */
   padding: 26px 0;
 }
 
@@ -5468,9 +5468,9 @@ footer .footer-wrp .foot-col {
   border: 1px solid #06498b;
 } */
 
-.auto-choice-rgt .automotive-card:hover {
+/* .auto-choice-rgt .automotive-card:hover {
   background: #06498b08;
-}
+} */
 
 .expert-p {
   font-weight: 400;
@@ -9470,13 +9470,16 @@ footer .foot-row-lft .foot-logo p {
   text-decoration: underline !important;
 }
 
+.top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
 .top_rate_pg .auto-choice-lft .fa-star {
   font-size: 12px;
 }
 
+.cat_pg .auto-choice-lft .form-check .filter1,
+.cat_pg .auto-choice-lft .form-check .filter2,
 .top_rate_pg .auto-choice-lft .form-check .filter1,
 .top_rate_pg .auto-choice-lft .form-check .filter2 {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .top-automotive-sec .choice_img img {
@@ -9604,7 +9607,7 @@ footer .foot-row-lft .foot-logo p {
 }
 
 .asn_main_sec .frst_rw .asn-rating p {
-  font-weight: 600;
+  font-weight: 400;
   color: #444444 !important;
 
 }
@@ -9960,9 +9963,6 @@ section.right_tool_sec .otr_rgtool h2 {
   font-size: 28px !important;
 }
 
-.top-automotive-sec.cat_pg {
-  background-color: #f7f9fb;
-}
 
 
 .faq-accor .accordion-button:hover::after,
@@ -10033,15 +10033,35 @@ section.top-automotive-sec.top_rate_pg {
 }
 
 .user_revew_sec .top_head p {
-  font-weight: 600;
+  font-weight: 400;
 }
 
 a.underline:hover {
   text-decoration: underline !important;
 }
-.review_sec .review_detl{
-border:1px solid #e2e8f0 !important;
+
+.review_sec .review_detl {
+  border: 1px solid #e2e8f0 !important;
 }
-.review_sec .review_detl:hover{
-  box-shadow:0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
+
+.review_sec .review_detl:hover {
+  box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
+}
+
+.top-automotive-sec.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label,
+.top_rate_pg.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label {
+  display: flex;
+  gap: 1px;
+  align-items: center;
+}
+
+.top-automotive-sec .auto-choice-lft .filter-section .form-check,
+.top_rate_pg .auto-choice-lft .filter-section .form-check {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.reviw_sec_new .review-cntnt-btm .review-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
 }

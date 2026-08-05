@@ -19,7 +19,7 @@
             background-color: #f7f9fb;
             border-bottom: 1px solid #e8eef6;
             /* margin-bottom: 25px; */
-            padding-bottom: 15px;
+            padding-bottom: 20px;
         }
 
         /* Toggle switch styling */
@@ -71,7 +71,7 @@
         }
 
         .automotive-card:hover {
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
         }
 
         /* Force header search bar always visible on this page */
@@ -145,6 +145,13 @@
             min-height: 44px !important;
             box-sizing: border-box !important;
             line-height: 1.4 !important;
+        }
+          .form-check-input {           
+            margin-top: 0;           
+        }
+         .price-separator,
+        .price-input input {
+            font-size: 12px;
         }
 
         /* Mobile responsive */
@@ -626,7 +633,7 @@
                                 </div>
                                 @if (!empty($products))
                                     @foreach ($products as $index => $item)
-                                        <div class="automotive-card auto-bg" data-aos="fade-up"
+                                        <div class="automotive-card" data-aos="fade-up"
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
                                             <div class="auto-choice-card" style="position: relative; ">
                                                 @php

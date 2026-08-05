@@ -1,7 +1,7 @@
 <div>
     @if($show)
         <div class="modal show d-block mod_detail_pg" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
                     
                     <!-- Top header with Left Headline & Business Info / Close Button -->
@@ -30,7 +30,7 @@
                         <div class="row g-4">
                             
                             <!-- Left Column: Review Form Wizard -->
-                            <div class="col-12 col-lg-8 review-left-col pe-lg-4">
+                            <div class="col-12 col-lg-9 review-left-col pe-lg-4">
                                 <div class="modal-header border-0  p-0  d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:20px;">
                                     <div class="d-flex flex-column gap-4">
                                         <div class="d-flex align-items-center gap-2">
@@ -179,7 +179,7 @@
                             </div>
 
                             <!-- Right Column: Sidebar Progress Panel -->
-                            <div class="col-lg-4   d-lg-block" style="display:flex !important; align-items:center;">
+                            <div class="col-lg-3   d-lg-block" style="display:flex !important; align-items:center;">
                                 <div class="p-3 p-md-4 rounded-3 mt-0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 0;">
                                     <!-- <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Review progress</h5> -->
                                     
