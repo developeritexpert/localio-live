@@ -583,7 +583,7 @@
                     </div>
                 </div>
                 <div class="right-tool-btn text-center">
-                    <a href="{{ route('register') }}" class="cta">Sign up for free</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="cta">Sign up for free</a>
                 </div>
             </div>
         </div>
