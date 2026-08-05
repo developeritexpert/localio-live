@@ -54,7 +54,7 @@
                         </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
-                        {{ $bName }} Comparisons
+                        {{ $bName }} / Comparisons
                     </li>
                 </ol>
             </nav>

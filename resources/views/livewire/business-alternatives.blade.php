@@ -191,65 +191,61 @@ section.top-automotive-sec.top_rate_pg.light {
                                 $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                             @endphp
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                <div class="p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
-                                    <!-- Title Row with Logo, Business Name, Wishlist & View all reviews link -->
-                                    <div class="d-flex align-items-start justify-content-between mb-3 gap-2">
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div style="width: 44px; height: 44px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
-                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: contain;">
-                                            </div>
-                                            <div>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <h4 style="margin: 0; font-size: 17px; font-weight: 700; color: #1e3050;">{{ $businessName }}</h4>
-                                                    <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-alt-card-'.$business->id" />
-                                                </div>
-                                                <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 13px; color: #64748b;">
-                                                    <div class="d-flex align-items-center gap-1">
-                                                        @for ($j = 1; $j <= 5; $j++)
-                                                            @if ($j <= floor($bAvgRating))
-                                                                <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
-                                                            @elseif ($j - 0.5 <= $bAvgRating)
-                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 12px;"></i>
-                                                            @else
-                                                                <i class="far fa-star text-warning" style="font-size: 12px;"></i>
-                                                            @endif
-                                                        @endfor
-                                                    </div>
-                                                    <span style="font-weight: 600; color: #334155;">{{ number_format($bAvgRating, 1) }}</span>
-                                                    <span>|</span>
-                                                    <span>{{ $bReviewCount }} {{ $bReviewCount == 1 ? 'Review' : 'Reviews' }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                    <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
                                         <div>
-                                            <a class="view-review-link" href="{{ $reviewsUrl }}" style="font-size: 13px; font-weight: 600; color: #002655; text-decoration: none; white-space: nowrap;">View all reviews</a>
+                                            <div style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
+                                                {{ number_format($bAvgRating, 1) }}
+                                            </div>
+                                            <div style="margin-top: 8px; margin-bottom: 4px; display: flex; gap: 4px;">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($bAvgRating))
+                                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                                    @elseif ($i - 0.5 <= $bAvgRating)
+                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                                    @else
+                                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+                                            <div style="color: #718096; font-size: 13px;">{{ number_format($bReviewCount) }} {{ $bReviewCount == 1 ? 'review' : 'reviews' }}</div>
                                         </div>
+                                        <a href="{{ $reviewsUrl }}" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                            View all reviews
+                                        </a>
                                     </div>
 
-                                    <!-- Criteria Breakdown -->
                                     @if(count($bCriteria) > 0)
-                                        <h5 style="font-size: 13.5px; font-weight: 700; color: #1e3050; margin-top: 16px; margin-bottom: 12px;">Review breakdown</h5>
+                                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
                                         <div class="mb-3">
                                             @foreach ($bCriteria as $criterion)
-                                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">{{ $criterion->name }}</span>
-                                                    <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                                        <div class="progress rounded-pill flex-grow-1 mx-2" style="height: 6px; background-color: #e2e8f0;">
-                                                            <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #22c55e;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
-                                                        </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #475569; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                    <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                    <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                        <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @endif
 
-                                    @if($bRecommendPercent > 0)
-                                        <div class="pt-3 border-top d-flex align-items-center justify-content-between">
-                                            <span style="font-size: 13px; font-weight: 600; color: #1e3050;">Recommended by users</span>
-                                            <span style="font-size: 14px; font-weight: 700; color: #1e3050;">{{ $bRecommendPercent }}%</span>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
+                                        <span style="font-weight: 600; color: #002347; font-size: 13.5px;">Recommended by users</span>
+                                        <strong style="color: #002347; font-size: 13.5px;">{{ $bRecommendPercent }}%</strong>
+                                    </div>
+
+                                    <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $businessName }}?</span>
+                                        <div style="display: flex; gap: 8px;">
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                                            </a>
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                            </a>
                                         </div>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
