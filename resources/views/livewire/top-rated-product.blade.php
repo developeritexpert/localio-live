@@ -550,7 +550,7 @@
                                                                                 </div>
                                                                             </div>
                                                                             <div class="rate_box">
-                                                                                {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} reviews
+                                                                                {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} {{ $item->reviews->count() == 1 ? 'review' : 'reviews' }}
                                                                             </div>
                                                                         </div>
                                                                     </div>

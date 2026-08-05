@@ -151,7 +151,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} reviews</div>
+                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
                         </div>
                         <a href="#grid-comparisons-section" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             View all comparisons

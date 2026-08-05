@@ -1391,7 +1391,7 @@
                                                             @endfor
                                                         </div>
 
-                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} reviews</span>
+                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
@@ -2412,7 +2412,7 @@
                                                                     @endfor
                                                                 </div>
                                                                 <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 500;">
-                                                                    {{ number_format($altRatingAvg, 1) }} | {{ $count }} Reviews
+                                                                    {{ number_format($altRatingAvg, 1) }} | {{ $count }} {{ $count == 1 ? 'Review' : 'Reviews' }}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -3116,7 +3116,7 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
-                                                        <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
+                                                        <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     {{-- Review Breakdown Title --}}
@@ -4113,7 +4113,7 @@
                                     @endfor
                                 </div>
                                 <span style="font-weight: 600; color: #333;">{{ number_format($averageRating, 1) }}</span>
-                                <span style="color: #888;">({{ $ratingCount }} reviews)</span>
+                                <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
                             </div>
                         </div>
                     </div>

@@ -201,7 +201,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="rate_box">
-                                                                            {{ $avgRating }} | {{ $ratingsCount }} reviews
+                                                                            {{ $avgRating }} | {{ $ratingsCount }} {{ $ratingsCount == 1 ? 'review' : 'reviews' }}
                                                                         </div>
                                                                     </div>
                                                                 </div>

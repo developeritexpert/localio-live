@@ -165,7 +165,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <span style="font-size: 13px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
+                            <span style="font-size: 13px; color: #64748b;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                         </div>
                         <a href="#reviews-list-container" style="font-size: 13.5px; font-weight: 600; color: #0284c7; text-decoration: none;">View all reviews</a>
                     </div>
@@ -356,7 +356,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
+                            <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
                         <!-- Criteria Breakdown -->

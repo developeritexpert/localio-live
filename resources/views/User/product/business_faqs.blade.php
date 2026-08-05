@@ -203,7 +203,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} reviews</div>
+                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
                         </div>
                         <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             View all reviews
