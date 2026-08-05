@@ -184,7 +184,7 @@
                                                                             <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
                                                                                 <h6 class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
                                                                             </a>
-                                                                            <div wire:key="wishlist-container-{{ $business->id }}">
+                                                                            <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
                                                                                 @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
                                                                             </div>
                                                                         </div>
