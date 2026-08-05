@@ -1193,12 +1193,20 @@
                                                                 @php
                                                                     $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
                                                                 @endphp
-                                                                <div class="asan-slider-inr" style="cursor: pointer;">
-                                                                    <img src="{{ $imgSrc }}"
-                                                                        onclick="openGallery({{ $index }})"
-                                                                        alt="Business Image {{ $index + 1 }}"
-                                                                        style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
-                                                                </div>
+                                                                 <div class="asan-slider-inr">
+                                                                     <a href="{{ $business->getTrackedUrl() }}"
+                                                                        data-track="{{ json_encode([
+                                                                            'type' => 'click',
+                                                                            'business_id' => $business->id,
+                                                                            'action' => 'visit_website',
+                                                                            'label' => 'Visit Website',
+                                                                        ]) }}"
+                                                                        target="_blank" style="display: block;">
+                                                                         <img src="{{ $imgSrc }}"
+                                                                             alt="Business Image {{ $index + 1 }}"
+                                                                             style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
+                                                                     </a>
+                                                                 </div>
                                                             @endforeach
                                                         </div>
 
