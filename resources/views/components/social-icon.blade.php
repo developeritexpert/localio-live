@@ -1,9 +1,29 @@
+@props(['business' => null])
+
 @php
+    $business = $business ?? ($page ?? null);
     $shareUrl = request()->url();
     $shareTitle = isset($page) ? $page->title : config('app.name');
     $shareDescription = isset($page) ? $page->meta_description : '';
     $componentId = 'share-' . uniqid();
 @endphp
+
+<style>
+    .social_wishlist_btn .wishlist a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 32px !important;
+        height: 32px !important;
+        background-color: #ff5722 !important;
+        border-radius: 50% !important;
+        text-decoration: none !important;
+    }
+    .social_wishlist_btn .wishlist a i {
+        color: #ffffff !important;
+        font-size: 14px !important;
+    }
+</style>
 
 <div class="inside_sec_text inside_sec_text_2" id="{{ $componentId }}">
     <div class="sharing_icons">
@@ -54,18 +74,12 @@
                 </span>
             </a>
         </div>
-        <div class="sharing_ul more_sharing_ul">
-            <a class="a2a_dd" href="https://www.addtoany.com/share" style="cursor: pointer;">
-                <span class="svg">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                        viewBox="-.3 0 32 32" version="1.1" width="100%" height="100%"
-                        style="display:block;border-radius:999px;" xml:space="preserve">
-                        <g>
-                            <path fill="currentColor" d="M18 14V8h-4v6H8v4h6v6h4v-6h6v-4h-6z" fill-rule="evenodd"></path>
-                        </g>
-                    </svg>
-                </span>
-            </a>
+        <div class="sharing_ul social_wishlist_btn">
+            @if(isset($business))
+                <div wire:key="wishlist-container-{{ $business->id }}">
+                    @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -249,9 +263,9 @@
             document.body.style.overflow = 'auto';
         }
         component.addEventListener('click', function(e) {
-            e.preventDefault();
             const shareBtn = e.target.closest('.share-btn');
             if (!shareBtn) return;
+            e.preventDefault();
 
             const platform = shareBtn.dataset.platform;
 

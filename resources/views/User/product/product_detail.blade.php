@@ -809,7 +809,7 @@
                         </nav>
                     </div>
                     <div class="inside_sec_text">
-                        <x-social-icon />
+                        <x-social-icon :business="$business" />
                     </div>
                 </div>
             </div>
@@ -840,13 +840,6 @@
                                             <div class="an_lkd">
                                                 <h1 style="color: #000;" class="mb-0 p-1">
                                                     {{ $business->translations->first()->name }} <span class="hide-on-sticky">Review {{ date('Y') }}</span> </h1>
-
-                                                {{-- <h6 style="color: #000;" class="mb-0 p-1">Review
-                                                    {{ $business->created_at->format('Y') }}</h6> --}}
-
-                                                <livewire:wishlist :product-id="$business->id"
-                                                    :wire:key="'wishlist-'.$business->id" />
-
                                             </div>
                                             <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
