@@ -195,354 +195,6 @@
             </div>
         @endif
         <div>
-            @if($isParentCategory)
-                <style>
-                    
-                    /* Parent Category UI Styles */
-                    .parent-cat-sidebar {
-                        border: 1px solid #e8eef6;
-                        border-radius: 8px;
-                        padding: 20px;
-                        background: #fff;
-                    }
-                    .parent-cat-sidebar h4 {
-                        font-size: 18px;
-                        font-weight: 700;
-                        margin-bottom: 15px;
-                        color: #002347;
-                        line-height: 1.3;
-                    }
-                    .parent-cat-sidebar ul {
-                        list-style: none;
-                        padding: 0;
-                        margin: 0;
-                    }
-                    .parent-cat-sidebar li {
-                        margin-bottom: 12px;
-                    }
-                    .parent-cat-sidebar li a {
-                        color: #555;
-                        font-size: 14px;
-                        text-decoration: none;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        transition: color 0.2s;
-                    }
-                    .parent-cat-sidebar li a:hover {
-                        color: #e56b46; /* The orange hover color */
-                    }
-                    .parent-cat-sidebar li a::after {
-                        content: '›';
-                        font-size: 18px;
-                        color: #e56b46;
-                        margin-left: 5px;
-                    }
-                    
-                    .parent-cat-main h1 {
-                        font-size: 32px;
-                        font-weight: 700;
-                        color: #002347;
-                        margin-bottom: 5px;
-                    }
-                    .parent-cat-main > p {
-                        font-size: 15px;
-                        color: #666;
-                        margin-bottom: 20px;
-                    }
-                    .parent-cat-main h3 {
-                        font-size: 24px;
-                        font-weight: 700;
-                        color: #002347;
-                        margin-bottom: 20px;
-                    }
-                    
-                    .subcat-block {
-                        border: 1px solid #e8eef6;
-                        border-radius: 8px;
-                        padding: 20px;
-                        background: #fff;
-                        margin-bottom: 25px;
-                    }
-                    .subcat-block h4 {
-                        font-size: 20px;
-                        font-weight: 700;
-                        color: #002347;
-                        margin-bottom: 8px;
-                    }
-                    .subcat-block p {
-                        font-size: 14px;
-                        color: #555;
-                        margin-bottom: 15px;
-                    }
-                    .subcat-block .subcat-popular-text {
-                        font-size: 13px;
-                        font-weight: 600;
-                        color: #333;
-                        margin-bottom: 15px;
-                    }
-                    
-                    .top-products-grid {
-                        display: grid;
-                        grid-template-columns: repeat(3, 1fr);
-                        gap: 15px;
-                    }
-                    @media(max-width: 991px) {
-                        .top-products-grid {
-                            grid-template-columns: repeat(2, 1fr);
-                        }
-                    }
-                    @media(max-width: 575px) {
-                        .top-products-grid {
-                            grid-template-columns: 1fr;
-                        }
-                    }
-                    .top-product-card {
-                        border: 1px solid #e8eef6;
-                        border-radius: 10px;
-                        padding: 16px;
-                        background: #fff;
-                        transition: all 0.3s ease;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-                    }
-                    .top-product-card:hover {
-                        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-                        transform: translateY(-3px);
-                        border-color: #d1def0;
-                    }
-                    .top-product-logo {
-                        width: 55px;
-                        height: 55px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        flex-shrink: 0;
-                    }
-                    .top-product-logo img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        border-radius: 50%;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-                    }
-                    .top-product-logo .avatar-placeholder {
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(135deg, #002347 0%, #00438a 100%);
-                        color: #fff;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: 700;
-                        font-size: 22px;
-                        border-radius: 50%;
-                        box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.05);
-                    }
-                    .top-product-info {
-                        flex: 1;
-                        min-width: 0;
-                    }
-                    .top-product-info h6 {
-                        font-size: 15px;
-                        font-weight: 700;
-                        color: #002347;
-                        margin: 0 0 5px 0;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        transition: color 0.2s ease;
-                    }
-                    .top-product-card:hover .top-product-info h6 {
-                        color: #e56b46;
-                    }
-                    .top-product-rating {
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        font-size: 13px;
-                        color: #777;
-                        margin-bottom: 2px;
-                    }
-                    .top-product-stars {
-                        color: #e56b46;
-                        font-size: 12px;
-                        display: flex;
-                    }
-                    .top-product-rating-text {
-                        font-size: 12px;
-                        color: #888;
-                        font-weight: 500;
-                    }
-                    .subcat-link:hover {
-                    text-decoration: underline !important;
-                    }
-                    .btn-view-details {
-                        border: 1.5px solid #06498b;
-                        border-radius: 30px;
-                        background: transparent;
-                        color: #06498b;
-                        font-size: 11px;
-                        text-decoration: none;
-                        transition: all 0.2s ease;
-                    }
-
-                    .btn-view-details:hover {
-                        background: #06498b;
-                        color: #fff;
-                        text-decoration: none;
-                    }
-                </style>
-                
-                <section class="top-automotive-sec  cat_pg light" >
-                    <div class="container">
-                        <!-- Breadcrumbs and Share Button Row -->
-                        <div class="row align-items-center mb-3">
-                            <div class="col-8">
-                                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                                    <ol class="breadcrumb m-0" style="background: transparent; padding: 0;">
-                                        <li class="breadcrumb-item">
-                                            <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
-                                               style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
-                                               onmouseout="this.style.color=''">All</a>
-                                        </li>
-                                        @if($category->parent)
-                                            <li class="breadcrumb-item">
-                                                <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
-                                                   style="color: inherit; text-decoration: none; font-size: 13px;" onmouseover="this.style.color='#f26522'"
-                                                   onmouseout="this.style.color=''">
-                                                    {{ $category->parent->translations->name ?? 'Main Category' }}
-                                                </a>
-                                            </li>
-                                        @endif
-                                        <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
-                                            {{ $category->translations->name ?? 'Category' }}
-                                        </li>
-                                    </ol>
-                                </nav>
-                            </div>
-                            <div class="col-4 d-flex justify-content-end">
-                                <x-social-icon />
-                            </div>
-                        </div>
-
-                        <!-- Title Section with Real Ratings Box (Full Width) -->
-                        <div class="top-rated-heading-block" style="border-bottom: none !important; padding-bottom: 0; margin-bottom: 24px;">
-                            <div class="row align-items-start">
-                                <div class="col-md-8 text-start">
-                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px;">Best {{ $category->translations->name ?? 'Software' }}</h1>
-                                    <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                        See more below to select the best {{ $category->translations->name ?? 'software' }}.
-                                    </p>
-                                </div>
-                                <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                    <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
-                                        <div class="d-flex align-items-center mb-2" style="gap: 8px;">
-                                            <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                            <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
-                                        </div>
-                                        <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                            Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
-                                        </p>
-                                        <a href="javascript:void(0)" onclick="openModal()" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <!-- Sidebar -->
-                            <div class="col-lg-3 mb-4">
-                                <div class="parent-cat-sidebar">
-                                    <h4>{{ $category->translations->name ?? 'Category' }} Categories</h4>
-                                    <ul>
-                                        @foreach($parentSubCategories as $subcat)
-                                            <li>
-                                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}">
-                                                    {{ $subcat->translations->name ?? 'Subcategory' }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Main Content -->
-                                <div class="col-lg-9">
-                                    <div class="parent-cat-main">
-                                                                            
-                                        @foreach($parentSubCategories as $subcat)
-                                            <div class="subcat-block">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $subcat->translations->name ?? 'Subcategory' }}</h3>
-                                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subcat->translations->slug ?? $subcat->slug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;">See all {{ $subcat->translations->name ?? 'Software' }}</a>
-                                                </div>
-                                                
-                                                @php
-                                                    $desc = strip_tags($subcat->translations->description ?? '');
-                                                    if(empty($desc)) {
-                                                        $desc = ($subcat->translations->name ?? 'Software') . ' solutions designed to help you manage your workflow efficiently.';
-                                                    }
-                                                @endphp
-                                                <p>{{ $desc }}</p>
-                                                
-                                                <div class="top-products-grid">
-                                                    @foreach($subcat->top_businesses as $business)
-                                                        <div class="top-product-card d-flex flex-column justify-content-between p-3">
-                                                            <div class="d-flex align-items-center gap-2 mb-3">
-                                                                <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                                                                    @if($business->icon_id)
-                                                                        <img src="{{ asset($business->icon_id) }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
-                                                                    @else
-                                                                        <div class="avatar-placeholder" style="width: 100%; height: 100%; border-radius: 50%; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #002347 0%, #00438a 100%); color: #fff; display: flex; align-items: center; justify-content: center;">
-                                                                            {{ strtoupper(substr($business->translations->first()->name ?? 'B', 0, 1)) }}
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                                <div class="top-product-info min-w-0">
-                                                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
-                                                                        {{ $business->translations->first()->name ?? 'Business Name' }}
-                                                                        <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span>
-                                                                    </h6>
-                                                                    <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                                                        <div class="d-flex" style="color: #ffb300;">
-                                                                            @php $rating = round($business->average_rating); @endphp
-                                                                            @for($i = 1; $i <= 5; $i++)
-                                                                                @if($i <= $rating)
-                                                                                    <i class="fas fa-star" style="margin-right:1px;"></i>
-                                                                                @else
-                                                                                    <i class="far fa-star" style="margin-right:1px; color:#ffe896;"></i>
-                                                                                @endif
-                                                                            @endfor
-                                                                        </div>
-                                                                        <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span>
-                                                                        <span>|</span>
-                                                                        <span>{{ $business->active_reviews_count }} {{ $business->active_reviews_count == 1 ? 'review' : 'reviews' }}</span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="d-flex gap-2 w-100 mt-auto">
-                                                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
-                                                                class="btn-view-details btn py-1 px-2 fw-semibold w-50">
-                                                                    View details
-                                                                </a>
-                                                                <a href="{{ $business->getTrackedUrl() }}" 
-                                                                target="_blank" 
-                                                                class="btn py-1 px-2 fw-semibold w-50 text-white" 
-                                                                style="background-color: #f26522; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition: background 0.2s;">
-                                                                    Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                        
-                                    </div>
-                                </div>
-                        </div>
-                    </div>
-                </section>
-            @else
                 <!-- section top-rated automaotive -->
     <section class="top-rated-heading-sec">
        <div class="container">
@@ -686,234 +338,259 @@
                                                 style="margin-top: 20px;" wire:ignore></div>
                                         </div>
                                     </div>
-                                    <div class="accordion" id="filterAccordion" style="border: none; width: 100%;">
-                                        @foreach ($filters as $filter)
-                                            @php
-                                                $currentLangId = $lang_id ?? getCurrentLanguageID();
-                                                $filterName =
-                                                    $filter->translations->where('language_id', $currentLangId)->first()
-                                                        ->name ?? $filter->name;
-                                                $filterType = $filter->filterType
-                                                    ? $filter->filterType->slug
-                                                    : 'checkbox';
-                                            @endphp
+                                    @if($isParentCategory)
+                                        @if(isset($subCategories) && count($subCategories) > 0)
+                                            <div class="filter-section mt-3 mb-3">
+                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Subcategories</h3>
+                                                @foreach ($subCategories as $subcat)
+                                                    @php
+                                                        $subcatName = $subcat->translations->name ?? $subcat->name;
+                                                    @endphp
+                                                    <div class="form-check" style="margin-bottom: 8px;">
+                                                        <input type="checkbox" class="form-check-input"
+                                                            wire:model.live="selectedSubCategories"
+                                                            value="{{ $subcat->id }}"
+                                                            id="subcat-{{ $subcat->id }}"
+                                                            style="margin-right: 8px; cursor: pointer;">
+                                                        <label class="form-check-label"
+                                                            for="subcat-{{ $subcat->id }}"
+                                                            style="font-size: 13px; color: #555; cursor: pointer;">
+                                                            {{ $subcatName }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="accordion" id="filterAccordion" style="border: none; width: 100%;">
+                                            @foreach ($filters as $filter)
+                                                @php
+                                                    $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                    $filterName =
+                                                        $filter->translations->where('language_id', $currentLangId)->first()
+                                                            ->name ?? $filter->name;
+                                                    $filterType = $filter->filterType
+                                                        ? $filter->filterType->slug
+                                                        : 'checkbox';
+                                                @endphp
 
-                                            <div class="filter-section">
-                                                <h3>
-                                                    {{ $filterName }}
-                                                </h3>
+                                                <div class="filter-section">
+                                                    <h3>
+                                                        {{ $filterName }}
+                                                    </h3>
 
-                                                <div class="accordion-body" style="padding: 0;">
-                                                    @if ($filterType === 'checkbox')
-                                                        @foreach ($filter->options as $option)
-                                                            @php
-                                                                $optionName =
-                                                                    $option->translations
-                                                                        ->where('language_id', $lang_id)
-                                                                        ->first()->name ?? $option->name;
-                                                            @endphp
-                                                            <div class="form-check" style="margin-bottom: 5px;">
-                                                                <input type="checkbox" class="form-check-input"
-                                                                    wire:model.live="selectedOptions"
-                                                                    value="{{ $option->id }}"
-                                                                    id="option-{{ $option->id }}"
-                                                                    style="margin-right: 8px; cursor: pointer;">
-                                                                <label class="form-check-label"
-                                                                    for="option-{{ $option->id }}"
-                                                                    style="font-size: 13px; color: #555; cursor: pointer;">
-                                                                    {{ $optionName }}
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @elseif($filterType === 'radio')
-                                                        @foreach ($filter->options as $option)
-                                                            @php
-                                                                $optionName =
-                                                                    $option->translations
-                                                                        ->where('language_id', $lang_id)
-                                                                        ->first()->name ?? $option->name;
-                                                            @endphp
-                                                            <div class="form-check" style="margin-bottom: 5px;">
-                                                                <input type="radio" class="form-check-input"
-                                                                    name="filter_{{ $filter->id }}"
-                                                                    wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
-                                                                    wire:click="toggleFilterOption({{ $option->id }})"
-                                                                    {{ in_array($option->id, $selectedOptions) ? 'checked' : '' }}
-                                                                    value="{{ $option->id }}"
-                                                                    id="option-{{ $option->id }}"
-                                                                    style="margin-right: 8px; cursor: pointer;">
-                                                                <label class="form-check-label"
-                                                                    for="option-{{ $option->id }}"
-                                                                    style="font-size: 13px; color: #555; cursor: pointer;">
-                                                                    {{ $optionName }}
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @elseif($filterType === 'dropdown')
-                                                        @php
-                                                            $selected = $filter->options->firstWhere(
-                                                                'id',
-                                                                $selectedOptions[0] ?? null,
-                                                            );
-                                                            $selectedOptionName = $selected
-                                                                ? $selected->translations
-                                                                        ->where('language_id', $lang_id)
-                                                                        ->first()->name ?? $selected->name
-                                                                : __('Select');
-                                                        @endphp
-                                                        <div class="">
-                                                            <select
-                                                                class="form-select w-full p-2 border border-gray-300 rounded-md text-sm"
-                                                                wire:model.live="selectedOptions.{{ $filter->id }}">
-                                                                <option value="">{{ __('Select') }}</option>
-                                                                @foreach ($filter->options as $option)
-                                                                    @php
-                                                                        $optionName =
-                                                                            $option->translations
-                                                                                ->where('language_id', $lang_id)
-                                                                                ->first()->name ?? $option->name;
-                                                                    @endphp
-                                                                    <option value="{{ $option->id }}">
-                                                                        {{ $optionName }}</option>
-                                                                @endforeach
-                                                            </select>
-
-                                                        </div>
-                                                    @elseif($filterType === 'toggle')
-                                                        @foreach ($filter->options as $option)
-                                                            @php
-                                                                $optionTranslation = $option->translations
-                                                                    ->where('language_id', $lang_id)
-                                                                    ->first();
-                                                                $optionName = $optionTranslation->name ?? $option->name;
-                                                                $onLabel =
-                                                                    $optionTranslation->on_label ??
-                                                                    ($option->on_label ?? 'On');
-                                                                $offLabel =
-                                                                    $optionTranslation->off_label ??
-                                                                    ($option->off_label ?? 'Off');
-                                                                $isChecked = in_array($option->id, $selectedOptions);
-                                                            @endphp
-                                                            <div class="toggle-switch mb-2">
-                                                                <label
-                                                                    class="toggle-label flex items-center cursor-pointer">
-                                                                    <div class="relative">
-                                                                        <input type="checkbox"
-                                                                            wire:model.live="selectedOptions"
-                                                                            value="{{ $option->id }}"
-                                                                            class="sr-only peer"
-                                                                            {{ $isChecked ? 'checked' : '' }}>
-
-                                                                        <div
-                                                                            class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors">
-                                                                        </div>
-                                                                        <div
-                                                                            class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ml-3">
-                                                                        <span
-                                                                            class="font-medium">{{ $optionName }}</span><br>
-                                                                        <span class="text-xs text-gray-500">
-                                                                            {{ $isChecked ? $onLabel : $offLabel }}
-                                                                        </span>
-                                                                    </div>
-                                                                </label>
-                                                            </div>
-                                                        @endforeach
-                                                    @elseif($filterType === 'slider')
-                                                        <div x-data="{
-                                                            min: {{ $filter->options->min('min_value') ?? 0 }},
-                                                            max: {{ $filter->options->max('max_value') ?? 100 }},
-                                                            currentMin: {{ $minPrice }},
-                                                            currentMax: {{ $maxPrice }},
-                                                            unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
-
-                                                            init() {
-                                                                this.$nextTick(() => {
-                                                                    this.setupSlider();
-                                                                });
-                                                            },
-
-                                                            setupSlider() {
-                                                                const slider = this.$refs.slider;
-                                                                if (typeof noUiSlider !== 'undefined' && slider) {
-                                                                    if (slider.noUiSlider) {
-                                                                        slider.noUiSlider.destroy();
-                                                                    }
-
-                                                                    noUiSlider.create(slider, {
-                                                                        start: [this.currentMin, this.currentMax],
-                                                                        connect: true,
-                                                                        range: {
-                                                                            'min': this.min,
-                                                                            'max': this.max
-                                                                        }
-                                                                    });
-
-                                                                    slider.noUiSlider.on('update', (values) => {
-                                                                        this.currentMin = Math.round(values[0]);
-                                                                        this.currentMax = Math.round(values[1]);
-                                                                    });
-
-                                                                    slider.noUiSlider.on('end', () => {
-                                                                        $wire.setPriceRange(this.currentMin, this.currentMax);
-                                                                    });
-                                                                }
-                                                            }
-                                                        }" class="range-slider py-4">
-                                                            <div class="values-display flex justify-between mb-2">
-                                                                <span x-text="currentMin + ' ' + unit"></span>
-                                                                <span x-text="currentMax + ' ' + unit"></span>
-                                                            </div>
-
-                                                            <div x-ref="slider" class="slider-element"></div>
-                                                        </div>
-                                                    @elseif($filterType === 'color')
-                                                        <div class="color-options flex flex-wrap gap-2">
+                                                    <div class="accordion-body" style="padding: 0;">
+                                                        @if ($filterType === 'checkbox')
                                                             @foreach ($filter->options as $option)
                                                                 @php
-                                                                    $isSelected = in_array(
-                                                                        $option->id,
-                                                                        $selectedOptions,
-                                                                    );
+                                                                    $optionName =
+                                                                        $option->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first()->name ?? $option->name;
+                                                                @endphp
+                                                                <div class="form-check" style="margin-bottom: 5px;">
+                                                                    <input type="checkbox" class="form-check-input"
+                                                                        wire:model.live="selectedOptions"
+                                                                        value="{{ $option->id }}"
+                                                                        id="option-{{ $option->id }}"
+                                                                        style="margin-right: 8px; cursor: pointer;">
+                                                                    <label class="form-check-label"
+                                                                        for="option-{{ $option->id }}"
+                                                                        style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                        {{ $optionName }}
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        @elseif($filterType === 'radio')
+                                                            @foreach ($filter->options as $option)
+                                                                @php
+                                                                    $optionName =
+                                                                        $option->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first()->name ?? $option->name;
+                                                                @endphp
+                                                                <div class="form-check" style="margin-bottom: 5px;">
+                                                                    <input type="radio" class="form-check-input"
+                                                                        name="filter_{{ $filter->id }}"
+                                                                        wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
+                                                                        wire:click="toggleFilterOption({{ $option->id }})"
+                                                                        {{ in_array($option->id, $selectedOptions) ? 'checked' : '' }}
+                                                                        value="{{ $option->id }}"
+                                                                        id="option-{{ $option->id }}"
+                                                                        style="margin-right: 8px; cursor: pointer;">
+                                                                    <label class="form-check-label"
+                                                                        for="option-{{ $option->id }}"
+                                                                        style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                        {{ $optionName }}
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        @elseif($filterType === 'dropdown')
+                                                            @php
+                                                                $selected = $filter->options->firstWhere(
+                                                                    'id',
+                                                                    $selectedOptions[0] ?? null,
+                                                                );
+                                                                $selectedOptionName = $selected
+                                                                    ? $selected->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first()->name ?? $selected->name
+                                                                    : __('Select');
+                                                            @endphp
+                                                            <div class="">
+                                                                <select
+                                                                    class="form-select w-full p-2 border border-gray-300 rounded-md text-sm"
+                                                                    wire:model.live="selectedOptions.{{ $filter->id }}">
+                                                                    <option value="">{{ __('Select') }}</option>
+                                                                    @foreach ($filter->options as $option)
+                                                                        @php
+                                                                            $optionName =
+                                                                                $option->translations
+                                                                                    ->where('language_id', $lang_id)
+                                                                                    ->first()->name ?? $option->name;
+                                                                        @endphp
+                                                                        <option value="{{ $option->id }}">
+                                                                            {{ $optionName }}</option>
+                                                                    @endforeach
+                                                                </select>
+
+                                                            </div>
+                                                        @elseif($filterType === 'toggle')
+                                                            @foreach ($filter->options as $option)
+                                                                @php
                                                                     $optionTranslation = $option->translations
                                                                         ->where('language_id', $lang_id)
                                                                         ->first();
-                                                                    $colorName =
-                                                                        $optionTranslation->name ?? $option->name;
-                                                                    // Get color value from option or fallback to a default
-                                                                    $colorValue =
-                                                                        $optionTranslation->color_value ?? '#cccccc';
+                                                                    $optionName = $optionTranslation->name ?? $option->name;
+                                                                    $onLabel =
+                                                                        $optionTranslation->on_label ??
+                                                                        ($option->on_label ?? 'On');
+                                                                    $offLabel =
+                                                                        $optionTranslation->off_label ??
+                                                                        ($option->off_label ?? 'Off');
+                                                                    $isChecked = in_array($option->id, $selectedOptions);
                                                                 @endphp
+                                                                <div class="toggle-switch mb-2">
+                                                                    <label
+                                                                        class="toggle-label flex items-center cursor-pointer">
+                                                                        <div class="relative">
+                                                                            <input type="checkbox"
+                                                                                wire:model.live="selectedOptions"
+                                                                                value="{{ $option->id }}"
+                                                                                class="sr-only peer"
+                                                                                {{ $isChecked ? 'checked' : '' }}>
 
-                                                                <button
-                                                                    wire:click="toggleFilterOption({{ $option->id }})"
-                                                                    class="color-option w-6 h-6 rounded-full border {{ $isSelected ? 'border-black' : 'border-gray-300' }}"
-                                                                    style="background-color: {{ $colorValue }}; position: relative;"
-                                                                    title="{{ $colorName }}">
-                                                                    @if ($isSelected)
-                                                                        <span
-                                                                            class="absolute inset-0 flex items-center justify-center text-white">
-                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                width="12" height="12"
-                                                                                viewBox="0 0 24 24" fill="none"
-                                                                                stroke="currentColor" stroke-width="2"
-                                                                                stroke-linecap="round"
-                                                                                stroke-linejoin="round">
-                                                                                <polyline points="20 6 9 17 4 12">
-                                                                                </polyline>
-                                                                            </svg>
-                                                                        </span>
-                                                                    @endif
-                                                                </button>
+                                                                            <div
+                                                                                class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors">
+                                                                            </div>
+                                                                            <div
+                                                                                class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="ml-3">
+                                                                            <span
+                                                                                class="font-medium">{{ $optionName }}</span><br>
+                                                                            <span class="text-xs text-gray-500">
+                                                                                {{ $isChecked ? $onLabel : $offLabel }}
+                                                                            </span>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
                                                             @endforeach
-                                                        </div>
-                                                    @endif
+                                                        @elseif($filterType === 'slider')
+                                                            <div x-data="{
+                                                                min: {{ $filter->options->min('min_value') ?? 0 }},
+                                                                max: {{ $filter->options->max('max_value') ?? 100 }},
+                                                                currentMin: {{ $minPrice }},
+                                                                currentMax: {{ $maxPrice }},
+                                                                unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+
+                                                                init() {
+                                                                    this.$nextTick(() => {
+                                                                        this.setupSlider();
+                                                                    });
+                                                                },
+
+                                                                setupSlider() {
+                                                                    const slider = this.$refs.slider;
+                                                                    if (typeof noUiSlider !== 'undefined' && slider) {
+                                                                        if (slider.noUiSlider) {
+                                                                            slider.noUiSlider.destroy();
+                                                                        }
+
+                                                                        noUiSlider.create(slider, {
+                                                                            start: [this.currentMin, this.currentMax],
+                                                                            connect: true,
+                                                                            range: {
+                                                                                'min': this.min,
+                                                                                'max': this.max
+                                                                            }
+                                                                        });
+
+                                                                        slider.noUiSlider.on('update', (values) => {
+                                                                            this.currentMin = Math.round(values[0]);
+                                                                            this.currentMax = Math.round(values[1]);
+                                                                        });
+
+                                                                        slider.noUiSlider.on('end', () => {
+                                                                            $wire.setPriceRange(this.currentMin, this.currentMax);
+                                                                        });
+                                                                    }
+                                                                }
+                                                            }" class="range-slider py-4">
+                                                                <div class="values-display flex justify-between mb-2">
+                                                                    <span x-text="currentMin + ' ' + unit"></span>
+                                                                    <span x-text="currentMax + ' ' + unit"></span>
+                                                                </div>
+
+                                                                <div x-ref="slider" class="slider-element"></div>
+                                                            </div>
+                                                        @elseif($filterType === 'color')
+                                                            <div class="color-options flex flex-wrap gap-2">
+                                                                @foreach ($filter->options as $option)
+                                                                    @php
+                                                                        $isSelected = in_array(
+                                                                            $option->id,
+                                                                            $selectedOptions,
+                                                                        );
+                                                                        $optionTranslation = $option->translations
+                                                                            ->where('language_id', $lang_id)
+                                                                            ->first();
+                                                                        $colorName =
+                                                                            $optionTranslation->name ?? $option->name;
+                                                                        // Get color value from option or fallback to a default
+                                                                        $colorValue =
+                                                                            $optionTranslation->color_value ?? '#cccccc';
+                                                                    @endphp
+
+                                                                    <button
+                                                                        wire:click="toggleFilterOption({{ $option->id }})"
+                                                                        class="color-option w-6 h-6 rounded-full border {{ $isSelected ? 'border-black' : 'border-gray-300' }}"
+                                                                        style="background-color: {{ $colorValue }}; position: relative;"
+                                                                        title="{{ $colorName }}">
+                                                                        @if ($isSelected)
+                                                                            <span
+                                                                                class="absolute inset-0 flex items-center justify-center text-white">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                                    width="12" height="12"
+                                                                                    viewBox="0 0 24 24" fill="none"
+                                                                                    stroke="currentColor" stroke-width="2"
+                                                                                    stroke-linecap="round"
+                                                                                    stroke-linejoin="round">
+                                                                                    <polyline points="20 6 9 17 4 12">
+                                                                                    </polyline>
+                                                                                </svg>
+                                                                            </span>
+                                                                        @endif
+                                                                    </button>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </div>
                        
                 </div>
@@ -1200,7 +877,7 @@
                                     <x-social-icon/>
                                 </div>
 
-                                <div class="alert alert-info">
+                                <div class="alert alert-info" style="background-color:#f7f9fb;">
                                     <p class="mb-2 text-center fs-4 text-secondary">Sorry, we don't have any Products that match your filters. Try adjusting them to see more options.</p>
                                 </div>
                             </div>
@@ -1252,7 +929,6 @@
             </div> --}}
             <x-news-letter-subscription/>
         </section>
-            @endif
         <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
         <script>
             function initPriceSlider() {
