@@ -767,13 +767,8 @@
             <div class="inner_banner_sec">
                 <div class="container-fluid" style="display: flex; justify-content: space-between;">
                     <div class="inner_banr_content">
-                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
-                                       style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
-                                       onmouseout="this.style.color=''">All</a>
-                                </li>
                                 @if ($business->category && $business->category->parent)
                                     @php
                                         $parentTranslation = $business->category->parent->translation()->first();
@@ -794,8 +789,7 @@
                                         $categoryTranslation = $business->category->translation()->first();
                                     @endphp
                                     @if ($categoryTranslation)
-                                        <li class="breadcrumb-item active" aria-current="page">
-                                            <!-- {{ $categoryTranslation->name }} -->
+                                        <li class="breadcrumb-item">
                                             <a href="javascript:void(0);"
                                                onclick="changeCategory('{{ $categoryTranslation->slug }}')"
                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
@@ -805,6 +799,9 @@
                                         </li>
                                     @endif
                                 @endif
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <span>{{ $business->translations->first()->name ?? '' }}</span>
+                                </li>
                             </ol>
                         </nav>
                     </div>
@@ -2016,7 +2013,7 @@
                                                         $translation = $feature->translations->first();
                                                         $featureReviews = $feature->reviews ?? collect();
                                                         $avgRating = $featureReviews->count() ? $featureReviews->avg('rating') : 0;
-                                                        $ratingCount = $featureReviews->count();
+                                                        $featureRatingCount = $featureReviews->count();
                                                     @endphp
 
                                                     <div class="col-md-6 col-lg-4">
