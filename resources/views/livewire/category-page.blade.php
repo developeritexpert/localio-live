@@ -5,6 +5,10 @@
     color:#002347 !important;
     font-weight:500;
     }
+    li.breadcrumb-item.active:hover{
+        color:unset !important;
+        text-decoration:none !important;
+    }
     li.breadcrumb-item:hover{
         color:unset !important;
         text-decoration:underline !important;
@@ -216,7 +220,7 @@
                                                 </a>
                                             </li>
                                         @endif
-                                        <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d;">
+                                        <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #6c757d; text-decoration:none;">
                                             {{ $category->translations->name ?? 'Category' }}
                                         </li>
                                     </ol>

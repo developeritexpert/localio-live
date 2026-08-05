@@ -129,6 +129,24 @@
     </style>
     <section class="top-rated-heading-sec">
        <div class="container">
+            <div class="row align-items-center mb-3">
+                <div class="col-8">
+                    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
+                        <ol class="breadcrumb m-0" style="background: transparent; padding: 0; display: flex; align-items: center;">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('category', ['locale' => app()->getLocale()]) }}"
+                                   style="color: inherit; text-decoration: underline; font-size: 13px;">All</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #002347; font-weight: 500;">
+                                Top-rated products
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-4 d-flex justify-content-end">
+                    <x-social-icon />
+                </div>
+            </div>
             <div class="top-rated-heading-block">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
@@ -494,7 +512,7 @@
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore>
+                                    <div wire:ignore class="d-none">
                                         <x-social-icon/>
                                     </div>
                                 </div>
