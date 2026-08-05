@@ -4875,7 +4875,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .sharing_icons .sharing_ul a:hover {
-  background-color: #f9633b;
+  background-color: #ff5722;
   cursor: pointer;
 }
 
@@ -6365,7 +6365,7 @@ div#learnMoreModal button.modal-close {
   }
 
   .fixed_sigup>div .space-y-3>div:first-child a {
-    background-color: #003f7d;
+    background-color: #174889;
   }
 
   .fixed_sigup>div .space-y-3>div:first-child a:hover {
@@ -6377,7 +6377,7 @@ div#learnMoreModal button.modal-close {
   }
 
   .fixed_sigup>div .space-y-3>div:last-child a:hover {
-    background-color: #003f7d;
+    background-color: #174889;
   }
 
   /* header  */
@@ -9023,7 +9023,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .sharing_icons .sharing_ul a:hover {
-  background-color: #f9633b;
+  background-color: #ff5722;
   cursor: pointer;
 }
 
@@ -10258,7 +10258,7 @@ html {
 }
 
 .automotive-card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
 }
 
 .custom-pagination-wrapper {
@@ -10287,16 +10287,16 @@ html {
 }
 
 .pagination-btn:hover {
-  background-color: #06498b;
-  border-color: #06498b;
+  background-color: #174889;
+  border-color: #174889;
   color: #fff;
-  transform: translateY(-1px);
+
 }
 
 .pagination-btn.active {
-  background-color: #06498b !important;
+  background-color: #174889 !important;
   color: white;
-  border-color: #06498b;
+  border-color: #174889;
 }
 
 .pagination-btn.disabled {
@@ -12750,9 +12750,9 @@ textarea#message {
     gap: 20px !important;
   }
 
-  .product_sec .inner_banner_sec {
+  /* .product_sec .inner_banner_sec {
     margin-bottom: 15px;
-  }
+  } */
 
   .sfwr_sec.cat_page_secs {
     margin-top: 75px !important;

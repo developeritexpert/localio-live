@@ -54,7 +54,7 @@
                         </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
-                        {{ $bName }} Comparisons
+                        {{ $bName }} / Comparisons
                     </li>
                 </ol>
             </nav>
@@ -66,19 +66,19 @@
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class="top_head d-flex align-items-center gap-3">
+                <div class="top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
                     <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2">
-                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                            <h1 style="font-size: 28px; font-weight: 700;  margin: 0; line-height: 1;">
                                Compare {{ $bName }} 
                             </h1>
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
-                        <p style="font-size: 15px; color: #64748b; margin: 4px 0 0 0;">
+                        <p style="font-size: 16px; color: #444; margin:0;">
                             {{ $subHeadline }}
                         </p>
                     </div>
@@ -151,7 +151,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} reviews</div>
+                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
                         </div>
                         <a href="#grid-comparisons-section" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             View all comparisons

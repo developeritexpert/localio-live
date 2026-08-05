@@ -184,7 +184,7 @@
                                                                             <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
                                                                                 <h6 class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
                                                                             </a>
-                                                                            <div wire:key="wishlist-container-{{ $business->id }}">
+                                                                            <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
                                                                                 @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
                                                                             </div>
                                                                         </div>
@@ -201,7 +201,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="rate_box">
-                                                                            {{ $avgRating }} | {{ $ratingsCount }} reviews
+                                                                            {{ $avgRating }} | {{ $ratingsCount }} {{ $ratingsCount == 1 ? 'review' : 'reviews' }}
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -583,7 +583,7 @@
                     </div>
                 </div>
                 <div class="right-tool-btn text-center">
-                    <a href="{{ route('register') }}" class="cta">Sign up for free</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="cta">Sign up for free</a>
                 </div>
             </div>
         </div>

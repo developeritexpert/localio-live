@@ -199,7 +199,7 @@
 
     /* Buttons */
     .btn-view-details {
-        border: 1.5px solid #06498b;
+        border: 1.5px solid #174889;
         border-radius: 30px;
         background: transparent;
         color: #06498b;
@@ -208,7 +208,7 @@
         transition:unset;
     }
     .btn-view-details:hover {
-        background: #06498b;
+        background: #174889;
         color: #fff;
         text-decoration: none;
     }

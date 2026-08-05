@@ -150,24 +150,69 @@
             <!-- Right Column: Rating Widget, Pros, and Cons -->
             <div class="col-lg-5 col-12 d-flex flex-column gap-4">
                 <!-- Compact Rating Card -->
-                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
-                    <div class="d-flex align-items-start justify-content-between mb-2">
+                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                    <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
                         <div>
-                            <span style="font-size: 38px; font-weight: 700; color: #0f172a; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
-                            <div class="d-flex align-items-center gap-1 my-2">
-                                @for ($j = 1; $j <= 5; $j++)
-                                    @if ($j <= floor($averageRating))
+                            <div style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
+                                {{ number_format($averageRating, 1) }}
+                            </div>
+                            <div style="margin-top: 8px; margin-bottom: 4px; display: flex; gap: 4px;">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= floor($averageRating))
                                         <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
-                                    @elseif ($j - 0.5 <= $averageRating)
+                                    @elseif ($i - 0.5 <= $averageRating)
                                         <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
                                     @else
                                         <i class="far fa-star text-warning" style="font-size: 16px;"></i>
                                     @endif
                                 @endfor
                             </div>
-                            <span style="font-size: 13px; color: #64748b;">{{ number_format($ratingCount) }} reviews</span>
+                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
                         </div>
-                        <a href="#reviews-list-container" style="font-size: 13.5px; font-weight: 600; color: #0284c7; text-decoration: none;">View all reviews</a>
+                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                            View all reviews
+                        </a>
+                    </div>
+
+                    @if(isset($criteria) && count($criteria) > 0)
+                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
+                        <div class="mb-3">
+                            @foreach ($criteria as $criterion)
+                                <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                    <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                    <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                        <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
+                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
+                        <span style="font-weight: 600; color: #002347; font-size: 13.5px;">Recommended by users</span>
+                        <strong style="color: #002347; font-size: 13.5px;">{{ $recommendPercent }}%</strong>
+                    </div>
+
+                    <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $bName }}?</span>
+                        <div style="display: flex; gap: 8px;">
+                            @auth
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                                </a>
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                </a>
+                            @else
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                                </a>
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                </a>
+                            @endauth
+                        </div>
                     </div>
                 </div>
 
@@ -273,8 +318,8 @@
         }
 
         .review-prompt-banner button:hover {
-        background-color: #06498b !important;
-        border-color: #06498b !important;
+        background-color: #174889 !important;
+        border-color: #174889 !important;
         color: #fff !important;
         }
 
@@ -321,10 +366,10 @@
                         <i class="fas fa-times" style="color: #e53e3e;"></i> No
                     </button>
                 @else
-                    <button onclick="openLoginModal()" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-check" style="color: #06498b;"></i> Yes
                     </button>
-                    <button onclick="openLoginModal()" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-times" style="color: #e53e3e;"></i> No
                     </button>
                 @endauth
@@ -356,7 +401,7 @@
                                     @endif
                                 @endfor
                             </div>
-                            <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
+                            <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
                         <!-- Criteria Breakdown -->
@@ -368,7 +413,7 @@
                                         <span style="font-size: 13px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
                                         <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                             <div class="progress rounded-pill flex-grow-1 mx-2" style="height: 8px; background-color: #e2e8f0;">
-                                                <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #21ac21;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #2CC464;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                             </div>
                                             <span style="font-size: 12px; font-weight: 600; color: #334155; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
                                         </div>
@@ -439,7 +484,7 @@
                             </button>
                         @else
                         <i class="fas fa-pen" style="font-size: 12px; color:#002347;"></i>
-                            <button onclick="openLoginModal()" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding:0;">
+                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding:0;">
                                  Write review
                             </button>
                         @endauth
@@ -452,6 +497,39 @@
                 </div>
 
                 @livewire('add-review')
+
+                @if(auth()->check() && session()->has('pending_review_business_id'))
+                    @php
+                        $pendingBusId = session('pending_review_business_id');
+                        $pendingRec = session('pending_review_recommend');
+                        session()->forget(['pending_review_business_id', 'pending_review_recommend']);
+                    @endphp
+                    <script>
+                        (function() {
+                            let attempts = 0;
+                            function triggerPendingReviewModal() {
+                                attempts++;
+                                if (window.Livewire) {
+                                    if (typeof Livewire.dispatch === 'function') {
+                                        Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                                    } else if (typeof Livewire.emit === 'function') {
+                                        Livewire.emit('openReviewModal', {{ $pendingBusId }}, {{ json_encode($pendingRec) }});
+                                    }
+                                }
+                                if (attempts < 5) {
+                                    setTimeout(triggerPendingReviewModal, 500);
+                                }
+                            }
+                            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                                setTimeout(triggerPendingReviewModal, 300);
+                            } else {
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    setTimeout(triggerPendingReviewModal, 300);
+                                });
+                            }
+                        })();
+                    </script>
+                @endif
             </div>
         </div>
     </div>

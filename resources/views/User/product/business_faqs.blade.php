@@ -28,7 +28,7 @@
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050;  border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #fdfdfd;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" >
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     @if($parentCatName)
@@ -67,19 +67,19 @@
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class="top_head d-flex align-items-center gap-3">
+                <div class="top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
                     <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                            <h1 style="font-size: 28px; font-weight: 700;  margin: 0; line-height: 1;">
                                 {{ $bName }} FAQs
                             </h1>
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
-                        <p style="font-size: 15px; color: #64748b; margin: 4px 0 0 0;">
+                        <p style="font-size: 16px; color: #444; margin: 0; font-weight:400;">
                             {{ $subHeadline }}
                         </p>
                     </div>
@@ -175,8 +175,8 @@
                             @foreach($business->usps as $usp)
                                 @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
                                 @if(!empty($uText))
-                                    <li class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-check text-success" style="font-size: 13px;"></i>
+                                    <li class="d-flex align-items-center gap-2" style="font-size: 16px; color: #000; font-weight:500;">
+                                        <i class="fas fa-check text-success" style="font-size: 16px; "></i>
                                         <span>{{ $uText }}</span>
                                     </li>
                                 @endif
@@ -195,30 +195,30 @@
                             <div style="margin-top: 8px; margin-bottom: 4px; display: flex; gap: 4px;">
                                 @for ($i = 1; $i <= 5; $i++)
                                     @if ($i <= floor($averageRating))
-                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
                                     @elseif ($i - 0.5 <= $averageRating)
-                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                     @else
-                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                     @endif
                                 @endfor
                             </div>
-                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} reviews</div>
+                            <div style="color: #718096; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
                         </div>
-                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             View all reviews
                         </a>
                     </div>
 
                     @if(isset($criteria) && count($criteria) > 0)
-                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
+                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
                         <div class="mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                    <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #444; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
                                     </div>
                                 </div>
                             @endforeach
@@ -226,25 +226,25 @@
                     @endif
 
                     <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
-                        <span style="font-weight: 600; color: #002347; font-size: 13.5px;">Recommended by users</span>
-                        <strong style="color: #002347; font-size: 13.5px;">{{ $recommendPercent }}%</strong>
+                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                        <strong style="color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
                     </div>
 
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $bName }}?</span>
+                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                         <div style="display: flex; gap: 8px;">
                             @auth
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                     <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
                                 </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                     <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
                                 </a>
                             @else
-                                <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                     <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
                                 </a>
-                                <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                     <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
                                 </a>
                             @endauth
@@ -257,9 +257,9 @@
                     <div class="row g-2">
                         <div class="col-6">
                             <div class="p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
-                                <div style="font-size: 12px; color: #64748b; font-weight: 600;">Starting price</div>
-                                <div class="my-2" style="font-size: 22px; font-weight: 700; color: #1e3050;">{{ $currency }}{{ $startingPrice }}</div>
-                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section6" style="font-size: 12.5px; color: #2b6cb0; font-weight: 600; text-decoration: none;">View pricing</a>
+                                <div style="font-size: 16px; color: #002347; font-weight: 600;">Starting price</div>
+                                <div class="my-2" style="font-size: 26px; font-weight: 700; color: #002347;">{{ $currency }}{{ $startingPrice }}</div>
+                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section6" style="font-size: 15px; color: #002347; font-weight: 600; text-decoration: none;" class="underline">View pricing</a>
                             </div>
                         </div>
                         <div class="col-6">
@@ -268,7 +268,7 @@
                                     <i class="fas fa-check" style="font-size: 14px;"></i>
                                 </div>
                                 <div style="font-size: 12.5px; font-weight: 700; color: #1e3050;">Free Trial Available</div>
-                                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn btn-sm text-white w-100 mt-1" style="background-color: #06498b; border-radius: 20px; font-weight: 600; font-size: 12px;">Claim Now</a>
+                                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn btn-sm text-white w-100 mt-1" style="background-color: #174889; border-radius: 20px; font-weight: 600; font-size: 12px; transition:unset !important" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">Claim Now</a>
                             </div>
                         </div>
                     </div>
@@ -279,7 +279,7 @@
                     <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
                             <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 0;">Highlighted reviews</h6>
-                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;">View all reviews</a>
+                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;" class="underline">View all reviews</a>
                         </div>
                         <div class="d-flex flex-column gap-3">
                             @foreach($topReviews as $rev)
@@ -340,7 +340,7 @@
                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                     <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
                         <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 0;">Recent discussions</h6>
-                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#sectionDiscussions" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;">View all discussions</a>
+                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#sectionDiscussions" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;" class="underline">View all discussions</a>
                     </div>
                     <div class="d-flex flex-column gap-3">
                         <div class="pb-3" style="border-bottom: 1px solid #f1f5f9;">
@@ -378,4 +378,30 @@
         </div>
     </div>
 </section>
+@livewire('add-review')
+
+@if(auth()->check() && session()->has('pending_review_business_id'))
+    @php
+        $pendingBusId = session('pending_review_business_id');
+        $pendingRec = session('pending_review_recommend');
+        session()->forget(['pending_review_business_id', 'pending_review_recommend']);
+    @endphp
+    <script>
+        function triggerPendingReviewModal() {
+            if (window.Livewire) {
+                if (typeof Livewire.dispatch === 'function') {
+                    Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                } else if (typeof Livewire.emit === 'function') {
+                    Livewire.emit('openReviewModal', {{ $pendingBusId }}, {{ json_encode($pendingRec) }});
+                }
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(triggerPendingReviewModal, 300);
+        });
+        document.addEventListener('livewire:load', function() {
+            setTimeout(triggerPendingReviewModal, 300);
+        });
+    </script>
+@endif
 @endsection

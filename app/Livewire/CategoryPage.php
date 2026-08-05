@@ -24,6 +24,8 @@ class CategoryPage extends Component
     // Parent Category properties
     public $isParentCategory = false;
     public $parentSubCategories = [];
+    public $subCategories = [];
+    public $selectedSubCategories = [];
 
     // Filter properties
     public $minPrice = 0;
@@ -44,6 +46,7 @@ class CategoryPage extends Component
     // Configure URL parameters - page is now path-based
     protected $queryString = [
         'selectedOptions' => ['except' => []],
+        'selectedSubCategories' => ['except' => []],
         'searchTerm' => ['except' => ''],
         'selectedRatings' => ['except' => []],
         'minPrice' => ['except' => 0],
@@ -99,7 +102,7 @@ class CategoryPage extends Component
         // Check if this is a parent category
         if (is_null($this->category->parent_id)) {
             $this->loadParentCategoryData();
-            if ($this->parentSubCategories->isNotEmpty()) {
+            if (count($this->subCategories) > 0) {
                 $this->isParentCategory = true;
             }
         }
@@ -107,41 +110,11 @@ class CategoryPage extends Component
 
     protected function loadParentCategoryData()
     {
-        // Load subcategories with their top products
-        $this->parentSubCategories = Category::where('parent_id', $this->category->id)
+        $this->subCategories = Category::where('parent_id', $this->category->id)
             ->with(['translations' => function ($query) {
                 $query->where('lang_id', $this->lang_id);
             }])
-            ->get()
-            ->map(function ($subcat) {
-                // Fetch top 6 businesses for this subcategory
-                $businesses = Business::where('category_id', $subcat->id)
-                    ->where('status', 1)
-                    ->whereHas('languages', function ($query) {
-                        $query->where('language_id', $this->lang_id);
-                    })
-                    ->where(function ($query) {
-                        $query->where('active_all_countries', 1)
-                            ->orWhereHas('countries', function ($q) {
-                                $q->where('country_id', $this->country_id);
-                            });
-                    })
-                    ->with(['translations' => function ($q) {
-                        $q->where('lang_id', $this->lang_id);
-                    }])
-                    ->withCount(['reviews as active_reviews_count' => function ($query) {
-                        $query->where('status', 'active');
-                    }])
-                    ->withAvg(['reviews as average_rating' => function ($query) {
-                        $query->where('status', 'active');
-                    }], 'rating')
-                    ->orderBy('average_rating', 'desc')
-                    ->take(6)
-                    ->get();
-                
-                $subcat->top_businesses = $businesses;
-                return $subcat;
-            });
+            ->get();
     }
 
     protected function initializePriceRange()
@@ -156,6 +129,7 @@ class CategoryPage extends Component
             $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : ceil($priceStats->max_price);
         }
     }
+
     protected function loadDefaultFilterOptions()
     {
         // Don't set defaults if URL parameters already exist
@@ -183,6 +157,7 @@ class CategoryPage extends Component
             }
         }
     }
+
     public function loadFilters()
     {
         // Load filters by category with appropriate relationships
@@ -193,7 +168,7 @@ class CategoryPage extends Component
                 'translations' => function ($query) {
                     $query->where('language_id', $this->lang_id);
                 },
-                'options', // Removed the problematic orderBy
+                'options',
                 'options.translations' => function ($query) {
                     $query->where('language_id', $this->lang_id);
                 },
@@ -214,15 +189,37 @@ class CategoryPage extends Component
             ];
         }
     }
+
     public function updated()
     {
         $this->calculateRatingCounts();
     }
+
+    public function updatedSelectedSubCategories()
+    {
+        $this->calculateRatingCounts();
+        $this->resetPage();
+        $this->dispatch('scroll-to-middle');
+    }
+
     public function calculateRatingCounts()
     {
-        $businesses = Business::select('id')
-            ->where('category_id', $this->category->id)
-            ->where('status', 1)
+        if ($this->isParentCategory) {
+            $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
+            $allCategoryIds = array_merge([$this->category->id], $allSubcatIds);
+            if (!empty($this->selectedSubCategories)) {
+                $targetCategoryIds = array_intersect($allCategoryIds, array_map('intval', (array)$this->selectedSubCategories));
+            } else {
+                $targetCategoryIds = $allCategoryIds;
+            }
+            $businesses = Business::select('id')
+                ->whereIn('category_id', $targetCategoryIds);
+        } else {
+            $businesses = Business::select('id')
+                ->where('category_id', $this->category->id);
+        }
+
+        $businesses = $businesses->where('status', 1)
             ->withAvg(['reviews' => function ($query) {
                 $query->where('status', 'active');
             }], 'rating')
@@ -258,9 +255,21 @@ class CategoryPage extends Component
 
     public function getProductsProperty()
     {
-        // Start with businesses in this category
-        $query = Business::where('category_id', $this->category->id)
-            ->where('status', 1)
+        // Start with businesses in this category or its subcategories if parent category
+        if ($this->isParentCategory) {
+            $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
+            $allCategoryIds = array_merge([$this->category->id], $allSubcatIds);
+            if (!empty($this->selectedSubCategories)) {
+                $targetCategoryIds = array_intersect($allCategoryIds, array_map('intval', (array)$this->selectedSubCategories));
+            } else {
+                $targetCategoryIds = $allCategoryIds;
+            }
+            $query = Business::whereIn('category_id', $targetCategoryIds);
+        } else {
+            $query = Business::where('category_id', $this->category->id);
+        }
+
+        $query->where('status', 1)
             ->with([
                 'translations' => function ($q) {
                     $q->where('lang_id', $this->lang_id);
@@ -544,6 +553,7 @@ class CategoryPage extends Component
     public function resetFilters()
     {
         $this->selectedOptions = [];
+        $this->selectedSubCategories = [];
         $this->searchTerm = '';
         $this->selectedRatings = [];
         $this->isPriceFilterActive = false;
@@ -613,6 +623,7 @@ class CategoryPage extends Component
         // Append filter query params
         $queryParams = [];
         if (!empty($this->selectedRatings)) $queryParams['selectedRatings'] = $this->selectedRatings;
+        if (!empty($this->selectedSubCategories)) $queryParams['selectedSubCategories'] = $this->selectedSubCategories;
         if (!empty($this->selectedOptions)) $queryParams['selectedOptions'] = $this->selectedOptions;
         if ($this->searchTerm !== '') $queryParams['searchTerm'] = $this->searchTerm;
         if ($this->minPrice != 0) $queryParams['minPrice'] = $this->minPrice;

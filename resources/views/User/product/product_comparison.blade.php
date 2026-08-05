@@ -11,122 +11,179 @@
     $catName = $cat->translation->name ?? $cat->translations->first()->name ?? null;
     $catSlug = $cat->translation->slug ?? $cat->translations->first()->slug ?? null;
 @endphp
-    <section class="inner_banner_sec cmpari_inner">
-        <div class="container">
-            <div class="inner_banr_content">
-                <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                    <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
-                        @if($parentCatName)
-                            <li class="breadcrumb-item">
-                                @if($parentCatSlug)
-                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $parentCatSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $parentCatName }}</a>
-                                @else
-                                    <span style="color: #64748b;">{{ $parentCatName }}</span>
-                                @endif
-                            </li>
-                        @endif
-                        @if($catName)
-                            <li class="breadcrumb-item">
-                                @if($catSlug)
-                                    <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
-                                @else
-                                    <span style="color: #64748b;">{{ $catName }}</span>
-                                @endif
-                            </li>
-                        @endif
-                        <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
-                            @if (count($businesses) >= 2)
-                                {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0; margin-top: 120px; padding-top: 50px; padding-bottom: 30px;">
+    <div class="container">
+        <!-- Breadcrumb & Social Share Row -->
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom: 0;">
+                    @if($parentCatName)
+                        <li class="breadcrumb-item">
+                            @if($parentCatSlug)
+                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $parentCatSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $parentCatName }}</a>
                             @else
-                                Businesses Comparison
+                                <span style="color: #64748b;">{{ $parentCatName }}</span>
                             @endif
                         </li>
-                    </ol>
-                </nav>
+                    @endif
+                    @if($catName)
+                        <li class="breadcrumb-item">
+                            @if($catSlug)
+                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
+                            @else
+                                <span style="color: #64748b;">{{ $catName }}</span>
+                            @endif
+                        </li>
+                    @endif
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                        @if (count($businesses) >= 2)
+                            {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}
+                        @else
+                            Businesses Comparison
+                        @endif
+                    </li>
+                </ol>
+            </nav>
+            <div class="inside_sec_text">
+                <x-social-icon />
             </div>
         </div>
-    </section>
 
-    <!-- section product comparison -->
-    <section class="product_comp_sec p_120 light">
-        <div class="container">
-            <div class="asn_dv xeo_dv" data-aos="fade-up" data-aos-duration="1000">
-                <div class="xeo_lft">
-                    <h2>
-                        @if (count($businesses) >= 2)
-                            {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}:
-                            Which is a better fit?
-                        @else
-                            Product Comparison: Which is a better fit?
-                        @endif
-                    </h2>
-                </div>
-                <div class="ans_ryt">
-                    <div class="site_vsit">
-                        <x-social-icon/>
+        <!-- Business Header Row -->
+        <div class="row align-items-center justify-content-between">
+            <div class="col-md-12 col-12">
+                <div class="top_head d-flex align-items-center gap-3">
+                    <div>
+                        <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
+                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                                @if (count($businesses) >= 2)
+                                    {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}: Comparison
+                                @else
+                                    Businesses Comparison
+                                @endif
+                            </h1>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- section product comparison -->
+<section class="product_comp_sec p_120 light" style="padding-top: 30px;">
+    <div class="container">
 
             <div class="row justify-content-center pro-row-gp versus-row" data-aos="fade-up" data-aos-duration="1000">
                 <div class="col-lg-9">
                     <div class="asn_tprw">
-                        <div class="pdc_box ">
+                        <div class="pdc_box bg-white rounded-4 border shadow-sm p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;">
                             @foreach ($businesses as $index => $business)
                                 @if ($index > 0)
                                     <div class="versus-box">
                                         <p class="d-flex m-0">vs</p>
                                     </div>
                                 @endif
-                                <div class="pdc_choice">
-                                    <div class="auto-choice-hd">
-                                        <div class="inn_sl_hed">
-                                            <div class="sli_img choice_img">
+                                <div class="pdc_choice text-center d-flex flex-column align-items-center">
+                                    <div class="auto-choice-hd w-100 d-flex flex-column align-items-center" style="border: none; padding: 0; margin-bottom: 0;">
+                                        <div class="inn_sl_hed flex-column align-items-center text-center w-100" style="gap: 8px;">
+                                            <div class="sli_img choice_img mx-auto" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 8px;">
                                                 <img class="slider_img" src="{{ asset($business->icon_id) }}"
-                                                    alt="{{ $business->translations->first()->name ?? '' }}">
+                                                    alt="{{ $business->translations->first()->name ?? '' }}" style="width: 100%; height: 100%; object-fit: contain;">
                                             </div>
-                                            <div class="sl_h">
-                                                <div class="inn_h d-flex align-items-center">
-                                                    <h6 class="head">{{ $business->translations->first()->name ?? '' }}</h6>
-                                                    <div>
-                                                        <livewire:wishlist :product-id="$business->id"
-                                                            :wire:key="'wishlist-'.$business->id" />
-                                                    </div>
+                                            <div class="sl_h text-center w-100">
+                                                <div class="inn_h d-flex align-items-center justify-content-center">
+                                                    <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()->name ?? '' }}</h6>
                                                 </div>
-                                                <div class="tp-btm d-flex">
-                                                    <div class="inn_ul d-flex align-items-center gap-1 list-unstyled m-0">
-                                                        @php
-                                                            $rating = round($business->reviews->avg('rating'), 1);
-                                                            $ratingCount = $business->reviews->count();
-                                                        @endphp
+                                                <div class="tp-btm d-flex align-items-center justify-content-center mt-1" style="gap: 6px;">
+                                                    @php
+                                                        $rating = round($business->reviews->avg('rating'), 1);
+                                                        $ratingCount = $business->reviews->count();
+                                                    @endphp
 
-                                                        <li>{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</li>
-                                                        <li class="d-flex">
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                @if ($rating >= $i)
-                                                                    <i class="fas fa-star text-warning me-1"></i>
-                                                                @elseif ($rating >= $i - 0.5)
-                                                                    <i class="fas fa-star-half-alt text-warning me-1"></i>
-                                                                @else
-                                                                    <i class="far fa-star text-warning me-1"></i>
-                                                                @endif
-                                                            @endfor
-                                                        </li>
-                                                        <li><i class="fa-solid fa-angle-down"></i></li>
+                                                    <span style="font-size: 13px; font-weight: 600; color: #64748b;">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                                    <div class="d-flex align-items-center">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($rating >= $i)
+                                                                <i class="fas fa-star text-warning" style="font-size: 13px; margin-right: 2px;"></i>
+                                                            @elseif ($rating >= $i - 0.5)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px; margin-right: 2px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 13px; margin-right: 2px;"></i>
+                                                            @endif
+                                                        @endfor
                                                     </div>
-                                                    <div class="rate_box ms-3">
-                                                        {{ $ratingCount }} Reviews{{ $ratingCount !== 1 ? 's' : '' }}
-                                                    </div>
+                                                    <span style="font-size: 13px; color: #64748b; font-weight: 500;">{{ $ratingCount }} {{ $ratingCount == 1 ? 'Review' : 'Reviews' }}</span>
                                                 </div>
-
                                             </div>
                                         </div>
-                                        <div class="auto-choice-btn fit-btn">
+                                        <div class="auto-choice-btn fit-btn w-100 mt-3" style="max-width: 220px;">
                                             <a href="{{ $business->permanent_url ?? $business->affiliate_link ?? 'javascript:void(0)' }}"
-                                                class="cta cta_orange d-flex align-items-center justify-content-center">
+                                                class="cta cta_orange d-flex align-items-center justify-content-center"
+                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%;">
                                                 Visit website
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                             </a>
+                                        </div>
+
+                                        <!-- Thin horizontal line -->
+                                        <hr class="w-100 my-3" style="border-top: 1px solid #e2e8f0; opacity: 1; margin-left: 0; margin-right: 0;">
+
+                                        <!-- Review Breakdown inside card -->
+                                        <div class="review-breakdown-card w-100 text-start">
+                                            <h6 style="font-size: 14px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">Review breakdown</h6>
+                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 8px;">
+                                                <li class="d-flex justify-content-between align-items-center">
+                                                    <span style="font-size: 12px; color: #64748b;">Value for money</span>
+                                                    <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
+                                                        @php
+                                                            $valueForMoney = $business->reviews->avg('value_for_money_rating') ?? 0;
+                                                            $valueForMoneyPercent = $valueForMoney * 20;
+                                                        @endphp
+                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 6px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        </div>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
+                                                    </div>
+                                                </li>
+                                                <li class="d-flex justify-content-between align-items-center">
+                                                    <span style="font-size: 12px; color: #64748b;">Ease of use</span>
+                                                    <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
+                                                        @php
+                                                            $easeOfUse = $business->reviews->avg('ease_of_use_rating') ?? 0;
+                                                            $easeOfUsePercent = $easeOfUse * 20;
+                                                        @endphp
+                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 6px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        </div>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
+                                                    </div>
+                                                </li>
+                                                <li class="d-flex justify-content-between align-items-center">
+                                                    <span style="font-size: 12px; color: #64748b;">Features</span>
+                                                    <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
+                                                        @php
+                                                            $featuresRating = $business->reviews->avg('exclusive_service_rating') ?? 0;
+                                                            $featuresPercent = $featuresRating * 20;
+                                                        @endphp
+                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 6px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        </div>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
+                                                    </div>
+                                                </li>
+                                            </ul>
+
+                                            @php
+                                                $recPercent = 100;
+                                                if ($ratingCount > 0 && $rating > 0) {
+                                                    $recPercent = round(($rating / 5) * 100);
+                                                }
+                                            @endphp
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
+                                                <span style="font-size: 12px; font-weight: 700; color: #1e3050;">Recommended by users</span>
+                                                <span style="font-size: 12px; font-weight: 700; color: #1e3050;">{{ $recPercent }}%</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <a href="javascript:void(0);" class="remove-from-comparison"
@@ -150,75 +207,7 @@
                 @endif
             </div>
 
-            <div class="row localio-brkdwn">
-                <div class="col-lg-9">
-                    <!-- localio breakdown -->
-                    <div class="main_feture compari-feature" data-aos="fade-up" data-aos-duration="1000">
-                        @foreach ($businesses as $index => $business)
-                            <div class="feture_box black-hding">
-                                <h6 class="size22 big-bld">{{ $business->translations->first()->name ?? 'Business' }} Review Breakdown
-                                </h6>
-                                <ul>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Ease of Use</span>
-                                        <div class="prgs_br">
-                                            @php
-                                                $easeOfUse = $business->reviews->avg('ease_of_use_rating') ?? 0;
-                                                $easeOfUsePercent = $easeOfUse * 20;
-                                            @endphp
-                                            <progress class="progress-bar" id="progress-bar-1-{{ $index }}"
-                                                value="{{ $easeOfUsePercent }}"
-                                                max="100">{{ $easeOfUsePercent }}%</progress>
-                                            <output
-                                                id="progress-output-1-{{ $index }}">{{ number_format($easeOfUse, 1) }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Customer Service</span>
-                                        <div class="prgs_br">
-                                            @php
-                                                $customerService = $business->reviews->avg('customer_service_rating') ?? 0;
-                                                $customerServicePercent = $customerService * 20;
-                                            @endphp
-                                            <progress class="progress-bar" id="progress-bar-2-{{ $index }}"
-                                                value="{{ $customerServicePercent }}"
-                                                max="100">{{ $customerServicePercent }}%</progress>
-                                            <output
-                                                id="progress-output-2-{{ $index }}">{{ number_format($customerService, 1) }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Exclusive Service</span>
-                                        <div class="prgs_br">
-                                            @php
-                                                $exclusiveService = $business->reviews->avg('exclusive_service_rating') ?? 0;
-                                                $exclusiveServicePercent = $exclusiveService * 20;
-                                            @endphp
-                                            <progress class="progress-bar" id="progress-bar-3-{{ $index }}"
-                                                value="{{ $exclusiveServicePercent }}"
-                                                max="100">{{ $exclusiveServicePercent }}%</progress>
-                                            <output
-                                                id="progress-output-3-{{ $index }}">{{ number_format($exclusiveService, 1) }}/5</output>
-                                        </div>
-                                    </li>
-                                    <li class="d-flex justify-content-between">
-                                        <span class="lyt-text">Value for Money</span>
-                                        <div class="prgs_br">
-                                            @php
-                                                $valueForMoney = $business->reviews->avg('value_for_money_rating') ?? 0;
-                                                $valueForMoneyPercent = $valueForMoney * 20;
-                                            @endphp
-                                            <progress class="progress-bar" id="progress-bar-4-{{ $index }}"
-                                                value="{{ $valueForMoneyPercent }}"
-                                                max="100">{{ $valueForMoneyPercent }}%</progress>
-                                            <output
-                                                id="progress-output-4-{{ $index }}">{{ number_format($valueForMoney, 1) }}/5</output>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        @endforeach
-                    </div>
+
 
                     <!-- key features div -->
                     <div class="cpa_rw cpa_bg light size18 pro-row-gp d-flex" data-aos="fade-up" data-aos-duration="1000">
@@ -261,7 +250,7 @@
                     </div>
 
                     <!-- price start from -->
-                    <div class="prc_dv" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="prc_dv" data-aos="fade-up" data-aos-duration="1000" style="max-width: 100% !important;">
                         <div class="hd_text">
                             <h2>Price Starts From</h2>
                         </div>
@@ -365,7 +354,7 @@
                                                 </li>
                                             </div>
                                             <div class="rate_box">
-                                                {{ $ratingCount }} Reviews{{ $ratingCount !== 1 ? 's' : '' }}
+                                                {{ $ratingCount }} {{ $ratingCount == 1 ? 'Review' : 'Reviews' }}
                                             </div>
                                         </div>
 

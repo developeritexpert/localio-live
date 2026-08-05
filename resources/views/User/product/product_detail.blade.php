@@ -154,9 +154,29 @@
                 session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             @endphp
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
-                });
+                (function() {
+                    let attempts = 0;
+                    function triggerPendingReviewModal() {
+                        attempts++;
+                        if (window.Livewire) {
+                            if (typeof Livewire.dispatch === 'function') {
+                                Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                            } else if (typeof Livewire.emit === 'function') {
+                                Livewire.emit('openReviewModal', {{ $pendingBusId }}, {{ json_encode($pendingRec) }});
+                            }
+                        }
+                        if (attempts < 5) {
+                            setTimeout(triggerPendingReviewModal, 500);
+                        }
+                    }
+                    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                        setTimeout(triggerPendingReviewModal, 300);
+                    } else {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            setTimeout(triggerPendingReviewModal, 300);
+                        });
+                    }
+                })();
             </script>
         @endif
         <style>
@@ -767,13 +787,8 @@
             <div class="inner_banner_sec">
                 <div class="container-fluid" style="display: flex; justify-content: space-between;">
                     <div class="inner_banr_content">
-                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
-                                       style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
-                                       onmouseout="this.style.color=''">All</a>
-                                </li>
                                 @if ($business->category && $business->category->parent)
                                     @php
                                         $parentTranslation = $business->category->parent->translation()->first();
@@ -794,8 +809,7 @@
                                         $categoryTranslation = $business->category->translation()->first();
                                     @endphp
                                     @if ($categoryTranslation)
-                                        <li class="breadcrumb-item active" aria-current="page">
-                                            <!-- {{ $categoryTranslation->name }} -->
+                                        <li class="breadcrumb-item">
                                             <a href="javascript:void(0);"
                                                onclick="changeCategory('{{ $categoryTranslation->slug }}')"
                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
@@ -805,11 +819,14 @@
                                         </li>
                                     @endif
                                 @endif
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <span>{{ $business->translations->first()->name ?? '' }}</span>
+                                </li>
                             </ol>
                         </nav>
                     </div>
                     <div class="inside_sec_text">
-                        <x-social-icon />
+                        <x-social-icon :business="$business" />
                     </div>
                 </div>
             </div>
@@ -840,13 +857,6 @@
                                             <div class="an_lkd">
                                                 <h1 style="color: #000;" class="mb-0 p-1">
                                                     {{ $business->translations->first()->name }} <span class="hide-on-sticky">Review {{ date('Y') }}</span> </h1>
-
-                                                {{-- <h6 style="color: #000;" class="mb-0 p-1">Review
-                                                    {{ $business->created_at->format('Y') }}</h6> --}}
-
-                                                <livewire:wishlist :product-id="$business->id"
-                                                    :wire:key="'wishlist-'.$business->id" />
-
                                             </div>
                                             <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
@@ -1200,12 +1210,20 @@
                                                                 @php
                                                                     $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
                                                                 @endphp
-                                                                <div class="asan-slider-inr" style="cursor: pointer;">
-                                                                    <img src="{{ $imgSrc }}"
-                                                                        onclick="openGallery({{ $index }})"
-                                                                        alt="Business Image {{ $index + 1 }}"
-                                                                        style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
-                                                                </div>
+                                                                 <div class="asan-slider-inr">
+                                                                     <a href="{{ $business->getTrackedUrl() }}"
+                                                                        data-track="{{ json_encode([
+                                                                            'type' => 'click',
+                                                                            'business_id' => $business->id,
+                                                                            'action' => 'visit_website',
+                                                                            'label' => 'Visit Website',
+                                                                        ]) }}"
+                                                                        target="_blank" style="display: block;">
+                                                                         <img src="{{ $imgSrc }}"
+                                                                             alt="Business Image {{ $index + 1 }}"
+                                                                             style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
+                                                                     </a>
+                                                                 </div>
                                                             @endforeach
                                                         </div>
 
@@ -1391,7 +1409,7 @@
                                                             @endfor
                                                         </div>
 
-                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} reviews</span>
+                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
@@ -1427,17 +1445,17 @@
                                                     <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @else
-                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @endauth
@@ -2015,7 +2033,7 @@
                                                         $translation = $feature->translations->first();
                                                         $featureReviews = $feature->reviews ?? collect();
                                                         $avgRating = $featureReviews->count() ? $featureReviews->avg('rating') : 0;
-                                                        $ratingCount = $featureReviews->count();
+                                                        $featureRatingCount = $featureReviews->count();
                                                     @endphp
 
                                                     <div class="col-md-6 col-lg-4">
@@ -2412,7 +2430,7 @@
                                                                     @endfor
                                                                 </div>
                                                                 <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 500;">
-                                                                    {{ number_format($altRatingAvg, 1) }} | {{ $count }} Reviews
+                                                                    {{ number_format($altRatingAvg, 1) }} | {{ $count }} {{ $count == 1 ? 'Review' : 'Reviews' }}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -3004,7 +3022,7 @@
                                         border: 1px solid rgba(0, 0, 0, 0.08) !important;
                                         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
                                         border-radius: 20px !important;
-                                        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+                                        /* transition: box-shadow 0.3s ease, border-color 0.3s ease; */
                                     }
                                     .review_sec .review_detl:hover {
                                         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
@@ -3080,10 +3098,10 @@
                                                     <i class="fas fa-times" style="color: #e53e3e;"></i> No
                                                 </button>
                                             @else
-                                                <button onclick="openLoginModal()" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-check" style="color: #06498b;"></i> Yes
                                                 </button>
-                                                <button onclick="openLoginModal()" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-times" style="color: #e53e3e;"></i> No
                                                 </button>
                                             @endauth
@@ -3116,7 +3134,7 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
-                                                        <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} reviews</span>
+                                                        <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     {{-- Review Breakdown Title --}}
@@ -3198,7 +3216,7 @@
                                                     @auth
                                                         onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                     @else
-                                                        onclick="openLoginModal()" 
+                                                        onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" 
                                                     @endauth
                                                     style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
                                                 ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
@@ -4113,7 +4131,7 @@
                                     @endfor
                                 </div>
                                 <span style="font-weight: 600; color: #333;">{{ number_format($averageRating, 1) }}</span>
-                                <span style="color: #888;">({{ $ratingCount }} reviews)</span>
+                                <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
                             </div>
                         </div>
                     </div>
@@ -4192,7 +4210,7 @@
                     }, 500);
                 @else
                     setTimeout(() => {
-                        openLoginModal();
+                        Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });
                     }, 500);
                 @endauth
             }

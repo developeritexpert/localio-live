@@ -1,7 +1,7 @@
 <div class="review-cntnt-btm">
     @if ($reviews->isNotEmpty())
         @foreach ($reviews as $review)
-            <div class="review_detl populr-alternative review-card" id="review-{{ $review->id }}" data-review-id="{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
+            <div class="review_detl populr-alternative review-card" id="review-{{ $review->id }}" data-review-id="{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="background-color:#f7f9fb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
                 
                 <!-- Top right actions (Date & Copy link) -->
                 <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
