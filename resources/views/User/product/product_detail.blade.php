@@ -154,9 +154,29 @@
                 session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             @endphp
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
-                });
+                (function() {
+                    let attempts = 0;
+                    function triggerPendingReviewModal() {
+                        attempts++;
+                        if (window.Livewire) {
+                            if (typeof Livewire.dispatch === 'function') {
+                                Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                            } else if (typeof Livewire.emit === 'function') {
+                                Livewire.emit('openReviewModal', {{ $pendingBusId }}, {{ json_encode($pendingRec) }});
+                            }
+                        }
+                        if (attempts < 5) {
+                            setTimeout(triggerPendingReviewModal, 500);
+                        }
+                    }
+                    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                        setTimeout(triggerPendingReviewModal, 300);
+                    } else {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            setTimeout(triggerPendingReviewModal, 300);
+                        });
+                    }
+                })();
             </script>
         @endif
         <style>
@@ -1432,10 +1452,10 @@
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @else
-                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @endauth
@@ -3078,10 +3098,10 @@
                                                     <i class="fas fa-times" style="color: #e53e3e;"></i> No
                                                 </button>
                                             @else
-                                                <button onclick="openLoginModal()" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-check" style="color: #06498b;"></i> Yes
                                                 </button>
-                                                <button onclick="openLoginModal()" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-times" style="color: #e53e3e;"></i> No
                                                 </button>
                                             @endauth
@@ -3196,7 +3216,7 @@
                                                     @auth
                                                         onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                     @else
-                                                        onclick="openLoginModal()" 
+                                                        onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })" 
                                                     @endauth
                                                     style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
                                                 ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
@@ -4190,7 +4210,7 @@
                     }, 500);
                 @else
                     setTimeout(() => {
-                        openLoginModal();
+                        Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });
                     }, 500);
                 @endauth
             }

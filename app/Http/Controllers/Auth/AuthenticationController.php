@@ -82,6 +82,9 @@ class AuthenticationController extends Controller
 
         if ($isFromModal) {
             session(['register_profile_needed' => true]);
+            if (session()->has('pending_review_business_id')) {
+                session(['pending_review_business_id' => session('pending_review_business_id')]);
+            }
             return redirect()->back();
         }
 
@@ -106,16 +109,21 @@ class AuthenticationController extends Controller
             ]);
 
 
-            //Store intended URL in session if passed from form
+            $isFromModal = $request->has('is_modal') || session('register_from_modal') || session()->has('pending_review_business_id');
+
+            // Store intended URL in session if passed from form
             if ($request->filled('url_intended')) {
                 session(['url.intended' => $request->input('url_intended')]);
             }
 
             // Redirect to intended if set
-            if(session()->has('url.intended')) {
+            if (session()->has('url.intended')) {
                 return redirect()->intended();
             }
 
+            if ($isFromModal) {
+                return redirect()->back();
+            }
 
         switch ($user->user_type) {
             case 'admin':
@@ -185,7 +193,7 @@ class AuthenticationController extends Controller
         if ($user) {
             Auth::login($user);
 
-            $isFromModal = session('register_from_modal', false);
+            $isFromModal = session('register_from_modal', false) || session()->has('pending_review_business_id');
 
             // Clear session data
             session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google', 'register_from_modal', 'register_profile_needed']);
@@ -197,7 +205,16 @@ class AuthenticationController extends Controller
                 'user_id' => $user->id,
             ]);
 
+            if (session()->has('url.intended')) {
+                return redirect()->intended();
+            }
+
             if ($isFromModal) {
+                // If HTTP_REFERER is available and not the standalone sign-in details page, redirect back there
+                $referer = request()->headers->get('referer');
+                if ($referer && !str_contains($referer, '/sign-in/details') && !str_contains($referer, '/register/details')) {
+                    return redirect()->to($referer)->with('success', 'Successfully registered!');
+                }
                 return redirect()->back()->with('success', 'Successfully registered!');
             }
 
@@ -209,7 +226,7 @@ class AuthenticationController extends Controller
 
     public function clearRegistrationSession()
     {
-        session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google', 'register_from_modal', 'register_profile_needed', 'pending_review_business_id', 'pending_review_recommend']);
+        session()->forget(['register_email', 'register_password', 'register_first_name', 'register_last_name', 'register_is_google', 'register_from_modal', 'register_profile_needed']);
         return response()->json(['status' => 'success']);
     }
 
@@ -254,6 +271,13 @@ class AuthenticationController extends Controller
                     'api_token' => $token,
                     'user_id' => $user->id,
                 ]);
+                if (session()->has('pending_review_business_id')) {
+                    $referer = request()->headers->get('referer');
+                    if ($referer) {
+                        return redirect()->to($referer)->with('success', 'Successfully registered!');
+                    }
+                    return redirect()->back()->with('success', 'Successfully registered!');
+                }
                 return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')])->with('success','Success full Register');
             } else {
                 return redirect()->back()->withErrors(['error' => 'Authentication failed']);

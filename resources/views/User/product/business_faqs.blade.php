@@ -241,10 +241,10 @@
                                     <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
                                 </a>
                             @else
-                                <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                     <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
                                 </a>
-                                <a href="javascript:void(0)" onclick="openLoginModal()" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
                                     <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
                                 </a>
                             @endauth
@@ -378,4 +378,30 @@
         </div>
     </div>
 </section>
+@livewire('add-review')
+
+@if(auth()->check() && session()->has('pending_review_business_id'))
+    @php
+        $pendingBusId = session('pending_review_business_id');
+        $pendingRec = session('pending_review_recommend');
+        session()->forget(['pending_review_business_id', 'pending_review_recommend']);
+    @endphp
+    <script>
+        function triggerPendingReviewModal() {
+            if (window.Livewire) {
+                if (typeof Livewire.dispatch === 'function') {
+                    Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                } else if (typeof Livewire.emit === 'function') {
+                    Livewire.emit('openReviewModal', {{ $pendingBusId }}, {{ json_encode($pendingRec) }});
+                }
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(triggerPendingReviewModal, 300);
+        });
+        document.addEventListener('livewire:load', function() {
+            setTimeout(triggerPendingReviewModal, 300);
+        });
+    </script>
+@endif
 @endsection

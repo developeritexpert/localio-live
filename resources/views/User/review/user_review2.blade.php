@@ -321,10 +321,10 @@
                         <i class="fas fa-times" style="color: #e53e3e;"></i> No
                     </button>
                 @else
-                    <button onclick="openLoginModal()" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-check" style="color: #06498b;"></i> Yes
                     </button>
-                    <button onclick="openLoginModal()" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-times" style="color: #e53e3e;"></i> No
                     </button>
                 @endauth
@@ -439,7 +439,7 @@
                             </button>
                         @else
                         <i class="fas fa-pen" style="font-size: 12px; color:#002347;"></i>
-                            <button onclick="openLoginModal()" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding:0;">
+                            <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} });" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding:0;">
                                  Write review
                             </button>
                         @endauth
@@ -452,6 +452,39 @@
                 </div>
 
                 @livewire('add-review')
+
+                @if(auth()->check() && session()->has('pending_review_business_id'))
+                    @php
+                        $pendingBusId = session('pending_review_business_id');
+                        $pendingRec = session('pending_review_recommend');
+                        session()->forget(['pending_review_business_id', 'pending_review_recommend']);
+                    @endphp
+                    <script>
+                        (function() {
+                            let attempts = 0;
+                            function triggerPendingReviewModal() {
+                                attempts++;
+                                if (window.Livewire) {
+                                    if (typeof Livewire.dispatch === 'function') {
+                                        Livewire.dispatch('openReviewModal', { businessId: {{ $pendingBusId }}, recommend: {{ json_encode($pendingRec) }} });
+                                    } else if (typeof Livewire.emit === 'function') {
+                                        Livewire.emit('openReviewModal', {{ $pendingBusId }}, {{ json_encode($pendingRec) }});
+                                    }
+                                }
+                                if (attempts < 5) {
+                                    setTimeout(triggerPendingReviewModal, 500);
+                                }
+                            }
+                            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                                setTimeout(triggerPendingReviewModal, 300);
+                            } else {
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    setTimeout(triggerPendingReviewModal, 300);
+                                });
+                            }
+                        })();
+                    </script>
+                @endif
             </div>
         </div>
     </div>
