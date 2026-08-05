@@ -57,7 +57,7 @@
                                 @if($step === 1)
                                     <!-- Step 1: Overall Ratings and Recommendation -->
                                     <div class="step-content " wire:key="step-1">
-                                        <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Overall ratings</h5>
+                                        <!-- <h5 class="mb-3" style="color: #002347; font-weight:600; font-size: 14px;">Overall ratings</h5> -->
                                         
                                          <div class="row">
                                              @foreach($criteria as $criterion)
@@ -67,7 +67,7 @@
                                                  @endphp
                                                  <div class="mb-3 col-md-6">
                                                      <label class="form-label fw-semibold " style="font-size: 12px; color:#444444; margin-bottom: 4px;">
-                                                         {{ $criterion['name'] }}:
+                                                         {{ $criterion['name'] }}
                                                      </label>
                                                      <div class="d-flex align-items-center gap-1 star-rating mt-1" data-rating-name="criteria_{{ $cId }}">
                                                          @for ($i = 1; $i <= 5; $i++)
