@@ -4875,7 +4875,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .sharing_icons .sharing_ul a:hover {
-  background-color: #f9633b;
+  background-color: #ff5722;
   cursor: pointer;
 }
 
@@ -6365,7 +6365,7 @@ div#learnMoreModal button.modal-close {
   }
 
   .fixed_sigup>div .space-y-3>div:first-child a {
-    background-color: #003f7d;
+    background-color: #174889;
   }
 
   .fixed_sigup>div .space-y-3>div:first-child a:hover {
@@ -6377,7 +6377,7 @@ div#learnMoreModal button.modal-close {
   }
 
   .fixed_sigup>div .space-y-3>div:last-child a:hover {
-    background-color: #003f7d;
+    background-color: #174889;
   }
 
   /* header  */
@@ -9023,7 +9023,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .sharing_icons .sharing_ul a:hover {
-  background-color: #f9633b;
+  background-color: #ff5722;
   cursor: pointer;
 }
 
@@ -10287,16 +10287,16 @@ html {
 }
 
 .pagination-btn:hover {
-  background-color: #06498b;
-  border-color: #06498b;
+  background-color: #174889;
+  border-color: #174889;
   color: #fff;
   transform: translateY(-1px);
 }
 
 .pagination-btn.active {
-  background-color: #06498b !important;
+  background-color: #174889 !important;
   color: white;
-  border-color: #06498b;
+  border-color: #174889;
 }
 
 .pagination-btn.disabled {

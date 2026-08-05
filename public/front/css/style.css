@@ -344,8 +344,8 @@ div#navbarSupportedContent {
   font-size: 14px;
   font-weight: 600;
   border-radius: 100px;
-  background-color: #06498b;
-  border-color: #06498b;
+  background-color: #174889;
+  border-color: #174889;
   display: inline-block;
   color: #fff;
 }
@@ -356,32 +356,32 @@ div#navbarSupportedContent {
 }
 
 .cta.cta_orange:hover {
-  background-color: #003f7d;
-  border-color: #003f7d;
+  background-color: #174889;
+  border-color: #174889;
 }
 
 .cta.cta_outline {
   background-color: transparent !important;
-  border: 1.5px solid #06498b !important;
+  border: 1.5px solid #174889 !important;
   color: #06498b !important;
   /* transition: all 0.3s ease-in-out; */
 }
 
 .cta.cta_outline:hover {
-  background-color: #06498b !important;
-  border-color: #06498b !important;
+  background-color: #174889 !important;
+  border-color: #174889 !important;
   color: #ffffff !important;
 }
 
 .blog-sec.terms-sec .cta.cta_orange:hover {
-  background: #06498b;
-  border-color: #06498b;
+  background: #174889;
+  border-color: #174889;
 }
 
 .dark .cta:hover {
   background-color: #ffffff;
   border-color: #ffffff;
-  color: #06498b;
+  color: #174889;
 }
 
 .Header_buttons .cta {
@@ -413,12 +413,12 @@ header .search-box input {
 .light .cta.cta_white {
   /* border-color: #000000; */
   color: white;
-  background-color: #003f7d;
+  background-color: #174889;
 }
 
 .cta.cta_white:hover {
-  background-color: #f9633b;
-  border-color: #f9633b;
+  background-color: #ff5522;
+  border-color: #ff5522;
   color: #ffffff;
 }
 
@@ -784,7 +784,7 @@ header .search-box input {
 
 /* footer css */
 footer {
-  background-color: #06498b;
+  background-color: #174889;
 }
 
 footer ul {
@@ -1113,7 +1113,7 @@ textarea:focus-visible {
 }
 
 .top-pro-btn .cta:hover {
-  background-color: #06498b;
+  background-color: #174889;
   color: #fff;
 }
 
@@ -1579,7 +1579,7 @@ textarea:focus-visible {
   color: #fff;
   content: "\2b";
   font-family: "fontAwesome";
-  background-color: #003f7d;
+  background-color: #174889;
   height: 37px;
   width: 37px;
   font-size: 15px !important;
@@ -1979,7 +1979,7 @@ global classes */
   background-color: #fff;
 }
 
-.review_sec .review_detl:hover,
+
 .review_sec .review_detl:hover {
   box-shadow: 0px 20px 30px 0px #0000000f;
   /* box-shadow: -8px -10px 26px 0px #0000000a; */
@@ -2979,9 +2979,9 @@ select:focus {
 }
 
 .auto-choice-btn .cta_orange:hover {
-  background-color: #06498b;
+  background-color: #174889;
   color: #ffffff;
-  border-color: #06498b;
+  border-color: #174889;
 }
 
 .text-choice a {
@@ -3687,7 +3687,7 @@ header.drk_header {
 
 .progress-bar::-webkit-progress-value {
   /* background: #21ac21; */
-  background: #2CC464;
+  background: #2CC464 !important;
   border-radius: 8px !important;
 }
 
@@ -5562,7 +5562,8 @@ i.white-heart {
 header .sec_head {
   position: fixed;
   width: 100%;
-  background-color: #06498b;
+  /* background-color: #06498b; */
+  background-color: #174889;
 }
 
 header .search_logo {
@@ -6092,8 +6093,8 @@ input[type="range"]::-ms-thumb {
 /* btn class */
 .btn-primary {
   color: #fff;
-  background-color: #003f7d;
-  border-color: #003f7d;
+  background-color: #174889;
+  border-color: #174889;
 }
 
 .alert-info {
@@ -6171,7 +6172,7 @@ header .dropdown_menu li a .ab_img {
 }
 
 .sharing_icons .sharing_ul a {
-  background-color: rgb(0 63 125);
+  background-color: #174889;
   color: #fff;
 }
 
@@ -8653,7 +8654,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .blue_t_org_btn {
-  background-color: rgb(0 63 125) !important;
+  background-color: #174889 !important;
 
 }
 
@@ -9393,7 +9394,7 @@ footer .foot-row-lft .foot-logo p {
 
 .product_integra_sec .sftwre-alt-btn a {
   color: #fff !important;
-  background-color: #003f7d;
+  background-color: #174889;
   border: none;
 }
 
@@ -9417,12 +9418,9 @@ footer .foot-row-lft .foot-logo p {
   top: 0 !important;
 }
 
-header .sec_head {
-  transition: 0.2s ease-in;
-}
 
 .transparency-banner {
-  background-color: #003f7d;
+  background-color: #174889;
   position: fixed !important;
   z-index: 10;
   top: 0 !important;
@@ -9643,7 +9641,7 @@ header .sec_head {
 }
 
 .most-populr-sec .popular-category-tab-btn.active {
-  color: #f9633b !important;
+  color: #ff5722 !important;
 }
 
 /* .most-populr-sec .popular-category-tab-btn span:hover {
@@ -9699,8 +9697,8 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover {
-  background-color: #06498b !important;
-  border-color: #06498b !important;
+  background-color: #174889 !important;
+  border-color: #174889 !important;
   color: #fff !important;
 }
 
@@ -9744,7 +9742,7 @@ section.right_tool_sec .otr_rgtool h2 {
 
 .crm_sec.revie_left_rgt_sec .progress-bar::-webkit-progress-bar,
 .revie_img_sec .prgs_br .progress-bar::-webkit-progress-bar {
-  background: #edf6ed !important;
+  background-color: #e2e8f0 !important;
 }
 
 /* 28-july-26  */
@@ -9901,7 +9899,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .asn_main_sec .new-visit-anc .cta.cta_orange:hover {
-  background-color: #06498b;
+  background-color: #174889;
 }
 
 .revie_left_rgt_sec .review-row-prod-inr .col-lg-8>div:first-child {
@@ -9947,7 +9945,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .top-product-card>div:last-child a:last-child:hover {
-  background-color: #06498b !important;
+  background-color: #174889 !important;
 }
 
 .crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover i {
@@ -9976,12 +9974,18 @@ section.right_tool_sec .otr_rgtool h2 {
   transition: unset !important;
 }
 
+.fa-star-half-alt,
 .fa-star {
   color: #FF5700 !important;
+  font-size: 16px;
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after {
-  height: 2px !important;
+  height: 1px !important;
+}
+
+.asn_dv .Tab-outerlnk #table-of-content ul li a.active:hover::after {
+  height: 3px !important;
 }
 
 section.top-automotive-sec.top_rate_pg {
@@ -10012,4 +10016,32 @@ section.top-automotive-sec.top_rate_pg {
 .progress-bar::-webkit-progress-bar {
   background-color: #e2e8f0 !important;
   border: none !important;
+}
+
+/* 5-aug */
+
+.banner_sec.home_bnr_sec {
+  background-color: #174889 !important;
+}
+
+.banner_sec.help-cntr-bnr {
+  background-color: #174889 !important;
+}
+
+.revie_left_rgt_sec .clear-filters-btn {
+  font-weight: 400;
+}
+
+.user_revew_sec .top_head p {
+  font-weight: 600;
+}
+
+a.underline:hover {
+  text-decoration: underline !important;
+}
+.review_sec .review_detl{
+border:1px solid #e2e8f0 !important;
+}
+.review_sec .review_detl:hover{
+  box-shadow:0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
 }
