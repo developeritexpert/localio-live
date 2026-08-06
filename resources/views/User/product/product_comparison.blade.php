@@ -62,6 +62,10 @@
                                     Businesses Comparison
                                 @endif
                             </h1>
+                            <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                            <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
+                            </p>
                         </div>
                     </div>
                 </div>
