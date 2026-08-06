@@ -1531,6 +1531,24 @@
     @if($showFAQSection)
 
         <div class="nk-block nk-block-lg">
+            
+            <div class="d-flex justify-content-center align-items-center mb-3">
+                <div class="form-group position-relative mb-0" style="min-width: 250px;">
+                    <div class="position-relative">
+                        <select class="form-control pe-5" wire:model.live="faqLangId">
+                            @foreach ($languages as $language)
+                                <option value="{{ $language->id }}">
+                                    {{ $language->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <i class="fa fa-chevron-down position-absolute"
+                            style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                        </i>
+                    </div>
+                </div>
+            </div>
 
             {{-- Success Message --}}
             @if (session()->has('message'))
@@ -1639,9 +1657,6 @@
                                         <td class="nk-tb-col">
                                             <span class="tb-sub">{{ Str::limit(strip_tags($faq['answer']), 100) }}</span>
                                         </td>
-
-
-
 
                                         <td class="nk-tb-col nk-tb-col-tools">
                                             <ul class="nk-tb-actions gx-1">

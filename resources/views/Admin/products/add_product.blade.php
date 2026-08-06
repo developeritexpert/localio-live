@@ -22,7 +22,7 @@
                                         <div class="d-flex">
                                             <div class="flex-grow-1">
                                                 {{-- <input type="text" class="form-control" name="name" id="name"
-                                                    placeholder="Product Name" value="{{ old('name') }}"> --}}
+                                                        placeholder="Product Name" value="{{ old('name') }}"> --}}
 
                                                     <x-google-input
                                                     type="text"
@@ -31,7 +31,6 @@
                                                     label="Product Name"
                                                     value="{{ old('name') }}"
                                                 />
-
 
                                             </div>
                                         </div>
@@ -74,161 +73,49 @@
                             <input type="hidden" name="lang_code" value="{{ getCurrentLanguageID() }}" />
                         </div>
                     </div>
+                     
+
                         <!-- Product Prices -->
-                      <!--  <div class="card card-bordered mb-3">
-                            <div class="card-inner">
-                                <h5 class="card-title">Product Price</h5>
+                    <!-- Product Prices -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <h5 class="card-title">Starting price</h5>
 
-                                <div id="price-container">
-                                    <div class="price-box mb-3  p-3 rounded position-relative">
-                                        <div class="">
-                                            <label class="form-label">Default Price :</label>
+                            <div id="price-container">
+                                <div class="price-box mb-3 p-3 rounded position-relative">
+
+                                    {{-- Row 1: Label + Default Price + Currency --}}
+                                    <!-- <div class="mb-2">
+                                        <label class="form-label">Default Price</label>
+                                    </div> -->
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="number"
+                                                name="prices"
+                                                label="Starting price"
+                                            />
                                         </div>
-                                        {{-- <div class="input-group mb-2"> --}}
-                                            {{-- <input type="number" class="form-control" name="prices"
-                                                placeholder="Enter Price" required> --}}
-                                                <x-google-input
-                                                    type="number"
-                                                    name="prices"
-                                                    label="Default Price"
-                                                />
-                                            {{-- Currency --}}
-                                            {{-- <select class="form-select" name="currencies" required>
-                                                @foreach ($currencies as $currency)
-                                                    <option value="{{ $currency->symbol }}">
-                                                        {{ $currency->code }}
-                                                    </option>
-                                                @endforeach
-                                            </select> --}}
-
+                                        <div class="col-md-6 mb-3">
                                             <x-google-input
-                                            type="select"
-                                            name="currencies"
-
-                                            label="Currency"
-                                            :alwaysActive="true"
-                                            :options="$currencies->pluck('code', 'symbol')->toArray()"
-                                            />
-
-
-                                            <div class="text-danger price-type-error d-none">This price type is already
-                                                selected.</div>
-
-
-                                            {{-- <select class="form-select" name="time_units" required>
-                                                <option value="">Time Unit</option>
-                                                <option value="one_time">One Time</option>
-                                                <option value="day">Day</option>
-                                                <option value="week">Week</option>
-                                                <option value="month">Month</option>
-                                                <option value="quarter">Quarter</option>
-                                                <option value="year">Year</option>
-                                            </select> --}}
-
-                                            <x-google-input
-                                            type="select"
-                                            name="time_units"
-                                            :alwaysActive="true"
-                                            label="Time Unit"
-                                            :options="[
-                                                'one_time' => 'One time',
-                                                'day' => 'Day',
-                                                'week' => 'Week',
-                                                'month' => 'Month',
-                                                'quarter' => 'Quarter',
-                                                'year' => 'Year'
-                                            ]"
-                                        />
-
-                                            {{-- <input type="text" class="form-control" name="price_descriptions"
-                                                placeholder="e.g. per user, per license"> --}}
-
-                                                <x-google-input
-                                                type="text"
-                                                name="price_descriptions"
-
-                                                label="Price Description"
-
-                                            />
-
-
-                                               {{-- reneweal price --}}
-                                               <div class=" d-flex flex-column" >
-                                                    <div class="">
-                                                        <label class="form-label">Renewal:</label>
-                                                    </div>
-
-                                                        {{-- <input type="number" class="form-control" name="renewal_prices"
-                                                            placeholder="Renewal Price (optional)"> --}}
-
-                                                            <x-google-input
-                                                            type="number"
-                                                            name="renewal_prices"
-                                                            label="Renewal Price "
-                                                        />
-
-
-                                                    {{-- <select class="form-select" name="renewal_time_units">
-                                                        <option value="">Time Unit</option>
-                                                        <option value="one_time">One Time</option>
-                                                        <option value="day">Day</option>
-                                                        <option value="week">Week</option>
-                                                        <option value="month">Month</option>
-                                                        <option value="quarter">Quarter</option>
-                                                        <option value="year">Year</option>
-                                                    </select> --}}
-
-                                                    <x-google-input
-                                                        type="select"
-                                                        name="renewal_time_units"
-
-                                                        label="Time Unit"
-
-                                                        :options="[
-                                                            'one_time' => 'One time',
-                                                            'day' => 'Day',
-                                                            'week' => 'Week',
-                                                            'month' => 'Month',
-                                                            'quarter' => 'Quarter',
-                                                            'year' => 'Year'
-                                                        ]"
-                                                        :alwaysActive="true"
-                                                    />
-
-                                            </div>
-
-                                        {{-- discount --}}
-                                        <div class="input-group mb-2 d-flex flex-column">
-                                            <div class="">
-                                                <label class="form-label">Discount:</label>
-                                            </div>
-
-                                                {{-- <input type="number" class="form-control" name="discount_prices"
-                                                    placeholder="Discount Price (optional)"> --}}
-
-                                                <x-google-input
-                                                    type="number"
-                                                    name="discount_prices"
-
-                                                    label="Discount Price (optional)"
-                                                />
-
-                                                {{-- <select class="form-select" name="discount_time_units">
-                                                    <option value="">Time Unit</option>
-                                                    <option value="one_time">One Time</option>
-                                                    <option value="day">Day</option>
-                                                    <option value="week">Week</option>
-                                                    <option value="month">Month</option>
-                                                    <option value="quarter">Quarter</option>
-                                                    <option value="year">Year</option>
-                                                </select> --}}
-
-                                                <x-google-input
                                                 type="select"
-                                                name="discount_time_units"
+                                                name="currencies"
+                                                label="Currency"
+                                                :alwaysActive="true"
+                                                :options="$currencies->pluck('code', 'symbol')->toArray()"
+                                            />
+                                        </div>
+                                    </div>
 
+                                    {{-- Row 2: No Label - Time Unit + Price Description --}}
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="select"
+                                                name="time_units"
                                                 label="Time Unit"
-
+                                                :alwaysActive="true"
                                                 :options="[
                                                     'one_time' => 'One time',
                                                     'day' => 'Day',
@@ -237,190 +124,108 @@
                                                     'quarter' => 'Quarter',
                                                     'year' => 'Year'
                                                 ]"
-                                                   :alwaysActive="true"
                                             />
-
-
                                         </div>
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="text"
+                                                name="price_descriptions"
+                                                label="Price Description"
+                                            />
+                                        </div>
+                                    </div>
+                                    <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
+                                    {{-- Row 3: Label + Renewal Price + Time Unit --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">Renewal</label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="number"
+                                                name="renewal_prices"
+                                                label="Renewal Price"
+                                            />
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="select"
+                                                name="renewal_time_units"
+                                                label="Time Unit"
+                                                :alwaysActive="true"
+                                                :options="[
+                                                    'one_time' => 'One time',
+                                                    'day' => 'Day',
+                                                    'week' => 'Week',
+                                                    'month' => 'Month',
+                                                    'quarter' => 'Quarter',
+                                                    'year' => 'Year'
+                                                ]"
+                                            />
+                                        </div>
+                                    </div>
+                                    <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
+                                    {{-- Row 4: Label + Discount Price + Time Unit --}}
+                                    <div class="mb-2">
+                                        <label class="form-label">Discount</label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="number"
+                                                name="discount_prices"
+                                                label="Discount Price (optional)"
+                                            />
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <x-google-input
+                                                type="select"
+                                                name="discount_time_units"
+                                                label="Time Unit"
+                                                :alwaysActive="true"
+                                                :options="[
+                                                    'one_time' => 'One time',
+                                                    'day' => 'Day',
+                                                    'week' => 'Week',
+                                                    'month' => 'Month',
+                                                    'quarter' => 'Quarter',
+                                                    'year' => 'Year'
+                                                ]"
+                                            />
+                                        </div>
+                                    </div>
 
-                                        <div class="mb-2">
-                                            {{-- <label class="form-label">Discount Expiration Date (optional):</label> --}}
-                                            {{-- <input type="date" class="form-control" name="discount_expiration_dates"> --}}
+                                    {{-- Discount Expiration Date --}}
+                                    <div class="row">
+                                        <div class="col-md-12 mb-2">
                                             <x-google-input
                                                 type="date"
                                                 id="discount_expiration_dates"
                                                 name="discount_expiration_dates"
                                                 label="Discount Expiration Date (optional)"
-
                                                 :alwaysActive="true"
                                             />
                                             <div class="form-text">
-                                                If set, the discount will only be shown until this date. After that, the
-                                                original or renewal price is displayed and the discounted price is removed
-                                                from our system.
+                                                If set, the discount will only be shown until this date. After that,
+                                                the original or renewal price is displayed and the discounted price is removed from our system.
                                             </div>
                                         </div>
-
                                     </div>
+
+                                    {{-- Validation --}}
+                                    <div class="text-danger price-type-error d-none">
+                                        This price type is already selected.
+                                    </div>
+
                                 </div>
-                                @error('prices.*')
-                                    <div class="text-danger small">{{ $message }}</div>
-                                @enderror
                             </div>
-                        </div> -->
 
-                        <!-- Product Prices -->
-<!-- Product Prices -->
-<div class="card card-bordered mb-3">
-    <div class="card-inner">
-        <h5 class="card-title">Starting price</h5>
-
-        <div id="price-container">
-            <div class="price-box mb-3 p-3 rounded position-relative">
-
-                {{-- Row 1: Label + Default Price + Currency --}}
-                <!-- <div class="mb-2">
-                    <label class="form-label">Default Price</label>
-                </div> -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="number"
-                            name="prices"
-                            label="Starting price"
-                        />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="select"
-                            name="currencies"
-                            label="Currency"
-                            :alwaysActive="true"
-                            :options="$currencies->pluck('code', 'symbol')->toArray()"
-                        />
-                    </div>
-                </div>
-
-                {{-- Row 2: No Label - Time Unit + Price Description --}}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="select"
-                            name="time_units"
-                            label="Time Unit"
-                            :alwaysActive="true"
-                            :options="[
-                                'one_time' => 'One time',
-                                'day' => 'Day',
-                                'week' => 'Week',
-                                'month' => 'Month',
-                                'quarter' => 'Quarter',
-                                'year' => 'Year'
-                            ]"
-                        />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="text"
-                            name="price_descriptions"
-                            label="Price Description"
-                        />
-                    </div>
-                </div>
-                <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
-                {{-- Row 3: Label + Renewal Price + Time Unit --}}
-                <div class="mb-2">
-                    <label class="form-label">Renewal</label>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="number"
-                            name="renewal_prices"
-                            label="Renewal Price"
-                        />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="select"
-                            name="renewal_time_units"
-                            label="Time Unit"
-                            :alwaysActive="true"
-                            :options="[
-                                'one_time' => 'One time',
-                                'day' => 'Day',
-                                'week' => 'Week',
-                                'month' => 'Month',
-                                'quarter' => 'Quarter',
-                                'year' => 'Year'
-                            ]"
-                        />
-                    </div>
-                </div>
-                <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
-                {{-- Row 4: Label + Discount Price + Time Unit --}}
-                <div class="mb-2">
-                    <label class="form-label">Discount</label>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="number"
-                            name="discount_prices"
-                            label="Discount Price (optional)"
-                        />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="select"
-                            name="discount_time_units"
-                            label="Time Unit"
-                            :alwaysActive="true"
-                            :options="[
-                                'one_time' => 'One time',
-                                'day' => 'Day',
-                                'week' => 'Week',
-                                'month' => 'Month',
-                                'quarter' => 'Quarter',
-                                'year' => 'Year'
-                            ]"
-                        />
-                    </div>
-                </div>
-
-                {{-- Discount Expiration Date --}}
-                <div class="row">
-                    <div class="col-md-12 mb-2">
-                        <x-google-input
-                            type="date"
-                            id="discount_expiration_dates"
-                            name="discount_expiration_dates"
-                            label="Discount Expiration Date (optional)"
-                            :alwaysActive="true"
-                        />
-                        <div class="form-text">
-                            If set, the discount will only be shown until this date. After that,
-                            the original or renewal price is displayed and the discounted price is removed from our system.
+                            @error('prices.*')
+                                <div class="text-danger small">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
-                </div>
-
-                {{-- Validation --}}
-                <div class="text-danger price-type-error d-none">
-                    This price type is already selected.
-                </div>
-
-            </div>
-        </div>
-
-        @error('prices.*')
-            <div class="text-danger small">{{ $message }}</div>
-        @enderror
-    </div>
-</div>
-
-
-
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <h5 class="card-title">Product Filters</h5>
@@ -465,7 +270,6 @@
                                             </div>
                                         </div>
                                     </div>
-
 
                                     <div class="card-body">
 
@@ -713,12 +517,13 @@
                 const businessId = $(this).val();
 
                 // If array with 1 element, get the first element
+                
                 const singleBusinessId = Array.isArray(businessId) ? businessId[0] : businessId;
 
                 if (singleBusinessId) {
                     // Find the associated category for this business
                     $.ajax({
-                        url: "/get-business-category", // You'll need to create this endpoint
+                        url: "/get-business-category", // 
                         type: "GET",
                         data: {
                             business_id: singleBusinessId
@@ -728,10 +533,8 @@
                                 // Set the hidden category input
                                 $productCategory.val(response.category_id);
 
-                                // Set display field with category name
                                 $categoryDisplay.val(response.category_name);
 
-                                // Load filters for this category
                                 loadFilters(response.category_id);
                             }
                         }
@@ -793,70 +596,6 @@
                         return html;
                     }
 
-
-                // Fetch filters for selected category
-                // $.ajax({
-                //     url: "/fetch-filters",
-                //     type: "GET",
-                //     data: {
-                //         categories: categoryId
-                //     },
-                //     success: function(response) {
-                //         if (response.success && response.filters.length > 0) {
-                //             let filtersHtml = '';
-
-                //             response.filters.forEach(filter => {
-                //                 const filterName = filter.translations.length ? filter
-                //                     .translations[0].name : 'Unknown Filter';
-
-                //                 filtersHtml +=
-                //                     `
-                //     <div class="form-group mb-3">
-                //         <label class="form-label font-weight-bold">${filterName}</label>
-                //         <select class="form-control product-filters" name="filters[${filter.id}][]" multiple="multiple" data-filter-id="${filter.id}">`;
-
-                //                 if (filter.options && filter.options.length > 0) {
-                //                     filter.options.forEach(option => {
-                //                         const optionName = option.translations
-                //                             .length ? option.translations[0]
-                //                             .name : 'Unknown Option';
-                //                         filtersHtml +=
-                //                             `<option value="${option.id}">${optionName}</option>`;
-                //                     });
-                //                 } else {
-                //                     filtersHtml +=
-                //                         `<option disabled>No options available</option>`;
-                //                 }
-
-                //                 filtersHtml += `</select>
-                //         <div class="form-text text-muted">Select applicable ${filterName} options for this product</div>
-                //     </div>`;
-                //             });
-
-                //             $filterFields.html(filtersHtml);
-
-                //             // Initialize Select2 for the newly added filter fields
-                //             initializeSelect2();
-                //             $('#category-message').hide();
-                //             // If there are old filter selections (from validation error), restore them
-                //             restoreOldFilterSelections();
-                //         } else {
-                //             $filterFields.html(`
-                //     <div class="alert alert-warning">
-                //         <em class="icon ni ni-alert-circle"></em>
-                //         No filters available for this category
-                //     </div>`);
-                //             }
-                //         },
-                //         error: function(xhr) {
-                //             $filterFields.html(`
-                //     <div class="alert alert-danger">
-                //         <em class="icon ni ni-cross-circle"></em>
-                //         Failed to load filters: ${xhr.statusText}
-                //     </div>`);
-                //             }
-                //         });
-                // }
                 $.ajax({
                     url: "/fetch-filters",
                     type: "GET",

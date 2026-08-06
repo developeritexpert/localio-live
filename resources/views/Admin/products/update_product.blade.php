@@ -71,256 +71,11 @@
                                     </div>
                                 </div>
 
-                           
-                                {{-- <div class="col-md-12 mt-3">
-                                    <div class="form-group">
-                                        <label class="form-label" for="overview">Product Overview</label>
-                                        <textarea class="description form-control" id="overview" name="overview" rows="3">{{ old('overview', $product->translation->overview ?? '') }}</textarea>
-                                        @error('overview')
-                                            <div class="error text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-12 mt-3">
-                                    <div class="form-group">
-                                        <label class="form-label" for="description">Product Description</label>
-                                        <textarea class="description form-control" id="description" name="description" rows="5">{{ old('description', $product->translation->description ?? '') }}</textarea>
-                                        @error('description')
-                                            <div class="error text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div> --}}
                             </div>
 
                             <input type="hidden" name="lang_code" value="{{ getCurrentLanguageID() }}" />
                         </div>
                     </div>
-
-                
-                    <!--    <div class="card card-bordered">
-                                <div class="card-inner">
-                    
-                                    <h5 class="card-title"> Product Price</h5>
-
-                                    <div id="price-container">
-
-                                        @foreach ($product->prices as $price)
-                                            <div class="price-box mb-3  rounded position-relative">
-                                                <div class="">
-                                                    <label class="form-label">Default Price :</label>
-                                                </div>
-                                                {{-- Main Price + Currency + Tenure --}}
-                                            
-                                                    {{-- <input type="number" class="form-control" name="prices"
-                                                        value="{{ $price->price }}" placeholder="Enter Price" required> --}}
-
-                                                        <x-google-input
-                                                            type="number"
-                                                            name="prices"
-                                                    
-                                                            label="Default Price"
-                                                            value="{{ $price->price }}"
-                                                        />
-
-                                                    {{-- Currency --}}
-                                                    {{-- <select class="form-select" name="currencies" required>
-                                                        @foreach ($currencies as $currency)
-                                                            <option value="{{ $currency->symbol }}"
-                                                                {{ $price->currency == $currency->symbol ? 'selected' : '' }}>
-                                                                {{ $currency->code }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select> --}}
-                                                    <x-google-input
-                                                        type="select"
-                                                        name="currencies"
-                                                        :alwaysActive="true" 
-                                                        label="Currency"
-                                                        :value="$price->currency"
-                                                        :options="$currencies->pluck('code', 'symbol')->toArray()"
-                                                        />
-                                            
-
-                                                {{-- Time Unit + Description --}}
-                                            
-                                                    {{-- <select class="form-select" name="time_units" required>
-                                                        <option value="">Time Unit</option>
-                                                        @foreach (['one_time', 'day', 'week', 'month', 'quarter', 'year'] as $unit)
-                                                            <option value="{{ $unit }}"
-                                                                {{ $price->time_unit == $unit ? 'selected' : '' }}>
-                                                                {{ ucfirst($unit) }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select> --}}
-
-                                                    <x-google-input
-                                                        type="select"
-                                                        name="time_units"
-                                                        :alwaysActive="true" 
-                                                        label="Time Unit"
-                                                        :value="$price->time_unit"
-                                                        :options="[
-                                                            'one_time' => 'One time',
-                                                            'day' => 'Day',
-                                                            'week' => 'Week',
-                                                            'month' => 'Month',
-                                                            'quarter' => 'Quarter',
-                                                            'year' => 'Year'
-                                                        ]"
-                                                    />
-                                                
-
-
-                                                    {{-- <input type="text" class="form-control" name="price_descriptions"
-                                                        value="{{ $price->additional_info }}"
-                                                        placeholder="e.g. per user, per license"> --}}
-
-                                                        <x-google-input
-                                                            type="text"
-                                                            name="price_descriptions"
-                                                        
-                                                            label="Price Description"
-                                                            value="{{ $price->additional_info }}"
-                                                        />
-                                    
-
-                                                    {{-- Renewal Price --}}
-                                                
-            
-                                                        <div class="">
-                                                            <label class="form-label">Renewal:</label>
-                                                        </div>
-                                                    
-                                                            {{-- <input type="number" class="form-control" name="renewal_prices"
-                                                                value="{{ $price->renewal_price }}"
-                                                                placeholder="Renewal Price (optional)"> --}}
-
-                                                                <x-google-input
-                                                                    type="number"
-                                                                    name="renewal_prices"
-                                                                
-                                                                    label="Renewal Price "
-                                                                value="{{ $price->renewal_price }}"
-                                                                />
-                                                            
-                                                            {{-- <select class="form-select" name="renewal_time_units">
-                                                                <option value="">Time Unit</option>
-                                                                @foreach (['one_time', 'day', 'week', 'month', 'quarter', 'year'] as $unit)
-                                                                    <option value="{{ $unit }}"
-                                                                        {{ $price->renewal_time_units == $unit ? 'selected' : '' }}>
-                                                                        {{ ucfirst($unit) }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select> --}}
-
-                                                            <x-google-input
-                                                                type="select"
-                                                                name="renewal_time_units"
-                                                        
-                                                                label="Time Unit"
-                                                                :value="$price->renewal_time_units"
-                                                                :options="[
-                                                                    'one_time' => 'One time',
-                                                                    'day' => 'Day',
-                                                                    'week' => 'Week',
-                                                                    'month' => 'Month',
-                                                                    'quarter' => 'Quarter',
-                                                                    'year' => 'Year'
-                                                                ]"
-                                                                :alwaysActive="true" 
-                                                            />
-
-                                                
-                                                    
-
-                                                {{-- Discount Price --}}
-                                                
-
-                                                    <div class="">
-                                                        <label class="form-label">Discount:</label>
-                                                    </div>
-                                            
-                                                        {{-- <input type="number" class="form-control" name="discount_prices"
-                                                            value="{{ $price->discount_price }}"
-                                                            placeholder="Discount Price (optional)"> --}}
-
-                                                            <x-google-input
-                                                                type="number"
-                                                                name="discount_prices"
-                                                                
-                                                                label="Discount Price (optional)"
-                                                                :value="$price->discount_price"
-                                                            
-                                                            />
-
-                                                        {{-- <select class="form-select" name="discount_time_units">
-                                                            <option value="">Time Unit</option>
-                                                            @foreach (['one_time', 'day', 'week', 'month', 'quarter', 'year'] as $unit)
-                                                                <option value="{{ $unit }}"
-                                                                    {{ $price->discount_time_units == $unit ? 'selected' : '' }}>
-                                                                    {{ ucfirst($unit) }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select> --}}
-
-                                                        <x-google-input
-                                                            type="select"
-                                                            name="discount_time_units"
-                                                        
-                                                            label="Time Unit"
-                                                            :value="$price->discount_time_units"
-                                                            :options="[
-                                                                'one_time' => 'One time',
-                                                                'day' => 'Day',
-                                                                'week' => 'Week',
-                                                                'month' => 'Month',
-                                                                'quarter' => 'Quarter',
-                                                                'year' => 'Year'
-                                                            ]"
-                                                            :alwaysActive="true" 
-                                                        />
-
-                                            
-                                                    
-                                    
-
-                                                </div>
-                                                    
-
-                                                {{-- Discount Expiration --}}
-                                                <div class="mb-2">
-                                                    {{-- <label class="form-label">Discount Expiration Date (optional):</label>
-                                                    <input type="date" class="form-control" name="discount_expiration_dates"
-                                                        value="{{ $price->discount_expiration_date }}"> --}}
-
-                                                        <x-google-input
-                                                            type="date"
-                                                            id="discount_expiration_dates"
-                                                            name="discount_expiration_dates"
-                                                            label="Discount Expiration Date (optional)"
-                                                            :value="$price->discount_expiration_date"
-                                                            :alwaysActive="true" 
-                                                        />
-                                                        
-
-                                                    <div class="form-text">
-                                                        If set, the discount will only be shown until this date. After that, the
-                                                        original or renewal price is displayed and the discounted price is
-                                                        removed from our system.
-                                                    </div>
-                                            
-                                            
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    @error('prices.*')
-                                        <div class="text-danger small">{{ $message }}</div>
-                                    @enderror
-
-                                </div>
-                            </div> -->
-
                             <div class="card card-bordered">
                                 <div class="card-inner">
                                     <!-- Product Prices -->
@@ -328,7 +83,7 @@
                             
                                     <div id="price-container">
                                         @foreach ($product->prices as $price)
-                                            <div class="price-box mb-3 p-3 rounded position-relative">
+                                                <div class="price-box mb-3 p-3 rounded position-relative">
                             
                                                 {{-- Row 1: Default Price & Currency --}}
                                                 <!-- <div class="mb-2">
@@ -383,9 +138,22 @@
                                                         />
                                                     </div>
                                                 </div>
+
+                                            </div>
+
+                                        @endforeach
+                                        </div>
+                                
+                                        @error('prices.*')
+                                            <div class="text-danger small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div> 
+                    
                             
                                                 {{-- Row 3: Renewal Price & Time Unit --}}
-                                                <div class="mb-2">
+                                                {{-- <div class="mb-2">
                                                     <label class="form-label">Renewal:</label>
                                                 </div>
                                                 <div class="row">
@@ -414,10 +182,10 @@
                                                             :alwaysActive="true" 
                                                         />
                                                     </div>
-                                                </div>
+                                                </div> --}}
                             
                                                 {{-- Row 4: Discount Price & Time Unit --}}
-                                                <div class="mb-2">
+                                                {{-- <div class="mb-2">
                                                     <label class="form-label">Discount:</label>
                                                 </div>
                                                 <div class="row">
@@ -446,10 +214,10 @@
                                                             :alwaysActive="true" 
                                                         />
                                                     </div>
-                                                </div>
+                                                </div> --}}
                             
                                                 {{-- Row 5: Discount Expiration Date --}}
-                                                <div class="row">
+                                                {{-- <div class="row">
                                                     <div class="col-md-12 mb-2">
                                                         <x-google-input
                                                             type="date"
@@ -465,20 +233,10 @@
                                                             removed from our system.
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> --}}
                             
-                                            </div>
-                                        @endforeach
-                                    </div>
-                            
-                                    @error('prices.*')
-                                        <div class="text-danger small">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
 
                             
-                </div> 
                 <div class="col-md-4 ">
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
@@ -600,41 +358,6 @@
                                                 <div class="text-danger small">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                   
-                                        {{-- <!-- File Upload Section -->
-                                        <div class="row mt-3">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label font-weight-bold">Product Icon</label>
-                                                    <input type="file" class="form-control-file" name="product_icon">
-                                                    @if ($product->product_icon)
-                                                        <div class="img-preview mt-2">
-                                                            <img src="{{ asset($product->product_icon) }}"
-                                                                alt="Product Icon" class="img-thumbnail" width="100">
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @error('product_icon')
-                                                    <div class="text-danger small">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <label class="form-label font-weight-bold">Product Image</label>
-                                                    <input type="file" class="form-control-file" name="product_image">
-                                                    @if ($product->product_image)
-                                                        <div class="img-preview mt-2">
-                                                            <img src="{{ asset($product->product_image) }}"
-                                                                alt="Product Image" class="img-thumbnail" width="100">
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @error('product_image')
-                                                    <div class="text-danger small">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div> --}}
                                     </div>
                                 </div>
                             </div>

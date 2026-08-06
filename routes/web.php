@@ -17,6 +17,8 @@ use App\Http\Controllers\UserDashboard\{UserDashboardController};
 use App\Models\ExpertGuides;
 use App\Models\ProductFeature;
 use App\Models\Rule;
+use App\Livewire\Admin\BusinessFaqManager;
+
 use Illuminate\Support\Facades\Route;
 // use Illuminate\Support\Facades\Redis;
 
@@ -42,7 +44,7 @@ Route::get('/logout', [AuthenticationController::class, 'logout'])->name('logout
 Route::post('loginprocc', [AuthenticationController::class, 'loginProcc'])->name('login_process');
 
 // --------------- ADMIN ROUTES ----------------------
-Route::group(['middleware' => ['auth', 'admin']], function () {
+    Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard', [AdminDashController::class, 'index'])->name('admin_dashboard');
     Route::get('admin-dashboard/setting', [AdminDashController::class, 'profile']);
     Route::post('admin-dashboard/update-profile-procc', [AdminDashController::class, 'ProfileUpdateProcc']);
@@ -132,6 +134,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
                 'pageMode' => 'faq'
             ]);
         })->name('admin.business.faq');
+
+
 
 
 
@@ -621,7 +625,6 @@ Route::get('/set-admin-active-language/{lang_id}', [SiteLanguagesController::cla
 Route::get('/refresh-csrf', function () {
     return response()->json(['token' => csrf_token()]);
 });
-
 
 // Ad tracking handling
 Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);

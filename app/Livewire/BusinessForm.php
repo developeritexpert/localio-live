@@ -111,8 +111,7 @@ class BusinessForm extends Component
 
     public $faqEditId;
     public $editingFAQ;
-
-
+    public $faqLangId = null;
 
     protected function rules()
     {
@@ -557,28 +556,36 @@ class BusinessForm extends Component
     public function mount($businessId = null, $faqBusinessId = null, $faqEditId = null, $pageMode = null)
     {
         // Handle FAQ view mode first
-        if ($pageMode === 'faq') {
-            $this->addbusiness = false;
-            $this->selectedBusinessForFAQ = $faqBusinessId;
-            $this->showFAQSection = true;
-            $this->loadBusinessFAQs();
-            return;
-        }
+       if ($pageMode === 'faq') {
+        $this->lang_id = getCurrentLanguageID();     
+        $this->loadLanguages();                       
+        $this->faqLangId = $this->lang_id;             
 
-        // Handle FAQ edit mode
-        if ($pageMode === 'faq_edit') {
-            $this->addbusiness = false;
-            $this->faqEditId = $faqEditId;
-            $this->editingFAQ = BusinessFaq::with('translation')->findOrFail($faqEditId);
-            $this->faqQuestion = $this->editingFAQ->translation->question ?? '';
-            $this->faqAnswer = $this->editingFAQ->translation->answer ?? '';
-            $this->editingFAQId = $faqEditId;
-            $this->selectedBusinessForFAQ = $this->editingFAQ->business_id;
-            $this->editMode = true;
-            $this->showFAQSection = true;
-            $this->loadBusinessFAQs();
-            return;
-        }
+        $this->addbusiness = false;
+        $this->selectedBusinessForFAQ = $faqBusinessId;
+        $this->showFAQSection = true;
+        $this->loadBusinessFAQs();
+        return;
+    }
+
+    // Handle FAQ edit mode
+    if ($pageMode === 'faq_edit') {
+        $this->lang_id = getCurrentLanguageID();    
+        $this->loadLanguages();                      
+        $this->faqLangId = $this->lang_id;            
+
+        $this->addbusiness = false;
+        $this->faqEditId = $faqEditId;
+        $this->editingFAQ = BusinessFaq::with('translation')->findOrFail($faqEditId);
+        $this->faqQuestion = $this->editingFAQ->translation->question ?? '';
+        $this->faqAnswer = $this->editingFAQ->translation->answer ?? '';
+        $this->editingFAQId = $faqEditId;
+        $this->selectedBusinessForFAQ = $this->editingFAQ->business_id;
+        $this->editMode = true;
+        $this->showFAQSection = true;
+        $this->loadBusinessFAQs();
+        return;
+    }
 
         // if($pageMode=='edit'){
         //     $this->editBusiness($businessId);
@@ -633,6 +640,11 @@ class BusinessForm extends Component
         $this->dispatch('categoryChanged', $this->categoryFeatures);
     }
 
+    public function updatedFaqLangId()
+    {  
+        $this->resetFAQForm();
+        $this->loadBusinessFAQs();
+    }
 
 
 
@@ -700,6 +712,7 @@ class BusinessForm extends Component
         // dd($countryId, $index);
         // dd( $this->editIsAffiliate );
         // dd($this->editUrlValue);
+       
         $this->validate([
             'editUrlValue' => 'required|url',
         ]);
@@ -1714,17 +1727,21 @@ class BusinessForm extends Component
     // $this->showTranslateForm = false;
 }
 
-public function loadBusinessFAQs()
+    public function loadBusinessFAQs()
 {
-    if (!$this->selectedBusinessForFAQ) return;
     
+    if (!$this->selectedBusinessForFAQ) return;
+
+    $langId = $this->faqLangId ?? $this->lang_id;
+    // dd($langId); 
+
     $this->businessFAQs = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
-        ->with(['translation' => function($query) {
-            $query->where('lang_id', $this->lang_id);
+        ->with(['translation' => function($query) use ($langId) {
+            $query->where('lang_id', $langId);
         }])
         ->ordered()
         ->get()
-        ->map(function($faq, $index) {
+        ->map(function($faq) {
             $translation = $faq->translation;
             return [
                 'id' => $faq->id,
@@ -1739,51 +1756,54 @@ public function loadBusinessFAQs()
 
 public function addFAQ()
 {
+
+    // dd("fuck you");
     $this->validate([
         'faqQuestion' => 'required|string|max:500',
         'faqAnswer' => 'required|string|max:2000',
     ]);
-    
+
     if (!$this->selectedBusinessForFAQ) return;
-    
-    DB::transaction(function () {
-        // Get next position
+
+    $langId = $this->faqLangId ?? $this->lang_id; 
+
+    DB::transaction(function () use ($langId) {
         $nextPosition = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
             ->max('position') + 1;
-        
-        // Create FAQ
+
         $faq = BusinessFaq::create([
             'business_id' => $this->selectedBusinessForFAQ,
             'position' => $nextPosition,
             'status' => 1
         ]);
-        
-        // Create translation
+
         BusinessFaqTranslation::create([
             'business_faq_id' => $faq->id,
-            'lang_id' => $this->lang_id,
+            'lang_id' => $langId,
             'question' => $this->faqQuestion,
             'answer' => $this->faqAnswer
         ]);
     });
-    
+
     $this->resetFAQForm();
     $this->loadBusinessFAQs();
-    
+
     session()->flash('message', 'FAQ added successfully!');
 }
 
 public function editFAQ($faqId)
 {
-    $faq = BusinessFaq::with(['translation' => function($query) {
-        $query->where('lang_id', $this->lang_id);
+    $langId = $this->faqLangId ?? $this->lang_id; 
+
+    $faq = BusinessFaq::with(['translation' => function($query) use ($langId) {
+        $query->where('lang_id', $langId);
     }])->find($faqId);
-    
-    if (!$faq || !$faq->translation) return;
-    
+
+    if (!$faq) return;
+
     $this->editingFAQId = $faqId;
-    $this->faqQuestion = $faq->translation->question;
-    $this->faqAnswer = $faq->translation->answer;
+    $this->faqQuestion = $faq->translation->question ?? '';
+    $this->faqAnswer = $faq->translation->answer ?? '';
 }
 
 public function updateFAQ()
@@ -1792,15 +1812,16 @@ public function updateFAQ()
         'faqQuestion' => 'required|string|max:500',
         'faqAnswer' => 'required|string|max:2000',
     ]);
-    
+
     if (!$this->editingFAQId) return;
-    
-    DB::transaction(function () {
-        // Update or create translation
+
+    $langId = $this->faqLangId ?? $this->lang_id; 
+
+    DB::transaction(function () use ($langId) {
         BusinessFaqTranslation::updateOrCreate(
             [
                 'business_faq_id' => $this->editingFAQId,
-                'lang_id' => $this->lang_id
+                'lang_id' => $langId
             ],
             [
                 'question' => $this->faqQuestion,
@@ -1808,10 +1829,10 @@ public function updateFAQ()
             ]
         );
     });
-    
+
     $this->resetFAQForm();
     $this->loadBusinessFAQs();
-    
+
     session()->flash('message', 'FAQ updated successfully!');
 }
 
@@ -1855,7 +1876,7 @@ public function reorderFAQs($orderedIds)
     $this->loadBusinessFAQs();
     
     session()->flash('message', 'FAQ order updated successfully!');
-    // dd('here');
+    
 }
 
 public function toggleFAQStatus($faqId)
