@@ -399,6 +399,56 @@
         .reviw_sec_new .filt_box li i.text-warning{
             color:#4a4a4a !important;
         }
+        /* Circular Pagination Styling */
+        .pagination-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .pagination-wrap .pagination {
+            display: flex !important;
+            gap: 12px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            list-style: none !important;
+        }
+        .pagination-wrap .pagination .page-item {
+            margin: 0 !important;
+            border: none !important;
+        }
+        .pagination-wrap .pagination .page-item .page-link {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 50% !important;
+            border: 1.5px solid #174889 !important;
+            background-color: #ffffff !important;
+            color: #174889 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            text-decoration: none !important;
+            padding: 0 !important;
+            transition: all 0.2s ease !important;
+            box-shadow: none !important;
+        }
+        .pagination-wrap .pagination .page-item.active .page-link {
+            background-color: #174889 !important;
+            border-color: #174889 !important;
+            color: #ffffff !important;
+        }
+        .pagination-wrap .pagination .page-item .page-link:hover {
+            background-color: #174889 !important;
+            border-color: #174889 !important;
+            color: #ffffff !important;
+        }
+        .pagination-wrap .pagination .page-item.disabled {
+            display: none !important;
+        }
         @media (max-width: 991px) {
             .review-sidebar-sticky {
                 position: relative !important;
