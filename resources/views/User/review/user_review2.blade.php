@@ -91,19 +91,19 @@
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class=" top_head d-flex align-items-center gap-3">
+                <div class=" top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
                     <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                            <h1 style="font-size: 28px; font-weight: 700;  margin: 0; line-height: 1;">
                                 {{ $bName }} {{ $reviewsWord }} reviews
                             </h1>
-                            <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
+                            
                         </div>
-                        <p style="font-size: 15px; color: #64748b; margin: 4px 0 0 0;">
+                        <p style="font-size: 16px; color: #444; margin: 0; font-weight:400;">
                             {{ $subHeadline }}
                         </p>
                     </div>
