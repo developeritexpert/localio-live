@@ -122,14 +122,14 @@ section.top-automotive-sec.top_rate_pg.light {
         }
     </style>
 
-    <section class="top-automotive-sec top_rate_pg light" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
+    <section class="top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
                     <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
-                        <div class="row align-items-start justify-content-end">
+                        <div class="row align-items-start">
                             @if(empty($hasUpperHeader))
-                                <div class="col-md-8 text-start">
+                                <div class="text-start col-lg-8">
                                     @php
                                         $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
                                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
@@ -195,7 +195,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                 $bSlug = $business->translations->first()->slug ?? $business->slug;
                                 $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                             @endphp
-                            <div class="col-md-4 mt-4 mt-md-0 text-start">
+                            <div class="col-lg-4 mt-4 mt-md-0 text-start">
                                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                     <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
                                         <div>

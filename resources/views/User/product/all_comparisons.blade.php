@@ -29,7 +29,7 @@
 @endphp
 
 <!-- Upper Header Section -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
+<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
@@ -99,7 +99,7 @@
 </section>
 
 <!-- Top Content Section: Both Titles & Descriptions on Left, Both Widgets on Right -->
-<section class="py-5" style="background-color: #ffffff;">
+<section class="py-5 common_detail_sec" style="background-color: #ffffff;">
     <div class="container">
         <div class="row g-4">
             <!-- Left Side: Title 1 & Description 1 AND Title 2 & Description 2 -->

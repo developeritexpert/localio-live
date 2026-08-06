@@ -9573,9 +9573,9 @@ footer .foot-row-lft .foot-logo p {
   font-size: 12px !important;
 }
 
-.top_rate_pg .automotive-card {
+/* .top_rate_pg .automotive-card {
   background: unset !important;
-}
+} */
 
 .top_rate_pg .automotive-card .auto-choice-hd {
   margin-bottom: 15px !important;
@@ -10114,4 +10114,17 @@ a.underline:hover {
 
 .cat_page_secs .parent-cat-sidebar .cat_link a:hover {
   text-decoration: underline !important;
+}
+
+.common_detail_sec .row .col-lg-8 {
+  width: 60%;
+}
+
+.common_detail_sec .row .col-lg-4 {
+  width: 36%;
+  padding: 0;
+}
+
+.common_detail_sec .row {
+  justify-content: space-between;
 }
