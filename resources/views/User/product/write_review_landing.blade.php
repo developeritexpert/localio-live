@@ -71,9 +71,9 @@
                             <div style="width: 70px; height: 70px; border-radius: 10px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
                                 <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 80%; max-height: 80%; object-fit: contain;">
                             </div>
-                            <h4 class="fw-bold mb-2 text-truncate w-100" style="color: #1e3050; font-size: 16px;">
+                            <h5 class=" mb-2 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
-                            </h4>
+                            </h5>
                             <div class="d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 4px;">
                                 <div class="text-warning d-flex gap-1" style="font-size: 12px; color: #ff9d28 !important;">
                                     @for ($i = 1; $i <= 5; $i++)

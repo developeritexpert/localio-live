@@ -2511,7 +2511,7 @@
                                     @endphp
                                     <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                        class="view-more-link"
-                                       style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
+                                       style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                         View more alternatives
                                     </a>
                                 </div>
@@ -2587,7 +2587,7 @@
                                                     <div class="mt-4 text-center">
                                                         <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
                                                            class="view-more-link"
-                                                           style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                           style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                                             View more FAQs
                                                         </a>
                                                     </div>
@@ -2648,7 +2648,7 @@
                                                         </div>
 
                                                         <!-- VS -->
-                                                        <div class="px-2 fw-normal text-muted flex-shrink-0" style="font-size: 22px; font-family: sans-serif; color: #000000 !important;">VS</div>
+                                                        <div class=" px-2 vs_circle  text-muted flex-shrink-0" style="font-size: 18px; font-family: sans-serif; ">vs</div>
 
                                                         <!-- Business B -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
@@ -2664,7 +2664,7 @@
 
                                                         <!-- Compare Button (Only Clickable Link) -->
                                                         <div class="flex-shrink-0  cmpre_btn" >
-                                                            <a href="{{ $seoUrl }}" class="cta cta_outline text-decoration-none" style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none " style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
                                                                 Compare
                                                             </a>
                                                         </div>
