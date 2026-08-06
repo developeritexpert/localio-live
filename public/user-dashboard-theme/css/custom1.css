@@ -195,14 +195,14 @@ h6 {
 }
 
 .main_dhdr .form button i {
-  background: #f9633b;
+  background: #ff5722;
   position: relative;
   /* top: 0; */
   color: #fff;
   border-radius: 110px;
   width: 60px;
   height: 36px;
-  border: 1px solid #f9633b;
+  border: 1px solid #ff5722;
   font-size: 16px;
 }
 
@@ -459,7 +459,7 @@ footer.ds_ftr {
 .drop_menu .dropdown-menu {
   display: none;
   transform-origin: top;
-  width: 300px;
+  width: 250px;
   border-radius: 5px;
   border: 0px;
   padding: 0px;

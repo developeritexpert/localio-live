@@ -122,23 +122,28 @@ section.top-automotive-sec.top_rate_pg.light {
         }
     </style>
 
-    <section class="top-automotive-sec top_rate_pg light" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
+    <section class="top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
-                    @if(empty($hasUpperHeader))
-                    <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
+                    <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
-                            <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                    {{ __('messages.business_alternatives_title', ['business' => $businessName]) !== 'messages.business_alternatives_title' ? __('messages.business_alternatives_title', ['business' => $businessName]) : $businessName . ' alternatives' }}
-                                </h1>
-                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                    {{ __('messages.business_alternatives_description', ['business' => $businessName]) !== 'messages.business_alternatives_description' ? __('messages.business_alternatives_description', ['business' => $businessName]) : 'Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.' }}
-                                </p>
-                            </div>
-                    @endif
+                            @if(empty($hasUpperHeader))
+                                <div class="text-start col-lg-8">
+                                    @php
+                                        $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
+                                        $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
+                                        $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
+                                    @endphp
+                                    <h1 style="color: #002347; font-size: 24px; font-weight: 700; margin-bottom: 4px;">
+                                        {{ $altTitle }}
+                                    </h1>
+                
+                                    <div style="font-size: 14.5px; color: #475569; line-height: 1.6;">
+                                        {!! $altDesc !!}
+                                    </div>
+                                </div>
+                            @endif
                             @php
                                 $activeReviews = ($business->reviews ?? collect())->where('status', 'active');
                                 $bReviewCount = $activeReviews->count();
@@ -187,31 +192,42 @@ section.top-automotive-sec.top_rate_pg.light {
                                 // Reviews URL
                                 $langObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
                                 $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
+                                $bName = $business->translations->first()->name ?? $business->name ?? 'Business';
                                 $bSlug = $business->translations->first()->slug ?? $business->slug;
                                 $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                             @endphp
-                            <div class="col-md-4 mt-4 mt-md-0 text-start">
+                            <div class="col-lg-4 mt-4 mt-md-0 text-start">
                                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                    <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
-                                        <div>
-                                            <div style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                                {{ number_format($bAvgRating, 1) }}
+                                    <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                                        <div class="d-flex align-items-center gap-3">
+                                            @if(!empty($business->icon_id))
+                                                <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <h3 style="font-size: 16px; font-weight: 700; color: #002347; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                                    <span style="font-weight: 400; color: #333;">{{ number_format($bAvgRating, 1) }}</span>
+                                                    <div class="rating-stars" style="display: flex; gap: 2px;">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= floor($bAvgRating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                                            @elseif ($i - 0.5 <= $bAvgRating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <span style="color: #666; font-weight: 600;">({{ number_format($bReviewCount) }})</span>
+                                                </div>
                                             </div>
-                                            <div style="margin-top: 8px; margin-bottom: 4px; display: flex; gap: 4px;">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= floor($bAvgRating))
-                                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
-                                                    @elseif ($i - 0.5 <= $bAvgRating)
-                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <div style="color: #718096; font-size: 13px;">{{ number_format($bReviewCount) }} {{ $bReviewCount == 1 ? 'review' : 'reviews' }}</div>
                                         </div>
-                                        <a href="{{ $reviewsUrl }}" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                            View all reviews
+
+                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta cta_orange justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px; padding:11px 25px;">
+                                            Visit website
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
                                     </div>
 

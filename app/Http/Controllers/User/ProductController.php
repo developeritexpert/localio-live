@@ -355,6 +355,12 @@ class ProductController extends Controller
         $lang_id=getCurrentLanguageID();
         $comparedProductIds = session()->get('compared_products', []);
         $businesses = Business::with([
+            'category.parent.translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
+            'category.translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
             'products.prices',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);

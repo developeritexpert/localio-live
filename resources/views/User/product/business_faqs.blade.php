@@ -60,7 +60,7 @@
                 </ol>
             </nav>
             <div class="inside_sec_text">
-                <x-social-icon />
+                <x-social-icon :business="$business" />
             </div>
         </div>
 
@@ -95,7 +95,7 @@
 </section>
 
 <!-- Content & Right Sidebar Section -->
-<section class="all_faqs_sec py-5" style="background-color: #ffffff !important;">
+<section class="all_faqs_sec py-5 common_detail_sec" style="background-color: #ffffff !important;">
     <div class="container">
         <div class="row g-4">
             <!-- Left Side: FAQs Title 1 & Description 1, Title 2 & Description 2, and FAQs Accordion -->

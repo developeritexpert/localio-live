@@ -27,6 +27,13 @@
 
 <div class="inside_sec_text inside_sec_text_2" id="{{ $componentId }}">
     <div class="sharing_icons">
+        <div class="sharing_ul social_wishlist_btn">
+            @if(isset($business))
+                <div wire:key="wishlist-container-{{ $business->id }}">
+                    @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
+                </div>
+            @endif
+        </div>
         <div class="sharing_ul">
             <a aria-label="Facebook" class="fb_icon share-btn" data-platform="facebook" title="Facebook">
                 <span class="svg">
@@ -73,13 +80,6 @@
                     </svg>
                 </span>
             </a>
-        </div>
-        <div class="sharing_ul social_wishlist_btn">
-            @if(isset($business))
-                <div wire:key="wishlist-container-{{ $business->id }}">
-                    @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
-                </div>
-            @endif
         </div>
     </div>
 </div>

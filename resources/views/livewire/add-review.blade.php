@@ -115,7 +115,7 @@
                                              <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="closeModal" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
                                                  Cancel
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; transition: background 0.2s;">
+                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -259,7 +259,7 @@
             .step-content.step2  .form-floating.text-inpt>.form-control{
                 height: unset !important;
                 min-height: unset !important;
-                padding:12px 20px !important;
+                padding:16px 20px !important;
             }
 
 
@@ -285,26 +285,33 @@
             .form-floating > textarea:focus ~ label,
             .form-floating > textarea:not(:placeholder-shown) ~ label {
                 opacity: 1 !important;
-                transform: scale(0.85) translateY(-6px) translateX(0.15rem) !important;
+                /* transform: scale(0.85) translateY(-6px) translateX(0.15rem) !important; */
                 color: #80868b !important;
                 font-weight: 600 !important;
                 background-color: #ffffff !important;
-                padding: 0 4px !important;
+                padding: 0 10px !important;
                 height: auto !important;
             }
+            .step-content.step2 .form-floating.text-inpt> label {
+                margin-left: 5px;
+            }
+            .step-content.step2 .form-floating label {
+    margin-left: 5px;
+}
+            
             .form-floating > label {
-                padding: 0.75rem 0.75rem;
+                padding: 17px 20px;
                 font-size: 13px;
                 color: #64748b;
             }
             .form-floating > .form-control,
             .form-floating > textarea {
-                border-radius: 8px !important;
+                border-radius: 4px !important;
                 border: 1px solid #cbd5e0 !important;
                 font-size: 13px !important;
             }
             .modal-dialog .modal-body .out_ln_btn:hover{
-              background-color:#06498b !important;
+              background-color:#174889 !important;
               color:#fff !important;
             }
             .modal-body{

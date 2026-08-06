@@ -84,26 +84,26 @@
                 </ol>
             </nav>
             <div class="inside_sec_text">
-                <x-social-icon />
+                <x-social-icon :business="$business" />
             </div>
         </div>
 
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class=" top_head d-flex align-items-center gap-3">
+                <div class=" top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
                     <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                            <h1 style="font-size: 28px; font-weight: 700;  margin: 0; line-height: 1;">
                                 {{ $bName }} {{ $reviewsWord }} reviews
                             </h1>
-                            <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
+                            
                         </div>
-                        <p style="font-size: 15px; color: #64748b; margin: 4px 0 0 0;">
+                        <p style="font-size: 16px; color: #444; margin: 0; font-weight:400;">
                             {{ $subHeadline }}
                         </p>
                     </div>
@@ -119,11 +119,11 @@
 </section>
 
 <!-- Overview & Pros/Cons Top Showcase Section -->
-<section class="overview-showcase-sec py-5" style="">
+<section class="common_detail_sec overview-showcase-sec py-5" style="">
     <div class="container">
         <div class="row g-4">
             <!-- Left Column: Titles and Descriptions -->
-            <div class="col-lg-7 col-12">
+            <div class="col-lg-8 col-12">
                 <div class="mb-5">
                     <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">{{ $reviewsTitle1 }}</h2>
                     <div style="font-size: 14.5px; color: #475569; line-height: 1.7;">
@@ -148,35 +148,41 @@
             </div>
 
             <!-- Right Column: Rating Widget, Pros, and Cons -->
-            <div class="col-lg-5 col-12 d-flex flex-column gap-4">
+            <div class="col-lg-4 col-12 d-flex flex-column gap-4">
                 <!-- Compact Rating Card -->
-                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                    <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
-                        <div>
-                            <div style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
+                <div class="feture_box review-breakdown-card bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
+                    <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                        <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                 {{ number_format($averageRating, 1) }}
-                            </div>
-                            <div style="margin-top: 8px; margin-bottom: 4px; display: flex; gap: 4px;">
+                            </span>
+
+                            <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
                                 @for ($i = 1; $i <= 5; $i++)
                                     @if ($i <= floor($averageRating))
-                                        <i class="fas fa-star text-warning" style="font-size: 16px;"></i>
+                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
                                     @elseif ($i - 0.5 <= $averageRating)
-                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 16px;"></i>
+                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
                                     @else
-                                        <i class="far fa-star text-warning" style="font-size: 16px;"></i>
+                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
                                     @endif
                                 @endfor
                             </div>
-                            <div style="color: #718096; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
+
+                            <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                         </div>
-                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+
+                        <a href="#reviews-section" class="view-review-link underline" style="color: #002347; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
                             View all reviews
                         </a>
                     </div>
 
+                    <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 700; color: #002347;">
+                        Review breakdown
+                    </h2>
+
                     @if(isset($criteria) && count($criteria) > 0)
-                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
-                        <div class="mb-3">
+                        <div class="review-progress-list mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                     <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
@@ -189,69 +195,127 @@
                         </div>
                     @endif
 
-                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
-                        <span style="font-weight: 600; color: #002347; font-size: 13.5px;">Recommended by users</span>
-                        <strong style="color: #002347; font-size: 13.5px;">{{ $recommendPercent }}%</strong>
+                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                        <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
                     </div>
 
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $bName }}?</span>
+                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                         <div style="display: flex; gap: 8px;">
                             @auth
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-up"></i>
                                 </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-down"></i>
                                 </a>
                             @else
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-up"></i>
                                 </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                    <i class="fas fa-thumbs-down"></i>
                                 </a>
                             @endauth
                         </div>
                     </div>
                 </div>
 
-                <!-- Pros Card -->
-                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Pros</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
-                        @foreach($pros as $pro)
-                            <li style="display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #334155; font-weight: 500;">
-                                <span style="width: 22px; height: 22px; border-radius: 50%; background: #22c55e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">
-                                    <i class="fas fa-plus"></i>
-                                </span>
-                                {{ $pro }}
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
+                <!-- Highlighted Reviews Card (Identical boxed design to business details page) -->
+                @php
+                    $topReviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+                    if ($topReviews->isEmpty() && $business->reviews) {
+                        $topReviews = $business->reviews;
+                    }
+                @endphp
+                <div class="bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
+                    <div class="d-flex justify-content-between align-items-center pb-3 mb-4" style="border-bottom: 1px solid #f0f0f0;">
+                        <h5 class="m-0" style="font-size: 14px; font-weight: 600; color: #002347;">Highlighted reviews</h5>
+                        <a href="#reviews-section" class="view-review-link underline" style="color: #002347; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                            View all reviews
+                        </a>
+                    </div>
 
-                <!-- Cons Card -->
-                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Cons</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
-                        @foreach($cons as $con)
-                            <li style="display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #334155; font-weight: 500;">
-                                <span style="width: 22px; height: 22px; border-radius: 50%; background: #ef4444; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">
-                                    <i class="fas fa-minus"></i>
-                                </span>
-                                {{ $con }}
-                            </li>
+                    @if($topReviews && $topReviews->count() > 0)
+                        @foreach($topReviews->take(2) as $review)
+                            <div class="sidebar-review-card {{ !$loop->last ? 'pb-4 mb-4' : '' }}" style="{{ !$loop->last ? 'border-bottom: 1px solid #f0f0f0;' : '' }}">
+                                <div class="d-flex justify-content-between align-items-start w-100">
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                            <img src="{{ asset($review->user->profile_image) }}"
+                                                class="rounded-circle"
+                                                style="width: 42px; height: 42px; object-fit: cover;"
+                                                alt="User Image">
+                                        @else
+                                            <div style="width: 42px; height: 42px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <span style="color: white; font-weight: bold; font-size: 17px;">
+                                                    @if ($review->user && $review->user->user_type === 'admin')
+                                                        {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                    @else
+                                                        {{ strtoupper(substr($review->user->first_name ?? ($review->user->name ?? 'A'), 0, 1)) }}
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        <div>
+                                            <h6 style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1e3050;">
+                                                @if ($review->user && $review->user->user_type === 'admin')
+                                                    {{ $review->public_name ?? 'Public' }}
+                                                @else
+                                                    {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
+                                                @endif
+                                            </h6>
+                                            @if($review->user && $review->user->job_title)
+                                                <div style="font-size: 12px; color: #64748b; margin-top: 1px; font-weight: 500;">{{ $review->user->job_title }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div style="text-align: right; flex-shrink: 0;">
+                                        @if($review->created_at)
+                                            <span style="font-size: 12px; color: #94a3b8; white-space: nowrap; font-weight: 400;">{{ $review->created_at->diffForHumans() }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                @if($review->translations && $review->translations->first() && $review->translations->first()->title)
+                                    <h5 style="margin-top: 10px; margin-bottom: 6px; font-size: 15px; font-weight: 700; color: #1e3050;">
+                                        {{ $review->translations->first()->title }}
+                                    </h5>
+                                @endif
+
+                                <div class="d-flex align-items-center gap-1 mb-2" style="margin-top: 4px;">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($review->rating))
+                                            <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                        @elseif($i - 0.5 <= $review->rating)
+                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                        @else
+                                            <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+
+                                @if($review->translations && $review->translations->first() && $review->translations->first()->description)
+                                    <p style="font-size: 13.5px; line-height: 1.5; color: #475569; margin-bottom: 0;">
+                                        {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description), 110) }}
+                                    </p>
+                                @endif
+                            </div>
                         @endforeach
-                    </ul>
-                </div>
+                    @else
+                        <p style="font-size: 14px; color: #64748b; margin: 0;">No highlighted reviews available yet.</p>
+                    @endif
+                </div>      
             </div>
         </div>
     </div>
 </section>
 
 <!-- Review Content Section -->
-<section class="review-section reviw_sec_new py-5" style="background-color: #ffffff; overflow: visible !important;">
+<section class="review-section reviw_sec_new py-5" id="reviews-section" style="background-color: #ffffff; overflow: visible !important;">
     <style>
         .review-sidebar-sticky {
             position: sticky !important;
@@ -335,6 +399,56 @@
         .reviw_sec_new .filt_box li i.text-warning{
             color:#4a4a4a !important;
         }
+        /* Circular Pagination Styling */
+        .pagination-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .pagination-wrap .pagination {
+            display: flex !important;
+            gap: 12px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            list-style: none !important;
+        }
+        .pagination-wrap .pagination .page-item {
+            margin: 0 !important;
+            border: none !important;
+        }
+        .pagination-wrap .pagination .page-item .page-link {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 50% !important;
+            border: 1.5px solid #174889 !important;
+            background-color: #ffffff !important;
+            color: #174889 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            text-decoration: none !important;
+            padding: 0 !important;
+            transition: all 0.2s ease !important;
+            box-shadow: none !important;
+        }
+        .pagination-wrap .pagination .page-item.active .page-link {
+            background-color: #174889 !important;
+            border-color: #174889 !important;
+            color: #ffffff !important;
+        }
+        .pagination-wrap .pagination .page-item .page-link:hover {
+            background-color: #174889 !important;
+            border-color: #174889 !important;
+            color: #ffffff !important;
+        }
+        .pagination-wrap .pagination .page-item.disabled {
+            display: none !important;
+        }
         @media (max-width: 991px) {
             .review-sidebar-sticky {
                 position: relative !important;
@@ -359,17 +473,17 @@
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
                 @auth
-                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-check" style="color: #06498b;"></i> Yes
                     </button>
-                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-times" style="color: #e53e3e;"></i> No
                     </button>
                 @else
-                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-check" style="color: #06498b;"></i> Yes
                     </button>
-                    <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                    <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                         <i class="fas fa-times" style="color: #e53e3e;"></i> No
                     </button>
                 @endauth

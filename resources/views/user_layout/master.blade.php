@@ -1694,6 +1694,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                     </div>
                                 </div>
+                                <hr class="msp_divider">
 
 
                                 <div class="msp_links_section">

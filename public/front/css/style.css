@@ -4330,12 +4330,12 @@ p.alrd_pra_text {
 }
 
 .sales-crm-pack .choice_img img {
-  height: 130px;
-  max-width: 130px;
+  height: 80px;
+  max-width: 80px;
 }
 
 .sales-crm-pack .inn_sl_hed {
-  gap: 30px;
+  gap: 20px;
 }
 
 .sales-crm-pack .inn_h {
@@ -4577,7 +4577,7 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .prc_bx .prc_contnt .inn_h {
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .prc_dv .prc_bx .prc_contnt p {
@@ -4587,7 +4587,7 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .prc_bx .prc_contnt .auto-choice-btn {
   text-align: center;
-  margin-top: 45px;
+  margin-top: 30px;
 }
 
 .prc_dv .prc_bx .prc_contnt .auto-choice-btn .cta.cta_orange {
@@ -4599,10 +4599,11 @@ header .container-fluid.top_hd_spacing {
 }
 
 .prc_dv .prc_bx .prc_contnt .inn_h h6.head {
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 65px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
   text-align: left;
+  margin-top: 20px;
   color: #ffffff;
 }
 
@@ -4612,8 +4613,8 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .prc_bx .prc_contnt p span {
   display: inline-block;
-  font-size: 37px;
-  font-weight: 400;
+  font-size: 26px;
+  font-weight: 700;
   line-height: 47.77px;
   text-align: center;
 }
@@ -4820,9 +4821,9 @@ section.product_comp_sec {
   padding: 50px 40px;
 }
 
-.compari_crm_pck .sftwre-alt-btn {
+/* .compari_crm_pck .sftwre-alt-btn {
   padding-top: 30px;
-}
+} */
 
 .compari_crm_pck .cta {
   padding: 11px 20px;
@@ -7094,7 +7095,7 @@ ul#pills-tab {
 
 .star-rating .star-item:hover {
   transform: scale(1.2);
-  color: #ffc107 !important;
+  color: #ff5722 !important;
   /* Highlight color on hover */
 }
 
@@ -7796,7 +7797,7 @@ input:checked~.toggle-dot {
 .pagination-btn:hover {
   background-color: #e9ecef;
   color: #495057;
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
 }
 
 .pagination-btn.active {
@@ -8480,7 +8481,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   left: 0;
   bottom: 0;
   width: 100% !important;
-  height: 3px;
+  height: 2px;
   background: #002347;
   opacity: 0;
   /* transition: width 0.3s ease; */
@@ -9060,7 +9061,7 @@ section.revie_img_sec {
 
 @media (max-width: 575px) {
   .top-pro-box {
-    flex-direction: column !important;
+    /* flex-direction: column !important; */
     align-items: stretch !important;
     gap: 12px !important;
   }
@@ -9573,9 +9574,9 @@ footer .foot-row-lft .foot-logo p {
   font-size: 12px !important;
 }
 
-.top_rate_pg .automotive-card {
+/* .top_rate_pg .automotive-card {
   background: unset !important;
-}
+} */
 
 .top_rate_pg .automotive-card .auto-choice-hd {
   margin-bottom: 15px !important;
@@ -9783,7 +9784,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .modal-dialog .modal-body .btn:hover {
-  background-color: #f9633b !important;
+  background-color: #ff5722 !important;
 }
 
 .modal-dialog .modal-body .btn {
@@ -9976,17 +9977,17 @@ section.right_tool_sec .otr_rgtool h2 {
 
 .fa-star-half-alt,
 .fa-star {
-  color: #FF5700 !important;
+  color: #FF5722 !important;
   font-size: 16px;
 }
 
-.asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after {
-  height: 1px !important;
+/* .asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after {
+  height: 2px !important;
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active:hover::after {
   height: 3px !important;
-}
+} */
 
 section.top-automotive-sec.top_rate_pg {
   background-color: #fdfdfd;
@@ -10048,11 +10049,25 @@ a.underline:hover {
   box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
 }
 
+
+.top_rate_pg .auto-choice-lft .filter-section .form-check .form-check-label,
 .top-automotive-sec.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label,
 .top_rate_pg.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label {
   display: flex;
   gap: 1px;
   align-items: center;
+}
+
+.top_rate_pg .price-input .currency,
+.top-automotive-sec.cat_pg .price-input .currency,
+.top_rate_pg .price-input .currency {
+  font-size: 12px;
+}
+
+.top_rate_pg.cat_pg .auto-choice-lft .form-check-input:hover,
+.top-automotive-sec.cat_pg .auto-choice-lft .form-check-input:hover,
+.top_rate_pg .auto-choice-lft .form-check-input:hover {
+  cursor: pointer
 }
 
 .top-automotive-sec .auto-choice-lft .filter-section .form-check,
@@ -10064,4 +10079,96 @@ a.underline:hover {
 
 .reviw_sec_new .review-cntnt-btm .review-card:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+}
+
+.social_wishlist_btn .wishlist a:hover {
+  background-color: #174889 !important;
+}
+
+.right_tool_sec .tool-card-img .fa-star {
+  color: #174889 !important;
+}
+
+.compare-section .vs_circle {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  border: 1px dashed #06498b33;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #002347 !important;
+  font-weight: 500 !important;
+}
+
+.compare-section .cmpre_btn a:hover {
+  background-color: #033b74;
+}
+
+.top-automotive-sec.cat_pg .automotive-card {
+  background-color: #06498b08 !important;
+}
+
+.top-automotive-sec.cat_pg {
+  background-color: #fdfdfd !important;
+}
+
+.latest_review_part_footer .review_card:hover {
+  box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
+}
+
+.mod_detail_pg .form-check-input {
+  margin-top: 0;
+}
+
+.mod_detail_pg .form-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cat_page_secs .parent-cat-sidebar .cat_link a:hover {
+  text-decoration: underline !important;
+}
+
+.common_detail_sec .row .col-lg-8 {
+  width: 60%;
+}
+
+.common_detail_sec .row .col-lg-4 {
+  width: 36%;
+  padding: 0;
+}
+
+.common_detail_sec .row {
+  justify-content: space-between;
+}
+
+.product_comp_sec a.remove-from-comparison .ct_icn {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product_comp_sec a.remove-from-comparison:hover .ct_icn {
+  background-color: #f7f9fb !important;
+}
+
+.crm_sec .crm_review_box {
+  padding: 50px 0;
+}
+
+.crm_sec.rev-tabi {
+  margin-top: 0px !important;
+}
+
+header .notfictn_lnk img {
+  filter: brightness(0) invert(1);
+}
+
+.mobe-bottom-row {
+  display: none;
 }

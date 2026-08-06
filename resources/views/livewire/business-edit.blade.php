@@ -789,26 +789,52 @@
                                             ->get();
                                     @endphp
                                     <hr class="my-3">
-                                    <div class="form-group mt-3 position-relative">
-                                        <label class="form-label">Business Sub Category</label>
-                                        <div class="position-relative">
-                                            <select class="form-control pe-5" wire:model.live="selected_category">
-                                                <option value=''>Select Category</option>
-                                                @if (isset($categories))
-                                                    @foreach ($subCategories as $category)
-                                                        <option value="{{ $category->id }}">
-                                                            {{ $category->categoryTranslations->first()->name ?? $category->id }}
-                                                        </option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            <i class="fa fa-chevron-down position-absolute"
-                                                style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                                    <div class="form-group mt-3" x-data="{
+                                        search: '',
+                                        selectCategory(id) {
+                                            $wire.set('selected_category', id);
+                                        }
+                                    }">
+                                        <label class="form-label">Primary sub-category</label>
+
+                                        <!-- Search input for primary sub-category -->
+                                        <div class="mb-2">
+                                            <input type="text" x-model="search" class="form-control" placeholder="Search primary sub-category...">
                                         </div>
+
+                                        <!-- Scrollable list of radio options -->
+                                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                            <div class="form-check py-1 border-bottom">
+                                                <input type="radio" id="primary_cat_none" name="primary_sub_category" class="form-check-input"
+                                                    value="" :checked="!$wire.selected_category" @change="selectCategory('')">
+                                                <label class="form-check-label w-100 text-muted" for="primary_cat_none">Select Category</label>
+                                            </div>
+                                            @if (isset($categories))
+                                                @foreach ($subCategories as $category)
+                                                    @php
+                                                        $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
+                                                    @endphp
+                                                    <div class="form-check py-1 border-bottom"
+                                                         x-show="'{{ strtolower(addslashes($catName)) }}'.includes(search.toLowerCase())">
+                                                        <input type="radio"
+                                                            id="primary_cat_{{ $category->id }}"
+                                                            name="primary_sub_category"
+                                                            class="form-check-input"
+                                                            value="{{ $category->id }}"
+                                                            :checked="$wire.selected_category == {{ $category->id }}"
+                                                            @change="selectCategory({{ $category->id }})">
+                                                        <label class="form-check-label w-100" for="primary_cat_{{ $category->id }}">
+                                                            {{ $catName }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+
                                         @error('selected_category')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
-                                    </div>
+                                    
                                     {{-- All sub-category --}}
 
                                     <div class="form-group mt-3" x-data="{
@@ -846,7 +872,7 @@
                                                 <div class="input-group">
                                                     <input type="text" x-model="search" class="form-control" placeholder="Search sub-categories...">
                                                     <div class="input-group-append">
-                                                        <button class="btn btn-outline-primary btn-sm" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
+                                                        <button class="btn btn-outline-primary btn-sm d-none" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
                                                             Select All
                                                         </button>
                                                         <button class="btn btn-outline-danger btn-sm" @click="clearAll()" type="button">

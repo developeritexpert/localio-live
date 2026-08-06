@@ -2511,7 +2511,7 @@
                                     @endphp
                                     <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                        class="view-more-link"
-                                       style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
+                                       style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                         View more alternatives
                                     </a>
                                 </div>
@@ -2587,7 +2587,7 @@
                                                     <div class="mt-4 text-center">
                                                         <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
                                                            class="view-more-link"
-                                                           style="font-size: 15px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                           style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                                             View more FAQs
                                                         </a>
                                                     </div>
@@ -2648,7 +2648,7 @@
                                                         </div>
 
                                                         <!-- VS -->
-                                                        <div class="px-2 fw-normal text-muted flex-shrink-0" style="font-size: 22px; font-family: sans-serif; color: #000000 !important;">VS</div>
+                                                        <div class=" px-2 vs_circle  text-muted flex-shrink-0" style="font-size: 18px; font-family: sans-serif; ">vs</div>
 
                                                         <!-- Business B -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
@@ -2664,7 +2664,7 @@
 
                                                         <!-- Compare Button (Only Clickable Link) -->
                                                         <div class="flex-shrink-0  cmpre_btn" >
-                                                            <a href="{{ $seoUrl }}" class="cta cta_outline text-decoration-none" style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
+                                                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none " style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
                                                                 Compare
                                                             </a>
                                                         </div>
@@ -3094,14 +3094,14 @@
                                                 <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-check" style="color: #06498b;"></i> Yes
                                                 </button>
-                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-times" style="color: #e53e3e;"></i> No
                                                 </button>
                                             @else
                                                 <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-check" style="color: #06498b;"></i> Yes
                                                 </button>
-                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 24px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                     <i class="fas fa-times" style="color: #e53e3e;"></i> No
                                                 </button>
                                             @endauth

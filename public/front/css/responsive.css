@@ -4909,7 +4909,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .drop_menu a img {
-  filter: brightness(0) invert(1);
+  /* filter: brightness(0) invert(1); */
   max-width: 20px;
 }
 
@@ -5767,7 +5767,7 @@ div#learnMoreModal button.modal-close {
   .pagination-btn:hover {
     background-color: #e9ecef;
     color: #495057;
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); */
   }
 
   .pagination-btn.active {
@@ -6154,7 +6154,7 @@ div#learnMoreModal button.modal-close {
   .pagination-btn:hover {
     background-color: #e9ecef;
     color: #495057;
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); */
   }
 
   .pagination-btn.active {
@@ -9053,7 +9053,7 @@ div#learnMoreModal button.modal-close {
 }
 
 .drop_menu a img {
-  filter: brightness(0) invert(1);
+  /* filter: brightness(0) invert(1); */
   max-width: 20px;
 }
 
@@ -9206,7 +9206,7 @@ div#learnMoreModal button.modal-close {
   transform-origin: top;
   /* opacity: 0; */
   display: none;
-  width: 300px;
+  width: 250px;
   border-radius: 5px;
   border: 0px;
   padding: 0px;
@@ -9902,7 +9902,7 @@ ul.options {
 .pagination-btn:hover {
   background-color: #e9ecef;
   color: #495057;
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
 }
 
 .pagination-btn.active {
@@ -11314,8 +11314,8 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 }
 
 #section1 .asn_dv .asn_dv_contnt .asn-img {
-  width: 55px;
-  height: 55px;
+  width: 53px;
+  height: 53px;
   overflow: hidden;
   border-radius: 50%;
 }
@@ -11401,6 +11401,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 .sales-crm-pack .inn_sl_hed {
   width: 100%;
   justify-content: center;
+  align-items: center;
 }
 
 .glass li {
@@ -12909,7 +12910,7 @@ textarea#message {
 
 @media (max-width:575px) {
   header nav#mobile_res {
-    background-color: #003f7d;
+    background-color: #174889;
   }
 
   #pvc_section h5 {
@@ -13088,13 +13089,13 @@ textarea#message {
   }
 
   /* 21-july-26  */
-  .transparency-banner .inr-trans>div {
+  /* .transparency-banner .inr-trans>div {
     font-size: 9px !important;
-  }
+  } */
 
-  .transparency-banner .inr-trans {
+  /* .transparency-banner .inr-trans {
     padding: 9px;
-  }
+  } */
 
   .most-populr-sec .best-value-inline-container {
     top: -20px;
@@ -13207,7 +13208,7 @@ textarea#message {
   }
 
   .most-populr-sec .popular-category-tab-btn span {
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
 
   .most-populr-sec .inn_h .sl_main h6.head {
@@ -13247,6 +13248,21 @@ textarea#message {
 
   section#section-compare {
     padding: 40px 0 !important;
+  }
+
+  .most-populr-sec .top-pro-btn .cta {
+    padding: 8px 12px;
+  }
+
+  .deskp-top-row.see-all-category-container {
+    display: none !important;
+  }
+
+  .mobe-bottom-row {
+    display: flex !important;
+    margin-top: 20px;
+    justify-content: center;
+
   }
 }
 

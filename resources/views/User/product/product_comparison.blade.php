@@ -5,11 +5,11 @@
     $parentCat = $firstBiz && $firstBiz->category && $firstBiz->category->parent ? $firstBiz->category->parent : null;
     $cat = $firstBiz && $firstBiz->category ? $firstBiz->category : null;
 
-    $parentCatName = $parentCat->translation->name ?? $parentCat->translations->first()->name ?? null;
-    $parentCatSlug = $parentCat->translation->slug ?? $parentCat->translations->first()->slug ?? null;
+    $parentCatName = $parentCat?->translation?->name ?? $parentCat?->translations?->first()?->name ?? null;
+    $parentCatSlug = $parentCat?->translation?->slug ?? $parentCat?->translations?->first()?->slug ?? null;
 
-    $catName = $cat->translation->name ?? $cat->translations->first()->name ?? null;
-    $catSlug = $cat->translation->slug ?? $cat->translations->first()->slug ?? null;
+    $catName = $cat?->translation?->name ?? $cat?->translations?->first()?->name ?? null;
+    $catSlug = $cat?->translation?->slug ?? $cat?->translations?->first()?->slug ?? null;
 @endphp
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0; margin-top: 120px; padding-top: 50px; padding-bottom: 30px;">
     <div class="container">
@@ -37,7 +37,9 @@
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
                         @if (count($businesses) >= 2)
-                            {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}
+                            {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}
+                        @elseif (count($businesses) == 1)
+                            {{ $businesses[0]->translations->first()?->name ?? '' }}
                         @else
                             Businesses Comparison
                         @endif
@@ -54,14 +56,20 @@
             <div class="col-md-12 col-12">
                 <div class="top_head d-flex align-items-center gap-3">
                     <div>
-                        <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
+                        <div class="an_lkd   align-items-center gap-2 " style="display:unset;">
                             <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
                                 @if (count($businesses) >= 2)
-                                    {{ $businesses[0]->translations->first()->name ?? '' }} vs {{ $businesses[1]->translations->first()->name ?? '' }}: Comparison
+                                    {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}: Comparison
+                                @elseif (count($businesses) == 1)
+                                    {{ $businesses[0]->translations->first()?->name ?? '' }}: Comparison
                                 @else
                                     Businesses Comparison
                                 @endif
                             </h1>
+                            <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                            <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -75,9 +83,9 @@
     <div class="container">
 
             <div class="row justify-content-center pro-row-gp versus-row" data-aos="fade-up" data-aos-duration="1000">
-                <div class="col-lg-9">
+                <div class="col-12">
                     <div class="asn_tprw">
-                        <div class="pdc_box bg-white rounded-4 border shadow-sm p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;">
+                        <div class="pdc_box bg-white rounded-4 border shadow-sm p-4 p-md-5" style="border-radius: 20px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;">
                             @foreach ($businesses as $index => $business)
                                 @if ($index > 0)
                                     <div class="versus-box">
@@ -89,11 +97,11 @@
                                         <div class="inn_sl_hed flex-column align-items-center text-center w-100" style="gap: 8px;">
                                             <div class="sli_img choice_img mx-auto" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 8px;">
                                                 <img class="slider_img" src="{{ asset($business->icon_id) }}"
-                                                    alt="{{ $business->translations->first()->name ?? '' }}" style="width: 100%; height: 100%; object-fit: contain;">
+                                                    alt="{{ $business->translations->first()?->name ?? '' }}" style="width: 100%; height: 100%; object-fit: contain;">
                                             </div>
                                             <div class="sl_h text-center w-100">
                                                 <div class="inn_h d-flex align-items-center justify-content-center">
-                                                    <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()->name ?? '' }}</h6>
+                                                    <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()?->name ?? '' }}</h6>
                                                 </div>
                                                 <div class="tp-btm d-flex align-items-center justify-content-center mt-1" style="gap: 6px;">
                                                     @php
@@ -101,7 +109,7 @@
                                                         $ratingCount = $business->reviews->count();
                                                     @endphp
 
-                                                    <span style="font-size: 13px; font-weight: 600; color: #64748b;">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                                    <span style="font-size: 13.5px; font-weight: 600; color: #64748b;">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
                                                     <div class="d-flex align-items-center">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($rating >= $i)
@@ -113,14 +121,16 @@
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="font-size: 13px; color: #64748b; font-weight: 500;">{{ $ratingCount }} {{ $ratingCount == 1 ? 'Review' : 'Reviews' }}</span>
+                                                    <span style="font-size: 13.5px; color: #64748b; font-weight: 500;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="auto-choice-btn fit-btn w-100 mt-3" style="max-width: 220px;">
                                             <a href="{{ $business->permanent_url ?? $business->affiliate_link ?? 'javascript:void(0)' }}"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%;">
+                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; border:none;"
+                                                onmouseover="this.style.backgroundColor='#e64a19';"
+                                                onmouseout="this.style.backgroundColor='#ff5722';">
                                                 Visit website
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                             </a>
@@ -131,45 +141,45 @@
 
                                         <!-- Review Breakdown inside card -->
                                         <div class="review-breakdown-card w-100 text-start">
-                                            <h6 style="font-size: 14px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">Review breakdown</h6>
-                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 8px;">
+                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h6>
+                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; color: #64748b;">Value for money</span>
+                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Value for money</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $valueForMoney = $business->reviews->avg('value_for_money_rating') ?? 0;
                                                             $valueForMoneyPercent = $valueForMoney * 20;
                                                         @endphp
-                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 6px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 8px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; color: #64748b;">Ease of use</span>
+                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Ease of use</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $easeOfUse = $business->reviews->avg('ease_of_use_rating') ?? 0;
                                                             $easeOfUsePercent = $easeOfUse * 20;
                                                         @endphp
-                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 6px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 8px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; color: #64748b;">Features</span>
+                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Features</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $featuresRating = $business->reviews->avg('exclusive_service_rating') ?? 0;
                                                             $featuresPercent = $featuresRating * 20;
                                                         @endphp
-                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 6px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 8px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -180,9 +190,9 @@
                                                     $recPercent = round(($rating / 5) * 100);
                                                 }
                                             @endphp
-                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
-                                                <span style="font-size: 12px; font-weight: 700; color: #1e3050;">Recommended by users</span>
-                                                <span style="font-size: 12px; font-weight: 700; color: #1e3050;">{{ $recPercent }}%</span>
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
+                                                <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
+                                                <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -209,24 +219,27 @@
 
 
 
-                    <!-- key features div -->
-                    <div class="cpa_rw cpa_bg light size18 pro-row-gp d-flex" data-aos="fade-up" data-aos-duration="1000">
+                    <!-- Features div (styled like business details page) -->
+                    <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
-                            <div class="cpa_bg_div {{ !$loop->first ? 'p_left' : '' }}">
-                                <div class="tp_box cpa_tp_box">
-                                    <h6 class="big-bld">Key Features</h6>
-                                    <ul class="list-unstyled">
+                            <div class="col-lg-6 col-md-6 mb-3">
+                                <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%;">
+                                    <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
                                         @if($business->features && $business->features->count() > 0)
-                                            @foreach($business->features as $feature)
-                                                <li class="d-flex align-items-center">
-                                                    <span><img src="{{ asset('front/img/pros-tick.svg') }}" alt=""></span>
-                                                    <span>{{ $feature->translations->first()->name ?? 'Feature Name' }}</span>
+                                             @foreach($business->features as $feature)
+                                                <li class="d-flex align-items-center" style="gap: 12px;">
+                                                    <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                        <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                    </span>
+                                                    <span style="font-size: 16px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
                                                 </li>
                                             @endforeach
                                         @else
-                                            <li class="d-flex align-items-center">
-                                                <span><img src="{{ asset('front/img/pros-tick.svg') }}" alt=""></span>
-                                                <span>No features available</span>
+                                            <li class="d-flex align-items-center" style="gap: 12px;">
+                                                <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                    <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                </span>
+                                                <span style="font-size: 16px;  font-weight:500; color: #000;">No features available</span>
                                             </li>
                                         @endif
                                     </ul>
@@ -240,9 +253,9 @@
                         @foreach ($businesses as $index => $business)
                             <div class="col-lg-6 {{ $index == 0 ? 'xrro_bordr' : '' }}">
                                 <div class="xro_box {{ $index == 1 ? 'p_left' : '' }}">
-                                    <h6>What is {{ $business->translations->first()->name ?? 'Product' }}?</h6>
+                                    <h6>What is {{ $business->translations->first()?->name ?? 'Product' }}?</h6>
                                     <div class="xro_text">
-                                        <p>{!! $business->translations->first()->description ?? 'No description available.' !!}</p>
+                                        <p>{!! $business->translations->first()?->description ?? 'No description available.' !!}</p>
                                     </div>
                                 </div>
                             </div>
@@ -258,12 +271,12 @@
                             @foreach ($businesses as $business)
                                 <div class="prc_contnt">
                                     <div class="sli_img">
-                                        <img class="slider_img" src="{{ asset($business->icon_id) }}"
-                                            alt="{{ $business->translations->first()->name ?? '' }}">
+                                        <img class="slider_img" src="{{ asset($business->icon_id) }} "style="max-width:55px;"
+                                            alt="{{ $business->translations->first()?->name ?? '' }}">
                                     </div>
                                     <div class="inn_h d-flex align-items-center">
-                                        <h6 class="head">{{ $business->translations->first()->name ?? '' }}</h6>
-                                        <div>
+                                        <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
+                                        <div class="d-none">
                                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                                         </div>
                                     </div>
@@ -330,9 +343,9 @@
                                     </div>
                                     <div class="sl_h">
                                         <div class="inn_h d-flex align-items-center">
-                                            <h6 class="head">{{ $business->translations->first()->name }}</h6>
+                                            <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
 
-                                            <div>
+                                            <div class="d-none">
                                                 <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                                             </div>
                                         </div>
@@ -354,11 +367,11 @@
                                                 </li>
                                             </div>
                                             <div class="rate_box">
-                                                {{ $ratingCount }} {{ $ratingCount == 1 ? 'Review' : 'Reviews' }}
+                                                ({{ $ratingCount }})
                                             </div>
                                         </div>
 
-                                        <div class="sftwre-alt-btn mt-2">
+                                        <div class="sftwre-alt-sftwre-alt-btn mt-2">
                                             <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center fw_500">
                                                 Visit website
@@ -375,7 +388,7 @@
                 <div class="crm_review_box review_sec compari_review" data-aos="fade-up" data-aos-duration="1000">
                     <nav class="d-flex">
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <button class="nav-link cta active" id="nav-home-tab" data-bs-toggle="tab"
+                            <button class="nav-link  active" id="nav-home-tab" data-bs-toggle="tab"
                                 data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
                                 aria-selected="true">All Reviews</button>
                             <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"
@@ -407,54 +420,87 @@
                                             <div class="compari-pack">
                                                 @if($business->reviews && $business->reviews->count() > 0)
                                                     @foreach($business->reviews->take(3) as $review)
-                                                        <div class="compari_pck_innr">
-                                                            <div class="compari_card_top">
-                                                                <div class="compari-img-txt d-flex">
-                                                                    <div class="compari-crd-img">
-                                                                        <img src="{{ asset('front/img/john-plus.png') }}" alt="">
+                                                        <div class="review_detl populr-alternative" id="review-{{ $review->id }}" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
+                                                            
+                                                            @if($review->created_at)
+                                                                <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px;">
+                                                                    <span style="font-size: 13px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
+                                                                </div>
+                                                            @endif
+
+                                                            <div class="reviw_hd" style="margin-bottom: 16px; border-bottom: none; padding-bottom: 0;">
+                                                                <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
+                                                                    <div class="asn-img" style="flex-shrink: 0;">
+                                                                        @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                            <img src="{{ asset($review->user->profile_image) }}"
+                                                                                class="img-fluid profile-circle"
+                                                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                                                alt="User Image">
+                                                                        @else
+                                                                            <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
+                                                                                <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                                                    @if ($review->user && $review->user->user_type === 'admin')
+                                                                                        {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                                                    @else
+                                                                                        {{ strtoupper(substr($review->user->first_name ?? ($review->user->name ?? 'A'), 0, 1)) }}
+                                                                                    @endif
+                                                                                </span>
+                                                                            </div>
+                                                                        @endif
                                                                     </div>
-                                                                    <div class="compari-txt">
-                                                                        <h6>{{ $review->user->first_name ?? 'Anonymous User' }}</h6>
-                                                                        <p class="m-0">{{ $review->user->position ?? 'Customer' }}</p>
-                                                                        <div class="rating">
+                                                                    <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
+                                                                        <h6 style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
+                                                                            @if ($review->user && $review->user->user_type === 'admin')
+                                                                                {{ $review->public_name ?? 'Public' }}
+                                                                            @else
+                                                                                {{ $review->user ? $review->user->displayName() : ($review->user->name ?? 'Anonymous User') }}
+                                                                            @endif
+                                                                        </h6>
+                                                                        @if($review->user && $review->user->job_title)
+                                                                            <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight: 500;">{{ $review->user->job_title }}</p>
+                                                                        @endif
+                                                                        @if($review->user && $review->user->company_size)
+                                                                            <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight: 500;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="review_text size18" style="padding-right: 0;">
+                                                                @php
+                                                                    $revTitle = $review->translations?->first()?->title;
+                                                                @endphp
+                                                                @if($revTitle)
+                                                                    <h5 class="size22 big-bld" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                                                                        {{ $revTitle }}
+                                                                    </h5>
+                                                                @endif
+                                                                
+                                                                <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                                                                    <div class="inn_ul">
+                                                                        <div class="rating-stars" style="display: flex; gap: 2px;">
                                                                             @for ($i = 1; $i <= 5; $i++)
-                                                                                @if ($review->rating >= $i)
-                                                                                    <i class="fas fa-star text-warning"></i>
-                                                                                @elseif ($review->rating >= $i - 0.5)
-                                                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                                                @if ($i <= floor($review->rating))
+                                                                                    <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                                                                @elseif ($i - 0.5 <= $review->rating)
+                                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
                                                                                 @else
-                                                                                    <i class="far fa-star text-warning"></i>
+                                                                                    <i class="far fa-star text-warning" style="font-size: 14px;"></i>
                                                                                 @endif
                                                                             @endfor
-                                                                            <span class="ms-2">{{ number_format($review->rating, 1) }}/5</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <p class="compari_p">"{{ $review->comment ?? 'Great product with excellent features and customer service.' }}"</p>
-                                                                <a href="javascript:void(0)" class="btn-see-full">See full review</a>
-                                                                @if($loop->last && $business->reviews->count() > 3)
-                                                                    <div class="compari_tabi">
-                                                                        <span>{{ $loop->iteration }}/{{ $business->reviews->count() }}</span>
-                                                                        <a href="javascript:void(0)" class="">Next <i class="fa-solid fa-chevron-right"></i></a>
-                                                                    </div>
-                                                                @endif
+
+                                                                <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
+                                                                    {!! nl2br(e(strip_tags($review->translations?->first()?->description ?? $review->comment ?? 'No Description Available'))) !!}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    <div class="compari_pck_innr">
-                                                        <div class="compari_card_top">
-                                                            <div class="compari-img-txt d-flex">
-                                                                <div class="compari-crd-img">
-                                                                    <img src="{{ asset('front/img/john-plus.png') }}" alt="">
-                                                                </div>
-                                                                <div class="compari-txt">
-                                                                    <h6>No Reviews Yet</h6>
-                                                                    <p class="m-0">Be the first to review</p>
-                                                                </div>
-                                                            </div>
-                                                            <p class="compari_p">"This business hasn't received any reviews yet. Be the first to share your experience!"</p>
-                                                        </div>
+                                                    <div class="review_detl" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                                                        <p style="color: #666; margin: 0; font-size: 14px;">This business hasn't received any reviews yet. Be the first to share your experience!</p>
                                                     </div>
                                                 @endif
                                             </div>
@@ -463,7 +509,7 @@
                                                      $curLang = getCurrentLocale();
                                                      $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
                                                      $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
-                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? '';
                                                  @endphp
                                                  <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="cta cta_white">View All Reviews</a>
                                              </div>
@@ -480,31 +526,90 @@
                                         <div class="col-lg-6 col-md-6">
                                             <div class="compari-pack_tab">
                                                 @php
-                                                    $ourReviews = $business->reviews->take(2);
+                                                    $internalReviews = $business->reviews->take(2);
                                                 @endphp
-                                                @if($ourReviews->count() > 0)
-                                                    @foreach($ourReviews as $review)
-                                                        <div class="compari_pck_innr">
-                                                            <div class="compari_card_top">
-                                                                <div class="compari-img-txt d-flex">
-                                                                    <div class="compari-crd-img">
-                                                                        <img src="{{ asset('front/img/john-plus.png') }}" alt="">
+                                                @if($internalReviews->count() > 0)
+                                                    @foreach($internalReviews as $review)
+                                                        <div class="review_detl populr-alternative" id="review-{{ $review->id }}" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
+                                                            
+                                                            @if($review->created_at)
+                                                                <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px;">
+                                                                    <span style="font-size: 13px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
+                                                                </div>
+                                                            @endif
+
+                                                            <div class="reviw_hd" style="margin-bottom: 16px; border-bottom: none; padding-bottom: 0;">
+                                                                <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
+                                                                    <div class="asn-img" style="flex-shrink: 0;">
+                                                                        @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                            <img src="{{ asset($review->user->profile_image) }}"
+                                                                                class="img-fluid profile-circle"
+                                                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                                                alt="User Image">
+                                                                        @else
+                                                                            <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
+                                                                                <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                                                    @if ($review->user && $review->user->user_type === 'admin')
+                                                                                        {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                                                    @else
+                                                                                        {{ strtoupper(substr($review->user->first_name ?? ($review->user->name ?? 'A'), 0, 1)) }}
+                                                                                    @endif
+                                                                                </span>
+                                                                            </div>
+                                                                        @endif
                                                                     </div>
-                                                                    <div class="compari-txt">
-                                                                        <h6>{{ $review->user->name ?? 'Anonymous User' }}</h6>
-                                                                        <p class="m-0">{{ $review->user->position ?? 'Customer' }}</p>
+                                                                    <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
+                                                                        <h6 style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
+                                                                            @if ($review->user && $review->user->user_type === 'admin')
+                                                                                {{ $review->public_name ?? 'Public' }}
+                                                                            @else
+                                                                                {{ $review->user ? $review->user->displayName() : ($review->user->name ?? 'User') }}
+                                                                            @endif
+                                                                        </h6>
+                                                                        @if($review->user && $review->user->job_title)
+                                                                            <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight: 500;">{{ $review->user->job_title }}</p>
+                                                                        @else
+                                                                            <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight: 500;">Verified User</p>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
-                                                                <p class="compari_p">"{{ $review->comment ?? 'Great experience with this business.' }}"</p>
-                                                                <a href="javascript:void(0)" class="btn-see-full">See full review</a>
+                                                            </div>
+
+                                                            <div class="review_text size18" style="padding-right: 0;">
+                                                                @php
+                                                                    $revTitle = $review->translations?->first()?->title;
+                                                                @endphp
+                                                                @if($revTitle)
+                                                                    <h5 class="size22 big-bld" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                                                                        {{ $revTitle }}
+                                                                    </h5>
+                                                                @endif
+
+                                                                <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                                                                    <div class="inn_ul">
+                                                                        <div class="rating-stars" style="display: flex; gap: 2px;">
+                                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                                @if ($i <= floor($review->rating))
+                                                                                    <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                                                                @elseif ($i - 0.5 <= $review->rating)
+                                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                                                                @else
+                                                                                    <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                                                                @endif
+                                                                            @endfor
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
+                                                                    {!! nl2br(e(strip_tags($review->translations?->first()?->description ?? $review->comment ?? 'Great experience with this business.'))) !!}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    <div class="compari_pck_innr">
-                                                        <div class="compari_card_top">
-                                                            <p class="compari_p">No internal reviews available for {{ $business->translations->first()->name ?? 'this business' }}.</p>
-                                                        </div>
+                                                    <div class="review_detl" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                                                        <p style="color: #666; margin: 0; font-size: 14px;">No internal reviews available for {{ $business->translations->first()?->name ?? 'this business' }}.</p>
                                                     </div>
                                                 @endif
                                             </div>
@@ -513,7 +618,7 @@
                                                      $curLang = getCurrentLocale();
                                                      $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
                                                      $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
-                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? '';
                                                  @endphp
                                                  <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="cta cta_white">View Reviews</a>
                                              </div>
@@ -534,27 +639,74 @@
                                                 @endphp
                                                 @if($trustpilotReviews->count() > 0)
                                                     @foreach($trustpilotReviews as $review)
-                                                        <div class="compari_pck_innr">
-                                                            <div class="compari_card_top">
-                                                                <div class="compari-img-txt d-flex">
-                                                                    <div class="compari-crd-img">
-                                                                        <img src="{{ asset('front/img/john-plus.png') }}" alt="">
+                                                        <div class="review_detl populr-alternative" id="review-{{ $review->id }}" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
+                                                            
+                                                            @if($review->created_at)
+                                                                <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px;">
+                                                                    <span style="font-size: 13px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
+                                                                </div>
+                                                            @endif
+
+                                                            <div class="reviw_hd" style="margin-bottom: 16px; border-bottom: none; padding-bottom: 0;">
+                                                                <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
+                                                                    <div class="asn-img" style="flex-shrink: 0;">
+                                                                        @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                                            <img src="{{ asset($review->user->profile_image) }}"
+                                                                                class="img-fluid profile-circle"
+                                                                                style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                                                alt="User Image">
+                                                                        @else
+                                                                            <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
+                                                                                <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                                                    {{ strtoupper(substr($review->user->name ?? 'T', 0, 1)) }}
+                                                                                </span>
+                                                                            </div>
+                                                                        @endif
                                                                     </div>
-                                                                    <div class="compari-txt">
-                                                                        <h6>{{ $review->user->name ?? 'Trustpilot User' }}</h6>
-                                                                        <p class="m-0">Trustpilot Review</p>
+                                                                    <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
+                                                                        <h6 style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
+                                                                            {{ $review->user->name ?? 'Trustpilot User' }}
+                                                                        </h6>
+                                                                        <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight: 500;">Trustpilot Review</p>
                                                                     </div>
                                                                 </div>
-                                                                <p class="compari_p">"{{ $review->comment ?? 'Verified Trustpilot review.' }}"</p>
-                                                                <a href="javascript:void(0)" class="btn-see-full">See full review</a>
+                                                            </div>
+
+                                                            <div class="review_text size18" style="padding-right: 0;">
+                                                                @php
+                                                                    $revTitle = $review->translations?->first()?->title;
+                                                                @endphp
+                                                                @if($revTitle)
+                                                                    <h5 class="size22 big-bld" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                                                                        {{ $revTitle }}
+                                                                    </h5>
+                                                                @endif
+
+                                                                <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                                                                    <div class="inn_ul">
+                                                                        <div class="rating-stars" style="display: flex; gap: 2px;">
+                                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                                @if ($i <= floor($review->rating))
+                                                                                    <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                                                                @elseif ($i - 0.5 <= $review->rating)
+                                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                                                                @else
+                                                                                    <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                                                                @endif
+                                                                            @endfor
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
+                                                                    {!! nl2br(e(strip_tags($review->translations?->first()?->description ?? $review->comment ?? 'Verified Trustpilot review.'))) !!}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     @endforeach
                                                 @else
-                                                    <div class="compari_pck_innr">
-                                                        <div class="compari_card_top">
-                                                            <p class="compari_p">No Trustpilot reviews available for {{ $business->translations->first()->name ?? 'this business' }}.</p>
-                                                        </div>
+                                                    <div class="review_detl" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                                                        <p style="color: #666; margin: 0; font-size: 14px;">No Trustpilot reviews available for {{ $business->translations->first()?->name ?? 'this business' }}.</p>
                                                     </div>
                                                 @endif
                                             </div>
@@ -563,7 +715,7 @@
                                                      $curLang = getCurrentLocale();
                                                      $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
                                                      $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
-                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+                                                     $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? '';
                                                  @endphp
                                                  <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="cta cta_white">View Reviews</a>
                                              </div>
@@ -582,7 +734,7 @@
     </div>
     </section>
 
-    <section class="subs_sec light p_120 ">
+    <section class="subs_sec light pt_120 ">
         {{-- <div class="container">
             <div class="subs_content" data-aos="fade-up" data-aos-duration="1000">
                 <h2>Send this comparison chart to my inbox</h2>
