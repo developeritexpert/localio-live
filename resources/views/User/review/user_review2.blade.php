@@ -222,35 +222,93 @@
                     </div>
                 </div>
 
-                <!-- Pros Card -->
-                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Pros</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
-                        @foreach($pros as $pro)
-                            <li style="display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #334155; font-weight: 500;">
-                                <span style="width: 22px; height: 22px; border-radius: 50%; background: #22c55e; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">
-                                    <i class="fas fa-plus"></i>
-                                </span>
-                                {{ $pro }}
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
+                <!-- Highlighted Reviews Card (Identical boxed design to business details page) -->
+                @php
+                    $topReviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+                    if ($topReviews->isEmpty() && $business->reviews) {
+                        $topReviews = $business->reviews;
+                    }
+                @endphp
+                <div class="bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
+                    <div class="d-flex justify-content-between align-items-center pb-3 mb-4" style="border-bottom: 1px solid #f0f0f0;">
+                        <h3 class="m-0" style="font-size: 17px; font-weight: 700; color: #002347;">Highlighted reviews</h3>
+                        <a href="#reviews-section" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                            View all reviews
+                        </a>
+                    </div>
 
-                <!-- Cons Card -->
-                <div class="p-4 bg-white rounded-4 border shadow-sm" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important;">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Cons</h3>
-                    <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px;">
-                        @foreach($cons as $con)
-                            <li style="display: flex; align-items: center; gap: 12px; font-size: 14.5px; color: #334155; font-weight: 500;">
-                                <span style="width: 22px; height: 22px; border-radius: 50%; background: #ef4444; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">
-                                    <i class="fas fa-minus"></i>
-                                </span>
-                                {{ $con }}
-                            </li>
+                    @if($topReviews && $topReviews->count() > 0)
+                        @foreach($topReviews->take(2) as $review)
+                            <div class="sidebar-review-card {{ !$loop->last ? 'pb-4 mb-4' : '' }}" style="{{ !$loop->last ? 'border-bottom: 1px solid #f0f0f0;' : '' }}">
+                                <div class="d-flex justify-content-between align-items-start w-100">
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                            <img src="{{ asset($review->user->profile_image) }}"
+                                                class="rounded-circle"
+                                                style="width: 42px; height: 42px; object-fit: cover;"
+                                                alt="User Image">
+                                        @else
+                                            <div style="width: 42px; height: 42px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <span style="color: white; font-weight: bold; font-size: 17px;">
+                                                    @if ($review->user && $review->user->user_type === 'admin')
+                                                        {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                    @else
+                                                        {{ strtoupper(substr($review->user->first_name ?? ($review->user->name ?? 'A'), 0, 1)) }}
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        <div>
+                                            <h6 style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1e3050;">
+                                                @if ($review->user && $review->user->user_type === 'admin')
+                                                    {{ $review->public_name ?? 'Public' }}
+                                                @else
+                                                    {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
+                                                @endif
+                                            </h6>
+                                            @if($review->user && $review->user->job_title)
+                                                <div style="font-size: 12px; color: #64748b; margin-top: 1px; font-weight: 500;">{{ $review->user->job_title }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div style="text-align: right; flex-shrink: 0;">
+                                        @if($review->created_at)
+                                            <span style="font-size: 12px; color: #94a3b8; white-space: nowrap; font-weight: 400;">{{ $review->created_at->diffForHumans() }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                @if($review->translations && $review->translations->first() && $review->translations->first()->title)
+                                    <h5 style="margin-top: 10px; margin-bottom: 6px; font-size: 15px; font-weight: 700; color: #1e3050;">
+                                        {{ $review->translations->first()->title }}
+                                    </h5>
+                                @endif
+
+                                <div class="d-flex align-items-center gap-1 mb-2" style="margin-top: 4px;">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($review->rating))
+                                            <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                        @elseif($i - 0.5 <= $review->rating)
+                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                        @else
+                                            <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+
+                                @if($review->translations && $review->translations->first() && $review->translations->first()->description)
+                                    <p style="font-size: 13.5px; line-height: 1.5; color: #475569; margin-bottom: 0;">
+                                        {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description), 110) }}
+                                    </p>
+                                @endif
+                            </div>
                         @endforeach
-                    </ul>
-                </div>
+                    @else
+                        <p style="font-size: 14px; color: #64748b; margin: 0;">No highlighted reviews available yet.</p>
+                    @endif
+                </div>      
             </div>
         </div>
     </div>
