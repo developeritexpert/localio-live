@@ -126,19 +126,24 @@ section.top-automotive-sec.top_rate_pg.light {
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
-                    @if(empty($hasUpperHeader))
-                    <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
-                        <div class="row align-items-start">
-                            <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                    {{ __('messages.business_alternatives_title', ['business' => $businessName]) !== 'messages.business_alternatives_title' ? __('messages.business_alternatives_title', ['business' => $businessName]) : $businessName . ' alternatives' }}
-                                </h1>
-                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                    {{ __('messages.business_alternatives_description', ['business' => $businessName]) !== 'messages.business_alternatives_description' ? __('messages.business_alternatives_description', ['business' => $businessName]) : 'Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.' }}
-                                </p>
-                            </div>
-                    @endif
+                    <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
+                        <div class="row align-items-start justify-content-end">
+                            @if(empty($hasUpperHeader))
+                                <div class="col-md-8 text-start">
+                                    @php
+                                        $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
+                                        $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
+                                        $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
+                                    @endphp
+                                    <h1 style="color: #002347; font-size: 24px; font-weight: 700; margin-bottom: 4px;">
+                                        {{ $altTitle }}
+                                    </h1>
+                
+                                    <div style="font-size: 14.5px; color: #475569; line-height: 1.6;">
+                                        {!! $altDesc !!}
+                                    </div>
+                                </div>
+                            @endif
                             @php
                                 $activeReviews = ($business->reviews ?? collect())->where('status', 'active');
                                 $bReviewCount = $activeReviews->count();

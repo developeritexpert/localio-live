@@ -61,26 +61,26 @@
         <!-- Business Header Row -->
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
-                <div class="top_head d-flex align-items-center gap-2">
-                    <!-- Business Icon -->
-                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
-                        <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
+                <div class="top_head">
+                    @php
+                        $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
+                        $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($bName . ' alternatives');
+                    @endphp
+                    <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
+                        <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                            {{ $bName }} alternatives
+                        </h1>
                     </div>
-                    <div>
-                        <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1;">
-                                {{ $bName }} alternatives
-                            </h1>
-                            <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
-                        </div>
-                        <p style="font-size: 16px; color: #444; margin:0;">
-                            {{ $subHeadline }}
-                        </p>
-                    </div>
+                    <p class="text-muted" style="font-size: 13px; margin-bottom: 14px; color: #888;">
+                        Last updated on {{ now()->format('F j, Y') }}
+                    </p>
+                    <p style="font-size: 16px; color: #444; margin: 0; font-weight: 400;">
+                        {{ $subHeadline }}
+                    </p>
                 </div>
             </div>
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;    " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>

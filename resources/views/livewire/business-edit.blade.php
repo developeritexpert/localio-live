@@ -790,7 +790,7 @@
                                     @endphp
                                     <hr class="my-3">
                                     <div class="form-group mt-3 position-relative">
-                                        <label class="form-label">Business Sub Category</label>
+                                        <label class="form-label">Primary sub-category</label>
                                         <div class="position-relative">
                                             <select class="form-control pe-5" wire:model.live="selected_category">
                                                 <option value=''>Select Category</option>
