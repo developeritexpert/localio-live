@@ -84,7 +84,7 @@
                 </ol>
             </nav>
             <div class="inside_sec_text">
-                <x-social-icon />
+                <x-social-icon :business="$business" />
             </div>
         </div>
 
