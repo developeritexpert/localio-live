@@ -83,9 +83,9 @@
     <div class="container">
 
             <div class="row justify-content-center pro-row-gp versus-row" data-aos="fade-up" data-aos-duration="1000">
-                <div class="col-lg-9">
+                <div class="col-12">
                     <div class="asn_tprw">
-                        <div class="pdc_box bg-white rounded-4 border shadow-sm p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;">
+                        <div class="pdc_box bg-white rounded-4 border shadow-sm p-4 p-md-5" style="border-radius: 20px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;">
                             @foreach ($businesses as $index => $business)
                                 @if ($index > 0)
                                     <div class="versus-box">
@@ -109,7 +109,7 @@
                                                         $ratingCount = $business->reviews->count();
                                                     @endphp
 
-                                                    <span style="font-size: 13px; font-weight: 600; color: #64748b;">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                                    <span style="font-size: 13.5px; font-weight: 600; color: #64748b;">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
                                                     <div class="d-flex align-items-center">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($rating >= $i)
@@ -121,14 +121,16 @@
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="font-size: 13px; color: #64748b; font-weight: 500;">({{ $ratingCount }})</span>
+                                                    <span style="font-size: 13.5px; color: #64748b; font-weight: 500;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="auto-choice-btn fit-btn w-100 mt-3" style="max-width: 220px;">
                                             <a href="{{ $business->permanent_url ?? $business->affiliate_link ?? 'javascript:void(0)' }}"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%;">
+                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; transition: background-color 0s;"
+                                                onmouseover="this.style.backgroundColor='#e64a19';"
+                                                onmouseout="this.style.backgroundColor='#ff5722';">
                                                 Visit website
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                             </a>
@@ -139,45 +141,45 @@
 
                                         <!-- Review Breakdown inside card -->
                                         <div class="review-breakdown-card w-100 text-start">
-                                            <h6 style="font-size: 14px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">Review breakdown</h6>
-                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 8px;">
+                                            <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h6>
+                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; color: #64748b;">Value for money</span>
+                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">Value for money</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $valueForMoney = $business->reviews->avg('value_for_money_rating') ?? 0;
                                                             $valueForMoneyPercent = $valueForMoney * 20;
                                                         @endphp
-                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 6px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 8px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #334155; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; color: #64748b;">Ease of use</span>
+                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">Ease of use</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $easeOfUse = $business->reviews->avg('ease_of_use_rating') ?? 0;
                                                             $easeOfUsePercent = $easeOfUse * 20;
                                                         @endphp
-                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 6px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 8px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #334155; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; color: #64748b;">Features</span>
+                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">Features</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $featuresRating = $business->reviews->avg('exclusive_service_rating') ?? 0;
                                                             $featuresPercent = $featuresRating * 20;
                                                         @endphp
-                                                        <div class="progress w-100" style="height: 6px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 6px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                            <div class="progress-bar" style="height: 8px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #1e3050; min-width: 35px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #334155; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -188,9 +190,9 @@
                                                     $recPercent = round(($rating / 5) * 100);
                                                 }
                                             @endphp
-                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2" style="border-top: 1px solid #f1f5f9;">
-                                                <span style="font-size: 12px; font-weight: 700; color: #1e3050;">Recommended by users</span>
-                                                <span style="font-size: 12px; font-weight: 700; color: #1e3050;">{{ $recPercent }}%</span>
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
+                                                <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
+                                                <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -732,7 +734,7 @@
     </div>
     </section>
 
-    <section class="subs_sec light p_120 ">
+    <section class="subs_sec light pt_120 ">
         {{-- <div class="container">
             <div class="subs_content" data-aos="fade-up" data-aos-duration="1000">
                 <h2>Send this comparison chart to my inbox</h2>
