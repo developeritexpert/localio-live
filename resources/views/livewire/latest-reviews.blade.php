@@ -27,8 +27,8 @@
                     <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0; text-transform:none;">Latest reviews</h2>
                 </div>
                 <div class="reviews-slider-nav" style="display: flex; gap: 8px;">
-                    <button class="reviews-prev" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #cbd5e0; background: #ffffff; color: #4a5568; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#4a5568'; this.style.background='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.background='#ffffff';"><i class="fas fa-chevron-left"></i></button>
-                    <button class="reviews-next" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#06498b'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#06498b';"><i class="fas fa-chevron-right"></i></button>
+                    <button class="reviews-prev" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer;" onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-left"></i></button>
+                    <button class="reviews-next" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer; " onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
                                 @endphp
 
                                 @if ($business && $businessTranslation)
-                                    <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 20px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 15px rgba(0,0,0,0.05)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.02)';">
+                                    <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;  height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: unset;  margin-bottom: 20px;" >
                                         <!-- Top part: user icon, name, rating -->
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                                             <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">

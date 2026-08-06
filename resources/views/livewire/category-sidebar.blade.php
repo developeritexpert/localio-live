@@ -9,7 +9,7 @@
                                 All categories
                             </h4>
                         @else
-                            <div style="margin-bottom: 15px; text-align: left;">
+                            <div style="margin-bottom: 15px; text-align: left;" class="cat_link">
                                 <a href="javascript:void(0)"
                                    wire:click="selectAllCategories"
                                    wire:loading.class="cat_loading"
@@ -127,7 +127,7 @@
                                                 <!-- <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span> -->
                                             </h6>
                                             <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                                <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span>
+                                                <span class="fw-medium text-dark">{{ number_format($business->average_rating, 1) }}</span>
                                                 <div class="d-flex" style="color: #ffc107;">
                                                     @php $rating = round($business->average_rating); @endphp
                                                     @for($i = 1; $i <= 5; $i++)
@@ -140,7 +140,7 @@
                                                 </div>
                                                 <!-- <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span> -->
                                                 <!-- <span>|</span> -->
-                                                <span>({{ $business->active_reviews_count }})</span>
+                                                <span class="fw-medium">({{ $business->active_reviews_count }})</span>
                                                 <!-- <span>{{ $business->active_reviews_count }} {{ $business->active_reviews_count == 1 ? 'review' : 'reviews' }}</span> -->
                                             </div>
                                         </div>

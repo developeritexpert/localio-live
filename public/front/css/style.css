@@ -8480,7 +8480,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
   left: 0;
   bottom: 0;
   width: 100% !important;
-  height: 3px;
+  height: 2px;
   background: #002347;
   opacity: 0;
   /* transition: width 0.3s ease; */
@@ -9783,7 +9783,7 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 .modal-dialog .modal-body .btn:hover {
-  background-color: #f9633b !important;
+  background-color: #ff5722 !important;
 }
 
 .modal-dialog .modal-body .btn {
@@ -9976,17 +9976,17 @@ section.right_tool_sec .otr_rgtool h2 {
 
 .fa-star-half-alt,
 .fa-star {
-  color: #FF5700 !important;
+  color: #FF5722 !important;
   font-size: 16px;
 }
 
-.asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after {
-  height: 1px !important;
+/* .asn_dv .Tab-outerlnk #table-of-content ul li a:hover::after {
+  height: 2px !important;
 }
 
 .asn_dv .Tab-outerlnk #table-of-content ul li a.active:hover::after {
   height: 3px !important;
-}
+} */
 
 section.top-automotive-sec.top_rate_pg {
   background-color: #fdfdfd;
@@ -10064,4 +10064,54 @@ a.underline:hover {
 
 .reviw_sec_new .review-cntnt-btm .review-card:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+}
+
+.social_wishlist_btn .wishlist a:hover {
+  background-color: #174889 !important;
+}
+
+.right_tool_sec .tool-card-img .fa-star {
+  color: #174889 !important;
+}
+
+.compare-section .vs_circle {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  border: 1px dashed #06498b33;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #002347 !important;
+  font-weight: 500 !important;
+}
+
+.compare-section .cmpre_btn a:hover {
+  background-color: #033b74;
+}
+
+.top-automotive-sec.cat_pg .automotive-card {
+  background-color: #06498b08 !important;
+}
+
+.top-automotive-sec.cat_pg {
+  background-color: #fdfdfd !important;
+}
+
+.latest_review_part_footer .review_card:hover {
+  box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
+}
+
+.mod_detail_pg .form-check-input {
+  margin-top: 0;
+}
+
+.mod_detail_pg .form-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cat_page_secs .parent-cat-sidebar .cat_link a:hover {
+  text-decoration: underline !important;
 }
