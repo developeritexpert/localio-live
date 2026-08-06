@@ -138,7 +138,7 @@
                                         tabindex="0">
                                         
                                         <!-- Top Row: See all Category link -->
-                                        <div class="see-all-category-container d-flex justify-content-end align-items-center">
+                                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center"style="display:flex;">
                                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
                                                 {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
                                             </a>
@@ -272,6 +272,11 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+                                        </div>
+                                        <div class=" mobe-bottom-row see-all-category-containerjustify-content-end align-items-center">
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
+                                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
+                                            </a>
                                         </div>
                                     </div>
                                 @endif

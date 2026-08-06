@@ -250,23 +250,30 @@
         </div>
         <div class="dropdown-menu dropdown-menu-right" style="margin-right: 20px;">
             <div class="dropdown-main ">
-                <div class="user_detail">
-                    <div class="user_img">
-                        @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
-                        <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
-                        @else
-                        <div class="profile-circle" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <span style="color: white; font-weight: bold; font-size: 20px; line-height: 1; margin-top: 2px;">
-                                {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
-                            </span>
+                @php
+                    $profileUrl = Auth::user()->user_type === 'vendor' 
+                        ? route('vendor-profile', ['locale' => app()->getLocale()]) 
+                        : route('user-profile', ['locale' => app()->getLocale()]);
+                @endphp
+                <a href="{{ $profileUrl }}" class="user_detail_link" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="user_detail">
+                        <div class="user_img">
+                            @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
+                            <img src="{{ asset(Auth::user()->profile_image) }}" class="img-fluid profile-circle" style=' border-radius: 50%; width: 50px; height: 50px; object-fit: cover; flex-shrink: 0;'>
+                            @else
+                            <div class="profile-circle" style="width: 50px; height: 50px; min-width: 50px; min-height: 50px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <span style="color: white; font-weight: bold; font-size: 20px; line-height: 1; margin-top: 2px;">
+                                    {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
+                                </span>
+                            </div>
+                            @endif
                         </div>
-                        @endif
+                        <div class="user_name">
+                            <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
+                            <p>{{ Auth::user()->email }}</p>
+                        </div>
                     </div>
-                    <div class="user_name">
-                        <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
-                        <p>{{ Auth::user()->email }}</p>
-                    </div>
-                </div>
+                </a>
                 <div class="dash-icon">
                     @if(Auth::user()->user_type ==='user')
                     <a class="dropdown-item"

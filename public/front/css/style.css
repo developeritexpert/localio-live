@@ -9061,7 +9061,7 @@ section.revie_img_sec {
 
 @media (max-width: 575px) {
   .top-pro-box {
-    flex-direction: column !important;
+    /* flex-direction: column !important; */
     align-items: stretch !important;
     gap: 12px !important;
   }
@@ -10163,4 +10163,12 @@ a.underline:hover {
 
 .crm_sec.rev-tabi {
   margin-top: 0px !important;
+}
+
+header .notfictn_lnk img {
+  filter: brightness(0) invert(1);
+}
+
+.mobe-bottom-row {
+  display: none;
 }
