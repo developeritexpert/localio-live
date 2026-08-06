@@ -5767,7 +5767,7 @@ div#learnMoreModal button.modal-close {
   .pagination-btn:hover {
     background-color: #e9ecef;
     color: #495057;
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); */
   }
 
   .pagination-btn.active {
@@ -6154,7 +6154,7 @@ div#learnMoreModal button.modal-close {
   .pagination-btn:hover {
     background-color: #e9ecef;
     color: #495057;
-    transform: translateY(-1px);
+    /* transform: translateY(-1px); */
   }
 
   .pagination-btn.active {
@@ -9902,7 +9902,7 @@ ul.options {
 .pagination-btn:hover {
   background-color: #e9ecef;
   color: #495057;
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
 }
 
 .pagination-btn.active {
@@ -11401,6 +11401,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 .sales-crm-pack .inn_sl_hed {
   width: 100%;
   justify-content: center;
+  align-items: center;
 }
 
 .glass li {

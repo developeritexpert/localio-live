@@ -56,7 +56,7 @@
             <div class="col-md-12 col-12">
                 <div class="top_head d-flex align-items-center gap-3">
                     <div>
-                        <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
+                        <div class="an_lkd   align-items-center gap-2 " style="display:unset;">
                             <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
                                 @if (count($businesses) >= 2)
                                     {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}: Comparison
@@ -128,7 +128,7 @@
                                         <div class="auto-choice-btn fit-btn w-100 mt-3" style="max-width: 220px;">
                                             <a href="{{ $business->permanent_url ?? $business->affiliate_link ?? 'javascript:void(0)' }}"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; transition: background-color 0s;"
+                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; border:none;"
                                                 onmouseover="this.style.backgroundColor='#e64a19';"
                                                 onmouseout="this.style.backgroundColor='#ff5722';">
                                                 Visit website
@@ -141,10 +141,10 @@
 
                                         <!-- Review Breakdown inside card -->
                                         <div class="review-breakdown-card w-100 text-start">
-                                            <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h6>
+                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h6>
                                             <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">Value for money</span>
+                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Value for money</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $valueForMoney = $business->reviews->avg('value_for_money_rating') ?? 0;
@@ -153,11 +153,11 @@
                                                         <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                             <div class="progress-bar" style="height: 8px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #334155; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">Ease of use</span>
+                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Ease of use</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $easeOfUse = $business->reviews->avg('ease_of_use_rating') ?? 0;
@@ -166,11 +166,11 @@
                                                         <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                             <div class="progress-bar" style="height: 8px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #334155; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 13px; font-weight: 500; color: #334155;">Features</span>
+                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Features</span>
                                                     <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
                                                         @php
                                                             $featuresRating = $business->reviews->avg('exclusive_service_rating') ?? 0;
@@ -179,7 +179,7 @@
                                                         <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                             <div class="progress-bar" style="height: 8px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #334155; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -231,7 +231,7 @@
                                                     <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
                                                         <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
                                                     </span>
-                                                    <span style="font-size: 16px; font-weight: 600; color: #1e3050; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
+                                                    <span style="font-size: 16px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
                                                 </li>
                                             @endforeach
                                         @else
@@ -239,7 +239,7 @@
                                                 <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
                                                     <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
                                                 </span>
-                                                <span style="font-size: 15px; color: #64748b;">No features available</span>
+                                                <span style="font-size: 16px;  font-weight:500; color: #000;">No features available</span>
                                             </li>
                                         @endif
                                     </ul>
@@ -271,7 +271,7 @@
                             @foreach ($businesses as $business)
                                 <div class="prc_contnt">
                                     <div class="sli_img">
-                                        <img class="slider_img" src="{{ asset($business->icon_id) }}"
+                                        <img class="slider_img" src="{{ asset($business->icon_id) }} "style="max-width:55px;"
                                             alt="{{ $business->translations->first()?->name ?? '' }}">
                                     </div>
                                     <div class="inn_h d-flex align-items-center">
@@ -371,7 +371,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="sftwre-alt-btn mt-2">
+                                        <div class="sftwre-alt-sftwre-alt-btn mt-2">
                                             <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center fw_500">
                                                 Visit website
@@ -388,7 +388,7 @@
                 <div class="crm_review_box review_sec compari_review" data-aos="fade-up" data-aos-duration="1000">
                     <nav class="d-flex">
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <button class="nav-link cta active" id="nav-home-tab" data-bs-toggle="tab"
+                            <button class="nav-link  active" id="nav-home-tab" data-bs-toggle="tab"
                                 data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
                                 aria-selected="true">All Reviews</button>
                             <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab"

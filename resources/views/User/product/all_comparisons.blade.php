@@ -220,8 +220,8 @@
                 @if(count($peerComparisons) > 0)
                     <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
-                            <h6 style="font-size: 15px; font-weight: 700; color: #002347; margin: 0;">Popular comparisons</h6>
-                            <a href="#grid-comparisons-section" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin: 0;">Popular comparisons</h6>
+                            <a href="#grid-comparisons-section" style="color: #002347; font-weight: 600; font-size: 14px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                 View all comparisons
                             </a>
                         </div>

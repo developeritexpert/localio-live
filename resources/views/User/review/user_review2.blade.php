@@ -172,7 +172,7 @@
                             <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
-                        <a href="#reviews-section" class="view-review-link underline" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
+                        <a href="#reviews-section" class="view-review-link underline" style="color: #002347; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
                             View all reviews
                         </a>
                     </div>
@@ -231,8 +231,8 @@
                 @endphp
                 <div class="bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
                     <div class="d-flex justify-content-between align-items-center pb-3 mb-4" style="border-bottom: 1px solid #f0f0f0;">
-                        <h3 class="m-0" style="font-size: 17px; font-weight: 700; color: #002347;">Highlighted reviews</h3>
-                        <a href="#reviews-section" class="view-review-link underline" style="color: #06498b; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                        <h5 class="m-0" style="font-size: 14px; font-weight: 600; color: #002347;">Highlighted reviews</h5>
+                        <a href="#reviews-section" class="view-review-link underline" style="color: #002347; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             View all reviews
                         </a>
                     </div>

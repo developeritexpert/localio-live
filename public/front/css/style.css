@@ -4330,12 +4330,12 @@ p.alrd_pra_text {
 }
 
 .sales-crm-pack .choice_img img {
-  height: 130px;
-  max-width: 130px;
+  height: 80px;
+  max-width: 80px;
 }
 
 .sales-crm-pack .inn_sl_hed {
-  gap: 30px;
+  gap: 20px;
 }
 
 .sales-crm-pack .inn_h {
@@ -4577,7 +4577,7 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .prc_bx .prc_contnt .inn_h {
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .prc_dv .prc_bx .prc_contnt p {
@@ -4587,7 +4587,7 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .prc_bx .prc_contnt .auto-choice-btn {
   text-align: center;
-  margin-top: 45px;
+  margin-top: 30px;
 }
 
 .prc_dv .prc_bx .prc_contnt .auto-choice-btn .cta.cta_orange {
@@ -4599,10 +4599,11 @@ header .container-fluid.top_hd_spacing {
 }
 
 .prc_dv .prc_bx .prc_contnt .inn_h h6.head {
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 65px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.5;
   text-align: left;
+  margin-top: 20px;
   color: #ffffff;
 }
 
@@ -4612,8 +4613,8 @@ header .container-fluid.top_hd_spacing {
 
 .prc_dv .prc_bx .prc_contnt p span {
   display: inline-block;
-  font-size: 37px;
-  font-weight: 400;
+  font-size: 26px;
+  font-weight: 700;
   line-height: 47.77px;
   text-align: center;
 }
@@ -4820,9 +4821,9 @@ section.product_comp_sec {
   padding: 50px 40px;
 }
 
-.compari_crm_pck .sftwre-alt-btn {
+/* .compari_crm_pck .sftwre-alt-btn {
   padding-top: 30px;
-}
+} */
 
 .compari_crm_pck .cta {
   padding: 11px 20px;
@@ -7094,7 +7095,7 @@ ul#pills-tab {
 
 .star-rating .star-item:hover {
   transform: scale(1.2);
-  color: #ffc107 !important;
+  color: #ff5722 !important;
   /* Highlight color on hover */
 }
 
@@ -7796,7 +7797,7 @@ input:checked~.toggle-dot {
 .pagination-btn:hover {
   background-color: #e9ecef;
   color: #495057;
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
 }
 
 .pagination-btn.active {
@@ -10048,11 +10049,25 @@ a.underline:hover {
   box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
 }
 
+
+.top_rate_pg .auto-choice-lft .filter-section .form-check .form-check-label,
 .top-automotive-sec.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label,
 .top_rate_pg.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label {
   display: flex;
   gap: 1px;
   align-items: center;
+}
+
+.top_rate_pg .price-input .currency,
+.top-automotive-sec.cat_pg .price-input .currency,
+.top_rate_pg .price-input .currency {
+  font-size: 12px;
+}
+
+.top_rate_pg.cat_pg .auto-choice-lft .form-check-input:hover,
+.top-automotive-sec.cat_pg .auto-choice-lft .form-check-input:hover,
+.top_rate_pg .auto-choice-lft .form-check-input:hover {
+  cursor: pointer
 }
 
 .top-automotive-sec .auto-choice-lft .filter-section .form-check,
@@ -10127,4 +10142,25 @@ a.underline:hover {
 
 .common_detail_sec .row {
   justify-content: space-between;
+}
+
+.product_comp_sec a.remove-from-comparison .ct_icn {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product_comp_sec a.remove-from-comparison:hover .ct_icn {
+  background-color: #f7f9fb !important;
+}
+
+.crm_sec .crm_review_box {
+  padding: 50px 0;
+}
+
+.crm_sec.rev-tabi {
+  margin-top: 0px !important;
 }
