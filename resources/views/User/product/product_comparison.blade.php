@@ -217,24 +217,27 @@
 
 
 
-                    <!-- key features div -->
-                    <div class="cpa_rw cpa_bg light size18 pro-row-gp d-flex" data-aos="fade-up" data-aos-duration="1000">
+                    <!-- Features div (styled like business details page) -->
+                    <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
-                            <div class="cpa_bg_div {{ !$loop->first ? 'p_left' : '' }}">
-                                <div class="tp_box cpa_tp_box">
-                                    <h6 class="big-bld">Key Features</h6>
-                                    <ul class="list-unstyled">
+                            <div class="col-lg-6 col-md-6 mb-3">
+                                <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%;">
+                                    <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
                                         @if($business->features && $business->features->count() > 0)
                                              @foreach($business->features as $feature)
-                                                <li class="d-flex align-items-center">
-                                                    <span><img src="{{ asset('front/img/pros-tick.svg') }}" alt=""></span>
-                                                    <span>{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
+                                                <li class="d-flex align-items-center" style="gap: 12px;">
+                                                    <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                        <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                    </span>
+                                                    <span style="font-size: 16px; font-weight: 600; color: #1e3050; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
                                                 </li>
                                             @endforeach
                                         @else
-                                            <li class="d-flex align-items-center">
-                                                <span><img src="{{ asset('front/img/pros-tick.svg') }}" alt=""></span>
-                                                <span>No features available</span>
+                                            <li class="d-flex align-items-center" style="gap: 12px;">
+                                                <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                    <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                </span>
+                                                <span style="font-size: 15px; color: #64748b;">No features available</span>
                                             </li>
                                         @endif
                                     </ul>
