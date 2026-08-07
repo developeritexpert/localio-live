@@ -1,5 +1,19 @@
 <div>
     <style>
+        label.form-check-label span.filter1 {
+            padding-left: 5px;
+        }
+
+        label.form-check-label {
+    cursor: pointer;
+}
+                .automotive-card {
+            box-shadow: 0px 34px 74px 0px #0023470f;
+        }
+
+        .automotive-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
 .top-rated-heading-sec .breadcrumb-item a, .asn_main_sec .breadcrumb-item a{
     display: block;
 }
@@ -300,7 +314,9 @@
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
                                         <h3 class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</h3>
+                                            <!-- {{ static_text('user_rating') }} -->
+                                            User rating
+                                        </h3>
 
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input"
@@ -327,7 +343,11 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <h3 class="fw-semibold text-dark mb-3">
+                                            <!-- {{ static_text('price_range') }} -->
+                                            Price range
+
+                                        </h3>
 
                                         <div class="price-slider-container">
                                             <div

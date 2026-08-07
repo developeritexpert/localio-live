@@ -1,7 +1,18 @@
 <div>
     <style>
-        .top-rated-heading-sec .breadcrumb-item a {
-            display: block;
+        label.form-check-label span.filter1 {
+            padding-left: 5px;
+        }
+
+        label.form-check-label {
+            cursor: pointer;
+        }
+        .automotive-card {
+            box-shadow: 0px 34px 74px 0px #0023470f;
+        }
+
+        .automotive-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
         .top-rated-heading-block h1 {
             font-size: 28px !important;
@@ -14,16 +25,16 @@
      
         section.top-automotive-sec.top_rate_pg.light {
            margin-top: 0 !important;
-           /* padding-top:0 !important; */
+           padding-top:0 !important;
         }
         .top-rated-heading-sec{
              margin-top: 120px ;
-           padding-top:30px !important;
-           background-color:#f7f9fb;
-           border-bottom: 1px solid #e2e8f0;
-           /* margin-bottom: 25px; */
+           padding-top:50px !important;
+           background-color:#fdfdfd;
+           border-bottom: 2px solid #e8eef6;
+           margin-bottom: 25px;
         }
-         .top-rated-heading-sec .padd-row {
+         .top-rated-heading-sec .row {
             padding-bottom:20px;
             
          }
@@ -48,19 +59,6 @@
             gap: 8px 45px !important;
             width: 100% !important;
         }
-        .top-rated-heading-sec .breadcrumb-item a:hover{
-            text-decoration:underline !important;
-        }
-
-
-        .form-check-input {           
-            margin-top: 0;           
-        }
-         .price-separator,
-        .price-input input {
-            font-size: 12px;
-        }
-    
         @media (max-width: 768px) {
             /* .automotive-card {
                 padding-bottom: 20px !important;
@@ -145,26 +143,8 @@
     </style>
     <section class="top-rated-heading-sec">
        <div class="container">
-            <div class=" bread_row row align-items-center mb-3">
-                <div class="col-8">
-                    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0" style="background: transparent; padding: 0; display: flex; align-items: center;">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('category', ['locale' => app()->getLocale()]) }}"
-                                   style="color: inherit; text-decoration: none; font-size: 13px;">All</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #002347; font-weight: 500;">
-                                Top-rated products
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="col-4 d-flex justify-content-end">
-                    <x-social-icon />
-                </div>
-            </div>
             <div class="top-rated-heading-block">
-                        <div class="padd-row row align-items-start">
+                        <div class="row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
@@ -173,7 +153,7 @@
                                 </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                         <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
@@ -188,7 +168,7 @@
                     </div>
        </div>
     </section>
-    <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px; background-color: #fdfdfd !important;">
+    <section class="top-automotive-sec top_rate_pg light  ">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
@@ -224,7 +204,9 @@
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
                                         <h3 class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</h3>
+                                            <!-- {{ static_text('user_rating') }} -->
+                                            User rating
+                                        </h3>
 
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input"
@@ -251,7 +233,11 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <h3 class="fw-semibold text-dark mb-3">
+                                            <!-- {{ static_text('price_range') }} -->
+                                            Price range
+
+                                        </h3>
 
                                         <div class="price-slider-container">
                                             <div
@@ -528,15 +514,15 @@
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore class="d-none">
+                                    <div wire:ignore>
                                         <x-social-icon/>
                                     </div>
                                 </div>
                                 @if (!empty($products))
                                     @foreach ($products as $index => $item)
-                                        <div class="automotive-card" data-aos="fade-up" style="background-color: #f7f9fb;"
+                                        <div class="automotive-card auto-bg" data-aos="fade-up"
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
-                                            <div class="auto-choice-card" style="position: relative;">
+                                            <div class="auto-choice-card" style="position: relative; ">
                                                 @php
                                                     $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
                                                 @endphp
@@ -569,9 +555,9 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                                            <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
-                                                                            <div class="inn_ul d-inline-flex m-0">
+                                                                        <div class="tp-btm d-flex flex-col-mob">
+                                                                             <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                            <div class="inn_ul">
                                                                                 <div class="rating-stars ">
                                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                                         @if ($i <= floor($item->reviews->avg('rating')))
@@ -584,7 +570,9 @@
                                                                                     @endfor
                                                                                 </div>
                                                                             </div>
-                                                                            <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->reviews->count() }})</span>
+                                                                            <div class="rate_box" style="font-weight: 400; ">
+                                                                                ({{ $item->reviews->count() }})
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -608,7 +596,7 @@
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
@@ -616,19 +604,19 @@
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>
