@@ -18,7 +18,7 @@
                   <div class="col-lg-6">
                      <a class="acc-box" href="{{route('user-deal', ['locale' => app()->getLocale()])}}">
                         <div class="acc-img">
-                           <img src="{{asset('user-dashboard-theme/img/mt_reward.svg')}}" class="img-fluid">
+                           <img src="{{asset('user-dashboard-theme/img/mt_reward1.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
 
@@ -33,7 +33,7 @@
                   <div class="col-lg-6">
                      <a class="acc-box" href="{{ route('user-product', ['locale' => app()->getLocale()]) }}">
                         <div class="acc-img">
-                           <img src="{{asset('user-dashboard-theme/img/saved_prdt.svg')}}" class="img-fluid">
+                           <img src="{{asset('user-dashboard-theme/img/saved_prdt1.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
                            <h2>My favorites</h2>
@@ -47,7 +47,7 @@
                    <div class="col-lg-6">
                      <a class="acc-box" href="{{ route('user-review', ['locale' => app()->getLocale()]) }}">
                         <div class="acc-img">
-                           <img src="{{asset('user-dashboard-theme/img/my_rview.svg')}}" class="img-fluid">
+                           <img src="{{asset('user-dashboard-theme/img/my_rview1.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
                            <h2>My reviews</h2>
@@ -60,7 +60,7 @@
                   <div class="col-lg-6">
                      <a class="acc-box" href="{{route('user-profile', ['locale' => app()->getLocale()])}}">
                         <div class="acc-img">
-                           <img src="{{asset('user-dashboard-theme/img/my_profle.svg')}}" class="img-fluid">
+                           <img src="{{asset('user-dashboard-theme/img/my_profle1.svg')}}" class="img-fluid">
                         </div>
                         <div class="acc-text">
                            <h2>My discussions</h2>

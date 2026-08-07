@@ -18,10 +18,12 @@ class CompareProducts extends Component
         $this->item = $item;
         $this->refreshComparedProducts();
     }
+
+    #[\Livewire\Attributes\On('toggleCompareProduct')]
     public function refreshComparedProducts()
     {
-        $this->comparedProducts = app(CompareService::class)->getComparedProducts();
-        $this->isInCompare = in_array((int)$this->item->id, $this->comparedProducts);
+        $this->comparedProducts = array_map('intval', app(CompareService::class)->getComparedProducts());
+        $this->isInCompare = in_array((int)$this->item->id, $this->comparedProducts, true);
         $this->isDisabled = count($this->comparedProducts) >= 2 && !$this->isInCompare;
     }
     public function toggleCompare($productId)

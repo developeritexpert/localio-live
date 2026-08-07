@@ -28,4 +28,9 @@ class PricingOption extends Model
     {
         return $this->belongsToMany(Business::class, 'business_pricing_option');
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_pricing_option');
+    }
 }

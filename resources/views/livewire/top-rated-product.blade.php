@@ -1,5 +1,22 @@
 <div>
     <style>
+        .automotive-card.auto-bg.aos-init.aos-animate {
+    background-color: #f7f9fb !important;
+}
+        label.form-check-label span.filter1 {
+            padding-left: 5px;
+        }
+
+        label.form-check-label {
+            cursor: pointer;
+        }
+        .automotive-card {
+            box-shadow: 0px 34px 74px 0px #0023470f;
+        }
+
+        .automotive-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
         .top-rated-heading-block h1 {
             font-size: 28px !important;
             font-weight: 700;
@@ -11,17 +28,23 @@
      
         section.top-automotive-sec.top_rate_pg.light {
            margin-top: 0 !important;
-           /* padding-top:0 !important; */
+           padding-top:0 !important;
         }
-        .top-rated-heading-sec{
-             margin-top: 120px ;
-           padding-top:30px !important;
-           background-color:#f7f9fb;
-           border-bottom: 1px solid #e2e8f0;
-           /* margin-bottom: 25px; */
-        }
-         .top-rated-heading-sec .padd-row {
-            padding-bottom:20px;
+    .top-rated-heading-sec {
+        margin-top: 120px;
+        padding-top: 30px !important;
+        background-color: #f7f9fb;
+        border-bottom: 1px solid #e2e8f0;
+        /* margin-bottom: 25px; */
+    }
+    .top-rated-heading-block {
+    padding-bottom: 20px;
+}
+    .top-rated-heading-sec .bread_row{
+        /* margin-top:20px; */
+    }
+         .top-rated-heading-sec .row {
+            /* padding-bottom:20px; */
             
          }
         /* View details button – match height of Visit website */
@@ -45,19 +68,6 @@
             gap: 8px 45px !important;
             width: 100% !important;
         }
-        .top-rated-heading-sec .breadcrumb-item a:hover{
-            text-decoration:underline !important;
-        }
-
-
-        .form-check-input {           
-            margin-top: 0;           
-        }
-         .price-separator,
-        .price-input input {
-            font-size: 12px;
-        }
-    
         @media (max-width: 768px) {
             /* .automotive-card {
                 padding-bottom: 20px !important;
@@ -142,26 +152,34 @@
     </style>
     <section class="top-rated-heading-sec">
        <div class="container">
-            <div class=" bread_row row align-items-center mb-3">
-                <div class="col-8">
-                    <nav style="--bs-breadcrumb-divider: '/';" aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0" style="background: transparent; padding: 0; display: flex; align-items: center;">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('category', ['locale' => app()->getLocale()]) }}"
-                                   style="color: inherit; text-decoration: none; font-size: 13px;">All</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page" style="font-size: 13px; color: #002347; font-weight: 500;">
-                                Top-rated products
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="col-4 d-flex justify-content-end">
-                    <x-social-icon />
-                </div>
-            </div>
+                                        <div class=" bread_row row align-items-center mb-3">
+                                    <div class="col-8">
+                                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                            <ol class="breadcrumb m-0" style="background: transparent;padding: 0;display: flex;align-items: center;">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
+                                               style="color: inherit; text-decoration: none; font-size: 13px;" 
+                                               onmouseout="this.style.color=''">All</a>
+                                        </li>
+                                        
+                                            <li class="breadcrumb-item">
+                                                <a href=""
+                                                   style="color: inherit; text-decoration: none; font-size: 13px;"
+                                                   onmouseout="this.style.color=''">
+                                                    Top rated products
+                                                </a>
+                                            </li>
+                                        
+                                        
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <x-social-icon />
+                            </div>
+                        </div>
             <div class="top-rated-heading-block">
-                        <div class="padd-row row align-items-start">
+                        <div class="row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
@@ -170,7 +188,7 @@
                                 </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                         <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
@@ -185,7 +203,7 @@
                     </div>
        </div>
     </section>
-    <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px">
+    <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px !important;">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
@@ -221,7 +239,9 @@
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
                                         <h3 class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</h3>
+                                            <!-- {{ static_text('user_rating') }} -->
+                                            User rating
+                                        </h3>
 
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input"
@@ -248,7 +268,11 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <h3 class="fw-semibold text-dark mb-3">
+                                            <!-- {{ static_text('price_range') }} -->
+                                            Price range
+
+                                        </h3>
 
                                         <div class="price-slider-container">
                                             <div
@@ -567,6 +591,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="tp-btm d-flex flex-col-mob">
+                                                                             <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
                                                                             <div class="inn_ul">
                                                                                 <div class="rating-stars ">
                                                                                     @for ($i = 1; $i <= 5; $i++)
@@ -580,8 +605,8 @@
                                                                                     @endfor
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="rate_box">
-                                                                                {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} {{ $item->reviews->count() == 1 ? 'review' : 'reviews' }}
+                                                                            <div class="rate_box" style="font-weight: 400; ">
+                                                                                ({{ $item->reviews->count() }})
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -642,7 +667,7 @@
                                                             <!-- Buttons -->
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
-                                                                    class="cta cta_orange justify-content-center"
+                                                                    class="btn-orng cta cta_orange justify-content-center"
                                                                     target="_blank" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
                                                                     Visit website
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
@@ -788,7 +813,9 @@
                                     <div>
                                         <p class="m-0">Showing {{ $products->count() }} results </p>
                                     </div>
-                                    <x-social-icon/>
+                                    <div class="d-none">
+                                        <x-social-icon/>
+                                    </div>
                                 </div>
 
                                 <div class="alert alert-info">

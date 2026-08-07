@@ -123,12 +123,12 @@
                                             <!-- <em class="icon ni ni-article"></em>  -->
                                              <em class="icon ni ni-box"></em>
                                     </span>
-                                        <span class="nk-menu-text">Products</span>
+                                        <span class="nk-menu-text">Starting price</span>
                                     </a>
                                     <ul class="nk-menu-sub">
                                         <li class="nk-menu-item">
                                             <a href="{{ route('products') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">All Products</span>
+                                                <span class="nk-menu-text">All Starting price</span>
                                             </a>
                                         </li>
 

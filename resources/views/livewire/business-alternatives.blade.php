@@ -620,8 +620,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex flex-col-mob">
-                                                                            <div class="inn_ul">
+                                                                        <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                            <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                            <div class="inn_ul d-inline-flex m-0">
                                                                                 <div class="rating-stars ">
                                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                                         @if ($i <= floor($item->reviews->avg('rating')))
@@ -634,9 +635,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                                     @endfor
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="rate_box">
-                                                                                {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} {{ $item->reviews->count() == 1 ? 'review' : 'reviews' }}
-                                                                            </div>
+                                                                            <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->reviews->count() }})</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>

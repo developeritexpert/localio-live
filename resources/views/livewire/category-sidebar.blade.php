@@ -1,5 +1,6 @@
 <section class="sfwr_sec cat_page_secs light p_120">
     <div class="container">
+        <h2 class="popular-categories-title">All categories</h2>
         <div class="sfwr_content">
             <div class="row gy-4">
                 <div class="col-lg-3 mb-4">

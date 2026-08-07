@@ -875,7 +875,7 @@
                                                         <button class="btn btn-outline-primary btn-sm d-none" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
                                                             Select All
                                                         </button>
-                                                        <button class="btn btn-outline-danger btn-sm" @click="clearAll()" type="button">
+                                                        <button class="btn btn-outline-danger btn-sm d-none" @click="clearAll()" type="button">
                                                             Clear All
                                                         </button>
                                                     </div>
@@ -1133,32 +1133,7 @@
 
 
                     
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Pricing Options</label>
-                            </div>
-                            <div wire:ignore>
-                                <select class="form-control pricing-options" multiple
-                                    wire:model="selectedPricingOptions">
-                                    @foreach ($pricingOptions as $pricingOption)
-                                        @php
-                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
-                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
-                                        @endphp
-                                        <option value="{{ $pricingOption->id }}"
-                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
-                                            {{ $prisingTranslation->name ?? "" }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
-                            @error('selectedPricingOptions')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="row g-3">
@@ -1693,13 +1668,7 @@
      */
     function initAllSelect2() {
 
-        $('.pricing-options, .lang-supported').select2();
-
-        $('.pricing-options').on('change', function() {
-            let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set(
-                'selectedPricingOptions', data);
-        });
+        $('.lang-supported').select2();
 
         $('.lang-supported').on('change', function() {
             let data = $(this).val();

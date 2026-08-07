@@ -15,60 +15,9 @@
                 <div class="col-lg-8">
                     <div class="card card-bordered">
                         <div class="card-inner">
-                            <div class="row g-3 mt-2">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        {{-- <label class="form-label" for="name">Product Name</label> --}}
-                                        <div class="d-flex">
-                                            <div class="flex-grow-1">
-                                                {{-- <input type="text" class="form-control" name="name" id="name"
-                                                    placeholder="Product Name" value="{{ old('name') }}"> --}}
-
-                                                    <x-google-input
-                                                    type="text"
-                                                    name="name"
-                                                    id="name"
-                                                    label="Product Name"
-                                                    value="{{ old('name') }}"
-                                                />
-
-
-                                            </div>
-                                        </div>
-                                        @error('name')
-                                            <div class="error text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mt-3">
-
-                                    {{-- <input type="text" class="form-control mt-2" name="product_link" id="product-link"
-                                        value="{{ old('product_link', $product->product_link ?? '') }}"
-                                        placeholder="Affiliate Link"> --}}
-
-                                        <x-google-input
-                                            type="text"
-                                            name="product_link"
-                                            id="product-link"
-                                            label="Product Link"
-                                            value="{{ old('product_link', $product->product_link ?? '') }}"
-                                        />
-                                    @error('product_link')
-                                        <div class="error text-danger">{{ $message }}</div>
-                                    @enderror
-                                    <div class="form-group d-flex align-items-center justify-content-between">
-                                        {{-- <label class="form-label" for="product-link">Product Link</label> --}}
-                                        <div class=""></div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="is_affiliate"
-                                                name="is_affiliate" value="1"
-                                                {{ old('is_affiliate', $is_affiliate ?? 0) ? 'checked' : '' }}>
-
-                                            <label class="form-check-label ms-2" for="is_affiliate">Affiliate</label>
-                                        </div>
-                                    </div>
-                                </div>
-
+                            <div class="row g-3 mt-2" style="display:none;">
+                                <input type="hidden" name="name" value="" />
+                                <input type="hidden" name="product_link" value="" />
                             </div>
 
                             <input type="hidden" name="lang_code" value="{{ getCurrentLanguageID() }}" />
@@ -328,81 +277,23 @@
                     </div>
                 </div>
                 <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
-                {{-- Row 3: Label + Renewal Price + Time Unit --}}
+                {{-- Offer / Pricing Options --}}
                 <div class="mb-2">
-                    <label class="form-label">Renewal</label>
+                    <label class="form-label">Offer Options</label>
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="number"
-                            name="renewal_prices"
-                            label="Renewal Price"
-                        />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="select"
-                            name="renewal_time_units"
-                            label="Time Unit"
-                            :alwaysActive="true"
-                            :options="[
-                                'one_time' => 'One time',
-                                'day' => 'Day',
-                                'week' => 'Week',
-                                'month' => 'Month',
-                                'quarter' => 'Quarter',
-                                'year' => 'Year'
-                            ]"
-                        />
-                    </div>
-                </div>
-                <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
-                {{-- Row 4: Label + Discount Price + Time Unit --}}
-                <div class="mb-2">
-                    <label class="form-label">Discount</label>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="number"
-                            name="discount_prices"
-                            label="Discount Price (optional)"
-                        />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <x-google-input
-                            type="select"
-                            name="discount_time_units"
-                            label="Time Unit"
-                            :alwaysActive="true"
-                            :options="[
-                                'one_time' => 'One time',
-                                'day' => 'Day',
-                                'week' => 'Week',
-                                'month' => 'Month',
-                                'quarter' => 'Quarter',
-                                'year' => 'Year'
-                            ]"
-                        />
-                    </div>
-                </div>
-
-                {{-- Discount Expiration Date --}}
-                <div class="row">
-                    <div class="col-md-12 mb-2">
-                        <x-google-input
-                            type="date"
-                            id="discount_expiration_dates"
-                            name="discount_expiration_dates"
-                            label="Discount Expiration Date (optional)"
-                            :alwaysActive="true"
-                        />
-                        <div class="form-text">
-                            If set, the discount will only be shown until this date. After that,
-                            the original or renewal price is displayed and the discounted price is removed from our system.
-                        </div>
-                    </div>
+                <div class="form-group mb-3">
+                    <select class="form-control select2-multiple pricing-options-select" name="pricing_options[]" multiple data-placeholder="Select Offer Options">
+                        @if(isset($pricingOptions))
+                            @foreach ($pricingOptions as $option)
+                                @php
+                                    $translation = $option->translations->firstWhere('lang_id', getCurrentLanguageID()) ?? $option->translations->first();
+                                @endphp
+                                <option value="{{ $option->id }}" {{ in_array($option->id, old('pricing_options', [])) ? 'selected' : '' }}>
+                                    {{ $translation->name ?? ('Option #' . $option->id) }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
                 </div>
 
                 {{-- Validation --}}
@@ -497,128 +388,54 @@
                                         </div>
                                         {{--  End Link Business Dropdown --}}
 
-                                        <!-- Product Business -->
-                                        <div class="form-group mt-3">
-                                            {{-- <label class="form-label font-weight-bold">Countries/Regions
-                                                Availability</label>
-                                            <select class="form-control select2-multiple" name="product_countries[]"
-                                                id="product-countries" multiple>
-                                                @foreach ($countries as $country)
-                                                    <option value="{{ $country->id }}"
-                                                        {{ in_array($country->id, old('product_countries', [])) ? 'selected' : '' }}>
-                                                        {{ $country->name }} ({{ $country->country_code }})
-                                                    </option>
-                                                @endforeach
-                                            </select> --}}
-                                            @php
-                                            $countryOptions = $countries->mapWithKeys(function($country) {
-                                                return [$country->id => $country->name . ' (' . $country->country_code . ')'];
-                                            })->toArray();
-                                            @endphp
+                                         <!-- Active Countries/Regions -->
+                                         <div class="form-group mt-3">
+                                             <label class="form-label font-weight-bold">Active Countries/Regions</label>
+                                             <div class="d-flex mb-2">
+                                                 <div class="form-check me-3">
+                                                     <input class="form-check-input country-availability-radio" type="radio" id="active_all_countries_1"
+                                                         name="active_all_countries" value="1"
+                                                         {{ old('active_all_countries', '1') == '1' ? 'checked' : '' }}>
+                                                     <label class="form-check-label" for="active_all_countries_1">All</label>
+                                                 </div>
+                                                 <div class="form-check">
+                                                     <input class="form-check-input country-availability-radio" type="radio" id="active_all_countries_0"
+                                                         name="active_all_countries" value="0"
+                                                         {{ old('active_all_countries') == '0' ? 'checked' : '' }}>
+                                                     <label class="form-check-label" for="active_all_countries_0">Specific Countries/Regions</label>
+                                                 </div>
+                                             </div>
 
-                                            <x-google-input
-                                                type="select"
-                                                name="product_countries"
-                                                id="product-countries"
-                                                label="Countries/Regions Availability"
-                                                :options="$countryOptions"
+                                             <div id="product-countries-wrapper" style="{{ old('active_all_countries', '1') == '1' ? 'display:none;' : '' }}">
+                                                 @php
+                                                 $countryOptions = $countries->mapWithKeys(function($country) {
+                                                     return [$country->id => $country->name . ' (' . $country->country_code . ')'];
+                                                 })->toArray();
+                                                 @endphp
 
-                                                :alwaysActive="true"
-                                                multiple
-                                                class="select2-multiple"
-                                            />
-                                            @error('product_countries')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        {{-- comments This  --}}
-                                        {{-- <div class="form-group">
-                                            @php
-                                                $businessOptions = $businesses->pluck('translations')->mapWithKeys(function ($translations, $id) {
-                                                    $name = optional($translations->first())->name ?? 'Business #' . $id;
-                                                    return [$translations->first()->business_id => $name];
-                                                });
-
-                                                $selectedBusinessIds = old('product_businesses')
-                                                    ?: (isset($product_business) ? $product_business->pluck('id')->values()->all() : []);
-                                            @endphp
-
-                                            <x-google-input
-                                            type="select"
-                                            name="product_businesses"
-                                            label="Linked Business"
-                                            :options="$businessOptions"
-                                            :selectedValues="$selectedBusinessIds"
-                                            :alwaysActive="true"
-                                            multiple
-                                            class="select2-multiple product-businesses"
-                                        />
-                                            @error('product_businesses')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div> --}}
-                                        {{-- End comments --}}
-
-                                        {{-- {{dd($categories);}} --}}
-                                        <div class="form-group mt-3" style="display: none">
-                                            <label class="form-label font-weight-bold">Product Category</label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" id="category-display" readonly
-                                                    placeholder="Category will be set based on business selection">
-                                                <input type="hidden" name="product_category" id="product-category"
-                                                    value="{{ old('product_category', isset($product) ? $product->categories->first()->id ?? '' : '') }}">
-                                            </div>
-                                            @error('product_category')
-                                                <div class="text-danger small">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class=" mt-1">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label font-weight-bold">Product Icon</label>
-                                        <input type="file" class="form-control-file" name="product_icon">
-                                        @if (old('product_icon_path'))
-                                            <div class="img-preview mt-2">
-                                                <img src="{{ asset(old('product_icon_path')) }}" class="img-thumbnail"
-                                                    width="100">
-                                            </div>
-                                        @endif
-                                    </div>
-                                    @error('product_icon')
-                                        <div class="text-danger small">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label font-weight-bold">Product
-                                            Image</label>
-                                        <input type="file" class="form-control-file" name="product_image">
-                                        @if (old('product_image_path'))
-                                            <div class="img-preview mt-2">
-                                                <img src="{{ asset(old('product_image_path')) }}" class="img-thumbnail"
-                                                    width="100">
-                                            </div>
-                                        @endif
-                                    </div>
-                                    @error('product_image')
-                                        <div class="text-danger small">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-        </form>
-    </div>
+                                                 <x-google-input
+                                                     type="select"
+                                                     name="product_countries"
+                                                     id="product-countries"
+                                                     label="Countries/Regions Availability"
+                                                     :options="$countryOptions"
+                                                     :alwaysActive="true"
+                                                     multiple
+                                                     class="select2-multiple"
+                                                 />
+                                                 @error('product_countries')
+                                                     <div class="text-danger small">{{ $message }}</div>
+                                                 @enderror
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+         </form>
+     </div>
     <script>
         const currencyOptions = @json(
             $currencies->map(function ($currency) {
@@ -631,6 +448,14 @@
 
     <script>
         $(document).ready(function() {
+            $('input[name="active_all_countries"]').on('change', function() {
+                if ($(this).val() == '1') {
+                    $('#product-countries-wrapper').slideUp();
+                } else {
+                    $('#product-countries-wrapper').slideDown();
+                }
+            });
+
             // Check if select2 is available
             if ($.fn.select2) {
                 console.log('Select2 is loaded ✅');
@@ -1184,14 +1009,7 @@
                 }
 
                 // Additional form validations
-                const requiredFields = [{
-                        field: 'input[name="name"]',
-                        message: 'Product name is required'
-                    },
-                    {
-                        field: 'input[name="product_link"]',
-                        message: 'Product link is required'
-                    },
+                const requiredFields = [
                     {
                         field: 'input[name="prices"]',
                         message: 'Price is required'

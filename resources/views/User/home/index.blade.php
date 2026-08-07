@@ -161,9 +161,17 @@
                                                     $isBestValue = $index === 0;
                                                 @endphp
 
-                                                <div class="col-xl-6 col-md-6 col-12">
+                                                <div class="col-lg-4 col-md-6 col-12">
                                                     <div class="review_card light top-rate-card h-100 {{ $isBestValue ? 'center-card-pack' : '' }}" style="margin: 0 !important;">
-                                                        <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between">
+                                                        <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between" style="background-color: #f7f9fb; position: relative;">
+                                                            @if ($isBestValue)
+                                                                <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
+                                                                    <div class="best-value-inline">
+                                                                        <i class="fa-regular fa-thumbs-up"></i>
+                                                                        <span>Best Value</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
                                                             <div class="inn_sl_hed mst_hdn">
                                                                 <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
                                                                     <div class="sli_img">
@@ -171,14 +179,6 @@
                                                                     </div>
                                                                 </a>
                                                                 <div class="sl_h">
-                                                                    @if ($isBestValue)
-                                                                        <div class="best-value-inline-container">
-                                                                            <div class="best-value-inline">
-                                                                                <i class="fa-regular fa-thumbs-up"></i>
-                                                                                <span>Best Value</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
                                                                     <div class="inn_h">
                                                                         <div class="sl_main">
                                                                             <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
@@ -189,8 +189,9 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="tp-btm d-flex">
-                                                                        <div class="inn_ul">
+                                                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
+                                                                        <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
                                                                                 @php
                                                                                     $rating = $avgRating > 0 ? round($avgRating) : 0;
@@ -200,51 +201,57 @@
                                                                                 @endfor
                                                                             </div>
                                                                         </div>
-                                                                        <div class="rate_box">
-                                                                            {{ $avgRating }} | {{ $ratingsCount }} {{ $ratingsCount == 1 ? 'review' : 'reviews' }}
-                                                                        </div>
+                                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingsCount }})</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
 
                                                              <!-- Short Description -->
                                                              @if(!empty($business->translations->first()->short_description))
-                                                                 <div class="mt-4 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                                 <div class="mt-4 text-start" style="font-size: 13px; color: #444; line-height: 1.5; width: 100%;">
                                                                      {{ $business->translations->first()->short_description }}
                                                                  </div>
                                                              @endif
 
                                                             <div class="slider_content_sec my-4">
                                                                 <div class="main_feature_lg">
-                                                                    <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto;">
+                                                                    <div class="feture_box lft_check_box" style="border: none; padding: 0; background: transparent; min-height: auto;">
                                                                         <ul class="list-unstyled" style="margin: 0; padding: 0;">
                                                                             @if ($business->usps->count() > 0)
                                                                                 @foreach ($business->usps->take(4) as $usp)
-                                                                                    <li class="d-flex align-items-center size18" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
-                                                                                        <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                    <li class="d-flex align-items-center" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
+                                                                                        <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
+                                                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                                                            </svg>
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </li>
                                                                                 @endforeach
                                                                             @else
-                                                                                <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
-                                                                                    <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                <li class="d-flex align-items-center" style="margin-bottom: 8px;">
+                                                                                    <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
+                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                                                        </svg>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Free domain & SSL certificate</p>
                                                                                 </li>
-                                                                                <li class="d-flex align-items-center size18" style="margin-bottom: 8px;">
-                                                                                    <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                <li class="d-flex align-items-center" style="margin-bottom: 8px;">
+                                                                                    <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
+                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 10-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                                                        </svg>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable automatic updates</p>
                                                                                 </li>
-                                                                                <li class="d-flex align-items-center size18" style="margin-bottom: 0;">
-                                                                                    <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                <li class="d-flex align-items-center" style="margin-bottom: 0;">
+                                                                                    <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
+                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 10-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                                                                                        </svg>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Scalable performance management</p>
                                                                                 </li>
                                                                             @endif
                                                                         </ul>
@@ -261,8 +268,9 @@
                                                                 </div>
                                                                 <div class="top-pro-btn" style="flex: 1;">
                                                                     <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? '#' }}"
-                                                                        class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                                        target="_blank" rel="noopener noreferrer" style="width: 100%;">
+                                                                        class="btn-orng cta cta_orange d-flex align-items-center justify-content-center"
+                                                                        target="_blank" rel="noopener noreferrer"
+                                                                        style="width:100%; ">
                                                                         {{ $homeContents['visit_website'] ?? 'Visit website' }}
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                     </a>
@@ -417,8 +425,9 @@
                                                         </div>
                                                     </a>
                                                     </div>
-                                                    <div class="tp-btm d-flex">
-                                                        <div class="inn_ul">
+                                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
+                                                        <div class="inn_ul d-inline-flex m-0">
                                                             <div class="tab_star_li">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     <span
@@ -431,8 +440,7 @@
                                                             </div>
 
                                                         </div>
-                                                        <div class="rate_box"> {{ number_format($businessRating, 1) }} |
-                                                            {{ $business->reviews->count() }} ratings</div>
+                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $business->reviews->count() }})</span>
                                                     </div>
                                                 </div>
                                             </div>

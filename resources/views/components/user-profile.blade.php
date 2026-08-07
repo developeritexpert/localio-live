@@ -253,7 +253,7 @@
                 @php
                     $profileUrl = Auth::user()->user_type === 'vendor' 
                         ? route('vendor-profile', ['locale' => app()->getLocale()]) 
-                        : route('user-profile', ['locale' => app()->getLocale()]);
+                        : route('user-dashboard', ['locale' => app()->getLocale()]);
                 @endphp
                 <a href="{{ $profileUrl }}" class="user_detail_link" style="text-decoration: none; color: inherit; display: block;">
                     <div class="user_detail">
