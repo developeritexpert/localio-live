@@ -896,7 +896,7 @@
                                                         'action' => 'visit_website',
                                                         'label' => 'Visit Website',
                                                     ]) }}"
-                                                    class="cta cta_orange d-flex align-items-center" target="_blank"
+                                                    class="btn-orng cta cta_orange d-flex align-items-center" target="_blank"
                                                     tabindex="0">
                                                     Visit website
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
@@ -2421,7 +2421,7 @@
                                                                 <h6 class="m-0 fw_700">Name not available</h6>
                                                             @endif
                                                             <div class="overall-rating-header d-flex align-items-center mt-2 flex-wrap" style="gap: 5px;">
-                                                                <span class="rate_box_num fw-medium" style="font-size: 13px; color: #333;">{{ number_format($altRatingAvg, 1) }}</span>
+                                                                <span class="rate_box_num fw-medium" style="font-size: 13px; color: #333; font-weight: 400 !important;">{{ number_format($altRatingAvg, 1) }}</span>
                                                                 <div class="rating-stars" style="display: flex; gap: 2px;">
                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                         @if ($i <= floor($altRatingAvg))
@@ -2433,7 +2433,7 @@
                                                                         @endif
                                                                     @endfor
                                                                 </div>
-                                                                <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 500;">
+                                                                <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 400 !important;">
                                                                     ({{ $count }})
                                                                 </span>
                                                             </div>
