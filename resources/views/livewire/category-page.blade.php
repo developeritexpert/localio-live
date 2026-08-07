@@ -352,7 +352,7 @@
                                     @if($isParentCategory)
                                         @if(isset($subCategories) && count($subCategories) > 0)
                                             <div class="filter-section mt-3 mb-3">
-                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Subcategories</h3>
+                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Categories</h3>
                                                 @foreach ($subCategories as $subcat)
                                                     @php
                                                         $subcatName = $subcat->translations->name ?? $subcat->name;

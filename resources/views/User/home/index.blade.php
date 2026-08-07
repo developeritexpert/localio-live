@@ -163,7 +163,7 @@
 
                                                 <div class="col-xl-6 col-md-6 col-12">
                                                     <div class="review_card light top-rate-card h-100 {{ $isBestValue ? 'center-card-pack' : '' }}" style="margin: 0 !important;">
-                                                        <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between">
+                                                        <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between" style="background-color: #f7f9fb;">
                                                             <div class="inn_sl_hed mst_hdn">
                                                                 <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
                                                                     <div class="sli_img">
