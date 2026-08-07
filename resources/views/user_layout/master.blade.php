@@ -1072,6 +1072,21 @@
                         }
 
 
+    
+    
+    
+    .btn-orng {
+    background-color: #ff5722 !important;
+    border-color:#ff5722 !important;
+    }
+
+    .btn-orng:hover {
+        background-color: #e64a19 !important;
+        border-color:#e64a19 !important;
+    }
+    
+    
+    
     </style>
 
 </head>
@@ -2439,7 +2454,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="text-center">
                 <h2 id="modal-title" class="modal-title">
                     <div class="hd_text">
-                        <h2 class="text-center">Sign In or Create an Account</h2>
+                        <h2 class="text-center">Sign in or create an account</h2>
                     </div>
                 </h2>
                 <p class="text-center" style="margin-bottom: 20px;">Continue with Google or use your email and password.</p>

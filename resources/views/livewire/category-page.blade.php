@@ -1,6 +1,22 @@
 <div>
     <style>
+        label.form-check-label span.filter1 {
+            padding-left: 5px;
+        }
 
+        label.form-check-label {
+    cursor: pointer;
+}
+                .automotive-card {
+            box-shadow: 0px 34px 74px 0px #0023470f;
+        }
+
+        .automotive-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+.top-rated-heading-sec .breadcrumb-item a, .asn_main_sec .breadcrumb-item a{
+    display: block;
+}
     li.breadcrumb-item.active {
     color:#002347 !important;
     font-weight:500;
@@ -262,7 +278,7 @@
                     </div>
        </div>
     </section>
-                <section class="top-automotive-sec cat_pg light" style="padding-top:25px !important;">
+                <section class="top-automotive-sec cat_pg light" style="padding-top:25px !important; background-color: #fdfdfd !important;">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
@@ -298,7 +314,9 @@
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
                                         <h3 class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</h3>
+                                            <!-- {{ static_text('user_rating') }} -->
+                                            User rating
+                                        </h3>
 
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input"
@@ -325,7 +343,11 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <h3 class="fw-semibold text-dark mb-3">
+                                            <!-- {{ static_text('price_range') }} -->
+                                            Price range
+
+                                        </h3>
 
                                         <div class="price-slider-container">
                                             <div
@@ -352,7 +374,7 @@
                                     @if($isParentCategory)
                                         @if(isset($subCategories) && count($subCategories) > 0)
                                             <div class="filter-section mt-3 mb-3">
-                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Subcategories</h3>
+                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Categories</h3>
                                                 @foreach ($subCategories as $subcat)
                                                     @php
                                                         $subcatName = $subcat->translations->name ?? $subcat->name;
@@ -668,25 +690,24 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex flex-col-mob">
-                                                                            <div class="inn_ul">
-                                                                                <div class="rating-stars ">
-                                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                                        @if ($i <= floor($item->reviews->avg('rating')))
-                                                                                            <i class="fas fa-star text-warning"></i>
-                                                                                        @elseif ($i - 0.5 <= $item->reviews->avg('rating'))
-                                                                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                        @else
-                                                                                            <i class="far fa-star text-warning"></i>
-                                                                                        @endif
-                                                                                    @endfor
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="rate_box">
-                                                                                {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} {{ $item->reviews->count() == 1 ? 'review' : 'reviews' }}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                        <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                             <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                             <div class="inn_ul d-inline-flex m-0">
+                                                                                 <div class="rating-stars ">
+                                                                                     @for ($i = 1; $i <= 5; $i++)
+                                                                                         @if ($i <= floor($item->reviews->avg('rating')))
+                                                                                             <i class="fas fa-star text-warning"></i>
+                                                                                         @elseif ($i - 0.5 <= $item->reviews->avg('rating'))
+                                                                                             <i class="fas fa-star-half-alt text-warning"></i>
+                                                                                         @else
+                                                                                             <i class="far fa-star text-warning"></i>
+                                                                                         @endif
+                                                                                     @endfor
+                                                                                 </div>
+                                                                             </div>
+                                                                             <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->reviews->count() }})</span>
+                                                                         </div>  </div>
+                                                                    <!-- </div> -->
                                                                 </div>
                                                             </div>
 
@@ -708,7 +729,7 @@
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
@@ -716,19 +737,19 @@
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>
@@ -744,7 +765,7 @@
                                                             <!-- Buttons -->
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
-                                                                    class="cta cta_orange justify-content-center"
+                                                                    class="btn-orng cta cta_orange justify-content-center"
                                                                     target="_blank" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
                                                                     Visit website
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>

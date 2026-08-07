@@ -686,8 +686,9 @@
                                                 ->count();
                                                 @endphp
 
-                                                <div class="tp-btm d-flex flex-col-mob">
-                                                    <div class="inn_ul">
+                                                <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                    <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="inn_ul d-inline-flex m-0">
                                                         <div class="rating-stars">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <=floor($averageRating))
@@ -700,10 +701,7 @@
                                                                     @endfor
                                                         </div>
                                                     </div>
-                                                    <div class="rate_box">
-                                                        {{ number_format($averageRating, 1) }} | {{ $ratingCount }}
-                                                        ratings
-                                                    </div>
+                                                    <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -712,10 +710,13 @@
                                                 /{{ $timeUnit }}
                                             </p>
                                         </div>
-                                        @if (!empty($business->pricingOptions) && $business->pricingOptions->isNotEmpty())
+                                        @php
+                                            $bPricingOptions = $business->products->flatMap->pricingOptions;
+                                        @endphp
+                                        @if (!empty($bPricingOptions) && $bPricingOptions->isNotEmpty())
                                         <div class="poplr-vrsion-trial h_80">
                                             <ul class="list-unstyled d-flex m-0 flex-wrap">
-                                                @foreach ($business->pricingOptions as $option)
+                                                @foreach ($bPricingOptions as $option)
                                                 @if ($option->translations->isNotEmpty())
                                                 <li>
                                                     <img src="{{ asset('front/img/tik-mrk.svg') }}">
@@ -808,8 +809,9 @@
                                                 : 0;
                                                 @endphp
 
-                                                <div class="tp-btm d-flex flex-col-mob">
-                                                    <div class="inn_ul">
+                                                <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                    <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($altAverageRating, 1) }}</span>
+                                                    <div class="inn_ul d-inline-flex m-0">
                                                         <div class="rating-stars">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <=floor($altAverageRating))
@@ -822,10 +824,7 @@
                                                                     @endfor
                                                         </div>
                                                     </div>
-                                                    <div class="rate_box">
-                                                        {{ number_format($altAverageRating, 1) }} | {{ $ratingCount }}
-                                                        ratings
-                                                    </div>
+                                                    <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -860,10 +859,13 @@
                                             <p class="m-0"><span>{{ $currency }}{{ $startingPrice }}</span>
                                                 /{{ $timeUnit }}</p>
                                         </div>
-                                        @if (!empty($alternativeBusiness[0]->pricingOptions) && $alternativeBusiness[0]->pricingOptions->isNotEmpty())
+                                        @php
+                                            $altPricingOptions = !empty($alternativeBusiness[0]) ? $alternativeBusiness[0]->products->flatMap->pricingOptions : collect();
+                                        @endphp
+                                        @if (!empty($altPricingOptions) && $altPricingOptions->isNotEmpty())
                                         <div class="poplr-vrsion-trial b_btm h_80 ">
                                             <ul class="list-unstyled d-flex m-0 flex-wrap">
-                                                @foreach ($alternativeBusiness[0]->pricingOptions as $option)
+                                                @foreach ($altPricingOptions as $option)
                                                 @if ($option->translations->isNotEmpty())
                                                 <li>
                                                     <img src="{{ asset('front/img/tik-mrk.svg') }}">
@@ -1127,8 +1129,9 @@
 
                                                 @endphp
 
-                                                <div class="tp-btm d-flex flex-col-mob">
-                                                    <div class="inn_ul">
+                                                <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                    <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="inn_ul d-inline-flex m-0">
                                                         <div class="rating-stars">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <=floor($averageRating))
@@ -1141,9 +1144,7 @@
                                                                     @endfor
                                                         </div>
                                                     </div>
-                                                    <div class="rate_box">
-                                                        {{ number_format($averageRating, 1) }} | {{ $ratingCount }} ratings
-                                                    </div>
+                                                    <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                             <div class="over-rate-progress p_top_btm_sftwre">
@@ -1244,8 +1245,9 @@
                                             </div>
                                             <div class="overall-rate-sftwre p_top_btm_sftwre">
                                                 <h6 class="fw_700">Overall Rating:</h6>
-                                                <div class="tp-btm d-flex flex-col-mob">
-                                                    <div class="inn_ul">
+                                                <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                    <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($altbusiness->reviews->avg('rating'), 1) }}</span>
+                                                    <div class="inn_ul d-inline-flex m-0">
                                                         <div class="rating-stars">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <=floor($altbusiness->reviews->avg('rating')))
@@ -1258,11 +1260,7 @@
                                                                     @endfor
                                                         </div>
                                                     </div>
-                                                    <div class="rate_box">
-                                                        {{ number_format($altbusiness->reviews->avg('rating'), 1) }} |
-                                                        {{ $altbusiness->reviews->where('status', 'active')->count() }}
-                                                        ratings
-                                                    </div>
+                                                    <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $altbusiness->reviews->where('status', 'active')->count() }})</span>
                                                 </div>
                                             </div>
 
@@ -1666,8 +1664,9 @@
                                                     </h6>
                                                     <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                                                 </div>
-                                                <div class="tp-btm d-flex flex-col-mob pt-2">
-                                                    <div class="inn_ul">
+                                                <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                    <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="inn_ul d-inline-flex m-0">
                                                         <div class="rating-stars">
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <=floor($averageRating))
@@ -1680,10 +1679,7 @@
                                                                     @endfor
                                                         </div>
                                                     </div>
-                                                    <div class="rate_box">
-                                                        {{ number_format($averageRating, 1) }} | {{ $ratingCount }}
-                                                        ratings
-                                                    </div>
+                                                    <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>

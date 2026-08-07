@@ -43,6 +43,7 @@ class ProductController extends Controller
                 ->where('status', 'active'),
             'products' => fn($q) => $q->with([
                 'prices',
+                'pricingOptions.translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
             ]) ->where(function ($query) {
                 $query->where('active_all_countries', 1)
@@ -451,31 +452,29 @@ class ProductController extends Controller
         }
         $businesses = $orderedBusinesses;
 
+        // Populate session with compared product IDs so single removal works correctly
+        session()->put('compared_products', $businesses->pluck('id')->toArray());
+        session()->save();
+
         return view('User.product.product_comparison', compact('businesses'));
     }
     public function removeFromComparison($locale, $productId)
     {
-        \Log::info('Removing product from comparison: ' . $productId);
-
         $productId = (int) $productId;
         $comparedProducts = session()->get('compared_products', []);
 
-        \Log::info('Before removal, compared products: ', $comparedProducts);
-
-        // Remove the product ID from the array
+        // Remove only the requested product ID from the array
         $comparedProducts = array_values(array_filter($comparedProducts, function ($id) use ($productId) {
-            return (int)$id != $productId;
+            return (int)$id !== $productId;
         }));
-        \Log::info('After removal, compared products: ', $comparedProducts);
 
-        // Update the session
+        // Update session
         session()->put('compared_products', $comparedProducts);
-
-        // Make sure to save the session
         session()->save();
 
         return response()->json([
-            'success' => true
+            'success' => true,
+            'redirect' => route('product-comparison', app()->getLocale())
         ]);
     }
 

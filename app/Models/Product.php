@@ -70,6 +70,10 @@ class Product extends Model
     {
         return $this->belongsToMany(Feature::class, 'product_features', 'product_id', 'feature_id');
     }
+    public function pricingOptions()
+    {
+        return $this->belongsToMany(PricingOption::class, 'product_pricing_option');
+    }
     public function iconMedia()
     {
         return $this->belongsTo(Media::class, 'product_icon', 'id');
