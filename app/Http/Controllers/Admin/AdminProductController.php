@@ -39,11 +39,15 @@ class AdminProductController extends Controller
     public function products()
     {
         $lang_id = getCurrentLanguageID();
-        $products = Product::with(['categories', 'countries','businesses.translations'=>function($query) use ($lang_id){
-            $query->where('lang_id',$lang_id);
+        $products = Product::with(['categories', 'countries', 'prices', 'businesses.translations' => function($query) use ($lang_id) {
+            $query->where('lang_id', $lang_id);
         }])->where('lang_id', $lang_id)
-            ->latest()
-            ->get();
+            ->get()
+            ->sortBy(function ($product) {
+                return strtolower(optional($product->businesses->first())->translation->name ?? 'zzz');
+            })
+            ->values();
+
         $currencies = Currency::all();
         return view('Admin.products.index', compact('products', 'currencies'));
     }
@@ -121,8 +125,9 @@ class AdminProductController extends Controller
         $lang_id = getCurrentLanguageID();
         DB::beginTransaction();
         try {
-            // Additional server-side validation for pricing logic
+            // Additional server-side validation for pricing logic & business country uniqueness
             $this->validatePricingLogic($request);
+            $this->validateBusinessCountryUniqueness($request);
             // dd($request->all());
             // Create Product and assign base fields
             $product = new Product();
@@ -478,6 +483,56 @@ class AdminProductController extends Controller
     }
 
     /**
+     * Validate that no business has more than one starting price per country/region.
+     */
+    private function validateBusinessCountryUniqueness(Request $request, $productId = null)
+    {
+        $businessIds = array_filter((array) $request->input('product_businesses', []));
+        if (empty($businessIds)) {
+            return;
+        }
+
+        $isAllCountries = $request->input('active_all_countries', '1') == '1';
+        $targetCountryIds = $isAllCountries ? [] : array_filter((array) $request->input('product_countries', []));
+
+        $query = Product::whereHas('businesses', function ($q) use ($businessIds) {
+            $q->whereIn('business_id', $businessIds);
+        })->with(['countries', 'businesses.translations']);
+
+        if ($productId) {
+            $query->where('id', '!=', $productId);
+        }
+
+        $existingProducts = $query->get();
+
+        foreach ($existingProducts as $existing) {
+            $businessName = optional($existing->businesses->first())->translation->name ?? 'The selected business';
+
+            if ($isAllCountries) {
+                throw ValidationException::withMessages([
+                    'active_all_countries' => ["{$businessName} already has a starting price set for another country/region. A business cannot have more than one starting price per country/region."]
+                ]);
+            }
+
+            if ($existing->active_all_countries == 1) {
+                throw ValidationException::withMessages([
+                    'active_all_countries' => ["{$businessName} already has a starting price active for ALL countries/regions."]
+                ]);
+            }
+
+            $existingCountryIds = $existing->countries->pluck('id')->toArray();
+            $overlap = array_intersect($targetCountryIds, $existingCountryIds);
+
+            if (!empty($overlap)) {
+                $countryNames = Country::whereIn('id', $overlap)->pluck('name')->implode(', ');
+                throw ValidationException::withMessages([
+                    'product_countries' => ["{$businessName} already has a starting price for: {$countryNames}. A business cannot have more than one starting price per country/region."]
+                ]);
+            }
+        }
+    }
+
+    /**
      * Update product prices with validation
      */
     private function updateProductPrices($product, $request)
@@ -532,8 +587,9 @@ class AdminProductController extends Controller
         if (!$product) {
             abort(404, 'Product not found');
         }
-        // Additional server-side validation for price logic
+        // Additional server-side validation for price logic & business country uniqueness
         $this->validatePriceData($request);
+        $this->validateBusinessCountryUniqueness($request, $id);
         DB::beginTransaction();
         try {
             // Update basic product information
