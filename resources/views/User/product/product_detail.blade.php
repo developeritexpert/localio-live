@@ -180,6 +180,9 @@
             </script>
         @endif
         <style>
+            .sidebar-review-card .review-header div small {
+                font-size: 12px !important;
+                }
             .transparency-banner{
                 position:  !important;
             }
@@ -1116,7 +1119,7 @@
                                                 </div>
                                             </div>
                                             @if(!empty($business->pro_cons_summary))
-                                            <div class="mt-3">
+                                            <div class="mt-4">
                                                 <p>{{ $business->pro_cons_summary }}</p>
                                             </div>
                                             @endif
@@ -1353,7 +1356,7 @@
                                                         <div class="prgs_br">
                                                             <progress class="progress-bar" value="{{ $easeOfUseAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <output>{{ $easeOfUseAvg }}/5</output>
+                                                            <output>{{ $easeOfUseAvg }} </output>
                                                         </div>
                                                     </li>
                                                     <li class="d-flex justify-content-between">
@@ -1361,7 +1364,7 @@
                                                         <div class="prgs_br">
                                                             <progress class="progress-bar" value="{{ $customerServiceAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <output>{{ $customerServiceAvg }}/5</output>
+                                                            <output>{{ $customerServiceAvg }} </output>
                                                         </div>
                                                     </li>
                                                     <li class="d-flex justify-content-between">
@@ -1369,7 +1372,7 @@
                                                         <div class="prgs_br">
                                                             <progress class="progress-bar" value="{{ $exclusiveFeatureAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <output>{{ $exclusiveFeatureAvg }}/5</output>
+                                                            <output>{{ $exclusiveFeatureAvg }} </output>
                                                         </div>
                                                     </li>
                                                     <li class="d-flex justify-content-between">
@@ -1377,7 +1380,7 @@
                                                         <div class="prgs_br">
                                                             <progress class="progress-bar" value="{{ $valueForMoneyAvg * 20 }}"
                                                                 max="100"></progress>
-                                                            <output>{{ $valueForMoneyAvg }}/5</output>
+                                                            <output>{{ $valueForMoneyAvg }} </output>
                                                         </div>
                                                     </li>
                                                 </ul>
@@ -1409,7 +1412,7 @@
                                                             @endfor
                                                         </div>
 
-                                                        <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                        <span style="color: #666; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
@@ -1430,7 +1433,7 @@
                                                             <progress class="progress-bar w-100"
                                                                 value="{{ $criterion->average_rating * 20 }}"
                                                                 max="100" style="height: 8px;"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                         </div>
                                                     </div>
                                                     @endforeach
@@ -2446,7 +2449,7 @@
                                                                     value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -2456,7 +2459,7 @@
                                                                     value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -2466,7 +2469,7 @@
                                                                     value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -2476,7 +2479,7 @@
                                                                     value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2898,7 +2901,7 @@
                                                                 <progress class="progress-bar"
                                                                     value="{{ $easeOfUseAvg * 20 }}"
                                                                     max="100"></progress>
-                                                                <output>{{ $easeOfUseAvg }}/5</output>
+                                                                <output>{{ $easeOfUseAvg }} </output>
                                                             </div>
                                                         </li>
                                                         <li class="d-flex justify-content-between">
@@ -2907,7 +2910,7 @@
                                                                 <progress class="progress-bar"
                                                                     value="{{ $customerServiceAvg * 20 }}"
                                                                     max="100"></progress>
-                                                                <output>{{ $customerServiceAvg }}/5</output>
+                                                                <output>{{ $customerServiceAvg }} </output>
                                                             </div>
                                                         </li>
                                                         <li class="d-flex justify-content-between">
@@ -2916,7 +2919,7 @@
                                                                 <progress class="progress-bar"
                                                                     value="{{ $exclusiveFeatureAvg * 20 }}"
                                                                     max="100"></progress>
-                                                                <output>{{ $exclusiveFeatureAvg }}/5</output>
+                                                                <output>{{ $exclusiveFeatureAvg }}</output>
                                                             </div>
                                                         </li>
                                                         <li class="d-flex justify-content-between">
@@ -2925,7 +2928,7 @@
                                                                 <progress class="progress-bar"
                                                                     value="{{ $valueForMoneyAvg * 20 }}"
                                                                     max="100"></progress>
-                                                                <output>{{ $valueForMoneyAvg }}/5</output>
+                                                                <output>{{ $valueForMoneyAvg }}</output>
                                                             </div>
                                                         </li>
                                                     </ul>
@@ -3148,7 +3151,7 @@
                                                             <span style="font-size: 13px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
                                                             <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                                 <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px; border-radius: 4px;"></progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #334155; margin-left: 8px; min-width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #334155; margin-left: 8px; min-width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                             </div>
                                                         </div>
                                                         @endforeach

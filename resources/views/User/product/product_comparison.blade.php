@@ -79,7 +79,7 @@
 </section>
 
 <!-- section product comparison -->
-<section class="product_comp_sec p_120 light" style="padding-top: 30px;">
+<section class="product_comp_sec p_120 light new-white-bg" style="padding-top: 30px;">
     <div class="container">
 
             <div class="row justify-content-center pro-row-gp versus-row" data-aos="fade-up" data-aos-duration="1000">

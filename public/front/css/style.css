@@ -10172,3 +10172,11 @@ header .notfictn_lnk img {
 .mobe-bottom-row {
   display: none;
 }
+
+.new-white-bg {
+  background-color: #fdfdfd !important;
+}
+
+.hd-top-bg {
+  background-color: #f7f9fb !important;
+}
