@@ -1757,7 +1757,6 @@ class BusinessForm extends Component
 public function addFAQ()
 {
 
-    // dd("fuck you");
     $this->validate([
         'faqQuestion' => 'required|string|max:500',
         'faqAnswer' => 'required|string|max:2000',

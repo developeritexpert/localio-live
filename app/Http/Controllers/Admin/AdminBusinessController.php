@@ -120,55 +120,48 @@ class AdminBusinessController extends Controller
     }
 
 
-    // public function priceoptions(){
-    //     $lang_id=getCurrentLanguageID();
-    //     $price_options = PricingOption::with(['translations' => function($query) use ($lang_id) {
-    //         $query->where('lang_id', $lang_id);
-    //     }]) ->whereHas('translations', function($query) use ($lang_id) {
-    //         $query->where('lang_id', $lang_id);
-    //     })->get();
-
-    //     return view('Admin.pricing_option.index', compact('price_options'));
-    // }
-
 
     public function priceoptions(Request $request)
-    {
-    // Handle AJAX request
+{
+    $englishLangId = Language::where('lang_code', 'en')->value('id');
+
+    // Handle AJAX request (triggered by #countrySelect change)
     if ($request->ajax()) {
-        $lang_id = $request->lang;
+        $langCode = $request->get('lang');
+        $langId   = Language::where('lang_code', $langCode)->value('id');
 
-        $price_options = PricingOption::with(['translations' => function ($q) use ($lang_id) {
-            $q->where('lang_id', $lang_id);
-        }])->get();
+        $price_options = PricingOption::with('translations')->get();
 
-        // Format data for JSON
-        $formatted = $price_options->map(function ($opt) {
+        $formatted = $price_options->map(function ($opt) use ($langId, $englishLangId) {
+            $translated = $opt->translations->where('lang_id', $langId)->first();
+            $english    = $opt->translations->where('lang_id', $englishLangId)->first();
+
             return [
-                'id'   => $opt->id,
-                'name' => $opt->translations->first()->name ?? $opt->slug,
+                'id'              => $opt->id,
+                'translated_name' => $translated->name ?? null,
+                'english_name'    => $english->name ?? $opt->slug,
+                'is_english'      => $langId == $englishLangId,
             ];
         });
 
         return response()->json([
             'price_options' => $formatted,
         ]);
-     }
+    }
 
-    //  Handle normal (non-AJAX) request
-    $lang_id = getCurrentLanguageID();
-    $lang    = Language::find($lang_id);
-    $langCode = $lang ? $lang->lang_code : null;
+    // Handle normal (non-AJAX) request
+    $siteLanguage = getCurrentLanguageID();
+    $lang         = Language::find($siteLanguage);
+    $langCode     = $lang ? $lang->lang_code : null;
 
-    $price_options = PricingOption::with(['translations' => function ($query) use ($lang_id) {
-        $query->where('lang_id', $lang_id);
-    }])->whereHas('translations', function ($query) use ($lang_id) {
-        $query->where('lang_id', $lang_id);
-    })->get();
+    $price_options = PricingOption::with('translations')->get();
 
     $countries = Language::where('status', 1)->get();
+    $languages = Language::where('status', 1)->get();
 
-    return view('Admin.pricing_option.index', compact('price_options', 'langCode', 'countries'));
+    return view('Admin.pricing_option.index', compact(
+        'price_options', 'langCode', 'countries', 'languages', 'siteLanguage', 'englishLangId'
+    ));
 }
 
 
@@ -312,7 +305,6 @@ class AdminBusinessController extends Controller
     }
 
 
-
     public function allVendorRequest()
     {
         $lang_id = getCurrentLanguageID();
@@ -332,8 +324,6 @@ class AdminBusinessController extends Controller
         })
         ->latest()
         ->get();
-
-        // dd($changeRequests);
 
 
         return view('Admin.vendor-changes.all_request', compact('changeRequests'));
@@ -393,7 +383,6 @@ class AdminBusinessController extends Controller
                             // Format: {"0": "path1", "2": "path2"}
                             foreach ($changeData as $index => $imagePath) {
                                 $index = (int)$index;
-
                                 // Delete the physical file
                                 $fullPath = public_path($imagePath);
                                 if (File::exists($fullPath)) {
@@ -570,7 +559,6 @@ class AdminBusinessController extends Controller
 
             DB::transaction(function () use ($data, $request) {
                 if ($request->field === 'edit_product' && isset($data['product_id'])) {
-                    // 🔄 Edit existing product
                     $product = Product::findOrFail($data['product_id']);
                     $product->update([
                         'product_link' => $data['link'] ?? '',
@@ -608,7 +596,7 @@ class AdminBusinessController extends Controller
                         ]
                     );
                 } else {
-                    // 🆕 Create new product
+                    // Create new product
                     $product = Product::create([
                         'product_link' => $data['link'] ?? '',
                     ]);
@@ -711,7 +699,6 @@ class AdminBusinessController extends Controller
     {
         $business = Business::findOrFail($businessId);
 
-        // Validate input
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -723,13 +710,11 @@ class AdminBusinessController extends Controller
 
         $items = [];
 
-        // Handle multiple icons, names, and links
         if ($request->has('name')) {
             foreach ($request->name as $index => $name) {
                 $iconPath = null;
 
                 if ($request->hasFile("icon.$index")) {
-                    // Store directly in public/integration-icons
                     $file = $request->file("icon.$index");
                     $filename = time() . "_$index." . $file->getClientOriginalExtension();
                     $file->move(public_path('integration-icons'), $filename);
@@ -746,7 +731,6 @@ class AdminBusinessController extends Controller
             }
         }
 
-        // Update or create integration
         BusinessIntegration::updateOrCreate(
             ['business_id' => $business->id],
             [

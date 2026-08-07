@@ -13,55 +13,6 @@
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
 
-                            {{-- <ul class="nk-block-tools g-3">
-
-                                <li class="nk-block-tools-opt">
-                                    <a href="#" data-target="addProduct"
-                                        class="toggle btn btn-icon btn-primary d-md-none"><em
-                                            class="icon ni ni-plus"></em></a>
-                                            @if(getCurrentLanguageID() === 1)
-                                            <a href="{{ route('priceoptionsAdd') }}"
-                                                class="btn btn-primary d-none d-md-inline-flex btn-localio"><em
-                                            class=""></em><span>Add Pricing Options</span></a>
-                                            @endif
-                                </li>
-                            </ul> --}}
-
-                            {{-- @php
-                                $countries = \App\Models\Country::where('status', 1)->get();
-                            @endphp --}}
-
-                            {{-- <ul class="nk-block-tools g-3">
-                                <li class="nk-block-tools-opt">
-                                    <!-- Mobile Toggle Button -->
-                                    <a href="#" data-target="addProduct"
-                                    class="toggle btn btn-icon btn-primary d-md-none">
-                                        <em class="icon ni ni-plus"></em>
-                                    </a>
-
-                                    @if(getCurrentLanguageID() === 1)
-                                        <!-- Main Add Button -->
-                                        <a href="{{ route('priceoptionsAdd') }}"
-                                        class="btn btn-primary d-none d-md-inline-flex btn-localio">
-                                            <em class=""></em><span>Add Pricing Options</span>
-                                        </a>
-                                </li>
-                            </ul> --}}
-
-                                <!-- Dropdown shown always below the button -->
-
-                                {{-- <div class="mt-2">
-                                    <select class="form-select" onchange="location = this.value;">
-                                        <option selected disabled>Select Country</option>
-                                        @foreach($countries as $country)
-                                            <option value="{{ route('priceoptionsAdd', ['country' => $country->code]) }}">
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div> --}}
-                            {{-- @endif --}}
-
                             <div class="mt-2">
                                 <select class="form-select" id="countrySelect" >
                                     <option selected disabled>Select Country</option>
@@ -86,23 +37,6 @@
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
 
-                            {{-- <ul class="nk-block-tools g-3">
-
-                                <li class="nk-block-tools-opt">
-                                    <a href="#" data-target="addProduct"
-                                        class="toggle btn btn-icon btn-primary d-md-none"><em
-                                            class="icon ni ni-plus"></em></a>
-                                            @if(getCurrentLanguageID() === 1)
-                                            <a href="{{ route('priceoptionsAdd') }}"
-                                                class="btn btn-primary d-none d-md-inline-flex btn-localio"><em
-                                            class=""></em><span>Add Pricing Options</span></a>
-                                            @endif
-                                </li>
-                            </ul> --}}
-
-                            {{-- @php
-                                $countries = \App\Models\Country::where('status', 1)->get();
-                            @endphp --}}
 
                             <ul class="nk-block-tools g-3">
                                 <li class="nk-block-tools-opt">
@@ -123,30 +57,10 @@
 
                                 <!-- Dropdown shown always below the button -->
 
-                                {{-- <div class="mt-2">
-                                    <select class="form-select" onchange="location = this.value;">
-                                        <option selected disabled>Select Country</option>
-                                        @foreach($countries as $country)
-                                            <option value="{{ route('priceoptionsAdd', ['country' => $country->code]) }}">
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div> --}}
+                               
                             @endif
 
-                            {{-- <div class="mt-2">
-                                <select class="form-select" id="countrySelect" >
-                                    <option selected disabled>Select Country</option>
-                                    @foreach($countries as $country)
-                                        <option value="{{ $country->lang_code }}" {{ $langCode == $country->lang_code ? 'selected' : '' }}>
-                                            {{ $country->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
-
-
+                           
                         </div>
                     </div>
                 </div>
@@ -154,30 +68,50 @@
 
             </div>
         </div>
-        <div class="card card-bordered card-preview">
-            <div class="card-inner">
-                <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
-                    @if ($price_options->isEmpty())
-                        <div class="text-center">
-                            <button class="btn btn-primary btn-localio">No data found</button>
-                        </div>
-                    @else
-                        <thead>
-                            <tr class="nk-tb-item nk-tb-head">
-                                <th class="nk-tb-col"><span class="sub-text">Name</span></th>
-                                <th class="nk-tb-col tb-tnx-action">
-                                    <span>Action</span>
-                                </th>
-                            </tr>
-                        </thead>
+                            <div class="card card-bordered card-preview">
+                                <div class="card-inner">
+                                    <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
+                                        @if ($price_options->isEmpty())
+                                            <div class="text-center">
+                                                <button class="btn btn-primary btn-localio">No data found</button>
+                                            </div>
+                                        @else
+                                            <thead>
+                        <tr class="nk-tb-item nk-tb-head">
+                            <th class="nk-tb-col"><span class="sub-text">Translated Name</span></th>
+                            <th class="nk-tb-col"><span class="sub-text">Name (English)</span></th>
+                            <th class="nk-tb-col tb-tnx-action">
+                                <span>Action</span>
+                            </th>
+                        </tr>
+                    </thead>
                         <tbody>
                             @foreach ($price_options as $price_option)
+                                @php
+                                    $translatedTranslation = $price_option->translations->where('lang_id', $siteLanguage)->first();
+                                    $englishTranslation    = $price_option->translations->where('lang_id', $englishLangId)->first();
+                                    $englishName           = $englishTranslation->name ?? $price_option->slug;
+                                @endphp
                                 <tr class="nk-tb-item">
                                     <td class="nk-tb-col">
                                         <div class="user-card">
                                             <div class="user-info">
-                                             <span class="tb-lead">{{ $price_option->translations->first()->name ?? '' }}</span>
-
+                                                @if($siteLanguage == $englishLangId)
+                                                    <span class="tb-lead">{{ $englishName }}</span>
+                                                @else
+                                                    @if(!empty($translatedTranslation->name))
+                                                        <span class="tb-lead">{{ $translatedTranslation->name }}</span>
+                                                    @else
+                                                        <span class="badge badge-dim bg-outline-warning">Not Translated</span>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        <div class="user-card">
+                                            <div class="user-info">
+                                                <span class="tb-lead">{{ $englishName }}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -190,22 +124,19 @@
                                                     <div class="dropdown-menu dropdown-menu-end edit-btn"
                                                         style="height:auto !important;">
                                                         <ul class="link-list-opt no-bdr">
-                                                            <li><a
-                                                                    href="{{route('priceoptionsAdd',$price_option->id) }}"><em
-                                                                        class="icon ni ni-edit-fill"></em><span>Edit</span></a>
+                                                            <li>
+                                                                <a href="{{route('priceoptionsAdd',$price_option->id) }}"><em
+                                                                    class="icon ni ni-edit-fill"></em><span>Edit</span></a>
                                                             </li>
-                                                            <li class="removeConfermation"
-                                                            data-url="{{ route('priceoptionsremove',$price_option->id) }}">
-                                                                <a
-                                                                href="{{ route('priceoptionsremove',$price_option->id)}}"><em
+                                                            <li class="removeConfermation" data-url="{{ route('priceoptionsremove',$price_option->id) }}">
+                                                                <a href="{{ route('priceoptionsremove',$price_option->id)}}"><em
                                                                 class="icon ni ni-trash-fill"></em><span>Remove</span></a>
-                                                         </li>
-                                                         <li>
-                                                            <a onclick="openOfferTranslateModal({{ $price_options->first()->id }}, '{{ $price_options->first()->translations->first()->name ?? $price_options->first()->slug }}')">
+                                                            </li>
+                                                        <li>
+                                                            <a onclick="openOfferTranslateModal({{ $price_option->id }}, '{{ addslashes($englishName) }}')">
                                                                 <em class="icon ni ni-globe"></em> <span>Translations</span>
                                                             </a>
                                                         </li>
-
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -286,68 +217,85 @@
 
 {{-- pricing options script --}}
 <script>
-    $('#countrySelect').on('change', function () {
-        let langCode = $('#countrySelect').val();
+   $('#countrySelect').on('change', function () {
+    let langCode = $('#countrySelect').val();
 
-        $.ajax({
-            url: '{{ route("priceoptions") }}',
-            type: 'GET',
-            data: {
-                lang: langCode
-            },
-            success: function (response) {
-                let tbody = '';
-                if (response.price_options.length === 0) {
-                    tbody = `<tr><td colspan="2" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
-                } else {
-                    response.price_options.forEach(option => {
-                        tbody += `
-                            <tr class="nk-tb-item">
-                                <td class="nk-tb-col">
-                                    <div class="user-card">
-                                        <div class="user-info">
-                                            <span class="tb-lead">${option.name ?? ''}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="nk-tb-col nk-tb-col-tools">
-                                    <ul class="nk-tb-actions gx-1">
-                                        <li>
-                                            <div class="drodown">
-                                                <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown">
-                                                    <em class="icon ni ni-more-h"></em>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-end edit-btn">
-                                                    <ul class="link-list-opt no-bdr">
-                                                        <li>
-                                                            <a href="/admin-dashboard/price-options/add/${option.id}">
-                                                                <em class="icon ni ni-edit-fill"></em><span>Edit</span>
-                                                            </a>
-                                                        </li>
-                                                        <li class="removeConfermation" data-url="/admin-dashboard/price-options/remove/${option.id}">
-                                                            <a href="/admin-dashboard/price-options/remove/${option.id}">
-                                                                <em class="icon ni ni-trash-fill"></em><span>Remove</span>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+    $.ajax({
+        url: '{{ route("priceoptions") }}',
+        type: 'GET',
+        data: {
+            lang: langCode
+        },
+        success: function (response) {
+            let tbody = '';
+            if (response.price_options.length === 0) {
+                tbody = `<tr><td colspan="3" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
+            } else {
+                response.price_options.forEach(option => {
+                    let translatedCell;
+                    if (option.is_english) {
+                        translatedCell = `<span class="tb-lead">${option.english_name ?? ''}</span>`;
+                    } else if (option.translated_name) {
+                        translatedCell = `<span class="tb-lead">${option.translated_name}</span>`;
+                    } else {
+                        translatedCell = `<span class="badge badge-dim bg-outline-warning">Not Translated</span>`;
+                    }
+
+                    tbody += `
+                        <tr class="nk-tb-item">
+                            <td class="nk-tb-col">
+                                <div class="user-card">
+                                    <div class="user-info">${translatedCell}</div>
+                                </div>
+                            </td>
+                            <td class="nk-tb-col">
+                                <div class="user-card">
+                                    <div class="user-info"><span class="tb-lead">${option.english_name ?? ''}</span></div>
+                                </div>
+                            </td>
+                            <td class="nk-tb-col nk-tb-col-tools">
+                                <ul class="nk-tb-actions gx-1">
+                                    <li>
+                                        <div class="drodown">
+                                            <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown">
+                                                <em class="icon ni ni-more-h"></em>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end edit-btn">
+                                                <ul class="link-list-opt no-bdr">
+                                                    <li>
+                                                        <a href="/admin-dashboard/price-options/add/${option.id}">
+                                                            <em class="icon ni ni-edit-fill"></em><span>Edit</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="removeConfermation" data-url="/admin-dashboard/price-options/remove/${option.id}">
+                                                        <a href="/admin-dashboard/price-options/remove/${option.id}">
+                                                            <em class="icon ni ni-trash-fill"></em><span>Remove</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a onclick="openOfferTranslateModal(${option.id}, '${(option.english_name ?? '').replace(/'/g, "\\'")}')">
+                                                            <em class="icon ni ni-globe"></em> <span>Translations</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
                                             </div>
-                                        </li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                $('table tbody').html(tbody);
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                alert('Something went wrong.');
+                                        </div>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    `;
+                });
             }
-        });
+
+            $('table tbody').html(tbody);
+        },
+        error: function (xhr) {
+            console.error(xhr);
+            alert('Something went wrong.');
+        }
     });
+});
 </script>
 {{-- End Script --}}
 
