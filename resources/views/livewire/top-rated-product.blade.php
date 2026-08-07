@@ -531,9 +531,9 @@
                                 </div>
                                 @if (!empty($products))
                                     @foreach ($products as $index => $item)
-                                        <div class="automotive-card auto-bg" data-aos="fade-up"
+                                        <div class="automotive-card" data-aos="fade-up" style="background-color: #f7f9fb;"
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
-                                            <div class="auto-choice-card" style="position: relative; ">
+                                            <div class="auto-choice-card" style="position: relative;">
                                                 @php
                                                     $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
                                                 @endphp
