@@ -55,7 +55,13 @@
                                 @endphp
 
                                 @if ($business && $businessTranslation)
-                                    <div class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px;  height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: unset;  margin-bottom: 20px;" >
+                                    @php
+                                        $bSlug = $businessTranslation->slug ?? ($business->slug ?? 'business');
+                                        $rWordRaw = static_text('reviews_word');
+                                        $rSlug = (!empty($rWordRaw) && $rWordRaw !== 'reviews_word') ? $rWordRaw : 'reviews';
+                                        $reviewsPageUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
+                                    @endphp
+                                    <a href="{{ $reviewsPageUrl }}" class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: unset; margin-bottom: 20px; text-decoration: none; color: inherit;">
                                         <!-- Top part: user icon, name, rating -->
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
                                             <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -71,7 +77,7 @@
                                                     <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
                                                 @endif
                                                 @if ($user && $user->company_size)
-                                                    <div class="user-company-size" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ static_text('company_size_' . $user->company_size) ?: $user->company_size }}</div>
+                                                    <div class="user-company-size d-none" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ static_text('company_size_' . $user->company_size) ?: $user->company_size }}</div>
                                                 @endif
                                             </div>
                                         </div>
@@ -99,12 +105,10 @@
                                                 <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
                                             </div>
                                             <div class="business-info" style="display: flex; flex-direction: column; overflow: hidden; min-width: 0; margin: 0; padding: 0; gap: 0;">
-                                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}" style="text-decoration: none; display: block; margin: 0; padding: 0;">
-                                                    <span style="font-size: 13px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.2; margin: 0; padding: 0;">{{ $businessName }}</span>
-                                                </a>
+                                                <span style="font-size: 13px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.2; margin: 0; padding: 0;">{{ $businessName }}</span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 @endif
                             @endforeach
                         </div>
