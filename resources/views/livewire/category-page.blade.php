@@ -14,9 +14,9 @@
         .automotive-card:hover {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-.top-rated-heading-sec .breadcrumb-item a, .asn_main_sec .breadcrumb-item a{
+/* .top-rated-heading-sec .breadcrumb-item a, .asn_main_sec .breadcrumb-item a{
     display: block;
-}
+} */
     li.breadcrumb-item.active {
     color:#002347 !important;
     font-weight:500;

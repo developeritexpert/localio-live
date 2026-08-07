@@ -143,6 +143,32 @@
     </style>
     <section class="top-rated-heading-sec">
        <div class="container">
+                                        <div class="row align-items-center mb-3">
+                                    <div class="col-8">
+                                        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                            <ol class="breadcrumb m-0" style="background: transparent;padding: 0;display: flex;align-items: center;">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/categories') }}"
+                                               style="color: inherit; text-decoration: none; font-size: 13px;" 
+                                               onmouseout="this.style.color=''">All</a>
+                                        </li>
+                                        
+                                            <li class="breadcrumb-item">
+                                                <a href=""
+                                                   style="color: inherit; text-decoration: none; font-size: 13px;"
+                                                   onmouseout="this.style.color=''">
+                                                    Top rated products
+                                                </a>
+                                            </li>
+                                        
+                                        
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="col-4 d-flex justify-content-end">
+                                <x-social-icon />
+                            </div>
+                        </div>
             <div class="top-rated-heading-block">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
