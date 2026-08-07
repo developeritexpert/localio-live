@@ -66,7 +66,7 @@
                                                      $value = $criteriaRatings[$cId] ?? 0;
                                                  @endphp
                                                  <div class="mb-3 col-md-6">
-                                                     <label class="form-label fw-semibold " style="font-size: 12px; color:#444444; margin-bottom: 4px;">
+                                                     <label class="form-label fw-semibold " style="font-size: 12px; color:#002347; margin-bottom: 4px;">
                                                          {{ $criterion['name'] }}
                                                      </label>
                                                      <div class="d-flex align-items-center gap-1 star-rating mt-1" data-rating-name="criteria_{{ $cId }}">
@@ -93,13 +93,13 @@
                                              <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-4">
                                                  <div class="form-check custom-radio">
                                                      <input class="form-check-input" type="radio" name="recommend" id="recommend_yes" value="1" wire:model="recommend" style="cursor: pointer;">
-                                                     <label class="form-check-label fw-semibold" for="recommend_yes" style="cursor: pointer; color: #444444; font-size: 12px;">
+                                                     <label class="form-check-label fw-semibold" for="recommend_yes" style="cursor: pointer; color: #002347; font-size: 12px;">
                                                          Yes, I recommend it
                                                      </label>
                                                  </div>
                                                  <div class="form-check custom-radio">
                                                      <input class="form-check-input" type="radio" name="recommend" id="recommend_no" value="0" wire:model="recommend" style="cursor: pointer;">
-                                                     <label class="form-check-label fw-semibold" for="recommend_no" style="cursor: pointer; color: #444444; font-size: 12px;">
+                                                     <label class="form-check-label fw-semibold" for="recommend_no" style="cursor: pointer; color: #002347; font-size: 12px;">
                                                          No, I don't recommend it
                                                      </label>
                                                  </div>
@@ -230,15 +230,18 @@
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
                                                 <i class="fas fa-lightbulb text-warning me-1"></i> Rate honestly
                                             </div>
-                                            <p class="m-0 text-muted" style="font-size: 11px;">Your ratings should reflect your overall experience with this business.</p>
+                                            <p class="m-0 text-muted" style="font-size: 12px;">Your ratings should reflect your overall experience with this business.</p>
                                         @elseif($step === 2)
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
                                                 <i class="fas fa-lightbulb text-warning me-1"></i> Be specific
                                             </div>
-                                            <p class="m-0 text-muted" style="font-size: 11px;">Include details that may help others make an informed decision.</p>
+                                            <p class="m-0 text-muted" style="font-size: 12px;">Include details that may help others make an informed decision.</p>
                                         @elseif($step === 3)
-                                            <div class="fw-bold text-dark mt-1">What stood out?</div>
-                                            <p class="m-0 text-muted" style="font-size: 11px;">List the biggest strengths and weaknesses you experienced.</p>
+                                            <!-- <div class="fw-bold text-dark mt-1">What stood out?</div> -->
+                                            <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> What stood out?
+                                            </div>
+                                            <p class="m-0 text-muted" style="font-size: 12px;">List the biggest strengths and weaknesses you experienced.</p>
                                         @endif
                                     </div>
                                 </div>
@@ -287,7 +290,7 @@
                 opacity: 1 !important;
                 /* transform: scale(0.85) translateY(-6px) translateX(0.15rem) !important; */
                 color: #80868b !important;
-                font-weight: 600 !important;
+                /* font-weight: 600 !important; */
                 background-color: #ffffff !important;
                 padding: 0 10px !important;
                 height: auto !important;
@@ -301,14 +304,15 @@
             
             .form-floating > label {
                 padding: 17px 20px;
-                font-size: 13px;
+                /* font-size: 13px; */
                 color: #64748b;
             }
             .form-floating > .form-control,
             .form-floating > textarea {
                 border-radius: 4px !important;
-                border: 1px solid #cbd5e0 !important;
-                font-size: 13px !important;
+                border: 1px solid #dadce0 !important;
+                /* font-size: 13px !important; */
+                color:#202124;
             }
             .modal-dialog .modal-body .out_ln_btn:hover{
               background-color:#174889 !important;

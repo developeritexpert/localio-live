@@ -1,5 +1,8 @@
 <div>
     <style>
+        .top-rated-heading-sec .breadcrumb-item a {
+            display: block;
+        }
         .top-rated-heading-block h1 {
             font-size: 28px !important;
             font-weight: 700;
@@ -605,7 +608,7 @@
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
@@ -613,19 +616,19 @@
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>
