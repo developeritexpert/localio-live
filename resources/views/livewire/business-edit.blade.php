@@ -875,7 +875,7 @@
                                                         <button class="btn btn-outline-primary btn-sm d-none" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
                                                             Select All
                                                         </button>
-                                                        <button class="btn btn-outline-danger btn-sm" @click="clearAll()" type="button">
+                                                        <button class="btn btn-outline-danger btn-sm d-none" @click="clearAll()" type="button">
                                                             Clear All
                                                         </button>
                                                     </div>
