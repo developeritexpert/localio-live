@@ -22,6 +22,7 @@
     .social_wishlist_btn .wishlist a i {
         color: #ffffff !important;
         font-size: 14px !important;
+        margin-left: 1px;
     }
 </style>
 

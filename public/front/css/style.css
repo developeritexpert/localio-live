@@ -1684,12 +1684,12 @@ global classes */
 }
 
 /* inner banner css start here */
-.inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 21.95px;
-  text-align: left;
-  color: #000000;
+body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: left;
+    color: #212529;
 }
 
 .inner_banner_sec {
@@ -8303,10 +8303,11 @@ input:checked~.toggle-dot {
 }
 
 .filter-section .form-check .form-check-label {
-  color: #000000;
-  font-weight: 500;
+    color: #000000;
+    font-weight: 500;
+    cursor: pointer;
+    gap: 2px !important;
 }
-
 /* 1 october  */
 
 .crm_sec {
@@ -9867,9 +9868,9 @@ section.right_tool_sec .otr_rgtool h2 {
 }
 
 /* 31-july-26  */
-.product_sec li.breadcrumb-item.active {
-  color: #002347 !important;
-  font-weight: 500 !important;
+body .product_sec li.breadcrumb-item.active {
+    color: #1e3050 !important;
+    font-weight: 500 !important;
 }
 
 .user_revew_sec li.breadcrumb-item {
@@ -10171,4 +10172,58 @@ header .notfictn_lnk img {
 
 .mobe-bottom-row {
   display: none;
+}
+
+
+/* 7 aug  */
+.sli_img img {
+    border-radius: 0 !important;
+}
+
+.banner_sec.home_bnr_sec {
+    padding: 230px 0 120px;
+}
+
+.center-card-pack .top-rate-innr {
+    background-color: #06498b08;
+}
+.most-populr-sec .top-pro-btn .cta {
+    font-size: 13px;
+    font-weight: 600;
+}
+ /* (h5 replace with h3 in html) */
+h5.card-title.mb-3 {
+    font-size: 20px !important;
+    font-weight: 500 !important;
+} 
+
+.card.card-bordered .card-body ul {
+     font-size: 16px; 
+     font-weight: 500;
+}
+.review-actions-bottom-right a {
+    background: #a0aec03b;
+    border-radius: 50%;
+    padding: 2px 6px;
+}
+.compare-section .comparison-box {
+    background-color: #f7f9fb !important;
+}
+.asn_dv .Tab-outerlnk #table-of-content ul li a.active {
+    font-weight: 500;
+}
+.asn_dv .Tab-outerlnk #table-of-content ul li a {
+    font-weight: 350;
+    font-size: 12px;
+}
+ .top-automotive-sec.cat_pg .auto-choice-lft .filter-section .form-check .form-check-label{
+ gap:2px;
+   cursor: pointer !important;
+ }
+.an_lkd .far.fa-heart {
+     display:none;
+}
+.inn_ul .rating-stars {
+    display: flex;
+    gap: 2px;
 }
