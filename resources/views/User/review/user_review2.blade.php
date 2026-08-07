@@ -359,9 +359,10 @@
         margin-bottom: 0 !important;
         }
 
-        .review-cntnt-btm .review-text {
-        font-size: 14px;
-        color: #444 !important;
+       .review-cntnt-btm .review-text {
+            font-size: 14px;
+            color: #444 !important;
+            line-height: 1.6;
         }
 
         .crd-stars {

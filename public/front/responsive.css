@@ -2414,6 +2414,7 @@
 .top-automotive-sec .auto-choice-lft .accordion-body::-webkit-scrollbar-thumb {
     background: #f9633b;
 }
+
 }
 
 @media only screen and (max-width: 767px) {
@@ -4052,5 +4053,6 @@
     left: 0;
     top: 0px;
   }
+
 }
 
