@@ -23,13 +23,19 @@ class CompareBar extends Component
     {
         $productIds = app(CompareService::class)->getComparedProducts();
         
-        // If we have products and a categoryId is provided, validate they belong to this category
+        // If we have products and a categoryId is provided, validate they belong to this category family
         if (count($productIds) > 0 && $this->categoryId) {
             $firstProduct = \App\Models\Business::find($productIds[0]);
-            if ($firstProduct && $firstProduct->category_id != $this->categoryId) {
-                // If they belong to a different category, clear the session
-                session()->forget('compared_products');
-                $productIds = [];
+            if ($firstProduct) {
+                $pCategory = \App\Models\Category::find($firstProduct->category_id);
+                $isValidCategory = $firstProduct->category_id == $this->categoryId 
+                    || ($pCategory && $pCategory->parent_id == $this->categoryId);
+
+                if (!$isValidCategory) {
+                    // If they belong to an unrelated category, clear the session
+                    session()->forget('compared_products');
+                    $productIds = [];
+                }
             }
         }
         

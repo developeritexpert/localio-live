@@ -2,7 +2,7 @@
     <div class="">
         <input type="checkbox"
                id="compare{{ $item->id }}"
-               wire:model.live="isInCompare"
+               {{ $isInCompare ? 'checked' : '' }}
                wire:click="toggleCompare({{ $item->id }})"
                @if($isDisabled) disabled title="You must uncheck a product first to compare another." @endif>
         <label for="compare{{ $item->id }}">Compare</label>
