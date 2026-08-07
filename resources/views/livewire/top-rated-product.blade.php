@@ -1,5 +1,8 @@
 <div>
     <style>
+        .automotive-card.auto-bg.aos-init.aos-animate {
+    background-color: #f7f9fb !important;
+}
         label.form-check-label span.filter1 {
             padding-left: 5px;
         }
@@ -27,15 +30,21 @@
            margin-top: 0 !important;
            padding-top:0 !important;
         }
-        .top-rated-heading-sec{
-             margin-top: 120px ;
-           padding-top:50px !important;
-           background-color:#fdfdfd;
-           border-bottom: 2px solid #e8eef6;
-           margin-bottom: 25px;
-        }
+    .top-rated-heading-sec {
+        margin-top: 120px;
+        padding-top: 30px !important;
+        background-color: #f7f9fb;
+        border-bottom: 1px solid #e2e8f0;
+        /* margin-bottom: 25px; */
+    }
+    .top-rated-heading-block {
+    padding-bottom: 20px;
+}
+    .top-rated-heading-sec .bread_row{
+        /* margin-top:20px; */
+    }
          .top-rated-heading-sec .row {
-            padding-bottom:20px;
+            /* padding-bottom:20px; */
             
          }
         /* View details button – match height of Visit website */
@@ -143,7 +152,7 @@
     </style>
     <section class="top-rated-heading-sec">
        <div class="container">
-                                        <div class="row align-items-center mb-3">
+                                        <div class=" bread_row row align-items-center mb-3">
                                     <div class="col-8">
                                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                                             <ol class="breadcrumb m-0" style="background: transparent;padding: 0;display: flex;align-items: center;">
@@ -194,7 +203,7 @@
                     </div>
        </div>
     </section>
-    <section class="top-automotive-sec top_rate_pg light  ">
+    <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px !important;">
         <div class="top-auto-btm">
             <div class="container">
                 <div class="top-auto-choice">
@@ -540,7 +549,7 @@
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore>
+                                    <div wire:ignore class="d-none">
                                         <x-social-icon/>
                                     </div>
                                 </div>
@@ -804,7 +813,9 @@
                                     <div>
                                         <p class="m-0">Showing {{ $products->count() }} results </p>
                                     </div>
-                                    <x-social-icon/>
+                                    <div class="d-none">
+                                        <x-social-icon/>
+                                    </div>
                                 </div>
 
                                 <div class="alert alert-info">
