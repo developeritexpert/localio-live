@@ -6,7 +6,8 @@ use App\Services\CompareService;
 
 class CompareBar extends Component
 {
-    public $comparedProducts = [];
+    public $comparedProducts = []; // Array of Business models
+    public $comparedProductIds = []; // Array of IDs
     public $errorMessage = '';
     public $categoryId = null;
 
@@ -20,25 +21,56 @@ class CompareBar extends Component
 
     public function refreshComparedProducts()
     {
-        $products = app(CompareService::class)->getComparedProducts();
+        $productIds = app(CompareService::class)->getComparedProducts();
         
         // If we have products and a categoryId is provided, validate they belong to this category
-        if (count($products) > 0 && $this->categoryId) {
-            $firstProduct = \App\Models\Business::find($products[0]);
+        if (count($productIds) > 0 && $this->categoryId) {
+            $firstProduct = \App\Models\Business::find($productIds[0]);
             if ($firstProduct && $firstProduct->category_id != $this->categoryId) {
                 // If they belong to a different category, clear the session
                 session()->forget('compared_products');
-                $products = [];
+                $productIds = [];
             }
         }
         
-        $this->comparedProducts = $products;
+        $this->comparedProductIds = $productIds;
+
+        if (count($productIds) > 0) {
+            $lang_id = function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : \App\Models\Language::where('lang_code', app()->getLocale())->value('id');
+            $this->comparedProducts = \App\Models\Business::with([
+                'translations' => function($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                }
+            ])
+            ->whereIn('id', $productIds)
+            ->get()
+            ->sortBy(function($model) use ($productIds) {
+                return array_search($model->id, $productIds);
+            })
+            ->values();
+        } else {
+            $this->comparedProducts = collect();
+        }
+    }
+
+    public function removeProduct($productId)
+    {
+        $result = app(CompareService::class)->toggleProductComparison($productId);
+        $this->refreshComparedProducts();
+        $this->dispatch('toggleCompareProduct');
+    }
+
+    public function clearAll()
+    {
+        session()->forget('compared_products');
+        $this->refreshComparedProducts();
+        $this->dispatch('toggleCompareProduct');
     }
 
     public function goToComparison()
     {
         // Try to construct the SEO URL if exactly 2 products are selected
-        if (is_array($this->comparedProducts) && count($this->comparedProducts) === 2) {
+        if (count($this->comparedProductIds) === 2) {
             $lang_id = function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : \App\Models\Language::where('lang_code', app()->getLocale())->value('id');
             
             $businesses = \App\Models\Business::with([
@@ -46,7 +78,7 @@ class CompareBar extends Component
                     $q->where('lang_id', $lang_id);
                 }
             ])
-            ->whereIn('id', $this->comparedProducts)
+            ->whereIn('id', $this->comparedProductIds)
             ->get();
             
             if ($businesses->count() === 2) {

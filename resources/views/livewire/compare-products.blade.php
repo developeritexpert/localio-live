@@ -32,6 +32,10 @@
                 alert(msg);
             }
         });
+
+        Livewire.on('toggleCompareProduct', () => {
+            $wire.call('refreshComparedProducts');
+        });
     </script>
     @endscript
 </div>
