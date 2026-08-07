@@ -1076,11 +1076,11 @@
                                         @if($business->proCons->count() > 0)
                                         <div class="col-lg-12 mt-5 mb-4">
                                             <div class="pros-cons-header mb-3">
-                                                <h3 style="font-weight: 700; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
+                                                <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
                                                     {{ $business->translations->first()->name ?? 'Business' }} pros and cons
-                                                </h3>
+                                                </h2>
                                                 @if(!empty($business->pro_cons_intro))
-                                                    <p class="text-muted" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
+                                                    <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
                                                         {{ $business->pro_cons_intro }}
                                                     </p>
                                                 @endif
@@ -1090,7 +1090,7 @@
                                                 <div class="col-md-6">
                                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                         <div class="card-body">
-                                                            <h5 class="card-title mb-3" style="font-weight: 700;">Pros</h5>
+                                                            <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
                                                             <ul class="list-unstyled mb-0">
                                                                 @foreach($business->proCons->where('type', 'pro') as $pro)
                                                                 <li class="d-flex align-items-start mb-2">
@@ -1105,7 +1105,7 @@
                                                 <div class="col-md-6">
                                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                         <div class="card-body">
-                                                            <h5 class="card-title mb-3" style="font-weight: 700;">Cons</h5>
+                                                            <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
                                                             <ul class="list-unstyled mb-0">
                                                                 @foreach($business->proCons->where('type', 'con') as $con)
                                                                 <li class="d-flex align-items-start mb-2">
@@ -1132,7 +1132,7 @@
                                         <div class="col-lg-12 mt-4 mb-4">
                                             <div class="offering-section mb-5">
                                                 @if($offering->headline)
-                                                    <h3 class="mb-3" style="font-weight: 700;">{{ $offering->headline }}</h3>
+                                                    <h2 class="mb-3" style="font-weight: 600; font-size:24px;">{{ $offering->headline }}</h2>
                                                 @endif
                                                 
                                                 @if($offering->top_text)
@@ -1394,7 +1394,7 @@
                                             <div class="feture_box review-breakdown-card">
 
                                                 {{-- Header & Overall Rating --}}
-                                                <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom:15px;">
+                                                <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
                                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                                         <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                                             {{ number_format($averageRating,1) }}
@@ -1412,7 +1412,7 @@
                                                             @endfor
                                                         </div>
 
-                                                        <span style="color: #666; font-size: 13px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                        <span style="color: #666; font-size: 12px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
@@ -3141,7 +3141,7 @@
                                                                 @endif
                                                             @endfor
                                                         </div>
-                                                        <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                        <span style="font-size: 12px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                     </div>
 
                                                     {{-- Review Breakdown Title --}}
