@@ -2418,6 +2418,7 @@
                                                                 <h6 class="m-0 fw_700">Name not available</h6>
                                                             @endif
                                                             <div class="overall-rating-header d-flex align-items-center mt-2 flex-wrap" style="gap: 5px;">
+                                                                <span class="rate_box_num fw-medium" style="font-size: 13px; color: #333;">{{ number_format($altRatingAvg, 1) }}</span>
                                                                 <div class="rating-stars" style="display: flex; gap: 2px;">
                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                         @if ($i <= floor($altRatingAvg))
@@ -2430,7 +2431,7 @@
                                                                     @endfor
                                                                 </div>
                                                                 <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 500;">
-                                                                    {{ number_format($altRatingAvg, 1) }} | {{ $count }} {{ $count == 1 ? 'Review' : 'Reviews' }}
+                                                                    ({{ $count }})
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -2862,22 +2863,22 @@
                                                 <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                                             </div>
                                             <div class="tp-btm d-flex flex-col-mob pt-2">
-                                                <div class="inn_ul">
-                                                    <div class="rating-stars">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            @if ($i <= floor($averageRating))
-                                                            <i class="fas fa-star text-warning"></i>
-                                                            @elseif ($i - 0.5 <= $averageRating)
-                                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                                <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                    <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                                                    <div class="inn_ul d-inline-flex m-0">
+                                                        <div class="rating-stars">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= floor($averageRating))
+                                                                    <i class="fas fa-star text-warning"></i>
+                                                                @elseif ($i - 0.5 <= $averageRating)
+                                                                    <i class="fas fa-star-half-alt text-warning"></i>
                                                                 @else
-                                                                <i class="far fa-star text-warning"></i>
+                                                                    <i class="far fa-star text-warning"></i>
                                                                 @endif
-                                                                @endfor
+                                                            @endfor
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="rate_box">
-                                                    {{ number_format($averageRating, 1) }} | {{ $ratingCount }}
-                                                    ratings
+                                                    <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>

@@ -262,7 +262,7 @@
                     </div>
        </div>
     </section>
-                <section class="top-automotive-sec cat_pg light" style="padding-top:25px !important;">
+                <section class="top-automotive-sec cat_pg light" style="padding-top:25px !important; background-color: #fdfdfd !important;">
                 <div class="top-auto-btm">
                     <div class="container">
                         <div class="top-auto-choice">
@@ -668,25 +668,24 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex flex-col-mob">
-                                                                            <div class="inn_ul">
-                                                                                <div class="rating-stars ">
-                                                                                    @for ($i = 1; $i <= 5; $i++)
-                                                                                        @if ($i <= floor($item->reviews->avg('rating')))
-                                                                                            <i class="fas fa-star text-warning"></i>
-                                                                                        @elseif ($i - 0.5 <= $item->reviews->avg('rating'))
-                                                                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                                                                        @else
-                                                                                            <i class="far fa-star text-warning"></i>
-                                                                                        @endif
-                                                                                    @endfor
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="rate_box">
-                                                                                {{ number_format($item->reviews->avg('rating'), 1) }} | {{ $item->reviews->count() }} {{ $item->reviews->count() == 1 ? 'review' : 'reviews' }}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                        <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                             <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                             <div class="inn_ul d-inline-flex m-0">
+                                                                                 <div class="rating-stars ">
+                                                                                     @for ($i = 1; $i <= 5; $i++)
+                                                                                         @if ($i <= floor($item->reviews->avg('rating')))
+                                                                                             <i class="fas fa-star text-warning"></i>
+                                                                                         @elseif ($i - 0.5 <= $item->reviews->avg('rating'))
+                                                                                             <i class="fas fa-star-half-alt text-warning"></i>
+                                                                                         @else
+                                                                                             <i class="far fa-star text-warning"></i>
+                                                                                         @endif
+                                                                                     @endfor
+                                                                                 </div>
+                                                                             </div>
+                                                                             <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->reviews->count() }})</span>
+                                                                         </div>  </div>
+                                                                    <!-- </div> -->
                                                                 </div>
                                                             </div>
 

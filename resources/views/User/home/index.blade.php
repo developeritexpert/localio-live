@@ -189,8 +189,9 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="tp-btm d-flex">
-                                                                        <div class="inn_ul">
+                                                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
+                                                                        <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
                                                                                 @php
                                                                                     $rating = $avgRating > 0 ? round($avgRating) : 0;
@@ -200,9 +201,7 @@
                                                                                 @endfor
                                                                             </div>
                                                                         </div>
-                                                                        <div class="rate_box">
-                                                                            {{ $avgRating }} | {{ $ratingsCount }} {{ $ratingsCount == 1 ? 'review' : 'reviews' }}
-                                                                        </div>
+                                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingsCount }})</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -417,8 +416,9 @@
                                                         </div>
                                                     </a>
                                                     </div>
-                                                    <div class="tp-btm d-flex">
-                                                        <div class="inn_ul">
+                                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
+                                                        <div class="inn_ul d-inline-flex m-0">
                                                             <div class="tab_star_li">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     <span
@@ -431,8 +431,7 @@
                                                             </div>
 
                                                         </div>
-                                                        <div class="rate_box"> {{ number_format($businessRating, 1) }} |
-                                                            {{ $business->reviews->count() }} ratings</div>
+                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $business->reviews->count() }})</span>
                                                     </div>
                                                 </div>
                                             </div>
