@@ -1496,9 +1496,6 @@ class BusinessForm extends Component
         // Sync country relationships
         $business->countries()->sync($this->selectedCountries);
 
-        // Sync pricing options
-        $business->pricingOptions()->sync($this->selectedPricingOptions);
-
         // Sync features
         $business->features()->sync($this->selectedFeatures);
 

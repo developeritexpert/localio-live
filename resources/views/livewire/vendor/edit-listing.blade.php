@@ -710,10 +710,13 @@
                                                 /{{ $timeUnit }}
                                             </p>
                                         </div>
-                                        @if (!empty($business->pricingOptions) && $business->pricingOptions->isNotEmpty())
+                                        @php
+                                            $bPricingOptions = $business->products->flatMap->pricingOptions;
+                                        @endphp
+                                        @if (!empty($bPricingOptions) && $bPricingOptions->isNotEmpty())
                                         <div class="poplr-vrsion-trial h_80">
                                             <ul class="list-unstyled d-flex m-0 flex-wrap">
-                                                @foreach ($business->pricingOptions as $option)
+                                                @foreach ($bPricingOptions as $option)
                                                 @if ($option->translations->isNotEmpty())
                                                 <li>
                                                     <img src="{{ asset('front/img/tik-mrk.svg') }}">
@@ -856,10 +859,13 @@
                                             <p class="m-0"><span>{{ $currency }}{{ $startingPrice }}</span>
                                                 /{{ $timeUnit }}</p>
                                         </div>
-                                        @if (!empty($alternativeBusiness[0]->pricingOptions) && $alternativeBusiness[0]->pricingOptions->isNotEmpty())
+                                        @php
+                                            $altPricingOptions = !empty($alternativeBusiness[0]) ? $alternativeBusiness[0]->products->flatMap->pricingOptions : collect();
+                                        @endphp
+                                        @if (!empty($altPricingOptions) && $altPricingOptions->isNotEmpty())
                                         <div class="poplr-vrsion-trial b_btm h_80 ">
                                             <ul class="list-unstyled d-flex m-0 flex-wrap">
-                                                @foreach ($alternativeBusiness[0]->pricingOptions as $option)
+                                                @foreach ($altPricingOptions as $option)
                                                 @if ($option->translations->isNotEmpty())
                                                 <li>
                                                     <img src="{{ asset('front/img/tik-mrk.svg') }}">

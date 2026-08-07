@@ -2812,9 +2812,12 @@
                                 <h6 class="fw_700 h6_26"> Usability and Experience</h6>
                                 <p>{{ $business->translations->first()->description }} </p>
                                 </div>
-                                @if (!empty($business->pricingOptions) && $business->pricingOptions->first()?->translations->isNotEmpty())
                                 @php
-                                $pricingOption = $business->pricingOptions->first();
+                                $productPricingOptions = $business->products->flatMap->pricingOptions;
+                                @endphp
+                                @if ($productPricingOptions->isNotEmpty() && $productPricingOptions->first()?->translations->isNotEmpty())
+                                @php
+                                $pricingOption = $productPricingOptions->first();
                                 $translation =
                                 $pricingOption->translations->firstWhere('lang_id', getCurrentLanguageID()) ??
                                 $pricingOption->translations->first();

@@ -15,7 +15,7 @@ use App\Models\ProConsTranslation;
 use App\Models\ProductTranslation;
 use App\Models\FeatureTransalte;
 use App\Models\Feature;
-use App\Models\{Business, Country, Currency, Filter, FilterOption, Media};
+use App\Models\{Business, Country, Currency, Filter, FilterOption, Media, PricingOption};
 use App\Models\Price;
 use App\Models\ProductFeature;
 use Illuminate\Support\Facades\DB;
@@ -108,8 +108,11 @@ class AdminProductController extends Controller
         $currencies = Currency::all();
         // Get all active countries
         $countries = Country::where('status', true)->orderBy('name')->get();
+        $pricingOptions = PricingOption::with(['translations' => function ($query) use ($lang_id) {
+            $query->where('lang_id', $lang_id);
+        }])->get();
         $is_affiliate=1;
-        return view('Admin.products.add_product', compact('is_affiliate','categories', 'currencies', 'businesses', 'countries'));
+        return view('Admin.products.add_product', compact('is_affiliate','categories', 'currencies', 'businesses', 'countries', 'pricingOptions'));
     }
     public function productAddProccess(ProductRequest $request)
     {
@@ -127,10 +130,10 @@ class AdminProductController extends Controller
             $product->status = $request->status;
             // dd($request->all());
             // Handle country availability
-            if ($request->has('product_countries')) {
-                $product->active_all_countries = 0;
-            } else {
+            if ($request->input('active_all_countries', '1') == '1') {
                 $product->active_all_countries = 1;
+            } else {
+                $product->active_all_countries = 0;
             }
             // dd($request->all());
             // Upload Product Icon with validation
@@ -188,63 +191,7 @@ class AdminProductController extends Controller
      */
     private function validatePricingLogic($request)
     {
-        $price = (float) $request->prices;
-        $discountPrice = $request->discount_prices ? (float) $request->discount_prices : null;
-        $renewalPrice = $request->renewal_prices ? (float) $request->renewal_prices : null;
-        $timeUnit = $request->time_units;
-
-        $errors = [];
-
-        // Validate discount price
-        if ($discountPrice !== null) {
-            if ($discountPrice >= $price) {
-                $errors['discount_prices'] = 'Discount price must be less than the regular price.';
-            }
-
-            if (!$request->discount_expiration_dates) {
-                $errors['discount_expiration_dates'] = 'Expiration date is required when discount price is provided.';
-            }
-
-            // Validate discount percentage isn't too high (e.g., more than 90% off)
-            $discountPercent = (($price - $discountPrice) / $price) * 100;
-            if ($discountPercent > 90) {
-                $errors['discount_prices'] = 'Discount cannot exceed 90% of the regular price.';
-            }
-        }
-
-        // Validate renewal price logic
-        if ($renewalPrice !== null) {
-            if ($timeUnit === 'one_time') {
-                $errors['renewal_prices'] = 'One-time products cannot have renewal prices.';
-            }
-
-            if (!$request->renewal_time_units) {
-                $errors['renewal_time_units'] = 'Renewal time unit is required when renewal price is provided.';
-            }
-
-            // Warn if renewal is significantly different from regular price
-            if ($renewalPrice > ($price * 2)) {
-                $errors['renewal_prices'] = 'Renewal price seems unusually high. Please verify the amount.';
-            }
-        }
-
-        // Validate expiration date
-        if ($request->discount_expiration_dates) {
-            $expirationDate = \Carbon\Carbon::parse($request->discount_expiration_dates);
-            $today = \Carbon\Carbon::now();
-
-            if ($expirationDate->lte($today)) {
-                $errors['discount_expiration_dates'] = 'Discount expiration date must be in the future.';
-            }
-
-            if ($expirationDate->gt($today->copy()->addYears(2))) {
-                $errors['discount_expiration_dates'] = 'Discount expiration date cannot be more than 2 years in the future.';
-            }
-        }
-
-        if (!empty($errors)) {
-            throw ValidationException::withMessages($errors);
-        }
+        // Base pricing validation if needed
     }
 
     /**
@@ -318,11 +265,18 @@ class AdminProductController extends Controller
             $product->categories()->sync([$request->product_category]);
         }
         // Attach countries
-        if ($request->has('product_countries')) {
+        if ($request->input('active_all_countries', '1') == '0' && $request->has('product_countries')) {
             $countryIds = array_filter($request->product_countries);
             if (!empty($countryIds)) {
                 $product->countries()->sync($countryIds);
             }
+        } else {
+            $product->countries()->detach();
+        }
+        // Attach pricing options
+        if ($request->has('pricing_options')) {
+            $pricingOptionIds = array_filter($request->pricing_options);
+            $product->pricingOptions()->sync($pricingOptionIds);
         }
     }
 
@@ -346,19 +300,6 @@ class AdminProductController extends Controller
             'updated_at' => now(),
         ];
 
-        // Add discount information if provided
-        if ($request->filled('discount_prices')) {
-            $pricingData['discount_price'] = (float) $request->discount_prices;
-            $pricingData['discount_time_units'] = $request->discount_time_units;
-            $pricingData['discount_expiration_date'] = $request->discount_expiration_dates;
-        }
-
-        // Add renewal information if provided
-        if ($request->filled('renewal_prices')) {
-            $pricingData['renewal_price'] = (float) $request->renewal_prices;
-            $pricingData['renewal_time_units'] = $request->renewal_time_units;
-        }
-
         // Insert pricing data
         $product->prices()->insert([$pricingData]);
     }
@@ -368,11 +309,12 @@ class AdminProductController extends Controller
      */
     private function createProductTranslation($request, $product, $lang_id)
     {
+        $name = !empty(trim($request->name)) ? trim($request->name) : 'Product #' . $product->id;
         $translationData = [
             'product_id' => $product->id,
-            'name' => trim($request->name),
-            'slug' => Str::slug($request->name),
-            'product_link' => $request->product_link,
+            'name' => $name,
+            'slug' => Str::slug($name),
+            'product_link' => $request->product_link ?? '',
             'lang_id' => $lang_id,
         ];
 
@@ -508,7 +450,12 @@ class AdminProductController extends Controller
             ];
         }
 
-        return view('Admin.products.update_product', compact('selectedFilters', 'currencies', 'product', 'product_category', 'product_business', 'businesses', 'categories', 'countries', 'selectedCountries'));
+        $pricingOptions = PricingOption::with(['translations' => function ($query) use ($lang_id) {
+            $query->where('lang_id', $lang_id);
+        }])->get();
+        $selectedPricingOptions = $product->pricingOptions->pluck('id')->toArray();
+
+        return view('Admin.products.update_product', compact('selectedFilters', 'currencies', 'product', 'product_category', 'product_business', 'businesses', 'categories', 'countries', 'selectedCountries', 'pricingOptions', 'selectedPricingOptions'));
     }
     private function validatePriceData($request)
     {
@@ -522,53 +469,6 @@ class AdminProductController extends Controller
         // Validate regular price
         if ($regularPrice <= 0) {
             $errors['prices'] = ['Regular price must be greater than 0'];
-        }
-
-        // Validate discount price logic
-        if ($discountPrice !== null) {
-            if ($discountPrice <= 0) {
-                $errors['discount_prices'] = ['Discount price must be greater than 0'];
-            } elseif ($discountPrice >= $regularPrice) {
-                $errors['discount_prices'] = ['Discount price must be less than regular price'];
-            } else {
-                // Check discount percentage
-                $discountPercentage = (($regularPrice - $discountPrice) / $regularPrice) * 100;
-                if ($discountPercentage < 1) {
-                    $errors['discount_prices'] = ['Discount should provide at least 1% savings'];
-                } elseif ($discountPercentage > 99) {
-                    $errors['discount_prices'] = ['Discount cannot be more than 99% off the regular price'];
-                }
-            }
-
-            // Validate discount expiration
-            if (!$discountExpiration) {
-                $errors['discount_expiration_dates'] = ['Expiration date is required when discount price is provided'];
-            } else {
-                $expDate = Carbon::parse($discountExpiration);
-                $now = Carbon::now();
-
-                if ($expDate->isPast()) {
-                    $errors['discount_expiration_dates'] = ['Expiration date must be in the future'];
-                }  elseif ($expDate->diffInDays($now) > 730) {
-                    $errors['discount_expiration_dates'] = ['Expiration date should not be more than 2 years from now'];
-                }
-            }
-
-            // Validate discount time unit
-            if (!$request->input('discount_time_units')) {
-                $errors['discount_time_units'] = ['Time unit is required when discount price is provided'];
-            }
-        }
-
-        // Validate renewal price logic
-        if ($renewalPrice !== null) {
-            if ($renewalPrice <= 0) {
-                $errors['renewal_prices'] = ['Renewal price must be greater than 0'];
-            }
-
-            if (!$request->input('renewal_time_units')) {
-                $errors['renewal_time_units'] = ['Time unit is required when renewal price is provided'];
-            }
         }
 
         // Throw validation exception if there are errors
@@ -604,18 +504,6 @@ class AdminProductController extends Controller
             'updated_at' => now(),
         ];
 
-        // Add discount fields if provided
-        if ($request->filled('discount_prices')) {
-            $priceData['discount_price'] = (float) $request->input('discount_prices');
-            $priceData['discount_time_units'] = $request->input('discount_time_units');
-            $priceData['discount_expiration_date'] = $request->input('discount_expiration_dates');
-        }
-
-        // Add renewal fields if provided
-        if ($request->filled('renewal_prices')) {
-            $priceData['renewal_price'] = (float) $request->input('renewal_prices');
-            $priceData['renewal_time_units'] = $request->input('renewal_time_units');
-        }
         // Insert price data
         try {
             $priceData['product_id'] = $product->id;
@@ -653,10 +541,10 @@ class AdminProductController extends Controller
             $product->status = $request->status;
             $product->lang_id = $lang_id;
 
-            if ($request->has('product_countries')) {
-                $product->active_all_countries = 0;
-            } else {
+            if ($request->input('active_all_countries', '1') == '1') {
                 $product->active_all_countries = 1;
+            } else {
+                $product->active_all_countries = 0;
             }
 
             // Upload Product Icon
@@ -696,10 +584,17 @@ class AdminProductController extends Controller
             }
 
             // Sync countries
-            if ($request->has('product_countries')) {
+            if ($request->input('active_all_countries', '1') == '0' && $request->has('product_countries')) {
                 $product->countries()->sync($request->product_countries);
             } else {
                 $product->countries()->detach();
+            }
+
+            // Sync pricing options
+            if ($request->has('pricing_options')) {
+                $product->pricingOptions()->sync(array_filter($request->pricing_options));
+            } else {
+                $product->pricingOptions()->detach();
             }
             // Handle filter options
             if ($request->filled('product_category')) {
@@ -727,21 +622,25 @@ class AdminProductController extends Controller
             $this->updateProductPrices($product, $request);
 
             // Handle Product Translation
+            $existingTranslation = $product->translation;
+            $name = !empty(trim($request->name)) ? trim($request->name) : ($existingTranslation->name ?? 'Product #' . $product->id);
+            $productLinkVal = $request->product_link ?? ($existingTranslation->product_link ?? '');
+
             $product->translation()->updateOrCreate([
                 'product_id' => $product->id,
                 'lang_id' => $lang_id,
             ], [
-                'name' => $request->name,
-                'slug' => Str::slug($request->name),
+                'name' => $name,
+                'slug' => Str::slug($name),
                 'description' => $request->description ?? null,
                 'overview' => $request->overview ?? null,
-                'product_link' => $request->product_link,
+                'product_link' => $productLinkVal,
             ]);
 
             // Commit the transaction
             DB::commit();
 
-            return redirect()->route('products')->with('success', 'Product updated successfully');
+            return redirect()->back()->with('success', 'Product updated successfully');
         } catch (ValidationException $e) {
             DB::rollBack();
             return back()->withErrors($e->errors())->withInput();

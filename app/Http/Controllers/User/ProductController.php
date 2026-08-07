@@ -43,6 +43,7 @@ class ProductController extends Controller
                 ->where('status', 'active'),
             'products' => fn($q) => $q->with([
                 'prices',
+                'pricingOptions.translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
             ]) ->where(function ($query) {
                 $query->where('active_all_countries', 1)

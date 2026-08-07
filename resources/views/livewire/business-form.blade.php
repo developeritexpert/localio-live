@@ -169,29 +169,7 @@
                         </div>
                     </div>
 
-                    <!-- Pricing Options Section -->
-                    <div class="card card-bordered mb-3">
-                        <div class="card-inner">
-                            <div class="form-group d-flex justify-content-between align-items-center">
-                                <label class="form-label">Pricing Options</label>
-                            </div>
-                            <div wire:ignore>
-                                <select class="form-control pricing-options" multiple
-                                    wire:model="selectedPricingOptions">
-                                    @foreach ($pricingOptions as $pricingOption)
-                                        <option value="{{ $pricingOption->id }}"
-                                            {{ in_array($pricingOption->id, $selectedPricingOptions ?? []) ? 'selected' : '' }}>
-                                            {{ $pricingOption->translations->first()->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            {{-- <input type="hidden" id="selectedPricingOptionsInput" wire:model="selectedPricingOptions"> --}}
-                            @error('selectedPricingOptions')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+
 
                     <!-- Category Features Section -->
                     @if (!empty($categoryFeatures))
@@ -1757,18 +1735,12 @@
      * Initialize all Select2 elements on the page
      */
     function initAllSelect2() {
-        $('.features, .pricing-options, .lang-supported').select2();
+        $('.features, .lang-supported').select2();
 
         $('.features').on('change', function() {
             let data = $(this).val();
             Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set('selectedFeatures',
                 data);
-        });
-
-        $('.pricing-options').on('change', function() {
-            let data = $(this).val();
-            Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id')).set(
-                'selectedPricingOptions', data);
         });
 
         $('.lang-supported').on('change', function() {

@@ -1814,9 +1814,6 @@ class BusinessEdit extends Component
         // Sync country relationships
         $business->countries()->sync($this->selectedCountries);
 
-        // Sync pricing options
-        $business->pricingOptions()->sync($this->selectedPricingOptions);
-
 
         // Sync sub categories
         $business->subCategories()->sync($this->selected_sub_categories ?? []);
