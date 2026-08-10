@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="d-none btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
@@ -140,39 +140,43 @@
                     $rSlug = (!empty($rWordRaw) && $rWordRaw !== 'reviews_word') ? $rWordRaw : 'reviews';
                     $reviewsPageUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                 @endphp
-                <div class="feture_box review-breakdown-card bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
-                    <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
-                        <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
-                            <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                {{ number_format($averageRating, 1) }}
-                            </span>
-
-                            <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    @if ($i <= floor($averageRating))
-                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                    @elseif ($i - 0.5 <= $averageRating)
-                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                    @else
-                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
-                                    @endif
-                                @endfor
+                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                    <div class="review-header-box top_review_bx" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                        <div class="d-flex align-items-center gap-3">
+                            @if(!empty($business->icon_id))
+                                <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                            @endif
+                            <div>
+                                <h3 style="font-size: 16px; font-weight: 700; color: #002347; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                <div style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                    <span style="font-weight: 400; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                                    <div class="rating-stars" style="display: flex; gap: 2px;">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <= floor($averageRating))
+                                                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                            @elseif ($i - 0.5 <= $averageRating)
+                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                            @else
+                                                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span style="color: #666; font-weight: 600;">({{ number_format($totalReviews) }})</span>
+                                </div>
                             </div>
-
-                            <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
-                        <a href="{{ $reviewsPageUrl }}" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                            View all reviews
+                        <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; border-radius: 30px; padding: 11px 25px;">
+                            Visit website
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>
                     </div>
 
-                    <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 700; color: #002347;">
-                        Review breakdown
-                    </h2>
-
                     @if(isset($criteria) && count($criteria) > 0)
-                        <div class="review-progress-list mb-3">
+                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
+                        <div class="mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                     <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
@@ -185,29 +189,20 @@
                         </div>
                     @endif
 
-                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                        <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
+                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
+                        <span style="font-weight: 600; color: #002347; font-size: 13.5px;">Recommended by users</span>
+                        <strong style="color: #002347; font-size: 13.5px;">{{ $recommendPercent }}%</strong>
                     </div>
 
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
+                        <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $bName }}?</span>
                         <div style="display: flex; gap: 8px;">
-                            @auth
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-up"></i>
-                                </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-down"></i>
-                                </a>
-                            @else
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-up"></i>
-                                </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-down"></i>
-                                </a>
-                            @endauth
+                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                            </a>
+                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -233,7 +228,7 @@
                                     ]);
                                 @endphp
                                 <li>
-                                    <a href="{{ $popUrl }}" style="color: #2b6cb0; text-decoration: none; font-weight: 500;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                    <a href="{{ $popUrl }}" style="color: #2b6cb0; text-decoration: none; font-weight: 600;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                         {{ $bName }} VS {{ $popPeerName }}
                                     </a>
                                 </li>

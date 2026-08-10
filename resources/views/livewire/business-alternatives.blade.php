@@ -225,7 +225,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                             </div>
                                         </div>
 
-                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta cta_orange justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px; padding:11px 25px;">
+                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px; padding:11px 25px;">
                                             Visit website
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
@@ -239,7 +239,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                     <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                     </div>
                                                 </div>
                                             @endforeach
