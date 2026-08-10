@@ -80,6 +80,7 @@ class ViewController extends Controller
             if ($limit <= 0) $limit = 6;
 
             $businesses = $category->businesses()
+                ->where('is_affiliate', 1)
                 ->where(function ($query) {
                     $query->where('active_all_countries', 1)
                         ->orWhereHas('countries', function ($q) {
@@ -597,6 +598,7 @@ class ViewController extends Controller
         }
 
         $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+            ->where('is_affiliate', 1)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
             ])->firstOrFail();

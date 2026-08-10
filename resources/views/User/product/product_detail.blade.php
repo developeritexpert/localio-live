@@ -887,6 +887,7 @@
                                         <div class="site_vsit">
                                             <ul class="list-unstyled">
                                             </ul>
+                                            @if($business->is_affiliate)
                                             <div class="top-pro-btn tp_visit new-visit-anc">
                                                 <a href="{{ $business->getTrackedUrl() }}"
                                                     data-track="{{ json_encode([
@@ -902,6 +903,7 @@
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </a>
                                             </div>
+                                            @endif
 
                                         </div>
                                     </div>
@@ -1127,7 +1129,7 @@
                                         @endif
 
                                         {{-- OFFERINGS SECTION --}}
-                                        @if($business->offerings->count() > 0)
+                                        @if($business->is_affiliate && $business->offerings->count() > 0)
                                         @php $offering = $business->offerings->first(); @endphp
                                         <div class="col-lg-12 mt-4 mb-4">
                                             <div class="offering-section mb-5">
@@ -1203,7 +1205,7 @@
                                             }
                                         @endphp
 
-                                         @if (!empty($images))
+                                         @if ($business->is_affiliate && !empty($images))
                                             <div class="col-lg-12">
                                                 <div class="is-asana-rgt">
                                                     <div class="row is-asan-slider">
@@ -1296,7 +1298,7 @@
                                 {{-- <div class="main_feture" style="--product-badge-label: '{{ addslashes($productBadgeLabel) }}';"> --}}
                                 <div class="main_feture">
                                     <div class=" fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
-                                        @if ($business->usps->count() > 0)
+                                        @if ($business->is_affiliate && $business->usps->count() > 0)
                                             {{-- Dynamic USPs from admin --}}
                                             <div class="main_feature_lg">
                                                 <div class="feture_box lft_check_box size15">
@@ -1312,8 +1314,8 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        @else
-                                            {{-- Fallback static USPs when none are set in admin --}}
+                                        @elseif ($business->is_affiliate)
+                                            {{-- Fallback static USPs when none are set in admin for affiliated business --}}
                                             <div class="main_feature_lg">
                                                 <div class="feture_box lft_check_box size15">
                                                     <ul class="list-unstyled">
@@ -1468,6 +1470,7 @@
                                             </div>
                                         </div>
                                         {{-- End Feature Localio Review Breakdown --}}
+                                        @if($business->is_affiliate)
                                         <div class="innr_price_trail">
 
                                             <div class="main_feature_sm">
@@ -1528,6 +1531,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @endif
                                       @php
                                         $pros = collect();
                                         $cons = collect();
@@ -1861,6 +1865,7 @@
                                                                 </p>
                                                             </div>
                                                         @endif
+                                                        @if($business->is_affiliate)
                                                         <div class="pricing_action d-flex justify-content-center">
                                                             <a href="{{ $product->product_link ?? ($business->affiliate_link ?? '#') }}"
                                                                 data-track="{{ json_encode([
@@ -1879,6 +1884,7 @@
                                                                 </span>
                                                             </a>
                                                         </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -4144,6 +4150,7 @@
                     </div>
 
                     <!-- CTA button -->
+                    @if($business->is_affiliate)
                     <div class="gallery-header-cta">
                         <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" 
                            target="_blank"
@@ -4154,6 +4161,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Body: Large image + arrows -->

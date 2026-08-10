@@ -164,4 +164,10 @@ class Business extends Model
         return $this->hasMany(BusinessUsp::class)->orderBy('sort_order');
     }
 
+    public function isAffiliated()
+    {
+        return (bool) $this->is_affiliate;
+    }
+
 }
+

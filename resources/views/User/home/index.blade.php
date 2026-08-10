@@ -148,6 +148,7 @@
                                         <div class="row g-4 justify-content-start">
                                             @php
                                                 $businesses = $category->businesses
+                                                    ->where('is_affiliate', 1)
                                                     ->sortByDesc('reviews_avg_rating');
                                             @endphp
 

@@ -764,12 +764,14 @@
                                                         <div  class="rgt_rgt_bx" style="  flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
                                                             <!-- Buttons -->
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
+                                                                @if($item->is_affiliate)
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                                     class="btn-orng cta cta_orange justify-content-center"
                                                                     target="_blank" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
                                                                     Visit website
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
+                                                                @endif
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                                     class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
                                                                     View details

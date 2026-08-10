@@ -364,6 +364,9 @@ class CategoryPage extends Component
             return $min >= $this->minPrice && $min <= $this->maxPrice;
         });
 
+        // Always show affiliated businesses first, then non-affiliated businesses
+        $filtered = $filtered->sortByDesc('is_affiliate')->values();
+
         // Count before pagination
         $totalCount = $filtered->count();
         $this->productsCount = $totalCount;

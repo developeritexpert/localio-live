@@ -363,6 +363,7 @@ class TopRatedProduct extends Component
             ->withAvg(['reviews as avg_rating' => function ($q) {
                 $q->where('status', 'active');
             }], 'rating')
+            ->orderByDesc('is_affiliate')
             ->orderByDesc('avg_rating') // Order by rating high to low
             ->orderBy('id'); // Secondary sort for consistent pagination
         // Apply search filter if exists
@@ -447,6 +448,14 @@ class TopRatedProduct extends Component
         $filtered = $filtered->sortByDesc(function ($business) {
             return $business->avg_rating ?? 0; // Use 0 for businesses without ratings
         })->values(); // Reset array keys
+
+        // Sort affiliated first, then by rating
+        $filtered = $filtered->sort(function ($a, $b) {
+            if ($a->is_affiliate != $b->is_affiliate) {
+                return $b->is_affiliate <=> $a->is_affiliate;
+            }
+            return ($b->avg_rating ?? 0) <=> ($a->avg_rating ?? 0);
+        })->values();
 
         // Count results
         $totalCount = $filtered->count();

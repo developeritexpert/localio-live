@@ -227,6 +227,7 @@ class ProductController extends Controller
         // dd($ratingBreakdown);
         $alternativeBusiness = Business::where('category_id', $business->category_id)
         ->where('id', '!=', $business->id)
+        ->where('is_affiliate', 1)
         ->where('status', 1)
         ->where(function ($query) {
             $query->where('active_all_countries', 1)
@@ -253,6 +254,7 @@ class ProductController extends Controller
 
         $peerComparisons = Business::where('category_id', $business->category_id)
             ->where('id', '!=', $business->id)
+            ->where('is_affiliate', 1)
             ->where('status', 1)
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
@@ -374,6 +376,7 @@ class ProductController extends Controller
             },
         ])
         ->whereIn('id', $comparedProductIds)
+        ->where('is_affiliate', 1)
         ->get();
             // dd($businesses);
         return view('User.product.product_comparison', compact('businesses'));
@@ -438,6 +441,7 @@ class ProductController extends Controller
         ->whereHas('translations', function($query) use ($slugs) {
             $query->whereIn('slug', $slugs);
         })
+        ->where('is_affiliate', 1)
         ->get();
         
         // Ensure businesses are ordered in the same way they were requested
@@ -715,6 +719,7 @@ class ProductController extends Controller
 
         $peerComparisons = Business::where('category_id', $business->category_id)
             ->where('id', '!=', $business->id)
+            ->where('is_affiliate', 1)
             ->where('status', 1)
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
