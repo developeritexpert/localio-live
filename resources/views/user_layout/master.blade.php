@@ -1085,7 +1085,7 @@
         border-color:#e64a19 !important;
     }
     .btn-g-link {
-        color: #002655;
+        color: #002655 !important;
         font-size: 13px;
         font-weight: 600;
         text-decoration: none;
@@ -1093,7 +1093,12 @@
     .btn-g-link:hover{
         text-decoration: underline !important;
     }
-    
+    .lts-wht-bg{
+        background-color: #fdfdfd !important;
+    }
+    .lts-gry-bg{
+        background-color: #f7f9fb!important;
+    }
     
     </style>
 
