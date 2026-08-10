@@ -1074,7 +1074,7 @@
 
     
     
-    
+    /* global css by r. */
     .btn-orng {
     background-color: #ff5722 !important;
     border-color:#ff5722 !important;
@@ -1084,7 +1084,15 @@
         background-color: #e64a19 !important;
         border-color:#e64a19 !important;
     }
-    
+    .btn-g-link {
+        color: #002655;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .btn-g-link:hover{
+        text-decoration: underline !important;
+    }
     
     
     </style>
@@ -2399,7 +2407,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         {{ $header->content ?? 'Transparency in our review process' }}
                     </p>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body d-none">
                     @foreach ($sections->where('sort_order', '>', 1) as $section)
                     <h2 class="modal-title" style="width: max-content">
                         {{ $section->title ?? 'About Our Independent Reviews' }}
@@ -2408,8 +2416,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     @endforeach
                 </div>
                 <div class="modal-disclaimer">
-                    <strong>Disclosure:</strong> We may earn affiliate commissions from qualifying purchases. This
-                    does not affect our editorial independence or review criteria.
+                    <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
+                </div>
+                <div class="mt-3">
+                    <a class="btn-g-link" href="#">Read our Affiliate disclosure</a>
                 </div>
                 @else
                 {{-- Extra fallback if there's no content at all in DB --}}
