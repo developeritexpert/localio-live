@@ -11,7 +11,7 @@
     $catName = $cat?->translation?->name ?? $cat?->translations?->first()?->name ?? null;
     $catSlug = $cat?->translation?->slug ?? $cat?->translations?->first()?->slug ?? null;
 @endphp
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0; margin-top: 120px; padding-top: 50px; padding-bottom: 30px;">
+<section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
@@ -153,7 +153,7 @@
                                                         <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                             <div class="progress-bar" style="height: 8px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
@@ -166,7 +166,7 @@
                                                         <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                             <div class="progress-bar" style="height: 8px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}</span>
                                                     </div>
                                                 </li>
                                                 <li class="d-flex justify-content-between align-items-center">
@@ -179,7 +179,7 @@
                                                         <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                             <div class="progress-bar" style="height: 8px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}</span>
                                                     </div>
                                                 </li>
                                             </ul>
