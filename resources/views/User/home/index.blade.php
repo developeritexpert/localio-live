@@ -223,9 +223,8 @@
                                                                                 @foreach ($business->usps->take(4) as $usp)
                                                                                     <li class="d-flex align-items-center" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
                                                                                         <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                            </svg>
+                                                                                            <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                            
                                                                                         </div>
                                                                                         <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </li>
@@ -233,27 +232,22 @@
                                                                             @else
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 8px;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                        
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Free domain & SSL certificate</p>
                                                                                 </li>
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 8px;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 10-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable updates</p>
                                                                                 </li>
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 0;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 10-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Friendly Customer Service</p>
                                                                                 </li>
                                                                             @endif
                                                                         </ul>
