@@ -798,8 +798,7 @@
                                     @endphp
                                     @if ($parentTranslation)
                                         <li class="breadcrumb-item">
-                                            <a href="javascript:void(0);"
-                                               onclick="changeCategory('{{ $parentTranslation->slug }}')"
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $parentTranslation->slug]) }}"
                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
                                                onmouseout="this.style.color=''">
                                                 {{ $parentTranslation->name }}
@@ -813,8 +812,7 @@
                                     @endphp
                                     @if ($categoryTranslation)
                                         <li class="breadcrumb-item">
-                                            <a href="javascript:void(0);"
-                                               onclick="changeCategory('{{ $categoryTranslation->slug }}')"
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $categoryTranslation->slug]) }}"
                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
                                                onmouseout="this.style.color=''">
                                                 {{ $categoryTranslation->name }}
@@ -1306,7 +1304,7 @@
                                                         @foreach ($business->usps->take(5) as $usp)
                                                             <li class="d-flex flex-row align-items-center size15">
                                                                 <div class="grn_chk">
-                                                                    <img src="{{ asset('front/img/tick-img.png') }}">
+                                                                    <img src="{{ asset('front/img/green-tick.svg') }}">
                                                                 </div>
                                                                 <p class="m-0">{{ $usp->text }}</p>
                                                             </li>
