@@ -135,7 +135,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
                                         $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
                                     @endphp
-                                    <h1 style="color: #002347; font-size: 24px; font-weight: 700; margin-bottom: 4px;">
+                                    <h1 style="color: #002347; font-size: 24px !important; font-weight: 600 !important; margin-bottom: 4px;">
                                         {{ $altTitle }}
                                     </h1>
                 
@@ -225,7 +225,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                             </div>
                                         </div>
 
-                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta cta_orange justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px; padding:11px 25px;">
+                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px; padding:11px 25px;">
                                             Visit website
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
@@ -239,7 +239,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                     <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -589,16 +589,16 @@ section.top-automotive-sec.top_rate_pg.light {
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
                                             <div class="auto-choice-card" style="position: relative; ">
                                                 @php
-                                                    $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
-                                                @endphp
-                                                <div class="card-compare-m">
-                                                    @if($isBestValue)
-                                                        <div style="margin-bottom: 25px;">
-                                                            <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                                                <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
-                                                            </span>
-                                                        </div>
-                                                    @endif
+                                                     $isRecommended = $item->is_affiliate && $index === 0;
+                                                 @endphp
+                                                 <div class="card-compare-m">
+                                                     @if($isRecommended)
+                                                         <div style="margin-bottom: 25px;">
+                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                                                                 <i class="far fa-star text-warning" style="margin-right: 4px;"></i> RECOMMENDED
+                                                             </span>
+                                                         </div>
+                                                     @endif
 
                                                     <div  style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">
                                                         <!-- Left Column -->
@@ -615,7 +615,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                         <div class="inn_h">
                                                                             <div class="sl_main">
                                                                                 <h6 class="head">{{ $item->translations->first()->name }}</h6>
-                                                                                <div wire:key="wishlist-container-{{ $item->id }}">
+                                                                                <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
                                                                                     @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
                                                                                 </div>
                                                                             </div>
@@ -657,29 +657,29 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                                 @foreach ($item->usps->take(4) as $usp)
                                                                                     <div class="d-flex align-items-center size18">
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>

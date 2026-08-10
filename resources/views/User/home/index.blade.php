@@ -91,7 +91,7 @@
             @if (isset($categories) && $categories->isNotEmpty())
                 <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
                     <!-- Left Sidebar Column: Category list -->
-                    <div class="col-lg-4 col-12 mb-4 mb-lg-0">
+                    <div class="col-lg-3 col-12 mb-4 mb-lg-0">
                         <h2 class="popular-categories-title">Most popular categories</h2>
                         <div class="popular-categories-sidebar">
                             <div class="nav flex-column nav-pills popular-categories-nav" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -122,7 +122,7 @@
                     </div>
 
                     <!-- Right Column: Products/Businesses in active Category -->
-                    <div class="col-lg-8 col-12">
+                    <div class="col-lg-9 col-12">
                         <div class="tab-content popular-categories-content" id="v-pills-tabContent">
                             @php $activePaneSet = false; @endphp
                             @foreach ($categories as $key => $category)
@@ -148,6 +148,7 @@
                                         <div class="row g-4 justify-content-start">
                                             @php
                                                 $businesses = $category->businesses
+                                                    ->where('is_affiliate', 1)
                                                     ->sortByDesc('reviews_avg_rating');
                                             @endphp
 
@@ -167,8 +168,9 @@
                                                             @if ($isBestValue)
                                                                 <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
                                                                     <div class="best-value-inline">
-                                                                        <i class="fa-regular fa-thumbs-up"></i>
-                                                                        <span>Best Value</span>
+                                                                        <!-- <i class="fa-regular fa-thumbs-up"></i> -->
+                                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
+                                                                        <span>Recommended</span>
                                                                     </div>
                                                                 </div>
                                                             @endif
@@ -190,7 +192,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
+                                                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
                                                                         <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
                                                                                 @php
@@ -201,7 +203,7 @@
                                                                                 @endfor
                                                                             </div>
                                                                         </div>
-                                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingsCount }})</span>
+                                                                        <span class="rate_box_count" style="font-size: 13px;">({{ $ratingsCount }})</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -221,9 +223,8 @@
                                                                                 @foreach ($business->usps->take(4) as $usp)
                                                                                     <li class="d-flex align-items-center" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
                                                                                         <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                            </svg>
+                                                                                            <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                            
                                                                                         </div>
                                                                                         <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </li>
@@ -231,27 +232,22 @@
                                                                             @else
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 8px;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                        
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Free domain & SSL certificate</p>
                                                                                 </li>
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 8px;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 10-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable updates</p>
                                                                                 </li>
                                                                                 <li class="d-flex align-items-center" style="margin-bottom: 0;">
                                                                                     <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#22c55e" style="width: 14px; height: 14px;">
-                                                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 10-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Friendly Customer Service</p>
                                                                                 </li>
                                                                             @endif
                                                                         </ul>
@@ -270,7 +266,7 @@
                                                                     <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? '#' }}"
                                                                         class="btn-orng cta cta_orange d-flex align-items-center justify-content-center"
                                                                         target="_blank" rel="noopener noreferrer"
-                                                                        style="width:100%; ">
+                                                                        style="width:100%; white-space: nowrap;">
                                                                         {{ $homeContents['visit_website'] ?? 'Visit website' }}
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                     </a>
@@ -426,7 +422,7 @@
                                                     </a>
                                                     </div>
                                                     <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
+                                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
                                                         <div class="inn_ul d-inline-flex m-0">
                                                             <div class="tab_star_li">
                                                                 @for ($i = 1; $i <= 5; $i++)
@@ -440,7 +436,7 @@
                                                             </div>
 
                                                         </div>
-                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $business->reviews->count() }})</span>
+                                                        <span class="rate_box_count " style="font-size: 13px;">({{ $business->reviews->count() }})</span>
                                                     </div>
                                                 </div>
                                             </div>

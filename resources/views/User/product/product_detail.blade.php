@@ -798,8 +798,7 @@
                                     @endphp
                                     @if ($parentTranslation)
                                         <li class="breadcrumb-item">
-                                            <a href="javascript:void(0);"
-                                               onclick="changeCategory('{{ $parentTranslation->slug }}')"
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $parentTranslation->slug]) }}"
                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
                                                onmouseout="this.style.color=''">
                                                 {{ $parentTranslation->name }}
@@ -813,8 +812,7 @@
                                     @endphp
                                     @if ($categoryTranslation)
                                         <li class="breadcrumb-item">
-                                            <a href="javascript:void(0);"
-                                               onclick="changeCategory('{{ $categoryTranslation->slug }}')"
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $categoryTranslation->slug]) }}"
                                                style="color: inherit; transition: none;" onmouseover="this.style.color='#f26522'"
                                                onmouseout="this.style.color=''">
                                                 {{ $categoryTranslation->name }}
@@ -887,6 +885,7 @@
                                         <div class="site_vsit">
                                             <ul class="list-unstyled">
                                             </ul>
+                                            @if($business->is_affiliate)
                                             <div class="top-pro-btn tp_visit new-visit-anc">
                                                 <a href="{{ $business->getTrackedUrl() }}"
                                                     data-track="{{ json_encode([
@@ -902,6 +901,7 @@
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </a>
                                             </div>
+                                            @endif
 
                                         </div>
                                     </div>
@@ -1127,7 +1127,7 @@
                                         @endif
 
                                         {{-- OFFERINGS SECTION --}}
-                                        @if($business->offerings->count() > 0)
+                                        @if($business->is_affiliate && $business->offerings->count() > 0)
                                         @php $offering = $business->offerings->first(); @endphp
                                         <div class="col-lg-12 mt-4 mb-4">
                                             <div class="offering-section mb-5">
@@ -1203,7 +1203,7 @@
                                             }
                                         @endphp
 
-                                         @if (!empty($images))
+                                         @if ($business->is_affiliate && !empty($images))
                                             <div class="col-lg-12">
                                                 <div class="is-asana-rgt">
                                                     <div class="row is-asan-slider">
@@ -1296,7 +1296,7 @@
                                 {{-- <div class="main_feture" style="--product-badge-label: '{{ addslashes($productBadgeLabel) }}';"> --}}
                                 <div class="main_feture">
                                     <div class=" fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
-                                        @if ($business->usps->count() > 0)
+                                        @if ($business->is_affiliate && $business->usps->count() > 0)
                                             {{-- Dynamic USPs from admin --}}
                                             <div class="main_feature_lg">
                                                 <div class="feture_box lft_check_box size15">
@@ -1304,7 +1304,7 @@
                                                         @foreach ($business->usps->take(5) as $usp)
                                                             <li class="d-flex flex-row align-items-center size15">
                                                                 <div class="grn_chk">
-                                                                    <img src="{{ asset('front/img/tick-img.png') }}">
+                                                                    <img src="{{ asset('front/img/green-tick.svg') }}">
                                                                 </div>
                                                                 <p class="m-0">{{ $usp->text }}</p>
                                                             </li>
@@ -1312,8 +1312,8 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        @else
-                                            {{-- Fallback static USPs when none are set in admin --}}
+                                        @elseif ($business->is_affiliate)
+                                            {{-- Fallback static USPs when none are set in admin for affiliated business --}}
                                             <div class="main_feature_lg">
                                                 <div class="feture_box lft_check_box size15">
                                                     <ul class="list-unstyled">
@@ -1468,6 +1468,7 @@
                                             </div>
                                         </div>
                                         {{-- End Feature Localio Review Breakdown --}}
+                                        @if($business->is_affiliate)
                                         <div class="innr_price_trail">
 
                                             <div class="main_feature_sm">
@@ -1528,6 +1529,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @endif
                                       @php
                                         $pros = collect();
                                         $cons = collect();
@@ -1861,6 +1863,7 @@
                                                                 </p>
                                                             </div>
                                                         @endif
+                                                        @if($business->is_affiliate)
                                                         <div class="pricing_action d-flex justify-content-center">
                                                             <a href="{{ $product->product_link ?? ($business->affiliate_link ?? '#') }}"
                                                                 data-track="{{ json_encode([
@@ -1879,6 +1882,7 @@
                                                                 </span>
                                                             </a>
                                                         </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -2609,7 +2613,7 @@
                                 $catName = $catTrans->name ?? 'providers';
                                 $compSlug = $catTrans->comparison_slug ?? 'compare';
                             @endphp
-                            <section class="compare-section p_50 light" id="section-compare" style="background-color: #f9fafb !important;">
+                            <section class="compare-section p_50 light" id="section-compare" style="background-color: #f7f9fb !important;">
                                 <div class="container">
                                     <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
                                         <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
@@ -2620,7 +2624,7 @@
                                         </p>
                                     </div>
 
-                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000" style="display: flex; justify-content: space-between; ">
+                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
                                         @forelse($peerComparisons as $peer)
                                             @php
                                                 $peerName = $peer->translations->first()->name ?? 'Business';
@@ -2636,14 +2640,14 @@
                                                     'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
-                                            <div class="col-lg-6 col-12">
-                                                <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                                                    <div class="d-flex align-items-center justify-content-between">
+                                            <div class="col-lg-4 col-md-6 col-12">
+                                                <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
                                                         <!-- Business A -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                             <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
                                                             <div style="min-width: 0;">
-                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $bName }}</div>
+                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $bName }}</div>
                                                                 <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                                     <span>{{ number_format($averageRating, 1) }}</span>
@@ -2652,26 +2656,26 @@
                                                         </div>
 
                                                         <!-- VS -->
-                                                        <div class=" px-2 vs_circle  text-muted flex-shrink-0" style="font-size: 18px; font-family: sans-serif; ">vs</div>
+                                                        <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
 
                                                         <!-- Business B -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                             <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
                                                             <div style="min-width: 0;">
-                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $peerName }}</div>
+                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $peerName }}</div>
                                                                 <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                                     <span>{{ number_format($peerRating, 1) }}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                        <!-- Compare Button (Only Clickable Link) -->
-                                                        <div class="flex-shrink-0  cmpre_btn" >
-                                                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none " style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
-                                                                Compare
-                                                            </a>
-                                                        </div>
+                                                    <!-- Compare Button Below -->
+                                                    <div class="cmpre_btn w-100 mt-auto">
+                                                        <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                            Compare
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2945,11 +2949,11 @@
                                                     <div class="grn_check_big">
                                                         <img src="{{ asset('front/img/new-grn-chk.png') }}">
                                                     </div>
-                                                    <h6 class="blue-text big-bld">Free Trial <br>
-                                                        Available
+                                                    <h6 class="blue-text big-bld">Free trial <br>
+                                                        available
                                                     </h6>
                                                     <div class="accor-btn p-0">
-                                                        <a class="cta cta_white">Claim Now</a>
+                                                        <a class="cta cta_white">Claim now</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -4144,6 +4148,7 @@
                     </div>
 
                     <!-- CTA button -->
+                    @if($business->is_affiliate)
                     <div class="gallery-header-cta">
                         <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" 
                            target="_blank"
@@ -4154,6 +4159,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>
                     </div>
+                    @endif
                 </div>
 
                 <!-- Body: Large image + arrows -->

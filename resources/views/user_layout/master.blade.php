@@ -1074,7 +1074,7 @@
 
     
     
-    
+    /* global css by r. */
     .btn-orng {
     background-color: #ff5722 !important;
     border-color:#ff5722 !important;
@@ -1084,8 +1084,21 @@
         background-color: #e64a19 !important;
         border-color:#e64a19 !important;
     }
-    
-    
+    .btn-g-link {
+        color: #002655 !important;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .btn-g-link:hover{
+        text-decoration: underline !important;
+    }
+    .lts-wht-bg{
+        background-color: #fdfdfd !important;
+    }
+    .lts-gry-bg{
+        background-color: #f7f9fb!important;
+    }
     
     </style>
 
@@ -1221,7 +1234,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <a href="javascript:void(0);"
                                 onclick="openLoginModal()"
                                 class="cta cta_orange wht-t-org-btn">
-                                    {{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}
+                                    {{ $headerContent['sign_up_btn_lable'] ?? 'Sign up' }}
                                 </a>
 
                             @else
@@ -2399,7 +2412,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         {{ $header->content ?? 'Transparency in our review process' }}
                     </p>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body d-none">
                     @foreach ($sections->where('sort_order', '>', 1) as $section)
                     <h2 class="modal-title" style="width: max-content">
                         {{ $section->title ?? 'About Our Independent Reviews' }}
@@ -2408,8 +2421,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     @endforeach
                 </div>
                 <div class="modal-disclaimer">
-                    <strong>Disclosure:</strong> We may earn affiliate commissions from qualifying purchases. This
-                    does not affect our editorial independence or review criteria.
+                    <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
+                </div>
+                <div class="mt-3">
+                    <a class="btn-g-link" href="#">Read our Affiliate disclosure</a>
                 </div>
                 @else
                 {{-- Extra fallback if there's no content at all in DB --}}
@@ -2623,7 +2638,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
 
                         <div class="accor-btn mt-4">
-                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
+                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="text-transform:unset !important; background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign up</button>
                         </div>
                     </form>
                 </div>

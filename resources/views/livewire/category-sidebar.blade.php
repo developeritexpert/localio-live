@@ -5,47 +5,38 @@
             <div class="row gy-4">
                 <div class="col-lg-3 mb-4">
                     <div class="parent-cat-sidebar">
-                        @if(is_null($selectedCategoryId))
-                            <h4 style="margin-bottom: 15px; text-align: left; font-size: 18px; font-weight: 700; color:#797C7F ">
-                                All categories
-                            </h4>
-                        @else
-                            <div style="margin-bottom: 15px; text-align: left;" class="cat_link">
-                                <a href="javascript:void(0)"
-                                   wire:click="selectAllCategories"
-                                   wire:loading.class="cat_loading"
-                                   wire:target="selectAllCategories"
-                                   style="font-size: 14px; font-weight: 600; color: #797C7F; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                                    <i class="fas fa-arrow-left" style="font-size: 12px;"></i> All categories
-                                </a>
-                            </div>
-                        @endif
-
                         <ul>
                             @foreach ($categories as $category)
                             @php
                                 $catItemName = null;
+                                $catItemSlug = null;
                                 if (isset($category->translations)) {
                                     if (is_object($category->translations) && !empty($category->translations->name)) {
                                         $catItemName = $category->translations->name;
+                                        $catItemSlug = $category->translations->slug ?? null;
                                     } elseif ($category->translations instanceof \Illuminate\Database\Eloquent\Collection && $category->translations->isNotEmpty()) {
                                         $catItemName = $category->translations->first()->name ?? null;
+                                        $catItemSlug = $category->translations->first()->slug ?? null;
                                     }
                                 }
                                 if (empty($catItemName) && method_exists($category, 'translation') && $category->translation) {
                                     $catItemName = $category->translation->name ?? null;
+                                    $catItemSlug = $category->translation->slug ?? null;
                                 }
                                 if (empty($catItemName)) {
                                     $catItemName = $category->name ?? null;
                                 }
+                                if (empty($catItemSlug)) {
+                                    $catItemSlug = $category->slug ?? (string)$category->id;
+                                }
                             @endphp
                             @if(!empty($catItemName))
-                            <li class="{{ $selectedCategoryId == $category->id ? 'active' : '' }}"
-                                wire:click="selectCategory({{ $category->id }})"
-                                wire:key="cat-{{ $category->id }}"
-                                wire:loading.class="cat_loading"
-                                wire:target="selectCategory({{ $category->id }})">
-                                {{ $catItemName }}
+                            <li wire:key="cat-{{ $category->id }}">
+                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}"
+                                   style="text-decoration: none; color: inherit; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                    <span>{{ $catItemName }}</span>
+                                    <!-- <i class="fas fa-chevron-right" style="font-size: 11px; color: #f26522;"></i> -->
+                                </a>
                             </li>
                             @endif
                             @endforeach
@@ -97,7 +88,7 @@
                             }
                         @endphp
                         @if(!empty($catName))
-                        <div class="subcat-block" wire:key="sub-{{ $subcat->id }}">
+                        <div class="subcat-block" wire:key="sub-{{ $subcat->id }}" style="background: #f7f9fb;">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catName }}</h3>
                                 <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;">See all {{ $catName }}</a>
@@ -111,7 +102,7 @@
                                     $bizName = $business->translations->first()->name ?? $business->name ?? null;
                                 @endphp
                                 @if(!empty($bizName))
-                                <div class="top-product-card d-flex flex-column justify-content-between p-3">
+                                <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background:#fdfdfd !important;">
                                     <div class="d-flex align-items-center gap-2 mb-3">
                                         <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                             @if($business->icon_id)
@@ -141,19 +132,19 @@
                                                 </div>
                                                 <!-- <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span> -->
                                                 <!-- <span>|</span> -->
-                                                <span class="fw-medium">({{ $business->active_reviews_count }})</span>
+                                                <span class="fw-medium text-dark">({{ $business->active_reviews_count }})</span>
                                                 <!-- <span>{{ $business->active_reviews_count }} {{ $business->active_reviews_count == 1 ? 'review' : 'reviews' }}</span> -->
                                             </div>
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2 w-100 mt-auto">
                                         <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
-                                        class="btn-view-details btn py-1 px-2 fw-semibold w-50">
+                                        class="btn-view-details btn py-1 px-2 fw-medium w-50">
                                             View details
                                         </a>
                                         <a href="{{ $business->getTrackedUrl() }}"
                                            target="_blank"
-                                           class="btn py-1 px-2 fw-semibold w-50 text-white"
+                                           class="btn py-1 px-2 fw-medium w-50 text-white"
                                            style="background-color: #ff5722; border-radius: 30px; font-size: 11px; text-align: center; text-decoration: none; transition:unset !important;">
                                             Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
                                         </a>

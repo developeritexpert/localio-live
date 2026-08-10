@@ -128,7 +128,7 @@
                                     <ul class="nk-menu-sub">
                                         <li class="nk-menu-item">
                                             <a href="{{ route('products') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">All Starting price</span>
+                                                <span class="nk-menu-text">All starting price</span>
                                             </a>
                                         </li>
 

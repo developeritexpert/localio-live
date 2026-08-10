@@ -1,5 +1,11 @@
 <div>
     <style>
+        .auto-choice-hd {
+    margin-bottom: 15px !important;
+}
+.automotive-card .slider_content_sec {
+    margin-top: 5px !important;
+}
         label.form-check-label span.filter1 {
             padding-left: 5px;
         }
@@ -659,13 +665,14 @@
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
                                             <div class="auto-choice-card" style="position: relative; ">
                                                 @php
-                                                    $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
+                                                     $topAffId = $this->topAffiliatedBusinessId;
+                                                     $isRecommended = $item->is_affiliate && ($item->id == $topAffId || ($topAffId === null && $index === 0));
                                                 @endphp
                                                 <div class="card-compare-m">
-                                                    @if($isBestValue)
+                                                    @if($isRecommended)
                                                         <div style="margin-bottom: 25px;">
                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                                                <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
+                                                                <i class="far fa-star text-warning" style="margin-right: 4px;"></i> RECOMMENDED
                                                             </span>
                                                         </div>
                                                     @endif
@@ -685,7 +692,7 @@
                                                                         <div class="inn_h">
                                                                             <div class="sl_main">
                                                                                 <h6 class="head">{{ $item->translations->first()->name }}</h6>
-                                                                                <div wire:key="wishlist-container-{{ $item->id }}">
+                                                                                <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
                                                                                     @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
                                                                                 </div>
                                                                             </div>
@@ -727,7 +734,7 @@
                                                                                 @foreach ($item->usps->take(4) as $usp)
                                                                                     <div class="d-flex align-items-center size18">
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
                                                                                         <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">{{ $usp->text }}</p>
                                                                                     </div>
@@ -735,19 +742,19 @@
                                                                             @else
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Scalable performance management</p>
                                                                                 </div>
@@ -764,12 +771,14 @@
                                                         <div  class="rgt_rgt_bx" style="  flex: 0 0 250px; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: stretch; margin-top: 10px;">
                                                             <!-- Buttons -->
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
+                                                                @if($item->is_affiliate)
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                                     class="btn-orng cta cta_orange justify-content-center"
                                                                     target="_blank" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
                                                                     Visit website
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
+                                                                @endif
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                                     class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
                                                                     View details
