@@ -140,55 +140,71 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </section>
 
-<section class="right_tool_sec dark p_80">
-    <div class="container">
-        <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
-            <div class="otr_rgtool">
-                <h2>{{ $homeContents['find_tool'] ?? null }}</h2>
-            </div>
-            <div class="right-tool-pack">
-                <div class="row">
-                    @foreach ($pageTileTranslationRightTool as $tile)
-                        @php
-                            $translation = $tile->translations->first();
-                        @endphp
+    @guest
+    <!-- section right-tool -->
+    <section class="right_tool_sec dark ">
+        <div class="container">
+            <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
+                <div class="otr_rgtool">
+                    <h2>Join the Localio community</h2>
+                    <p class="text-white size16 " style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                </div>
+                <div class="right-tool-pack">
+                    <div class="row">
                         <div class="col-lg-4">
                             <div class="tool-card">
                                 <div class="tool-card-img">
-                                    @if (!empty($translation?->image))
-                                        <img src="{{ asset($translation->image) }}" alt="">
-                                    @elseif (!empty($tile->image))
-                                        <img src="{{ asset($tile->image) }}" alt="">
-                                    @endif
+                                    <i class="fa-solid fa-user" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed">{{ $translation->title ?? '' }}</h3>
-                                    <p class="size18">{{ $translation->description ?? '' }}</p>
+                                    <h3 class="tool_hed">Share your experience</h3>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                        <div class="col-lg-4">
+                            <div class="tool-card">
+                                <div class="tool-card-img">
+                                    <i class="fa-solid fa-comments" style="color: #06498b; font-size: 24px;"></i>
+                                </div>
+                                <div class="tool-crd-bdy">
+                                    <h3 class="tool_hed">Join discussions</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="tool-card">
+                                <div class="tool-card-img">
+                                    <i class="fa-solid fa-star" style="color: #06498b; font-size: 24px;"></i>
+                                </div>
+                                <div class="tool-crd-bdy">
+                                    <h3 class="tool_hed">Build your reputation</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-tool-btn text-center">
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="cta">Sign up for free</a>
                 </div>
             </div>
-            <div class="right-tool-btn text-center">
-                <a href="{{ route('category', ['locale' => app()->getLocale()]) }}" class="cta">
-                    {{ $homeContents['get_button_lable'] ?? null }}
-                </a>
-            </div>
         </div>
-    </div>
 
-    <div class="back-image1">
-        @if (isset($findToolLeftImage))
-            <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1" alt="{{ $findToolLeftImage->meta_key }}">
-        @endif
-    </div>
-    <div class="back-image2">
-        @if (isset($findToolRightImage))
-            <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2" alt="{{ $findToolRightImage->meta_key }}">
-        @endif
-    </div>
-</section>
+        <div class="back-image1">
+            @if (isset($findToolLeftImage))
+                <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1"
+                    alt="{{ $findToolLeftImage->meta_key }}">
+            @endif
+            <!-- <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
+        </div>
+        <div class="back-image2">
+            @if (isset($findToolRightImage))
+                <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2"
+                    alt="{{ $findToolRightImage->meta_key }}">
+            @endif
+            <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
+        </div>
+    </section>
+    @endguest
 
 {{-- SCRIPT 1: Handle form submission for non-authenticated users --}}
 <script>

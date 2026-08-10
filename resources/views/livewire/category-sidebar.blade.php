@@ -132,7 +132,7 @@
                                                 </div>
                                                 <!-- <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span> -->
                                                 <!-- <span>|</span> -->
-                                                <span class="fw-medium">({{ $business->active_reviews_count }})</span>
+                                                <span class="fw-medium text-dark">({{ $business->active_reviews_count }})</span>
                                                 <!-- <span>{{ $business->active_reviews_count }} {{ $business->active_reviews_count == 1 ? 'review' : 'reviews' }}</span> -->
                                             </div>
                                         </div>

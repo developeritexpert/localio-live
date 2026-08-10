@@ -103,7 +103,7 @@
                                                 <div class="inn_h d-flex align-items-center justify-content-center">
                                                     <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()?->name ?? '' }}</h6>
                                                 </div>
-                                                <div class="tp-btm d-flex align-items-center justify-content-center mt-1" style="gap: 6px;">
+                                                <div class="tp-btm d-flex align-items-center justify-content-center mt-1 rating-new-style" style="gap: 6px;">
                                                     @php
                                                         $rating = round($business->reviews->avg('rating'), 1);
                                                         $ratingCount = $business->reviews->count();
@@ -351,7 +351,7 @@
                                         <img src="{{ asset($business->icon_id) }}" alt="No Image available">
                                     </div>
                                     <div class="sl_h">
-                                        <div class="inn_h d-flex align-items-center">
+                                        <div class="inn_h d-flex align-items-center rating-new-style">
                                             <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
 
                                             <div class="d-none">
@@ -360,7 +360,7 @@
                                         </div>
 
                                         {{-- Your original rating HTML with dynamic values --}}
-                                        <div class="tp-btm d-flex">
+                                        <div class="tp-btm d-flex rating-new-style">
                                             <div class="inn_ul d-flex align-items-center">
                                                 <li>{{ $rating }}</li>
                                                 <li>
