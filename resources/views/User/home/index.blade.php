@@ -168,8 +168,9 @@
                                                             @if ($isBestValue)
                                                                 <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
                                                                     <div class="best-value-inline">
-                                                                        <i class="fa-regular fa-thumbs-up"></i>
-                                                                        <span>Best Value</span>
+                                                                        <!-- <i class="fa-regular fa-thumbs-up"></i> -->
+                                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
+                                                                        <span>Recommended</span>
                                                                     </div>
                                                                 </div>
                                                             @endif
