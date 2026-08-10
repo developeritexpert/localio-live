@@ -252,6 +252,34 @@ class CategoryPage extends Component
         $this->ratingCounts = $counts;
     }
 
+    public function getTopAffiliatedBusinessIdProperty()
+    {
+        if ($this->isParentCategory) {
+            $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
+            $targetCategoryIds = array_merge([$this->category->id], $allSubcatIds);
+            $query = Business::whereIn('category_id', $targetCategoryIds);
+        } else {
+            $query = Business::where('category_id', $this->category->id);
+        }
+
+        return $query->where('status', 1)
+            ->where('is_affiliate', 1)
+            ->whereHas('languages', function ($q) {
+                $q->where('language_id', $this->lang_id);
+            })
+            ->where(function ($q) {
+                $q->where('active_all_countries', 1)
+                    ->orWhereHas('countries', function ($cq) {
+                        $cq->where('country_id', $this->country_id);
+                    });
+            })
+            ->withAvg(['reviews as avg_rating' => function ($q) {
+                $q->where('status', 'active');
+            }], 'rating')
+            ->orderByDesc('avg_rating')
+            ->orderBy('id')
+            ->value('id');
+    }
 
     public function getProductsProperty()
     {

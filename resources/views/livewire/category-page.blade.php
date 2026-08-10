@@ -659,13 +659,14 @@
                                             data-aos-duration="1000" wire:key="product-{{ $item->id }}">
                                             <div class="auto-choice-card" style="position: relative; ">
                                                 @php
-                                                    $isBestValue = $index === 0 || (isset($item->is_best_value) && $item->is_best_value) || (isset($item->best_value) && $item->best_value);
+                                                     $topAffId = $this->topAffiliatedBusinessId;
+                                                     $isRecommended = $item->is_affiliate && ($item->id == $topAffId || ($topAffId === null && $index === 0));
                                                 @endphp
                                                 <div class="card-compare-m">
-                                                    @if($isBestValue)
+                                                    @if($isRecommended)
                                                         <div style="margin-bottom: 25px;">
                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                                                <i class="fa fa-thumbs-up" style="margin-right: 4px;"></i> BEST VALUE
+                                                                <i class="far fa-star text-warning" style="margin-right: 4px;"></i> RECOMMENDED
                                                             </span>
                                                         </div>
                                                     @endif
