@@ -242,7 +242,7 @@
 </section>
 
 <!-- Comparisons Grid Section -->
-<section id="grid-comparisons-section" class="all_comparisons_sec py-5" style="background-color: #f8fafc !important; border-top: 1px solid #e2e8f0;">
+<section id="grid-comparisons-section" class="compare-section all_comparisons_sec py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
     <div class="container">
         <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
             <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 6px;">
@@ -257,15 +257,15 @@
             @forelse($peerComparisons as $peer)
                 @php
                     $peerName = $peer->translations->first()->name ?? 'Business';
-                    $peerRating = $peer->average_rating ?? 0;
+                    $peerRating = round($peer->reviews->avg('rating'), 1);
                     $seoUrl = route('product-comparison.seo', [
                         'locale' => app()->getLocale(),
                         'comparison_slug' => $compSlug,
                         'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($peerName)
                     ]);
                 @endphp
-                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 bg-white rounded-3 border d-flex flex-column justify-content-between h-100" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: all 0.2s;" onmouseover="this.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)'; this.style.borderColor='#cbd5e0';" onmouseout="this.style.boxShadow='0 2px 6px rgba(0,0,0,0.03)'; this.style.borderColor='#e2e8f0';">
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);" >
                         <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
                             <!-- Business A -->
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
@@ -282,7 +282,7 @@
                             </div>
 
                             <!-- VS Keyword -->
-                            <div class="vs_txt px-2 fw-bold text-center flex-shrink-0" style="font-size: 13px; color: #1e3050; font-family: sans-serif;">
+                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">
                                 {{ strtoupper($vsKey) }}
                             </div>
 
@@ -302,8 +302,8 @@
                         </div>
 
                         <!-- Compare Button -->
-                        <div class="mt-2 text-center">
-                            <a href="{{ $seoUrl }}" class="btn w-100" style="background-color: #06498b; color: #ffffff; font-weight: 600; font-size: 13.5px; padding: 7px 16px; border-radius: 20px; text-decoration: none;" onmouseover="this.style.backgroundColor='#002347';" onmouseout="this.style.backgroundColor='#06498b';">
+                        <div class="cmpre_btn w-100 mt-auto">
+                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;" >
                                 Compare
                             </a>
                         </div>

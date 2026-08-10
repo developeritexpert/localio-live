@@ -135,7 +135,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
                                         $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
                                     @endphp
-                                    <h1 style="color: #002347; font-size: 24px; font-weight: 700; margin-bottom: 4px;">
+                                    <h1 style="color: #002347; font-size: 24px !important; font-weight: 600 !important; margin-bottom: 4px;">
                                         {{ $altTitle }}
                                     </h1>
                 
@@ -615,7 +615,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                         <div class="inn_h">
                                                                             <div class="sl_main">
                                                                                 <h6 class="head">{{ $item->translations->first()->name }}</h6>
-                                                                                <div wire:key="wishlist-container-{{ $item->id }}">
+                                                                                <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
                                                                                     @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
                                                                                 </div>
                                                                             </div>
