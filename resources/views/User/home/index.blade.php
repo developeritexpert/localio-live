@@ -91,7 +91,7 @@
             @if (isset($categories) && $categories->isNotEmpty())
                 <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
                     <!-- Left Sidebar Column: Category list -->
-                    <div class="col-lg-4 col-12 mb-4 mb-lg-0">
+                    <div class="col-lg-3 col-12 mb-4 mb-lg-0">
                         <h2 class="popular-categories-title">Most popular categories</h2>
                         <div class="popular-categories-sidebar">
                             <div class="nav flex-column nav-pills popular-categories-nav" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -122,7 +122,7 @@
                     </div>
 
                     <!-- Right Column: Products/Businesses in active Category -->
-                    <div class="col-lg-8 col-12">
+                    <div class="col-lg-9 col-12">
                         <div class="tab-content popular-categories-content" id="v-pills-tabContent">
                             @php $activePaneSet = false; @endphp
                             @foreach ($categories as $key => $category)
@@ -192,7 +192,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
+                                                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
                                                                         <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
                                                                                 @php
@@ -203,7 +203,7 @@
                                                                                 @endfor
                                                                             </div>
                                                                         </div>
-                                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $ratingsCount }})</span>
+                                                                        <span class="rate_box_count" style="font-size: 13px;">({{ $ratingsCount }})</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -422,7 +422,7 @@
                                                     </a>
                                                     </div>
                                                     <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                        <span class="rate_box_num" style="font-size: 14px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
+                                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
                                                         <div class="inn_ul d-inline-flex m-0">
                                                             <div class="tab_star_li">
                                                                 @for ($i = 1; $i <= 5; $i++)
@@ -436,7 +436,7 @@
                                                             </div>
 
                                                         </div>
-                                                        <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $business->reviews->count() }})</span>
+                                                        <span class="rate_box_count " style="font-size: 13px;">({{ $business->reviews->count() }})</span>
                                                     </div>
                                                 </div>
                                             </div>

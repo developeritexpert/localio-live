@@ -591,7 +591,7 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="tp-btm d-flex flex-col-mob">
-                                                                             <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                             <span class="rate_box_num" style="font-size: 12px; font-weight: 500; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
                                                                             <div class="inn_ul">
                                                                                 <div class="rating-stars ">
                                                                                     @for ($i = 1; $i <= 5; $i++)
@@ -631,7 +631,7 @@
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
@@ -639,19 +639,19 @@
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 13px; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>

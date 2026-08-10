@@ -5,7 +5,7 @@
                 
                 <!-- Top right actions (Date & Copy link) -->
                 <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
-                    <span style="font-size: 13px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
+                    <span style="font-size: 12px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
                 </div>
 
                 <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">

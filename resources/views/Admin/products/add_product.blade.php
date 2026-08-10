@@ -277,24 +277,28 @@
                     </div>
                 </div>
                 <hr style="border-top:1px solid #dee2e6; opacity:1; margin:20px 0;">
-                {{-- Offer / Pricing Options --}}
-                <div class="mb-2">
-                    <label class="form-label">Offer Options</label>
-                </div>
-                <div class="form-group mb-3">
-                    <select class="form-control select2-multiple pricing-options-select" name="pricing_options[]" multiple data-placeholder="Select Offer Options">
-                        @if(isset($pricingOptions))
-                            @foreach ($pricingOptions as $option)
-                                @php
-                                    $translation = $option->translations->firstWhere('lang_id', getCurrentLanguageID()) ?? $option->translations->first();
-                                @endphp
-                                <option value="{{ $option->id }}" {{ in_array($option->id, old('pricing_options', [])) ? 'selected' : '' }}>
-                                    {{ $translation->name ?? ('Option #' . $option->id) }}
-                                </option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
+                @php
+                    $pricingSelectOptions = [];
+                    if (isset($pricingOptions)) {
+                        foreach ($pricingOptions as $option) {
+                            $translation = $option->translations->firstWhere('lang_id', getCurrentLanguageID()) ?? $option->translations->first();
+                            $pricingSelectOptions[$option->id] = $translation->name ?? ('Option #' . $option->id);
+                        }
+                    }
+                    $selectedPricingOptions = old('pricing_options', []);
+                @endphp
+
+                <x-google-input
+                    type="select"
+                    name="pricing_options"
+                    id="pricing_options"
+                    label="Offer Options"
+                    :options="$pricingSelectOptions"
+                    :selectedValues="$selectedPricingOptions"
+                    :alwaysActive="true"
+                    multiple
+                    class="select2-multiple pricing-options-select"
+                />
 
                 {{-- Validation --}}
                 <div class="text-danger price-type-error d-none">
@@ -461,6 +465,12 @@
                 console.log('Select2 is loaded ✅');
 
 
+
+                $('#pricing_options').select2({
+                    placeholder: "Select Offer Options",
+                    allowClear: true,
+                    width: '100%'
+                });
 
                 // Add select all / clear all buttons
                 $('<div class="select2-buttons mt-2">' +

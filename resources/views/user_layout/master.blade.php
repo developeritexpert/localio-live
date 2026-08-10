@@ -1234,7 +1234,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <a href="javascript:void(0);"
                                 onclick="openLoginModal()"
                                 class="cta cta_orange wht-t-org-btn">
-                                    {{ $headerContent['sign_up_btn_lable'] ?? 'Sign Up' }}
+                                    {{ $headerContent['sign_up_btn_lable'] ?? 'Sign up' }}
                                 </a>
 
                             @else
@@ -2638,7 +2638,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
 
                         <div class="accor-btn mt-4">
-                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign Up</button>
+                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="text-transform:unset !important; background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign up</button>
                         </div>
                     </form>
                 </div>
