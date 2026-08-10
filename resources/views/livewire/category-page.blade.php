@@ -1,5 +1,11 @@
 <div>
     <style>
+        .auto-choice-hd {
+    margin-bottom: 15px !important;
+}
+.automotive-card .slider_content_sec {
+    margin-top: 5px !important;
+}
         label.form-check-label span.filter1 {
             padding-left: 5px;
         }
@@ -686,7 +692,7 @@
                                                                         <div class="inn_h">
                                                                             <div class="sl_main">
                                                                                 <h6 class="head">{{ $item->translations->first()->name }}</h6>
-                                                                                <div wire:key="wishlist-container-{{ $item->id }}">
+                                                                                <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
                                                                                     @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
                                                                                 </div>
                                                                             </div>
@@ -728,7 +734,7 @@
                                                                                 @foreach ($item->usps->take(4) as $usp)
                                                                                     <div class="d-flex align-items-center size18">
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
                                                                                         <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">{{ $usp->text }}</p>
                                                                                     </div>
@@ -736,19 +742,19 @@
                                                                             @else
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
+                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
                                                                                     <p class="m-0" style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">Scalable performance management</p>
                                                                                 </div>

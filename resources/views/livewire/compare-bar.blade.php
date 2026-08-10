@@ -13,7 +13,7 @@
                 <!-- Left side: Remove All & Selected Product Icons -->
                 <div class="d-flex align-items-center flex-wrap" style="gap: 15px;">
                     <a href="javascript:void(0)" wire:click="clearAll" onclick="document.querySelectorAll('.blue-chkbox input[type=checkbox]').forEach(input => { input.checked = false; input.dispatchEvent(new Event('change', { bubbles: true })); });" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                        Remove All
+                        Remove all
                     </a>
                     <div class="d-flex align-items-center" style="gap: 10px;">
                         @foreach ($comparedProducts as $product)

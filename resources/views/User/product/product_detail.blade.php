@@ -2613,7 +2613,7 @@
                                 $catName = $catTrans->name ?? 'providers';
                                 $compSlug = $catTrans->comparison_slug ?? 'compare';
                             @endphp
-                            <section class="compare-section p_50 light" id="section-compare" style="background-color: #f9fafb !important;">
+                            <section class="compare-section p_50 light" id="section-compare" style="background-color: #f7f9fb !important;">
                                 <div class="container">
                                     <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
                                         <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
@@ -2624,7 +2624,7 @@
                                         </p>
                                     </div>
 
-                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000" style="display: flex; justify-content: space-between; ">
+                                    <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
                                         @forelse($peerComparisons as $peer)
                                             @php
                                                 $peerName = $peer->translations->first()->name ?? 'Business';
@@ -2640,14 +2640,14 @@
                                                     'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                 ]);
                                             @endphp
-                                            <div class="col-lg-6 col-12">
-                                                <div class="comparison-box p-3 bg-white rounded-3 border" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                                                    <div class="d-flex align-items-center justify-content-between">
+                                            <div class="col-lg-4 col-md-6 col-12">
+                                                <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                                                    <div class="d-flex align-items-center justify-content-between mb-3">
                                                         <!-- Business A -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                             <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
                                                             <div style="min-width: 0;">
-                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $bName }}</div>
+                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $bName }}</div>
                                                                 <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                                     <span>{{ number_format($averageRating, 1) }}</span>
@@ -2656,26 +2656,26 @@
                                                         </div>
 
                                                         <!-- VS -->
-                                                        <div class=" px-2 vs_circle  text-muted flex-shrink-0" style="font-size: 18px; font-family: sans-serif; ">vs</div>
+                                                        <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
 
                                                         <!-- Business B -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                             <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
                                                             <div style="min-width: 0;">
-                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 14px; color: #1e293b !important;">{{ $peerName }}</div>
+                                                                <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $peerName }}</div>
                                                                 <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                                     <span>{{ number_format($peerRating, 1) }}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                        <!-- Compare Button (Only Clickable Link) -->
-                                                        <div class="flex-shrink-0  cmpre_btn" >
-                                                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none " style="padding: 6px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">
-                                                                Compare
-                                                            </a>
-                                                        </div>
+                                                    <!-- Compare Button Below -->
+                                                    <div class="cmpre_btn w-100 mt-auto">
+                                                        <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                            Compare
+                                                        </a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2949,11 +2949,11 @@
                                                     <div class="grn_check_big">
                                                         <img src="{{ asset('front/img/new-grn-chk.png') }}">
                                                     </div>
-                                                    <h6 class="blue-text big-bld">Free Trial <br>
-                                                        Available
+                                                    <h6 class="blue-text big-bld">Free trial <br>
+                                                        available
                                                     </h6>
                                                     <div class="accor-btn p-0">
-                                                        <a class="cta cta_white">Claim Now</a>
+                                                        <a class="cta cta_white">Claim now</a>
                                                     </div>
                                                 </div>
                                             </div>
