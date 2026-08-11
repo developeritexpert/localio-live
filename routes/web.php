@@ -519,7 +519,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     Route::get('/help-center', [MetaPagesController::class, 'helpCenter'])->name('help-center');
-    Route::get('/who-we-are', [MetaPagesController::class, 'whoWeAre'])->name('who-we-are');
+    Route::get('/about-localio', [MetaPagesController::class, 'whoWeAre'])->name('who-we-are');
     Route::get('/contact', [MetaPagesController::class, 'contact'])->name('contact');
     Route::post('/contact-form-submit', [MetaPagesController::class, 'contactFormSubmit'])->name('contact.submit');
     Route::post('/query-form-submit', [MetaPagesController::class, 'queryFormSubmit'])->name('query.submit');
