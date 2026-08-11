@@ -2115,6 +2115,7 @@ document.addEventListener('DOMContentLoaded', function () {
     </header>
     @yield('content')
     @livewireScripts
+    @include('partials.prevent_page_expired')
     <!-- content section end -->
     <!-- footer  -->
     @php
