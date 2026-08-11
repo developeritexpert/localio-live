@@ -170,14 +170,16 @@
             <div class="col-lg-4 col-12 d-flex flex-column gap-4">
                 <!-- 1. USPs List Widget -->
                 @if($business->usps && $business->usps->count() > 0)
-                    <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px; color: #2d3748;">
+                    <div class="boxshadow_border p-4 bg-white rounded-3 border" style="border-radius: 14px !important;">
+                        <ul class="list-unstyled" style="font-size: 14px; color: #2d3748;">
                             @foreach($business->usps as $usp)
                                 @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
                                 @if(!empty($uText))
-                                    <li class="d-flex align-items-center gap-2" style="font-size: 16px; color: #000; font-weight:500;">
-                                        <i class="fas fa-check text-success" style="font-size: 16px; "></i>
-                                        <span>{{ $uText }}</span>
+                                    <li class="d-flex flex-row align-items-center size15" style="margin-bottom: 14px; font-size: 16px; color: #000; font-weight:500;">
+                                        <div class="grn_chk">
+                                            <img src="{{ asset('front/img/green-tick.svg') }}">
+                                        </div>
+                                        <p class="m-0">{{ $usp->text }}</p>
                                     </li>
                                 @endif
                             @endforeach
@@ -186,7 +188,7 @@
                 @endif
 
                 <!-- 2. Rating Breakdown Widget -->
-                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div class="boxshadow_border p-4 bg-white rounded-3 border" style="border-radius: 14px !important;">
                     <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
                         <div>
                             <div style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
@@ -256,14 +258,14 @@
                 @if(!is_null($startingPrice))
                     <div class="row g-2">
                         <div class="col-6">
-                            <div class="p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
+                            <div class="boxshadow_border p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important;">
                                 <div style="font-size: 16px; color: #002347; font-weight: 600;">Starting price</div>
                                 <div class="my-2" style="font-size: 26px; font-weight: 700; color: #002347;">{{ $currency }}{{ $startingPrice }}</div>
                                 <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section6" style="font-size: 15px; color: #002347; font-weight: 600; text-decoration: none;" class="underline">View pricing</a>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
+                            <div class="boxshadow_border p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important;">
                                 <div class="mx-auto my-1" style="width: 32px; height: 32px; border-radius: 50%; background: #06498b; color: #fff; display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-check" style="font-size: 14px;"></i>
                                 </div>
@@ -276,7 +278,7 @@
 
                 <!-- 4. Highlighted Reviews Widget -->
                 @if(isset($topReviews) && $topReviews->count() > 0)
-                    <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                    <div class="boxshadow_border p-4 bg-white rounded-3 border" style="border-radius: 14px !important;">
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
                             <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 0;">Highlighted reviews</h6>
                             <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;" class="underline">View all reviews</a>
@@ -337,7 +339,7 @@
                 @endif
 
                 <!-- 5. Recent Discussions Widget -->
-                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div class="boxshadow_border p-4 bg-white rounded-3 border" style="border-radius: 14px !important;">
                     <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
                         <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 0;">Recent discussions</h6>
                         <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#sectionDiscussions" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;" class="underline">View all discussions</a>

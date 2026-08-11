@@ -1099,7 +1099,30 @@
     .lts-gry-bg{
         background-color: #f7f9fb!important;
     }
+    .card-h-title{
+        font-size: 14px !important;
+        font-weight:600 !important;
+        text-transform: none !important;
+        color: #002347 !important;
+        line-height: 1.3 !important;
+    }
+    .card-h-link{
+        font-size: 13px !important;
+        font-weight:600 !important;
+        text-transform: none !important;
+        color: #002347 !important;
+        line-height: 1.3 !important;
+        text-decoration: none !important;
+    }
+    .card-h-link:hover{
+        text-decoration: underline !important;
+        color: #002347 !important;
+    }
     
+    .boxshadow_border {
+        border: 1px solid #06498b1a !important;
+        box-shadow: 0 8px 24px rgb(141 143 144 / 28%) !important;
+    }
     </style>
 
 </head>
