@@ -447,6 +447,10 @@ class TopRatedProduct extends Component
 
         // Filter businesses by price range
         $filtered = $businesses->filter(function ($business) {
+            if (!$business->is_affiliate) {
+                return !$this->isPriceFilterActive;
+            }
+
             $validPrices = $business->products->flatMap(function ($product) {
                 return $product->prices;
             })->map(function ($price) {
