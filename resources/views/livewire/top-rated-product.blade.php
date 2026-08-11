@@ -714,7 +714,7 @@
                                                             @endphp
 
                                                             <!-- Price -->
-                                                            @if ($startingPrice)
+                                                            @if ($startingPrice && !empty($item->is_affiliate))
                                                                 <div class="text-center mt-4 w-100" style="  padding: 15px 25px; border-radius: 8px;">
                                                                     <h6 style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">Starting price</h6>
                                                                     <h3 style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
