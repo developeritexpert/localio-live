@@ -10,7 +10,7 @@
                     
                     <!-- Top right actions (Date & Copy link) -->
                     <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
-                        <span style="font-size: 13px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
+                        <span style="font-size: 12px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
                         <!-- <a href="javascript:void(0)" onclick="copyToClipboard('{{ url()->current() }}#review-{{ $review->id }}')" title="Copy link to review" style="color: #a0aec0; transition: color 0.2s; font-size: 15px;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
                             <i class="fas fa-link"></i>
                         </a> -->
