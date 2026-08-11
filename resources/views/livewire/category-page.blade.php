@@ -697,7 +697,7 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                        <div class="rating-new-style tp-btm d-flex align-items-center" style="gap: 6px;">
                                                                              <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
                                                                              <div class="inn_ul d-inline-flex m-0">
                                                                                  <div class="rating-stars ">
@@ -712,7 +712,7 @@
                                                                                      @endfor
                                                                                  </div>
                                                                              </div>
-                                                                             <span class="rate_box_count text-muted" style="font-size: 14px;">({{ $item->reviews->count() }})</span>
+                                                                             <span class="rate_box_count " style="font-size: 14px;">({{ $item->reviews->count() }})</span>
                                                                          </div>  </div>
                                                                     <!-- </div> -->
                                                                 </div>

@@ -164,7 +164,7 @@
                                         
                                             <li class="breadcrumb-item">
                                                 <a href=""
-                                                   style="font-size: 13px; color: #6c757d; text-decoration:none; font-weight: 500;">
+                                                   style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
                                                     Top-rated products
                                                 </a>
                                             </li>
@@ -190,12 +190,12 @@
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences. Transparent rankings.</h6>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                        Ratings and reviews are shared by real users from the Localio community.
                                     </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How rankings work</a>
                                 </div>
                             </div>
                         </div>
@@ -590,10 +590,10 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex flex-col-mob">
-                                                                             <span class="rate_box_num" style="font-size: 12px; font-weight: 500; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                        <div class="rating-new-style tp-btm d-flex flex-col-mob">
+                                                                             <span class="rate_box_num" style="font-size: 11px !important;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
                                                                             <div class="inn_ul">
-                                                                                <div class="rating-stars ">
+                                                                                <div class="rating-stars " style="gap:1px;">
                                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                                         @if ($i <= floor($item->reviews->avg('rating')))
                                                                                             <i class="fas fa-star text-warning"></i>
@@ -605,7 +605,7 @@
                                                                                     @endfor
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="rate_box" style="font-weight: 400; ">
+                                                                            <div class="rate_box" style="font-size: 11px !important;">
                                                                                 ({{ $item->reviews->count() }})
                                                                             </div>
                                                                         </div>
