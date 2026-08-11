@@ -272,12 +272,12 @@
                                 <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences. Transparent rankings.</h6>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                        Ratings and reviews are shared by real users from the Localio community.
                                     </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How rankings work</a>
                                 </div>
                             </div>
                         </div>
@@ -963,7 +963,7 @@
                                     <div>
                                         <p class="m-0">Showing {{ $products->count() }} results </p>
                                     </div>
-                                    <x-social-icon/>
+                                    
                                 </div>
 
                                 <div class="alert alert-info" style="background-color:#f7f9fb;">
