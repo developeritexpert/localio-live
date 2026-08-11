@@ -621,43 +621,45 @@
                                                             @endif
 
                                                             <!-- Features -->
-                                                            <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
-                                                                <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
-                                                                    <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
-                                                                        <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                                                            @if ($item->usps->count() > 0)
-                                                                                @foreach ($item->usps->take(4) as $usp)
+                                                            @if (!empty($item->is_affiliate))
+                                                                <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
+                                                                    <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
+                                                                        <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
+                                                                            <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                                                @if ($item->usps->count() > 0)
+                                                                                    @foreach ($item->usps->take(4) as $usp)
+                                                                                        <div class="d-flex align-items-center size18">
+                                                                                            <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                            </div>
+                                                                                            <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        </div>
+                                                                                    @endforeach
+                                                                                @else
                                                                                     <div class="d-flex align-items-center size18">
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                     </div>
-                                                                                @endforeach
-                                                                            @else
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
-                                                                                </div>
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
-                                                                                </div>
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
-                                                                                    </div>
-                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
-                                                                                </div>
-                                                                            @endif
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            @endif
 
                                                             <!-- Compare Checkbox -->
                                                         </div>
