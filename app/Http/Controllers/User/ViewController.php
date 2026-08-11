@@ -598,7 +598,6 @@ class ViewController extends Controller
         }
 
         $business = \App\Models\Business::where('id', $businessTranslation->business_id)
-            ->where('is_affiliate', 1)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
             ])->firstOrFail();

@@ -288,7 +288,6 @@ class BusinessAlternatives extends Component
                 $query->where('language_id', $this->lang_id);
             })
             ->where('id', '!=', $this->businessId)
-            ->where('is_affiliate', 1)
             ->where(function ($query) {
                 $query->whereIn('category_id', $this->subCategoryIds)
                     ->orWhereHas('products', function($pq) {
@@ -341,7 +340,6 @@ class BusinessAlternatives extends Component
             $query->where('language_id', $this->lang_id);
         })
             ->where('id', '!=', $this->businessId)
-            ->where('is_affiliate', 1)
             ->where(function ($query) {
                 $query->whereIn('category_id', $this->subCategoryIds)
                     ->orWhereHas('products', function($pq) {
