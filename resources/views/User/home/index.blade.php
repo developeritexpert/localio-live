@@ -167,10 +167,10 @@
                                                         <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between" style="background-color: #f7f9fb; position: relative;">
                                                             @if ($isBestValue)
                                                                 <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
-                                                                    <div class="best-value-inline">
+                                                                    <div class="best-value-inline" >
                                                                         <!-- <i class="fa-regular fa-thumbs-up"></i> -->
-                                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
-                                                                        <span>Recommended</span>
+                                                                        <i class="far fa-star text-warning" style="font-size: 12px !important; color: #06498b !important;"></i>
+                                                                       <span style="text-transform: none !important;">Recommended</span>
                                                                     </div>
                                                                 </div>
                                                             @endif
