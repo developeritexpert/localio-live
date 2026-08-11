@@ -2388,7 +2388,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="container">
                                     <h3 style="color: black;">Choose your Country/Region</h3>
                                 <div class="footer-langs-container">
-                                    @foreach ($languages as $language)
+                                    @foreach ($languages->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $language)
                                     <li>
                                         <a href="{{ url('/' . strtolower($language->lang_code)) }}">
                                             {{ $language->name }}
