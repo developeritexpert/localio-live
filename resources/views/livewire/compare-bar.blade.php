@@ -9,7 +9,7 @@
     @if (count($comparedProductIds) > 0)
     <div class="fixed-bottom bg-light p-3 shadow-lg" id="compareBar" style="border-top: 1px solid #e2e8f0; z-index: 1050;">
         <div class="container">
-            <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap: 15px;">
+            <div class="remove-all d-flex justify-content-between align-items-center flex-wrap" style="gap: 15px;">
                 <!-- Left side: Remove All & Selected Product Icons -->
                 <div class="d-flex align-items-center flex-wrap" style="gap: 15px;">
                     

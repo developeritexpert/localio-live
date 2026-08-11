@@ -676,7 +676,7 @@
                                                  class=" d-inline-flex align-items-center gap-2"
                                                  style="background-color: #fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; font-size: 13.5px; font-weight: 600; border: 1px solid #cbd5e1; outline: none; cursor: pointer;"
                                                  >
-                                             <span>Sort: <strong>{{ $currentLabel }}</strong></span>
+                                             <span>Sort: <span>{{ $currentLabel }}</span></span>
                                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease; {{ $showSortDropdown ? 'transform: rotate(180deg);' : '' }}">
                                                  <polyline points="6 9 12 15 18 9"/>
                                              </svg>
@@ -743,8 +743,8 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="rating-new-style tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                                             <span class="rate_box_num" style="font-size: 14px; font-weight: 400; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                        <div class="rating-group d-flex align-items-center" style="gap: 6px;">
+                                                                             <span class="rate_box_num" style="">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
                                                                              <div class="inn_ul d-inline-flex m-0">
                                                                                  <div class="rating-stars ">
                                                                                      @for ($i = 1; $i <= 5; $i++)
@@ -758,7 +758,7 @@
                                                                                      @endfor
                                                                                  </div>
                                                                              </div>
-                                                                             <span class="rate_box_count " style="font-size: 14px;">({{ $item->reviews->count() }})</span>
+                                                                             <span class="rate_box_count " style="">({{ $item->reviews->count() }})</span>
                                                                          </div>  </div>
                                                                     <!-- </div> -->
                                                                 </div>

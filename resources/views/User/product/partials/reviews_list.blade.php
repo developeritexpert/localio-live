@@ -92,7 +92,7 @@
                             <i class="fas fa-link"></i>
                         </a> -->
                         <a href="javascript:void(0)" aria-label="Copy Link" class="copy_link_icon share-btn" style="color: #a0aec0;" data-platform="copy" onclick="copyToClipboard('{{ url()->current() }}#review-{{ $review->id }}')" title="Copy link to review" >
-                            <span class="svg">
+                            <span class="svg svg-share">
                                 <svg style="display:block;border-radius:999px;" focusable="false" aria-hidden="true"
                                     xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="-4 -4 40 40">
                                     <path fill="currentColor"

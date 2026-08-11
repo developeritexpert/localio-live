@@ -191,7 +191,7 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                                    <div class="rating-group tp-btm d-flex align-items-center" style="gap: 6px;">
                                                                         <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
                                                                         <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
