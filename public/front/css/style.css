@@ -9921,9 +9921,9 @@ body .product_sec li.breadcrumb-item.active {
     background: #2cc464 !important;
 }
 
-.top-product-card>div:last-child a:last-child:hover {
+/* .top-product-card>div:last-child a:last-child:hover {
     background-color: #174889 !important;
-}
+} */
 
 .crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover i {
     color: #fff !important;

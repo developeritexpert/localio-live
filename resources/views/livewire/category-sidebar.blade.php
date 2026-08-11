@@ -166,9 +166,5 @@
             </div>
         </div>
     </div>
-    <style>
-    .top-product-card>div:last-child a:last-child:hover {
-    background-color: #e64a19 !important ;
-}
-</style>
+
 </section>
