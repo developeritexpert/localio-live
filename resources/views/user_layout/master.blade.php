@@ -65,6 +65,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
     <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
+    @stack('styles')
     <script src="//unpkg.com/alpinejs" defer></script>
     <style>
         @media (max-width: 767px) {

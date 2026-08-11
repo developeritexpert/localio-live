@@ -123,7 +123,8 @@ section.top-automotive-sec.top_rate_pg.light {
     </style>
 
     <section class="top-automotive-sec top_rate_pg light common_detail_sec" style="{{ !empty($hasUpperHeader) ? 'margin-top: 20px !important; padding-top: 0 !important;' : '' }}">
-        <div class="top-auto-btm">
+    <div class="top-auto-btm">
+        
             <div class="container">
                 <div class="top-auto-choice">
                     <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px;">
@@ -265,6 +266,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                 </div>
                             </div>
                         </div>
+                        <h2 class="mt-3">All {{ $businessName }} alternatives </h2>
                     </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
