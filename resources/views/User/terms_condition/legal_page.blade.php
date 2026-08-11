@@ -6,26 +6,17 @@
             <div class="row">
                 <!-- Left Sidebar -->
                 <div class="col-md-4">
-                    @include('User.terms_condition._sidebar', ['activeSlug' => 'privacy-policy'])
+                    @include('User.terms_condition._sidebar', ['activeSlug' => $activeSlug ?? ''])
                 </div>
 
                 <!-- Right Content -->
                 <div class="col-md-8">
-                    @if (isset($document))
-                        <div class="mb-5">
-                            <h2 class="mb-4">{{ $document->title ?? 'Privacy Policy' }}</h2>
-                            <div>{!! $document->description ?? '' !!}</div>
+                    <div class="mb-5">
+                        <h2 class="mb-4">{{ $document->title ?? $documentTitle }}</h2>
+                        <div class="legal-document-content">
+                            {!! $document->description ?? '' !!}
                         </div>
-                    @elseif (isset($privacy_policy) && $privacy_policy->isNotEmpty())
-                        @foreach ($privacy_policy as $index => $policy)
-                            <div class="mb-5">
-                                <h3 class="mb-3">{{ $policy->title }}</h3>
-                                <div>{!! $policy->description !!}</div>
-                            </div>
-                        @endforeach
-                    @else
-                        <p>{{ static_text('no_policy') }}</p>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -82,7 +73,6 @@
         <div class="back-image1">
            <img src="{{asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt="">
         </div>
-        <div class="back-image2">
            <img src="{{asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt="">
         </div>
      </section>

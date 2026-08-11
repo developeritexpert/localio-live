@@ -12,9 +12,7 @@
             <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap: 15px;">
                 <!-- Left side: Remove All & Selected Product Icons -->
                 <div class="d-flex align-items-center flex-wrap" style="gap: 15px;">
-                    <a href="javascript:void(0)" wire:click="clearAll" onclick="document.querySelectorAll('.blue-chkbox input[type=checkbox]').forEach(input => { input.checked = false; input.dispatchEvent(new Event('change', { bubbles: true })); });" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                        Remove all
-                    </a>
+                    
                     <div class="d-flex align-items-center" style="gap: 10px;">
                         @foreach ($comparedProducts as $product)
                             <div class="position-relative d-flex align-items-center justify-content-center bg-white" style="width: 44px; height: 44px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
@@ -32,6 +30,9 @@
                             <div style="width: 44px; height: 44px; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc;"></div>
                         @endfor
                     </div>
+                    <a href="javascript:void(0)" wire:click="clearAll" onclick="document.querySelectorAll('.blue-chkbox input[type=checkbox]').forEach(input => { input.checked = false; input.dispatchEvent(new Event('change', { bubbles: true })); });" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                        Remove all
+                    </a>
                 </div>
 
                 <!-- Right side: Compare Action Button -->

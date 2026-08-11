@@ -756,7 +756,7 @@
 .fixed-div .main-view-rating-hide {
     display: flex !important;
     align-items: center;
-    gap: 8px;
+    gap: 3px;
     margin-top: 4px;
 }
 .fixed-div .hide-on-sticky {
@@ -857,10 +857,13 @@
                                         <div class="asn-rating">
                                             <div class="an_lkd">
                                                 <h1 style="color: #000;" class="mb-0 p-1">
-                                                    {{ $business->translations->first()->name }} <span class="hide-on-sticky">Review {{ date('Y') }}</span> </h1>
+                                                    {{ $business->translations->first()->name }} <span class="hide-on-sticky">review {{ date('Y') }}</span> </h1>
                                             </div>
                                             <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
                                             <div class="main-view-rating-hide">
+                                                <span style="font-size: 14px; font-weight: 500; color: #555;">
+                                                    {{ number_format($averageRating, 1) }}
+                                                </span>
                                                 <div style="display: flex; gap: 2px;">
                                                     @for ($i = 1; $i <= 5; $i++)
                                                         @if ($i <= floor($averageRating))
@@ -873,7 +876,7 @@
                                                     @endfor
                                                 </div>
                                                 <span style="font-size: 14px; font-weight: 500; color: #555;">
-                                                    {{ number_format($averageRating, 1) }} | {{ $ratingCount }} {{ $ratingCount === 1 ? 'review' : 'reviews' }}
+                                                    ({{ $ratingCount }})
                                                 </span>
                                             </div>
                                         </div>
@@ -1512,8 +1515,8 @@
                                                     <div class="grn_check_big">
                                                         <img src="{{ asset('front/img/new-grn-chk.svg') }}">
                                                     </div>
-                                                    <h6 class="blue-text big-bld">Free Trial
-                                                        Available
+                                                    <h6 class="blue-text big-bld">Free trial
+                                                        available
                                                     </h6>
                                                     <div class="accor-btn">
                                                         <a class="cta cta_white blue_t_org_btn"
@@ -1524,7 +1527,7 @@
                                                                 'action' => 'claim_now',
                                                                 'label' => 'Claim Now',
                                                             ]) }}"
-                                                            type="button">Claim Now</a>
+                                                            type="button" style="text-transform:none !important;">Claim now</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2517,7 +2520,7 @@
                                         $languageObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
                                         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
                                     @endphp
-                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'alternatives_slug' => $expectedAlternativesSlug]) }}"
+                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug ?? $business->slug ?? '', 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                        class="view-more-link"
                                        style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                         View more alternatives

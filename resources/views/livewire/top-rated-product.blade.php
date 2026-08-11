@@ -164,7 +164,7 @@
                                         
                                             <li class="breadcrumb-item">
                                                 <a href=""
-                                                   style="font-size: 13px; color: #6c757d; text-decoration:none; font-weight: 500;">
+                                                   style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
                                                     Top-rated products
                                                 </a>
                                             </li>
@@ -190,12 +190,12 @@
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences. Transparent rankings.</h6>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                        Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
+                                        Ratings and reviews are shared by real users from the Localio community.
                                     </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How rankings work</a>
                                 </div>
                             </div>
                         </div>
@@ -548,9 +548,56 @@
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore class="d-none">
-                                        <x-social-icon/>
-                                    </div>
+                                     @php
+                                         $sortOptionsMap = [
+                                             'highest_rated' => 'Highest rated',
+                                             'most_reviewed' => 'Most reviewed',
+                                             'most_recommended' => 'Most recommended',
+                                             'price_low_high' => 'Price: low to high',
+                                             'price_high_low' => 'Price: high to low',
+                                             'name_a_z' => 'Name: A–Z',
+                                             'name_z_a' => 'Name: Z–A',
+                                         ];
+                                         $currentSort = $sortBy ?? 'highest_rated';
+                                         $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
+                                     @endphp
+
+                                     <div class="position-relative d-inline-block">
+                                         {{-- Trigger pill button --}}
+                                         <button type="button"
+                                                 wire:click="toggleSortDropdown"
+                                                 class="d-inline-flex align-items-center gap-2"
+                                                 style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; font-size: 13.5px; font-weight: 600; border: 1px solid #cbd5e1; outline: none;  cursor: pointer;"
+                                            
+                                                 >
+                                             <span>Sort: <strong>{{ $currentLabel }}</strong></span>
+                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease; {{ $showSortDropdown ? 'transform: rotate(180deg);' : '' }}">
+                                                 <polyline points="6 9 12 15 18 9"/>
+                                             </svg>
+                                         </button>
+
+                                         {{-- Floating card menu — pure Livewire, no Alpine --}}
+                                         @if($showSortDropdown)
+                                         <div class="position-absolute end-0 mt-2 bg-white py-2"
+                                              style="z-index: 9999; min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                                             @foreach($sortOptionsMap as $val => $label)
+                                                 <button type="button"
+                                                         wire:click="setSortBy('{{ $val }}')"
+                                                         class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
+                                                         style="font-size: 14px; color: #1e3050; cursor: pointer; transition: background-color 0.15s ease; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
+                                                         onmouseover="this.style.backgroundColor='#f1f5f9'"
+                                                         onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
+                                                     <span style="{{ $currentSort === $val ? 'font-weight: 700;' : 'font-weight: 400;' }}">{{ $label }}</span>
+                                                     @if($currentSort === $val)
+                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3050" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-left: 8px;">
+                                                             <polyline points="20 6 9 17 4 12"/>
+                                                         </svg>
+                                                     @endif
+                                                 </button>
+                                             @endforeach
+                                         </div>
+                                         @endif
+                                     </div>
                                 </div>
                                 @if (!empty($products))
                                     @foreach ($products as $index => $item)
@@ -564,8 +611,8 @@
                                                 <div class="card-compare-m">
                                                     @if($isRecommended)
                                                          <div style="margin-bottom: 25px;">
-                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">
-                                                                 <i class="far fa-star text-warning" style="margin-right: 4px;"></i> RECOMMENDED
+                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">
+                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Recommended
                                                              </span>
                                                          </div>
                                                      @endif
@@ -590,10 +637,10 @@
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="tp-btm d-flex flex-col-mob">
-                                                                             <span class="rate_box_num" style="font-size: 12px; font-weight: 500; color: #333;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                        <div class="rating-new-style tp-btm d-flex flex-col-mob">
+                                                                             <span class="rate_box_num" style="font-size: 11px !important;">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
                                                                             <div class="inn_ul">
-                                                                                <div class="rating-stars ">
+                                                                                <div class="rating-stars " style="gap:1px;">
                                                                                     @for ($i = 1; $i <= 5; $i++)
                                                                                         @if ($i <= floor($item->reviews->avg('rating')))
                                                                                             <i class="fas fa-star text-warning"></i>
@@ -605,7 +652,7 @@
                                                                                     @endfor
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="rate_box" style="font-weight: 400; ">
+                                                                            <div class="rate_box" style="font-size: 11px !important;">
                                                                                 ({{ $item->reviews->count() }})
                                                                             </div>
                                                                         </div>
@@ -621,43 +668,45 @@
                                                             @endif
 
                                                             <!-- Features -->
-                                                            <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
-                                                                <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
-                                                                    <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
-                                                                        <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                                                            @if ($item->usps->count() > 0)
-                                                                                @foreach ($item->usps->take(4) as $usp)
+                                                            @if (!empty($item->is_affiliate))
+                                                                <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
+                                                                    <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
+                                                                        <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
+                                                                            <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                                                @if ($item->usps->count() > 0)
+                                                                                    @foreach ($item->usps->take(4) as $usp)
+                                                                                        <div class="d-flex align-items-center size18">
+                                                                                            <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                                <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                            </div>
+                                                                                            <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        </div>
+                                                                                    @endforeach
+                                                                                @else
                                                                                     <div class="d-flex align-items-center size18">
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                     </div>
-                                                                                @endforeach
-                                                                            @else
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
-                                                                                </div>
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                    <div class="d-flex align-items-center size18">
+                                                                                        <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
-                                                                                </div>
-                                                                                <div class="d-flex align-items-center size18">
-                                                                                    <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
-                                                                                        <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
-                                                                                    </div>
-                                                                                    <p class="m-0" style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
-                                                                                </div>
-                                                                            @endif
+                                                                                @endif
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            @endif
 
                                                             <!-- Compare Checkbox -->
                                                         </div>
@@ -712,7 +761,7 @@
                                                             @endphp
 
                                                             <!-- Price -->
-                                                            @if ($startingPrice)
+                                                            @if ($startingPrice && !empty($item->is_affiliate))
                                                                 <div class="text-center mt-4 w-100" style="  padding: 15px 25px; border-radius: 8px;">
                                                                     <h6 style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">Starting price</h6>
                                                                     <h3 style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">

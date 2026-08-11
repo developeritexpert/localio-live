@@ -33,7 +33,7 @@
         transition: color 0.2s;
     }
     .parent-cat-sidebar li::after {
-        content: '›';
+        /* content: '›'; */
         font-size: 18px;
         color: #e56b46;
         margin-left: 5px;

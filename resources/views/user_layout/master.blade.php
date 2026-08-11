@@ -65,6 +65,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
     <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
+    @stack('styles')
     <script src="//unpkg.com/alpinejs" defer></script>
     <style>
         @media (max-width: 767px) {
@@ -1099,7 +1100,30 @@
     .lts-gry-bg{
         background-color: #f7f9fb!important;
     }
+    .card-h-title{
+        font-size: 14px !important;
+        font-weight:600 !important;
+        text-transform: none !important;
+        color: #002347 !important;
+        line-height: 1.3 !important;
+    }
+    .card-h-link{
+        font-size: 13px !important;
+        font-weight:600 !important;
+        text-transform: none !important;
+        color: #002347 !important;
+        line-height: 1.3 !important;
+        text-decoration: none !important;
+    }
+    .card-h-link:hover{
+        text-decoration: underline !important;
+        color: #002347 !important;
+    }
     
+    .boxshadow_border {
+        border: 1px solid #06498b1a !important;
+        box-shadow: 0 8px 24px rgb(141 143 144 / 28%) !important;
+    }
     </style>
 
 </head>
@@ -2115,6 +2139,7 @@ document.addEventListener('DOMContentLoaded', function () {
     </header>
     @yield('content')
     @livewireScripts
+    @include('partials.prevent_page_expired')
     <!-- content section end -->
     <!-- footer  -->
     @php
@@ -2209,32 +2234,28 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ route('write-review', ['locale' => session('lang_code', 'en-us')]) }}">Write review</a>
+                                    </li>
                                     {{-- <li><a
                                             href="{{ route('exclusive-business-deals') }}">{{ $footerContents['exclusive_deal'] ?? 'Exclusive Deals' }}</a>
                                     </li> --}}
-                                </ul>
                             </div>
                             <div class="foot-col footer-dropdown">
                                 <h6 class="footer-title">
-                                    {{ $footerContents['company'] ?? 'Company' }}
+                                    {{ $footerContents['company'] ?? 'Legal' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
                                 </h6>
                                 <ul class="foot-col-list">
-                                    <li><a
-                                            href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['who_we_are'] ??
-                                                'Who We Are
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ' }}</a>
-                                    </li>
-                                    <li><a
-                                            href="{{ route('privacy-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['privacy_policy'] ??
-                                                'Privacy Policy
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ' }}</a>
-                                    </li>
-                                    <li><a
-                                            href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}</a>
-                                    </li>
+                                    <li><a href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}</a></li>
+                                    <li><a href="{{ route('privacy-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['privacy_policy'] ?? 'Privacy policy' }}</a></li>
+                                    <li><a href="{{ route('cookie-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['cookie_policy'] ?? 'Cookie policy' }}</a></li>
+                                    <li><a href="{{ route('community-guidelines', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['community_guidelines'] ?? 'Community guidelines' }}</a></li>
+                                    <li><a href="{{ route('affiliate-disclosure', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['affiliate_disclosure'] ?? 'Affiliate disclosure' }}</a></li>
+                                    <li><a href="{{ route('copyright-dmca-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['copyright_dmca_policy'] ?? 'Copyright & DMCA policy' }}</a></li>
+                                    <li><a href="{{ route('legal-notice', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['legal_notice'] ?? 'Legal notice' }}</a></li>
                                 </ul>
                             </div>
                             {{-- <div class="foot-col">
@@ -2363,7 +2384,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="container">
                                     <h3 style="color: black;">Choose your Country/Region</h3>
                                 <div class="footer-langs-container">
-                                    @foreach ($languages as $language)
+                                    @foreach ($languages->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $language)
                                     <li>
                                         <a href="{{ url('/' . strtolower($language->lang_code)) }}">
                                             {{ $language->name }}
@@ -2420,7 +2441,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p>{{ $section->content ?? 'Default content paragraph.' }}</p>
                     @endforeach
                 </div>
-                <div class="modal-disclaimer">
+                <div class="modal-disclaimer mt-0">
                     <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
                 </div>
                 <div class="mt-3">

@@ -9,7 +9,7 @@
     $catSlug = $catTrans->slug ?? $business->category->slug ?? null;
     $parentCatName = $parentCatTrans->name ?? '';
     $parentCatSlug = $parentCatTrans->slug ?? $business->category->parent->slug ?? null;
-    $bName = $business->translations->first()->name ?? 'Business';
+    $bName = $business->translations->first()?->name ?? 'Business';
     $stAltSub = static_text('business_alternatives_subheadline');
     if (!empty($stAltSub) && $stAltSub !== 'business_alternatives_subheadline') {
         $subHeadline = $stAltSub;

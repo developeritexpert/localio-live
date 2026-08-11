@@ -31,6 +31,65 @@ class SitePagesController extends Controller
 {
     public function policies()
     {
+        return redirect()->route('admin.legal_documents');
+    }
+
+    public function ensureLegalDocumentsExist($langId = 1)
+    {
+        $documents = [
+            'terms-of-service'      => 'Terms of service',
+            'privacy-policy'        => 'Privacy policy',
+            'cookie-policy'         => 'Cookie policy',
+            'community-guidelines'  => 'Community guidelines',
+            'affiliate-disclosure'  => 'Affiliate disclosure',
+            'copyright-dmca-policy' => 'Copyright & DMCA policy',
+            'legal-notice'          => 'Legal notice',
+        ];
+
+        foreach ($documents as $key => $title) {
+            $exists = PolicyTranslation::where('key', $key)
+                ->where('lang_id', $langId)
+                ->first();
+
+            if (!$exists) {
+                $initialDescription = '';
+                if ($key == 'privacy-policy') {
+                    $legacy = PolicyTranslation::where('lang_id', $langId)
+                        ->whereNotIn('key', array_keys($documents))
+                        ->get();
+                    if ($legacy->isNotEmpty()) {
+                        $initialDescription = $legacy->pluck('description')->implode("<br><br>");
+                    }
+                } elseif ($key == 'terms-of-service') {
+                    $legacyTerms = TermsTranslation::where('lang_id', $langId)->get();
+                    if ($legacyTerms->isNotEmpty()) {
+                        $initialDescription = $legacyTerms->pluck('description')->implode("<br><br>");
+                    }
+                }
+
+                if (empty($initialDescription)) {
+                    $initialDescription = '<p>Enter full text for ' . e($title) . ' here.</p>';
+                }
+
+                $policy = new Policy;
+                $policy->type = $key;
+                $policy->lang_id = $langId;
+                $policy->save();
+
+                PolicyTranslation::create([
+                    'title'       => $title,
+                    'lang_id'     => $langId,
+                    'description' => $initialDescription,
+                    'key'         => $key,
+                    'policy_id'   => $policy->id,
+                    'status'      => 'active',
+                ]);
+            }
+        }
+    }
+
+    public function legalDocumentsList()
+    {
         $locale = getCurrentLocale();
         $lang_code = Language::where('lang_code', $locale)->first();
 
@@ -38,8 +97,72 @@ class SitePagesController extends Controller
             $lang_code = Language::where('lang_code', 'en-us')->first();
         }
 
-        $privacy_policy = PolicyTranslation::where('lang_id', $lang_code->id)->pluck('title', 'id');
-        return view('Admin.site-content.privacy-policy.privacy-policy', compact('privacy_policy'));
+        $langId = $lang_code ? $lang_code->id : 1;
+        $this->ensureLegalDocumentsExist($langId);
+
+        $keys = [
+            'terms-of-service',
+            'privacy-policy',
+            'cookie-policy',
+            'community-guidelines',
+            'affiliate-disclosure',
+            'copyright-dmca-policy',
+            'legal-notice',
+        ];
+
+        $documents = PolicyTranslation::where('lang_id', $langId)
+            ->whereIn('key', $keys)
+            ->get()
+            ->sortBy(function($item) use ($keys) {
+                return array_search($item->key, $keys);
+            });
+
+        return view('Admin.site-content.legal-pages.index', compact('documents'));
+    }
+
+    public function legalDocumentEdit($slug)
+    {
+        $locale = getCurrentLocale();
+        $lang_code = Language::where('lang_code', $locale)->first();
+        $langId = $lang_code ? $lang_code->id : 1;
+
+        $this->ensureLegalDocumentsExist($langId);
+
+        $document = PolicyTranslation::where('key', $slug)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if (!$document) {
+            return redirect()->route('admin.legal_documents')->with('error', 'Document not found');
+        }
+
+        return view('Admin.site-content.legal-pages.edit', compact('document'));
+    }
+
+    public function legalDocumentUpdate(Request $request, $slug)
+    {
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $locale = getCurrentLocale();
+        $lang_code = Language::where('lang_code', $locale)->first();
+        $langId = $lang_code ? $lang_code->id : 1;
+
+        $document = PolicyTranslation::where('key', $slug)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($document) {
+            $document->update([
+                'title' => $validatedData['title'],
+                'description' => $validatedData['description'],
+                'status' => 'active',
+            ]);
+        }
+
+        return redirect()->route('admin.legal_documents')->with('success', 'Document updated successfully!');
     }
 
     public function policiesAddShow($id = null)
@@ -590,14 +713,7 @@ class SitePagesController extends Controller
     // terms and condition
     public function terms_show()
     {
-        $locale = getCurrentLocale();
-        $lang_code = Language::where('lang_code', $locale)->first();
-
-        if (!$lang_code) {
-            $lang_code='en-us';
-        }
-        $terms = TermsTranslation::where('lang_id', $lang_code->id)->pluck('title', 'id');
-        return view('Admin.site-content.terms-condition.terms', compact('terms'));
+        return redirect()->route('admin.legal_documents');
     }
 
     public function termsAdd_show($id = null)

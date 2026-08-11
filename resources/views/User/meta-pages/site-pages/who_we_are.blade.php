@@ -150,7 +150,7 @@
             <p>{{ $whoWeAre->ss_sub_desc ?? '' }}
             </p>
             <div class="top-pro-btn  snd_bttn">
-                <a  class="cta cta_orange">{{ $whoWeAre->protfolio_btn ?? '' }}</a>
+                <a href="{{ route('category', ['locale' => app()->getLocale()]) }}" class="btn-orng cta cta_orange">{{ $whoWeAre->protfolio_btn ?? '' }}</a>
             </div>
         </div>
     </div>

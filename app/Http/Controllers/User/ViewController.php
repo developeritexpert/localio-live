@@ -562,11 +562,11 @@ class ViewController extends Controller
         $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
         $expectedComparisonsSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
 
-        if ($second_segment === $expectedAlternativesSlug) {
+        if ($second_segment === $expectedAlternativesSlug || $second_segment === 'alternatives') {
             return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
         }
 
-        if ($second_segment === $expectedFaqSlug) {
+        if ($second_segment === $expectedFaqSlug || $second_segment === 'faqs') {
             return $this->businessFaqs($request, $locale, $business_slug, $second_segment);
         }
 
@@ -598,9 +598,8 @@ class ViewController extends Controller
         }
 
         $business = \App\Models\Business::where('id', $businessTranslation->business_id)
-            ->where('is_affiliate', 1)
             ->with([
-                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'translations',
             ])->firstOrFail();
 
         return view('User.product.business_alternatives', compact('business'));
