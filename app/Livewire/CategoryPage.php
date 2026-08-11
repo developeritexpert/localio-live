@@ -37,6 +37,8 @@ class CategoryPage extends Component
     public $activeFilters = [];
     public $isPriceFilterActive = false;
     public $ratingCounts;
+    public $sortBy = 'highest_rated';
+    public $showSortDropdown = false;
 
     // Results properties
     public $productsCount = 0;
@@ -51,6 +53,7 @@ class CategoryPage extends Component
         'selectedRatings' => ['except' => []],
         'minPrice' => ['except' => 0],
         'maxPrice' => ['except' => 2000],
+        'sortBy' => ['except' => 'highest_rated'],
     ];
 
     public function mount($slug, $initialPage = 1)
@@ -376,6 +379,10 @@ class CategoryPage extends Component
                 return !$this->isPriceFilterActive;
             }
 
+            if (!$this->isPriceFilterActive) {
+                return true;
+            }
+
             $validPrices = $business->products->flatMap(function ($product) {
                 return $product->prices;
             })->map(function ($price) {
@@ -396,8 +403,106 @@ class CategoryPage extends Component
             return $min >= $this->minPrice && $min <= $this->maxPrice;
         });
 
-        // Always show affiliated businesses first, then non-affiliated businesses
-        $filtered = $filtered->sortByDesc('is_affiliate')->values();
+        $getStartingPrice = function ($business) {
+            $validPrices = $business->products->flatMap(function ($product) {
+                return $product->prices;
+            })->map(function ($price) {
+                $now = now();
+                if ($price->discount_price && $price->discount_expiration_date && $now->lte($price->discount_expiration_date)) {
+                    return (float)$price->discount_price;
+                } elseif ($price->renewal_price) {
+                    return (float)$price->renewal_price;
+                } else {
+                    return (float)$price->price;
+                }
+            })->filter(fn($p) => !is_null($p));
+
+            return $validPrices->isNotEmpty() ? $validPrices->min() : null;
+        };
+
+        $getMetrics = function ($business) use ($getStartingPrice) {
+            $activeReviews = $business->reviews ? $business->reviews->where('status', 'active') : collect();
+            $reviewCount = $activeReviews->count();
+            $avgRating = $reviewCount > 0 ? (float)$activeReviews->avg('rating') : 0.0;
+            $recCount = $activeReviews->where('recommend', 1)->count();
+            $recRate = $reviewCount > 0 ? (float)(($recCount / $reviewCount) * 100) : 0.0;
+            $name = mb_strtolower(trim($business->translations->first()?->name ?? $business->name ?? ''));
+            $price = $getStartingPrice($business);
+
+            return [
+                'is_affiliate' => (int)($business->is_affiliate ?? 0),
+                'name' => $name,
+                'avg_rating' => $avgRating,
+                'review_count' => $reviewCount,
+                'rec_rate' => $recRate,
+                'price' => $price,
+            ];
+        };
+
+        $sortBy = $this->sortBy ?? 'highest_rated';
+
+        $filtered = $filtered->sort(function ($a, $b) use ($sortBy, $getMetrics) {
+            $mA = $getMetrics($a);
+            $mB = $getMetrics($b);
+
+            switch ($sortBy) {
+                case 'most_reviewed':
+                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                    }
+                    if ($mA['review_count'] !== $mB['review_count']) {
+                        return $mB['review_count'] <=> $mA['review_count'];
+                    }
+                    return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                case 'most_recommended':
+                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                    }
+                    if ($mA['rec_rate'] !== $mB['rec_rate']) {
+                        return $mB['rec_rate'] <=> $mA['rec_rate'];
+                    }
+                    return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                case 'price_low_high':
+                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                    }
+                    $pA = is_null($mA['price']) ? PHP_INT_MAX : $mA['price'];
+                    $pB = is_null($mB['price']) ? PHP_INT_MAX : $mB['price'];
+                    if ($pA !== $pB) {
+                        return $pA <=> $pB;
+                    }
+                    return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                case 'price_high_low':
+                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                    }
+                    $pA = is_null($mA['price']) ? -1 : $mA['price'];
+                    $pB = is_null($mB['price']) ? -1 : $mB['price'];
+                    if ($pA !== $pB) {
+                        return $pB <=> $pA;
+                    }
+                    return $mB['avg_rating'] <=> $mA['avg_rating'];
+
+                case 'name_a_z':
+                    return strcmp($mA['name'], $mB['name']);
+
+                case 'name_z_a':
+                    return strcmp($mB['name'], $mA['name']);
+
+                case 'highest_rated':
+                default:
+                    if ($mA['is_affiliate'] !== $mB['is_affiliate']) {
+                        return $mB['is_affiliate'] <=> $mA['is_affiliate'];
+                    }
+                    if ($mA['avg_rating'] !== $mB['avg_rating']) {
+                        return $mB['avg_rating'] <=> $mA['avg_rating'];
+                    }
+                    return $mB['review_count'] <=> $mA['review_count'];
+            }
+        })->values();
 
         // Count before pagination
         $totalCount = $filtered->count();
@@ -585,6 +690,25 @@ class CategoryPage extends Component
         $this->dispatch('scroll-to-middle');
 
     }
+    public function setSortBy($sort)
+    {
+        $this->sortBy = $sort;
+        $this->showSortDropdown = false;
+        $this->resetPage();
+        $this->dispatch('scroll-to-middle');
+    }
+
+    public function toggleSortDropdown()
+    {
+        $this->showSortDropdown = !$this->showSortDropdown;
+    }
+
+    public function updatedSortBy()
+    {
+        $this->resetPage();
+        $this->dispatch('scroll-to-middle');
+    }
+
     public function resetFilters()
     {
         $this->selectedOptions = [];
@@ -592,6 +716,7 @@ class CategoryPage extends Component
         $this->searchTerm = '';
         $this->selectedRatings = [];
         $this->isPriceFilterActive = false;
+        $this->sortBy = 'highest_rated';
         $this->initializePriceRange();
         $this->loadDefaultFilterOptions();
        

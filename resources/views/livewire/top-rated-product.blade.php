@@ -548,9 +548,56 @@
                                             <p class="m-0">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
-                                    <div wire:ignore class="d-none">
-                                        <x-social-icon/>
-                                    </div>
+                                     @php
+                                         $sortOptionsMap = [
+                                             'highest_rated' => 'Highest rated',
+                                             'most_reviewed' => 'Most reviewed',
+                                             'most_recommended' => 'Most recommended',
+                                             'price_low_high' => 'Price: low to high',
+                                             'price_high_low' => 'Price: high to low',
+                                             'name_a_z' => 'Name: A–Z',
+                                             'name_z_a' => 'Name: Z–A',
+                                         ];
+                                         $currentSort = $sortBy ?? 'highest_rated';
+                                         $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
+                                     @endphp
+
+                                     <div class="position-relative d-inline-block">
+                                         {{-- Trigger pill button --}}
+                                         <button type="button"
+                                                 wire:click="toggleSortDropdown"
+                                                 class="d-inline-flex align-items-center gap-2"
+                                                 style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; font-size: 13.5px; font-weight: 600; border: 1px solid #cbd5e1; outline: none;  cursor: pointer;"
+                                            
+                                                 >
+                                             <span>Sort: <strong>{{ $currentLabel }}</strong></span>
+                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s ease; {{ $showSortDropdown ? 'transform: rotate(180deg);' : '' }}">
+                                                 <polyline points="6 9 12 15 18 9"/>
+                                             </svg>
+                                         </button>
+
+                                         {{-- Floating card menu — pure Livewire, no Alpine --}}
+                                         @if($showSortDropdown)
+                                         <div class="position-absolute end-0 mt-2 bg-white py-2"
+                                              style="z-index: 9999; min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                                             @foreach($sortOptionsMap as $val => $label)
+                                                 <button type="button"
+                                                         wire:click="setSortBy('{{ $val }}')"
+                                                         class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
+                                                         style="font-size: 14px; color: #1e3050; cursor: pointer; transition: background-color 0.15s ease; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
+                                                         onmouseover="this.style.backgroundColor='#f1f5f9'"
+                                                         onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
+                                                     <span style="{{ $currentSort === $val ? 'font-weight: 700;' : 'font-weight: 400;' }}">{{ $label }}</span>
+                                                     @if($currentSort === $val)
+                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3050" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-left: 8px;">
+                                                             <polyline points="20 6 9 17 4 12"/>
+                                                         </svg>
+                                                     @endif
+                                                 </button>
+                                             @endforeach
+                                         </div>
+                                         @endif
+                                     </div>
                                 </div>
                                 @if (!empty($products))
                                     @foreach ($products as $index => $item)
