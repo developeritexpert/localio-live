@@ -9,76 +9,104 @@ use App\Models\Language;
 use App\Models\TermsTranslation;
 use App\Models\PolicyTranslation;
 use Illuminate\Support\Facades\Session;
-use App\Models\Rule;
+
 class TermAndConditionController extends Controller
 {
-    //
+    public function showLegalPage($slug = 'terms-of-service')
+    {
+        $locale = getCurrentLocale();
+        $lang_code = Language::where('lang_code', $locale)->first();
+
+        if (!$lang_code) {
+            $lang_code = Language::where('lang_code', 'en-us')->first();
+        }
+
+        $titles = [
+            'terms-of-service'      => 'Terms of service',
+            'privacy-policy'        => 'Privacy policy',
+            'cookie-policy'         => 'Cookie policy',
+            'community-guidelines'  => 'Community guidelines',
+            'affiliate-disclosure'  => 'Affiliate disclosure',
+            'copyright-dmca-policy' => 'Copyright & DMCA policy',
+            'legal-notice'          => 'Legal notice',
+        ];
+
+        $documentTitle = $titles[$slug] ?? 'Legal Document';
+
+        $langId = $lang_code ? $lang_code->id : 1;
+
+        $doc = PolicyTranslation::where('key', $slug)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if (!$doc) {
+            if ($slug == 'privacy-policy') {
+                $policies = PolicyTranslation::where('lang_id', $langId)->get();
+                if ($policies->isNotEmpty()) {
+                    $description = $policies->pluck('description')->implode("<br><br>");
+                    $doc = (object)[
+                        'title' => 'Privacy policy',
+                        'description' => $description,
+                    ];
+                }
+            } elseif ($slug == 'terms-of-service') {
+                $terms = TermsTranslation::where('lang_id', $langId)->get();
+                if ($terms->isNotEmpty()) {
+                    $description = $terms->pluck('description')->implode("<br><br>");
+                    $doc = (object)[
+                        'title' => 'Terms of service',
+                        'description' => $description,
+                    ];
+                }
+            }
+        }
+
+        if (!$doc) {
+            $doc = (object)[
+                'title' => $documentTitle,
+                'description' => '<p>Content for ' . e($documentTitle) . ' will be added soon.</p>',
+            ];
+        }
+
+        return view('User.terms_condition.legal_page', [
+            'document'      => $doc,
+            'activeSlug'    => $slug,
+            'documentTitle' => $documentTitle,
+        ]);
+    }
+
     public function privacyPolicy()
     {
-        $lang = Session::get('current_lang');
-
-        $locale = getCurrentLocale(); // Get the current locale (language)
-        $lang_code = Language::where('lang_code', $locale)->first();
-
-        if (!$lang_code) {
-            return redirect()
-                ->back()
-                ->withErrors('Language not found.');
-        }
-        $privacy_policy = PolicyTranslation::where('lang_id', $lang_code->id)->get();
-        $terms = TermsTranslation::where('lang_id', $lang_code->id)->get();
-
-
-        // if ($privacy_policy->isEmpty()) {
-        //     // Handle the case where no data is found
-        //     dd('No records found for the given language');
-        // } else {
-        //     dd($privacy_policy);   // This will display the result if data exists
-        // }
-
-
-        // $siteLanguage = SiteLanguages::where('handle', $lang)->first();
-
-
-        // $policies = Policy::with(['translations' => function ($query) use ($siteLanguage){
-        //                     $query->where('language_id',$siteLanguage->id);
-        //                     }])->where('title','Privacy Policy')->get();
-
-        // $privacyPolicy = Policy::where('title','Privacy Policy')->first();
-        // dd($privacyPolicy);
-
-        // $rules = Rule::with(['translations' => function ($query) use ($siteLanguage){
-        //                 $query->where('language_id', $siteLanguage->id);
-        //                 }])->where('policy_id' ,$privacyPolicy->id)->get();
-
-        return view('User.terms_condition.privacy_policy',compact('privacy_policy','terms'));
+        return $this->showLegalPage('privacy-policy');
     }
+
     public function termsCondtion()
     {
-        $lang = Session::get('current_lang');
-        // dd($lang);
-        // $siteLanguage = SiteLanguages::where('handle', $lang)->first();
+        return $this->showLegalPage('terms-of-service');
+    }
 
-        // $policies = Policy::with(['translations' => function ($query) use (){
-        //                     $query->where('language_id',1);
-        //                     }])->where('title','Terms and Conditions')->get();
+    public function cookiePolicy()
+    {
+        return $this->showLegalPage('cookie-policy');
+    }
 
-        // $terms= Policy::where('title','Terms and Conditions')->first();
+    public function communityGuidelines()
+    {
+        return $this->showLegalPage('community-guidelines');
+    }
 
-        // $rules = Rule::with(['translations' => function ($query) use ($siteLanguage){
-        //                 $query->where('language_id', $siteLanguage->id);
-        //                 }])->where('policy_id' ,$terms->id)->get();
-        $locale = getCurrentLocale(); // Get the current locale (language)
-        $lang_code = Language::where('lang_code', $locale)->first();
+    public function affiliateDisclosure()
+    {
+        return $this->showLegalPage('affiliate-disclosure');
+    }
 
-        if (!$lang_code) {
-            return redirect()
-                ->back()
-                ->withErrors('Language not found.');
-        }
-        $terms = TermsTranslation::where('lang_id', $lang_code->id)->get();
-        $privacy_policy = PolicyTranslation::where('lang_id', $lang_code->id)->get();
+    public function copyrightDmcaPolicy()
+    {
+        return $this->showLegalPage('copyright-dmca-policy');
+    }
 
-        return view('User.terms_condition.terms_condition',compact('terms','privacy_policy'));
+    public function legalNotice()
+    {
+        return $this->showLegalPage('legal-notice');
     }
 }

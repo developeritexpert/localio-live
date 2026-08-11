@@ -2240,7 +2240,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                     {{-- <li><a
                                             href="{{ route('exclusive-business-deals') }}">{{ $footerContents['exclusive_deal'] ?? 'Exclusive Deals' }}</a>
                                     </li> --}}
-                                </ul>
                             </div>
                             <div class="foot-col footer-dropdown">
                                 <h6 class="footer-title">
@@ -2250,19 +2249,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </span>
                                 </h6>
                                 <ul class="foot-col-list">
-                                    <li><a
-                                            href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['who_we_are'] ??
-                                                'About Localio
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ' }}</a>
-                                    </li>
-                                    <li><a
-                                            href="{{ route('privacy-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['privacy_policy'] ??
-                                                'Privacy Policy
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ' }}</a>
-                                    </li>
-                                    <li><a
-                                            href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}</a>
-                                    </li>
+                                    <li><a href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}</a></li>
+                                    <li><a href="{{ route('privacy-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['privacy_policy'] ?? 'Privacy policy' }}</a></li>
+                                    <li><a href="{{ route('cookie-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['cookie_policy'] ?? 'Cookie policy' }}</a></li>
+                                    <li><a href="{{ route('community-guidelines', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['community_guidelines'] ?? 'Community guidelines' }}</a></li>
+                                    <li><a href="{{ route('affiliate-disclosure', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['affiliate_disclosure'] ?? 'Affiliate disclosure' }}</a></li>
+                                    <li><a href="{{ route('copyright-dmca-policy', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['copyright_dmca_policy'] ?? 'Copyright & DMCA policy' }}</a></li>
+                                    <li><a href="{{ route('legal-notice', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['legal_notice'] ?? 'Legal notice' }}</a></li>
                                 </ul>
                             </div>
                             {{-- <div class="foot-col">

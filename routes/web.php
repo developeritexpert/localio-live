@@ -254,6 +254,11 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     Route::get('/admin-dashboard/remove-article-category/{id?}', [ArticleController::class, 'articleCategoryRemove'])->name('article-category-remove');
 
+    // Legal Documents Admin Routes
+    Route::get('/admin-dashboard/legal-documents', [SitePagesController::class, 'legalDocumentsList'])->name('admin.legal_documents');
+    Route::get('/admin-dashboard/legal-documents/edit/{slug}', [SitePagesController::class, 'legalDocumentEdit'])->name('admin.legal_documents.edit');
+    Route::post('/admin-dashboard/legal-documents/update/{slug}', [SitePagesController::class, 'legalDocumentUpdate'])->name('admin.legal_documents.update');
+
     // policies Route
     Route::get('/admin-dashboard/policies', [SitePagesController::class, 'policies'])->name('admin.policies');
     Route::get('admin-dashboard/policy/add/{id?}', [SitePagesController::class, 'policiesAddShow'])->name('policies_add_show');
@@ -509,8 +514,13 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     //TermAndConditionController
-    Route::get('/privacy-policy', [TermAndConditionController::class, 'privacyPolicy'])->name('privacy-policy');
     Route::get('/Terms-of-service', [TermAndConditionController::class, 'termsCondtion'])->name('terms-condition');
+    Route::get('/privacy-policy', [TermAndConditionController::class, 'privacyPolicy'])->name('privacy-policy');
+    Route::get('/cookie-policy', [TermAndConditionController::class, 'cookiePolicy'])->name('cookie-policy');
+    Route::get('/community-guidelines', [TermAndConditionController::class, 'communityGuidelines'])->name('community-guidelines');
+    Route::get('/affiliate-disclosure', [TermAndConditionController::class, 'affiliateDisclosure'])->name('affiliate-disclosure');
+    Route::get('/copyright-dmca-policy', [TermAndConditionController::class, 'copyrightDmcaPolicy'])->name('copyright-dmca-policy');
+    Route::get('/legal-notice', [TermAndConditionController::class, 'legalNotice'])->name('legal-notice');
 
     // SiteMetaPages Controller
     Route::get('/expert-guides', [MetaPagesController::class, 'expertGuide'])->name('expert-guide');
