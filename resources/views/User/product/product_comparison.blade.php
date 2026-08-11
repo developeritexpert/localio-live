@@ -103,25 +103,25 @@
                                                 <div class="inn_h d-flex align-items-center justify-content-center">
                                                     <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()?->name ?? '' }}</h6>
                                                 </div>
-                                                <div class="tp-btm d-flex align-items-center justify-content-center mt-1 rating-new-style" style="gap: 6px;">
+                                                <div class="tp-btm d-flex align-items-center justify-content-center mt-1 rating-group" style="gap: 6px;">
                                                     @php
                                                         $rating = round($business->reviews->avg('rating'), 1);
                                                         $ratingCount = $business->reviews->count();
                                                     @endphp
 
-                                                    <span style="font-size: 13.5px; font-weight: 600; color: #64748b;">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                                    <span style="">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
                                                     <div class="d-flex align-items-center">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($rating >= $i)
-                                                                <i class="fas fa-star text-warning" style="font-size: 13px; margin-right: 2px;"></i>
+                                                                <i class="r-star fas fa-star text-warning" style=""></i>
                                                             @elseif ($rating >= $i - 0.5)
-                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px; margin-right: 2px;"></i>
+                                                                <i class="r-star fas fa-star-half-alt text-warning" style=""></i>
                                                             @else
-                                                                <i class="far fa-star text-warning" style="font-size: 13px; margin-right: 2px;"></i>
+                                                                <i class="r-star far fa-star text-warning" style=";"></i>
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="font-size: 13.5px; color: #64748b; font-weight: 500;">({{ $ratingCount }})</span>
+                                                    <span style="">({{ $ratingCount }})</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -202,19 +202,22 @@
                                     </a>
                                 </div>
                             @endforeach
+                            @if (count($businesses) < 2)
+                                <div class="versus-box" style="visibility: hidden;">
+                                    <p class="d-flex m-0">vs</p>
+                                </div>
+                                <div class="pdc_choice text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 100%;">
+                                    <a href="{{route('top-rated-product')}}" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px;">
+                                        <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
+                                            <img src="{{ asset('front/img/pls-add.png') }}" style="width: 48px; height: 48px;">
+                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;">Add Business</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
-                @if (count($businesses) < 2)
-                <div class="col-lg-3">
-                    <a href="{{route('top-rated-product')}}" class="pdc_ryt">
-                        <div class="ad_lnk">
-                            <img src="{{ asset('front/img/pls-add.png') }}">
-                            Add Business
-                        </div>
-                    </a>
-                </div>
-                @endif
             </div>
 
 
@@ -351,7 +354,7 @@
                                         <img src="{{ asset($business->icon_id) }}" alt="No Image available">
                                     </div>
                                     <div class="sl_h">
-                                        <div class="inn_h d-flex align-items-center rating-new-style">
+                                        <div class="inn_h d-flex align-items-center ">
                                             <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
 
                                             <div class="d-none">
@@ -360,24 +363,25 @@
                                         </div>
 
                                         {{-- Your original rating HTML with dynamic values --}}
-                                        <div class="tp-btm d-flex rating-new-style">
-                                            <div class="inn_ul d-flex align-items-center">
-                                                <li>{{ $rating }}</li>
-                                                <li>
+                                        <div class="tp-btm d-flex rating-group">
+                                            <!-- <div class="rate_box_num"> -->
+                                                <span style="font-size:12px;">{{ $rating }}</span>
+                                            <!-- </div> -->
+
+                                                <div>
                                                     @for ($i = 1; $i <= 5; $i++)
                                                         @if ($rating >= $i)
-                                                            <i class="fas fa-star text-warning"></i>
+                                                            <i class="r-star fas fa-star text-warning"></i>
                                                         @elseif ($rating >= $i - 0.5)
-                                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                                            <i class="r-star fas fa-star-half-alt text-warning"></i>
                                                         @else
-                                                            <i class="far fa-star text-warning"></i>
+                                                            <i class="r-star far fa-star text-warning"></i>
                                                         @endif
                                                     @endfor
-                                                </li>
                                             </div>
-                                            <div class="rate_box">
+                                            <span class="">
                                                 ({{ $ratingCount }})
-                                            </div>
+                                            </span>
                                         </div>
 
                                         <div class="sftwre-alt-sftwre-alt-btn mt-2">

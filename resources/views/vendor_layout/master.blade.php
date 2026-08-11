@@ -385,6 +385,7 @@ $favicon = \App\Models\HeaderContent::where([
         }
     </script>
     @livewireScripts
+    @include('partials.prevent_page_expired')
 </body>
 
 </html>

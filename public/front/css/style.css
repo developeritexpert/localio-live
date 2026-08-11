@@ -9921,9 +9921,9 @@ body .product_sec li.breadcrumb-item.active {
     background: #2cc464 !important;
 }
 
-.top-product-card>div:last-child a:last-child:hover {
+/* .top-product-card>div:last-child a:last-child:hover {
     background-color: #174889 !important;
-}
+} */
 
 .crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover i {
     color: #fff !important;
@@ -10149,7 +10149,7 @@ header .notfictn_lnk img {
 }
 
 .banner_sec.home_bnr_sec {
-    padding: 230px 0 120px;
+    padding: 170px 0 90px;
 }
 
 .center-card-pack .top-rate-innr {
@@ -10202,7 +10202,7 @@ h5.card-title.mb-3 {
 
 .inn_ul .rating-stars {
     display: flex;
-    gap: 2px;
+    /* gap: 2px;cate */
 }
 
 .new-white-bg {
@@ -10244,7 +10244,7 @@ h5.card-title.mb-3 {
 }
 
 .fa-flag:before {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .review-actions-bottom-right a:hover {
@@ -10328,4 +10328,185 @@ section.banner_sec.help-cntr-bnr.inr-bnr.dark {
 
 section.most-populr-sec.ms_dv.light.p_120 {
     margin-top: 125px;
+}
+
+
+/* ====style.css updated by-Kashish(11-aug-26)===== */
+.best-value-inline {
+    padding: 3px 10px 4px 10px !important;
+}
+
+.best-value-inline span {
+    text-transform: capitalize !important;
+}
+
+.best-value-inline i.far.fa-star.text-warning {
+    font-size: 8px !important;
+    margin-right: 0;
+    color: #06498b !important;
+}
+
+.rating-group {
+    color: #333 !important;
+    line-height: 1 !important;
+    margin-top: 6px !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    gap: 3px !important;
+}
+
+.rating-group .rate_box_num {
+    padding-top: 1px;
+}
+
+.rating-group div {
+    /* margin-bottom: 2px; */
+    font-size: 9px !important;
+}
+
+.blue-heart {
+    background: #174889;
+    border-radius: 50%;
+    padding: 4px 0px 2px 0px;
+    color: #fff;
+    transition: transform 0.2s linear,
+        background 0.2s linear;
+}
+
+.blue-heart:hover {
+    background: #ff5722;
+}
+
+.svg-share {
+    display: flex;
+    justify-content: center;
+}
+
+.svg-share svg {
+    width: 80%;
+    height: 80%;
+}
+
+.review-time {
+    font-size: 12px !important;
+    color: #777;
+    font-weight: 500;
+}
+
+.remove-all {
+    max-width: 920px;
+    margin-left: auto;
+}
+
+@media (min-width: 1599px) {
+    .remove-all {
+        max-width: 1125px;
+    }
+}
+
+@media (max-width: 1399px) {
+    .remove-all {
+        max-width: 790px;
+    }
+}
+
+@media (max-width: 1199px) {
+    .remove-all {
+        max-width: 676px;
+    }
+}
+
+/* =====sign up page=== */
+.form-floating>#modalCompanySize~label {
+    top: 50% !important;
+    left: 0 !important;
+    transform: translateY(-50%) !important;
+    font-size: 1rem !important;
+    opacity: 1 !important;
+    height: auto !important;
+    padding: 0 0.75rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.form-floating>#modalCompanySize:valid~label {
+    top: 0 !important;
+    transform: scale(0.85) translateY(-50%) translateX(0.15rem) !important;
+    background: #fff;
+    opacity: 0.65 !important;
+}
+
+#modalCompanySize {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
+}
+
+#modalCompanySize:focus {
+    border-color: var(--bs-border-color) !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-control-plaintext~label,
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label {
+    transform: scale(0.85) translateY(-1.5rem) translateX(0.15rem);
+    color: #80868b;
+    font-size: 11px !important;
+}
+
+.form-floating>.form-control:not(:placeholder-shown),
+.form-floating>.form-select,
+.form-floating>.form-control-plaintext:focus,
+.form-floating>.form-control-plaintext:not(:placeholder-shown),
+.form-floating>.form-control:focus,
+.form-floating>.form-control:not(:placeholder-shown) {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+}
+
+.form-floating>label {
+    position: absolute;
+    color: #80868b;
+    font-size: 16px;
+    font-weight: 400;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+    pointer-events: none;
+    padding: 13px 15px;
+}
+
+.form-floating>.form-control,
+.form-floating>.form-control-plaintext,
+.form-floating>.form-select {
+    height: 50px !important;
+    min-height: 50px !important;
+}
+
+.portf_sec .succes_content .top-pro-btn .cta:hover {
+    background-color: #e64a19 !important;
+    border-color: #ff5722;
+    color: #fff;
+    cursor: pointer;
+}
+
+.card-compare-m span .fa-star.text-warning {
+    font-size: 10px !important;
+    margin-right: 0;
+    color: #06498b !important;
+}
+
+
+i.r-star {
+    font-size: 10px !important;
+}
+
+.inner_box_silder.top-rate-innr.top-rate-innr_2.h-100.d-flex.flex-column.justify-content-between {
+    box-shadow: 0px 34px 74px 0px #0023470f !important;
+    background-color: #f7f9fb !important;
+}
+
+.inner_box_silder.top-rate-innr.top-rate-innr_2.h-100.d-flex.flex-column.justify-content-between:hover {
+    box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
 }

@@ -1,6 +1,9 @@
 @extends('user_layout.master')
-
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('front/css/product-detail-components.css') }}">
+@endpush
 @section('content')
+
 @php
     $lang_id = getCurrentLanguageID();
     $bTranslation = $business->translations->first();
@@ -25,7 +28,7 @@
 @endphp
 
 <!-- Upper Header Section -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050;  border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="margin-top: 100px; background-color: #f7f9fb; color: #1e3050;  border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" >
@@ -94,287 +97,347 @@
     </div>
 </section>
 
-<!-- Content & Right Sidebar Section -->
-<section class="all_faqs_sec py-5 common_detail_sec" style="background-color: #ffffff !important;">
+<!-- Content & Right Sidebar Section (matching product_detail.blade.php structure) -->
+<section class="revie_img_sec">
     <div class="container">
-        <div class="row g-4">
-            <!-- Left Side: FAQs Title 1 & Description 1, Title 2 & Description 2, and FAQs Accordion -->
-            <div class="col-lg-8 col-12">
-                <!-- Section 1: Title 1 & Description 1 -->
-                @if($faqTitle1)
-                    <div class="mb-4">
-                        <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                            {{ $faqTitle1 }}
-                        </h2>
-                        @if($faqDesc1)
-                            <div class="content_box mb-4" style="font-size: 15px; color: #4a5568; line-height: 1.6;">
-                                {!! $faqDesc1 !!}
+        <div class="image_revie_inr">
+
+            <!-- Left Side: FAQs Content & Accordion -->
+            <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
+                <div class="row sld_rw">
+                    <div class="col-lg-12">
+                        <div class="is-asana-lft">
+
+                            <!-- Section 1: Title 1 & Description 1 -->
+                            @if($faqTitle1)
+                                <h2>{{ $faqTitle1 }}</h2>
+                                @if($faqDesc1)
+                                    <div class="is_text mb-5">
+                                        {!! $faqDesc1 !!}
+                                    </div>
+                                @endif
+                            @endif
+
+                            <!-- Section 2: Title 2 & Description 2 -->
+                            @if($faqTitle2 || $faqDesc2)
+                                @if($faqTitle2)
+                                    <h2>{{ $faqTitle2 }}</h2>
+                                @endif
+                                @if($faqDesc2)
+                                    <div class="is_text ">
+                                        {!! $faqDesc2 !!}
+                                    </div>
+                                @endif
+                            @endif
+
+                        </div>
+                    </div>
+
+                    <!-- FAQs Accordion (exact structure from product_detail) -->
+                    <div class="col-lg-12">
+                        <div class="faq-accor" style="width:100%;">
+                            <div class="accordion" id="businessFaqAccordion">
+                                @forelse ($business->faqs as $index => $faq)
+                                    @php $translation = $faq->translations->first(); @endphp
+                                    @if ($translation)
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingFaq{{ $index }}">
+                                                <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
+                                                        type="button" data-bs-toggle="collapse"
+                                                        data-bs-target="#collapseFaq{{ $index }}"
+                                                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                                        aria-controls="collapseFaq{{ $index }}"
+                                                        style="font-weight: 600;color: #002347;font-size: 16px;padding: 16px 20px;"
+                                                        >
+                                                    <span>{{ $translation->question }}</span>
+                                                </button>
+                                            </h2>
+                                            <div id="collapseFaq{{ $index }}"
+                                                 class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                 aria-labelledby="headingFaq{{ $index }}"
+                                                 data-bs-parent="#businessFaqAccordion">
+                                                <div class="accordion-body"
+                                                style="font-size: 15px; color: #444; line-height: 1.6; padding: 20px;"
+                                                >
+                                                    {{ $translation->answer }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @empty
+                                    <p>No FAQs available for {{ $bName }} at this time.</p>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- End Left Side -->
+
+            <!-- Right Side: Sidebar (exact thre_revi_rgt structure from product_detail) -->
+            <div class="thre_revi_rgt">
+                <div class="main_feture">
+                    <div class="fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
+
+                        <!-- 1. USPs -->
+                        @if($business->usps && $business->usps->count() > 0)
+                            <div class="main_feature_lg">
+                                <div class="feture_box lft_check_box size15">
+                                    <ul class="list-unstyled">
+                                        @foreach($business->usps as $usp)
+                                            @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
+                                            @if(!empty($uText))
+                                                <li class="d-flex flex-row align-items-center size15">
+                                                    <div class="grn_chk">
+                                                        <img src="{{ asset('front/img/green-tick.svg') }}">
+                                                    </div>
+                                                    <p class="m-0">{{ $uText }}</p>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ul>
+                                </div>
                             </div>
                         @endif
-                    </div>
-                @endif
 
-                <!-- Section 2: Title 2 & Description 2 -->
-                @if($faqTitle2 || $faqDesc2)
-                    <div class="mb-4">
-                        @if($faqTitle2)
-                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                                {{ $faqTitle2 }}
-                            </h2>
-                        @endif
-                        @if($faqDesc2)
-                            <div class="content_box mb-4" style="font-size: 15px; color: #4a5568; line-height: 1.6;">
-                                {!! $faqDesc2 !!}
+                        <!-- 2. Review Breakdown -->
+                        <div class="main_feature_lg">
+                            <div class="feture_box review-breakdown-card">
+
+                                {{-- Header & Overall Rating --}}
+                                <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
+                                    <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
+                                            {{ number_format($averageRating, 1) }}
+                                        </span>
+                                        <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= floor($averageRating))
+                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                @elseif ($i - 0.5 <= $averageRating)
+                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span style="color: #666; font-size: 12px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                    </div>
+                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
+                                        View all reviews
+                                    </a>
+                                </div>
+
+                                <h2 class="breakdown-title" style="margin-bottom: 15px;">
+                                    Review breakdown
+                                </h2>
+
+                                {{-- Breakdown --}}
+                                <div class="review-progress-list">
+                                    @if(isset($criteria) && count($criteria) > 0)
+                                        @foreach ($criteria as $criterion)
+                                            <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                    <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
+                                                    <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+
+                                <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                    <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
+                                </div>
+
+                                <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
+                                    <div style="display: flex; gap: 8px;">
+                                        @auth
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                <i class="fas fa-thumbs-up"></i>
+                                            </a>
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                <i class="fas fa-thumbs-down"></i>
+                                            </a>
+                                        @else
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                <i class="fas fa-thumbs-up"></i>
+                                            </a>
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                <i class="fas fa-thumbs-down"></i>
+                                            </a>
+                                        @endauth
+                                    </div>
+                                </div>
+
                             </div>
-                        @endif
-                    </div>
-                @endif
+                        </div>
 
-                <!-- FAQs Accordion -->
-                <div class="faq-accor mt-4" style="width:100%;">
-                    <div class="accordion" id="businessFaqAccordion">
-                        @forelse ($business->faqs as $index => $faq)
-                            @php $translation = $faq->translations->first(); @endphp
-                            @if ($translation)
-                                <div class="accordion-item mb-3 border rounded-3 bg-white" style="border-radius: 8px !important; overflow: hidden; border: 1px solid #e2e8f0 !important;">
-                                    <h2 class="accordion-header" id="headingFaq{{ $index }}">
-                                        <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapseFaq{{ $index }}"
-                                                aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                                aria-controls="collapseFaq{{ $index }}"
-                                                style="font-weight: 600; color: #002347; font-size: 16px; padding: 16px 20px;">
-                                            <span>{{ $translation->question }}</span>
-                                        </button>
-                                    </h2>
-                                    <div id="collapseFaq{{ $index }}"
-                                         class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
-                                         aria-labelledby="headingFaq{{ $index }}"
-                                         data-bs-parent="#businessFaqAccordion">
-                                        <div class="accordion-body" style="font-size: 15px; color: #444; line-height: 1.6; padding: 20px;">
-                                            {{ $translation->answer }}
+                        <!-- 3. Starting Price & Free Trial -->
+                        @if(!is_null($startingPrice))
+                            <div class="innr_price_trail">
+                                <div class="main_feature_sm">
+                                    <div class="feture_box str_prc_box">
+                                        <h6 class="starting-price-title">Starting price</h6>
+                                        <h2 class="starting-price-value">{{ $currency }}{{ $startingPrice }}</h2>
+                                        <p class="starting-price-text">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
+                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link">
+                                            View pricing
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="main_feature_sm">
+                                    <div class="fre_trail feture_box size22">
+                                        <div class="grn_check_big">
+                                            <img src="{{ asset('front/img/new-grn-chk.svg') }}">
+                                        </div>
+                                        <h6 class="blue-text big-bld">Free trial available</h6>
+                                        <div class="accor-btn">
+                                            <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="cta cta_white blue_t_org_btn" style="text-transform:none !important;">Claim now</a>
                                         </div>
                                     </div>
                                 </div>
-                            @endif
-                        @empty
-                            <div class="p-4 text-center text-muted bg-white rounded border">
-                                No FAQs available for {{ $bName }} at this time.
                             </div>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
+                        @endif
 
-            <!-- Right Side: Sidebar Widgets matching Product Details Page -->
-            <div class="col-lg-4 col-12 d-flex flex-column gap-4">
-                <!-- 1. USPs List Widget -->
-                @if($business->usps && $business->usps->count() > 0)
-                    <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                        <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px; color: #2d3748;">
-                            @foreach($business->usps as $usp)
-                                @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
-                                @if(!empty($uText))
-                                    <li class="d-flex align-items-center gap-2" style="font-size: 16px; color: #000; font-weight:500;">
-                                        <i class="fas fa-check text-success" style="font-size: 16px; "></i>
-                                        <span>{{ $uText }}</span>
-                                    </li>
-                                @endif
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                        <!-- 4. Highlighted Reviews -->
+                        @if(isset($topReviews) && $topReviews->count() > 0)
+                            <div class="main_feature_lg">
+                                <div class="feture_box review-breakdown-box">
 
-                <!-- 2. Rating Breakdown Widget -->
-                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                    <div class="d-flex justify-content-between align-items-start mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
-                        <div>
-                            <div style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                {{ number_format($averageRating, 1) }}
-                            </div>
-                            <div style="margin-top: 8px; margin-bottom: 4px; display: flex; gap: 4px;">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    @if ($i <= floor($averageRating))
-                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                    @elseif ($i - 0.5 <= $averageRating)
-                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                    @else
-                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
-                                    @endif
-                                @endfor
-                            </div>
-                            <div style="color: #718096; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</div>
-                        </div>
-                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                            View all reviews
-                        </a>
-                    </div>
-
-                    @if(isset($criteria) && count($criteria) > 0)
-                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
-                        <div class="mb-3">
-                            @foreach ($criteria as $criterion)
-                                <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
-                                    <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                        <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #444; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                    <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
+                                        <h2 class="size22 big-bld m-0">Highlighted reviews</h2>
+                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link">
+                                            View all reviews
+                                        </a>
                                     </div>
+
+                                    @foreach($topReviews->take(2) as $rev)
+                                        @php
+                                            $revTrans = $rev->translations->first();
+                                            $u = $rev->user;
+                                            if ($u && $u->user_type === 'admin') {
+                                                $displayName = $rev->public_name ?? 'Public';
+                                            } elseif ($u) {
+                                                $displayName = $u->displayName();
+                                            } else {
+                                                $displayName = 'Anonymous';
+                                            }
+                                        @endphp
+                                        <div class="sidebar-review-card" style="margin-bottom: 20px;">
+                                            <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                                <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+                                                    @if($u && $u->profile_image && $u->profile_image !== 'front/img/default.png')
+                                                        <img src="{{ asset($u->profile_image) }}" class="rounded-circle" width="45" height="45">
+                                                    @else
+                                                        <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                            <span style="color: white; font-weight: bold; font-size: 20px;">{{ strtoupper(substr($u->first_name ?? 'A', 0, 1)) }}</span>
+                                                        </div>
+                                                    @endif
+                                                    <div>
+                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">{{ $displayName }}</h6>
+                                                        @if($u && $u->job_title)
+                                                            <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $u->job_title }}</div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div style="text-align: right; flex-shrink: 0;">
+                                                    <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
+                                                </div>
+                                            </div>
+                                            <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: #1e3050;">
+                                                {{ $revTrans->title ?? 'Review' }}
+                                            </h5>
+                                            <div class="rating-stars-wrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                                <div class="rating-stars">
+                                                    @for($s=1; $s<=5; $s++)
+                                                        @if($s<=floor($rev->rating))
+                                                            <i class="fas fa-star text-warning" style="font-size: 12px !important;"></i>
+                                                        @elseif($s-0.5<=$rev->rating)
+                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 12px !important;"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning" style="font-size: 12px !important;"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                            </div>
+                                            @if($revTrans && !empty($revTrans->description))
+                                                <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($revTrans->description), 90) }}</p>
+                                            @endif
+                                        </div>
+                                    @endforeach
+
                                 </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
-                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                        <strong style="color: #002347; font-size: 14px;">{{ $recommendPercent }}%</strong>
-                    </div>
-
-                    <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
-                        <div style="display: flex; gap: 8px;">
-                            @auth
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
-                                </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
-                                </a>
-                            @else
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
-                                </a>
-                                <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                    <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
-                                </a>
-                            @endauth
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Pricing & Free Trial Card -->
-                @if(!is_null($startingPrice))
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
-                                <div style="font-size: 16px; color: #002347; font-weight: 600;">Starting price</div>
-                                <div class="my-2" style="font-size: 26px; font-weight: 700; color: #002347;">{{ $currency }}{{ $startingPrice }}</div>
-                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section6" style="font-size: 15px; color: #002347; font-weight: 600; text-decoration: none;" class="underline">View pricing</a>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 bg-white rounded-3 border text-center h-100 d-flex flex-column justify-content-between" style="border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
-                                <div class="mx-auto my-1" style="width: 32px; height: 32px; border-radius: 50%; background: #06498b; color: #fff; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-check" style="font-size: 14px;"></i>
+                        @endif
+
+                        <!-- 5. Recent Discussions -->
+                        <div class="main_feature_lg">
+                            <div class="feture_box review-breakdown-box">
+                                <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                                    <h2 class="size22 big-bld m-0">Recent discussions</h2>
+                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="view-review-link">
+                                        View all discussions
+                                    </a>
                                 </div>
-                                <div style="font-size: 12.5px; font-weight: 700; color: #1e3050;">Free Trial Available</div>
-                                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn btn-sm text-white w-100 mt-1" style="background-color: #174889; border-radius: 20px; font-weight: 600; font-size: 12px; transition:unset !important" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">Claim Now</a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
 
-                <!-- 4. Highlighted Reviews Widget -->
-                @if(isset($topReviews) && $topReviews->count() > 0)
-                    <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
-                            <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 0;">Highlighted reviews</h6>
-                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;" class="underline">View all reviews</a>
-                        </div>
-                        <div class="d-flex flex-column gap-3">
-                            @foreach($topReviews as $rev)
-                                @php 
-                                    $revTrans = $rev->translations->first(); 
-                                    $u = $rev->user;
-                                    if ($u && $u->user_type === 'admin') {
-                                        $displayName = $rev->public_name ?? 'Public';
-                                        $initial = strtoupper(substr($displayName, 0, 1));
-                                    } elseif ($u) {
-                                        $displayName = $u->displayName();
-                                        $initial = strtoupper(substr($u->first_name ?? $u->name ?? 'A', 0, 1));
-                                    } else {
-                                        $displayName = 'Anonymous';
-                                        $initial = 'A';
-                                    }
-                                @endphp
-                                <div class="pb-3" style="border-bottom: 1px solid #f1f5f9;">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div class="d-flex align-items-start gap-2">
-                                            <div style="width: 38px; height: 38px; border-radius: 50%; background: #002347; color: #fff; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                {{ $initial }}
+                                <div class="sidebar-review-card" style="margin-bottom: 20px;">
+                                    <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                        <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
                                             </div>
                                             <div>
-                                                <div style="font-size: 14px; font-weight: 700; color: #002347; line-height: 1.2;">{{ $displayName }}</div>
-                                                @if(!empty($u->job_title))
-                                                    <div style="font-size: 12px; color: #718096; line-height: 1.3;">{{ $u->job_title }}</div>
-                                                @endif
-                                                @if(!empty($u->industry))
-                                                    <div style="font-size: 12px; color: #718096; line-height: 1.3;">{{ $u->industry }}</div>
-                                                @endif
-                                                @if(!empty($u->company_size))
-                                                    @php $compSizeText = static_text('company_size_' . $u->company_size); @endphp
-                                                    <div style="font-size: 12px; color: #718096; line-height: 1.3;">{{ (!empty($compSizeText) && $compSizeText !== 'company_size_' . $u->company_size) ? $compSizeText : $u->company_size }}</div>
-                                                @endif
+                                                <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">Marc L.</h6>
+                                                <div style="font-size: 12px; color: #777; margin-top: 2px;">Product Manager • Small Business (1-50 emp.)</div>
                                             </div>
                                         </div>
-                                        <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
+                                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                                            <small class="text-muted" style="font-size: 11px; white-space: nowrap;">2 hours ago</small>
+                                        </div>
                                     </div>
-                                    @if($revTrans && !empty($revTrans->title))
-                                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 10px 0 6px 0;">{{ $revTrans->title }}</h6>
-                                    @endif
-                                    <div class="d-flex gap-1 mb-2">
-                                        @for($s=1; $s<=5; $s++)
-                                            <i class="fas fa-star {{ $s <= $rev->rating ? 'text-warning' : 'text-muted' }}" style="font-size: 12px;"></i>
-                                        @endfor
-                                    </div>
-                                    @if($revTrans && !empty($revTrans->description))
-                                        <p style="font-size: 13px; color: #4a5568; margin: 0; line-height: 1.4;">{{ Str::limit(strip_tags($revTrans->description), 120) }}</p>
-                                    @endif
+                                    <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                        Is there a free tier for API access or is it trial only?
+                                    </h5>
+                                    <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
+                                        We are looking to integrate this into our workflow and want to test the latency over a few weeks...
+                                    </p>
                                 </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
 
-                <!-- 5. Recent Discussions Widget -->
-                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
-                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin: 0;">Recent discussions</h6>
-                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#sectionDiscussions" style="color: #06498b; font-weight: 600; font-size: 13px; text-decoration: none;" class="underline">View all discussions</a>
-                    </div>
-                    <div class="d-flex flex-column gap-3">
-                        <div class="pb-3" style="border-bottom: 1px solid #f1f5f9;">
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #002347; color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center;">M</div>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 600; color: #1e3050;">Marc L.</div>
-                                        <div style="font-size: 11px; color: #718096;">Product Manager • Small Business (1-50 emp.)</div>
+                                <div class="sidebar-review-card" style="margin-bottom: 0;">
+                                    <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                        <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <span style="color: white; font-weight: bold; font-size: 20px;">S</span>
+                                            </div>
+                                            <div>
+                                                <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">Sarah J.</h6>
+                                                <div style="font-size: 12px; color: #777; margin-top: 2px;">CTO • Mid-Market (51-1000 emp.)</div>
+                                            </div>
+                                        </div>
+                                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
+                                            <small class="text-muted" style="font-size: 11px; white-space: nowrap;">1 day ago</small>
+                                        </div>
                                     </div>
+                                    <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                        How does the performance compare to alternatives in large datasets?
+                                    </h5>
+                                    <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
+                                        We noticed some latency spikes during queries with more than 10k items. Anyone else facing this?
+                                    </p>
                                 </div>
-                                <span style="font-size: 11px; color: #a0aec0;">2 hours ago</span>
                             </div>
-                            <h6 style="font-size: 13px; font-weight: 600; color: #1e3050; margin: 8px 0 4px 0;">Is there a free tier for API access or is it trial only?</h6>
-                            <p style="font-size: 12.5px; color: #4a5568; margin: 0; line-height: 1.4;">We are looking to integrate this into our workflow and want to test the latency over a few weeks...</p>
                         </div>
 
-                        <div>
-                            <div class="d-flex justify-content-between align-items-start mb-1">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div style="width: 32px; height: 32px; border-radius: 50%; background: #002347; color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center;">S</div>
-                                    <div>
-                                        <div style="font-size: 13px; font-weight: 600; color: #1e3050;">Sarah J.</div>
-                                        <div style="font-size: 11px; color: #718096;">CTO • Mid-Market (51-1000 emp.)</div>
-                                    </div>
-                                </div>
-                                <span style="font-size: 11px; color: #a0aec0;">1 day ago</span>
-                            </div>
-                            <h6 style="font-size: 13px; font-weight: 600; color: #1e3050; margin: 8px 0 4px 0;">How does the performance compare to alternatives in large datasets?</h6>
-                            <p style="font-size: 12.5px; color: #4a5568; margin: 0; line-height: 1.4;">We noticed some latency spikes during queries with more than 10k items. Anyone else facing this?</p>
-                        </div>
                     </div>
                 </div>
             </div>
+            <!-- End Right Side -->
+
         </div>
     </div>
 </section>

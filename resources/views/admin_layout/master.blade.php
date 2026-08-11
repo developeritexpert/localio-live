@@ -282,13 +282,8 @@
                                             </a>
                                         </li> --}}
                                         <li class="nk-menu-item">
-                                            <a href="{{ route('admin.policies') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Privacy Policy</span>
-                                            </a>
-                                        </li>
-                                        <li class="nk-menu-item">
-                                            <a href="{{ route('terms') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Terms and Conditions</span>
+                                            <a href="{{ route('admin.legal_documents') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Legal Documents</span>
                                             </a>
                                         </li>
 
@@ -996,6 +991,7 @@
         };
     </script>
     @livewireScripts
+    @include('partials.prevent_page_expired')
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>

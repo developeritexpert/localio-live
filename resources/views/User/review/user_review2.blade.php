@@ -150,7 +150,7 @@
             <!-- Right Column: Rating Widget, Pros, and Cons -->
             <div class="col-lg-4 col-12 d-flex flex-column gap-4">
                 <!-- Compact Rating Card -->
-                <div class="feture_box review-breakdown-card bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
+                <div class="boxshadow_border feture_box review-breakdown-card bg-white p-4" style="border-radius: 16px !important;">
                     <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                         <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                             <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
@@ -172,12 +172,12 @@
                             <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
-                        <a href="#reviews-section" class="view-review-link underline" style="color: #002347; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
+                        <a href="#reviews-section" class="card-h-link view-review-link underline" style=" padding-top: 5px;">
                             View all reviews
                         </a>
                     </div>
 
-                    <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 700; color: #002347;">
+                    <h2 class="breakdown-title card-h-title" style="margin-bottom: 15px !important;">
                         Review breakdown
                     </h2>
 
@@ -185,10 +185,10 @@
                         <div class="review-progress-list mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                    <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                     </div>
                                 </div>
                             @endforeach
@@ -229,10 +229,10 @@
                         $topReviews = $business->reviews;
                     }
                 @endphp
-                <div class="bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;">
+                <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important;">
                     <div class="d-flex justify-content-between align-items-center pb-3 mb-4" style="border-bottom: 1px solid #f0f0f0;">
-                        <h5 class="m-0" style="font-size: 14px; font-weight: 600; color: #002347;">Highlighted reviews</h5>
-                        <a href="#reviews-section" class="view-review-link underline" style="color: #002347; font-weight: 600; font-size: 13.5px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                        <h5 class="m-0 card-h-title" >Highlighted reviews</h5>
+                        <a href="#reviews-section" class="card-h-link view-review-link underline" style="">
                             View all reviews
                         </a>
                     </div>
@@ -260,7 +260,7 @@
                                         @endif
 
                                         <div>
-                                            <h6 style="margin: 0; font-size: 14.5px; font-weight: 700; color: #1e3050;">
+                                            <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
                                                 @if ($review->user && $review->user->user_type === 'admin')
                                                     {{ $review->public_name ?? 'Public' }}
                                                 @else
@@ -268,20 +268,20 @@
                                                 @endif
                                             </h6>
                                             @if($review->user && $review->user->job_title)
-                                                <div style="font-size: 12px; color: #64748b; margin-top: 1px; font-weight: 500;">{{ $review->user->job_title }}</div>
+                                                <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
                                             @endif
                                         </div>
                                     </div>
 
                                     <div style="text-align: right; flex-shrink: 0;">
                                         @if($review->created_at)
-                                            <span style="font-size: 12px; color: #94a3b8; white-space: nowrap; font-weight: 400;">{{ $review->created_at->diffForHumans() }}</span>
+                                            <span class="text-muted" style="font-size: 12px; white-space: nowrap; font-weight: 400;">{{ $review->created_at->diffForHumans() }}</span>
                                         @endif
                                     </div>
                                 </div>
 
                                 @if($review->translations && $review->translations->first() && $review->translations->first()->title)
-                                    <h5 style="margin-top: 10px; margin-bottom: 6px; font-size: 15px; font-weight: 700; color: #1e3050;">
+                                    <h5 style="margin-top: 10px; margin-bottom: 8px; font-size: 15px; font-weight: 600; color: #1e3050;">
                                         {{ $review->translations->first()->title }}
                                     </h5>
                                 @endif
@@ -299,7 +299,7 @@
                                 </div>
 
                                 @if($review->translations && $review->translations->first() && $review->translations->first()->description)
-                                    <p style="font-size: 13.5px; line-height: 1.5; color: #475569; margin-bottom: 0;">
+                                    <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                         {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description), 110) }}
                                     </p>
                                 @endif
@@ -516,12 +516,12 @@
                                     @endif
                                 @endfor
                             </div>
-                            <span style="font-size: 14px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                            <span style="font-size: 12px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
                         <!-- Criteria Breakdown -->
                         @if(isset($criteria) && count($criteria) > 0)
-                            <h5 style="font-size: 14px; font-weight: 600; color: #1e3050; margin-top: 20px; margin-bottom: 14px;">Review breakdown</h5>
+                            <h5 class="card-h-title" style="padding-top: 16px; border-top: 1px solid #f1f5f9; font-size: 14px; font-weight: 600; color: #002347; margin-top: 18px; margin-bottom: 14px; line-height: 1 !important;">Review breakdown</h5>
                             <div class="mb-3">
                                 @foreach ($criteria as $criterion)
                                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -530,7 +530,7 @@
                                             <div class="progress rounded-pill flex-grow-1 mx-2" style="height: 8px; background-color: #e2e8f0;">
                                                 <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #2CC464;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                             </div>
-                                            <span style="font-size: 12px; font-weight: 600; color: #334155; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}/5</span>
+                                            <span style="font-size: 12px; font-weight: 600; color: #334155; width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -548,7 +548,7 @@
                     <!-- Filter by Rating Section -->
                     <div class="filt_box p-4 bg-white rounded-3 border" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                            <span style="font-size: 15px; font-weight: 700; color: #1e3050;">Filter by rating</span>
+                            <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
                             <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear filter</span>
                         </div>
 

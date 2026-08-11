@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         :options="$queryOptions"
                         :value="old('query_type')"
                         placeholder="Select a topic"
-                        :alwaysActive="true"
+                        :alwaysActive="false"
                     />
                 </div>
 
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         label="Full Name"
                         :value="old('name')"
                         placeholder="Enter your full name"
-                        :alwaysActive="true"
+                        :alwaysActive="false"
                     />
                 </div>
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         label="Email Address"
                         :value="old('email')"
                         placeholder="Enter your email"
-                        :alwaysActive="true"
+                        :alwaysActive="false"
                     />
                 </div>
 
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         label="Your Message"
                         :value="old('message')"
                         rows="8"
-                        :alwaysActive="true"
+                        :alwaysActive="false"
                     />
 
                     {{-- <label for="upload_input" class="upload-icon">
