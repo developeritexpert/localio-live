@@ -2234,6 +2234,9 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="{{ route('write-review', ['locale' => session('lang_code', 'en-us')]) }}">Write review</a>
+                                    </li>
                                     {{-- <li><a
                                             href="{{ route('exclusive-business-deals') }}">{{ $footerContents['exclusive_deal'] ?? 'Exclusive Deals' }}</a>
                                     </li> --}}
@@ -2241,7 +2244,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                             <div class="foot-col footer-dropdown">
                                 <h6 class="footer-title">
-                                    {{ $footerContents['company'] ?? 'Company' }}
+                                    {{ $footerContents['company'] ?? 'Legal' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
@@ -2249,7 +2252,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <ul class="foot-col-list">
                                     <li><a
                                             href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['who_we_are'] ??
-                                                'Who We Are
+                                                'About Localio
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}</a>
                                     </li>
                                     <li><a
