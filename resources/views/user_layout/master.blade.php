@@ -2420,7 +2420,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p>{{ $section->content ?? 'Default content paragraph.' }}</p>
                     @endforeach
                 </div>
-                <div class="modal-disclaimer">
+                <div class="modal-disclaimer mt-0">
                     <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
                 </div>
                 <div class="mt-3">
