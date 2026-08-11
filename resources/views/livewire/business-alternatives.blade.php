@@ -192,8 +192,8 @@ section.top-automotive-sec.top_rate_pg.light {
                                 // Reviews URL
                                 $langObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
                                 $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
-                                $bName = $business->translations->first()->name ?? $business->name ?? 'Business';
-                                $bSlug = $business->translations->first()->slug ?? $business->slug;
+                                $bName = $business->translations->first()?->name ?? $business->name ?? 'Business';
+                                $bSlug = $business->translations->first()?->slug ?? $business->slug ?? 'business-' . $business->id;
                                 $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                             @endphp
                             <div class="col-lg-4 mt-4 mt-md-0 text-start">
@@ -614,7 +614,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                     <div class="sl_h">
                                                                         <div class="inn_h">
                                                                             <div class="sl_main">
-                                                                                <h6 class="head">{{ $item->translations->first()->name }}</h6>
+                                                                                <h6 class="head">{{ $item->translations->first()?->name ?? '' }}</h6>
                                                                                 <div class="d-none" wire:key="wishlist-container-{{ $item->id }}">
                                                                                     @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
                                                                                 </div>
@@ -642,9 +642,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                                             </div>
 
                                                             <!-- Short Description -->
-                                                            @if(!empty($item->translations->first()->short_description))
+                                                            @if(!empty($item->translations->first()?->short_description))
                                                                 <div class="mb-3 mt-1 text-start" style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
-                                                                    {{ $item->translations->first()->short_description }}
+                                                                    {{ $item->translations->first()?->short_description }}
                                                                 </div>
                                                             @endif
 

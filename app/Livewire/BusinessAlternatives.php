@@ -73,13 +73,15 @@ class BusinessAlternatives extends Component
             $this->subCategoryIds = [$this->business->category_id];
         }
 
-        // Load filters using all products of these sub-categories
         $allProducts = Product::with([
             'filterOptions.filterOption.filter.translations' => fn($q) => $q->where('language_id', $this->lang_id),
             'filterOptions.filterOption.translations' => fn($q) => $q->where('language_id', $this->lang_id),
             'filterOptions.filterOption.filter.filterType',
         ])
             ->where('lang_id', $this->lang_id)
+            ->whereHas('businesses', function($bq) {
+                $bq->where('is_affiliate', 1);
+            })
             ->whereHas('translations', function ($q) {
                 $q->where('lang_id', $this->lang_id);
             })
@@ -150,6 +152,9 @@ class BusinessAlternatives extends Component
         $lang_id = $this->lang_id;
         $maxPrice = Product::whereHas('categories', function($cq) {
                 $cq->whereIn('categories.id', $this->subCategoryIds);
+            })
+            ->whereHas('businesses', function($bq) {
+                $bq->where('is_affiliate', 1);
             })
             ->where('lang_id', $lang_id)
             ->whereHas('prices')
@@ -241,7 +246,7 @@ class BusinessAlternatives extends Component
         $locale = app()->getLocale();
         $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
-        $businessSlug = $this->business->translations->first()->slug;
+        $businessSlug = $this->business->translations->first()?->slug ?? $this->business->slug ?? '';
 
         $url = '/' . $locale . '/' . $businessSlug . '/' . $expectedAlternativesSlug;
 
@@ -284,6 +289,7 @@ class BusinessAlternatives extends Component
                 $q->where('status', 'active');
             }
         ])
+            ->where('is_affiliate', 1)
             ->whereHas('languages', function ($query) {
                 $query->where('language_id', $this->lang_id);
             })
@@ -339,6 +345,7 @@ class BusinessAlternatives extends Component
         })->whereHas('languages', function ($query) {
             $query->where('language_id', $this->lang_id);
         })
+            ->where('is_affiliate', 1)
             ->where('id', '!=', $this->businessId)
             ->where(function ($query) {
                 $query->whereIn('category_id', $this->subCategoryIds)
@@ -631,7 +638,7 @@ class BusinessAlternatives extends Component
         $locale = app()->getLocale();
         $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
-        $businessSlug = $this->business->translations->first()->slug;
+        $businessSlug = $this->business->translations->first()?->slug ?? $this->business->slug ?? '';
 
         return redirect()->to('/' . $locale . '/' . $businessSlug . '/' . $expectedAlternativesSlug);
     }

@@ -227,6 +227,7 @@ class ProductController extends Controller
         // dd($ratingBreakdown);
         $alternativeBusiness = Business::where('category_id', $business->category_id)
         ->where('id', '!=', $business->id)
+        ->where('is_affiliate', 1)
         ->where('status', 1)
         ->where(function ($query) {
             $query->where('active_all_countries', 1)

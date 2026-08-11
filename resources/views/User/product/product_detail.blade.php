@@ -2517,7 +2517,7 @@
                                         $languageObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
                                         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
                                     @endphp
-                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'alternatives_slug' => $expectedAlternativesSlug]) }}"
+                                    <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug ?? $business->slug ?? '', 'alternatives_slug' => $expectedAlternativesSlug]) }}"
                                        class="view-more-link"
                                        style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                                         View more alternatives
