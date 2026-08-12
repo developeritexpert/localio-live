@@ -938,69 +938,27 @@
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3">
-                                        <label class="form-label">Permanent Link</label>
-                                        <div class="permanent-link-container @error('permanentUrlSlug') is-invalid @enderror"
-                                            x-data="{
-                                                editing: false,
-                                                originalValue: @entangle('permanentUrlSlug').live,
-                                                tempValue: @entangle('permanentUrlSlug').live,
-                                                startEdit() {
-                                                    this.editing = true;
-                                                    this.originalValue = this.tempValue;
-                                                    this.$nextTick(() => this.$refs.input.focus());
-                                                },
-                                                saveEdit() {
-                                                    if (this.tempValue.trim() === '') {
-                                                        this.tempValue = this.originalValue;
-                                                        return;
-                                                    }
-                                                    if (!/^[a-zA-Z0-9\-_]+$/.test(this.tempValue)) {
-                                                        alert('Only letters, numbers, hyphens, and underscores are allowed');
-                                                        return;
-                                                    }
-                                                    this.editing = false;
-                                                },
-                                                cancelEdit() {
-                                                    this.tempValue = this.originalValue;
-                                                    this.editing = false;
-                                                }
-                                            }">
-
-                                            <div class="permanent-link-display" x-show="!editing" >
-                                                <span class="url-prefix">localio.com/</span>
-                                                <span class="url-editable"
-                                                    x-text="tempValue || 'your-business-name'"></span>
-                                            </div>
-
-                                            <div class="permanent-link-display" x-show="editing"
-                                                style="display: none;">
-                                                <span class="url-prefix">localio.com/</span>
-                                                <input type="text" class="permanent-link-input url-editable"
-                                                    x-model="tempValue" x-ref="input" @keydown.enter="saveEdit()"
-                                                    @keydown.escape="cancelEdit()">
-                                                
-                                                <!-- Edit Controls -->
-                                             <div class="edit-controls" style="top: 10% !important;">
-                                                 <em class="icon ni ni-edit text-primary fs-5" x-show="!editing"
-                                                     @click.stop="startEdit()" style="cursor: pointer;" title="Edit"></em>
-
-                                                 <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
-                                                     <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                         <em class="icon ni ni-save" style="font-size:14px;"></em>
-                                                     </button>
-                                                     <button type="button" class="btn btn-sm btn-icon btn-danger rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                         <em class="icon ni ni-cross" style="font-size:14px;"></em>
-                                                     </button>
-                                                 </div>
-                                             </div>
-                                            </div>
+                                        <label class="form-label fw-semibold" for="business-slug">
+                                            Permanent Link
+                                            <span class="text-muted fw-normal ms-1" style="font-size:0.8rem;">(URL slug)</span>
+                                        </label>
+                                        <div class="input-group @error('slug') has-error @enderror" style="border-radius:8px; overflow:hidden; border:1.5px solid #dee2e6; background:#fff;">
+                                            <span class="input-group-text" style="background:#f0f3f7; border:none; border-right:1.5px solid #dee2e6; color:#6c757d; font-size:0.85rem; padding:0 12px; white-space:nowrap; font-weight:500;">localio.com/</span>
+                                            <input
+                                                type="text"
+                                                id="business-slug"
+                                                wire:model.live="slug"
+                                                class="form-control"
+                                                style="border:none; background:#fff; font-size:0.9rem; box-shadow:none; padding:10px 14px;"
+                                                placeholder="your-business-name"
+                                                autocomplete="off"
+                                                spellcheck="false"
+                                            >
                                         </div>
-
-                                        @error('permanentUrlSlug')
-                                            <div class="text-danger">{{ $message }}</div>
+                                        @error('slug')
+                                            <div class="text-danger mt-1" style="font-size:0.82rem;"><em class="icon ni ni-alert-circle me-1"></em>{{ $message }}</div>
                                         @enderror
-                                        <!-- Hidden field for the full URL -->
-                                        <input type="hidden" wire:model="permanent_url">
+                                        <div class="text-muted mt-1" style="font-size:0.78rem;">Only letters, numbers, hyphens and underscores. This sets the public business URL.</div>
                                     </div>
                                     <hr class="my-3">
                                         <div class="form-group mt-3">

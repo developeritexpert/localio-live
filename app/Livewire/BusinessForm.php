@@ -137,7 +137,7 @@ class BusinessForm extends Component
     public $lang_supported = [];
     public $content = '';
     public $editingPermanentUrl = false;
-    public $permanentUrlSlug = '';
+    public $slug = '';
     public $countryIsAffiliate = true;
     public $is_affiliate = 0;
     public $primary_keywords = '';
@@ -545,8 +545,8 @@ class BusinessForm extends Component
     //         $this->loadCategoryFeatures($this->selected_category);
     //         $this->loadCategoryTopics($this->selected_category);
     //     }
-    //     if ($this->permanent_url) {
-    //         $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
+        // slug is loaded directly from translation in editBusiness()
+
     //     }
 
     //     // $this->categoryTopics = collect();
@@ -611,9 +611,9 @@ class BusinessForm extends Component
             $this->loadCategoryTopics($this->selected_category);
         }
 
-        if ($this->permanent_url) {
-            $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
-        }
+        // slug is loaded directly from translation in editBusiness()
+
+
     }
 
 
@@ -674,10 +674,10 @@ class BusinessForm extends Component
         $segments = explode('/', $slug);
         return end($segments);
     }
-    public function updatePermanentUrlSlug()
+    public function updateSlug()
     {
-        if ($this->permanentUrlSlug) {
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        if ($this->slug) {
+            $this->permanent_url = 'https://localio.com/' . $this->slug;
         }
     }
     public function editUrl($countryId, $index)
@@ -723,15 +723,14 @@ class BusinessForm extends Component
         $this->editIsAffiliate = false;
         $this->resetValidation(['editUrlValue']);
     }
-    public function updatedPermanentUrlSlug($value)
+    public function updatedSlug($value)
     {
-        $this->permanent_url = 'https://localio.com/' . $value;
+        // Slug updated directly; no separate permanent_url needed
     }
     public function updatedName($value)
     {
         if (!$this->editMode) {
-            $this->permanentUrlSlug = Str::slug($value);
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+            $this->slug = Str::slug($value);
         }
     }
     protected function loadCategoryFeatures($categoryId)
@@ -1087,7 +1086,7 @@ class BusinessForm extends Component
         $this->short_description = $translation->short_description ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
-        $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
+        $this->slug = $translation->slug ?? '';
         $this->is_affiliate_partner = $business->is_affiliate ? 1 : 0;
         $this->primary_keywords = $translation->primary_keywords ?? '';
         $this->secondary_keywords = $translation->secondary_keywords ?? '';
@@ -1196,9 +1195,8 @@ class BusinessForm extends Component
 
     public function storeBusiness()
     {
-        if (empty($this->permanentUrlSlug) && !empty($this->name)) {
-            $this->permanentUrlSlug = Str::slug($this->name);
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        if (empty($this->slug) && !empty($this->name)) {
+            $this->slug = Str::slug($this->name);
         }
 
         // Mark all fields as touched before validation
@@ -1232,9 +1230,8 @@ class BusinessForm extends Component
 
     public function updateBusiness()
     {
-        if (empty($this->permanentUrlSlug) && !empty($this->name)) {
-            $this->permanentUrlSlug = Str::slug($this->name);
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        if (empty($this->slug) && !empty($this->name)) {
+            $this->slug = Str::slug($this->name);
         }
 
         // Mark all fields as touched before validation
@@ -1325,16 +1322,12 @@ class BusinessForm extends Component
             'business_description' => 'nullable|string',
             'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
-            'permanentUrlSlug' => [
+            'slug' => [
                 'required',
                 'string',
                 'max:191',
                 'regex:/^[a-zA-Z0-9\-_]+$/',
-                Rule::unique('businesses', 'permanent_url')
-                    ->ignore($this->businessId)
-                    ->where(function ($query) {
-                        return $query->where('permanent_url', 'https://localio.com/' . $this->permanentUrlSlug);
-                    }),
+                Rule::unique('business_translations', 'slug')->ignore($this->businessId, 'business_id'),
             ],
             'countryWebsiteUrls' => 'nullable',
             'features' => 'nullable',
@@ -1404,7 +1397,7 @@ class BusinessForm extends Component
 
     protected function createBusinessTranslation($business)
     {
-        $slug = Str::slug($this->name);
+        $slug = $this->slug ? Str::slug($this->slug) : Str::slug($this->name);
         $business->translations()->create([
             'name' => $this->name,
             'slug' => $slug,
@@ -1471,7 +1464,7 @@ class BusinessForm extends Component
 
     protected function updateBusinessTranslation($business)
     {
-        $slug = Str::slug($this->name);
+        $slug = $this->slug ? Str::slug($this->slug) : Str::slug($this->name);
         $business->translations()->updateOrCreate(
             ['business_id' => $business->id, 'lang_id' => $this->languages_supported],
             [
