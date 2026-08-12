@@ -1084,7 +1084,7 @@
                                                 </h2>
                                                 @if(!empty($business->pro_cons_intro))
                                                     <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
-                                                        {{ $business->pro_cons_intro }}
+                                                        {!! $business->pro_cons_intro !!}
                                                     </p>
                                                 @endif
                                             </div>
@@ -1123,7 +1123,7 @@
                                             </div>
                                             @if(!empty($business->pro_cons_summary))
                                             <div class="mt-4">
-                                                <p>{{ $business->pro_cons_summary }}</p>
+                                                <div>{!! $business->pro_cons_summary !!}</div>
                                             </div>
                                             @endif
                                         </div>
@@ -1140,7 +1140,7 @@
                                                 
                                                 @if($offering->top_text)
                                                     <div class="mb-3">
-                                                        {{ $offering->top_text }}
+                                                        {!! $offering->top_text !!}
                                                     </div>
                                                 @endif
                                             </div>

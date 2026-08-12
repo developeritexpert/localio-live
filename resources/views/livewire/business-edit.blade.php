@@ -214,10 +214,32 @@
                             <!-- Introduction -->
                             <div class="col-12 mb-4">
                                 <div class="form-group">
-                                    <label class="form-label">Pros & cons introduction</label>
-                                    <textarea class="form-control" rows="3"
-                                        wire:model.live="pro_cons_intro"
-                                        placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                                    <label class="form-label">Pros &amp; cons introduction</label>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_pro_cons_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('pro_cons_intro', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_pro_cons_intro"
+                                            class="form-control"
+                                            wire:model.live="pro_cons_intro"
+                                            rows="3"
+                                            placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
@@ -304,11 +326,32 @@
                             <!-- Summary -->
                             <div class="col-12 mt-2">
                                 <div class="form-group">
-                                    <label class="form-label">Pros & cons ending text</label>
-                                    <textarea class="form-control"
-                                            rows="3"
+                                    <label class="form-label">Pros &amp; cons ending text</label>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_pro_cons_summary)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('pro_cons_summary', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_pro_cons_summary"
+                                            class="form-control"
                                             wire:model.live="pro_cons_summary"
+                                            rows="3"
                                             placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
@@ -334,7 +377,31 @@
                                 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Products/services introduction</label>
-                                    <textarea class="form-control" rows="3" wire:model.live="businessOfferings.0.top_text" placeholder="Introduction text above the image..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_offerings_top_text)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('businessOfferings.0.top_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_offerings_top_text"
+                                            class="form-control"
+                                            wire:model.live="businessOfferings.0.top_text"
+                                            rows="3"
+                                            placeholder="Introduction text above the image..."></textarea>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-group mb-3">
