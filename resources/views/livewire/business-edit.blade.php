@@ -104,7 +104,124 @@
 
             <div class="row">
                 <div class="col-md-8">
+                    {{-- =====================================================
+                         AI OUTPUT UPLOAD PANEL
+                         Paste full AI-generated text to auto-fill all fields
+                    ====================================================== --}}
+                    <div class="card card-bordered mb-3 border-primary"
+                         x-data="{
+                             open: false,
+                             copyTemplate() {
+                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pros]\nExcellent customer support\nVery affordable pricing\nEasy-to-use control panel\n\n[cons]\nLimited basic plan storage\nRenewal prices increase\nNo free trial available\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
+                                 navigator.clipboard.writeText(t).then(function() {
+                                     alert('Format template copied to clipboard! Paste it in your AI chat and ask it to fill in the content, then paste the result back here.');
+                                 }).catch(function() {
+                                     prompt('Copy this format template:', t);
+                                 });
+                             }
+                         }">
+                        {{-- Card Header / Toggle --}}
+                        <div class="card-header d-flex align-items-center justify-content-between py-2 px-3"
+                             style="cursor:pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px 4px 0 0;"
+                             @click="open = !open">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="font-size:1.1rem;">&#129302;</span>
+                                <span class="fw-semibold text-white" style="font-size:0.95rem; letter-spacing:0.01em;">
+                                    AI Output Upload
+                                </span>
+                                <span class="badge bg-white text-primary ms-1" style="font-size:0.72rem;">
+                                    Auto-fill all fields
+                                </span>
+                            </div>
+                            <em class="icon ni text-white" :class="open ? 'ni-chevron-up' : 'ni-chevron-down'"></em>
+                        </div>
+
+                        {{-- Collapsible Body --}}
+                        <div x-show="open" x-cloak
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100">
+                            <div class="card-inner">
+                                {{-- Instructions --}}
+                                <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-start " style="font-size:0.82rem;">
+                                    <em class="icon ni ni-info me-1 mt-1 flex-shrink-0"></em>
+                                    <div>
+                                        <strong>How to use:</strong>
+                                        Click <em>Copy Format Template</em>, paste it into your AI chat, and ask it to fill in the content for this business.
+                                        Then paste the AI response below and click <strong>Apply Content</strong> &mdash; all fields will be auto-filled.
+                                    </div>
+                                </div>
+
+                                {{-- Copy Format Button --}}
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyTemplate()">
+                                        <em class="icon ni ni-copy me-1"></em> Copy Format Template
+                                    </button>
+                                    <span class="text-muted ms-2" style="font-size:0.78rem;">
+                                        Copies the required AI output format to your clipboard
+                                    </span>
+                                </div>
+
+                                {{-- Textarea --}}
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-semibold mb-1">
+                                        Paste AI-generated content below:
+                                    </label>
+                                    <textarea
+                                        wire:model="aiOutputText"
+                                        class="form-control font-monospace"
+                                        rows="18"
+                                        placeholder="[name]&#10;Business Name Here&#10;&#10;[short_description]&#10;A short description...&#10;&#10;[business_description]&#10;<p>Full description HTML...</p>&#10;&#10;[usps]&#10;USP line 1&#10;USP line 2&#10;&#10;... etc"
+                                        style="resize:vertical; font-size:0.82rem; line-height:1.5; border: 2px solid #dee2e6; border-radius:6px;"
+                                    ></textarea>
+                                </div>
+
+                                {{-- Status Feedback --}}
+                                @if($aiApplyStatus === 'success')
+                                    <div class="alert alert-success py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size:0.84rem;">
+                                        <em class="icon ni ni-check-circle-fill text-success"></em>
+                                        {{ $aiApplyMessage }}
+                                    </div>
+                                @elseif($aiApplyStatus === 'error')
+                                    <div class="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size:0.84rem;">
+                                        <em class="icon ni ni-alert-circle text-danger"></em>
+                                        {{ $aiApplyMessage }}
+                                    </div>
+                                @endif
+
+                                {{-- Action Buttons --}}
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button
+                                        type="button"
+                                        wire:click="parseAndApplyAiOutput"
+                                        wire:loading.attr="disabled"
+                                        class="btn btn-primary"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                        <span wire:loading.remove wire:target="parseAndApplyAiOutput">
+                                            <em class="icon ni ni-spark me-1"></em> Apply Content
+                                        </span>
+                                        <span wire:loading wire:target="parseAndApplyAiOutput">
+                                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                            Applying...
+                                        </span>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            wire:click="$set('aiOutputText', '')"
+                                            wire:click.prevent
+                                            title="Clear the textarea">
+                                        <em class="icon ni ni-trash"></em> Clear
+                                    </button>
+                                    <span class="text-muted ms-auto" style="font-size:0.76rem;">
+                                        Only filled sections will overwrite existing field values.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- END AI Output Upload Panel --}}
+
                     <!-- Business Name Section -->
+
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">
@@ -211,6 +328,12 @@
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.business_description = editor.getData();
                                                 });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.business_description !== undefined) {
+                                                        editor.setData(e.detail.fields.business_description);
+                                                    }
+                                                });
                                             })
                                             .catch(error => {
                                                 console.error(error);
@@ -262,6 +385,12 @@
                                                         this.editor = editor;
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('pro_cons_intro', editor.getData());
+                                                        });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.pro_cons_intro !== undefined) {
+                                                                editor.setData(e.detail.fields.pro_cons_intro);
+                                                            }
                                                         });
                                                     })
                                                     .catch(error => {
@@ -375,6 +504,12 @@
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('pro_cons_summary', editor.getData());
                                                         });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.pro_cons_summary !== undefined) {
+                                                                editor.setData(e.detail.fields.pro_cons_summary);
+                                                            }
+                                                        });
                                                     })
                                                     .catch(error => {
                                                         console.error(error);
@@ -425,6 +560,12 @@
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('businessOfferings.0.top_text', editor.getData());
                                                         });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.offerings_top_text !== undefined) {
+                                                                editor.setData(e.detail.fields.offerings_top_text);
+                                                            }
+                                                        });
                                                     })
                                                     .catch(error => {
                                                         console.error(error);
@@ -453,6 +594,12 @@
                                                         this.editor = editor;
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.after_image_description = editor.getData();
+                                                        });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.after_image_description !== undefined) {
+                                                                editor.setData(e.detail.fields.after_image_description);
+                                                            }
                                                         });
                                                     })
                                                     .catch(error => {
@@ -503,6 +650,12 @@
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.alternatives_description = editor.getData();
                                                 });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.alternatives_description !== undefined) {
+                                                        editor.setData(e.detail.fields.alternatives_description);
+                                                    }
+                                                });
                                             })
                                             .catch(error => {
                                                 console.error(error);
@@ -552,6 +705,12 @@
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.reviews_description = editor.getData();
                                                 });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_description);
+                                                    }
+                                                });
                                             })
                                             .catch(error => {
                                                 console.error(error);
@@ -597,6 +756,12 @@
                                                 this.editor = editor;
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.reviews_description_2 = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description_2 !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_description_2);
+                                                    }
                                                 });
                                             })
                                             .catch(error => {
@@ -645,6 +810,12 @@
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.faqs_description = editor.getData();
                                                     });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.faqs_description !== undefined) {
+                                                            editor.setData(e.detail.fields.faqs_description);
+                                                        }
+                                                    });
                                                 })
                                                 .catch(error => {
                                                     console.error(error);
@@ -685,6 +856,12 @@
                                                     this.editor = editor;
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.faqs_description_2 = editor.getData();
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.faqs_description_2 !== undefined) {
+                                                            editor.setData(e.detail.fields.faqs_description_2);
+                                                        }
                                                     });
                                                 })
                                                 .catch(error => {
@@ -732,6 +909,12 @@
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.comparison_description = editor.getData();
                                                     });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.comparison_description !== undefined) {
+                                                            editor.setData(e.detail.fields.comparison_description);
+                                                        }
+                                                    });
                                                 })
                                                 .catch(error => {
                                                     console.error(error);
@@ -772,6 +955,12 @@
                                                     this.editor = editor;
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.comparison_description_2 = editor.getData();
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.comparison_description_2 !== undefined) {
+                                                            editor.setData(e.detail.fields.comparison_description_2);
+                                                        }
                                                     });
                                                 })
                                                 .catch(error => {

@@ -165,6 +165,12 @@ class BusinessEdit extends Component
 
     public $pro_cons_intro = '';
     public $pro_cons_summary = '';
+    public $pro_cons_headline = '';
+
+    // AI Output Upload
+    public string $aiOutputText = '';
+    public string $aiApplyStatus = '';  // success | error | empty string
+    public string $aiApplyMessage = '';
 
 
 
@@ -1053,6 +1059,7 @@ class BusinessEdit extends Component
         
         $this->pro_cons_intro = $business->pro_cons_intro ?? '';
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
+        $this->pro_cons_headline = $business->pro_cons_headline ?? '';
 
         // Load existing Offerings (restricted to one for now)
         if ($business->offerings->count() > 0) {
@@ -1669,7 +1676,8 @@ class BusinessEdit extends Component
             'status' => (bool)$this->status,
             'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
-            'pro_cons_summary' => $this->pro_cons_summary
+            'pro_cons_summary' => $this->pro_cons_summary,
+            'pro_cons_headline' => $this->pro_cons_headline,
         ]);
     }
 
@@ -1756,7 +1764,8 @@ class BusinessEdit extends Component
             'status' => (bool)$this->status,
             'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
-            'pro_cons_summary' => $this->pro_cons_summary
+            'pro_cons_summary' => $this->pro_cons_summary,
+            'pro_cons_headline' => $this->pro_cons_headline,
         ]);
     }
 
@@ -1934,6 +1943,161 @@ class BusinessEdit extends Component
     //         session()->flash('error', 'An error occurred: ' . $e->getMessage());
     //     }
     // }
+
+
+    // -----------------------------------------------------------------------
+    // AI Output Upload — parse full AI-generated text blob into form fields
+    // -----------------------------------------------------------------------
+
+    public function parseAndApplyAiOutput(): void
+    {
+        $raw = trim($this->aiOutputText);
+
+        if ($raw === '') {
+            $this->aiApplyStatus = 'error';
+            $this->aiApplyMessage = 'Please paste AI output content first.';
+            return;
+        }
+
+        $sections = $this->parseAiSections($raw);
+
+        if (empty($sections)) {
+            $this->aiApplyStatus = 'error';
+            $this->aiApplyMessage = 'Could not parse any sections. Make sure the format uses [section_key] markers.';
+            return;
+        }
+
+        $populated = 0;
+
+        // --- Scalar / plain-text fields ---
+        $scalarMap = [
+            'name'                       => 'name',
+            'short_description'          => 'short_description',
+            'description_title'          => 'description_title',
+            'business_description'       => 'business_description',
+            'pro_cons_headline'          => 'pro_cons_headline',
+            'pro_cons_intro'             => 'pro_cons_intro',
+            'pro_cons_summary'           => 'pro_cons_summary',
+            'after_image_description'    => 'after_image_description',
+            'alternatives_title'         => 'alternatives_title',
+            'alternatives_description'   => 'alternatives_description',
+            'alternatives_title_2'       => 'alternatives_title_2',
+            'alternatives_description_2' => 'alternatives_description_2',
+            'reviews_title'              => 'reviews_title',
+            'reviews_description'        => 'reviews_description',
+            'reviews_title_2'            => 'reviews_title_2',
+            'reviews_description_2'      => 'reviews_description_2',
+            'faqs_title'                 => 'faqs_title',
+            'faqs_description'           => 'faqs_description',
+            'faqs_title_2'               => 'faqs_title_2',
+            'faqs_description_2'         => 'faqs_description_2',
+            'comparison_title'           => 'comparison_title',
+            'comparison_description'     => 'comparison_description',
+            'comparison_title_2'         => 'comparison_title_2',
+            'comparison_description_2'   => 'comparison_description_2',
+            'meta_title'                    => 'meta_title',
+            'meta_description'              => 'meta_description',
+            'alternatives_meta_title'       => 'alternatives_meta_title',
+            'alternatives_meta_description' => 'alternatives_meta_description',
+            'reviews_meta_title'            => 'reviews_meta_title',
+            'reviews_meta_description'      => 'reviews_meta_description',
+            'faqs_meta_title'               => 'faqs_meta_title',
+            'faqs_meta_description'         => 'faqs_meta_description',
+            'comparison_meta_title'         => 'comparison_meta_title',
+            'comparison_meta_description'   => 'comparison_meta_description',
+        ];
+
+        foreach ($scalarMap as $key => $property) {
+            if (array_key_exists($key, $sections) && $sections[$key] !== '') {
+                $this->{$property} = $sections[$key];
+                $populated++;
+            }
+        }
+
+        // --- Offerings array fields (nested) ---
+        if (array_key_exists('offerings_headline', $sections) && $sections['offerings_headline'] !== '') {
+            $this->businessOfferings[0]['headline'] = $sections['offerings_headline'];
+            $populated++;
+        }
+        if (array_key_exists('offerings_top_text', $sections) && $sections['offerings_top_text'] !== '') {
+            $this->businessOfferings[0]['top_text'] = $sections['offerings_top_text'];
+            $populated++;
+        }
+
+        // --- USPs (each non-empty line = one USP, max 6) ---
+        if (array_key_exists('usps', $sections) && $sections['usps'] !== '') {
+            $lines = array_values(array_filter(
+                array_map('trim', explode(PHP_EOL, $sections['usps'])),
+                fn($l) => $l !== ''
+            ));
+            $usps = array_map(fn($t) => ['text' => $t], array_slice($lines, 0, 6));
+            while (count($usps) < 5) {
+                $usps[] = ['text' => ''];
+            }
+            $this->businessUsps = $usps;
+            $populated++;
+        }
+
+        // --- Pros (each non-empty line = one pro) ---
+        if (array_key_exists('pros', $sections) && $sections['pros'] !== '') {
+            $lines = array_values(array_filter(
+                array_map('trim', explode(PHP_EOL, $sections['pros'])),
+                fn($l) => $l !== ''
+            ));
+            $this->businessPros = array_map(fn($t) => ['text' => $t], $lines);
+            $populated++;
+        }
+
+        // --- Cons (each non-empty line = one con) ---
+        if (array_key_exists('cons', $sections) && $sections['cons'] !== '') {
+            $lines = array_values(array_filter(
+                array_map('trim', explode(PHP_EOL, $sections['cons'])),
+                fn($l) => $l !== ''
+            ));
+            $this->businessCons = array_map(fn($t) => ['text' => $t], $lines);
+            $populated++;
+        }
+
+        // --- Dispatch browser event so Alpine.js can update CKEditor (wire:ignore) fields ---
+        $this->dispatch('ai-content-applied', fields: [
+            'business_description'       => $this->business_description,
+            'pro_cons_intro'             => $this->pro_cons_intro,
+            'pro_cons_summary'           => $this->pro_cons_summary,
+            'offerings_top_text'         => $this->businessOfferings[0]['top_text'] ?? '',
+            'after_image_description'    => $this->after_image_description,
+            'alternatives_description'   => $this->alternatives_description,
+            'alternatives_description_2' => $this->alternatives_description_2,
+            'reviews_description'        => $this->reviews_description,
+            'reviews_description_2'      => $this->reviews_description_2,
+            'faqs_description'           => $this->faqs_description,
+            'faqs_description_2'         => $this->faqs_description_2,
+            'comparison_description'     => $this->comparison_description,
+            'comparison_description_2'   => $this->comparison_description_2,
+        ]);
+
+        $this->aiApplyStatus = 'success';
+        $this->aiApplyMessage = '\u2713 Content applied to ' . $populated . ' field group(s) successfully.';
+    }
+
+    /**
+     * Parse a section-delimited AI output string into an associative array.
+     * Format: each section starts with [key] on its own line; value is all text
+     * until the next [key] marker or end of string.
+     */
+    private function parseAiSections(string $text): array
+    {
+        $sections = [];
+        preg_match_all(
+            '/^\[([a-z_0-9]+)\]\s*$(.+?)(?=^\[[a-z_0-9]+\]\s*$|\z)/ms',
+            $text,
+            $matches,
+            PREG_SET_ORDER
+        );
+        foreach ($matches as $match) {
+            $sections[strtolower($match[1])] = trim($match[2]);
+        }
+        return $sections;
+    }
 
     public function resetForm()
     {
