@@ -69,10 +69,16 @@ class ProductController extends Controller
         ])->firstOrFail();
         // dd($business);
         $languages = Language::all();
-        // Calculate average rating
-        $averageRating = $business->reviews->count() > 0
-            ? $business->reviews->avg('rating')
-            : 0;
+        // Calculate average rating: User rating if active user reviews exist; fallback to admin_rating if set
+        $approvedReviewsCount = $business->reviews->where('status', 'active')->count();
+        $hasUserReviews = $approvedReviewsCount > 0;
+        if ($hasUserReviews) {
+            $averageRating = round($business->reviews->where('status', 'active')->avg('rating'), 1);
+        } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
+            $averageRating = (float)$business->admin_rating;
+        } else {
+            $averageRating = 0;
+        }
 
         // Inactive review message (if applicable)
         $userInactiveReviewMessage = null;
@@ -328,6 +334,7 @@ class ProductController extends Controller
             'currency',
             'timeUnit',
             'averageRating',
+            'hasUserReviews',
             'reviews',
             'userInactiveReviewMessage',
             'languages',

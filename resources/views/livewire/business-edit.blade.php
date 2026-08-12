@@ -835,6 +835,14 @@
                                             ->get();
                                     @endphp
                                     <hr class="my-3">
+                                    <div class="form-group mt-3">
+                                        <label class="form-label" for="admin_rating">Review Rating (Admin)</label>
+                                        <input type="number" step="0.1" min="1" max="5" id="admin_rating" wire:model.defer="admin_rating" class="form-control" placeholder="e.g. 4.5">
+                                        <small class="form-text text-muted">Set initial overall review rating for this business (1.0 to 5.0 stars). Used until the business gets approved user reviews.</small>
+                                        @error('admin_rating')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <div class="form-group mt-3" x-data="{
                                         search: '',
                                         selectCategory(id) {

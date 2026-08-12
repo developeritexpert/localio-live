@@ -102,6 +102,7 @@ class BusinessEdit extends Component
     public $status = 0;
     public $meta_title = '';
     public $meta_description = '';
+    public $admin_rating = null;
     public $selected_category = null;
     public $selected_sub_categories = [];
 
@@ -1077,6 +1078,7 @@ class BusinessEdit extends Component
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
         $this->selected_category = $business->category_id ?? null;
+        $this->admin_rating = $business->admin_rating;
         $this->selected_sub_categories = $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
@@ -1568,6 +1570,7 @@ class BusinessEdit extends Component
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
+            'admin_rating' => 'nullable|numeric|min:1|max:5',
             'description_title' => 'nullable|string|max:255',
             'business_description' => 'nullable|string',
             'alternatives_title' => 'nullable|string|max:255',
@@ -1664,6 +1667,7 @@ class BusinessEdit extends Component
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
             'status' => (bool)$this->status,
+            'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
             'pro_cons_summary' => $this->pro_cons_summary
         ]);
@@ -1750,6 +1754,7 @@ class BusinessEdit extends Component
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
             'status' => (bool)$this->status,
+            'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
             'pro_cons_summary' => $this->pro_cons_summary
         ]);

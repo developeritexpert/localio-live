@@ -840,7 +840,14 @@
                 @php
                     $activeReviews = $business->reviews->where('status', 'active');
                     $ratingCount = $activeReviews->count();
-                    $averageRating = $ratingCount > 0 ? $activeReviews->avg('rating') : 0;
+                    $hasUserReviews = $ratingCount > 0;
+                    if ($hasUserReviews) {
+                        $averageRating = $activeReviews->avg('rating');
+                    } elseif ($business->admin_rating !== null && (float)$business->admin_rating > 0) {
+                        $averageRating = (float)$business->admin_rating;
+                    } else {
+                        $averageRating = null;
+                    }
                 @endphp
                 <div class="container-fluid">
                     <div class="asn_dv_contnt ">
@@ -860,25 +867,29 @@
                                                     {{ $business->translations->first()->name }} <span class="hide-on-sticky">review {{ date('Y') }}</span> </h1>
                                             </div>
                                             <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
-                                            <div class="main-view-rating-hide">
-                                                <span style="font-size: 14px; font-weight: 500; color: #555;">
-                                                    {{ number_format($averageRating, 1) }}
-                                                </span>
-                                                <div style="display: flex; gap: 2px;">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= floor($averageRating))
-                                                            <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
-                                                        @elseif ($i - 0.5 <= $averageRating)
-                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
-                                                        @else
-                                                            <i class="far fa-star text-warning" style="font-size: 14px;"></i>
-                                                        @endif
-                                                    @endfor
+                                            @if ($averageRating !== null)
+                                                <div class="main-view-rating-hide">
+                                                    <span style="font-size: 14px; font-weight: 500; color: #555;">
+                                                        {{ number_format($averageRating, 1) }}
+                                                    </span>
+                                                    <div style="display: flex; gap: 2px;">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= floor($averageRating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                                            @elseif ($i - 0.5 <= $averageRating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    @if ($hasUserReviews)
+                                                        <span style="font-size: 14px; font-weight: 500; color: #555;">
+                                                            ({{ $ratingCount }})
+                                                        </span>
+                                                    @endif
                                                 </div>
-                                                <span style="font-size: 14px; font-weight: 500; color: #555;">
-                                                    ({{ $ratingCount }})
-                                                </span>
-                                            </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -1397,55 +1408,63 @@
                                             <div class="feture_box review-breakdown-card">
 
                                                 {{-- Header & Overall Rating --}}
-                                                <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
-                                                    <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
-                                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                                            {{ number_format($averageRating,1) }}
-                                                        </span>
+                                                @if ($averageRating !== null)
+                                                    <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
+                                                        <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
+                                                            <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
+                                                                {{ number_format($averageRating,1) }}
+                                                            </span>
 
-                                                        <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                @if ($i <= floor($averageRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                @elseif ($i - 0.5 <= $averageRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                                @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
-                                                                @endif
-                                                            @endfor
+                                                            <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                    @if ($i <= floor($averageRating))
+                                                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                    @elseif ($i - 0.5 <= $averageRating)
+                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                    @else
+                                                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                    @endif
+                                                                @endfor
+                                                            </div>
+
+                                                            @if ($hasUserReviews)
+                                                                <span style="color: #666; font-size: 12px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                            @endif
                                                         </div>
 
-                                                        <span style="color: #666; font-size: 12px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                        @if ($hasUserReviews)
+                                                            <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
+                                                                View all reviews
+                                                            </a>
+                                                        @endif
                                                     </div>
+                                                @endif
 
-                                                    <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
-                                                        View all reviews
-                                                    </a>
-                                                </div>
+                                                @if ($hasUserReviews)
+                                                    <h2 class="breakdown-title" style="margin-bottom: 15px;">
+                                                        Review breakdown
+                                                    </h2>
 
-                                                <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                                    Review breakdown
-                                                </h2>
-
-                                                {{-- Breakdown --}}
-                                                <div class="review-progress-list ">
-                                                    @foreach ($criteria as $criterion)
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
-                                                        <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                                            <progress class="progress-bar w-100"
-                                                                value="{{ $criterion->average_rating * 20 }}"
-                                                                max="100" style="height: 8px;"></progress>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                    {{-- Breakdown --}}
+                                                    <div class="review-progress-list ">
+                                                        @foreach ($criteria as $criterion)
+                                                        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                            <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                            <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
+                                                                <progress class="progress-bar w-100"
+                                                                    value="{{ $criterion->average_rating * 20 }}"
+                                                                    max="100" style="height: 8px;"></progress>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                            </div>
                                                         </div>
+                                                        @endforeach
                                                     </div>
-                                                    @endforeach
-                                                </div>
 
-                                                <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                    <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
-                                                </div>
+                                                    <div class="recommendation-rate mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                        <strong style="color: #002347; font-size: 14px; font-weight:600;">{{ $recommendPercent }}%</strong>
+                                                    </div>
+                                                @endif
 
                                                 <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                                     <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
