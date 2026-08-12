@@ -84,6 +84,28 @@
                         </div>
                     </div>
 
+                    {{-- Preview Description (short_description) --}}
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label mb-0">Preview Description</label>
+                                <span class="text-muted" style="font-size:0.78rem;">Shown on category, top-rated &amp; most-popular pages</span>
+                            </div>
+                            <div class="form-group">
+                                <textarea
+                                    class="form-control @error('short_description') is-invalid @enderror"
+                                    wire:model.live="short_description"
+                                    rows="3"
+                                    placeholder="A short summary shown in business listing cards..."
+                                    style="resize:vertical;"
+                                ></textarea>
+                                @error('short_description')
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- USP / Key Selling Points Section --}}
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
