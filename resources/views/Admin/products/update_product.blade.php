@@ -443,7 +443,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-body">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+
+                    <!-- Box 2: Linked Business & Related Subcategories -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
                                         {{-- Add Link Business Dropdown --}}
                                         <div class="form-group">
                                             @php
@@ -472,6 +480,47 @@
                                             @enderror
                                         </div>
 
+                                        <!-- Related Subcategories -->
+                                        <div class="form-group mt-3" id="related-subcategories-group">
+                                            <label class="form-label font-weight-bold">Related Subcategories</label>
+                                            <div class="d-flex mb-2">
+                                                <div class="form-check me-3">
+                                                    <input class="form-check-input subcategory-availability-radio" type="radio" id="active_all_subcategories_1"
+                                                        name="active_all_subcategories" value="1"
+                                                        {{ old('active_all_subcategories', '1') == '1' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="active_all_subcategories_1">All</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input subcategory-availability-radio" type="radio" id="active_all_subcategories_0"
+                                                        name="active_all_subcategories" value="0"
+                                                        {{ old('active_all_subcategories') == '0' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="active_all_subcategories_0">Specific Subcategories</label>
+                                                </div>
+                                            </div>
+
+                                            <div id="product-subcategories-wrapper" style="{{ old('active_all_subcategories', '1') == '1' ? 'display:none;' : '' }}">
+                                                <x-google-input
+                                                    type="select"
+                                                    name="product_subcategories"
+                                                    id="product-subcategories"
+                                                    label="Subcategories Availability"
+                                                    :options="[]"
+                                                    :alwaysActive="true"
+                                                    multiple
+                                                    class="select2-multiple product-subcategories"
+                                                />
+                                                @error('product_subcategories')
+                                                    <div class="text-danger small">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Box 3: Active Countries/Regions -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
                                         <!-- Active Countries/Regions -->
                                         <div class="form-group mt-3">
                                             <label class="form-label font-weight-bold">Active Countries/Regions</label>
@@ -519,6 +568,8 @@
                             </div>
                         </div>
                     </div>
+                    </div>
+
                 </div>
             </div>
         </form>
