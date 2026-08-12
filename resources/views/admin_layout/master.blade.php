@@ -108,11 +108,11 @@
                                                 <span class="nk-menu-text">Business Categories</span>
                                             </a>
                                         </li>
-                                        <li class="nk-menu-item">
+                                        <!-- <li class="nk-menu-item">
                                             <a href="{{ route('priceoptions') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Offer Options</span>
                                             </a>
-                                        </li>
+                                        </li> -->
                                     </ul>
                                 </li>
 
@@ -129,6 +129,11 @@
                                         <li class="nk-menu-item">
                                             <a href="{{ route('products') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">All starting price</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('priceoptions') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Offer Options</span>
                                             </a>
                                         </li>
 
