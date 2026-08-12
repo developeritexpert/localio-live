@@ -133,7 +133,7 @@
                                         </li>
                                         <li class="nk-menu-item">
                                             <a href="{{ route('priceoptions') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Offer Options</span>
+                                                <span class="nk-menu-text">Offer options</span>
                                             </a>
                                         </li>
 

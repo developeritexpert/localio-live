@@ -164,6 +164,7 @@
                     @else
                         <thead>
                             <tr class="nk-tb-item nk-tb-head">
+                                <th class="nk-tb-col"><span class="sub-text">Translated Name</span></th>
                                 <th class="nk-tb-col"><span class="sub-text">Name</span></th>
                                 <th class="nk-tb-col tb-tnx-action">
                                     <span>Action</span>
@@ -176,7 +177,20 @@
                                     <td class="nk-tb-col">
                                         <div class="user-card">
                                             <div class="user-info">
-                                             <span class="tb-lead">{{ $price_option->translations->first()->name ?? '' }}</span>
+                               @php
+                                   $trans = $price_option->translations->where('lang_id', $lang_id)->first();
+                                   $eng = $price_option->translations->where('lang_id', 1)->first();
+                                   $translatedName = $trans->name ?? ($price_option->slug ?? '');
+                                   $englishName = $eng->name ?? ($price_option->slug ?? '');
+                               @endphp
+                               <span class="tb-lead">{{ $translatedName }}</span>
+                             </div>
+                           </div>
+                        </td>
+                        <td class="nk-tb-col">
+                            <div class="user-card">
+                                <div class="user-info">
+                                    <span class="tb-lead">{{ $englishName }}</span>
 
                                             </div>
                                         </div>
@@ -191,17 +205,17 @@
                                                         style="height:auto !important;">
                                                         <ul class="link-list-opt no-bdr">
                                                             <li><a
-                                                                    href="{{route('priceoptionsAdd',$price_option->id) }}"><em
-                                                                        class="icon ni ni-edit-fill"></em><span>Edit</span></a>
-                                                            </li>
+                                                                    href="{{ route('priceoptionsAdd', ['id' => $price_option->id, 'lang' => $langCode]) }}"><em
+                                                                         class="icon ni ni-edit-fill"></em><span>Edit</span></a>
+                                                             </li>
                                                             <li class="removeConfermation"
                                                             data-url="{{ route('priceoptionsremove',$price_option->id) }}">
                                                                 <a
                                                                 href="{{ route('priceoptionsremove',$price_option->id)}}"><em
                                                                 class="icon ni ni-trash-fill"></em><span>Remove</span></a>
                                                          </li>
-                                                         <li>
-                                                            <a onclick="openOfferTranslateModal({{ $price_options->first()->id }}, '{{ $price_options->first()->translations->first()->name ?? $price_options->first()->slug }}')">
+                                                        <li>
+                                                            <a onclick="openOfferTranslateModal({{ $price_option->id }}, '{{ addslashes($englishName) }}')">
                                                                 <em class="icon ni ni-globe"></em> <span>Translations</span>
                                                             </a>
                                                         </li>
@@ -298,7 +312,7 @@
             success: function (response) {
                 let tbody = '';
                 if (response.price_options.length === 0) {
-                    tbody = `<tr><td colspan="2" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
+                    tbody = `<tr><td colspan="3" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
                 } else {
                     response.price_options.forEach(option => {
                         tbody += `
@@ -306,8 +320,14 @@
                                 <td class="nk-tb-col">
                                     <div class="user-card">
                                         <div class="user-info">
-                                            <span class="tb-lead">${option.name ?? ''}</span>
-                                        </div>
+                                            <span class="tb-lead">${option.translated_name ?? ''}</span>
+                        </div>
+                        </div>
+                        </td>
+                        <td class="nk-tb-col">
+                            <div class="user-card">
+                                <div class="user-info">
+                               <span class="tb-lead">${option.english_name ?? ""}</span>
                                     </div>
                                 </td>
                                 <td class="nk-tb-col nk-tb-col-tools">
@@ -320,12 +340,12 @@
                                                 <div class="dropdown-menu dropdown-menu-end edit-btn">
                                                     <ul class="link-list-opt no-bdr">
                                                         <li>
-                                                            <a href="/admin-dashboard/price-options/add/${option.id}">
+                                                            <a href="/admin-dashboard/businesses/pricing-options/add/${option.id}?lang=${langCode}">
                                                                 <em class="icon ni ni-edit-fill"></em><span>Edit</span>
                                                             </a>
                                                         </li>
-                                                        <li class="removeConfermation" data-url="/admin-dashboard/price-options/remove/${option.id}">
-                                                            <a href="/admin-dashboard/price-options/remove/${option.id}">
+                                                        <li class="removeConfermation" data-url="/admin-dashboard/businesses/pricing-options/remove/${option.id}">
+                                                            <a href="/admin-dashboard/businesses/pricing-options/remove/${option.id}">
                                                                 <em class="icon ni ni-trash-fill"></em><span>Remove</span>
                                                             </a>
                                                         </li>
