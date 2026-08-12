@@ -142,6 +142,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('admin-dashboard/businesses/pricing-options/remove/{id}', [AdminBusinessController::class, 'priceoptionsremove'])->name('priceoptionsremove');
     // Offer Option translation route
     Route::post('admin-dashboard/businesses/pricing-options/translate', [AdminBusinessController::class, 'saveOfferTranslation'])->name('admin.save-offer-translation');
+    Route::get('admin-dashboard/businesses/pricing-options/get-translations/{id}', [AdminBusinessController::class, 'getOfferTranslations'])->name('admin.get-offer-translations');
 
     // SiteLanguagesController
 

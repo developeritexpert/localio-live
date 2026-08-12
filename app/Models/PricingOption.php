@@ -10,6 +10,11 @@ class PricingOption extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_pricing_option');
+    }
+
     public function translations()
     {
         return $this->hasMany(PricingOptionTranslation::class);

@@ -29,6 +29,11 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
     public function scopeOnlyParents($query)
     {
         return $query->whereNull('parent_id');
@@ -118,6 +123,11 @@ public function imageMedia()
     public function filters()
     {
         return $this->hasMany(Filter::class);
+    }
+
+    public function pricingOptions()
+    {
+        return $this->belongsToMany(PricingOption::class, 'category_pricing_option');
     }
 
     public function products()

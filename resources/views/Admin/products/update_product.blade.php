@@ -1,9 +1,14 @@
 @extends('admin_layout.master')
 @section('content')
+<style>
+    .dropdown-menu.dropdown-menu-end.edit-btn.show {
+    height: 25vh !important;
+}
+</style>
      <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between">
             <div class="nk-block-head-content">
-                <h4 class="title nk-block-title">Edit Product</h4>
+                <h4 class="title nk-block-title">Edit starting price</h4>
                 <div class="nk-block-des text-soft">
                     <p>Update product information and settings</p>
                 </div>

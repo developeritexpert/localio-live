@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Business;
+use App\Models\Category;
 use App\Models\Language;
 use App\Models\PricingOption;
 use App\Models\PricingOptionTranslation;
@@ -119,18 +120,29 @@ class AdminBusinessController extends Controller
 
         $langCode = $selectedLang ? $selectedLang->lang_code : 'en-us';
 
-        $price_options = PricingOption::with(['translations'])->get();
+        $price_options = PricingOption::with(['translations', 'categories.categoryTranslations'])->get();
 
         if ($request->ajax()) {
             $formatted = $price_options->map(function ($opt) use ($lang_id) {
                 $translated = $opt->translations->where('lang_id', $lang_id)->first();
                 $english = $opt->translations->where('lang_id', 1)->first();
 
+                $categoryNames = $opt->categories->map(function ($cat) use ($lang_id) {
+                    $trans = $cat->categoryTranslations->where('lang_id', $lang_id)->first() 
+                          ?? $cat->categoryTranslations->where('lang_id', 1)->first();
+                    return $trans->name ?? 'Category #' . $cat->id;
+                })->toArray();
+
                 return [
-                    'id'              => $opt->id,
-                    'name'            => $english->name ?? ($opt->slug ?? ''),
-                    'translated_name' => $translated->name ?? ($opt->slug ?? ''),
-                    'english_name'    => $english->name ?? ($opt->slug ?? ''),
+                    'id'                     => $opt->id,
+                    'name'                   => $english->name ?? ($opt->slug ?? ''),
+                    'translated_name'        => $translated->name ?? ($opt->slug ?? ''),
+                    'english_name'           => $english->name ?? ($opt->slug ?? ''),
+                    'button_text'            => $translated->button_text ?? ($english->button_text ?? 'Claim now'),
+                    'translated_button_text' => $translated->button_text ?? ($english->button_text ?? 'Claim now'),
+                    'english_button_text'    => $english->button_text ?? 'Claim now',
+                    'scope'                  => $opt->scope ?? 'global',
+                    'categories'             => $categoryNames,
                 ];
             });
 
@@ -158,11 +170,18 @@ class AdminBusinessController extends Controller
         $langCode = $selectedLang ? $selectedLang->lang_code : 'en-us';
         $languages = Language::where('status', 1)->get();
 
+        // Fetch parent categories with subcategories for selector
+        $allCategories = Category::with(['categoryTranslations', 'subCategories.categoryTranslations'])
+            ->where(function($q) {
+                $q->whereNull('parent_id')->orWhere('parent_id', 0);
+            })
+            ->get();
+
         if ($id != null) {
-            $pricing_data = PricingOption::with('translations')->where('id', $id)->first();
-            return view('Admin.pricing_option.add', compact('pricing_data', 'lang_id', 'langCode', 'languages'));
+            $pricing_data = PricingOption::with(['translations', 'categories'])->where('id', $id)->first();
+            return view('Admin.pricing_option.add', compact('pricing_data', 'lang_id', 'langCode', 'languages', 'allCategories'));
         }
-        return view('Admin.pricing_option.add', compact('lang_id', 'langCode', 'languages'));
+        return view('Admin.pricing_option.add', compact('lang_id', 'langCode', 'languages', 'allCategories'));
     }
 
     public function priceoptionsAddprocess(Request $request)
@@ -181,33 +200,70 @@ class AdminBusinessController extends Controller
             $price_option = new PricingOption();
         }
 
+        // Scope handling
+        $price_option->scope = $request->input('scope', 'global');
+
         // Auto-generate slug from name if creating or slug is empty
         if (!$price_option->slug) {
             $price_option->slug = Str::slug($request->name);
         }
         $price_option->save();
 
-        $langId = $request->input('lang_id', getCurrentLanguageID());
+        // Sync Categories if category_specific, else detach all
+        if ($price_option->scope === 'category_specific') {
+            $price_option->categories()->sync($request->input('categories', []));
+        } else {
+            $price_option->categories()->detach();
+        }
+
+        $langId = getCurrentLanguageID() ?: 1;
+        $buttonText = $request->input('button_text', 'Claim now');
 
         PricingOptionTranslation::updateOrCreate(
             ['pricing_option_id' => $price_option->id, 'lang_id' => $langId],
-            ['name' => $request->name]
+            [
+                'name' => $request->name,
+                'button_text' => $buttonText,
+            ]
         );
 
-        $selectedLang = Language::find($langId);
-        $redirectUrl = route('priceoptions');
-        if ($selectedLang) {
-            $redirectUrl .= '?lang=' . $selectedLang->lang_code;
-        }
-
-        return redirect($redirectUrl)->with('success', 'Pricing Option saved successfully.');
+        return redirect()->route('priceoptions')->with('success', 'Pricing Option saved successfully.');
     }
 
     public function priceoptionsremove($id){
         $price_option = PricingOption::find($id);
-        $price_option->translations()->delete();
-        $price_option->delete();
+        if ($price_option) {
+            $price_option->categories()->detach();
+            $price_option->translations()->delete();
+            $price_option->delete();
+        }
         return redirect()->route('priceoptions')->with('success','Price Option Removed Successfully');
+    }
+
+    public function getOfferTranslations($id)
+    {
+        $pricingOption = PricingOption::with('translations')->find($id);
+        if (!$pricingOption) {
+            return response()->json(['success' => false, 'message' => 'Offer option not found.']);
+        }
+
+        $languages = Language::where('status', 1)->get();
+        $translations = [];
+
+        foreach ($languages as $lang) {
+            $trans = $pricingOption->translations->where('lang_id', $lang->id)->first();
+            $translations[$lang->id] = [
+                'name' => $trans ? $trans->name : '',
+                'button_text' => $trans ? ($trans->button_text ?? '') : '',
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'offer_id' => $pricingOption->id,
+            'slug' => $pricingOption->slug,
+            'translations' => $translations,
+        ]);
     }
 
     public function saveOfferTranslation(Request $request)
@@ -215,39 +271,61 @@ class AdminBusinessController extends Controller
         $offerId = $request->input('offer_id');
         $sourceLangId = $request->input('source_lang_id');
         $targetLangIds = $request->input('target_lang_ids', []);
+        $manualTranslations = $request->input('manual_translations', []);
 
         $pricingOption = PricingOption::with('translations')->find($offerId);
         if (!$pricingOption) {
             return response()->json(['success' => false, 'message' => 'Offer option not found.']);
         }
 
-        // Get the source translation text
-        $sourceTranslation = $pricingOption->translations->where('lang_id', $sourceLangId)->first();
-        $sourceName = $sourceTranslation->name ?? $pricingOption->slug;
+        // 1. Process manual edits for any language passed
+        if (!empty($manualTranslations) && is_array($manualTranslations)) {
+            foreach ($manualTranslations as $langId => $data) {
+                $name = trim($data['name'] ?? '');
+                $buttonText = trim($data['button_text'] ?? '');
 
-        if (empty($sourceName)) {
-            return response()->json(['success' => false, 'message' => 'Source translation not found.']);
+                if ($name !== '' || $buttonText !== '') {
+                    PricingOptionTranslation::updateOrCreate(
+                        ['pricing_option_id' => $offerId, 'lang_id' => $langId],
+                        [
+                            'name' => $name !== '' ? $name : ($pricingOption->slug ?? ''),
+                            'button_text' => $buttonText !== '' ? $buttonText : 'Claim now',
+                        ]
+                    );
+                }
+            }
         }
 
-        // Get source and target language codes for Google Translate
-        $sourceLang = Language::find($sourceLangId);
-        $sourceCode = $sourceLang ? explode('-', $sourceLang->lang_code)[0] : 'en';
+        // 2. Process auto-translations for target languages if selected
+        if (!empty($targetLangIds)) {
+            $sourceTranslation = $pricingOption->translations->where('lang_id', $sourceLangId)->first();
+            $sourceName = $sourceTranslation->name ?? $pricingOption->slug;
+            $sourceButtonText = $sourceTranslation->button_text ?? 'Claim now';
 
-        foreach ($targetLangIds as $targetLangId) {
-            if ($targetLangId == $sourceLangId) {
-                continue;
+            if (!empty($sourceName)) {
+                $sourceLang = Language::find($sourceLangId);
+                $sourceCode = $sourceLang ? explode('-', $sourceLang->lang_code)[0] : 'en';
+
+                foreach ($targetLangIds as $targetLangId) {
+                    if ($targetLangId == $sourceLangId) {
+                        continue;
+                    }
+
+                    $targetLang = Language::find($targetLangId);
+                    $targetCode = $targetLang ? explode('-', $targetLang->lang_code)[0] : 'en';
+
+                    $translatedName = $this->translateText($sourceName, $sourceCode, $targetCode);
+                    $translatedButtonText = $this->translateText($sourceButtonText, $sourceCode, $targetCode);
+
+                    PricingOptionTranslation::updateOrCreate(
+                        ['pricing_option_id' => $offerId, 'lang_id' => $targetLangId],
+                        [
+                            'name' => $translatedName,
+                            'button_text' => $translatedButtonText,
+                        ]
+                    );
+                }
             }
-
-            $targetLang = Language::find($targetLangId);
-            $targetCode = $targetLang ? explode('-', $targetLang->lang_code)[0] : 'en';
-
-            // Use Google Translate API (free endpoint)
-            $translatedName = $this->translateText($sourceName, $sourceCode, $targetCode);
-
-            PricingOptionTranslation::updateOrCreate(
-                ['pricing_option_id' => $offerId, 'lang_id' => $targetLangId],
-                ['name' => $translatedName]
-            );
         }
 
         return response()->json(['success' => true, 'message' => 'Translations saved successfully.']);
