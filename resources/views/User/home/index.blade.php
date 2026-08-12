@@ -169,8 +169,8 @@
                                                                 <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
                                                                     <div class="best-value-inline" >
                                                                         <!-- <i class="fa-regular fa-thumbs-up"></i> -->
-                                                                        <i class="far fa-star text-warning" style="font-size: 12px !important; color: #06498b !important;"></i>
-                                                                       <span style="text-transform: none !important;">Recommended</span>
+                                                                        <i class="far fa-star text-warning"></i>
+                                                                       <span style="text-transform: none !important;">Top choice</span>
                                                                     </div>
                                                                 </div>
                                                             @endif
@@ -192,7 +192,7 @@
                                                                         </div>
                                                                     </div>
                                                                     <div class="rating-group tp-btm d-flex align-items-center" style="gap: 6px;">
-                                                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ $avgRating }}</span>
+                                                                        <span class="rate_box_num" style="">{{ $avgRating }}</span>
                                                                         <div class="inn_ul d-inline-flex m-0">
                                                                             <div class="tab_star_li">
                                                                                 @php
@@ -203,7 +203,7 @@
                                                                                 @endfor
                                                                             </div>
                                                                         </div>
-                                                                        <span class="rate_box_count" style="font-size: 13px;">({{ $ratingsCount }})</span>
+                                                                        <span class="rate_box_count" style="">({{ $ratingsCount }})</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -592,7 +592,7 @@
                     </div>
                 </div>
                 <div class="right-tool-btn text-center">
-                    <a href="javascript:void(0)" onclick="openLoginModal()" class="cta">Sign up for free</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Sign up for free</a>
                 </div>
             </div>
         </div>

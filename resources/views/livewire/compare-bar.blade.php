@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Right side: Compare Action Button -->
-                <button class="btn btn-primary start-comparing-btn" wire:click="goToComparison" @if(count($comparedProductIds) < 2) disabled title="Please select 2 products to compare" style="opacity: 0.6; cursor: not-allowed;" @endif>
+                <button class="blue-btn btn btn-primary start-comparing-btn" wire:click="goToComparison" @if(count($comparedProductIds) < 2) disabled title="Please select 2 products to compare" style="opacity: 0.6; cursor: not-allowed;" @endif>
                     Start comparing
                 </button>
             </div>

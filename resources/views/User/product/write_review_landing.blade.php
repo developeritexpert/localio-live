@@ -19,7 +19,7 @@
         
         <!-- Trending Section -->
         <div class="mb-5">
-            <h2 class=" mb-4" style="color: #002347; font-size: 24px; ">Trending Software & Services</h2>
+            <h2 class=" mb-4" style="color: #002347; font-size: 24px; ">Trending products</h2>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($trendingBusinesses as $business)
                     @php
@@ -31,11 +31,11 @@
                             <div style="width: 60px; height: 60px; border-radius: 10px; overflow: hidden; background: #f8fafc;  display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
                                 <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 100%; max-height: 100%; object-fit: none;">
                             </div>
-                            <h5 class="mb-2 text-truncate w-100" style="color:#002347; font-size: 16px; font-weight:600;">
+                            <h5 class="mb-1 text-truncate w-100" style="color:#002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
                             </h5>
-                            <div class="d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 6px;">
-                                <span style="font-size: 11px; font-weight: 500; color: #333;">{{ number_format($ratingAvg, 1) }}</span>
+                            <div class="rating-group d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 6px;">
+                                <span style="">{{ number_format($ratingAvg, 1) }}</span>
                                 <div class="text-warning d-flex" style="font-size: 11px; color: #ff9d28 !important;">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($ratingAvg))
@@ -47,9 +47,9 @@
                                         @endif
                                     @endfor
                                 </div>
-                                <span class="" style="font-size: 11px; font-weight: 500;">({{ $count }})</span>
+                                <span class="" style="">({{ $count }})</span>
                             </div>
-                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2  fw-semibold" style="border-radius: 20px; font-size: 14px;  background-color:#003f7d; color: #fff; transition:unset !important;">
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="blue-btn  w-100 py-2  fw-semibold" style="border-radius: 20px; font-size: 14px;  background-color:#003f7d; color: #fff; transition:unset !important;">
                                 Review
                             </a>
                         </div>
