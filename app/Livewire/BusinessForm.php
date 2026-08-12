@@ -55,7 +55,7 @@ class BusinessForm extends Component
     public $countries = [];
     public $selectedCountry = null;
     public $selectedCountryName = null;
-    public $active_all_countries = 0;
+    public $active_all_countries = 1;
 
     // Form fields
     public $name = '';
@@ -71,7 +71,7 @@ class BusinessForm extends Component
     public $headquaters = '';
     public $pricingOptions = '';
     public $year_found = '';
-    public $languages_supported = '';
+    public $languages_supported = 1;
     public $support_options = '';
     public $permanent_url = '';
     public $status = 0;
@@ -1652,7 +1652,8 @@ class BusinessForm extends Component
         $this->affiliate_link = '';
         $this->websiteUrls = [''];
         $this->features = ['', '', ''];
-        $this->active_all_countries = 0;
+       $this->languages_supported = 1;
+        $this->active_all_countries = 1;
         $this->loadCountries();
     }
 
