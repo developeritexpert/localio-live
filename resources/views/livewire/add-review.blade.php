@@ -87,7 +87,7 @@
                                          <hr class="my-3">
 
                                          <div class="mb-3">
-                                             <label class="form-label mb-2" style="font-size: 14px; color:#002347; font-weight:600">
+                                             <label class="form-label mb-3 recommend-txt" style="">
                                                  Would you recommend {{ $businessName }}?
                                              </label>
                                              <div class="d-flex flex-column flex-sm-row gap-2 gap-sm-4">
@@ -115,7 +115,7 @@
                                              <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="closeModal" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
                                                  Cancel
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>

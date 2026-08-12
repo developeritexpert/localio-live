@@ -312,7 +312,7 @@
                                                     <h6 class="blue-text big-bld mt-2">Free Trial<br>Available</h6>
                                                 </div>
                                                 <div class="mt-3">
-                                                    <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" class="blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
+                                                    <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" class="blue-btn blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -349,11 +349,11 @@
 
                         <div class="col-md-6">
                             <div class="sales-crm-pack crm-pack-lft compari_crm_pck">
-                                <div class="inn_sl_hed">
+                                <div class="inn_sl_hed review-brand-icon ">
                                     <div class="sli_img choice_img">
                                         <img src="{{ asset($business->icon_id) }}" alt="No Image available">
                                     </div>
-                                    <div class="sl_h">
+                                    <div class="sl_h review-brand-icon-sl_h">
                                         <div class="inn_h d-flex align-items-center ">
                                             <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
 

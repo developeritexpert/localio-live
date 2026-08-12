@@ -174,6 +174,7 @@ class AddReview extends Component
             'lang_id'     => $lang_id,
             'rating'      => $avg_rating,
             'recommend'   => (bool)$this->recommend,
+            'status'      => 'inactive',
         ]);
 
         $this->reviewId = $review->id;

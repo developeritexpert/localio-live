@@ -5,12 +5,12 @@
         <div class="container">
             <div class="row">
                 <!-- Left Sidebar -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     @include('User.terms_condition._sidebar', ['activeSlug' => $activeSlug ?? ''])
                 </div>
 
                 <!-- Right Content -->
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="mb-5">
                         <h2 class="mb-4">{{ $document->title ?? $documentTitle }}</h2>
                         <div class="legal-document-content">
@@ -66,7 +66,7 @@
                  </div>
               </div>
               <div class="right-tool-btn text-center">
-                 <a href="{{route('category')}}" class="cta">Get Started</a>
+                 <a href="{{route('category')}}" class="blue-btn cta">Get Started</a>
               </div>
            </div>
         </div>

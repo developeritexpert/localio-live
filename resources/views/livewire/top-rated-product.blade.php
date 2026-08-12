@@ -165,7 +165,7 @@
                                             <li class="breadcrumb-item">
                                                 <a href=""
                                                    style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
-                                                    Top-rated products
+                                                    Top rated
                                                 </a>
                                             </li>
                                         
@@ -566,8 +566,8 @@
                                          {{-- Trigger pill button --}}
                                          <button type="button"
                                                  wire:click="toggleSortDropdown"
-                                                 class="d-inline-flex align-items-center gap-2"
-                                                 style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; font-size: 13.5px; font-weight: 600; border: 1px solid #cbd5e1; outline: none;  cursor: pointer;"
+                                                 class="sorting d-inline-flex align-items-center gap-2"
+                                                 style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none;  cursor: pointer;"
                                             
                                                  >
                                              <span>Sort: <span>{{ $currentLabel }}</span></span>
@@ -611,8 +611,8 @@
                                                 <div class="card-compare-m">
                                                     @if($isRecommended)
                                                          <div style="margin-bottom: 25px;">
-                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">
-                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Recommended
+                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500;">
+                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Top choice
                                                              </span>
                                                          </div>
                                                      @endif
@@ -624,8 +624,8 @@
                                                             <div class="auto-choice-hd" style="border: none; padding: 0; margin-bottom: 0;">
                                                                 <div class="inn_sl_hed" style="width: 100%;">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
-                                                                        <div class="sli_img choice_img">
-                                                                            <img class="slider_img" src="{{ asset($item->icon_id) }}" alt="No Images For This Product">
+                                                                        <div class="top-product-logo">
+                                                                            <img class="" src="{{ asset($item->icon_id) }}" alt="No Images For This Product">
                                                                         </div>
                                                                     </a>
                                                                     <div class="sl_h">

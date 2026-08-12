@@ -1,9 +1,14 @@
 @extends('admin_layout.master')
 @section('content')
+<style>
+    .dropdown-menu.dropdown-menu-end.edit-btn.show {
+    height: 25vh !important;
+}
+</style>
      <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between">
             <div class="nk-block-head-content">
-                <h4 class="title nk-block-title">Edit Product</h4>
+                <h4 class="title nk-block-title">Edit starting price</h4>
                 <div class="nk-block-des text-soft">
                     <p>Update product information and settings</p>
                 </div>
@@ -412,102 +417,119 @@
                                 </div>
                             </div>
                 </div> 
-                <div class="col-md-4">
+                <!-- old right side -->
+                <div class="col-md-4 mt-4">
+                    <!-- Card 1: View Page, Product Status, Update Button -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
-                            <div class="row g-3">
-                                <div class="card  border-0">
-                                    <div class="col-md-12 mt-1 d-flex justify-content-between">
-                                        <a href="#" class="btn btn-link text-center"><span><b>View
-                                                    Page</b></span></a>
-                                        <button type="submit" class="btn btn-primary" id="submitBtn"><span>Update
-                                                </span></button>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label d-block text-left">Product Status</label>
-                                        <div class="d-flex align-items-center justify-content-left">
-                                            <div class="custom-control custom-switch">
-                                                <!-- Hidden input to ensure "private" is sent if unchecked -->
-                                                <input type="hidden" name="status" value="private">
+                            <div class="card border-0">
+                                <div class="col-md-12 mt-1 d-flex justify-content-between">
+                                    <a href="#" class="btn btn-link text-center"><span><b>View
+                                                Page</b></span></a>
+                                    <button type="submit" class="btn btn-primary" id="submitBtn"><span>Update
+                                            </span></button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label d-block text-left">Product Status</label>
+                                    <div class="d-flex align-items-center justify-content-left">
+                                        <div class="custom-control custom-switch">
+                                            <!-- Hidden input to ensure "private" is sent if unchecked -->
+                                            <input type="hidden" name="status" value="private">
 
-                                                <input type="checkbox" class="custom-control-input"
-                                                    id="productStatusSwitch" name="status" value="public"
-                                                    {{ $product->status == 'public' ? 'checked' : '' }}>
-                                                <label class="custom-control-label"
-                                                    for="productStatusSwitch">Public</label>
-                                            </div>
+                                            <input type="checkbox" class="custom-control-input"
+                                                id="productStatusSwitch" name="status" value="public"
+                                                {{ $product->status == 'public' ? 'checked' : '' }}>
+                                            <label class="custom-control-label"
+                                                for="productStatusSwitch">Public</label>
                                         </div>
                                     </div>
-                                    <div class="card-body">
-                                        {{-- Add Link Business Dropdown --}}
-                                        <div class="form-group">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Linked Business -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="card border-0">
+                                <div class="card-body">
+                                    {{-- Add Link Business Dropdown --}}
+                                    <div class="form-group">
+                                        @php
+                                            $businessOptions = $businesses->pluck('translations')->mapWithKeys(function ($translations, $id) {
+                                                $name = optional($translations->first())->name ?? 'Business #' . $id;
+                                                return [$translations->first()->business_id => $name];
+                                            });
+
+                                            $selectedBusinessIds = old('product_businesses')
+                                                ?: (isset($product_business) ? $product_business->pluck('id')->values()->all() : []);
+                                        @endphp
+
+                                        <x-google-input
+                                            type="select"
+                                            name="product_businesses"
+                                            id="product-businesses"
+                                            label="Linked Business"
+                                            :options="$businessOptions"
+                                            :selectedValues="$selectedBusinessIds"
+                                            :alwaysActive="true"
+                                            multiple
+                                            class="product-businesses"
+                                        />
+                                        @error('product_businesses')
+                                            <div class="text-danger small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Active Countries/Regions -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="card border-0">
+                                <div class="card-body">
+                                    <!-- Active Countries/Regions -->
+                                    <div class="form-group">
+                                        <label class="form-label font-weight-bold">Active Countries/Regions</label>
+                                        <div class="d-flex mb-2">
+                                            <div class="form-check me-3">
+                                                <input class="form-check-input country-availability-radio" type="radio" id="active_all_countries_1"
+                                                    name="active_all_countries" value="1"
+                                                    {{ old('active_all_countries', (string)$product->active_all_countries) == '1' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="active_all_countries_1">All</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input country-availability-radio" type="radio" id="active_all_countries_0"
+                                                    name="active_all_countries" value="0"
+                                                    {{ old('active_all_countries', (string)$product->active_all_countries) == '0' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="active_all_countries_0">Specific Countries/Regions</label>
+                                            </div>
+                                        </div>
+
+                                        <div id="product-countries-wrapper" style="{{ old('active_all_countries', (string)$product->active_all_countries) == '1' ? 'display:none;' : '' }}">
                                             @php
-                                                $businessOptions = $businesses->pluck('translations')->mapWithKeys(function ($translations, $id) {
-                                                    $name = optional($translations->first())->name ?? 'Business #' . $id;
-                                                    return [$translations->first()->business_id => $name];
-                                                });
-
-                                                $selectedBusinessIds = old('product_businesses')
-                                                    ?: (isset($product_business) ? $product_business->pluck('id')->values()->all() : []);
+                                            $countryOptions = $countries->mapWithKeys(function($country) {
+                                                return [$country->id => $country->name . ' (' . $country->country_code . ')'];
+                                            })->toArray();
                                             @endphp
-
+                                            
                                             <x-google-input
                                                 type="select"
-                                                name="product_businesses"
-                                                id="product-businesses"
-                                                label="Linked Business"
-                                                :options="$businessOptions"
-                                                :selectedValues="$selectedBusinessIds"
+                                                name="product_countries"
+                                                id="product-countries"
+                                                label="Countries/Regions Availability"
+                                                :options="$countryOptions"
+                                                :selectedValues="$selectedCountries"
                                                 :alwaysActive="true"
                                                 multiple
-                                                class="product-businesses"
+                                                class="select2-multiple"
                                             />
-                                            @error('product_businesses')
+                                            
+                                            @error('product_countries')
                                                 <div class="text-danger small">{{ $message }}</div>
                                             @enderror
-                                        </div>
-
-                                        <!-- Active Countries/Regions -->
-                                        <div class="form-group mt-3">
-                                            <label class="form-label font-weight-bold">Active Countries/Regions</label>
-                                            <div class="d-flex mb-2">
-                                                <div class="form-check me-3">
-                                                    <input class="form-check-input country-availability-radio" type="radio" id="active_all_countries_1"
-                                                        name="active_all_countries" value="1"
-                                                        {{ old('active_all_countries', (string)$product->active_all_countries) == '1' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="active_all_countries_1">All</label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input country-availability-radio" type="radio" id="active_all_countries_0"
-                                                        name="active_all_countries" value="0"
-                                                        {{ old('active_all_countries', (string)$product->active_all_countries) == '0' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="active_all_countries_0">Specific Countries/Regions</label>
-                                                </div>
-                                            </div>
-
-                                            <div id="product-countries-wrapper" style="{{ old('active_all_countries', (string)$product->active_all_countries) == '1' ? 'display:none;' : '' }}">
-                                                @php
-                                                $countryOptions = $countries->mapWithKeys(function($country) {
-                                                    return [$country->id => $country->name . ' (' . $country->country_code . ')'];
-                                                })->toArray();
-                                                @endphp
-                                                
-                                                <x-google-input
-                                                    type="select"
-                                                    name="product_countries"
-                                                    id="product-countries"
-                                                    label="Countries/Regions Availability"
-                                                    :options="$countryOptions"
-                                                    :selectedValues="$selectedCountries"
-                                                    :alwaysActive="true"
-                                                    multiple
-                                                    class="select2-multiple"
-                                                />
-                                                
-                                                @error('product_countries')
-                                                    <div class="text-danger small">{{ $message }}</div>
-                                                @enderror
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -515,6 +537,8 @@
                         </div>
                     </div>
                 </div>
+                <!-- new right side -->
+
             </div>
         </form>
     </div>

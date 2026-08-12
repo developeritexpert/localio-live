@@ -31,9 +31,11 @@ class Business extends Model
         'high_intent_keywords',
         'pro_cons_intro',
         'pro_cons_summary',
+        'admin_rating',
     ];
     protected $casts = [
         'is_affiliate' => 'integer',
+        'admin_rating' => 'float',
         'business_images' => 'array',
         'screenshot_urls' => 'array',
     ];
@@ -167,6 +169,47 @@ class Business extends Model
     public function isAffiliated()
     {
         return (bool) $this->is_affiliate;
+    }
+
+    /**
+     * Get active (approved) user reviews count.
+     */
+    public function getApprovedReviewsCountAttribute()
+    {
+        return $this->reviews->where('status', 'active')->count();
+    }
+
+    /**
+     * Get active (approved) user reviews average rating.
+     */
+    public function getApprovedUserRatingAttribute()
+    {
+        $approvedReviews = $this->reviews->where('status', 'active');
+        return $approvedReviews->count() > 0 ? round($approvedReviews->avg('rating'), 1) : null;
+    }
+
+    /**
+     * Get effective business display rating.
+     * Uses approved user review rating if available; falls back to admin_rating if set; otherwise null.
+     */
+    public function getDisplayRatingAttribute()
+    {
+        $approvedCount = $this->reviews->where('status', 'active')->count();
+        if ($approvedCount > 0) {
+            return round($this->reviews->where('status', 'active')->avg('rating'), 1);
+        }
+        if ($this->admin_rating !== null && (float)$this->admin_rating > 0) {
+            return (float)$this->admin_rating;
+        }
+        return null;
+    }
+
+    /**
+     * Check if business has approved user reviews (for showing detailed rating bars).
+     */
+    public function getHasUserReviewsAttribute()
+    {
+        return $this->reviews->where('status', 'active')->count() > 0;
     }
 
 }

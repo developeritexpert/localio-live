@@ -45,7 +45,7 @@
                             <th class="nk-tb-col"><span class="sub-text">Name</span></th>
                             <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                             <th class="nk-tb-col"><span class="sub-text">Business Category</span></th>
-                            <th class="nk-tb-col"><span class="sub-text">Permanent Link</span></th>
+                            <th class="nk-tb-col"><span class="sub-text">Affiliate</span></th>
                             <th class="nk-tb-col tb-tnx-action">
                                 <span>Action</span>
                             </th>
@@ -83,7 +83,13 @@
                                 <td class="nk-tb-col">
                                     <div class="user-card">
                                         <div class="user-info">
-                                            <span class="tb-lead">{{ $business->permanent_url ?? 'N/A' }}</span>
+                                            <span class="tb-lead">
+                                @if($business->is_affiliate)
+                                    <em class=" ni ni-check-circle text-success fs-5"></em>
+                                @else
+                                    <em class=" ni ni-cross-circle text-danger fs-5"></em>
+                                @endif
+                             </span>
                                         </div>
                                     </div>
                                 </td>

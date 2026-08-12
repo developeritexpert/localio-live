@@ -2546,7 +2546,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </div>
                                     </div>
                                     <div class="accor-btn">
-                                        <button type="submit" class="cta cta_white">Continue</button>
+                                        <button type="submit" class="blue-btn cta cta_white">Continue</button>
                                     </div>
                                 </form>
                             </div>
@@ -2610,7 +2610,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             </select>
                             <label for="modalCompanySize">Company size</label>
                         </div>
-                         <div class="row mt-3">
+                         <div class="row mt-4">
                         <div class="col-12">
                             <div class="form-check mb-3">
                                 <input
@@ -2659,7 +2659,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
 
                         <div class="accor-btn mt-4">
-                            <button type="submit" class="cta cta_white register_details_btn w-100 py-3 fw-bold" style="text-transform:unset !important; background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign up</button>
+                            <button type="submit" class="blue-btn cta cta_white register_details_btn w-100 py-3 " style="text-transform:unset !important; background-color: #06498b; color: white; border-radius: 30px; font-size: 15px; transition: background 0.2s;">Sign up</button>
                         </div>
                     </form>
                 </div>

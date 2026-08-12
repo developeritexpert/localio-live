@@ -1,5 +1,10 @@
 @extends('admin_layout.master')
 @section('content')
+<style>
+    .dropdown-menu.dropdown-menu-end.edit-btn.show {
+    height: 10rem !important;
+}
+</style>
     <div class="nk-block nk-block-lg offer-options">
         <div class="nk-block-head nk-block-head-sm">
             <div class="nk-block-between">
@@ -12,56 +17,6 @@
                         <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
-
-                            {{-- <ul class="nk-block-tools g-3">
-
-                                <li class="nk-block-tools-opt">
-                                    <a href="#" data-target="addProduct"
-                                        class="toggle btn btn-icon btn-primary d-md-none"><em
-                                            class="icon ni ni-plus"></em></a>
-                                            @if(getCurrentLanguageID() === 1)
-                                            <a href="{{ route('priceoptionsAdd') }}"
-                                                class="btn btn-primary d-none d-md-inline-flex btn-localio"><em
-                                            class=""></em><span>Add Pricing Options</span></a>
-                                            @endif
-                                </li>
-                            </ul> --}}
-
-                            {{-- @php
-                                $countries = \App\Models\Country::where('status', 1)->get();
-                            @endphp --}}
-
-                            {{-- <ul class="nk-block-tools g-3">
-                                <li class="nk-block-tools-opt">
-                                    <!-- Mobile Toggle Button -->
-                                    <a href="#" data-target="addProduct"
-                                    class="toggle btn btn-icon btn-primary d-md-none">
-                                        <em class="icon ni ni-plus"></em>
-                                    </a>
-
-                                    @if(getCurrentLanguageID() === 1)
-                                        <!-- Main Add Button -->
-                                        <a href="{{ route('priceoptionsAdd') }}"
-                                        class="btn btn-primary d-none d-md-inline-flex btn-localio">
-                                            <em class=""></em><span>Add Pricing Options</span>
-                                        </a>
-                                </li>
-                            </ul> --}}
-
-                                <!-- Dropdown shown always below the button -->
-
-                                {{-- <div class="mt-2">
-                                    <select class="form-select" onchange="location = this.value;">
-                                        <option selected disabled>Select Country</option>
-                                        @foreach($countries as $country)
-                                            <option value="{{ route('priceoptionsAdd', ['country' => $country->code]) }}">
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div> --}}
-                            {{-- @endif --}}
-
                             <div class="mt-2">
                                 <select class="form-select" id="countrySelect" >
                                     <option selected disabled>Select Country</option>
@@ -72,8 +27,6 @@
                                     @endforeach
                                 </select>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -85,28 +38,8 @@
                         <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
-
-                            {{-- <ul class="nk-block-tools g-3">
-
-                                <li class="nk-block-tools-opt">
-                                    <a href="#" data-target="addProduct"
-                                        class="toggle btn btn-icon btn-primary d-md-none"><em
-                                            class="icon ni ni-plus"></em></a>
-                                            @if(getCurrentLanguageID() === 1)
-                                            <a href="{{ route('priceoptionsAdd') }}"
-                                                class="btn btn-primary d-none d-md-inline-flex btn-localio"><em
-                                            class=""></em><span>Add Pricing Options</span></a>
-                                            @endif
-                                </li>
-                            </ul> --}}
-
-                            {{-- @php
-                                $countries = \App\Models\Country::where('status', 1)->get();
-                            @endphp --}}
-
                             <ul class="nk-block-tools g-3">
                                 <li class="nk-block-tools-opt">
-                                    <!-- Mobile Toggle Button -->
                                     <a href="#" data-target="addProduct"
                                     class="toggle btn btn-icon btn-primary d-md-none">
                                         <em class="icon ni ni-plus"></em>
@@ -120,33 +53,7 @@
                                         </a>
                                 </li>
                             </ul>
-
-                                <!-- Dropdown shown always below the button -->
-
-                                {{-- <div class="mt-2">
-                                    <select class="form-select" onchange="location = this.value;">
-                                        <option selected disabled>Select Country</option>
-                                        @foreach($countries as $country)
-                                            <option value="{{ route('priceoptionsAdd', ['country' => $country->code]) }}">
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div> --}}
                             @endif
-
-                            {{-- <div class="mt-2">
-                                <select class="form-select" id="countrySelect" >
-                                    <option selected disabled>Select Country</option>
-                                    @foreach($countries as $country)
-                                        <option value="{{ $country->lang_code }}" {{ $langCode == $country->lang_code ? 'selected' : '' }}>
-                                            {{ $country->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
-
-
                         </div>
                     </div>
                 </div>
@@ -164,7 +71,10 @@
                     @else
                         <thead>
                             <tr class="nk-tb-item nk-tb-head">
+                                <th class="nk-tb-col"><span class="sub-text">Translated Name</span></th>
                                 <th class="nk-tb-col"><span class="sub-text">Name</span></th>
+                                <th class="nk-tb-col"><span class="sub-text">Button Text</span></th>
+                                <th class="nk-tb-col"><span class="sub-text">Scope / Categories</span></th>
                                 <th class="nk-tb-col tb-tnx-action">
                                     <span>Action</span>
                                 </th>
@@ -176,10 +86,44 @@
                                     <td class="nk-tb-col">
                                         <div class="user-card">
                                             <div class="user-info">
-                                             <span class="tb-lead">{{ $price_option->translations->first()->name ?? '' }}</span>
-
+                                                @php
+                                                    $trans = $price_option->translations->where('lang_id', $lang_id)->first();
+                                                    $eng = $price_option->translations->where('lang_id', 1)->first();
+                                                    $translatedName = $trans->name ?? ($price_option->slug ?? '');
+                                                    $englishName = $eng->name ?? ($price_option->slug ?? '');
+                                                    $buttonText = $trans->button_text ?? ($eng->button_text ?? 'Claim now');
+                                                @endphp
+                                                <span class="tb-lead">{{ $translatedName }}</span>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        <div class="user-card">
+                                            <div class="user-info">
+                                                <span class="tb-lead">{{ $englishName }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        <span class="badge bg-outline-primary">{{ $buttonText }}</span>
+                                    </td>
+                                    <td class="nk-tb-col">
+                                        @if($price_option->scope === 'category_specific')
+                                            <span class="badge bg-info mb-1">Category Specific</span>
+                                            <br>
+                                            <small class="text-muted">
+                                                @php
+                                                    $catNames = $price_option->categories->map(function($cat) use ($lang_id) {
+                                                        $t = $cat->categoryTranslations->where('lang_id', $lang_id)->first()
+                                                          ?? $cat->categoryTranslations->where('lang_id', 1)->first();
+                                                        return $t->name ?? 'Category #' . $cat->id;
+                                                    })->join(', ');
+                                                @endphp
+                                                {{ $catNames ?: 'No categories assigned' }}
+                                            </small>
+                                        @else
+                                            <span class="badge bg-success">Global</span>
+                                        @endif
                                     </td>
                                     <td class="nk-tb-col nk-tb-col-tools">
                                         <ul class="nk-tb-actions gx-1">
@@ -191,17 +135,17 @@
                                                         style="height:auto !important;">
                                                         <ul class="link-list-opt no-bdr">
                                                             <li><a
-                                                                    href="{{route('priceoptionsAdd',$price_option->id) }}"><em
-                                                                        class="icon ni ni-edit-fill"></em><span>Edit</span></a>
-                                                            </li>
+                                                                    href="{{ route('priceoptionsAdd', ['id' => $price_option->id]) }}"><em
+                                                                         class="icon ni ni-edit-fill"></em><span>Edit</span></a>
+                                                             </li>
                                                             <li class="removeConfermation"
                                                             data-url="{{ route('priceoptionsremove',$price_option->id) }}">
                                                                 <a
                                                                 href="{{ route('priceoptionsremove',$price_option->id)}}"><em
                                                                 class="icon ni ni-trash-fill"></em><span>Remove</span></a>
                                                          </li>
-                                                         <li>
-                                                            <a onclick="openOfferTranslateModal({{ $price_options->first()->id }}, '{{ $price_options->first()->translations->first()->name ?? $price_options->first()->slug }}')">
+                                                        <li>
+                                                            <a onclick="openOfferTranslateModal({{ $price_option->id }}, '{{ addslashes($englishName) }}')">
                                                                 <em class="icon ni ni-globe"></em> <span>Translations</span>
                                                             </a>
                                                         </li>
@@ -221,7 +165,7 @@
         </div>
     </div>
 
-{{-- Transalation Model in Offer Option --}}
+{{-- Translation Modal in Offer Option --}}
      <div class="modal fade" id="translateOfferModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
@@ -233,14 +177,6 @@
                     <div class="mb-3">
                         <label>Offer Name</label>
                         <input type="text" id="modalOfferName" class="form-control" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label>Source Language</label>
-                        <select id="modalOfferSourceLanguage" class="form-select">
-                            @foreach($languages as $lang)
-                                <option value="{{ $lang['id'] }}">{{ $lang['name'] }}</option>
-                            @endforeach
-                        </select>
                     </div>
                     <div class="mb-3">
                         <label>Target Languages</label>
@@ -298,17 +234,34 @@
             success: function (response) {
                 let tbody = '';
                 if (response.price_options.length === 0) {
-                    tbody = `<tr><td colspan="2" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
+                    tbody = `<tr><td colspan="5" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
                 } else {
                     response.price_options.forEach(option => {
+                        let scopeBadge = option.scope === 'category_specific'
+                            ? `<span class="badge bg-info mb-1">Category Specific</span><br><small class="text-muted">${(option.categories && option.categories.length > 0) ? option.categories.join(', ') : 'No categories assigned'}</small>`
+                            : `<span class="badge bg-success">Global</span>`;
+
                         tbody += `
                             <tr class="nk-tb-item">
                                 <td class="nk-tb-col">
                                     <div class="user-card">
                                         <div class="user-info">
-                                            <span class="tb-lead">${option.name ?? ''}</span>
+                                            <span class="tb-lead">${option.translated_name ?? ''}</span>
                                         </div>
                                     </div>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <div class="user-card">
+                                        <div class="user-info">
+                                            <span class="tb-lead">${option.english_name ?? ""}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="nk-tb-col">
+                                    <span class="badge bg-outline-primary">${option.translated_button_text ?? 'Claim now'}</span>
+                                </td>
+                                <td class="nk-tb-col">
+                                    ${scopeBadge}
                                 </td>
                                 <td class="nk-tb-col nk-tb-col-tools">
                                     <ul class="nk-tb-actions gx-1">
@@ -320,13 +273,18 @@
                                                 <div class="dropdown-menu dropdown-menu-end edit-btn">
                                                     <ul class="link-list-opt no-bdr">
                                                         <li>
-                                                            <a href="/admin-dashboard/price-options/add/${option.id}">
+                                                            <a href="/admin-dashboard/businesses/pricing-options/add/${option.id}">
                                                                 <em class="icon ni ni-edit-fill"></em><span>Edit</span>
                                                             </a>
                                                         </li>
-                                                        <li class="removeConfermation" data-url="/admin-dashboard/price-options/remove/${option.id}">
-                                                            <a href="/admin-dashboard/price-options/remove/${option.id}">
+                                                        <li class="removeConfermation" data-url="/admin-dashboard/businesses/pricing-options/remove/${option.id}">
+                                                            <a href="/admin-dashboard/businesses/pricing-options/remove/${option.id}">
                                                                 <em class="icon ni ni-trash-fill"></em><span>Remove</span>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a onclick="openOfferTranslateModal(${option.id}, '${(option.english_name || '').replace(/'/g, "\\'")}')">
+                                                                <em class="icon ni ni-globe"></em> <span>Translations</span>
                                                             </a>
                                                         </li>
                                                     </ul>
@@ -351,14 +309,13 @@
 </script>
 {{-- End Script --}}
 
-{{-- Transalaton Model Script in Offer Option --}}
+{{-- Translation Modal Script in Offer Option --}}
 <script>
     let currentOfferId = null;
 
     function openOfferTranslateModal(offerId, offerName) {
         currentOfferId = offerId;
         $('#modalOfferName').val(offerName);
-        console.log(offerName);
 
         $('#selectAllOfferLanguages').prop('checked', false);
         $('.target-offer-language').prop('checked', false);
@@ -374,7 +331,7 @@
         const targetLanguages = $('.target-offer-language:checked').map(function () {
             return $(this).val();
         }).get();
-        const sourceLanguageId = $('#modalOfferSourceLanguage').val();
+        const sourceLanguageId = 1;
 
         if (!currentOfferId) {
             NioApp.Toast('No offer selected.', 'error', { position: 'top-right' });
@@ -403,6 +360,8 @@
                 if (data.success) {
                     $('#translateOfferModal').modal('hide');
                     NioApp.Toast('Translation saved successfully!', 'success', { position: 'top-right' });
+                    // Refresh table
+                    $('#countrySelect').trigger('change');
                 } else {
                     NioApp.Toast(data.message || 'Failed to save translation.', 'error', { position: 'top-right' });
                 }

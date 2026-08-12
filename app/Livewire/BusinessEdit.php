@@ -55,7 +55,7 @@ class BusinessEdit extends Component
     public $countries = [];
     public $selectedCountry = null;
     public $selectedCountryName = null;
-    public $active_all_countries = 0;
+    public $active_all_countries = 1;
 
     // Form fields
     public $name = '';
@@ -96,12 +96,13 @@ class BusinessEdit extends Component
     public $headquaters = '';
     public $pricingOptions = '';
     public $year_found = '';
-    public $languages_supported = '';
+    public $languages_supported = 1;
     public $support_options = '';
     public $permanent_url = '';
     public $status = 0;
     public $meta_title = '';
     public $meta_description = '';
+    public $admin_rating = null;
     public $selected_category = null;
     public $selected_sub_categories = [];
 
@@ -164,6 +165,12 @@ class BusinessEdit extends Component
 
     public $pro_cons_intro = '';
     public $pro_cons_summary = '';
+    public $pro_cons_headline = '';
+
+    // AI Output Upload
+    public string $aiOutputText = '';
+    public string $aiApplyStatus = '';  // success | error | empty string
+    public string $aiApplyMessage = '';
 
 
 
@@ -188,7 +195,7 @@ class BusinessEdit extends Component
     public $lang_supported = [];
     public $content = '';
     public $editingPermanentUrl = false;
-    public $permanentUrlSlug = '';
+    public $slug = '';
     public $countryIsAffiliate = true;
     public $is_affiliate = 0;
     public $primary_keywords = '';
@@ -268,9 +275,9 @@ class BusinessEdit extends Component
             $this->loadCategoryTopics($this->selected_category);
         }
 
-        if ($this->permanent_url) {
-            $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
-        }
+        // slug is loaded directly from translation in editBusiness()
+
+
     }
 
     public function render()
@@ -647,10 +654,10 @@ class BusinessEdit extends Component
         $segments = explode('/', $slug);
         return end($segments);
     }
-    public function updatePermanentUrlSlug()
+    public function updateSlug()
     {
-        if ($this->permanentUrlSlug) {
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        if ($this->slug) {
+            $this->permanent_url = 'https://localio.com/' . $this->slug;
         }
     }
     public function editUrl($countryId, $index)
@@ -696,15 +703,14 @@ class BusinessEdit extends Component
         $this->editIsAffiliate = false;
         $this->resetValidation(['editUrlValue']);
     }
-    public function updatedPermanentUrlSlug($value)
+    public function updatedSlug($value)
     {
-        $this->permanent_url = 'https://localio.com/' . $value;
+        // Slug updated directly; no separate permanent_url needed
     }
     public function updatedName($value)
     {
         if (!$this->editMode) {
-            $this->permanentUrlSlug = Str::slug($value);
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+            $this->slug = Str::slug($value);
         }
     }
     protected function loadCategoryFeatures($categoryId)
@@ -1053,6 +1059,7 @@ class BusinessEdit extends Component
         
         $this->pro_cons_intro = $business->pro_cons_intro ?? '';
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
+        $this->pro_cons_headline = $business->pro_cons_headline ?? '';
 
         // Load existing Offerings (restricted to one for now)
         if ($business->offerings->count() > 0) {
@@ -1078,6 +1085,7 @@ class BusinessEdit extends Component
         $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
         $this->lang_supported = $business->languages->pluck('id')->toArray();
         $this->selected_category = $business->category_id ?? null;
+        $this->admin_rating = $business->admin_rating;
         $this->selected_sub_categories = $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [];
         if ($this->selected_category) {
             $this->loadCategoryTopics($this->selected_category);
@@ -1133,7 +1141,7 @@ class BusinessEdit extends Component
         $this->short_description = $translation->short_description ?? '';
         $this->after_image_description = $translation->after_image_description ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
-        $this->permanentUrlSlug = $this->extractSlugFromUrl($this->permanent_url);
+        $this->slug = $translation->slug ?? '';
         $this->is_affiliate_partner = $business->is_affiliate ? 1 : 0;
         $this->primary_keywords = $translation->primary_keywords ?? '';
         $this->secondary_keywords = $translation->secondary_keywords ?? '';
@@ -1243,9 +1251,8 @@ class BusinessEdit extends Component
     // store new business in DB
     public function storeBusiness()
     {
-        if (empty($this->permanentUrlSlug) && !empty($this->name)) {
-            $this->permanentUrlSlug = Str::slug($this->name);
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        if (empty($this->slug) && !empty($this->name)) {
+            $this->slug = Str::slug($this->name);
         }
 
         // Mark all fields as touched before validation
@@ -1289,9 +1296,8 @@ class BusinessEdit extends Component
 
     public function updateBusiness()
     {
-        if (empty($this->permanentUrlSlug) && !empty($this->name)) {
-            $this->permanentUrlSlug = Str::slug($this->name);
-            $this->permanent_url = 'https://localio.com/' . $this->permanentUrlSlug;
+        if (empty($this->slug) && !empty($this->name)) {
+            $this->slug = Str::slug($this->name);
         }
 
         // Mark all fields as touched before validation
@@ -1571,6 +1577,7 @@ class BusinessEdit extends Component
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
+            'admin_rating' => 'nullable|numeric|min:1|max:5',
             'description_title' => 'nullable|string|max:255',
             'business_description' => 'nullable|string',
             'alternatives_title' => 'nullable|string|max:255',
@@ -1591,16 +1598,12 @@ class BusinessEdit extends Component
             'comparison_description_2' => 'nullable|string',
             'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
-            'permanentUrlSlug' => [
+            'slug' => [
                 'required',
                 'string',
                 'max:191',
                 'regex:/^[a-zA-Z0-9\-_]+$/',
-                Rule::unique('businesses', 'permanent_url')
-                    ->ignore($this->businessId)
-                    ->where(function ($query) {
-                        return $query->where('permanent_url', 'https://localio.com/' . $this->permanentUrlSlug);
-                    }),
+                Rule::unique('business_translations', 'slug')->ignore($this->businessId, 'business_id'),
             ],
             'countryWebsiteUrls' => 'nullable',
             'features' => 'nullable',
@@ -1671,14 +1674,16 @@ class BusinessEdit extends Component
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
             'status' => (bool)$this->status,
+            'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
-            'pro_cons_summary' => $this->pro_cons_summary
+            'pro_cons_summary' => $this->pro_cons_summary,
+            'pro_cons_headline' => $this->pro_cons_headline,
         ]);
     }
 
     protected function createBusinessTranslation($business)
     {
-        $slug = Str::slug($this->name);
+        $slug = $this->slug ? Str::slug($this->slug) : Str::slug($this->name);
         $business->translations()->create([
             'name' => $this->name,
             'slug' => $slug,
@@ -1757,14 +1762,16 @@ class BusinessEdit extends Component
             'year_found' => $this->year_found,
             'permanent_url' => $this->permanent_url,
             'status' => (bool)$this->status,
+            'admin_rating' => ($this->admin_rating !== '' && $this->admin_rating !== null) ? $this->admin_rating : null,
             'pro_cons_intro' => $this->pro_cons_intro,
-            'pro_cons_summary' => $this->pro_cons_summary
+            'pro_cons_summary' => $this->pro_cons_summary,
+            'pro_cons_headline' => $this->pro_cons_headline,
         ]);
     }
 
     protected function updateBusinessTranslation($business)
     {
-        $slug = Str::slug($this->name);
+        $slug = $this->slug ? Str::slug($this->slug) : Str::slug($this->name);
         $business->translations()->updateOrCreate(
             ['business_id' => $business->id, 'lang_id' => $this->languages_supported],
             [
@@ -1937,6 +1944,161 @@ class BusinessEdit extends Component
     //     }
     // }
 
+
+    // -----------------------------------------------------------------------
+    // AI Output Upload — parse full AI-generated text blob into form fields
+    // -----------------------------------------------------------------------
+
+    public function parseAndApplyAiOutput(): void
+    {
+        $raw = trim($this->aiOutputText);
+
+        if ($raw === '') {
+            $this->aiApplyStatus = 'error';
+            $this->aiApplyMessage = 'Please paste AI output content first.';
+            return;
+        }
+
+        $sections = $this->parseAiSections($raw);
+
+        if (empty($sections)) {
+            $this->aiApplyStatus = 'error';
+            $this->aiApplyMessage = 'Could not parse any sections. Make sure the format uses [section_key] markers.';
+            return;
+        }
+
+        $populated = 0;
+
+        // --- Scalar / plain-text fields ---
+        $scalarMap = [
+            'name'                       => 'name',
+            'short_description'          => 'short_description',
+            'description_title'          => 'description_title',
+            'business_description'       => 'business_description',
+            'pro_cons_headline'          => 'pro_cons_headline',
+            'pro_cons_intro'             => 'pro_cons_intro',
+            'pro_cons_summary'           => 'pro_cons_summary',
+            'after_image_description'    => 'after_image_description',
+            'alternatives_title'         => 'alternatives_title',
+            'alternatives_description'   => 'alternatives_description',
+            'alternatives_title_2'       => 'alternatives_title_2',
+            'alternatives_description_2' => 'alternatives_description_2',
+            'reviews_title'              => 'reviews_title',
+            'reviews_description'        => 'reviews_description',
+            'reviews_title_2'            => 'reviews_title_2',
+            'reviews_description_2'      => 'reviews_description_2',
+            'faqs_title'                 => 'faqs_title',
+            'faqs_description'           => 'faqs_description',
+            'faqs_title_2'               => 'faqs_title_2',
+            'faqs_description_2'         => 'faqs_description_2',
+            'comparison_title'           => 'comparison_title',
+            'comparison_description'     => 'comparison_description',
+            'comparison_title_2'         => 'comparison_title_2',
+            'comparison_description_2'   => 'comparison_description_2',
+            'meta_title'                    => 'meta_title',
+            'meta_description'              => 'meta_description',
+            'alternatives_meta_title'       => 'alternatives_meta_title',
+            'alternatives_meta_description' => 'alternatives_meta_description',
+            'reviews_meta_title'            => 'reviews_meta_title',
+            'reviews_meta_description'      => 'reviews_meta_description',
+            'faqs_meta_title'               => 'faqs_meta_title',
+            'faqs_meta_description'         => 'faqs_meta_description',
+            'comparison_meta_title'         => 'comparison_meta_title',
+            'comparison_meta_description'   => 'comparison_meta_description',
+        ];
+
+        foreach ($scalarMap as $key => $property) {
+            if (array_key_exists($key, $sections) && $sections[$key] !== '') {
+                $this->{$property} = $sections[$key];
+                $populated++;
+            }
+        }
+
+        // --- Offerings array fields (nested) ---
+        if (array_key_exists('offerings_headline', $sections) && $sections['offerings_headline'] !== '') {
+            $this->businessOfferings[0]['headline'] = $sections['offerings_headline'];
+            $populated++;
+        }
+        if (array_key_exists('offerings_top_text', $sections) && $sections['offerings_top_text'] !== '') {
+            $this->businessOfferings[0]['top_text'] = $sections['offerings_top_text'];
+            $populated++;
+        }
+
+        // --- USPs (each non-empty line = one USP, max 6) ---
+        if (array_key_exists('usps', $sections) && $sections['usps'] !== '') {
+            $lines = array_values(array_filter(
+                array_map('trim', explode(PHP_EOL, $sections['usps'])),
+                fn($l) => $l !== ''
+            ));
+            $usps = array_map(fn($t) => ['text' => $t], array_slice($lines, 0, 6));
+            while (count($usps) < 5) {
+                $usps[] = ['text' => ''];
+            }
+            $this->businessUsps = $usps;
+            $populated++;
+        }
+
+        // --- Pros (each non-empty line = one pro) ---
+        if (array_key_exists('pros', $sections) && $sections['pros'] !== '') {
+            $lines = array_values(array_filter(
+                array_map('trim', explode(PHP_EOL, $sections['pros'])),
+                fn($l) => $l !== ''
+            ));
+            $this->businessPros = array_map(fn($t) => ['text' => $t], $lines);
+            $populated++;
+        }
+
+        // --- Cons (each non-empty line = one con) ---
+        if (array_key_exists('cons', $sections) && $sections['cons'] !== '') {
+            $lines = array_values(array_filter(
+                array_map('trim', explode(PHP_EOL, $sections['cons'])),
+                fn($l) => $l !== ''
+            ));
+            $this->businessCons = array_map(fn($t) => ['text' => $t], $lines);
+            $populated++;
+        }
+
+        // --- Dispatch browser event so Alpine.js can update CKEditor (wire:ignore) fields ---
+        $this->dispatch('ai-content-applied', fields: [
+            'business_description'       => $this->business_description,
+            'pro_cons_intro'             => $this->pro_cons_intro,
+            'pro_cons_summary'           => $this->pro_cons_summary,
+            'offerings_top_text'         => $this->businessOfferings[0]['top_text'] ?? '',
+            'after_image_description'    => $this->after_image_description,
+            'alternatives_description'   => $this->alternatives_description,
+            'alternatives_description_2' => $this->alternatives_description_2,
+            'reviews_description'        => $this->reviews_description,
+            'reviews_description_2'      => $this->reviews_description_2,
+            'faqs_description'           => $this->faqs_description,
+            'faqs_description_2'         => $this->faqs_description_2,
+            'comparison_description'     => $this->comparison_description,
+            'comparison_description_2'   => $this->comparison_description_2,
+        ]);
+
+        $this->aiApplyStatus = 'success';
+        $this->aiApplyMessage = '\u2713 Content applied to ' . $populated . ' field group(s) successfully.';
+    }
+
+    /**
+     * Parse a section-delimited AI output string into an associative array.
+     * Format: each section starts with [key] on its own line; value is all text
+     * until the next [key] marker or end of string.
+     */
+    private function parseAiSections(string $text): array
+    {
+        $sections = [];
+        preg_match_all(
+            '/^\[([a-z_0-9]+)\]\s*$(.+?)(?=^\[[a-z_0-9]+\]\s*$|\z)/ms',
+            $text,
+            $matches,
+            PREG_SET_ORDER
+        );
+        foreach ($matches as $match) {
+            $sections[strtolower($match[1])] = trim($match[2]);
+        }
+        return $sections;
+    }
+
     public function resetForm()
     {
         $this->reset([
@@ -1974,7 +2136,8 @@ class BusinessEdit extends Component
         $this->affiliate_link = '';
         $this->websiteUrls = [''];
         $this->features = ['', '', ''];
-        $this->active_all_countries = 0;
+       $this->languages_supported = 1;
+        $this->active_all_countries = 1;
         $this->loadCountries();
     }
 

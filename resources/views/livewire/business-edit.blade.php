@@ -37,7 +37,44 @@
     </div>
     {{-- @if ($businessId) --}}
         <form wire:submit.prevent="{{ $businessId ? 'updateBusiness' : 'storeBusiness' }}" method="POST"
-            enctype="multipart/form-data">
+            enctype="multipart/form-data"
+            x-data="{
+                isAffiliate: @entangle('is_affiliate').live,
+                editing: false,
+                originalUrl: @entangle('affiliate_link').live,
+                tempUrl: @entangle('affiliate_link').live,
+                validationError: '',
+                startEdit() {
+                    this.editing = true;
+                    this.originalUrl = this.tempUrl;
+                    this.validationError = '';
+                    this.$nextTick(() => this.$refs.urlInput && this.$refs.urlInput.focus());
+                },
+                saveEdit() {
+                    this.validationError = '';
+                    const urlPattern = /^(https?:\/\/)?(localhost(:\d+)?|[\da-z\.-]+\.[a-z\.]{2,6})(:[0-9]+)?(\/[\/\w \.-]*)*\/?(\?[;&a-z\d%_\.~+=-]*)?(#[a-z\d_-]*)?$/i;
+
+                    if (this.tempUrl && this.tempUrl.trim() !== '' && !urlPattern.test(this.tempUrl)) {
+                        this.validationError = 'Please enter a valid URL';
+                        return;
+                    }
+
+                    this.editing = false;
+                },
+                cancelEdit() {
+                    this.tempUrl = this.originalUrl;
+                    this.validationError = '';
+                    this.editing = false;
+                }
+            }">
+            @if($is_affiliate == 0)
+                <div x-show="!isAffiliate" x-cloak class="alert alert-warning py-2 px-3 mb-3 d-flex align-items-center"
+                    role="alert"
+                    style="font-size: 0.875rem; border-left: 4px solid #ffc107; background-color: #fffbeb;">
+                    <em class="icon ni ni-alert-circle me-2 fs-5 text-warning"></em>
+                    <span class="fw-bold text-dark">NO AFFILIATE URL ADDED</span>
+                </div>
+            @endif
             @if (session()->has('error'))
                 <div class="alert alert-danger alert-icon alert-dismissible mb-3" role="alert">
                     <em class="icon ni ni-cross-circle"></em>
@@ -67,7 +104,124 @@
 
             <div class="row">
                 <div class="col-md-8">
+                    {{-- =====================================================
+                         AI OUTPUT UPLOAD PANEL
+                         Paste full AI-generated text to auto-fill all fields
+                    ====================================================== --}}
+                    <div class="card card-bordered mb-3 border-primary"
+                         x-data="{
+                             open: false,
+                             copyTemplate() {
+                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pros]\nExcellent customer support\nVery affordable pricing\nEasy-to-use control panel\n\n[cons]\nLimited basic plan storage\nRenewal prices increase\nNo free trial available\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
+                                 navigator.clipboard.writeText(t).then(function() {
+                                     alert('Format template copied to clipboard! Paste it in your AI chat and ask it to fill in the content, then paste the result back here.');
+                                 }).catch(function() {
+                                     prompt('Copy this format template:', t);
+                                 });
+                             }
+                         }">
+                        {{-- Card Header / Toggle --}}
+                        <div class="card-header d-flex align-items-center justify-content-between py-2 px-3"
+                             style="cursor:pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px 4px 0 0;"
+                             @click="open = !open">
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="font-size:1.1rem;">&#129302;</span>
+                                <span class="fw-semibold text-white" style="font-size:0.95rem; letter-spacing:0.01em;">
+                                    AI Output Upload
+                                </span>
+                                <span class="badge bg-white text-primary ms-1" style="font-size:0.72rem;">
+                                    Auto-fill all fields
+                                </span>
+                            </div>
+                            <em class="icon ni text-white" :class="open ? 'ni-chevron-up' : 'ni-chevron-down'"></em>
+                        </div>
+
+                        {{-- Collapsible Body --}}
+                        <div x-show="open" x-cloak
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100">
+                            <div class="card-inner">
+                                {{-- Instructions --}}
+                                <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-start " style="font-size:0.82rem;">
+                                    <em class="icon ni ni-info me-1 mt-1 flex-shrink-0"></em>
+                                    <div>
+                                        <strong>How to use:</strong>
+                                        Click <em>Copy Format Template</em>, paste it into your AI chat, and ask it to fill in the content for this business.
+                                        Then paste the AI response below and click <strong>Apply Content</strong> &mdash; all fields will be auto-filled.
+                                    </div>
+                                </div>
+
+                                {{-- Copy Format Button --}}
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyTemplate()">
+                                        <em class="icon ni ni-copy me-1"></em> Copy Format Template
+                                    </button>
+                                    <span class="text-muted ms-2" style="font-size:0.78rem;">
+                                        Copies the required AI output format to your clipboard
+                                    </span>
+                                </div>
+
+                                {{-- Textarea --}}
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-semibold mb-1">
+                                        Paste AI-generated content below:
+                                    </label>
+                                    <textarea
+                                        wire:model="aiOutputText"
+                                        class="form-control font-monospace"
+                                        rows="18"
+                                        placeholder="[name]&#10;Business Name Here&#10;&#10;[short_description]&#10;A short description...&#10;&#10;[business_description]&#10;<p>Full description HTML...</p>&#10;&#10;[usps]&#10;USP line 1&#10;USP line 2&#10;&#10;... etc"
+                                        style="resize:vertical; font-size:0.82rem; line-height:1.5; border: 2px solid #dee2e6; border-radius:6px;"
+                                    ></textarea>
+                                </div>
+
+                                {{-- Status Feedback --}}
+                                @if($aiApplyStatus === 'success')
+                                    <div class="alert alert-success py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size:0.84rem;">
+                                        <em class="icon ni ni-check-circle-fill text-success"></em>
+                                        {{ $aiApplyMessage }}
+                                    </div>
+                                @elseif($aiApplyStatus === 'error')
+                                    <div class="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size:0.84rem;">
+                                        <em class="icon ni ni-alert-circle text-danger"></em>
+                                        {{ $aiApplyMessage }}
+                                    </div>
+                                @endif
+
+                                {{-- Action Buttons --}}
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button
+                                        type="button"
+                                        wire:click="parseAndApplyAiOutput"
+                                        wire:loading.attr="disabled"
+                                        class="btn btn-primary"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                        <span wire:loading.remove wire:target="parseAndApplyAiOutput">
+                                            <em class="icon ni ni-spark me-1"></em> Apply Content
+                                        </span>
+                                        <span wire:loading wire:target="parseAndApplyAiOutput">
+                                            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                            Applying...
+                                        </span>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            wire:click="$set('aiOutputText', '')"
+                                            wire:click.prevent
+                                            title="Clear the textarea">
+                                        <em class="icon ni ni-trash"></em> Clear
+                                    </button>
+                                    <span class="text-muted ms-auto" style="font-size:0.76rem;">
+                                        Only filled sections will overwrite existing field values.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- END AI Output Upload Panel --}}
+
                     <!-- Business Name Section -->
+
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">
@@ -79,6 +233,28 @@
                                     wire:model.live="name" />
                                 @error('name')
                                     <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Preview Description (short_description) --}}
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <div class="form-group d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label mb-0">Preview Description</label>
+                                <span class="text-muted" style="font-size:0.78rem;">Shown on category, top-rated &amp; most-popular pages</span>
+                            </div>
+                            <div class="form-group">
+                                <textarea
+                                    class="form-control @error('short_description') is-invalid @enderror"
+                                    wire:model.live="short_description"
+                                    rows="3"
+                                    placeholder="A short summary shown in business listing cards..."
+                                    style="resize:vertical;"
+                                ></textarea>
+                                @error('short_description')
+                                    <div class="text-danger mt-1" style="font-size:0.82rem;">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -152,6 +328,12 @@
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.business_description = editor.getData();
                                                 });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.business_description !== undefined) {
+                                                        editor.setData(e.detail.fields.business_description);
+                                                    }
+                                                });
                                             })
                                             .catch(error => {
                                                 console.error(error);
@@ -192,10 +374,38 @@
                             <!-- Introduction -->
                             <div class="col-12 mb-4">
                                 <div class="form-group">
-                                    <label class="form-label">Pros & cons introduction</label>
-                                    <textarea class="form-control" rows="3"
-                                        wire:model.live="pro_cons_intro"
-                                        placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                                    <label class="form-label">Pros &amp; cons introduction</label>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_pro_cons_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('pro_cons_intro', editor.getData());
+                                                        });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.pro_cons_intro !== undefined) {
+                                                                editor.setData(e.detail.fields.pro_cons_intro);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_pro_cons_intro"
+                                            class="form-control"
+                                            wire:model.live="pro_cons_intro"
+                                            rows="3"
+                                            placeholder="Introductory text shown above the Pros and Cons boxes..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
@@ -282,11 +492,38 @@
                             <!-- Summary -->
                             <div class="col-12 mt-2">
                                 <div class="form-group">
-                                    <label class="form-label">Pros & cons ending text</label>
-                                    <textarea class="form-control"
-                                            rows="3"
+                                    <label class="form-label">Pros &amp; cons ending text</label>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_pro_cons_summary)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('pro_cons_summary', editor.getData());
+                                                        });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.pro_cons_summary !== undefined) {
+                                                                editor.setData(e.detail.fields.pro_cons_summary);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_pro_cons_summary"
+                                            class="form-control"
                                             wire:model.live="pro_cons_summary"
+                                            rows="3"
                                             placeholder="Summary text shown below the Pros and Cons boxes..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
@@ -312,7 +549,37 @@
                                 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Products/services introduction</label>
-                                    <textarea class="form-control" rows="3" wire:model.live="businessOfferings.0.top_text" placeholder="Introduction text above the image..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_offerings_top_text)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('businessOfferings.0.top_text', editor.getData());
+                                                        });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.offerings_top_text !== undefined) {
+                                                                editor.setData(e.detail.fields.offerings_top_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_offerings_top_text"
+                                            class="form-control"
+                                            wire:model.live="businessOfferings.0.top_text"
+                                            rows="3"
+                                            placeholder="Introduction text above the image..."></textarea>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-group mb-3">
@@ -327,6 +594,12 @@
                                                         this.editor = editor;
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.after_image_description = editor.getData();
+                                                        });
+                                                        // AI Output Upload listener
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.after_image_description !== undefined) {
+                                                                editor.setData(e.detail.fields.after_image_description);
+                                                            }
                                                         });
                                                     })
                                                     .catch(error => {
@@ -354,26 +627,6 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">Alternatives Meta Title</label>
-                                <input type="text" class="form-control @error('alternatives_meta_title') is-invalid @enderror"
-                                    wire:model.live="alternatives_meta_title" placeholder="Meta title for alternatives page" />
-                                @error('alternatives_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">Alternatives Meta Description</label>
-                                <textarea class="form-control @error('alternatives_meta_description') is-invalid @enderror"
-                                    wire:model.live="alternatives_meta_description" rows="2" placeholder="Meta description for alternatives page"></textarea>
-                                @error('alternatives_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">Alternatives page title</label>
                                 <input type="text" class="form-control @error('alternatives_title') is-invalid @enderror"
                                     wire:model.live="alternatives_title" placeholder="e.g. Best {{ $name ?: 'Business Name' }} Alternatives" />
@@ -396,6 +649,12 @@
                                                 this.editor = editor;
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.alternatives_description = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.alternatives_description !== undefined) {
+                                                        editor.setData(e.detail.fields.alternatives_description);
+                                                    }
                                                 });
                                             })
                                             .catch(error => {
@@ -423,26 +682,6 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">Reviews Meta Title</label>
-                                <input type="text" class="form-control @error('reviews_meta_title') is-invalid @enderror"
-                                    wire:model.live="reviews_meta_title" placeholder="Meta title for reviews page" />
-                                @error('reviews_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">Reviews Meta Description</label>
-                                <textarea class="form-control @error('reviews_meta_description') is-invalid @enderror"
-                                    wire:model.live="reviews_meta_description" rows="2" placeholder="Meta description for reviews page"></textarea>
-                                @error('reviews_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">Reviews page title</label>
                                 <input type="text" class="form-control @error('reviews_title') is-invalid @enderror"
                                     wire:model.live="reviews_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Reviews & Ratings" />
@@ -465,6 +704,12 @@
                                                 this.editor = editor;
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.reviews_description = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_description);
+                                                    }
                                                 });
                                             })
                                             .catch(error => {
@@ -512,6 +757,12 @@
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.reviews_description_2 = editor.getData();
                                                 });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_description_2 !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_description_2);
+                                                    }
+                                                });
                                             })
                                             .catch(error => {
                                                 console.error(error);
@@ -538,26 +789,6 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">FAQs Meta Title</label>
-                                <input type="text" class="form-control @error('faqs_meta_title') is-invalid @enderror"
-                                    wire:model.live="faqs_meta_title" placeholder="Meta title for FAQs page" />
-                                @error('faqs_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">FAQs Meta Description</label>
-                                <textarea class="form-control @error('faqs_meta_description') is-invalid @enderror"
-                                    wire:model.live="faqs_meta_description" rows="2" placeholder="Meta description for FAQs page"></textarea>
-                                @error('faqs_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">FAQs page title 1</label>
                                 <input type="text" class="form-control @error('faqs_title') is-invalid @enderror"
                                     wire:model.live="faqs_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Frequently Asked Questions" />
@@ -578,6 +809,12 @@
                                                     this.editor = editor;
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.faqs_description = editor.getData();
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.faqs_description !== undefined) {
+                                                            editor.setData(e.detail.fields.faqs_description);
+                                                        }
                                                     });
                                                 })
                                                 .catch(error => {
@@ -620,6 +857,12 @@
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.faqs_description_2 = editor.getData();
                                                     });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.faqs_description_2 !== undefined) {
+                                                            editor.setData(e.detail.fields.faqs_description_2);
+                                                        }
+                                                    });
                                                 })
                                                 .catch(error => {
                                                     console.error(error);
@@ -645,26 +888,6 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">Comparison Meta Title</label>
-                                <input type="text" class="form-control @error('comparison_meta_title') is-invalid @enderror"
-                                    wire:model.live="comparison_meta_title" placeholder="Meta title for comparison page" />
-                                @error('comparison_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">Comparison Meta Description</label>
-                                <textarea class="form-control @error('comparison_meta_description') is-invalid @enderror"
-                                    wire:model.live="comparison_meta_description" rows="2" placeholder="Meta description for comparison page"></textarea>
-                                @error('comparison_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">Comparison page title 1</label>
                                 <input type="text" class="form-control @error('comparison_title') is-invalid @enderror"
                                     wire:model.live="comparison_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Comparison" />
@@ -685,6 +908,12 @@
                                                     this.editor = editor;
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.comparison_description = editor.getData();
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.comparison_description !== undefined) {
+                                                            editor.setData(e.detail.fields.comparison_description);
+                                                        }
                                                     });
                                                 })
                                                 .catch(error => {
@@ -726,6 +955,12 @@
                                                     this.editor = editor;
                                                     editor.model.document.on('change:data', () => {
                                                         this.$wire.comparison_description_2 = editor.getData();
+                                                    });
+                                                    // AI Output Upload listener
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.comparison_description_2 !== undefined) {
+                                                            editor.setData(e.detail.fields.comparison_description_2);
+                                                        }
                                                     });
                                                 })
                                                 .catch(error => {
@@ -789,6 +1024,14 @@
                                             ->get();
                                     @endphp
                                     <hr class="my-3">
+                                    <div class="form-group mt-3">
+                                        <label class="form-label" for="admin_rating">Review Rating (Admin)</label>
+                                        <input type="number" step="0.1" min="1" max="5" id="admin_rating" wire:model.defer="admin_rating" class="form-control" placeholder="e.g. 4.5">
+                                        <small class="form-text text-muted">Set initial overall review rating for this business (1.0 to 5.0 stars). Used until the business gets approved user reviews.</small>
+                                        @error('admin_rating')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                     <div class="form-group mt-3" x-data="{
                                         search: '',
                                         selectCategory(id) {
@@ -938,69 +1181,27 @@
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3">
-                                        <label class="form-label">Permanent Link</label>
-                                        <div class="permanent-link-container @error('permanentUrlSlug') is-invalid @enderror"
-                                            x-data="{
-                                                editing: false,
-                                                originalValue: @entangle('permanentUrlSlug').live,
-                                                tempValue: @entangle('permanentUrlSlug').live,
-                                                startEdit() {
-                                                    this.editing = true;
-                                                    this.originalValue = this.tempValue;
-                                                    this.$nextTick(() => this.$refs.input.focus());
-                                                },
-                                                saveEdit() {
-                                                    if (this.tempValue.trim() === '') {
-                                                        this.tempValue = this.originalValue;
-                                                        return;
-                                                    }
-                                                    if (!/^[a-zA-Z0-9\-_]+$/.test(this.tempValue)) {
-                                                        alert('Only letters, numbers, hyphens, and underscores are allowed');
-                                                        return;
-                                                    }
-                                                    this.editing = false;
-                                                },
-                                                cancelEdit() {
-                                                    this.tempValue = this.originalValue;
-                                                    this.editing = false;
-                                                }
-                                            }">
-
-                                            <div class="permanent-link-display" x-show="!editing" >
-                                                <span class="url-prefix">localio.com/</span>
-                                                <span class="url-editable"
-                                                    x-text="tempValue || 'your-business-name'"></span>
-                                            </div>
-
-                                            <div class="permanent-link-display" x-show="editing"
-                                                style="display: none;">
-                                                <span class="url-prefix">localio.com/</span>
-                                                <input type="text" class="permanent-link-input url-editable"
-                                                    x-model="tempValue" x-ref="input" @keydown.enter="saveEdit()"
-                                                    @keydown.escape="cancelEdit()">
-                                                
-                                                <!-- Edit Controls -->
-                                             <div class="edit-controls" style="top: 10% !important;">
-                                                 <em class="icon ni ni-edit text-primary fs-5" x-show="!editing"
-                                                     @click.stop="startEdit()" style="cursor: pointer;" title="Edit"></em>
-
-                                                 <div class="save-cancel-buttons d-flex align-items-center gap-1" x-show="editing" style="display: none;">
-                                                     <button type="button" class="btn btn-sm btn-icon btn-success rounded-circle shadow-sm" @click="saveEdit()" title="Save" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                         <em class="icon ni ni-save" style="font-size:14px;"></em>
-                                                     </button>
-                                                     <button type="button" class="btn btn-sm btn-icon btn-danger rounded-circle shadow-sm" @click="cancelEdit()" title="Cancel" style="width:28px; height:28px; padding:0; display:inline-flex; align-items:center; justify-content:center;">
-                                                         <em class="icon ni ni-cross" style="font-size:14px;"></em>
-                                                     </button>
-                                                 </div>
-                                             </div>
-                                            </div>
+                                        <label class="form-label fw-semibold" for="business-slug">
+                                            Permanent Link
+                                            <span class="text-muted fw-normal ms-1" style="font-size:0.8rem;">(URL slug)</span>
+                                        </label>
+                                        <div class="input-group @error('slug') has-error @enderror" style="border-radius:8px; overflow:hidden; border:1.5px solid #dee2e6; background:#fff;">
+                                            <span class="input-group-text" style="background:#f0f3f7; border:none; border-right:1.5px solid #dee2e6; color:#6c757d; font-size:0.85rem; padding:0 12px; white-space:nowrap; font-weight:500;">localio.com/</span>
+                                            <input
+                                                type="text"
+                                                id="business-slug"
+                                                wire:model.live="slug"
+                                                class="form-control"
+                                                style="border:none; background:#fff; font-size:0.9rem; box-shadow:none; padding:10px 14px;"
+                                                placeholder="your-business-name"
+                                                autocomplete="off"
+                                                spellcheck="false"
+                                            >
                                         </div>
-
-                                        @error('permanentUrlSlug')
-                                            <div class="text-danger">{{ $message }}</div>
+                                        @error('slug')
+                                            <div class="text-danger mt-1" style="font-size:0.82rem;"><em class="icon ni ni-alert-circle me-1"></em>{{ $message }}</div>
                                         @enderror
-                                        <!-- Hidden field for the full URL -->
-                                        <input type="hidden" wire:model="permanent_url">
+                                        <div class="text-muted mt-1" style="font-size:0.78rem;">Only letters, numbers, hyphens and underscores. This sets the public business URL.</div>
                                     </div>
                                     <hr class="my-3">
                                         <div class="form-group mt-3">
@@ -1136,355 +1337,233 @@
 
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
-                            <div class="row g-3">
-                                <div class="col-md-12">
+                            <!-- Headline & Add URL Button -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <label class="form-label m-0 fs-6 fw-bold">Redirect URL</label>
+                                <div x-show="isAffiliate">
+                                    @if (!empty($selectedCountries))
+                                        <button type="button" class="btn btn-sm text-white"
+                                            wire:click="showAddUrlForm" style="background-color: #F9633B; border-color: #F9633B;">
+                                            <em class="icon ni ni-plus me-1"></em>Add URL
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
 
-                                    
-
-
-                                    <div class="form-group">
-
-                                        <div class="boxbtn_dlex d-flex justify-content-between mb-2 align-items-center">
-                                            <label class="form-label m-0">Redirect URL</label>
-                                            <div class="d-flex justify-content-between align-items-center ">
-                                                @if (!empty($selectedCountries))
-                                                    <button type="button" class="btn btn-sm btn-primary"
-                                                        wire:click="showAddUrlForm" style="background: #F9633B;">
-                                                        <i class="fas fa-plus me-1"></i>Add URL
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </div>
-
-                                        
-
-                                        <div class="affiliate-link-container affiliate-link-container_2 @error('affiliate_link') is-invalid @enderror"
-                                            x-data="{
-                                                editing: false,
-                                                originalUrl: @entangle('affiliate_link').live,
-                                                tempUrl: @entangle('affiliate_link').live,
-                                                originalAffiliate: @entangle('is_affiliate').live,
-                                                tempAffiliate: @entangle('is_affiliate').live,
-                                                validationError: '',
-                                                init() {
-                                                    if ((!this.tempUrl || this.tempUrl.trim() === '') && this.tempAffiliate === null) {
-                                                        this.tempAffiliate = true;
-                                                    }
-                                                },
-                                                startEdit() {
-                                                    this.editing = true;
-                                                    this.originalUrl = this.tempUrl;
-                                                    this.originalAffiliate = this.tempAffiliate;
-                                                    this.validationError = '';
-                                                    this.$nextTick(() => this.$refs.urlInput.focus());
-                                                },
-                                                saveEdit() {
-                                                    this.validationError = '';
-                                                    const urlPattern = /^(https?:\/\/)?(localhost(:\d+)?|[\da-z\.-]+\.[a-z\.]{2,6})(:[0-9]+)?(\/[\/\w \.-]*)*\/?(\?[;&a-z\d%_\.~+=-]*)?(#[a-z\d_-]*)?$/i;
-
-                                                    if (this.tempUrl.trim() !== '' && !urlPattern.test(this.tempUrl)) {
-                                                        this.validationError = 'Please enter a valid URL';
-                                                        return;
-                                                    }
-
-                                                    this.editing = false;
-                                                },
-                                                cancelEdit() {
-                                                    this.tempUrl = this.originalUrl;
-                                                    this.tempAffiliate = this.originalAffiliate;
-                                                    this.validationError = '';
-                                                    this.editing = false;
-                                                }
-                                            }">
-
-                                   <div class="affilates-div">
-                                             <div class="affiliate-link-display" x-show="!editing" @click="startEdit()" style="cursor: pointer;">
-                                                <div class="url-display-wrapper d-flex align-items-center justify-content-between">
-                                                    <span class="url-text" x-text="tempUrl || 'Enter redirect URL'"
-                                                        :title="tempUrl"></span>
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <div class="affiliate-indicator">
-                                                            <template x-if="tempAffiliate">
-                                                                <i class="fas fa-check-circle text-success"
-                                                                    title="Affiliate Link"></i>
-                                                            </template>
-                                                            <template x-if="!tempAffiliate">
-                                                                <i class="fas fa-exclamation-triangle text-warning"
-                                                                    title="Non-Affiliate Link"></i>
-                                                            </template>
-                                                        </div>
-                                                        <em class="icon ni ni-edit text-primary fs-5 btn btn-info" title="Edit"></em>
-                                                    </div>
-                                                </div>
-                                             </div>
-
-                                             <!-- Edit Mode -->
-                                             <div class="affiliate-link-edit" x-show="editing" style="display: none;">
-                                                 <div class="url-input-wrapper">
-                                                     <input type="url" class="form-control affiliate-link-input"
-                                                         x-model="tempUrl" x-ref="urlInput"
-                                                         placeholder="https://example.com/redirect-link"
-                                                         @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
-
-                                                     <!-- Validation Error Display -->
-                                                     <div x-show="validationError" class="text-danger small mt-1"
-                                                         x-text="validationError"></div>
-                                                 </div>
-
-                                                 <!-- Toggle Switch - Only visible while editing -->
-                                                 <div class="affiliate-toggle-section m-0 mt-2 d-flex align-items-center justify-content-between" style="height: 3rem; z-index: 1;">
-                                                     <div class="affiliate-toggle d-flex align-items-center">
-                                                         <label class="form-check-label me-2 mb-0">
-                                                             Affiliate
-                                                         </label>
-                                                       <div class="label_from_box d-flex align-items-center">
-                                                           <div class="form-check form-switch m-0">
-                                                             <input class="form-check-input" type="checkbox"
-                                                                 x-model="tempAffiliate" id="affiliateToggle">
-                                                         </div>
-                                                         <div class="affiliate-indicator-toggle ms-2">
-                                                             <template x-if="tempAffiliate">
-                                                                 <i class="fas fa-check-circle text-success"
-                                                                     title="Affiliate Link"></i>
-                                                             </template>
-                                                             <template x-if="!tempAffiliate">
-                                                                 <i class="fas fa-exclamation-triangle text-warning"
-                                                                     title="Non-Affiliate Link"></i>
-                                                             </template>
-                                                         </div>
-                                                       </div>
-                                                     </div>
-
-                                                     <!-- Save / Cancel Buttons (Visible only while editing) -->
-                                                     <div class="save-cancel-buttons d-flex align-items-center gap-1">
-                                                         <button type="button" class="btn btn-sm btn-success px-2 py-1" @click="saveEdit()" title="Save" style="width: 100%; margin-left: -9rem;">
-                                                             <em class="icon ni ni-save me-1"></em> Save
-                                                         </button>
-                                                         <button type="button" class="btn btn-sm btn-secondary px-2 py-1" @click="cancelEdit()" title="Cancel"  style="width: 100%; margin-left: 0rem;">
-                                                             <em class="icon ni ni-cross me-1"></em> Cancel
-                                                         </button>
-                                                     </div>
-                                                 </div>
-                                             </div>
-                                   </div>
-
-                                        </div>
-
-                                        @error('affiliate_link')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
+                            <!-- Affiliate Toggle directly below headline -->
+                            <div class="p-2 px-3 mb-3 bg-light rounded-2 border d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="fw-bold text-dark">Affiliate</span>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            x-model="isAffiliate" id="affiliateToggleMain" style="cursor: pointer; width: 2.75rem; height: 1.35rem;">
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card card-bordered mb-3" style="border:none; ">
-                                <div class="card-inner p-0 mt-2">
-                                    <!-- Add URL Form -->
-                                    @if ($showUrlForm)
-                                        <div class="border rounded p-3 mb-3" style="background-color: #f8f9fa;">
-                                            <h6 class="mb-3">Add New Redirect URL</h6>
-                                            <div class="row">
-                                                <div class="col-lg-12">
-                                                    <div class="form-group mb-3">
-                                                        <label class="form-label">Select Country</label>
-                                                        <select class="form-control" wire:model="selectedCountryForUrl">
-                                                            <option value="">Choose a country</option>
-                                                            @foreach ($selectedCountries as $countryId)
-                                                                @php
-                                                                    $country = collect($countries)->firstWhere('id', $countryId);
-                                                                @endphp
-                                                                @if ($country)
-                                                                    <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                                                @endif
-                                                            @endforeach
-                                                        </select>
-                                                        @error('selectedCountryForUrl')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-12">
-                                                    <div class="form-group mb-3">
-                                                        <label class="form-label">Website URL</label>
-                                                        <input type="url" class="form-control" wire:model="newWebsiteUrl"
-                                                            placeholder="https://example.com" />
-                                                        @error('newWebsiteUrl')
-                                                            <small class="text-danger">{{ $message }}</small>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="d-flex justify-content-between  mb-3" style="flex-direction: column;">
-                                                <div class="form-check form-switch d-flex align-items-center mb-2 p-0">
-                                                    <input class="form-check-input" type="checkbox" id="countryAffiliateToggle"
-                                                        wire:model="countryIsAffiliate" style="width: 3rem; margin:0px; height: 1.5rem;">
-                                                    <label class="form-check-label ms-2" for="countryAffiliateToggle">
-                                                        <span class="fw-medium">
-                                                            {{ $countryIsAffiliate ? 'Affiliate Link' : 'Direct Link' }}
-                                                        </span>
-                                                    </label>
-                                                </div>
-                                                
-                                                <div>
-                                                    <button type="button" class="btn btn-secondary btn-sm me-2" wire:click="cancelAddUrl">
-                                                        Cancel
-                                                    </button>
-                                                    <button type="button" class="btn btn-success btn-sm" wire:click="addCountryWebsiteUrl"
-                                                        wire:loading.attr="disabled" wire:target="addCountryWebsiteUrl">
-                                                        <span wire:loading.remove wire:target="addCountryWebsiteUrl">
-                                                            Save URL
-                                                        </span>
-                                                        <span wire:loading wire:target="addCountryWebsiteUrl">
-                                                            <i class="fas fa-spinner fa-spin me-1"></i>Saving...
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <!-- Display Existing URLs -->
-                                    @if (!empty($countryWebsiteUrls))
-                                        <div class="country-urls-list">
-                                            @foreach ($countryWebsiteUrls as $countryId => $urlData)
-                                                 @php
-                                                     $country = collect($countries)->firstWhere('id', $countryId);
-                                                     $countryDisplayName = $country ? ($country->name . ($country->language ? ' – ' . $country->language->name : '')) : '';
-                                                 @endphp
-                                                 @if ($country)
-                                                     <div class="country-url-group mb-4">
-                                                         <div class="d-flex align-items-center mb-2">
-                                                             <h6 class="mb-0 me-2">{{ $countryDisplayName }}</h6>
-                                                         </div>
-
-                                                        @if (is_array($urlData) || is_object($urlData))
-                                                            @foreach ((array) $urlData as $index => $urlInfo)
-                                                                <div class="url-item border rounded p-3 mb-2" style="background-color: #fdfdfe;">
-                                                                    @if ($editingUrl == $countryId . '-' . $index)
-                                                                        <!-- Edit Mode -->
-                                                                        <div class="affiliate-link-edit">
-                                                                            <div class="row g-2 align-items-center">
-                                                                                <!-- Input + Toggle Section -->
-                                                                                <!-- Input + Toggle Section -->
-                                                                                <div class="col-md-9" x-data="{ tempAffiliate: @entangle('editIsAffiliate') }">
-                                                                                    <!-- URL Input -->
-                                                                                    <div class="url-input-wrapper">
-                                                                                        <input type="url" class="form-control affiliate-link-input"
-                                                                                            wire:model="editUrlValue"
-                                                                                            placeholder="https://example.com">
-
-                                                                                        <!-- Validation Error -->
-                                                                                        @error('editUrlValue')
-                                                                                            <div class="text-danger small mt-1">{{ $message }}</div>
-                                                                                        @enderror
-                                                                                    </div>
-
-                                                                                    <!-- Toggle Switch - Only visible while editing -->
-                                                                                    <div class="affiliate-toggle-section m-0 mt-2">
-                                                                                        <div class="affiliate-toggle" style="width:100%" >
-                                                                                            <label class="form-check-label me-2">
-                                                                                                Is Affiliate
-                                                                                            </label>
-                                                                                            <div class="label_from_box d-flex align-items-center">
-                                                                                                <div class="form-check form-switch">
-                                                                                                    <input class="form-check-input" type="checkbox"
-                                                                                                        x-model="tempAffiliate"
-                                                                                                        id="affiliateToggle"
-                                                                                                        style="width: 2.5rem; height: 1.25rem;">
-                                                                                                </div>
-                                                                                                <div class="affiliate-indicator-toggle ms-2">
-                                                                                                    <template x-if="tempAffiliate">
-                                                                                                        <i class="fas fa-check-circle text-success" title="Affiliate Link"></i>
-                                                                                                    </template>
-                                                                                                    <template x-if="!tempAffiliate">
-                                                                                                        <i class="fas fa-exclamation-triangle text-warning" title="Non-Affiliate Link"></i>
-                                                                                                    </template>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-
-
-                                                                                <!-- Action Buttons (Right Aligned) -->
-                                                                                <div class="col-md-3 text-md-end text-start mt-md-0 mt-2">
-                                                                                    <button type="button" class="btn btn-success btn-sm me-1"
-                                                                                        wire:click="saveUrlEdit({{ $countryId }}, {{ $index }})"
-                                                                                        wire:loading.attr="disabled"
-                                                                                        wire:target="saveUrlEdit({{ $countryId }}, {{ $index }})">
-                                                                                        <span wire:loading.remove wire:target="saveUrlEdit({{ $countryId }}, {{ $index }})">
-                                                                                            <i class="fas fa-check"></i>
-                                                                                        </span>
-                                                                                        <span wire:loading wire:target="saveUrlEdit({{ $countryId }}, {{ $index }})">
-                                                                                            <i class="fas fa-spinner fa-spin"></i>
-                                                                                        </span>
-                                                                                    </button>
-                                                                                    <button type="button" class="btn btn-secondary btn-sm"
-                                                                                        wire:click="cancelUrlEdit">
-                                                                                        <i class="fas fa-times"></i>
-                                                                                    </button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-
-
-
-                                                                    @else
-                                                                        <!-- Display Mode -->
-                                                                        <div class="row align-items-center">
-                                                                            <div class="col-md-6">
-                                                                                <div class="d-flex align-items-center">
-                                                                                    <i class="fas fa-link text-muted me-2"></i>
-                                                                                    <a href="{{ is_array($urlInfo) ? $urlInfo['url'] : $urlInfo }}"
-                                                                                        target="_blank" class="text-decoration-none">
-                                                                                        {{ is_array($urlInfo) ? $urlInfo['url'] : $urlInfo }}
-                                                                                    </a>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="col-md-3">
-                                                                                {{-- @php
-                                                                                    $isAffiliate = is_array($urlInfo) ? $urlInfo['is_affiliate'] ?? false : false;
-                                                                                @endphp
-                                                                                @if ($isAffiliate)
-                                                                                    <span class="badge bg-success">
-                                                                        <i class="fas fa-handshake me-1"></i>Affiliate
-                                                                    </span>
-                                                                                @endif --}}
-                                                                            </div>
-                                                                            {{-- delelte url --}}
-                                                                            <div class="col-md-3 d-flex justify-content-end ">
-                                                                                <button type="button" class="btn btn-outline-primary btn-sm me-1"
-                                                                                    wire:click="editUrl({{ $countryId }}, {{ $index }})"
-                                                                                    title="Edit URL">
-                                                                                    <i class="fas fa-edit"></i>
-                                                                                </button>
-                                                                                <button type="button" class="btn btn-outline-danger btn-sm"
-                                                                                    {{-- wire:click="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})" --}}
-                                                                                    wire:loading.attr="disabled"
-                                                                                    wire:target="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})"
-                                                                                    title="Remove URL"
-                                                                                    onclick="event.preventDefault(); if(confirm('Are you sure you want to remove this URL?')) { @this.removeCountryWebsiteUrl({{ $countryId }}, {{ $index }}) }">
-                                                                                    <span wire:loading.remove wire:target="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})">
-                                                                                        <i class="fas fa-trash"></i>
-                                                                                    </span>
-                                                                                    <span wire:loading wire:target="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})">
-                                                                                        <i class="fas fa-spinner fa-spin"></i>
-                                                                                    </span>
-                                                                                </button>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                </div>
-                                                            @endforeach
-                                                        @endif
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    @endif
+                                <div>
+                                    <template x-if="isAffiliate">
+                                        <span class="badge badge-dim bg-outline-success d-inline-flex align-items-center px-2 py-1">
+                                            <em class="icon ni ni-check-circle me-1 fs-6"></em> Active
+                                        </span>
+                                    </template>
+                                    <template x-if="!isAffiliate">
+                                        <span class="badge badge-dim bg-outline-warning d-inline-flex align-items-center px-2 py-1">
+                                            <em class="icon ni ni-alert-circle me-1 fs-6"></em> Disabled
+                                        </span>
+                                    </template>
                                 </div>
                             </div>
+
+                            <!-- Default Redirect URL Box (Visible ONLY when Affiliate is ON) -->
+                            <div x-show="isAffiliate" class="mb-3">
+                                <!-- Display Mode -->
+                                <div x-show="!editing" @click="startEdit()"
+                                    class="border rounded-2 p-2 px-3 bg-white d-flex align-items-center justify-content-between"
+                                    style="cursor: pointer; transition: all 0.2s ease-in-out;">
+                                    <span class="text-truncate text-dark fw-medium" x-text="tempUrl || 'Enter redirect URL'" :title="tempUrl"></span>
+                                    <button type="button" class="btn btn-icon btn-sm btn-soft-primary" title="Edit URL">
+                                        <em class="icon ni ni-edit fs-5"></em>
+                                    </button>
+                                </div>
+
+                                <!-- Edit Mode -->
+                                <div x-show="editing" style="display: none;" class="border rounded-2 p-3 bg-white shadow-sm">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label mb-1 fs-7 text-muted">URL Address</label>
+                                        <input type="url" class="form-control"
+                                            x-model="tempUrl" x-ref="urlInput"
+                                            placeholder="https://example.com/redirect-link"
+                                            @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
+                                        <div x-show="validationError" class="text-danger small mt-1" x-text="validationError"></div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-2 mt-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary px-3" @click="cancelEdit()">
+                                            Cancel
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-primary px-3" @click="saveEdit()">
+                                            <em class="icon ni ni-check me-1"></em> Save
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @error('affiliate_link')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Add Country URL Form (Visible ONLY when Affiliate is ON) -->
+                            @if ($showUrlForm)
+                                <div x-show="isAffiliate" class="border rounded-2 p-3 mb-3" style="background-color: #f8f9fa;">
+                                    <h6 class="mb-3 fs-6 fw-bold">Add New Redirect URL</h6>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Select Country</label>
+                                                <select class="form-control" wire:model="selectedCountryForUrl">
+                                                    <option value="">Choose a country</option>
+                                                    @foreach ($selectedCountries as $countryId)
+                                                        @php
+                                                            $country = collect($countries)->firstWhere('id', $countryId);
+                                                        @endphp
+                                                        @if ($country)
+                                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                                @error('selectedCountryForUrl')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12">
+                                            <div class="form-group mb-3">
+                                                <label class="form-label">Website URL</label>
+                                                <input type="url" class="form-control" wire:model="newWebsiteUrl"
+                                                    placeholder="https://example.com" />
+                                                @error('newWebsiteUrl')
+                                                    <small class="text-danger">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="form-check form-switch d-flex align-items-center m-0">
+                                            <input class="form-check-input" type="checkbox" id="countryAffiliateToggle"
+                                                wire:model="countryIsAffiliate" style="width: 2.5rem; height: 1.25rem; cursor: pointer;">
+                                            <label class="form-check-label ms-2 mb-0" for="countryAffiliateToggle">
+                                                <span class="fw-medium">
+                                                    {{ $countryIsAffiliate ? 'Affiliate Link' : 'Direct Link' }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-secondary btn-sm" wire:click="cancelAddUrl">
+                                                Cancel
+                                            </button>
+                                            <button type="button" class="btn btn-success btn-sm" wire:click="addCountryWebsiteUrl"
+                                                wire:loading.attr="disabled" wire:target="addCountryWebsiteUrl">
+                                                <span wire:loading.remove wire:target="addCountryWebsiteUrl">
+                                                    Save URL
+                                                </span>
+                                                <span wire:loading wire:target="addCountryWebsiteUrl">
+                                                    <em class="icon ni ni-spinner spin me-1"></em>Saving...
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Existing Country URLs List (Visible ONLY when Affiliate is ON) -->
+                            @if (!empty($countryWebsiteUrls))
+                                <div x-show="isAffiliate" class="country-urls-list mt-3">
+                                    @foreach ($countryWebsiteUrls as $countryId => $urlData)
+                                        @php
+                                            $country = collect($countries)->firstWhere('id', $countryId);
+                                            $countryDisplayName = $country ? ($country->name . ($country->language ? ' – ' . $country->language->name : '')) : '';
+                                        @endphp
+                                        @if ($country)
+                                            <div class="country-url-group mb-3">
+                                                <h6 class="mb-2 fs-6 text-muted fw-bold">{{ $countryDisplayName }}</h6>
+
+                                                @if (is_array($urlData) || is_object($urlData))
+                                                    @foreach ((array) $urlData as $index => $urlInfo)
+                                                        <div class="url-item border rounded-2 p-3 mb-2 bg-white shadow-sm">
+                                                            @if ($editingUrl == $countryId . '-' . $index)
+                                                                <!-- Edit Mode -->
+                                                                <div class="row g-2 align-items-center">
+                                                                    <div class="col-md-9" x-data="{ tempAffiliateCountry: @entangle('editIsAffiliate') }">
+                                                                        <div class="form-group mb-2">
+                                                                            <input type="url" class="form-control"
+                                                                                wire:model="editUrlValue"
+                                                                                placeholder="https://example.com">
+                                                                            @error('editUrlValue')
+                                                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
+
+                                                                        <div class="d-flex align-items-center gap-2">
+                                                                            <span class="small text-muted">Is Affiliate:</span>
+                                                                            <div class="form-check form-switch m-0">
+                                                                                <input class="form-check-input" type="checkbox"
+                                                                                    x-model="tempAffiliateCountry"
+                                                                                    style="width: 2.2rem; height: 1.1rem; cursor: pointer;">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-3 text-end">
+                                                                        <button type="button" class="btn btn-success btn-sm me-1"
+                                                                            wire:click="saveUrlEdit({{ $countryId }}, {{ $index }})"
+                                                                            wire:loading.attr="disabled"
+                                                                            wire:target="saveUrlEdit({{ $countryId }}, {{ $index }})">
+                                                                            <em class="icon ni ni-check"></em>
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-secondary btn-sm"
+                                                                            wire:click="cancelUrlEdit">
+                                                                            <em class="icon ni ni-cross"></em>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            @else
+                                                                <!-- Display Mode -->
+                                                                <div class="row align-items-center">
+                                                                    <div class="col-md-8">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <em class="icon ni ni-link text-muted me-2 fs-5"></em>
+                                                                            <a href="{{ is_array($urlInfo) ? $urlInfo['url'] : $urlInfo }}"
+                                                                                target="_blank" class="text-primary text-decoration-none text-truncate">
+                                                                                {{ is_array($urlInfo) ? $urlInfo['url'] : $urlInfo }}
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-4 d-flex justify-content-end ">
+                                                                        <button type="button" class="btn btn-light btn-icon btn-sm text-primary"
+                                                                            wire:click="editUrl({{ $countryId }}, {{ $index }})"
+                                                                            title="Edit URL" style=" margin-right: 10px;">
+                                                                            <em class="icon ni ni-edit"></em>
+                                                                        </button>
+                                                                        <button type="button" class="btn btn-light btn-icon btn-sm text-danger"
+                                                                            wire:loading.attr="disabled"
+                                                                            wire:target="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})"
+                                                                            title="Remove URL"
+                                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to remove this URL?')) { @this.removeCountryWebsiteUrl({{ $countryId }}, {{ $index }}) }">
+                                                                            <em class="icon ni ni-trash"></em>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                                       <!-- Media Upload Section -->
@@ -1530,7 +1609,7 @@
 
                                     </div>
                                     <div class="form-group mt-3">
-                                        <label class="form-label">Meta Title</label>
+                                        <label class="form-label">Main meta title</label>
                                         <input type="text" class="form-control"
                                             @error('meta_title') is-invalid @enderror" wire:model.live="meta_title" />
                                         @error('meta_title')
@@ -1539,10 +1618,90 @@
                                     </div>
 
                                     <div class="form-group mt-3">
-                                        <label class="form-label">Meta Description</label>
-                                        <textarea class="form-control" @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
+                                        <label class="form-label">Main meta description</label>
+                                        <textarea class="form-control @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
                                             rows="4"></textarea>
                                         @error('meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Alternatives Meta Title</label>
+                                        <input type="text" class="form-control @error('alternatives_meta_title') is-invalid @enderror"
+                                            wire:model.live="alternatives_meta_title" placeholder="" />
+                                        @error('alternatives_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Alternatives Meta Description</label>
+                                        <textarea class="form-control @error('alternatives_meta_description') is-invalid @enderror"
+                                            wire:model.live="alternatives_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('alternatives_meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Reviews Meta Title</label>
+                                        <input type="text" class="form-control @error('reviews_meta_title') is-invalid @enderror"
+                                            wire:model.live="reviews_meta_title" placeholder="" />
+                                        @error('reviews_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Reviews Meta Description</label>
+                                        <textarea class="form-control @error('reviews_meta_description') is-invalid @enderror"
+                                            wire:model.live="reviews_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('reviews_meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">FAQs Meta Title</label>
+                                        <input type="text" class="form-control @error('faqs_meta_title') is-invalid @enderror"
+                                            wire:model.live="faqs_meta_title" placeholder="" />
+                                        @error('faqs_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">FAQs Meta Description</label>
+                                        <textarea class="form-control @error('faqs_meta_description') is-invalid @enderror"
+                                            wire:model.live="faqs_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('faqs_meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Comparison Meta Title</label>
+                                        <input type="text" class="form-control @error('comparison_meta_title') is-invalid @enderror"
+                                            wire:model.live="comparison_meta_title" placeholder="" />
+                                        @error('comparison_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Comparison Meta Description</label>
+                                        <textarea class="form-control @error('comparison_meta_description') is-invalid @enderror"
+                                            wire:model.live="comparison_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('comparison_meta_description')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
