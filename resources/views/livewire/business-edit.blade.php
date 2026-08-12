@@ -480,26 +480,6 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">Alternatives Meta Title</label>
-                                <input type="text" class="form-control @error('alternatives_meta_title') is-invalid @enderror"
-                                    wire:model.live="alternatives_meta_title" placeholder="Meta title for alternatives page" />
-                                @error('alternatives_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">Alternatives Meta Description</label>
-                                <textarea class="form-control @error('alternatives_meta_description') is-invalid @enderror"
-                                    wire:model.live="alternatives_meta_description" rows="2" placeholder="Meta description for alternatives page"></textarea>
-                                @error('alternatives_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">Alternatives page title</label>
                                 <input type="text" class="form-control @error('alternatives_title') is-invalid @enderror"
                                     wire:model.live="alternatives_title" placeholder="e.g. Best {{ $name ?: 'Business Name' }} Alternatives" />
@@ -548,26 +528,6 @@
                     <!-- Reviews Page Description Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Reviews Meta Title</label>
-                                <input type="text" class="form-control @error('reviews_meta_title') is-invalid @enderror"
-                                    wire:model.live="reviews_meta_title" placeholder="Meta title for reviews page" />
-                                @error('reviews_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">Reviews Meta Description</label>
-                                <textarea class="form-control @error('reviews_meta_description') is-invalid @enderror"
-                                    wire:model.live="reviews_meta_description" rows="2" placeholder="Meta description for reviews page"></textarea>
-                                @error('reviews_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
                             <div class="form-group mb-3">
                                 <label class="form-label">Reviews page title</label>
                                 <input type="text" class="form-control @error('reviews_title') is-invalid @enderror"
@@ -664,26 +624,6 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group mb-3">
-                                <label class="form-label">FAQs Meta Title</label>
-                                <input type="text" class="form-control @error('faqs_meta_title') is-invalid @enderror"
-                                    wire:model.live="faqs_meta_title" placeholder="Meta title for FAQs page" />
-                                @error('faqs_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">FAQs Meta Description</label>
-                                <textarea class="form-control @error('faqs_meta_description') is-invalid @enderror"
-                                    wire:model.live="faqs_meta_description" rows="2" placeholder="Meta description for FAQs page"></textarea>
-                                @error('faqs_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
-                            <div class="form-group mb-3">
                                 <label class="form-label">FAQs page title 1</label>
                                 <input type="text" class="form-control @error('faqs_title') is-invalid @enderror"
                                     wire:model.live="faqs_title" placeholder="e.g. {{ $name ?: 'Business Name' }} Frequently Asked Questions" />
@@ -770,26 +710,6 @@
                     <!-- Comparison Page Description Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
-                            <div class="form-group mb-3">
-                                <label class="form-label">Comparison Meta Title</label>
-                                <input type="text" class="form-control @error('comparison_meta_title') is-invalid @enderror"
-                                    wire:model.live="comparison_meta_title" placeholder="Meta title for comparison page" />
-                                @error('comparison_meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label">Comparison Meta Description</label>
-                                <textarea class="form-control @error('comparison_meta_description') is-invalid @enderror"
-                                    wire:model.live="comparison_meta_description" rows="2" placeholder="Meta description for comparison page"></textarea>
-                                @error('comparison_meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <hr class="preview-hr my-3">
-
                             <div class="form-group mb-3">
                                 <label class="form-label">Comparison page title 1</label>
                                 <input type="text" class="form-control @error('comparison_title') is-invalid @enderror"
@@ -1502,9 +1422,89 @@
 
                                     <div class="form-group mt-3">
                                         <label class="form-label">Main meta description</label>
-                                        <textarea class="form-control" @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
+                                        <textarea class="form-control @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
                                             rows="4"></textarea>
                                         @error('meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Alternatives Meta Title</label>
+                                        <input type="text" class="form-control @error('alternatives_meta_title') is-invalid @enderror"
+                                            wire:model.live="alternatives_meta_title" placeholder="" />
+                                        @error('alternatives_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Alternatives Meta Description</label>
+                                        <textarea class="form-control @error('alternatives_meta_description') is-invalid @enderror"
+                                            wire:model.live="alternatives_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('alternatives_meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Reviews Meta Title</label>
+                                        <input type="text" class="form-control @error('reviews_meta_title') is-invalid @enderror"
+                                            wire:model.live="reviews_meta_title" placeholder="" />
+                                        @error('reviews_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Reviews Meta Description</label>
+                                        <textarea class="form-control @error('reviews_meta_description') is-invalid @enderror"
+                                            wire:model.live="reviews_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('reviews_meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">FAQs Meta Title</label>
+                                        <input type="text" class="form-control @error('faqs_meta_title') is-invalid @enderror"
+                                            wire:model.live="faqs_meta_title" placeholder="" />
+                                        @error('faqs_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">FAQs Meta Description</label>
+                                        <textarea class="form-control @error('faqs_meta_description') is-invalid @enderror"
+                                            wire:model.live="faqs_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('faqs_meta_description')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <hr class="preview-hr my-3">
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Comparison Meta Title</label>
+                                        <input type="text" class="form-control @error('comparison_meta_title') is-invalid @enderror"
+                                            wire:model.live="comparison_meta_title" placeholder="" />
+                                        @error('comparison_meta_title')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Comparison Meta Description</label>
+                                        <textarea class="form-control @error('comparison_meta_description') is-invalid @enderror"
+                                            wire:model.live="comparison_meta_description" rows="2" placeholder=""></textarea>
+                                        @error('comparison_meta_description')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
