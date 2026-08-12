@@ -1,10 +1,22 @@
 <div class="nk-block nk-block-lg">
     <div class="nk-block-head nk-block-head-sm">
-        <div class="nk-block-between">
+        <div class="nk-block-between align-items-center">
             <div class="nk-block-head-content">
                 <h3 class="nk-block-title page-title">Business</h3>
             </div>
-            <div class="nk-block-head-content">
+            <div class="nk-block-head-content d-flex align-items-center gap-3">
+                <div class="position-relative me-2">
+                    <select class="form-control form-select pe-5" wire:model.live="languages_supported">
+                        <option value="">Select Region / Language</option>
+                        @if(!empty($languages))
+                            @foreach ($languages as $language)
+                                <option value="{{ is_object($language) ? $language->id : $language['id'] }}">
+                                    {{ is_object($language) ? $language->name : $language['name'] }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
                 <div class="toggle-wrap nk-block-tools-toggle">
                     <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu">
                         <em class="icon ni ni-more-v"></em>
@@ -113,7 +125,7 @@
 
 
                             <!-- If you're using Alpine.js -->
-                            <div x-data="{
+                            <div wire:ignore x-data="{
                                 editor: null,
                                 init() {
                                     this.$nextTick(() => {
@@ -123,6 +135,12 @@
                                                 this.editor = editor;
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.business_description = editor.getData();
+                                                });
+                                                Livewire.on('contentLoaded', data => {
+                                                    if (this.editor) {
+                                                        const val = (data && data[0] && data[0].business_description !== undefined) ? data[0].business_description : (data.business_description || '');
+                                                        this.editor.setData(val);
+                                                    }
                                                 });
                                             })
                                             .catch(error => {
@@ -179,6 +197,12 @@
                                                 this.editor = editor;
                                                 editor.model.document.on('change:data', () => {
                                                     this.$wire.after_image_description = editor.getData();
+                                                });
+                                                Livewire.on('contentLoaded', data => {
+                                                    if (this.editor) {
+                                                        const val = (data && data[0] && data[0].after_image_description !== undefined) ? data[0].after_image_description : (data.after_image_description || '');
+                                                        this.editor.setData(val);
+                                                    }
                                                 });
                                             })
                                             .catch(error => {
@@ -506,17 +530,20 @@
                                         </div>
                                     </div>
                                     <hr class="my-3">
-                                    <div class="form-group position-relative">
+                                     <div class="form-group position-relative">
                                         <label class="form-label">Country/Region</label>
                                         <div class="position-relative">
                                             <select
                                                 class="form-control @error('languages_supported') is-invalid @enderror pe-5"
                                                 wire:model.live="languages_supported">
                                                 <option value="">Select Region</option>
-                                                @foreach ($languages as $language)
-                                                    <option value="{{ $language->id }}">{{ $language->name }}
-                                                    </option>
-                                                @endforeach
+                                                @if(!empty($languages))
+                                                    @foreach ($languages as $language)
+                                                        <option value="{{ is_object($language) ? $language->id : $language['id'] }}">
+                                                            {{ is_object($language) ? $language->name : $language['name'] }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
                                             </select>
                                             <i class="fa fa-chevron-down position-absolute"
                                                 style="right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
@@ -1494,28 +1521,25 @@
                                                 <li>
                                                     <div class="drodown">
                                                         <a href="#" class="dropdown-toggle btn btn-icon btn-trigger"
-                                                            data-bs-toggle="dropdown"><em
-                                                                class="icon ni ni-more-h"></em></a>
-                                                        <div class="dropdown-menu dropdown-menu-end edit-btn"
-                                                            style="height: auto !important;">
+                                                            data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                                        <div class="dropdown-menu dropdown-menu-end edit-btn" style="height: auto !important;">
                                                             <ul class="link-list-opt no-bdr">
                                                                 <li>
-                                                                    <a wire:click="editFAQ({{ $faq['id'] }})">
+                                                                    <a href="#" wire:click.prevent="editFAQ({{ $faq['id'] }})">
                                                                         <em class="icon ni ni-edit-fill"></em><span>Edit</span>
                                                                     </a>
                                                                 </li>
                                                                 <li>
-                                                                    <a  wire:click="toggleFAQStatus({{ $faq['id'] }})">
+                                                                    <a href="#" wire:click.prevent="toggleFAQStatus({{ $faq['id'] }})">
                                                                         <em class="icon ni ni-{{ $faq['status'] ? 'eye-off' : 'eye' }}-fill"></em>
                                                                         <span>{{ $faq['status'] ? 'Deactivate' : 'Activate' }}</span>
                                                                     </a>
                                                                 </li>
                                                                 <li>
-                                                                    <a wire:click="deleteFAQ({{ $faq['id'] }})" >
+                                                                    <a href="#" wire:click.prevent="deleteFAQ({{ $faq['id'] }})">
                                                                         <em class="icon ni ni-trash-fill"></em><span>Delete</span>
                                                                     </a>
                                                                 </li>
-
                                                             </ul>
                                                         </div>
                                                     </div>
