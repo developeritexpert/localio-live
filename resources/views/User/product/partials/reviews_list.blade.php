@@ -44,10 +44,10 @@
                                         {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
                                     @endif
                                 @if($review->user && $review->user->job_title)
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;  font-weight:500;">{{ $review->user->job_title }}</p>
+                                    <p class="asn-rating-p" style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;  font-weight:500;">{{ $review->user->job_title }}</p>
                                 @endif
                                 @if($review->user && $review->user->company_size)
-                                    <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
+                                    <p class="asn-rating-p" style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>
                                 @endif
                             </div>
                         </div>

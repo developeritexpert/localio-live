@@ -100,7 +100,11 @@ class CategoriesController extends Controller
         $category_image_url = null;
         $category_icon_url = null;
         $category_data = null;
-        $rating_criteria = [];
+        $default_criteria = [];
+        $inherited_criteria = [];
+        $custom_criteria = [];
+
+        $defaultMaster = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
 
         if ($id != null) {
             $category_data = CategoryTranslation::where('id', $id)->first()->toArray();
@@ -113,7 +117,37 @@ class CategoriesController extends Controller
                 $category_icon = Media::where('id', $category->category_icon)->first();
                 $category_image_url = $category_image ? asset($category_image->dir_path . '/' . $category_image->file_name) : null;
                 $category_icon_url = $category_icon ? asset($category_icon->dir_path . '/' . $category_icon->file_name) : null;
-                $rating_criteria = $category->ratingCriteria()->get();
+
+                $effective = $category->getEffectiveRatingCriteria();
+
+                foreach ($defaultMaster as $def) {
+                    $item = $effective->firstWhere('default_key', $def->key);
+                    $default_criteria[] = [
+                        'key' => $def->key,
+                        'name' => $def->name,
+                        'description' => $item ? $item->description : $def->default_description,
+                    ];
+                }
+
+                foreach ($effective as $item) {
+                    if (!$item->is_default) {
+                        if (!empty($item->is_inherited)) {
+                            $inherited_criteria[] = $item;
+                        } else {
+                            $custom_criteria[] = $item;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (empty($default_criteria)) {
+            foreach ($defaultMaster as $def) {
+                $default_criteria[] = [
+                    'key' => $def->key,
+                    'name' => $def->name,
+                    'description' => $def->default_description,
+                ];
             }
         }
 
@@ -126,7 +160,18 @@ class CategoriesController extends Controller
             }])
             ->get();
 
-        return view('Admin.categories.add', compact('category_data', 'category', 'category_image_url', 'category_icon_url', 'parentCategories', 'hasSubcategories', 'hasItems', 'rating_criteria'));
+        return view('Admin.categories.add', compact(
+            'category_data',
+            'category',
+            'category_image_url',
+            'category_icon_url',
+            'parentCategories',
+            'hasSubcategories',
+            'hasItems',
+            'default_criteria',
+            'inherited_criteria',
+            'custom_criteria'
+        ));
     }
 
     // public function add_process(Request $request)
@@ -441,27 +486,67 @@ class CategoriesController extends Controller
             );
 
             // Handle rating criteria
-            $submittedExistingCriteria = $request->input('existing_rating_criteria', []) ?? null;
-            $submittedNewCriteria = $request->input('new_rating_criteria', []) ?? null;
-            
-            // Delete criteria not in the submitted list
-            $existingIds = array_keys($submittedExistingCriteria);
-            $category->ratingCriteria()->whereNotIn('id', $existingIds)->delete();
+            // 1. Process Default Criteria Descriptions for this Category
+            $submittedDefaultCriteria = $request->input('default_rating_criteria', []);
+            $defaultMaster = \App\Models\DefaultRatingCriteria::all();
+            foreach ($defaultMaster as $def) {
+                $desc = isset($submittedDefaultCriteria[$def->key]['description'])
+                    ? trim($submittedDefaultCriteria[$def->key]['description'])
+                    : null;
 
-            // Update existing criteria (preserves historical reviews!)
-            foreach ($submittedExistingCriteria as $criteriaId => $name) {
+                CategoryRatingCriteria::updateOrCreate(
+                    [
+                        'category_id' => $category->id,
+                        'default_key' => $def->key,
+                    ],
+                    [
+                        'name' => $def->name,
+                        'description' => $desc,
+                        'is_default' => true,
+                    ]
+                );
+            }
+
+            // 2. Process Custom Criteria (Category or Subcategory specific)
+            $submittedExistingCriteria = $request->input('existing_rating_criteria', []) ?? [];
+            $submittedNewCriteria = $request->input('new_rating_criteria', []) ?? [];
+
+            $existingIds = array_keys($submittedExistingCriteria);
+            $category->ratingCriteria()
+                ->where('is_default', false)
+                ->whereNotIn('id', $existingIds)
+                ->delete();
+
+            // Update existing custom criteria
+            foreach ($submittedExistingCriteria as $criteriaId => $data) {
+                $name = is_array($data) ? ($data['name'] ?? '') : $data;
+                $desc = is_array($data) ? ($data['description'] ?? null) : null;
+
                 if (trim($name) !== '') {
-                    CategoryRatingCriteria::where('id', $criteriaId)->where('category_id', $category->id)->update(['name' => trim($name)]);
+                    CategoryRatingCriteria::where('id', $criteriaId)
+                        ->where('category_id', $category->id)
+                        ->where('is_default', false)
+                        ->update([
+                            'name' => trim($name),
+                            'description' => $desc ? trim($desc) : null,
+                        ]);
                 }
             }
 
-            // Add new criteria
-            foreach ($submittedNewCriteria as $name) {
-                if (trim($name) !== '') {
-                    CategoryRatingCriteria::create([
-                        'category_id' => $category->id,
-                        'name' => trim($name)
-                    ]);
+            // Add new custom criteria
+            if (is_array($submittedNewCriteria)) {
+                foreach ($submittedNewCriteria as $newCrit) {
+                    $name = is_array($newCrit) ? ($newCrit['name'] ?? '') : $newCrit;
+                    $desc = is_array($newCrit) ? ($newCrit['description'] ?? null) : null;
+
+                    if (trim($name) !== '') {
+                        CategoryRatingCriteria::create([
+                            'category_id' => $category->id,
+                            'name' => trim($name),
+                            'description' => $desc ? trim($desc) : null,
+                            'is_default' => false,
+                        ]);
+                    }
                 }
             }
 

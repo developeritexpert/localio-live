@@ -115,6 +115,12 @@
                                                             </a>
                                                         </li>
 
+                                                        <li>
+                                                            <a wire:click.prevent="openFeaturesModal({{ $business->id }})">
+                                                                <em class="icon ni ni-layers-fill"></em>Features
+                                                            </a>
+                                                        </li>
+
 
 
                                                         <li>
@@ -147,6 +153,60 @@
                 </table>
             </div>
         </div>
+
+        {{-- Features Modal --}}
+        @if($showFeaturesModal)
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1055;">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Assign Features: {{ $featureBusinessName }}</h5>
+                        <button type="button" class="btn-close" wire:click="closeFeaturesModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-muted fs-12 mb-3">Only features corresponding to categories assigned to this business are available below.</p>
+                        
+                        <div class="form-group mb-4">
+                            <label class="form-label font-weight-bold">Available Category Features</label>
+                            <div class="row g-2" style="max-height: 220px; overflow-y: auto; border: 1px solid #e5e7eb; padding: 12px; border-radius: 6px; background-color: #fcfcfc;">
+                                @forelse($businessCategoryFeatures as $feat)
+                                    <div class="col-md-6 mb-2">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input" id="feat_ls_{{ $feat['id'] }}" value="{{ $feat['id'] }}" wire:model.live="selectedBusinessFeatureIds">
+                                            <label class="custom-control-label font-weight-normal" for="feat_ls_{{ $feat['id'] }}">
+                                                {{ $feat['translations'][0]['name'] ?? ($feat['name'] ?? 'Feature #'.$feat['id']) }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="col-12 text-muted">No features found for this business's assigned categories.</div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3 d-none">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label font-weight-bold mb-0">Fast JSON Feature Upload & Assign</label>
+                                <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyAssignExampleFormat()">
+                                    <em class="icon ni ni-copy"></em> Copy Example Format
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mb-1">Paste JSON array of features to quickly match and select existing features.</small>
+                            <textarea class="form-control" id="assign_feature_json" wire:model="featureJsonData" rows="4" placeholder='[
+  { "name": "Free Chat Support" },
+  { "name": "Long Battery Life" }
+]'></textarea>
+                            <button type="button" class="btn btn-sm btn-outline-secondary mt-2" wire:click="fastAssignFeatureJson">Fast Parse & Assign JSON</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click="closeFeaturesModal">Cancel</button>
+                        <button type="button" class="btn btn-primary" style="background:#F9633B" wire:click="saveBusinessFeatures">Save Features</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
 
         {{-- translating modal --}}
             <div wire:ignore.self class="modal fade" id="translateModal" tabindex="-1" aria-labelledby="translateModalLabel" aria-hidden="true">
@@ -790,6 +850,7 @@
         initCkEditor();
     });
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const translateModalEl = document.getElementById('translateModal');
@@ -824,6 +885,20 @@
             });
         });
     });
+
+    function copyAssignExampleFormat() {
+        const exampleFormat = `[\n  { "name": "Free Chat Support" },\n  { "name": "Long Battery Life" }\n]`;
+        navigator.clipboard.writeText(exampleFormat).then(() => {
+            NioApp.Toast('Example JSON format copied to clipboard!', 'info', { position: 'top-right' });
+        }).catch(err => {
+            const textarea = document.getElementById('assign_feature_json');
+            if (textarea) {
+                textarea.value = exampleFormat;
+                textarea.dispatchEvent(new Event('input'));
+            }
+            NioApp.Toast('Example JSON inserted!', 'info', { position: 'top-right' });
+        });
+    }
 </script>
 
 

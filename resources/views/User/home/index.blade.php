@@ -176,8 +176,8 @@
                                                             @endif
                                                             <div class="inn_sl_hed mst_hdn">
                                                                 <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
-                                                                    <div class="sli_img">
-                                                                        <img class="slider_img" src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}" alt="">
+                                                                    <div class="top-product-logo">
+                                                                        <img class="" src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}" alt="">
                                                                     </div>
                                                                 </a>
                                                                 <div class="sl_h">
@@ -592,7 +592,7 @@
                     </div>
                 </div>
                 <div class="right-tool-btn text-center">
-                    <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Sign up for free</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Get started </a>
                 </div>
             </div>
         </div>

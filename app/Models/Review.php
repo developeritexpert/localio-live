@@ -28,6 +28,11 @@ class Review extends Model
         return $this->hasMany(ReviewRating::class, 'review_id');
     }
 
+    public function selectedProCons()
+    {
+        return $this->belongsToMany(CategoryProCon::class, 'review_pro_cons', 'review_id', 'category_pro_con_id')->withTimestamps();
+    }
+
 
     public function user()
     {

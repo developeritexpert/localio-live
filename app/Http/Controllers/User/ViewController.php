@@ -316,29 +316,44 @@ class ViewController extends Controller
         $averageRating = $ratingCount > 0 ? round($activeReviews->avg('rating'), 1) : 0;
 
         // Dynamic Rating Criteria Breakdown
-        $criteria = $business->category ? $business->category->ratingCriteria : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $activeReviewIds = $activeReviews->pluck('id')->toArray();
+
         foreach ($criteria as $criterion) {
             $totalScore = 0;
             $count = 0;
-            foreach ($activeReviews as $review) {
-                $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
-                    ->where('criteria_id', $criterion->id)
-                    ->first();
-                if ($ratingRecord) {
-                    $totalScore += $ratingRecord->rating;
-                    $count++;
-                } else {
+
+            $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where('id', $criterion->id)
+                ->orWhere(function ($q) use ($criterion) {
+                    if ($criterion->default_key) {
+                        $q->where('default_key', $criterion->default_key);
+                    }
+                    $q->orWhereRaw('LOWER(name) = ?', [strtolower($criterion->name)]);
+                })
+                ->pluck('id')
+                ->toArray();
+
+            $ratingRecords = \App\Models\ReviewRating::whereIn('review_id', $activeReviewIds)
+                ->whereIn('criteria_id', $matchingCriteriaIds)
+                ->get();
+
+            if ($ratingRecords->isNotEmpty()) {
+                $totalScore = $ratingRecords->sum('rating');
+                $count = $ratingRecords->count();
+            } else {
+                foreach ($activeReviews as $review) {
                     $legacyVal = null;
-                    if ($criterion->name === 'Ease of Use') {
+                    $cName = strtolower($criterion->name);
+                    if ($cName === 'ease of use') {
                         $legacyVal = $review->ease_of_use_rating;
-                    } elseif ($criterion->name === 'Customer Service') {
+                    } elseif ($cName === 'customer service') {
                         $legacyVal = $review->customer_service_rating;
-                    } elseif ($criterion->name === 'Features') {
+                    } elseif ($cName === 'features') {
                         $legacyVal = $review->exclusive_service_rating;
-                    } elseif ($criterion->name === 'Value for Money') {
+                    } elseif ($cName === 'value for money') {
                         $legacyVal = $review->value_for_money_rating;
                     }
-                    if (!is_null($legacyVal)) {
+                    if (!is_null($legacyVal) && $legacyVal > 0) {
                         $totalScore += $legacyVal;
                         $count++;
                     }
@@ -490,29 +505,44 @@ class ViewController extends Controller
         $recommendPercent = $totalReviews > 0 ? round(($recommendCount / $totalReviews) * 100) : 0;
 
         // Calculate Criteria ratings
-        $criteria = $business->category ? $business->category->ratingCriteria : collect();
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+        $activeReviewIds = $activeReviews->pluck('id')->toArray();
+
         foreach ($criteria as $criterion) {
             $totalScore = 0;
             $count = 0;
-            foreach ($activeReviews as $review) {
-                $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
-                    ->where('criteria_id', $criterion->id)
-                    ->first();
-                if ($ratingRecord) {
-                    $totalScore += $ratingRecord->rating;
-                    $count++;
-                } else {
+
+            $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where('id', $criterion->id)
+                ->orWhere(function ($q) use ($criterion) {
+                    if ($criterion->default_key) {
+                        $q->where('default_key', $criterion->default_key);
+                    }
+                    $q->orWhereRaw('LOWER(name) = ?', [strtolower($criterion->name)]);
+                })
+                ->pluck('id')
+                ->toArray();
+
+            $ratingRecords = \App\Models\ReviewRating::whereIn('review_id', $activeReviewIds)
+                ->whereIn('criteria_id', $matchingCriteriaIds)
+                ->get();
+
+            if ($ratingRecords->isNotEmpty()) {
+                $totalScore = $ratingRecords->sum('rating');
+                $count = $ratingRecords->count();
+            } else {
+                foreach ($activeReviews as $review) {
                     $legacyVal = null;
-                    if ($criterion->name === 'Ease of Use') {
+                    $cName = strtolower($criterion->name);
+                    if ($cName === 'ease of use') {
                         $legacyVal = $review->ease_of_use_rating;
-                    } elseif ($criterion->name === 'Customer Service') {
+                    } elseif ($cName === 'customer service') {
                         $legacyVal = $review->customer_service_rating;
-                    } elseif ($criterion->name === 'Features') {
+                    } elseif ($cName === 'features') {
                         $legacyVal = $review->exclusive_service_rating;
-                    } elseif ($criterion->name === 'Value for Money') {
+                    } elseif ($cName === 'value for money') {
                         $legacyVal = $review->value_for_money_rating;
                     }
-                    if (!is_null($legacyVal)) {
+                    if (!is_null($legacyVal) && $legacyVal > 0) {
                         $totalScore += $legacyVal;
                         $count++;
                     }

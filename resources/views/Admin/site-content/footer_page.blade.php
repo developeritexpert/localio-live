@@ -21,7 +21,7 @@
                 'fields' => [
                     'discover' => 'Discover Text',
                     'categories' => 'Categories',
-                    'top_rated_product' => 'Top Rated Product',
+                    'top_rated  ' => 'Top Rated',
                     'exclusive_deal' => 'Exclusive Deal',
                 ]
             ],

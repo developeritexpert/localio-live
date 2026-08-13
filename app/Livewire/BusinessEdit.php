@@ -239,6 +239,8 @@ class BusinessEdit extends Component
         $this->selectedFeatures = $data['features'] ?? [];
     }
 
+    public $ratingTexts = []; // criteria_key => ['intro_text' => '', 'end_text' => '']
+
     public function mount($id = null)
     {
         if(isset($id) && $id != null){
@@ -1061,6 +1063,16 @@ class BusinessEdit extends Component
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
         $this->pro_cons_headline = $business->pro_cons_headline ?? '';
 
+        // Load existing rating texts
+        $existingTexts = \App\Models\BusinessRatingText::where('business_id', $id)->get();
+        $this->ratingTexts = [];
+        foreach ($existingTexts as $txt) {
+            $this->ratingTexts[$txt->criteria_key] = [
+                'intro_text' => $txt->intro_text ?? '',
+                'end_text' => $txt->end_text ?? '',
+            ];
+        }
+
         // Load existing Offerings (restricted to one for now)
         if ($business->offerings->count() > 0) {
             $offering = $business->offerings->first();
@@ -1276,6 +1288,7 @@ class BusinessEdit extends Component
             $this->saveUsps($business->id);
             $this->saveProsCons($business->id);
             $this->saveOfferings($business->id);
+            $this->saveRatingTexts($business->id);
 
             DB::commit();
 
@@ -1324,6 +1337,7 @@ class BusinessEdit extends Component
             $this->saveUsps($business->id);
             $this->saveProsCons($business->id);
             $this->saveOfferings($business->id);
+            $this->saveRatingTexts($business->id);
 
             DB::commit();
 
@@ -1365,35 +1379,7 @@ class BusinessEdit extends Component
 
     public function saveProsCons($businessId)
     {
-        \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
-        $proConsToInsert = [];
-        foreach ($this->businessPros as $pro) {
-            $text = trim($pro['text'] ?? '');
-            if (!empty($text)) {
-                $proConsToInsert[] = [
-                    'business_id' => $businessId,
-                    'type' => 'pro',
-                    'text' => $text,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        foreach ($this->businessCons as $con) {
-            $text = trim($con['text'] ?? '');
-            if (!empty($text)) {
-                $proConsToInsert[] = [
-                    'business_id' => $businessId,
-                    'type' => 'con',
-                    'text' => $text,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        if (!empty($proConsToInsert)) {
-            \App\Models\BusinessProCon::insert($proConsToInsert);
-        }
+        // Pros & Cons are now user review-based
     }
 
     public function saveOfferings($businessId)
@@ -1422,6 +1408,29 @@ class BusinessEdit extends Component
                 'bottom_text' => trim($offering['bottom_text'] ?? ''),
                 'image' => $imagePath,
             ]);
+        }
+    }
+
+    public function saveRatingTexts($businessId)
+    {
+        if (empty($this->ratingTexts) || !is_array($this->ratingTexts)) return;
+
+        foreach ($this->ratingTexts as $key => $data) {
+            $intro = $data['intro_text'] ?? null;
+            $end = $data['end_text'] ?? null;
+
+            if ($intro !== null || $end !== null) {
+                \App\Models\BusinessRatingText::updateOrCreate(
+                    [
+                        'business_id' => $businessId,
+                        'criteria_key' => (string)$key,
+                    ],
+                    [
+                        'intro_text' => $intro,
+                        'end_text' => $end,
+                    ]
+                );
+            }
         }
     }
 
