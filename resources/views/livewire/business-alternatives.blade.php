@@ -199,18 +199,18 @@ section.top-automotive-sec.top_rate_pg.light {
                             @endphp
                             <div class="col-lg-4 mt-4 mt-md-0 text-start">
                                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                    <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
-                                        <div class="d-flex align-items-center gap-3">
+                                    <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                                        <div class="d-flex align-items-center gap-2">
                                             @if(!empty($business->icon_id))
                                                 <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
                                                     <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: cover;">
                                                 </div>
                                             @endif
                                             <div>
-                                                <h3 style="font-size: 16px; font-weight: 700; color: #002347; margin: 0 0 4px 0;">{{ $bName }}</h3>
-                                                <div style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
-                                                    <span style="font-weight: 400; color: #333;">{{ number_format($bAvgRating, 1) }}</span>
-                                                    <div class="rating-stars" style="display: flex; gap: 2px;">
+                                                <h3 style="font-size: 16px !important; font-weight: 500 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                                <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                                    <span style="">{{ number_format($bAvgRating, 1) }}</span>
+                                                    <div class="rating-stars" style="display: flex; gap: 0px;">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($i <= floor($bAvgRating))
                                                                 <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
@@ -221,7 +221,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                             @endif
                                                         @endfor
                                                     </div>
-                                                    <span style="color: #666; font-weight: 600;">({{ number_format($bReviewCount) }})</span>
+                                                    <span style="   ">({{ number_format($bReviewCount) }})</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -233,29 +233,29 @@ section.top-automotive-sec.top_rate_pg.light {
                                     </div>
 
                                     @if(count($bCriteria) > 0)
-                                        <h6 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 12px;">Review breakdown</h6>
+                                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Review breakdown</h6>
                                         <div class="mb-3">
                                             @foreach ($bCriteria as $criterion)
                                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                    <p class="m-0" style="font-size: 13px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @endif
 
-                                    <div class="d-flex justify-content-between align-items-center pt-2 mt-2" style="border-top: 1px solid #f0f0f0;">
-                                        <span style="font-weight: 600; color: #002347; font-size: 13.5px;">Recommended by users</span>
-                                        <strong style="color: #002347; font-size: 13.5px;">{{ $bRecommendPercent }}%</strong>
+                                    <div class="d-flex justify-content-between align-items-center pt-3 mt-3" style="border-top: 1px solid #f0f0f0;">
+                                        <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
+                                        <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $bRecommendPercent }}%</strong>
                                     </div>
 
                                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $businessName }}?</span>
+                                        <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $businessName }}?</span>
                                         <div style="display: flex; gap: 8px;">
-                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#174889';">
                                                 <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
                                             </a>
                                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
@@ -596,8 +596,8 @@ section.top-automotive-sec.top_rate_pg.light {
                                                  <div class="card-compare-m">
                                                      @if($isRecommended)
                                                          <div style="margin-bottom: 25px;">
-                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;">
-                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Recommended
+                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; ;">
+                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Top choice
                                                              </span>
                                                          </div>
                                                      @endif

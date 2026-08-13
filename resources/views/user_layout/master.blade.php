@@ -1371,7 +1371,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </li>
                                         <li class=" menu-item cat_menu_item">
                                             <a
-                                                href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</a>
+                                                href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated'] ?? 'Top Rated' }}</a>
                                         </li>
                                         @foreach($categories as $category)
                                             <li class="menu-item">
@@ -2229,8 +2229,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                         </a>
                                     </li>
                                     <li><a
-                                            href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['top_rated_product'] ??
-                                                'Top-rated products
+                                            href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['top_ratedt'] ??
+                                                'Top-rated 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}
                                         </a>
                                     </li>
@@ -2612,7 +2612,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                          <div class="row mt-4">
                         <div class="col-12">
-                            <div class="form-check mb-3">
+                            <div class="form-check ">
                                 <input
                                     class="form-check-input"
                                     type="checkbox"
