@@ -1209,7 +1209,7 @@
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['intro_text']))
-                                                    <div class="mb-3 text-muted">{!! $ratingTexts['features']['intro_text'] !!}</div>
+                                                    <div class="mb-3">{!! $ratingTexts['features']['intro_text'] !!}</div>
                                                 @endif
 
                                                 <!-- Community Rating Box -->
@@ -1220,11 +1220,11 @@
                                                         <span style="color: #f9633b;">★</span>
                                                         <span>Features</span>
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                    <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['end_text']))
-                                                    <div class="mb-3 text-muted">{!! $ratingTexts['features']['end_text'] !!}</div>
+                                                    <div class="mb-3">{!! $ratingTexts['features']['end_text'] !!}</div>
                                                 @endif
 
                                                 <!-- Feature Badges/Chips -->
@@ -1259,7 +1259,7 @@
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['intro_text']))
-                                                    <div class="mb-3 text-muted">{!! $ratingTexts['ease_of_use']['intro_text'] !!}</div>
+                                                    <div class="mb-3">{!! $ratingTexts['ease_of_use']['intro_text'] !!}</div>
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
@@ -1269,11 +1269,11 @@
                                                         <span style="color: #f9633b;">★</span>
                                                         <span>Ease of use</span>
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                    <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['end_text']))
-                                                    <div class="mb-3 text-muted">{!! $ratingTexts['ease_of_use']['end_text'] !!}</div>
+                                                    <div class="mb-3">{!! $ratingTexts['ease_of_use']['end_text'] !!}</div>
                                                 @endif
                                             </div>
 
@@ -1294,7 +1294,7 @@
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['intro_text']))
-                                                            <div class="mb-3 text-muted">{!! $ratingTexts[$crKey]['intro_text'] !!}</div>
+                                                            <div class="mb-3">{!! $ratingTexts[$crKey]['intro_text'] !!}</div>
                                                         @endif
 
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
@@ -1304,11 +1304,11 @@
                                                                 <span style="color: #f9633b;">★</span>
                                                                 <span>{{ $cr->name }}</span>
                                                             </div>
-                                                            <div class="text-muted" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                            <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['end_text']))
-                                                            <div class="mb-3 text-muted">{!! $ratingTexts[$crKey]['end_text'] !!}</div>
+                                                            <div class="mb-3 ">{!! $ratingTexts[$crKey]['end_text'] !!}</div>
                                                         @endif
                                                     </div>
                                                 @endif
@@ -1326,7 +1326,7 @@
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['intro_text']))
-                                                    <div class="mb-3 text-muted">{!! $ratingTexts['value_for_money']['intro_text'] !!}</div>
+                                                    <div class="mb-3 ">{!! $ratingTexts['value_for_money']['intro_text'] !!}</div>
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
@@ -1336,11 +1336,11 @@
                                                         <span style="color: #f9633b;">★</span>
                                                         <span>Value for money</span>
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                    <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['end_text']))
-                                                    <div class="mb-3 text-muted">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
+                                                    <div class="mb-3 ">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
                                                 @endif
                                             </div>
                                         </div>

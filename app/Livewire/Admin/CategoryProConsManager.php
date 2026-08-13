@@ -3,15 +3,23 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\Category;
 use App\Models\CategoryProCon;
 use Illuminate\Support\Facades\Log;
 
 class CategoryProConsManager extends Component
 {
+    use WithPagination;
+
+    protected $paginationTheme = 'bootstrap';
     public $selectedCategoryFilter = '';
     public $selectedTypeFilter = '';
     public $search = '';
+
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingSelectedCategoryFilter() { $this->resetPage(); }
+    public function updatingSelectedTypeFilter() { $this->resetPage(); }
 
     // Form fields for single Add/Edit
     public $editingId = null;

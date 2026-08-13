@@ -59,55 +59,80 @@
     <!-- Data Table -->
     <div class="card card-bordered card-preview">
         <div class="card-inner p-0">
-            <table class="table table-tranx">
+            <table class="nk-tb-list nk-tb-ulist" data-auto-responsive="false">
                 <thead>
-                    <tr class="tb-tnx-head">
-                        <th>Category</th>
-                        <th>Type</th>
-                        <th>Text</th>
-                        <th>Status</th>
-                        <th class="text-end">Actions</th>
+                    <tr class="nk-tb-item nk-tb-head">
+                        <th class="nk-tb-col"><span class="sub-text">Category</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Type</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Text</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Status</span></th>
+                        <th class="nk-tb-col tb-tnx-action text-end"><span class="sub-text">Action</span></th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($items as $item)
-                        <tr>
-                            <td>
-                                <strong>{{ $item->category->categoryTranslations->first()->name ?? $item->category->categoryTranslations->first()->title ?? 'Category #'.$item->category_id }}</strong>
+                        <tr class="nk-tb-item">
+                            <td class="nk-tb-col">
+                                <div class="user-card">
+                                    <div class="user-info">
+                                        <span class="tb-lead">{{ $item->category->categoryTranslations->first()->name ?? $item->category->categoryTranslations->first()->title ?? 'Category #'.$item->category_id }}</span>
+                                    </div>
+                                </div>
                             </td>
-                            <td>
+                            <td class="nk-tb-col">
                                 @if($item->type === 'pro')
                                     <span class="badge bg-success-dim text-success"><em class="icon ni ni-plus"></em> Pro</span>
                                 @else
                                     <span class="badge bg-danger-dim text-danger"><em class="icon ni ni-minus"></em> Con</span>
                                 @endif
                             </td>
-                            <td>{{ $item->text }}</td>
-                            <td>
+                            <td class="nk-tb-col">
+                                <span class="tb-amount">{{ $item->text }}</span>
+                            </td>
+                            <td class="nk-tb-col">
                                 <button type="button" class="btn btn-xs {{ $item->status ? 'btn-outline-success' : 'btn-outline-secondary' }}" wire:click="toggleStatus({{ $item->id }})">
                                     {{ $item->status ? 'Active' : 'Inactive' }}
                                 </button>
                             </td>
-                            <td class="text-end">
-                                <button type="button" class="btn btn-trigger btn-icon" wire:click="openEditModal({{ $item->id }})" title="Edit">
-                                    <em class="icon ni ni-edit"></em>
-                                </button>
-                                <button type="button" class="btn btn-trigger btn-icon text-danger" wire:click="delete({{ $item->id }})" onclick="confirm('Are you sure you want to delete this item?') || event.stopImmediatePropagation()" title="Delete">
-                                    <em class="icon ni ni-trash"></em>
-                                </button>
+                            <td class="nk-tb-col nk-tb-col-tools text-end">
+                                <ul class="nk-tb-actions gx-1 justify-end">
+                                    <li>
+                                        <div class="drodown">
+                                            <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
+                                            <div class="dropdown-menu dropdown-menu-end" style="height: auto">
+                                                <ul class="link-list-opt no-bdr">
+                                                    <li>
+                                                        <a href="javascript:void(0)" wire:click="openEditModal({{ $item->id }})">
+                                                            <em class="icon ni ni-edit-fill"></em><span>Edit</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0)" class="text-danger" wire:click="delete({{ $item->id }})" onclick="confirm('Are you sure you want to delete this item?') || event.stopImmediatePropagation()">
+                                                            <em class="icon ni ni-trash-fill"></em><span>Delete</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">No Pros & Cons found. Add one or paste JSON content.</td>
+                        <tr class="nk-tb-item">
+                            <td colspan="5" class="nk-tb-col text-center py-4 text-muted">No Pros & Cons found. Add one or paste JSON content.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
         @if($items->hasPages())
-            <div class="card-inner">
-                {{ $items->links() }}
+            <div class="card-inner border-top">
+                <div class="nk-block-between-md g-3">
+                    <div class="g">
+                        {{ $items->links() }}
+                    </div>
+                </div>
             </div>
         @endif
     </div>
