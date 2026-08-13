@@ -348,6 +348,20 @@ class ProductController extends Controller
             ];
         }
 
+        // Aggregate User Selected Pros and Cons for this business from active reviews
+        $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+            ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+            ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+            ->where('reviews.business_id', $business->id)
+            ->where('reviews.status', 'active')
+            ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+            ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+            ->orderByDesc('review_count')
+            ->get();
+
+        $aggregatedPros = $aggregatedProCons->where('type', 'pro')->values();
+        $aggregatedCons = $aggregatedProCons->where('type', 'con')->values();
+
         $default_image=WebSetting::where('key','user_default_image')->value('value');
         return view('User.product.product_detail', compact(
             'business','alternativeBusiness','additional_info','link','default_image',
@@ -369,7 +383,9 @@ class ProductController extends Controller
             'criteria',
             'recommendPercent',
             'peerComparisons',
-            'ratingTexts'
+            'ratingTexts',
+            'aggregatedPros',
+            'aggregatedCons'
         ));
     }
 
