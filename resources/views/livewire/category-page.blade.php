@@ -262,7 +262,13 @@
             <div class="top-rated-heading-block">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                @if(!empty($feature_slug))
+                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                        {{ $category->translations->name ?? 'Category' }} providers with {{ ucwords(str_replace('-', ' ', $feature_slug)) }}
+                                    </h1>
+                                @else
+                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                @endif
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                     {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
@@ -344,6 +350,29 @@
                                             </label>
                                         </div>
                                     </div>
+
+                                     <!-- Rating Criteria Filter Section -->
+                                     @if(isset($availableCriteria) && count($availableCriteria) > 0)
+                                         <div class="filter-section mt-3 pt-3 border-top">
+                                             <h3 class="fw-semibold text-dark mb-2">
+                                                 Criteria ratings
+                                             </h3>
+                                             @foreach($availableCriteria as $crit)
+                                                 <div class="mb-2">
+                                                     <label class="form-label fw-bold mb-1 text-secondary" style="font-size: 13px;">
+                                                         {{ $crit->name }}
+                                                     </label>
+                                                     <select class="form-select form-select-sm" wire:model.live="selectedCriteriaRatings.{{ $crit->id }}" style="font-size: 12px;">
+                                                         <option value="">Any rating</option>
+                                                         <option value="4">4★ & above</option>
+                                                         <option value="3">3★ & above</option>
+                                                         <option value="2">2★ & above</option>
+                                                         <option value="1">1★ & above</option>
+                                                     </select>
+                                                 </div>
+                                             @endforeach
+                                         </div>
+                                     @endif
 
                                     <link rel="stylesheet"
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />

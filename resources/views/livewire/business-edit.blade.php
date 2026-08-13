@@ -112,7 +112,7 @@
                          x-data="{
                              open: false,
                              copyTemplate() {
-                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pros]\nExcellent customer support\nVery affordable pricing\nEasy-to-use control panel\n\n[cons]\nLimited basic plan storage\nRenewal prices increase\nNo free trial available\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
+                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
                                  navigator.clipboard.writeText(t).then(function() {
                                      alert('Format template copied to clipboard! Paste it in your AI chat and ask it to fill in the content, then paste the result back here.');
                                  }).catch(function() {
@@ -356,6 +356,53 @@
                         </div>
                     </div>
 
+                    <!-- Rating Criteria Introduction & End Texts Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <h5 class="card-title mb-3">Rating Criteria Intro & End Texts</h5>
+                            <p class="text-muted fs-12 mb-3">Configure introduction and end texts for Features, Ease of use, Value for money, and category rating criteria.</p>
+                            
+                            <!-- Features -->
+                            <div class="border p-3 rounded mb-3 bg-light">
+                                <h6 class="fw-bold mb-2">1. Features Section</h6>
+                                <div class="form-group mb-2">
+                                    <label class="form-label text-muted">Introduction Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.features.intro_text" rows="2" placeholder="Intro text for Features..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted">End Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.features.end_text" rows="2" placeholder="End text for Features..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Ease of Use -->
+                            <div class="border p-3 rounded mb-3 bg-light">
+                                <h6 class="fw-bold mb-2">2. Ease of Use Section</h6>
+                                <div class="form-group mb-2">
+                                    <label class="form-label text-muted">Introduction Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.intro_text" rows="2" placeholder="Intro text for Ease of use..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted">End Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.end_text" rows="2" placeholder="End text for Ease of use..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Value for Money -->
+                            <div class="border p-3 rounded mb-3 bg-light">
+                                <h6 class="fw-bold mb-2">3. Value for Money Section</h6>
+                                <div class="form-group mb-2">
+                                    <label class="form-label text-muted">Introduction Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.intro_text" rows="2" placeholder="Intro text for Value for money..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted">End Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.end_text" rows="2" placeholder="End text for Value for money..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 <div class="card card-bordered mb-3">
 
                     <div class="card-inner">
@@ -409,85 +456,7 @@
                                 </div>
                             </div>
 
-                            <!-- Heading -->
-                            <div class="col-12 mb-3">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <label class="form-label mb-1">
-                                            <strong>Pros & Cons</strong>
-                                        </label>
-                                        <p class="text-muted small mb-0">
-                                            Add Pros (green +) and Cons (red -) for this business.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <!-- Pros -->
-                            <div class="col-md-6 mb-3">
-                                <div class="border rounded p-3 h-100">
-
-                                    <h6 class="title mb-3">Pros</h6>
-
-                                    @foreach ($businessPros as $index => $pro)
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <span class="text-success fw-bold" style="font-size:18px;">+</span>
-
-                                            <input type="text"
-                                                class="form-control"
-                                                wire:model.live="businessPros.{{ $index }}.text"
-                                                placeholder="e.g. Excellent customer support">
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-danger"
-                                                    wire:click="removePro({{ $index }})"
-                                                    title="Remove">
-                                                <em class="icon ni ni-trash"></em>
-                                            </button>
-                                        </div>
-                                    @endforeach
-
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary mt-2"
-                                            wire:click="addPro">
-                                        <em class="icon ni ni-plus"></em> Add Pro
-                                    </button>
-
-                                </div>
-                            </div>
-
-                            <!-- Cons -->
-                            <div class="col-md-6 mb-3">
-                                <div class="border rounded p-3 h-100">
-
-                                    <h6 class="title mb-3">Cons</h6>
-
-                                    @foreach ($businessCons as $index => $con)
-                                        <div class="d-flex align-items-center gap-2 mb-2">
-                                            <span class="text-danger fw-bold" style="font-size:18px;">-</span>
-
-                                            <input type="text"
-                                                class="form-control"
-                                                wire:model.live="businessCons.{{ $index }}.text"
-                                                placeholder="e.g. Limited basic plan">
-
-                                            <button type="button"
-                                                    class="btn btn-sm btn-danger"
-                                                    wire:click="removeCon({{ $index }})"
-                                                    title="Remove">
-                                                <em class="icon ni ni-trash"></em>
-                                            </button>
-                                        </div>
-                                    @endforeach
-
-                                    <button type="button"
-                                            class="btn btn-sm btn-outline-primary mt-2"
-                                            wire:click="addCon">
-                                        <em class="icon ni ni-plus"></em> Add Con
-                                    </button>
-
-                                </div>
-                            </div>
 
                             <!-- Summary -->
                             <div class="col-12 mt-2">

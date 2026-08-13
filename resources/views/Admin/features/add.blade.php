@@ -48,7 +48,7 @@
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}"
                                                 {{ collect(old('category_ids'))->contains($category->id) ? 'selected' : '' }}>
-                                                {{ $category->name }}
+                                                {{ $category->translated_name ?? ($category->translations->name ?? 'Category #'.$category->id) }}
                                             </option>
                                         @endforeach
                                     </select>

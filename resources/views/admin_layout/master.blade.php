@@ -108,6 +108,11 @@
                                                 <span class="nk-menu-text">Business Categories</span>
                                             </a>
                                         </li>
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('admin.category-pro-cons') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Category Pros & Cons</span>
+                                            </a>
+                                        </li>
                                         <!-- <li class="nk-menu-item">
                                             <a href="{{ route('priceoptions') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Offer Options</span>

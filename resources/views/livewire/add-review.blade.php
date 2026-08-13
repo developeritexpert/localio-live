@@ -1,4 +1,13 @@
 <div>
+<style>
+    button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.gap-1.btn-success.text-white.shadow-sm {
+    background: #033b74 !important;
+}
+button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.gap-1.btn-danger.text-white.shadow-sm {
+    background: #033b74 !important;
+}
+</style>
+
     @if($show)
         <div class="modal show d-block mod_detail_pg" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">
             <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -66,9 +75,14 @@
                                                      $value = $criteriaRatings[$cId] ?? 0;
                                                  @endphp
                                                  <div class="mb-3 col-md-6">
-                                                     <label class="form-label fw-semibold " style="font-size: 12px; color:#002347; margin-bottom: 4px;">
+                                                     <label class="form-label fw-semibold mb-0" style="font-size: 12px; color:#002347;">
                                                          {{ $criterion['name'] }}
                                                      </label>
+                                                     @if(!empty($criterion['description']))
+                                                         <small class="text-muted d-block" style="font-size: 11px; line-height: 1.3; color: #64748b; margin-bottom: 4px;">
+                                                             {{ $criterion['description'] }}
+                                                         </small>
+                                                     @endif
                                                      <div class="d-flex align-items-center gap-1 star-rating mt-1" data-rating-name="criteria_{{ $cId }}">
                                                          @for ($i = 1; $i <= 5; $i++)
                                                              <i class="star-item {{ $i <= $value ? 'fas fa-star filled' : 'far fa-star' }}"
@@ -149,19 +163,59 @@
                                      </div>
 
                                 @elseif($step === 3)
-                                    <!-- Step 3: Pros & Cons (Optional) -->
+                                    <!-- Step 3: Pros & Cons (Selectable Chips) -->
                                     <div class="step-content" wire:key="step-3">
-
-                                        <div class="form-floating mb-3">
-                                            <textarea id="pros" class="form-control" wire:model.defer="pros" placeholder="Pros (What you liked)" style="height: 100px;"></textarea>
-                                            <label for="pros">Pros (What you liked)</label>
-                                            @error('pros') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
+                                        
+                                        <!-- Pros Section -->
+                                        <div class="mb-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
+                                                    <i class="fas fa-plus-circle text-success me-1"></i> Pros <span class="fw-normal text-muted" style="font-size: 12px;">(What you liked)</span>
+                                                </label>
+                                                <span class="badge bg-light text-secondary border" style="font-size: 11px;">
+                                                    {{ count($selectedPros) }}/5 selected
+                                                </span>
+                                            </div>
+                                            <div class="d-flex flex-wrap gap-2 p-3 border rounded-3" style="background-color: #fafafa; min-height: 80px;">
+                                                @forelse($availablePros as $pro)
+                                                    @php $isSelected = in_array($pro['id'], $selectedPros); @endphp
+                                                    <button type="button" 
+                                                            wire:click="togglePro({{ $pro['id'] }})"
+                                                            class="btn btn-sm rounded-pill transition-all d-inline-flex align-items-center gap-1 {{ $isSelected ? 'btn-success text-white shadow-sm' : 'btn-outline-success bg-white' }}"
+                                                            style="font-size: 13px; padding: 6px 14px; font-weight: 500; border-width: 1px;">
+                                                        <i class="fas {{ $isSelected ? 'fa-check-circle' : 'fa-plus' }}" style="font-size: 11px;"></i>
+                                                        <span>{{ $pro['text'] }}</span>
+                                                    </button>
+                                                @empty
+                                                    <p class="text-muted small m-0 align-self-center">No pre-defined pros available for this category.</p>
+                                                @endforelse
+                                            </div>
                                         </div>
 
-                                        <div class="form-floating mb-3">
-                                            <textarea id="cons" class="form-control" wire:model.defer="cons" placeholder="Cons (What you disliked)" style="height: 100px;"></textarea>
-                                            <label for="cons">Cons (What you disliked)</label>
-                                            @error('cons') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
+                                        <!-- Cons Section -->
+                                        <div class="mb-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
+                                                    <i class="fas fa-minus-circle text-danger me-1"></i> Cons <span class="fw-normal text-muted" style="font-size: 12px;">(What you disliked)</span>
+                                                </label>
+                                                <span class="badge bg-light text-secondary border" style="font-size: 11px;">
+                                                    {{ count($selectedCons) }}/5 selected
+                                                </span>
+                                            </div>
+                                            <div class="d-flex flex-wrap gap-2 p-3 border rounded-3" style="background-color: #fafafa; min-height: 80px;">
+                                                @forelse($availableCons as $con)
+                                                    @php $isSelected = in_array($con['id'], $selectedCons); @endphp
+                                                    <button type="button" 
+                                                            wire:click="toggleCon({{ $con['id'] }})"
+                                                            class="btn btn-sm rounded-pill transition-all d-inline-flex align-items-center gap-1 {{ $isSelected ? 'btn-danger text-white shadow-sm' : 'btn-outline-danger bg-white' }}"
+                                                            style="font-size: 13px; padding: 6px 14px; font-weight: 500; border-width: 1px;">
+                                                        <i class="fas {{ $isSelected ? 'fa-check-circle' : 'fa-minus' }}" style="font-size: 11px;"></i>
+                                                        <span>{{ $con['text'] }}</span>
+                                                    </button>
+                                                @empty
+                                                    <p class="text-muted small m-0 align-self-center">No pre-defined cons available for this category.</p>
+                                                @endforelse
+                                            </div>
                                         </div>
 
                                          <hr class="my-3">

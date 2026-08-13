@@ -72,6 +72,14 @@ class CategoryController extends Controller
        return view('User.category.category_detail', compact('slug', 'page'));
      }
 
+     public function subCategoryFeatureDetail($lang_code, $category_slug, $subcategory_slug, $feature_slug){
+       return view('User.category.category_detail', [
+           'slug' => $subcategory_slug,
+           'feature_slug' => $feature_slug,
+           'page' => 1
+       ]);
+     }
+
 
 
     // Business Category Translation

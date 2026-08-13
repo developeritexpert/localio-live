@@ -26,19 +26,49 @@ class FeatureController extends Controller
             }
         ])->get();
 
-        return view('Admin.features.index', compact('features'));
+        // Retrieve top-level categories only
+        $categories = Category::where(function ($query) {
+            $query->whereNull('parent_id')->orWhere('parent_id', 0);
+        })->get()->map(function ($cat) use ($lang_id) {
+            $catName = DB::table('category_translations')
+                ->where('category_id', $cat->id)
+                ->where('lang_id', $lang_id)
+                ->value('name');
+            if (empty($catName)) {
+                $catName = DB::table('category_translations')
+                    ->where('category_id', $cat->id)
+                    ->value('name') ?? ('Category #' . $cat->id);
+            }
+            $cat->translated_name = $catName;
+            return $cat;
+        });
+
+        return view('Admin.features.index', compact('features', 'categories'));
     }
 
     public function create()
     {
         $lang_id = getCurrentLanguageID();
-        $categories = Category::whereHas('translations', function ($q) use ($lang_id) {
-            $q->where('lang_id', $lang_id);
-        })->with(['translations' => function ($q) use ($lang_id) {
-            $q->where('lang_id', $lang_id);
-        }])->get();
+        // Retrieve top-level categories only
+        $categories = Category::where(function ($query) {
+            $query->whereNull('parent_id')->orWhere('parent_id', 0);
+        })->get()->map(function ($cat) use ($lang_id) {
+            $catName = DB::table('category_translations')
+                ->where('category_id', $cat->id)
+                ->where('lang_id', $lang_id)
+                ->value('name');
+            if (empty($catName)) {
+                $catName = DB::table('category_translations')
+                    ->where('category_id', $cat->id)
+                    ->value('name') ?? ('Category #' . $cat->id);
+            }
+            $cat->translated_name = $catName;
+            return $cat;
+        });
+
         return view('Admin.features.add', compact('categories'));
     }
+
     public function store(Request $request)
     {
         $lang_id = getCurrentLanguageID();
@@ -63,6 +93,7 @@ class FeatureController extends Controller
             $feature->translations()->create([
                 'lang_id' => $lang_id,
                 'name' => $request->name,
+                'description' => $request->description ?? null,
             ]);
             DB::commit();
 
@@ -72,6 +103,75 @@ class FeatureController extends Controller
             return redirect()->route('features.create')->with('error', 'Error creating feature: ' . $e->getMessage());
         }
     }
+
+    public function jsonUpload(Request $request)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'json_data' => 'required|string',
+        ]);
+
+        $category = Category::findOrFail($request->category_id);
+        if (!empty($category->parent_id) && $category->parent_id != 0) {
+            return redirect()->back()->with('error', 'Features can only be assigned to top-level categories, not subcategories.');
+        }
+
+        $items = json_decode($request->json_data, true);
+        if (!is_array($items)) {
+            return redirect()->back()->with('error', 'Invalid JSON format provided.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $importedCount = 0;
+            foreach ($items as $item) {
+                if (empty($item['name']) && empty($item['feature_name'])) {
+                    continue;
+                }
+                $name = trim($item['name'] ?? $item['feature_name']);
+                $description = trim($item['description'] ?? $item['feature_description'] ?? '');
+
+                // Check existing feature translation for language
+                $existingTranslation = DB::table('feature_translations')
+                    ->where('lang_id', $lang_id)
+                    ->where('name', $name)
+                    ->first();
+
+                if ($existingTranslation) {
+                    $feature = Feature::find($existingTranslation->feature_id);
+                    if ($feature) {
+                        $feature->update(['category_id' => $request->category_id]);
+                        if (!empty($description)) {
+                            DB::table('feature_translations')
+                                ->where('id', $existingTranslation->id)
+                                ->update(['description' => $description]);
+                        }
+                    }
+                } else {
+                    $feature = Feature::create([
+                        'category_id' => $request->category_id,
+                        'status' => 'active',
+                    ]);
+
+                    $feature->translations()->create([
+                        'lang_id' => $lang_id,
+                        'name' => $name,
+                        'description' => $description,
+                    ]);
+                }
+                $importedCount++;
+            }
+
+            DB::commit();
+            return redirect()->route('features')->with('success', "Successfully processed {$importedCount} features via JSON.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error uploading JSON: ' . $e->getMessage());
+        }
+    }
+
     public function edit($id)
     {
         $lang_id = getCurrentLanguageID();
@@ -83,17 +183,28 @@ class FeatureController extends Controller
             }
         ])->findOrFail($id);
 
-        $categories = Category::whereHas('translations', function ($q) use ($lang_id) {
-            $q->where('lang_id', $lang_id);
-        })->with(['translations' => function ($q) use ($lang_id) {
-            $q->where('lang_id', $lang_id);
-        }])->get();
+        // Retrieve top-level categories only
+        $categories = Category::where(function ($query) {
+            $query->whereNull('parent_id')->orWhere('parent_id', 0);
+        })->get()->map(function ($cat) use ($lang_id) {
+            $catName = DB::table('category_translations')
+                ->where('category_id', $cat->id)
+                ->where('lang_id', $lang_id)
+                ->value('name');
+            if (empty($catName)) {
+                $catName = DB::table('category_translations')
+                    ->where('category_id', $cat->id)
+                    ->value('name') ?? ('Category #' . $cat->id);
+            }
+            $cat->translated_name = $catName;
+            return $cat;
+        });
 
         return view('Admin.features.edit', compact('feature', 'categories', 'lang_id'));
     }
+
     public function update(Request $request, $id)
     {
-        // dd($request->all());
         $lang_id = getCurrentLanguageID();
 
         $request->merge([
@@ -110,7 +221,6 @@ class FeatureController extends Controller
                     ->where('lang_id', $lang_id)
                     ->ignore($id, 'feature_id'),
             ],
-
         ]);
 
         DB::beginTransaction();
@@ -124,11 +234,12 @@ class FeatureController extends Controller
                 'status' => $request->status,
             ]);
 
-            // Update or create translation for the current language
+            // Update or create translation for current language
             $feature->translations()->updateOrCreate(
                 ['lang_id' => $lang_id],
-                ['name' => $request->name,
-                  'description' => $request->description, //added description
+                [
+                    'name' => $request->name,
+                    'description' => $request->description,
                 ]
             );
             DB::commit();

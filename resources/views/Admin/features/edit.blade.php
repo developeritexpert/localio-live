@@ -45,7 +45,7 @@
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}"
                                                 {{ old('category_ids', optional($feature->category)->id ?? null) == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
+                                                {{ $category->translated_name ?? ($category->translations->name ?? 'Category #'.$category->id) }}
                                             </option>
                                         @endforeach
                                     </select>

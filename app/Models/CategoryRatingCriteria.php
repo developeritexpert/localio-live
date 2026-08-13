@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class CategoryRatingCriteria extends Model
 {
     protected $table = 'category_rating_criteria';
-    protected $fillable = ['category_id', 'name'];
+    protected $fillable = ['category_id', 'name', 'description', 'is_default', 'default_key'];
 
     public function category()
     {
