@@ -1086,59 +1086,75 @@
                                             </div>
                                         </div>
 
-                                        {{-- PROS & CONS SECTION --}}
-                                        @if($business->proCons->count() > 0)
-                                        <div class="col-lg-12 mt-5 mb-4">
-                                            <div class="pros-cons-header mb-3">
-                                                <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
-                                                    {{ $business->translations->first()->name ?? 'Business' }} pros and cons
-                                                </h2>
-                                                @if(!empty($business->pro_cons_intro))
-                                                    <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
-                                                        {!! $business->pro_cons_intro !!}
-                                                    </p>
-                                                @endif
-                                            </div>
+                                         {{-- PROS & CONS SECTION (Review-Based Aggregation) --}}
+                                         @php
+                                             $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                 ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                 ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                 ->where('reviews.business_id', $business->id)
+                                                 ->where('reviews.status', 'active')
+                                                 ->where('category_pro_cons.status', 1)
+                                                 ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+                                                 ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                                 ->orderByDesc('review_count')
+                                                 ->get();
 
-                                            <div class="row g-4">
-                                                <div class="col-md-6">
-                                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
-                                                            <ul class="list-unstyled mb-0">
-                                                                @foreach($business->proCons->where('type', 'pro') as $pro)
-                                                                <li class="d-flex align-items-start mb-2">
-                                                                    <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                                    <span>{{ $pro->text }}</span>
-                                                                </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
-                                                            <ul class="list-unstyled mb-0">
-                                                                @foreach($business->proCons->where('type', 'con') as $con)
-                                                                <li class="d-flex align-items-start mb-2">
-                                                                    <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                                    <span>{{ $con->text }}</span>
-                                                                </li>
-                                                                @endforeach
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @if(!empty($business->pro_cons_summary))
-                                            <div class="mt-4">
-                                                <div>{!! $business->pro_cons_summary !!}</div>
-                                            </div>
-                                            @endif
-                                        </div>
-                                        @endif
+                                             $aggregatedPros = $aggregatedProCons->where('type', 'pro');
+                                             $aggregatedCons = $aggregatedProCons->where('type', 'con');
+                                         @endphp
+
+                                         @if($aggregatedPros->count() >= 1 && $aggregatedCons->count() >= 1)
+                                         <div class="col-lg-12 mt-5 mb-4">
+                                             <div class="pros-cons-header mb-3">
+                                                 <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
+                                                     {{ $business->translations->first()->name ?? 'Business' }} pros and cons
+                                                 </h2>
+                                                 @if(!empty($business->pro_cons_intro))
+                                                     <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
+                                                         {!! $business->pro_cons_intro !!}
+                                                     </p>
+                                                 @endif
+                                             </div>
+
+                                             <div class="row g-4">
+                                                 <div class="col-md-6">
+                                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                         <div class="card-body">
+                                                             <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                             <ul class="list-unstyled mb-0">
+                                                                 @foreach($aggregatedPros as $pro)
+                                                                 <li class="d-flex align-items-start mb-2">
+                                                                     <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                     <span style="color: #202124;">{{ $pro->text }} <small class="text-muted font-weight-normal">({{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                 </li>
+                                                                 @endforeach
+                                                             </ul>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                                 <div class="col-md-6">
+                                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                         <div class="card-body">
+                                                             <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                             <ul class="list-unstyled mb-0">
+                                                                 @foreach($aggregatedCons as $con)
+                                                                 <li class="d-flex align-items-start mb-2">
+                                                                     <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                     <span style="color: #202124;">{{ $con->text }} <small class="text-muted font-weight-normal">({{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                 </li>
+                                                                 @endforeach
+                                                             </ul>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             @if(!empty($business->pro_cons_summary))
+                                             <div class="mt-4">
+                                                 <div>{!! $business->pro_cons_summary !!}</div>
+                                             </div>
+                                             @endif
+                                         </div>
+                                         @endif
 
                                         {{-- OFFERINGS SECTION --}}
                                         @if($business->is_affiliate && $business->offerings->count() > 0)

@@ -84,6 +84,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin/page-get-listed-translation/update', [AdminDashController::class, 'ESsectionUpdate'])->name('admin.page_get_listed_translation.update');
     //  CategoriesController  categories
     Route::get('/admin-dashboard/categories', [CategoriesController::class, 'index'])->name('categories');
+    Route::get('/admin-dashboard/category-pro-cons', function() { return view('Admin.category_pro_cons.index'); })->name('admin.category-pro-cons');
     Route::get('/admin-dashboard/categories/add/{id?}', [CategoriesController::class, 'add'])->name('add-category');
     Route::post('/admin-dashboard/categories/add-process', [CategoriesController::class, 'add_process'])->name('add-category-process');
     Route::get('/admin-dashboard/remove-category/{id}', [CategoriesController::class, 'remove'])->name('admin-remove-categories');

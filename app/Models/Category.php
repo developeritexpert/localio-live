@@ -54,6 +54,11 @@ class Category extends Model
         return $this->hasMany(CategoryRatingCriteria::class, 'category_id');
     }
 
+    public function proCons()
+    {
+        return $this->hasMany(CategoryProCon::class, 'category_id');
+    }
+
     public function media()
 {
     return $this->hasOne(Media::class, 'id', 'category_icon');

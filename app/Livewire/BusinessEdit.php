@@ -1365,35 +1365,7 @@ class BusinessEdit extends Component
 
     public function saveProsCons($businessId)
     {
-        \App\Models\BusinessProCon::where('business_id', $businessId)->delete();
-        $proConsToInsert = [];
-        foreach ($this->businessPros as $pro) {
-            $text = trim($pro['text'] ?? '');
-            if (!empty($text)) {
-                $proConsToInsert[] = [
-                    'business_id' => $businessId,
-                    'type' => 'pro',
-                    'text' => $text,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        foreach ($this->businessCons as $con) {
-            $text = trim($con['text'] ?? '');
-            if (!empty($text)) {
-                $proConsToInsert[] = [
-                    'business_id' => $businessId,
-                    'type' => 'con',
-                    'text' => $text,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-        }
-        if (!empty($proConsToInsert)) {
-            \App\Models\BusinessProCon::insert($proConsToInsert);
-        }
+        // Pros & Cons are now user review-based
     }
 
     public function saveOfferings($businessId)
