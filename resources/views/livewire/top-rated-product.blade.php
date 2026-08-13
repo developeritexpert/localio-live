@@ -190,7 +190,7 @@
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences. Transparent rankings.</h6>
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences.</h6>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                         Ratings and reviews are shared by real users from the Localio community.
@@ -610,11 +610,13 @@
                                                  @endphp
                                                 <div class="card-compare-m">
                                                     @if($isRecommended)
-                                                         <div style="margin-bottom: 25px;">
-                                                             <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500;">
-                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Top choice
-                                                             </span>
-                                                         </div>
+                                                        <div class="best-value-inline-container" style="padding-bottom:21px">
+                                                                    <div class="best-value-inline" >
+                                                                        <!-- <i class="fa-regular fa-thumbs-up"></i> -->
+                                                                        <i class="far fa-star text-warning"></i>
+                                                                       <span style="text-transform: none !important;">Top choice</span>
+                                                                    </div>
+                                                                </div>
                                                      @endif
 
                                                     <div  style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch; gap: 20px; width: 100%;">

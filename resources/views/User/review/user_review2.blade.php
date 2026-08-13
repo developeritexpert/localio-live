@@ -169,7 +169,7 @@
                                 @endfor
                             </div>
 
-                            <span style="color: #666; font-size: 14px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                            <span class="f-12" style="color: #666;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
                         <a href="#reviews-section" class="card-h-link view-review-link underline" style=" padding-top: 5px;">
@@ -188,7 +188,7 @@
                                     <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #333;  min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                     </div>
                                 </div>
                             @endforeach

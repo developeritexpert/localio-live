@@ -2,7 +2,7 @@
     <div class="search-input-wrap position-relative">
         <input type="text" 
                wire:model.live.debounce.300ms="query" 
-               placeholder="Find your software or service to review..." 
+               placeholder="Search for a brand, product or service to review... " 
                class="form-control py-3 px-4 shadow-sm border-0" 
                style="border-radius: 30px; font-size: 16px; padding-right: 50px; background-color: #fff;" />
         <i class="fa fa-search position-absolute" style="right: 20px; top: 50%; transform: translateY(-50%); color: #7a8ea8; font-size: 18px;"></i>

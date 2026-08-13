@@ -43,8 +43,8 @@ button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.g
                                 <div class="modal-header border-0  p-0  d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:20px;">
                                     <div class="d-flex flex-column gap-4">
                                         <div class="d-flex align-items-center gap-2">
-                                            <div style="width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: #f1f5f9;">
-                                                <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <div class="top-product-small-logo" style="">
+                                                <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}" style="">
                                             </div>
                                             <span class="fw-bold" style="color: #002655; font-size: 14px;">{{ $businessName }}</span>
                                         </div>

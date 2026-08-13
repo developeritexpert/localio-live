@@ -851,7 +851,7 @@
                 @endphp
                 <div class="container-fluid">
                     <div class="asn_dv_contnt ">
-                        <div class="asn-img">
+                        <div class="top-product-logo">
                             <img src="{{ asset($business->icon_id) }}" alt="{{ $business->translations->first()->name }}">
                         </div>
                         <div class="div_prent_ever">
@@ -1074,7 +1074,7 @@
 
               <section class="revie_img_sec">
                    <div class="container">
-                       <div class="image_revie_inr">
+                       <div class="image_revie_inr mt-3">
                             <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
                                     <div class="row sld_rw">
                                         <div class="col-lg-12">
@@ -1086,35 +1086,19 @@
                                             </div>
                                         </div>
 
-                                         {{-- PROS & CONS SECTION (Review-Based Aggregation) --}}
-                                         @php
-                                             $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                                 ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                                 ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                                 ->where('reviews.business_id', $business->id)
-                                                 ->where('reviews.status', 'active')
-                                                 ->where('category_pro_cons.status', 1)
-                                                 ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
-                                                 ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                                 ->orderByDesc('review_count')
-                                                 ->get();
-
-                                             $aggregatedPros = $aggregatedProCons->where('type', 'pro');
-                                             $aggregatedCons = $aggregatedProCons->where('type', 'con');
-                                         @endphp
-
-                                         @if($aggregatedPros->count() >= 1 && $aggregatedCons->count() >= 1)
-                                         <div class="col-lg-12 mt-5 mb-4">
-                                             <div class="pros-cons-header mb-3">
-                                                 <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
-                                                     {{ $business->translations->first()->name ?? 'Business' }} pros and cons
-                                                 </h2>
-                                                 @if(!empty($business->pro_cons_intro))
-                                                     <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
-                                                         {!! $business->pro_cons_intro !!}
-                                                     </p>
-                                                 @endif
-                                             </div>
+                                        {{-- PROS & CONS SECTION --}}
+                                        @if($business->proCons->count() > 0)
+                                        <div class="col-lg-12 mt-2 mb-4">
+                                            <div class="pros-cons-header mb-3">
+                                                <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
+                                                    {{ $business->translations->first()->name ?? 'Business' }} pros and cons
+                                                </h2>
+                                                @if(!empty($business->pro_cons_intro))
+                                                    <p class="" style="font-size: 15px; margin-bottom: 20px; line-height: 1.6;">
+                                                        {!! $business->pro_cons_intro !!}
+                                                    </p>
+                                                @endif
+                                            </div>
 
                                              <div class="row g-4">
                                                  <div class="col-md-6">
@@ -1159,14 +1143,14 @@
                                         {{-- OFFERINGS SECTION --}}
                                         @if($business->is_affiliate && $business->offerings->count() > 0)
                                         @php $offering = $business->offerings->first(); @endphp
-                                        <div class="col-lg-12 mt-4 mb-4">
-                                            <div class="offering-section mb-3">
+                                        <div class="col-lg-12 mt-4 mb-2">
+                                            <div class="offering-section ">
                                                 @if($offering->headline)
-                                                    <h2 class="mb-3" style="font-weight: 600; font-size:24px;">{{ $offering->headline }}</h2>
+                                                    <h2 class="mb-2" style="font-weight: 600; font-size:24px;">{{ $offering->headline }}</h2>
                                                 @endif
                                                 
                                                 @if($offering->top_text)
-                                                    <div class="mb-3">
+                                                    <div class="mb-2">
                                                         {!! $offering->top_text !!}
                                                     </div>
                                                 @endif
@@ -1470,7 +1454,7 @@
                                          {{-- End Business Images  --}}
 
                                          @if (!empty($business->translations->first()->after_image_description))
-                                             <div class="col-lg-12 mt-4 after-image-desc">
+                                             <div class="col-lg-12 mt-2 after-image-desc">
                                                  <div class="is_text">
                                                      {!! $business->translations->first()->after_image_description !!}
                                                  </div>
@@ -1615,7 +1599,7 @@
                                                             </div>
 
                                                             @if ($hasUserReviews)
-                                                                <span style="color: #666; font-size: 12px;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                                <span class="f-12" style="color: #666;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                             @endif
                                                         </div>
 
@@ -1641,7 +1625,7 @@
                                                                 <progress class="progress-bar w-100"
                                                                     value="{{ $criterion->average_rating * 20 }}"
                                                                     max="100" style="height: 8px;"></progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333;  min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                             </div>
                                                         </div>
                                                         @endforeach
@@ -2663,7 +2647,7 @@
                                                                     value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }} </span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333;  min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -2673,7 +2657,7 @@
                                                                     value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }} </span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333;  min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -2683,7 +2667,7 @@
                                                                     value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }} </span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -2693,7 +2677,7 @@
                                                                     value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}"
                                                                     max="100">
                                                                 </progress>
-                                                                <span style="font-size: 12px; font-weight: 600; color: #333; margin-left: 8px; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }} </span>
+                                                                <span style="font-size: 12px; font-weight: 600; color: #333;  min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }} </span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2855,7 +2839,10 @@
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                                         <!-- Business A -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                                            <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                                                            <div class="top-product-medium-logo">
+                                                                <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class=" flex-shrink-0" style="">
+                                                            </div>
+                                                            
                                                             <div style="min-width: 0;">
                                                                 <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $bName }}</div>
                                                                 <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
@@ -2870,7 +2857,9 @@
 
                                                         <!-- Business B -->
                                                         <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                                            <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                                                            <div class="top-product-medium-logo">
+                                                            <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="">
+                                                        </div>
                                                             <div style="min-width: 0;">
                                                                 <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $peerName }}</div>
                                                                 <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
@@ -3384,7 +3373,7 @@
                                                 <!-- Filter by Rating Title Row -->
                                                 <div class="wrap-review-filter">
 
-                                                    <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
+                                                    <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
                                                         <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
                                                         <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear filter</span>
                                                     </div>

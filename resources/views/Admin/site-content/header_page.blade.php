@@ -79,7 +79,7 @@
                                             'sign_out_btn_lable' => 'Sign Out Button Label',
                                             'categories' => 'Categories Text',
                                             'exclusive' => 'Exclusive Deal Text',
-                                            'top_rated_product' => 'Top Rated Product Text',
+                                            'top_rated' => 'Top Rated Text',
                                             'expert_guide' => 'Expert Guides Text',
                                             'help_center' => 'Help Center Text',
                                         ];

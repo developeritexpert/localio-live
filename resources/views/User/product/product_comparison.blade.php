@@ -95,9 +95,9 @@
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center">
                                     <div class="auto-choice-hd w-100 d-flex flex-column align-items-center" style="border: none; padding: 0; margin-bottom: 0;">
                                         <div class="inn_sl_hed flex-column align-items-center text-center w-100" style="gap: 8px;">
-                                            <div class="sli_img choice_img mx-auto" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 8px;">
+                                            <div class=" top-product-logo mx-auto" style="margin-bottom: 8px;">
                                                 <img class="slider_img" src="{{ asset($business->icon_id) }}"
-                                                    alt="{{ $business->translations->first()?->name ?? '' }}" style="width: 100%; height: 100%; object-fit: contain;">
+                                                    alt="{{ $business->translations->first()?->name ?? '' }}" style="">
                                             </div>
                                             <div class="sl_h text-center w-100">
                                                 <div class="inn_h d-flex align-items-center justify-content-center">
@@ -210,7 +210,7 @@
                                     <a href="{{route('top-rated-product')}}" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
                                             <img src="{{ asset('front/img/pls-add.png') }}" style="width: 48px; height: 48px;">
-                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;">Add Business</span>
+                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare </span>
                                         </div>
                                     </a>
                                 </div>
@@ -279,7 +279,9 @@
                                 @endphp
                                 <div class="col-lg-6 col-12">
                                     <div class="d-flex align-items-center gap-2 mb-3">
-                                        <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="width: 32px; height: 32px; object-fit: contain; border-radius: 50%;">
+                                        <div class="top-product-medium-logo">
+                                        <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="">
+                                        </div>
                                         <h5 style="font-size: 16px; font-weight: 700; color: #1e3050; margin: 0;">{{ $bName }}</h5>
                                     </div>
                                     <div class="row g-3">
@@ -350,7 +352,7 @@
                         <div class="col-md-6">
                             <div class="sales-crm-pack crm-pack-lft compari_crm_pck">
                                 <div class="inn_sl_hed review-brand-icon ">
-                                    <div class="sli_img choice_img">
+                                    <div class="top-product-logo ">
                                         <img src="{{ asset($business->icon_id) }}" alt="No Image available">
                                     </div>
                                     <div class="sl_h review-brand-icon-sl_h">

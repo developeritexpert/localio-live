@@ -109,7 +109,7 @@
                                             @if($business->icon_id)
                                                 <img src="{{ asset($business->icon_id) }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
                                             @else
-                                                <div class="avatar-placeholder" style="width: 100%; height: 100%; border-radius: 50%; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #002347 0%, #00438a 100%); color: #fff; display: flex; align-items: center; justify-content: center;">
+                                                <div class="avatar-placeholder" style="width: 100%; height: 100%; border-radius: 10px; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #002347 0%, #00438a 100%); color: #fff; display: flex; align-items: center; justify-content: center;">
                                                     {{ strtoupper(substr($bizName, 0, 1)) }}
                                                 </div>
                                             @endif
