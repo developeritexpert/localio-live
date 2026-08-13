@@ -75,9 +75,14 @@ button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.g
                                                      $value = $criteriaRatings[$cId] ?? 0;
                                                  @endphp
                                                  <div class="mb-3 col-md-6">
-                                                     <label class="form-label fw-semibold " style="font-size: 12px; color:#002347; margin-bottom: 4px;">
+                                                     <label class="form-label fw-semibold mb-0" style="font-size: 12px; color:#002347;">
                                                          {{ $criterion['name'] }}
                                                      </label>
+                                                     @if(!empty($criterion['description']))
+                                                         <small class="text-muted d-block" style="font-size: 11px; line-height: 1.3; color: #64748b; margin-bottom: 4px;">
+                                                             {{ $criterion['description'] }}
+                                                         </small>
+                                                     @endif
                                                      <div class="d-flex align-items-center gap-1 star-rating mt-1" data-rating-name="criteria_{{ $cId }}">
                                                          @for ($i = 1; $i <= 5; $i++)
                                                              <i class="star-item {{ $i <= $value ? 'fas fa-star filled' : 'far fa-star' }}"

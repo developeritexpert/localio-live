@@ -180,30 +180,89 @@
 
                         <!-- Rating Criteria Section -->
                         <div class="col-md-12 mt-4" id="rating_criteria_section">
-                            <h5 class="title mb-3">Rating Criteria</h5>
-                            <p class="text-muted small">Add the criteria users will rate businesses on (e.g. "Value for money", "Ease of use").</p>
-                            <div id="criteria_wrapper">
-                                @if(isset($rating_criteria) && count($rating_criteria) > 0)
-                                    @foreach($rating_criteria as $index => $criterion)
-                                        <div class="d-flex mb-2 criteria-row">
-                                            <input type="text" class="form-control" name="existing_rating_criteria[{{ $criterion->id }}]" value="{{ $criterion->name }}" placeholder="Enter criteria name" required />
-                                            <button type="button" class="btn btn-danger ms-2 remove-criteria"><i class="fa fa-trash"></i></button>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <div class="d-flex mb-2 criteria-row">
-                                        <input type="text" class="form-control" name="new_rating_criteria[]" placeholder="Enter criteria name (e.g. Ease of use)" />
-                                        <button type="button" class="btn btn-danger ms-2 remove-criteria"><i class="fa fa-trash"></i></button>
+                            <h5 class="title mb-1">Rating Criteria</h5>
+                            <p class="text-muted small mb-3">Configure default rating criteria descriptions and define category or subcategory specific criteria.</p>
+
+                            <!-- Default Rating Criteria (3 Mandatory Defaults) -->
+                            <div class="card card-bordered bg-light mb-3">
+                                <div class="card-inner py-3">
+                                    <h6 class="title mb-2 text-primary"><i class="fa fa-lock me-1"></i> Default Rating Criteria (Global Defaults)</h6>
+                                    <p class="text-muted small mb-3">These 3 criteria apply to all categories and cannot be removed. You can add category-specific short descriptions for each.</p>
+                                    <div class="row g-2">
+                                        @foreach($default_criteria as $def)
+                                            <div class="col-md-12 mb-3 p-2 bg-white rounded border">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <span class="fw-bold me-2">{{ $def['name'] }}</span>
+                                                    <span class="badge bg-secondary">Default</span>
+                                                </div>
+                                                <input type="text" class="form-control form-control-sm" name="default_rating_criteria[{{ $def['key'] }}][description]" value="{{ $def['description'] ?? '' }}" placeholder="Add short description for {{ $def['name'] }} (shown in review modal)" />
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endif
+                                </div>
                             </div>
-                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_criteria_btn">
-                                <i class="fa fa-plus me-1"></i> Add Another Criteria
-                            </button>
+
+                            <!-- Inherited Main Category Criteria (if subcategory) -->
+                            @if(isset($inherited_criteria) && count($inherited_criteria) > 0)
+                                <div class="card card-bordered bg-light mb-3">
+                                    <div class="card-inner py-3">
+                                        <h6 class="title mb-2 text-info"><i class="fa fa-sitemap me-1"></i> Inherited Main Category Criteria</h6>
+                                        <p class="text-muted small mb-3">These criteria are inherited from the parent main category.</p>
+                                        <div class="row g-2">
+                                            @foreach($inherited_criteria as $inherited)
+                                                <div class="col-md-12 p-2 bg-white rounded border mb-2">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <span class="fw-bold me-2">{{ $inherited->name }}</span>
+                                                        <span class="badge bg-info">Inherited from Main Category</span>
+                                                    </div>
+                                                    @if($inherited->description)
+                                                        <small class="text-muted d-block">{{ $inherited->description }}</small>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Category / Subcategory Specific Custom Criteria -->
+                            <div class="card card-bordered mb-3">
+                                <div class="card-inner py-3">
+                                    <h6 class="title mb-2"><i class="fa fa-tags me-1"></i> Additional Criteria for this Category / Subcategory</h6>
+                                    <p class="text-muted small mb-3">Add custom criteria specific to this category or subcategory.</p>
+                                    
+                                    <div id="criteria_wrapper">
+                                        @if(isset($custom_criteria) && count($custom_criteria) > 0)
+                                            @foreach($custom_criteria as $index => $criterion)
+                                                <div class="criteria-card border p-3 rounded mb-2 bg-white position-relative">
+                                                    <div class="row g-2 align-items-center">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label mb-1 small fw-bold">Criteria Name</label>
+                                                            <input type="text" class="form-control" name="existing_rating_criteria[{{ $criterion->id }}][name]" value="{{ $criterion->name }}" placeholder="e.g. Performance, Scalability" required />
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label mb-1 small fw-bold">Short Description Text</label>
+                                                            <input type="text" class="form-control" name="existing_rating_criteria[{{ $criterion->id }}][description]" value="{{ $criterion->description }}" placeholder="Description shown below criteria in review modal" />
+                                                        </div>
+                                                        <div class="col-md-1 text-end">
+                                                            <label class="form-label mb-1 d-block opacity-0">Remove</label>
+                                                            <button type="button" class="btn btn-outline-danger remove-criteria"><i class="fa fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_criteria_btn">
+                                        <i class="fa fa-plus me-1"></i> Add Additional Criteria
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="col-md-12 mt-5">
+                        <div class="col-md-12 mt-4">
                             <div class="form-group">
                                 <button type="submit" class="btn btn-lg btn-primary btn-localio">{{isset($category_data)?'Update Category':'Save Category' }}</button>
                             </div>
@@ -218,8 +277,6 @@
             const isParentCheckbox = document.getElementById('is_parent');
             const parentCategoryGroup = document.getElementById('parent_category_group');
             const parentCategorySelect = document.getElementById('parent_id');
-            const importantCategoryGroup = document.getElementById('important_category_group');
-            const importantCategoryCheckbox = document.getElementById('is_important');
 
             function toggleParentDropdown() {
                 if (isParentCheckbox && isParentCheckbox.checked) {
@@ -239,28 +296,36 @@
             // Rating Criteria Logic
             const addCriteriaBtn = document.getElementById('add_criteria_btn');
             const criteriaWrapper = document.getElementById('criteria_wrapper');
+            let newCriteriaIndex = 0;
 
             if (addCriteriaBtn && criteriaWrapper) {
                 addCriteriaBtn.addEventListener('click', function() {
-                    const row = document.createElement('div');
-                    row.className = 'd-flex mb-2 criteria-row';
-                    row.innerHTML = `
-                        <input type="text" class="form-control" name="new_rating_criteria[]" placeholder="Enter criteria name" required />
-                        <button type="button" class="btn btn-danger ms-2 remove-criteria"><i class="fa fa-trash"></i></button>
+                    newCriteriaIndex++;
+                    const card = document.createElement('div');
+                    card.className = 'criteria-card border p-3 rounded mb-2 bg-white position-relative';
+                    card.innerHTML = `
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-5">
+                                <label class="form-label mb-1 small fw-bold">Criteria Name</label>
+                                <input type="text" class="form-control" name="new_rating_criteria[${newCriteriaIndex}][name]" placeholder="e.g. Server management" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mb-1 small fw-bold">Short Description Text</label>
+                                <input type="text" class="form-control" name="new_rating_criteria[${newCriteriaIndex}][description]" placeholder="Description shown below criteria in review modal" />
+                            </div>
+                            <div class="col-md-1 text-end">
+                                <label class="form-label mb-1 d-block opacity-0">Remove</label>
+                                <button type="button" class="btn btn-outline-danger remove-criteria"><i class="fa fa-trash"></i></button>
+                            </div>
+                        </div>
                     `;
-                    criteriaWrapper.appendChild(row);
+                    criteriaWrapper.appendChild(card);
                 });
 
                 criteriaWrapper.addEventListener('click', function(e) {
                     const removeBtn = e.target.closest('.remove-criteria');
                     if (removeBtn) {
-                        const rows = criteriaWrapper.querySelectorAll('.criteria-row');
-                        if (rows.length > 1) {
-                            removeBtn.closest('.criteria-row').remove();
-                        } else {
-                            // If it's the last one, just clear the value
-                            removeBtn.closest('.criteria-row').querySelector('input').value = '';
-                        }
+                        removeBtn.closest('.criteria-card').remove();
                     }
                 });
             }

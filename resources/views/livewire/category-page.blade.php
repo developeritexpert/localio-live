@@ -345,6 +345,29 @@
                                         </div>
                                     </div>
 
+                                     <!-- Rating Criteria Filter Section -->
+                                     @if(isset($availableCriteria) && count($availableCriteria) > 0)
+                                         <div class="filter-section mt-3 pt-3 border-top">
+                                             <h3 class="fw-semibold text-dark mb-2">
+                                                 Criteria ratings
+                                             </h3>
+                                             @foreach($availableCriteria as $crit)
+                                                 <div class="mb-2">
+                                                     <label class="form-label fw-bold mb-1 text-secondary" style="font-size: 13px;">
+                                                         {{ $crit->name }}
+                                                     </label>
+                                                     <select class="form-select form-select-sm" wire:model.live="selectedCriteriaRatings.{{ $crit->id }}" style="font-size: 12px;">
+                                                         <option value="">Any rating</option>
+                                                         <option value="4">4★ & above</option>
+                                                         <option value="3">3★ & above</option>
+                                                         <option value="2">2★ & above</option>
+                                                         <option value="1">1★ & above</option>
+                                                     </select>
+                                                 </div>
+                                             @endforeach
+                                         </div>
+                                     @endif
+
                                     <link rel="stylesheet"
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 

@@ -32,6 +32,8 @@ class CategoryPage extends Component
     public $maxPrice = 2000;
     public $selectedOptions = [];
     public $selectedRatings = [];
+    public $selectedCriteriaRatings = [];
+    public $availableCriteria = [];
     public $filters = [];
     public $filterTypes = [];
     public $activeFilters = [];
@@ -51,6 +53,7 @@ class CategoryPage extends Component
         'selectedSubCategories' => ['except' => []],
         'searchTerm' => ['except' => ''],
         'selectedRatings' => ['except' => []],
+        'selectedCriteriaRatings' => ['except' => []],
         'minPrice' => ['except' => 0],
         'maxPrice' => ['except' => 2000],
         'sortBy' => ['except' => 'highest_rated'],
@@ -71,6 +74,8 @@ class CategoryPage extends Component
         }, 'parent.translations' => function ($query) {
             $query->where('lang_id', $this->lang_id);
         }])->firstOrFail();
+
+        $this->availableCriteria = $this->category->getEffectiveRatingCriteria();
 
         // Clear comparison session if switching to a different category
         $comparedProducts = session()->get('compared_products', []);
@@ -340,6 +345,24 @@ class CategoryPage extends Component
                     ->groupBy('business_id')
                     ->havingRaw('AVG(rating) >= ?', [min($this->selectedRatings)]);
             });
+        }
+
+        // Apply criteria rating filter if selected
+        if (!empty($this->selectedCriteriaRatings)) {
+            foreach ($this->selectedCriteriaRatings as $criteriaId => $minRating) {
+                if (!empty($minRating) && (int)$minRating > 0) {
+                    $minRating = (int)$minRating;
+                    $query->whereIn('id', function ($subQuery) use ($criteriaId, $minRating) {
+                        $subQuery->select('reviews.business_id')
+                            ->from('reviews')
+                            ->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')
+                            ->where('reviews.status', 'active')
+                            ->where('review_ratings.criteria_id', $criteriaId)
+                            ->groupBy('reviews.business_id')
+                            ->havingRaw('AVG(review_ratings.rating) >= ?', [$minRating]);
+                    });
+                }
+            }
         }
         // Group selected options by filter ID for more accurate filtering
         $groupedOptions = [];

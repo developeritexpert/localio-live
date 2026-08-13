@@ -66,10 +66,8 @@ class AddReview extends Component
             ]));
 
             if ($business->category) {
-                $this->criteria = $business->category->ratingCriteria->toArray();
-                if (empty($this->criteria) && $business->category->parent) {
-                    $this->criteria = $business->category->parent->ratingCriteria->toArray();
-                }
+                $effectiveCriteria = $business->category->getEffectiveRatingCriteria();
+                $this->criteria = $effectiveCriteria->toArray();
                 foreach ($this->criteria as $criterion) {
                     $this->criteriaRatings[$criterion['id']] = 0;
                 }
@@ -96,11 +94,24 @@ class AddReview extends Component
             $this->businessName = 'Business';
         }
 
-        // If existing review by user, load their selections
+        // If existing review by user, load their selections & ratings
         $existingReview = Review::where('user_id', Auth::id())
             ->where('business_id', $this->businessId)
             ->first();
         if ($existingReview) {
+            $this->reviewId = $existingReview->id;
+            $this->recommend = $existingReview->recommend ? 1 : 0;
+            $trans = $existingReview->translations->first();
+            if ($trans) {
+                $this->title2 = $trans->title;
+                $this->comment = $trans->description;
+            }
+
+            $existingRatings = \App\Models\ReviewRating::where('review_id', $existingReview->id)->get();
+            foreach ($existingRatings as $rRating) {
+                $this->criteriaRatings[$rRating->criteria_id] = $rRating->rating;
+            }
+
             $existingIds = $existingReview->selectedProCons()->pluck('category_pro_cons.id')->toArray();
             $this->selectedPros = CategoryProCon::whereIn('id', $existingIds)->where('type', 'pro')->pluck('id')->toArray();
             $this->selectedCons = CategoryProCon::whereIn('id', $existingIds)->where('type', 'con')->pluck('id')->toArray();
@@ -201,27 +212,6 @@ class AddReview extends Component
             return;
         }
 
-        $existingReview = Review::where('user_id', Auth::id())
-            ->where('business_id', $this->businessId)
-            ->first();
-
-        if ($existingReview) {
-            if ($existingReview->status === 'inactive') {
-                $this->dispatch('alert', ['type' => 'error', 'message' => 'Your review has been disabled by the administrator.']);
-                return;
-            }
-            $this->reviewId = $existingReview->id;
-            if ($existingReview->translations->first()) {
-                $existingReview->translations->first()->update([
-                    'title'       => $this->title2,
-                    'description' => $this->comment,
-                ]);
-            }
-            $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
-            $existingReview->selectedProCons()->sync($selectedIds);
-            return;
-        }
-
         // Calculate average rating
         $totalRating = 0;
         $criteriaCount = count($this->criteriaRatings);
@@ -231,13 +221,57 @@ class AddReview extends Component
         $avg_rating = $criteriaCount > 0 ? round($totalRating / $criteriaCount, 2) : 0;
         $lang_id = getCurrentLanguageID();
 
+        $existingReview = Review::where('user_id', Auth::id())
+            ->where('business_id', $this->businessId)
+            ->first();
+
+        if ($existingReview) {
+            $this->reviewId = $existingReview->id;
+
+            $existingReview->update([
+                'rating'    => $avg_rating,
+                'recommend' => (bool)$this->recommend,
+            ]);
+
+            if ($existingReview->translations->first()) {
+                $existingReview->translations->first()->update([
+                    'title'       => $this->title2,
+                    'description' => $this->comment,
+                ]);
+            } else {
+                $existingReview->translations()->create([
+                    'business_id' => $this->businessId,
+                    'language_id' => $lang_id,
+                    'title'       => $this->title2,
+                    'description' => $this->comment,
+                ]);
+            }
+
+            // Save / update criteria ratings
+            foreach ($this->criteriaRatings as $criteriaId => $ratingVal) {
+                \App\Models\ReviewRating::updateOrCreate(
+                    [
+                        'review_id'   => $existingReview->id,
+                        'criteria_id' => $criteriaId,
+                    ],
+                    [
+                        'rating'      => $ratingVal
+                    ]
+                );
+            }
+
+            $selectedIds = array_merge($this->selectedPros, $this->selectedCons);
+            $existingReview->selectedProCons()->sync($selectedIds);
+            return;
+        }
+
         $review = Review::create([
             'user_id'     => Auth::id(),
             'business_id' => $this->businessId,
             'lang_id'     => $lang_id,
             'rating'      => $avg_rating,
             'recommend'   => (bool)$this->recommend,
-            'status'      => 'inactive',
+            'status'      => 'active',
         ]);
 
         $this->reviewId = $review->id;

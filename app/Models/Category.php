@@ -54,6 +54,94 @@ class Category extends Model
         return $this->hasMany(CategoryRatingCriteria::class, 'category_id');
     }
 
+    public function getEffectiveRatingCriteria()
+    {
+        $defaultMaster = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
+        $effectiveCriteria = collect();
+
+        // 1. Resolve 3 Default Criteria for this category
+        foreach ($defaultMaster as $def) {
+            // First check if there is an existing criteria record with matching default_key or name
+            $criterion = CategoryRatingCriteria::where('category_id', $this->id)
+                ->where(function ($q) use ($def) {
+                    $q->where('default_key', $def->key)
+                      ->orWhereRaw('LOWER(name) = ?', [strtolower($def->name)]);
+                })
+                ->first();
+
+            if ($criterion && !$criterion->default_key) {
+                $criterion->update([
+                    'is_default' => true,
+                    'default_key' => $def->key,
+                    'name' => $def->name,
+                ]);
+            }
+
+            if (!$criterion && $this->parent_id) {
+                // Try inheriting default criterion description from parent
+                $parentCriterion = CategoryRatingCriteria::where('category_id', $this->parent_id)
+                    ->where(function ($q) use ($def) {
+                        $q->where('default_key', $def->key)
+                          ->orWhereRaw('LOWER(name) = ?', [strtolower($def->name)]);
+                    })
+                    ->first();
+
+                if ($parentCriterion) {
+                    $criterion = CategoryRatingCriteria::firstOrCreate(
+                        [
+                            'category_id' => $this->id,
+                            'default_key' => $def->key,
+                        ],
+                        [
+                            'name' => $def->name,
+                            'description' => $parentCriterion->description,
+                            'is_default' => true,
+                        ]
+                    );
+                }
+            }
+
+            if (!$criterion) {
+                // Create default criterion row for this category
+                $criterion = CategoryRatingCriteria::firstOrCreate(
+                    [
+                        'category_id' => $this->id,
+                        'default_key' => $def->key,
+                    ],
+                    [
+                        'name' => $def->name,
+                        'description' => $def->default_description,
+                        'is_default' => true,
+                    ]
+                );
+            }
+
+            $effectiveCriteria->push($criterion);
+        }
+
+        // 2. Resolve Main Category Custom Criteria (if this is a subcategory)
+        if ($this->parent_id) {
+            $parentCustomCriteria = CategoryRatingCriteria::where('category_id', $this->parent_id)
+                ->where('is_default', false)
+                ->get();
+            foreach ($parentCustomCriteria as $pCrit) {
+                $pCrit->is_inherited = true;
+                $effectiveCriteria->push($pCrit);
+            }
+        }
+
+        // 3. Resolve Current Category Custom Criteria
+        $ownCustomCriteria = CategoryRatingCriteria::where('category_id', $this->id)
+            ->where('is_default', false)
+            ->get();
+        foreach ($ownCustomCriteria as $ownCrit) {
+            $ownCrit->is_inherited = false;
+            $effectiveCriteria->push($ownCrit);
+        }
+
+        return $effectiveCriteria;
+    }
+
     public function proCons()
     {
         return $this->hasMany(CategoryProCon::class, 'category_id');
