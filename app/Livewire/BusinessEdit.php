@@ -1063,6 +1063,16 @@ class BusinessEdit extends Component
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
         $this->pro_cons_headline = $business->pro_cons_headline ?? '';
 
+        // Load existing rating texts
+        $existingTexts = \App\Models\BusinessRatingText::where('business_id', $id)->get();
+        $this->ratingTexts = [];
+        foreach ($existingTexts as $txt) {
+            $this->ratingTexts[$txt->criteria_key] = [
+                'intro_text' => $txt->intro_text ?? '',
+                'end_text' => $txt->end_text ?? '',
+            ];
+        }
+
         // Load existing Offerings (restricted to one for now)
         if ($business->offerings->count() > 0) {
             $offering = $business->offerings->first();
@@ -1323,16 +1333,6 @@ class BusinessEdit extends Component
             $this->syncBusinessRelationships($business);
 
             $this->saveTopicDescriptions();
-
-        // Load existing rating texts
-        $existingTexts = \App\Models\BusinessRatingText::where('business_id', $id)->get();
-        $this->ratingTexts = [];
-        foreach ($existingTexts as $txt) {
-            $this->ratingTexts[$txt->criteria_key] = [
-                'intro_text' => $txt->intro_text ?? '',
-                'end_text' => $txt->end_text ?? '',
-            ];
-        }
 
             $this->saveUsps($business->id);
             $this->saveProsCons($business->id);

@@ -2113,11 +2113,12 @@
 
                             {{-- pros and Cons --}}
                             @php
+                                $currentLangId = $lang_id ?? getCurrentLanguageID();
                                 $prosList = collect();
                                 $consList = collect();
 
                                 foreach ($business->reviews as $review) {
-                                    $translation = $review->translations->firstWhere('language_id', $lang_id);
+                                    $translation = $review->translations->firstWhere('language_id', $currentLangId);
                                     if ($translation) {
                                         // Assuming pros and cons are comma-separated strings or arrays
                                         $prosList = $prosList->merge(
