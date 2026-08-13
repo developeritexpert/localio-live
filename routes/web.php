@@ -229,6 +229,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/features', [FeatureController::class, 'index'])->name('features');
     Route::get('/features/add', [FeatureController::class, 'create'])->name('features.create');
     Route::post('/features/store', [FeatureController::class, 'store'])->name('features.store');
+    Route::post('/features/json-upload', [FeatureController::class, 'jsonUpload'])->name('features.json_upload');
 
     Route::get('/features/edit/{id}', [FeatureController::class, 'edit'])->name('features.edit');
     Route::post('/features/update/{id}', [FeatureController::class, 'update'])->name('features.update');
@@ -488,6 +489,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     // Category Controller
     Route::get('/categories', [CategoryController::class, 'index'])->name('category');
     Route::get('/categories/{slug}/{page}', [CategoryController::class, 'categoryDetail'])->where('page', '[0-9]+')->name('category.detail.page');
+    Route::get('/categories/{category_slug}/{subcategory_slug}/{feature_slug}', [CategoryController::class, 'subCategoryFeatureDetail'])->name('category.subcategory.feature');
     Route::get('/categories/{slug}', [CategoryController::class, 'categoryDetail'])->name('category.detail');
     
 

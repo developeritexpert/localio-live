@@ -1221,6 +1221,12 @@
                                                                 </a>
                                                             </li>
 
+                                                            <li>
+                                                                <a wire:click.prevent="openFeaturesModal({{ $business->id }})">
+                                                                    <em class="icon ni ni-layers-fill"></em>Features
+                                                                </a>
+                                                            </li>
+
 
 
                                                             <li>
@@ -1846,6 +1852,55 @@
         }
     }
 </script>
+
+    @if($showFeaturesModal)
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Features: {{ $featureBusinessName }}</h5>
+                    <button type="button" class="btn-close" wire:click="closeFeaturesModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted fs-12 mb-3">Only features corresponding to categories assigned to this business are available below.</p>
+                    
+                    <div class="form-group mb-4">
+                        <label class="form-label">Available Category Features</label>
+                        <div class="row g-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px;">
+                            @forelse($businessCategoryFeatures as $feat)
+                                <div class="col-md-6">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="feat_{{ $feat['id'] }}" value="{{ $feat['id'] }}" wire:model.live="selectedBusinessFeatureIds">
+                                        <label class="custom-control-label" for="feat_{{ $feat['id'] }}">
+                                            {{ $feat['translations'][0]['name'] ?? ($feat['name'] ?? 'Feature #'.$feat['id']) }}
+                                        </label>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="col-12 text-muted">No features found for this business's assigned categories.</div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Fast JSON Feature Upload & Assign</label>
+                        <small class="text-muted d-block mb-1">Paste JSON array of features to quickly match and select existing features.</small>
+                        <textarea class="form-control" wire:model="featureJsonData" rows="4" placeholder='[
+  { "name": "SSL included" },
+  { "name": "Website backups" }
+]'></textarea>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" wire:click="fastAssignFeatureJson">Fast Parse & Assign JSON</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="closeFeaturesModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" style="background:#F9633B" wire:click="saveBusinessFeatures">Save Features</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
 @push('scripts')
 
 

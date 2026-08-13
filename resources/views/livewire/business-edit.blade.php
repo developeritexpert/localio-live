@@ -356,6 +356,53 @@
                         </div>
                     </div>
 
+                    <!-- Rating Criteria Introduction & End Texts Section -->
+                    <div class="card card-bordered mb-3">
+                        <div class="card-inner">
+                            <h5 class="card-title mb-3">Rating Criteria Intro & End Texts</h5>
+                            <p class="text-muted fs-12 mb-3">Configure introduction and end texts for Features, Ease of use, Value for money, and category rating criteria.</p>
+                            
+                            <!-- Features -->
+                            <div class="border p-3 rounded mb-3 bg-light">
+                                <h6 class="fw-bold mb-2">1. Features Section</h6>
+                                <div class="form-group mb-2">
+                                    <label class="form-label text-muted">Introduction Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.features.intro_text" rows="2" placeholder="Intro text for Features..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted">End Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.features.end_text" rows="2" placeholder="End text for Features..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Ease of Use -->
+                            <div class="border p-3 rounded mb-3 bg-light">
+                                <h6 class="fw-bold mb-2">2. Ease of Use Section</h6>
+                                <div class="form-group mb-2">
+                                    <label class="form-label text-muted">Introduction Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.intro_text" rows="2" placeholder="Intro text for Ease of use..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted">End Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.end_text" rows="2" placeholder="End text for Ease of use..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Value for Money -->
+                            <div class="border p-3 rounded mb-3 bg-light">
+                                <h6 class="fw-bold mb-2">3. Value for Money Section</h6>
+                                <div class="form-group mb-2">
+                                    <label class="form-label text-muted">Introduction Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.intro_text" rows="2" placeholder="Intro text for Value for money..."></textarea>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="form-label text-muted">End Text</label>
+                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.end_text" rows="2" placeholder="End text for Value for money..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 <div class="card card-bordered mb-3">
 
                     <div class="card-inner">

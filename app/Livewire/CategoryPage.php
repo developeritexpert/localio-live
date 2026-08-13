@@ -59,9 +59,12 @@ class CategoryPage extends Component
         'sortBy' => ['except' => 'highest_rated'],
     ];
 
-    public function mount($slug, $initialPage = 1)
+    public $feature_slug = null;
+
+    public function mount($slug, $initialPage = 1, $feature_slug = null)
     {
         $this->slug = $slug;
+        $this->feature_slug = $feature_slug;
         $this->page = (int) $initialPage;
         $this->lang_id = getCurrentLanguageID();
         $this->country_id= getCurrentCountry();
@@ -303,6 +306,16 @@ class CategoryPage extends Component
             $query = Business::whereIn('category_id', $targetCategoryIds);
         } else {
             $query = Business::where('category_id', $this->category->id);
+        }
+
+        if (!empty($this->feature_slug)) {
+            $featureSlug = $this->feature_slug;
+            $query->whereHas('features', function ($q) use ($featureSlug) {
+                $q->whereHas('translations', function ($tq) use ($featureSlug) {
+                    $tq->where('name', 'LIKE', str_replace('-', ' ', $featureSlug))
+                       ->orWhere('name', 'LIKE', $featureSlug);
+                });
+            });
         }
 
         $query->where('status', 1)

@@ -42,6 +42,13 @@ class BusinessForm extends Component
     public $isSubmitting = false;
     public $addbusiness = true;
 
+    public $showFeaturesModal = false;
+    public $featureBusinessId = null;
+    public $featureBusinessName = '';
+    public $businessCategoryFeatures = [];
+    public $selectedBusinessFeatureIds = [];
+    public $featureJsonData = '';
+
     // Country selection
     public $countryWebsiteUrls = []; // Associative array: countryId => [URLs]
     public $selectedCountryForUrl = null; // Country selected when adding a URL
@@ -1918,6 +1925,116 @@ private function resetFAQForm()
     $this->faqAnswer = '';
     $this->editingFAQId = null;
     $this->resetValidation(['faqQuestion', 'faqAnswer']);
+}
+
+public function openFeaturesModal($businessId)
+{
+    $business = Business::with(['category', 'features'])->find($businessId);
+    if (!$business) return;
+
+    $this->featureBusinessId = $business->id;
+    $this->featureBusinessName = optional($business->translations->first())->name ?? 'Business';
+    $this->selectedBusinessFeatureIds = $business->features->pluck('id')->toArray();
+    $this->featureJsonData = '';
+
+    // Find all parent category IDs associated with this business (primary + secondary)
+    $categoryIds = [];
+    if ($business->category) {
+        $categoryIds[] = !empty($business->category->parent_id) ? $business->category->parent_id : $business->category->id;
+    }
+
+    $subCategoryParentIds = DB::table('business_sub_category')
+        ->where('business_id', $business->id)
+        ->join('categories', 'business_sub_category.category_id', '=', 'categories.id')
+        ->pluck('categories.parent_id')
+        ->filter()
+        ->toArray();
+
+    $categoryIds = array_unique(array_merge($categoryIds, $subCategoryParentIds));
+
+    $lang_id = $this->lang_id ?? getCurrentLanguageID();
+    $query = Feature::query();
+    if (!empty($categoryIds)) {
+        $query->whereIn('category_id', $categoryIds);
+    }
+
+    $features = $query->whereHas('translations', function ($q) use ($lang_id) {
+            $q->where('lang_id', $lang_id);
+        })
+        ->with(['translations' => function ($q) use ($lang_id) {
+            $q->where('lang_id', $lang_id);
+        }])
+        ->get();
+
+    if ($features->isEmpty()) {
+        $features = Feature::whereHas('translations', function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            })
+            ->with(['translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            }])
+            ->get();
+    }
+
+    $this->businessCategoryFeatures = $features->toArray();
+
+    $this->showFeaturesModal = true;
+}
+
+public function saveBusinessFeatures()
+{
+    if (!$this->featureBusinessId) return;
+
+    $business = Business::find($this->featureBusinessId);
+    if ($business) {
+        $business->features()->sync($this->selectedBusinessFeatureIds);
+        $this->dispatch('show-toast', ['type' => 'success', 'message' => 'Features assigned successfully!']);
+    }
+    $this->closeFeaturesModal();
+}
+
+public function fastAssignFeatureJson()
+{
+    if (!$this->featureBusinessId || empty($this->featureJsonData)) return;
+
+    $items = json_decode($this->featureJsonData, true);
+    if (!is_array($items)) {
+        $this->dispatch('show-toast', ['type' => 'error', 'message' => 'Invalid JSON format']);
+        return;
+    }
+
+    $assignedIds = [];
+    $lang_id = $this->lang_id ?? getCurrentLanguageID();
+
+    foreach ($items as $item) {
+        $name = trim($item['name'] ?? $item['feature_name'] ?? '');
+        if (empty($name)) continue;
+
+        $featureTranslate = DB::table('feature_translations')
+            ->where('lang_id', $lang_id)
+            ->where('name', $name)
+            ->first();
+
+        if ($featureTranslate) {
+            $assignedIds[] = $featureTranslate->feature_id;
+        }
+    }
+
+    if (!empty($assignedIds)) {
+        $this->selectedBusinessFeatureIds = array_values(array_unique(array_merge($this->selectedBusinessFeatureIds, $assignedIds)));
+        $this->dispatch('show-toast', ['type' => 'success', 'message' => 'Features parsed and assigned from JSON']);
+    } else {
+        $this->dispatch('show-toast', ['type' => 'info', 'message' => 'No matching existing features found for JSON entries']);
+    }
+}
+
+public function closeFeaturesModal()
+{
+    $this->showFeaturesModal = false;
+    $this->featureBusinessId = null;
+    $this->businessCategoryFeatures = [];
+    $this->selectedBusinessFeatureIds = [];
+    $this->featureJsonData = '';
 }
 
 

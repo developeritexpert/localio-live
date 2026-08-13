@@ -262,7 +262,13 @@
             <div class="top-rated-heading-block">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                @if(!empty($feature_slug))
+                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                        {{ $category->translations->name ?? 'Category' }} providers with {{ ucwords(str_replace('-', ' ', $feature_slug)) }}
+                                    </h1>
+                                @else
+                                    <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $category->translations->name ?? 'Products' }}</h1>
+                                @endif
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                     {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}

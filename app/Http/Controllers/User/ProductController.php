@@ -339,6 +339,15 @@ class ProductController extends Controller
             $recommendPercent = 0;
         }
 
+        $ratingTextsRecords = \App\Models\BusinessRatingText::where('business_id', $business->id)->get();
+        $ratingTexts = [];
+        foreach ($ratingTextsRecords as $rTxt) {
+            $ratingTexts[$rTxt->criteria_key] = [
+                'intro_text' => $rTxt->intro_text,
+                'end_text' => $rTxt->end_text,
+            ];
+        }
+
         $default_image=WebSetting::where('key','user_default_image')->value('value');
         return view('User.product.product_detail', compact(
             'business','alternativeBusiness','additional_info','link','default_image',
@@ -359,7 +368,8 @@ class ProductController extends Controller
             'trustpilotReviews',
             'criteria',
             'recommendPercent',
-            'peerComparisons'
+            'peerComparisons',
+            'ratingTexts'
         ));
     }
 
