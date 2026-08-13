@@ -184,7 +184,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-3 d-none">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label class="form-label font-weight-bold mb-0">Fast JSON Feature Upload & Assign</label>
                                 <button type="button" class="btn btn-xs btn-outline-secondary" onclick="copyAssignExampleFormat()">
