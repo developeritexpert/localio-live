@@ -1106,12 +1106,14 @@
                                                          <div class="card-body">
                                                              <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
                                                              <ul class="list-unstyled mb-0">
-                                                                 @foreach($aggregatedPros as $pro)
-                                                                 <li class="d-flex align-items-start mb-2">
-                                                                     <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                                     <span style="color: #202124;">{{ $pro->text }} <small class="text-muted font-weight-normal">({{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }})</small></span>
-                                                                 </li>
-                                                                 @endforeach
+                                                                 @if(isset($aggregatedPros) && !empty($aggregatedPros))
+                                                                     @foreach($aggregatedPros as $pro)
+                                                                     <li class="d-flex align-items-start mb-2">
+                                                                         <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                         <span style="color: #202124;">{{ $pro->text }} <small class="text-muted font-weight-normal">({{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                     </li>
+                                                                     @endforeach
+                                                                 @endif
                                                              </ul>
                                                          </div>
                                                      </div>
@@ -1121,12 +1123,14 @@
                                                          <div class="card-body">
                                                              <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
                                                              <ul class="list-unstyled mb-0">
-                                                                 @foreach($aggregatedCons as $con)
-                                                                 <li class="d-flex align-items-start mb-2">
-                                                                     <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                                     <span style="color: #202124;">{{ $con->text }} <small class="text-muted font-weight-normal">({{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }})</small></span>
-                                                                 </li>
-                                                                 @endforeach
+                                                                 @if(isset($aggregatedCons) && !empty($aggregatedCons))
+                                                                     @foreach($aggregatedCons as $con)
+                                                                     <li class="d-flex align-items-start mb-2">
+                                                                         <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                         <span style="color: #202124;">{{ $con->text }} <small class="text-muted font-weight-normal">({{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                     </li>
+                                                                     @endforeach
+                                                                 @endif
                                                              </ul>
                                                          </div>
                                                      </div>
