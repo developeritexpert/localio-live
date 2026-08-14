@@ -370,10 +370,8 @@ class CategoriesController extends Controller
             'title' => 'nullable|string|max:255',
             'comparison_slug' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
-            'image' => 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
-            'category_icon' => $isNewCategory
-            ? 'required|mimes:svg,png,jpg,jpeg,webp|max:2048'
-            : 'nullable|mimes:svg,png,jpg,jpeg,webp|max:2048',
+            'image' => 'nullable',
+            'category_icon' => 'nullable',
             'is_parent' => 'nullable',
             'parent_id' => 'nullable|required_without:is_parent|exists:categories,id',
         ];
@@ -383,6 +381,7 @@ class CategoriesController extends Controller
         $validator->after(function ($validator) use ($request) {
             $is_parent = $request->has('is_parent');
             $parent_id = $request->parent_id;
+            $category_id = null;
 
 
 

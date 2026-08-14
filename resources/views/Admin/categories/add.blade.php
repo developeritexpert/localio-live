@@ -143,40 +143,7 @@
 
 
 
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label class="form-label" for="image">Upload Image</label>
-                                <div class="dz-message">
-                                    <input type="file" class="form-control" name="image" id="image" >
-                                </div>
-                                @error('image')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        @isset($category_image_url)
-                            <div class="col-12">
-                                <img src="{{ asset($category_image_url) }}" alt="Category Image" class="img-fluid rounded-circle" style="height: 50px;">
-                            </div>
-                        @endisset
-
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label class="form-label" for="image">Upload Icon</label>
-                                <div class="dz-message">
-                                    <input type="file" class="form-control" name="category_icon" id="categoryIcon"  >
-                                </div>
-                                @error('category_icon')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        @isset($category_icon_url)
-                            <div class="col-12">
-                                <img src="{{ asset($category_icon_url) }}" alt="Category Image" class="img-fluid rounded-circle" style="height: 50px;">
-                            </div>
-                        @endisset
+                        
 
                         <!-- Rating Criteria Section -->
                         <div class="col-md-12 mt-4" id="rating_criteria_section">
