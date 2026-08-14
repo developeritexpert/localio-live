@@ -1109,7 +1109,9 @@
                                                                  @foreach($aggregatedPros as $pro)
                                                                  <li class="d-flex align-items-start mb-2">
                                                                      <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                                     <span style="color: #202124;">{{ $pro->text }} <small class="text-muted font-weight-normal">({{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                     <span style="color: #202124;">{{ $pro->text }} 
+                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 13px;">{{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                    </span>
                                                                  </li>
                                                                  @endforeach
                                                              </ul>
@@ -1124,7 +1126,9 @@
                                                                  @foreach($aggregatedCons as $con)
                                                                  <li class="d-flex align-items-start mb-2">
                                                                      <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                                     <span style="color: #202124;">{{ $con->text }} <small class="text-muted font-weight-normal">({{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                     <span style="color: #202124;">{{ $con->text }} 
+                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 13px;">{{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                    </span>
                                                                  </li>
                                                                  @endforeach
                                                              </ul>
