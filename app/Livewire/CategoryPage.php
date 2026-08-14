@@ -323,7 +323,31 @@ class CategoryPage extends Component
                 'translations' => function ($q) {
                     $q->where('lang_id', $this->lang_id);
                 },'limitedFeatures.translations'=>fn($q) => $q->where('lang_id', $this->lang_id),
-                'products.prices' => fn($q) => $q->orderBy('price'),
+                'products' => function ($pq) {
+                    $pq->with(['prices' => fn($p) => $p->orderBy('price')])
+                        ->where(function ($query) {
+                            $query->where('active_all_countries', 1)
+                                ->orWhere(function ($q) {
+                                    $q->where('active_all_countries', 0)
+                                        ->whereHas('countries', function ($countryQuery) {
+                                            $countryQuery->where('country_id', $this->country_id);
+                                        });
+                                });
+                        });
+
+                    if ($this->category && $this->category->parent_id) {
+                        $subCatId = $this->category->id;
+                        $pq->where(function ($sq) use ($subCatId) {
+                            $sq->where('active_all_subcategories', 1)
+                               ->orWhere(function ($subq) use ($subCatId) {
+                                   $subq->where('active_all_subcategories', 0)
+                                        ->whereHas('categories', function ($catQ) use ($subCatId) {
+                                            $catQ->where('categories.id', $subCatId);
+                                        });
+                               });
+                        });
+                    }
+                },
                 'reviews' => fn($q) => $q->with('translations')
                     ->whereHas('translations', fn($q) => $q->where('language_id', $this->lang_id))
                     ->where('status', 'active')

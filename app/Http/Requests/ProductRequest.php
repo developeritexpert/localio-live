@@ -26,8 +26,12 @@ class ProductRequest extends FormRequest
             'name' => 'nullable|string|max:255',
             'product_link' => 'nullable|url|max:500',
             'status' => 'required|in:public,private',
+            'active_all_countries' => 'nullable|in:0,1',
             'product_countries' => 'nullable|array',
             'product_countries.*' => 'exists:countries,id',
+            'active_all_subcategories' => 'nullable|in:0,1',
+            'product_subcategories' => 'nullable|array',
+            'product_subcategories.*' => 'exists:categories,id',
             'product_businesses' => 'nullable|array',
             'product_businesses.*' => 'exists:businesses,id',
             'product_category' => 'nullable|exists:categories,id',
@@ -88,4 +92,3 @@ class ProductRequest extends FormRequest
         }
     }
 }
-

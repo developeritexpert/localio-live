@@ -423,8 +423,20 @@
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="card border-0">
+                                @php
+                                    $linkedBusiness = isset($product_business) ? $product_business->first() : null;
+                                    $businessSlug = null;
+                                    if ($linkedBusiness) {
+                                        $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                        $businessTranslation = $linkedBusiness->translations->where('lang_id', $currentLangId)->first()
+                                            ?? ($linkedBusiness->translations->where('lang_id', 1)->first() ?? $linkedBusiness->translations->first());
+                                        $businessSlug = $businessTranslation->slug ?? ($linkedBusiness->slug ?? null);
+                                    }
+                                    $viewPageUrl = $businessSlug ? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessSlug]) : '#';
+                                @endphp
+
                                 <div class="col-md-12 mt-1 d-flex justify-content-between">
-                                    <a href="#" class="btn btn-link text-center"><span><b>View
+                                    <a href="{{ $viewPageUrl }}" id="view-page-btn" target="_blank" rel="noopener noreferrer" class="btn btn-link text-center"><span><b>View
                                                 Page</b></span></a>
                                     <button type="submit" class="btn btn-primary" id="submitBtn"><span>Update
                                             </span></button>
@@ -450,7 +462,7 @@
 
                     <!-- Card 2: Linked Business -->
                     <div class="card card-bordered mb-3">
-                        <div class="card-inner">
+                        <div class="">
                             <div class="card border-0">
                                 <div class="card-body">
                                     {{-- Add Link Business Dropdown --}}
@@ -479,6 +491,66 @@
                                         @error('product_businesses')
                                             <div class="text-danger small">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+
+                    <!-- Card: Related Subcategories -->
+                    <!-- <div class="card card-bordered mb-3" id="product-subcategories-section"> -->
+                        <div class="">
+                            <div class="card border-0">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label font-weight-bold">Related Subcategories</label>
+                                        <div class="d-flex mb-2">
+                                            <div class="form-check me-3">
+                                                <input class="form-check-input subcategory-availability-radio" type="radio" id="active_all_subcategories_1"
+                                                    name="active_all_subcategories" value="1"
+                                                    {{ old('active_all_subcategories', (string)$product->active_all_subcategories) == '1' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="active_all_subcategories_1">All</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input subcategory-availability-radio" type="radio" id="active_all_subcategories_0"
+                                                    name="active_all_subcategories" value="0"
+                                                    {{ old('active_all_subcategories', (string)$product->active_all_subcategories) == '0' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="active_all_subcategories_0">Specific Subcategories</label>
+                                            </div>
+                                        </div>
+
+                                        <div id="product-subcategories-wrapper" style="{{ old('active_all_subcategories', (string)$product->active_all_subcategories) == '1' ? 'display:none;' : '' }}">
+                                            @php
+                                                $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                $subCategoryOptions = [];
+                                                if(isset($businessSubCategories) && $businessSubCategories->count() > 0) {
+                                                    foreach($businessSubCategories as $sub) {
+                                                        $subName = $sub->categoryTranslations->where('lang_id', $currentLangId)->first()->name
+                                                            ?? ($sub->categoryTranslations->where('lang_id', 1)->first()->name ?? ($sub->name ?? 'Subcategory #' . $sub->id));
+                                                        $subCategoryOptions[$sub->id] = $subName;
+                                                    }
+                                                }
+                                                $selectedSubCatIds = old('product_subcategories', $selectedSubCategories ?? []);
+                                            @endphp
+
+                                            <x-google-input
+                                                type="select"
+                                                name="product_subcategories"
+                                                id="product-subcategories"
+                                                label="Related Subcategories"
+                                                :options="$subCategoryOptions"
+                                                :selectedValues="$selectedSubCatIds"
+                                                :alwaysActive="true"
+                                                multiple
+                                                class="select2-multiple"
+                                            />
+                                            <div class="select2-buttons mt-2">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary clear-all-subcategories">Clear All</button>
+                                            </div>
+                                            @error('product_subcategories')
+                                                <div class="text-danger small">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -848,6 +920,25 @@
                 }
             });
 
+            $('input[name="active_all_subcategories"]').on('change', function() {
+                if ($(this).val() == '1') {
+                    $('#product-subcategories-wrapper').slideUp();
+                } else {
+                    $('#product-subcategories-wrapper').slideDown();
+                }
+            });
+
+            $('#product-subcategories').select2({
+                placeholder: "Select Subcategories",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('.clear-all-subcategories').on('click', function() {
+                $('#product-subcategories option').prop('selected', false);
+                $('#product-subcategories').trigger('change');
+            });
+
             // Cache DOM elements
             const $productCategory = $('#product-category'); // Hidden input
             const $categoryDisplay = $('#category-display'); // Display input
@@ -893,6 +984,9 @@
                 });
             }
 
+            // Cache initial business id to avoid wiping subcategories on initial page load
+            let currentBusinessId = Array.isArray($productBusinesses.val()) ? $productBusinesses.val()[0] : $productBusinesses.val();
+
             // Handle business change to update category
             $productBusinesses.on('change', function() {
                 const businessId = $(this).val();
@@ -900,11 +994,17 @@
                 // If array with 1 element, get the first element
                 const singleBusinessId = Array.isArray(businessId) ? businessId[0] : businessId;
 
+                // Do not wipe out loaded subcategories if business hasn't actually changed
+                if (singleBusinessId === currentBusinessId) {
+                    return;
+                }
+                currentBusinessId = singleBusinessId;
+
                 if (singleBusinessId) {
                     // Show loading state in category field
                     $categoryDisplay.val('Loading...');
 
-                    // Find the associated category for this business
+                    // Find the associated category and subcategories for this business
                     $.ajax({
                         url: "/get-business-category",
                         type: "GET",
@@ -912,15 +1012,31 @@
                             business_id: singleBusinessId
                         },
                         success: function(response) {
-                            if (response.success && response.category_id) {
-                                // Set the hidden category input
-                                $productCategory.val(response.category_id);
+                            if (response.success) {
+                                if (response.category_id) {
+                                    // Set the hidden category input
+                                    $productCategory.val(response.category_id);
 
-                                // Set display field with category name
-                                $categoryDisplay.val(response.category_name);
+                                    // Set display field with category name
+                                    $categoryDisplay.val(response.category_name);
 
-                                // Load filters for this category
-                                loadFilters(response.category_id);
+                                    // Load filters for this category
+                                    loadFilters(response.category_id);
+                                }
+
+                                if (response.business_slug) {
+                                    $('#view-page-btn').attr('href', '/' + '{{ app()->getLocale() }}' + '/' + response.business_slug);
+                                }
+
+                                // Populate subcategories
+                                const $subSelect = $('#product-subcategories');
+                                $subSelect.empty();
+                                if (response.subcategories && response.subcategories.length > 0) {
+                                    response.subcategories.forEach(sub => {
+                                        $subSelect.append(new Option(sub.name, sub.id, false, false));
+                                    });
+                                }
+                                $subSelect.trigger('change');
                             } else {
                                 // Handle case where no category is found
                                 $productCategory.val('');
@@ -943,6 +1059,7 @@
                     // Clear category if no business selected
                     $productCategory.val('');
                     $categoryDisplay.val('');
+                    $('#product-subcategories').empty().trigger('change');
                     $filterFields.html(
                         '<div class="alert alert-info"><em class="icon ni ni-info"></em> Select a business to load available filters</div>'
                     );
