@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use App\Models\{Country, Currency, Language, SiteLanguages};
+use App\Models\{Country, Currency, Language, SiteLanguages, BaseLanguage};
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
@@ -14,23 +14,25 @@ class SiteLanguagesController extends Controller
 {
     public function index()
     {
-        $siteLanguages = Language::all();
+        $siteLanguages = Language::with(['country', 'baseLanguage'])->get();
 
         return view('Admin.setting.siteLanguages.index', compact('siteLanguages'));
     }
+
     public function add()
     {
         $countries = Country::all();
-        $languagesforBase= Language::where('status',1)->get();
-        return view('Admin.setting.siteLanguages.add', compact('countries','languagesforBase'));
+        $baseLanguages = BaseLanguage::where('status', 1)->orderBy('is_master', 'desc')->orderBy('name')->get();
+        return view('Admin.setting.siteLanguages.add', compact('countries', 'baseLanguages'));
     }
+
     public function addProcc(Request $request)
     {
         $request->validate([
             'name' => 'required|unique:languages,name|string|max:255',
             'lang_code' => 'required|alpha_dash|unique:languages,lang_code|string|max:255',
             'country_id' => 'required|exists:countries,id',
-            'base_language_id' => 'nullable|exists:languages,id',
+            'base_language_id' => 'nullable|exists:base_languages,id',
             'faq_slug' => 'nullable|string|max:255',
             'alternatives_slug' => 'nullable|string|max:255',
             'reviews_slug' => 'nullable|string|max:255',
@@ -39,17 +41,17 @@ class SiteLanguagesController extends Controller
             'is_active_translation' => 'nullable|boolean',
             'is_valid_language_code' => 'nullable|boolean',
         ]);
+
         $language = new Language();
         $language->name = $request->name;
         $language->lang_code = $request->lang_code;
         $language->country_id = $request->country_id;
-        $language->base_language_id = $request->base_language_id;
+        $language->base_language_id = $request->filled('base_language_id') ? $request->base_language_id : null;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
         $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->reviews_slug = $request->reviews_slug ?? 'reviews';
         $language->comparisons_slug = $request->comparisons_slug ?? 'comparisons';
         $language->status = $request->status ?? 1;
-        // $language->is_active_translation = $request->is_active_translation ?? 0;
         $language->save();
 
         return redirect()->route('site-languages')->with('success', 'Site Language added successfully.');
@@ -59,9 +61,10 @@ class SiteLanguagesController extends Controller
     {
         $siteLanguage = Language::findOrFail($id);
         $countries = Country::all();
-        $languagesforBase= Language::where('status',1)->get();
-        return view('Admin.setting.siteLanguages.update', compact('siteLanguage', 'countries','languagesforBase'));
+        $baseLanguages = BaseLanguage::where('status', 1)->orderBy('is_master', 'desc')->orderBy('name')->get();
+        return view('Admin.setting.siteLanguages.update', compact('siteLanguage', 'countries', 'baseLanguages'));
     }
+
     public function updateProcc(Request $request)
     {
         $id = $request->id ?? $request->route('id');
@@ -70,7 +73,7 @@ class SiteLanguagesController extends Controller
             'name' => 'required|string|max:255',
             'lang_code' => 'required|string|unique:languages,lang_code,' . $id . ',id',
             'country_id' => 'required|exists:countries,id',
-            'base_language_id' => 'nullable|exists:languages,id',
+            'base_language_id' => 'nullable|exists:base_languages,id',
             'faq_slug' => 'nullable|string|max:255',
             'alternatives_slug' => 'nullable|string|max:255',
             'reviews_slug' => 'nullable|string|max:255',
@@ -83,7 +86,7 @@ class SiteLanguagesController extends Controller
         $language->name = $request->name;
         $language->lang_code = $request->lang_code;
         $language->country_id = $request->country_id;
-        $language->base_language_id = $request->base_language_id;
+        $language->base_language_id = $request->filled('base_language_id') ? $request->base_language_id : null;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
         $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->reviews_slug = $request->reviews_slug ?? 'reviews';
@@ -93,12 +96,10 @@ class SiteLanguagesController extends Controller
     
         return redirect()->route('site-languages')->with('success', 'Site Language updated successfully.');
     }
-    
 
     public function remove($id)
     {
         $siteLanguage = Language::findOrFail($id);
-        
         $siteLanguage->delete();
 
         return redirect()->route('site-languages')->with('success', 'Site Language deleted successfully.');
@@ -116,8 +117,6 @@ class SiteLanguagesController extends Controller
         return redirect()->route('site-languages')->with('success', $message);
     }
 
-
-
     public function setActiveSiteLanguage($lang_id)
     {
         $language = Language::find($lang_id);
@@ -133,11 +132,10 @@ class SiteLanguagesController extends Controller
         App::setLocale($lang_code);
         return redirect('/' . $lang_code);
     }
+
     public function setActiveAdminLanguage($lang_id)
     {
-        //  dd($lang_id);
         $language = Language::find($lang_id);
-        // dd($languages);
         if (!$language) {
             $language = Language::find(1);
             $lang_code = $language->lang_code;
@@ -152,10 +150,10 @@ class SiteLanguagesController extends Controller
         return redirect()->back()->with('success', 'Language Changed');
     }
 
-
-    public function allLanguage(){
+    public function allLanguage()
+    {
         $languages = Language::with(['baseLanguage', 'currency'])->get();
-        $currencies=Currency::all();
-        return view('Admin.language-region.all_language',compact('languages'));
+        $currencies = Currency::all();
+        return view('Admin.language-region.all_language', compact('languages'));
     }
 }

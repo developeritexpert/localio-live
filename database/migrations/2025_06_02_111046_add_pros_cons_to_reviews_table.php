@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('review_translations', function (Blueprint $table) {
-            $table->text('pros')->nullable()->after('description');
-            $table->text('cons')->nullable()->after('pros');
-        });
+        if (Schema::hasTable('review_translations') && !Schema::hasColumn('review_translations', 'pros')) {
+            Schema::table('review_translations', function (Blueprint $table) {
+                $table->text('pros')->nullable()->after('description');
+                $table->text('cons')->nullable()->after('pros');
+            });
+        }
     }
 
     /**
@@ -22,8 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('review_translations', function (Blueprint $table) {
-          $table->dropColumn(['pros', 'cons']);
-        });
+        if (Schema::hasTable('review_translations') && Schema::hasColumn('review_translations', 'pros')) {
+            Schema::table('review_translations', function (Blueprint $table) {
+                $table->dropColumn(['pros', 'cons']);
+            });
+        }
     }
 };

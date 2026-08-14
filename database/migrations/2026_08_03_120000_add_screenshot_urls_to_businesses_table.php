@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('businesses', function (Blueprint $table) {
+        if (!Schema::hasColumn('businesses', 'screenshot_urls')) {
+            Schema::table('businesses', function (Blueprint $table) {
             $table->json('screenshot_urls')->nullable()->after('business_images');
         });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('businesses', function (Blueprint $table) {
+        if (!Schema::hasColumn('businesses', 'screenshot_urls')) {
+            Schema::table('businesses', function (Blueprint $table) {
             $table->dropColumn('screenshot_urls');
         });
+        }
     }
 };

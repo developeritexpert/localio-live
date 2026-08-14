@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
+use App\Http\Controllers\Admin\BaseLanguageController;
 use App\Http\Controllers\Admin\{AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
 
@@ -163,6 +164,15 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/country/add', [CountryController::class, 'add'])->name('country.add');
     Route::post('/admin-dashboard/country/addProcc', [CountryController::class, 'addProcc'])->name('country.addProcc');
     Route::get('/admin-dashboard/country/delete/{id}', [CountryController::class, 'delete'])->name('country.delete');
+
+    // Base Languages
+    Route::get('/admin-dashboard/base-languages', [BaseLanguageController::class, 'index'])->name('base-languages.index');
+    Route::get('/admin-dashboard/base-languages/add', [BaseLanguageController::class, 'add'])->name('base-languages.add');
+    Route::post('/admin-dashboard/base-languages/addProcc', [BaseLanguageController::class, 'addProcc'])->name('base-languages.addProcc');
+    Route::get('/admin-dashboard/base-languages/update/{id}', [BaseLanguageController::class, 'update'])->name('base-languages.update');
+    Route::post('/admin-dashboard/base-languages/updateProcc/{id}', [BaseLanguageController::class, 'updateProcc'])->name('base-languages.updateProcc');
+    Route::get('/admin-dashboard/base-languages/delete/{id}', [BaseLanguageController::class, 'delete'])->name('base-languages.delete');
+    Route::get('/admin-dashboard/base-languages/toggle-status/{id}', [BaseLanguageController::class, 'toggleStatus'])->name('base-languages.toggle-status');
 
 
 

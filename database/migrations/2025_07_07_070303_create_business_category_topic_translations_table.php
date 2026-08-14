@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('business_category_topic_translations', function (Blueprint $table) {
+        if (!Schema::hasTable('business_category_topic_translations')) {
+            Schema::create('business_category_topic_translations', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('business_category_topic_id');
@@ -25,6 +26,7 @@ return new class extends Migration
     
             $table->timestamps();
         });
+        }
     }
 
     /**

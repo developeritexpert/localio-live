@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('product_translations', function (Blueprint $table) {
+        if (!Schema::hasColumn('product_translations', 'is_affiliate')) {
+            Schema::table('product_translations', function (Blueprint $table) {
             $table->boolean('is_affiliate')->default(false)->after('product_link');
         });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('product_translations', function (Blueprint $table) {
+        if (!Schema::hasColumn('product_translations', 'is_affiliate')) {
+            Schema::table('product_translations', function (Blueprint $table) {
             $table->dropColumn('is_affiliate');
         });
+        }
     }
 };

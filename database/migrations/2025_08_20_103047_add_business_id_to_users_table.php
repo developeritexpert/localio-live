@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        if (!Schema::hasColumn('users', 'business_id')) {
+            Schema::table('users', function (Blueprint $table) {
             //  Add the business_id column (nullable, foreign key)
             $table->unsignedBigInteger('business_id')->nullable()->after('number');
 
@@ -21,6 +22,7 @@ return new class extends Migration
                 ->on('businesses')
                 ->onDelete('set null'); // If business is deleted, set user.business_id to null
         });
+        }
     }
 
     /**
@@ -28,9 +30,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        if (!Schema::hasColumn('users', 'business_id')) {
+            Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['business_id']);
             $table->dropColumn('business_id');
         });
+        }
     }
 };

@@ -547,6 +547,12 @@
                                                 <span class="nk-menu-text">Countries List</span>
                                             </a>
                                         </li>
+
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('base-languages.index') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Base languages</span>
+                                            </a>
+                                        </li>
                                     </ul>
 
                                 </li>
