@@ -180,6 +180,63 @@
             </script>
         @endif
         <style>
+            /* Sticky In-Page Navigation Sidebar Box */
+            .sidebar-sticky-nav-wrapper {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 85px;
+                z-index: 90;
+                margin-top: 15px;
+            }
+            .sidebar-sticky-nav-card {
+                background: #ffffff;
+                border-radius: 14px;
+                box-shadow: 0 8px 24px rgb(141 143 144 / 28%);
+                padding: 24px 20px 20px 20px;
+                transition: all 0.3s ease;
+            }
+            .sidebar-toc-link {
+                color: #4a5568 !important;
+                font-size: 14px !important;
+                font-weight: 500 !important;
+                text-decoration: none !important;
+                padding: 6px 10px !important;
+                border-radius: 6px !important;
+                display: block !important;
+                transition: all 0.2s ease !important;
+            }
+            .sidebar-toc-link:hover,
+            .sidebar-toc-link.active-sidebar-link {
+                color: #002347 !important;
+                background-color: #f0f4f8 !important;
+                font-weight: 600 !important;
+            }
+            .sidebar-write-review-btn {
+                color: #002347 !important;
+                font-size: 13.5px !important;
+                font-weight: 600 !important;
+                text-decoration: none !important;
+                cursor: pointer !important;
+                transition: color 0.2s ease !important;
+            }
+            .sidebar-write-review-btn:hover {
+                color: #ff6b35 !important;
+                text-decoration: underline !important;
+            }
+            .sidebar-sticky-nav-btn {
+                background-color: #ff5722 !important;
+                border-color: #ff5722 !important;
+                color: #ffffff !important;
+                font-weight: 600 !important;
+                font-size: 14px !important;
+                padding: 10px 16px !important;
+                border-radius: 8px !important;
+                text-decoration: none !important;
+                transition: background-color 0.2s ease !important;
+            }
+            .sidebar-sticky-nav-btn:hover {
+                background-color: #e64a19 !important;
+            }
             a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
                 background-color: #e4e7ea !important;
             }
@@ -1936,6 +1993,92 @@
                                                     </p>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <!-- Sticky In-Page Navigation Box Below Discussions -->
+                                        @php
+                                            $stickyBName = optional($business->translations->first())->name ?? 'Business';
+                                            $stickyRatingVal = $averageRating ?? 4.5;
+                                            $stickyRatingCount = $ratingCount ?? ($business->reviews->where('status', 'active')->count() ?: 0);
+                                        @endphp
+                                        <div class="main_feature_lg sidebar-sticky-nav-wrapper">
+                                            <div class="feture_box sidebar-sticky-nav-card text-center">
+                                                <!-- Logo -->
+                                                <div class="d-flex justify-content-center align-items-center mb-2" style="height: 48px;">
+                                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $stickyBName }}" style="max-height: 44px; max-width: 130px; object-fit: contain;">
+                                                </div>
+
+                                                <!-- Business Name -->
+                                                <h4 style="font-size: 18px; font-weight: 700; color: #002347; margin: 0 0 6px 0;">
+                                                    {{ $stickyBName }}
+                                                </h4>
+
+                                                <!-- Rating Below Business Name -->
+                                                <div class="d-flex align-items-center justify-content-center gap-2 mb-3" style="font-size: 13px;">
+                                                    <span style="font-weight: 700; color: #002347; font-size: 14px;">
+                                                        {{ number_format($stickyRatingVal, 1) }}
+                                                    </span>
+                                                    <div class="rating-stars text-warning d-flex align-items-center" style="gap: 2px;">
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            @if ($i <= floor($stickyRatingVal))
+                                                                <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
+                                                            @elseif ($i - 0.5 <= $stickyRatingVal)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 12px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 12px;"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <span class="text-muted" style="font-size: 12px;">
+                                                        ({{ $stickyRatingCount }})
+                                                    </span>
+                                                </div>
+
+                                                <!-- Visit Website Button -->
+                                                @if($business->is_affiliate)
+                                                    <div class="mb-3">
+                                                        <a href="{{ $business->getTrackedUrl() }}"
+                                                           data-track="{{ json_encode([
+                                                               'type' => 'click',
+                                                               'business_id' => $business->id,
+                                                               'action' => 'visit_website',
+                                                               'label' => 'Visit Website Sticky Sidebar',
+                                                           ]) }}"
+                                                           class="btn-orng cta cta_orange d-flex align-items-center btn sidebar-sticky-nav-btn w-100 justify-content-center gap-2"
+                                                           target="_blank">
+                                                            <span>Visit {{ $stickyBName }}</span>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                        </a>
+                                                    </div>
+                                                @endif
+
+                                                <!-- In-page Navigation Links -->
+                                                <div class="text-start" style="border-top: 1px solid #f0f2f5; padding-top: 10px; margin-top: 10px;">
+                                                    <ul class="list-unstyled mb-0 sidebar-toc-nav">
+                                                        @foreach ($tableOfContents as $item)
+                                                            <li class="mb-1">
+                                                                <a href="#{{ $item['id'] }}" class="sidebar-toc-link">
+                                                                    {{ $item['label'] }}
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+
+                                                <!-- Write a Review Button -->
+                                                <div class="pt-3 mt-2 text-center" style="border-top: 1px solid #f0f2f5;">
+                                                    <a href="javascript:void(0)"
+                                                       @auth
+                                                       onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                                       @else
+                                                       onclick="openLoginModal()"
+                                                       @endauth
+                                                       class="sidebar-write-review-btn d-inline-flex align-items-center justify-content-center gap-2">
+                                                        <i class="fas fa-pencil-alt me-1"></i>
+                                                        <span>Write a review</span>
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div></div>
                                     </div>
                                 </div>
@@ -2737,76 +2880,64 @@
 
                             {{-- faq --}}
                             @if(isset($business->faqs) && $business->faqs->count() > 0)
-                            <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15" style="background-color:#fdfdfd;">
+                            <section class="faq-section faq-section_1 product_inr_faq p_50 pt-2 light" id="section15" style="background-color:#fdfdfd;">
                                 <div class="container">
                                     <div class="faq-inner">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <div class="d-flex flex-column w-auto">
-                                                    {{-- <h2>Frequently Asked Questions (FAQs)</h2>
-                                                    <p>
-                                                        Find quick answers to the most common questions about using Localio
-                                                        to discover, filter, and connect with the best local businesses and
-                                                        products.
-                                                    </p> --}}
+                                        @php
+                                            $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
+                                            $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
+                                        @endphp
+                                        <div class="faq-heading-wrapper text-center mb-4" data-aos="fade-up" data-aos-duration="1000">
+                                            <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                                                {{ $faq_title?->default_value ?? 'Frequently Asked Questions (FAQs)' }}
+                                            </h2>
+                                            @if(!empty($faq_description?->default_value))
+                                                <p style="font-size: 15px; color: #64748b; max-width: 750px; margin: 0 auto;">
+                                                    {{ $faq_description->default_value }}
+                                                </p>
+                                            @endif
+                                        </div>
 
-                                                    @php
-                                                        $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
-                                                        $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
-                                                    @endphp
-
-                                                    <h2>{{ $faq_title?->default_value ?? '' }}</h2>
-                                                    <p>{{ $faq_description?->default_value ?? '' }}</p>
-
-
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-8">
-                                                <div class="faq-accor">
-                                                    <div class="accordion" id="accordionExample">
-                                                        @forelse ($business->faqs->take(10) as $index => $faq)
-                                                            @php $translation = $faq->translations->first(); @endphp
-                                                            @if ($translation)
-                                                                <div class="accordion-item">
-                                                                    <h2 class="accordion-header"
-                                                                        id="heading{{ $index }}">
-                                                                        <button
-                                                                            class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
-                                                                            type="button" data-bs-toggle="collapse"
-                                                                            data-bs-target="#collapse{{ $index }}"
-                                                                            aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                                                            aria-controls="collapse{{ $index }}">
-                                                                            <span>{{ $translation->question }}</span>
-                                                                        </button>
-                                                                    </h2>
-                                                                    <div id="collapse{{ $index }}"
-                                                                        class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
-                                                                        aria-labelledby="heading{{ $index }}"
-                                                                        data-bs-parent="#accordionExample">
-                                                                        <div class="accordion-body">
-                                                                            {{ $translation->answer }}
-                                                                        </div>
-                                                                    </div>
+                                        <div class="faq-accor" style="max-width: 900px; margin: 0 auto;">
+                                            <div class="accordion" id="accordionExample">
+                                                @forelse ($business->faqs->take(10) as $index => $faq)
+                                                    @php $translation = $faq->translations->first(); @endphp
+                                                    @if ($translation)
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="heading{{ $index }}">
+                                                                <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
+                                                                    type="button" data-bs-toggle="collapse"
+                                                                    data-bs-target="#collapse{{ $index }}"
+                                                                    aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                                                    aria-controls="collapse{{ $index }}">
+                                                                    <span>{{ $translation->question }}</span>
+                                                                </button>
+                                                            </h2>
+                                                            <div id="collapse{{ $index }}"
+                                                                class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                                aria-labelledby="heading{{ $index }}"
+                                                                data-bs-parent="#accordionExample">
+                                                                <div class="accordion-body">
+                                                                    {{ $translation->answer }}
                                                                 </div>
-                                                            @endif
-                                                        @empty
-                                                            <p>No FAQs available for this business.</p>
-                                                        @endforelse
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @empty
+                                                    <p>No FAQs available for this business.</p>
+                                                @endforelse
+                                            </div>
 
-                                                    </div>
-
-                                                    @php
-                                                        $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
-                                                        $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
-                                                    @endphp
-                                                    <div class="mt-4 text-center">
-                                                        <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
-                                                           class="view-more-link"
-                                                           style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                            View more FAQs
-                                                        </a>
-                                                    </div>
-                                                </div>
+                                            @php
+                                                $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
+                                                $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
+                                            @endphp
+                                            <div class="mt-4 text-center">
+                                                <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
+                                                   class="view-more-link"
+                                                   style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                    View more FAQs
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -3863,13 +3994,45 @@
             }, 300);
         }
 
-        jQuery(window).scroll(function() {
-            var scroll = jQuery(window).scrollTop();
-            if (scroll >= 200) {
-                jQuery(".asn_main_sec > .asn_dv").addClass("fixed-div");
-            } else {
-                jQuery(".asn_main_sec > .asn_dv").removeClass("fixed-div");
+        // Sticky sidebar in-page nav active state highlighter
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.sidebar-toc-link');
+            const sections = [];
+            
+            navLinks.forEach(link => {
+                const targetId = link.getAttribute('href');
+                if (targetId && targetId.startsWith('#')) {
+                    const sectionEl = document.querySelector(targetId);
+                    if (sectionEl) {
+                        sections.push({ id: targetId, element: sectionEl, link: link });
+                    }
+                }
+            });
+
+            function updateActiveNav() {
+                const scrollPos = window.scrollY + 140;
+                let currentActive = null;
+
+                for (let i = 0; i < sections.length; i++) {
+                    const top = sections[i].element.offsetTop;
+                    const height = sections[i].element.offsetHeight;
+                    if (scrollPos >= top && scrollPos < top + height) {
+                        currentActive = sections[i];
+                    }
+                }
+
+                if (!currentActive && sections.length > 0 && scrollPos < sections[0].element.offsetTop) {
+                    currentActive = sections[0];
+                }
+
+                navLinks.forEach(l => l.classList.remove('active-sidebar-link'));
+                if (currentActive) {
+                    currentActive.link.classList.add('active-sidebar-link');
+                }
             }
+
+            window.addEventListener('scroll', updateActiveNav, { passive: true });
+            updateActiveNav();
         });
     </script>
     <script>
