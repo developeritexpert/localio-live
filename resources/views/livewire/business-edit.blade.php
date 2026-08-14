@@ -112,7 +112,7 @@
                          x-data="{
                              open: false,
                              copyTemplate() {
-                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
+                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[features]\nFeature Name 1\nFeature Name 2\nFeature Name 3\n\n[features_intro_text]\n<p>Overview of key features and capabilities offered...</p>\n\n[features_end_text]\n<p>Summary of feature offerings and overall tool performance.</p>\n\n[ease_of_use_intro_text]\n<p>How intuitive and user-friendly the platform is...</p>\n\n[ease_of_use_end_text]\n<p>Final thoughts on the user interface and learning curve.</p>\n\n[value_for_money_intro_text]\n<p>Pricing breakdown, value evaluation, and plan flexibility...</p>\n\n[value_for_money_end_text]\n<p>Verdict on whether the pricing matches the provided feature set.</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
                                  navigator.clipboard.writeText(t).then(function() {
                                      alert('Format template copied to clipboard! Paste it in your AI chat and ask it to fill in the content, then paste the result back here.');
                                  }).catch(function() {
@@ -378,6 +378,11 @@
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('ratingTexts.features.intro_text', editor.getData());
                                                         });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.features_intro_text !== undefined) {
+                                                                editor.setData(e.detail.fields.features_intro_text);
+                                                            }
+                                                        });
                                                     })
                                                     .catch(error => {
                                                         console.error(error);
@@ -405,6 +410,11 @@
                                                         this.editor = editor;
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('ratingTexts.features.end_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.features_end_text !== undefined) {
+                                                                editor.setData(e.detail.fields.features_end_text);
+                                                            }
                                                         });
                                                     })
                                                     .catch(error => {
@@ -439,6 +449,11 @@
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('ratingTexts.ease_of_use.intro_text', editor.getData());
                                                         });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.ease_of_use_intro_text !== undefined) {
+                                                                editor.setData(e.detail.fields.ease_of_use_intro_text);
+                                                            }
+                                                        });
                                                     })
                                                     .catch(error => {
                                                         console.error(error);
@@ -466,6 +481,11 @@
                                                         this.editor = editor;
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('ratingTexts.ease_of_use.end_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.ease_of_use_end_text !== undefined) {
+                                                                editor.setData(e.detail.fields.ease_of_use_end_text);
+                                                            }
                                                         });
                                                     })
                                                     .catch(error => {
@@ -500,6 +520,11 @@
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('ratingTexts.value_for_money.intro_text', editor.getData());
                                                         });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.value_for_money_intro_text !== undefined) {
+                                                                editor.setData(e.detail.fields.value_for_money_intro_text);
+                                                            }
+                                                        });
                                                     })
                                                     .catch(error => {
                                                         console.error(error);
@@ -527,6 +552,11 @@
                                                         this.editor = editor;
                                                         editor.model.document.on('change:data', () => {
                                                             this.$wire.set('ratingTexts.value_for_money.end_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.value_for_money_end_text !== undefined) {
+                                                                editor.setData(e.detail.fields.value_for_money_end_text);
+                                                            }
                                                         });
                                                     })
                                                     .catch(error => {
