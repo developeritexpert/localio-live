@@ -151,13 +151,13 @@ button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.g
                                             @error('comment') <small class="text-danger d-block mt-1" style="font-size: 11px;">{{ $message }}</small> @enderror
                                         </div>
 
-                                         <hr class="my-3">
+                                         <!-- <hr class="my-3"> -->
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
                                              <button type="button" class="btn out_ln_btn btn-outline-secondary  w-50 w-sm-auto" wire:click="setStep(1)" style=" font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff ; ">
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn text-white  w-50 w-sm-auto" wire:click="submitStep2" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
-                                                 Submit review <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
+                                                 Continue  <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -224,7 +224,7 @@ button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.g
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn  text-white  w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px; ">
-                                                 Submit pros & cons <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
+                                                 Submit review<i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
                                      </div>
@@ -309,14 +309,15 @@ button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.g
         </div>
         
         <style>
-            .step-content.step2 .text-inpt>.form-control:not(:placeholder-shown){
+            /* .step-content.step2 .text-inpt>.form-control:not(:placeholder-shown){
                 padding:12px 20px !important;
             
-            }
+            } */
             .step-content.step2  .form-floating.text-inpt>.form-control{
-                height: unset !important;
+                /* height: unset !important;
                 min-height: unset !important;
-                padding:16px 20px !important;
+                padding:16px 20px !important; */
+                font-size:15px;
             }
 
 

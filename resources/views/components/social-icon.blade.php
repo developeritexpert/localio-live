@@ -27,7 +27,7 @@
 </style>
 
 <div class="inside_sec_text inside_sec_text_2" id="{{ $componentId }}">
-    <div class="sharing_icons d-none">
+    <div class="sharing_icons">
         <div class="sharing_ul social_wishlist_btn">
             @if(isset($business))
                 <div wire:key="wishlist-container-{{ $business->id }}">

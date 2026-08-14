@@ -2054,7 +2054,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
 }
 
 .hd_text {
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
 }
 
 .main_feture .feture_box .progress-bar {
@@ -3333,6 +3333,7 @@ input:-webkit-autofill:active {
     transition: 250ms;
     user-select: none;
     pointer-events: none;
+    line-height: 1.9;
 }
 
 .input-box .input-label svg {
@@ -6158,7 +6159,7 @@ header .dropdown_menu li a .ab_img {
     font-weight: 600;
     color: #fff;
     text-align: center;
-    padding: 16px 26px !important;
+    padding: 10px 26px !important;
     width: fit-content;
     border-radius: 8px;
     display: flex;
@@ -8923,7 +8924,7 @@ section.revie_img_sec {
         display: flex !important;
         flex-direction: column !important;
         align-items: flex-start !important;
-        gap: 4px !important;
+        gap: 0px !important;
         min-width: 0 !important;
     }
 
@@ -8961,7 +8962,7 @@ section.revie_img_sec {
         flex-wrap: wrap !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 6px !important;
+        gap: 3px !important;
         width: 100% !important;
         margin-top: 2px !important;
     }
@@ -8974,7 +8975,7 @@ section.revie_img_sec {
 
     .most-populr-sec .inn_sl_hed.mst_hdn .tp-btm .tab_star_li i {
         font-size: 12px !important;
-        color: #fbbf24 !important;
+        color: #ff5722 !important;
     }
 
     .most-populr-sec .inn_sl_hed.mst_hdn .rate_box {
@@ -10447,6 +10448,8 @@ section.most-populr-sec.ms_dv.light.p_120 {
     font-weight: 500 !important;
     font-size: 12px !important;
     gap: 3px !important;
+    display: flex;
+    align-items: center;
 }
 
 .rating-group .rate_box_num {
@@ -10459,7 +10462,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 }
 
 .blue-heart {
-    background: #a0aec03b;
+    background: #d3d3d3;
     border-radius: 50%;
     padding: 4px 0px 2px 0px;
     color: #fff;
@@ -10536,6 +10539,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 #modalCompanySize {
     padding-top: 0.625rem !important;
     padding-bottom: 0.625rem !important;
+    cursor: pointer;
 }
 
 #modalCompanySize:focus {
@@ -10554,7 +10558,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 .form-floating > textarea:not(:placeholder-shown) ~ label {
     transform: scale(0.85) translateY(-1.5rem) translateX(0.15rem);
     color: #80868b;
-    font-size: 11px !important;
+    font-size: 13px !important;
     font-weight: 400;
 }
 
@@ -10578,7 +10582,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
     white-space: nowrap;
     user-select: none;
     pointer-events: none;
-    padding: 13px 15px;
+    padding: 14px 15px;
 }
 
 .form-floating > .form-control,
@@ -10618,13 +10622,19 @@ i.r-star {
 /* ====style.css updated by-Kashish(12-aug-26)===== */
 .blue-btn:hover,
 a.cta.btn_blue:hover,
-.modal-dialog .modal-body .btn:hover {
+.modal-dialog .modal-body .btn:hover,
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover {
     background-color: #033b74 !important;
     color: #fff !important;
 }
-.blue-btn {
+.blue-btn,
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button {
     background-color: #174889 !important;
+    color: #fff !important;
     border: none !important;
+}
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover i {
+    color: unset;
 }
 
 .top-product-logo {
@@ -10677,7 +10687,7 @@ a.cta.btn_blue:hover,
 
 .form-floating textarea.form-control {
     height: auto !important;
-    min-height: 120px !important;
+    min-height: 140px !important;
     resize: vertical;
 }
 
@@ -10703,6 +10713,7 @@ a.cta.btn_blue:hover,
     position: relative;
     top: -1px;
     color: #000;
+    font-size: 13px;
 }
 .blue-heart:hover .wishlist a i {
     color: #fff;
@@ -10794,10 +10805,36 @@ a.cta.btn_blue:hover,
 }
 
 .top_header.dark::-webkit-scrollbar-thumb {
-    background: #1e3050;
+    background: #174889;
     border-radius: 10px;
 }
 
 .top_header.dark::-webkit-scrollbar-thumb:hover {
     background: #16243c;
+}
+
+/* ====style.css updated by-Kashish(14-aug-26)===== */
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button:hover .fas.fa-times {
+    color: #e53e3e !important;
+}
+
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button .fas.fa-check {
+    color: #fff !important;
+}
+.auto-choice-rgt .inside_sec_text .sharing_icons {
+    display: none;
+}
+
+.filter-by-title-row {
+    margin-top: 0px;
+}
+
+.accor-btn button.blue-btn.cta.cta_white {
+    padding: 12px 28px;
+}
+.sorting:hover {
+    background: #efefefde !important;
+}
+.rating-stars i {
+    font-size: 11px !important;
 }
