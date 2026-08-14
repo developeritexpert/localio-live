@@ -96,22 +96,35 @@
                                                 <label class="form-check-label fw-bold" for="cat_{{ $cat->id }}">{{ $catName }}</label>
                                             </div>
 
+                                         {{--
                                             @php
                                                 $subCats = ($cat->subCategories && count($cat->subCategories) > 0) ? $cat->subCategories : ($cat->children ?? []);
                                             @endphp
+
                                             @if($subCats && count($subCats) > 0)
                                                 <div class="ms-4 mb-2">
                                                     @foreach($subCats as $subcat)
                                                         @php
                                                             $subcatName = optional($subcat->categoryTranslations->first())->name ?? ('Subcategory #' . $subcat->id);
                                                         @endphp
+
                                                         <div class="form-check mb-1">
-                                                            <input type="checkbox" class="form-check-input subcategory-checkbox" name="categories[]" value="{{ $subcat->id }}" id="cat_{{ $subcat->id }}" data-parent-id="{{ $cat->id }}" {{ in_array($subcat->id, $assignedCategoryIds) ? 'checked' : '' }}>
-                                                            <label class="form-check-label" for="cat_{{ $subcat->id }}">{{ $subcatName }}</label>
+                                                            <input type="checkbox"
+                                                                class="form-check-input subcategory-checkbox"
+                                                                name="categories[]"
+                                                                value="{{ $subcat->id }}"
+                                                                id="cat_{{ $subcat->id }}"
+                                                                data-parent-id="{{ $cat->id }}"
+                                                                {{ in_array($subcat->id, $assignedCategoryIds) ? 'checked' : '' }}>
+
+                                                            <label class="form-check-label" for="cat_{{ $subcat->id }}">
+                                                                {{ $subcatName }}
+                                                            </label>
                                                         </div>
                                                     @endforeach
                                                 </div>
                                             @endif
+                                            --}}
                                         @endforeach
                                     @else
                                         <p class="text-muted">No categories available.</p>
