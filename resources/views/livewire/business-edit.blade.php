@@ -1293,28 +1293,57 @@
                                         </div>
                                     </div>
                                     <hr class="my-3">
-                                    <div class="form-group mt-3">
-                                        <label class="form-label fw-semibold" for="business-slug">
-                                            Permanent Link
-                                            <span class="text-muted fw-normal ms-1" style="font-size:0.8rem;">(URL slug)</span>
-                                        </label>
-                                        <div class="input-group @error('slug') has-error @enderror" style="border-radius:8px; overflow:hidden; border:1.5px solid #dee2e6; background:#fff;">
-                                            <span class="input-group-text" style="background:#f0f3f7; border:none; border-right:1.5px solid #dee2e6; color:#6c757d; font-size:0.85rem; padding:0 12px; white-space:nowrap; font-weight:500;">localio.com/</span>
-                                            <input
-                                                type="text"
-                                                id="business-slug"
-                                                wire:model.live="slug"
-                                                class="form-control"
-                                                style="border:none; background:#fff; font-size:0.9rem; box-shadow:none; padding:10px 14px;"
-                                                placeholder="your-business-name"
-                                                autocomplete="off"
-                                                spellcheck="false"
-                                            >
+                                    <div class="form-group mt-3" x-data="{ isEditing: false }">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label fw-semibold mb-0" for="business-slug">
+                                                Permanent Link
+                                            </label>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-icon btn-trigger" 
+                                                    @click="isEditing = !isEditing; if(isEditing) { $nextTick(() => $refs.slugInput.focus()); }"
+                                                    :title="isEditing ? 'Close edit' : 'Edit permanent link'">
+                                                <em class="icon ni" :class="isEditing ? 'ni-cross' : 'ni-edit-alt text-primary'"></em>
+                                            </button>
                                         </div>
+
+                                        {{-- Display Mode (Read-only styled box like image) --}}
+                                        <div x-show="!isEditing" 
+                                             @click="isEditing = true; $nextTick(() => $refs.slugInput.focus());" 
+                                             class="mb-4 border rounded-2 p-2 px-3 bg-light d-flex align-items-center justify-content-between"
+                                             style="cursor: pointer; min-height: 38px; border-color: #dee2e6 !important;">
+                                            <span class="font-monospace text-dark" style="font-size: 0.88rem;">
+                                                localio.com/<span class="text-primary fw-medium" x-text="$wire.slug || 'your-business-slug'"></span>
+                                            </span>
+                                            <em class=" ni ni-edit-alt text-muted fs-6"></em>
+                                        </div>
+
+                                        {{-- Edit Mode --}}
+                                        <div x-show="isEditing" x-cloak style="display: none;">
+                                            <div class="input-group @error('slug') has-error @enderror" style="border-radius:8px; overflow:hidden; border:1.5px solid #667eea; background:#fff;">
+                                                <span class="input-group-text" style="background:#f0f3f7; border:none; border-right:1.5px solid #dee2e6; color:#6c757d; font-size:0.85rem; padding:0 12px; white-space:nowrap; font-weight:500;">localio.com/</span>
+                                                <input
+                                                    type="text"
+                                                    id="business-slug"
+                                                    x-ref="slugInput"
+                                                    wire:model.live="slug"
+                                                    class="form-control"
+                                                    style="border:none; background:#fff; font-size:0.9rem; box-shadow:none; padding:8px 12px;"
+                                                    placeholder="your-business-name"
+                                                    autocomplete="off"
+                                                    spellcheck="false"
+                                                    @keydown.enter.prevent="isEditing = false"
+                                                    @keydown.escape="isEditing = false"
+                                                >
+                                                <button type="button" class="btn btn-primary btn-sm px-3" @click="isEditing = false" title="Done editing">
+                                                    <em class="icon ni ni-check"></em>
+                                                </button>
+                                            </div>
+                                        </div>
+
                                         @error('slug')
                                             <div class="text-danger mt-1" style="font-size:0.82rem;"><em class="icon ni ni-alert-circle me-1"></em>{{ $message }}</div>
                                         @enderror
-                                        <div class="text-muted mt-1" style="font-size:0.78rem;">Only letters, numbers, hyphens and underscores. This sets the public business URL.</div>
+                                        <div class="text-muted mt-1" style="font-size:0.75rem;">Auto-generates from Business Name. Click the pencil icon to customize manually.</div>
                                     </div>
                                     <hr class="my-3">
                                         <div class="form-group mt-3">

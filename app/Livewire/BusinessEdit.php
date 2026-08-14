@@ -201,6 +201,7 @@ class BusinessEdit extends Component
     public $content = '';
     public $editingPermanentUrl = false;
     public $slug = '';
+    public bool $isSlugCustomized = false;
     public $countryIsAffiliate = true;
     public $is_affiliate = 0;
     public $primary_keywords = '';
@@ -712,11 +713,11 @@ class BusinessEdit extends Component
     }
     public function updatedSlug($value)
     {
-        // Slug updated directly; no separate permanent_url needed
+        $this->isSlugCustomized = true;
     }
     public function updatedName($value)
     {
-        if (!$this->editMode) {
+        if (!$this->isSlugCustomized) {
             $this->slug = Str::slug($value);
         }
     }
@@ -1159,6 +1160,7 @@ class BusinessEdit extends Component
         $this->after_image_description = $translation->after_image_description ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
         $this->slug = $translation->slug ?? '';
+        $this->isSlugCustomized = !empty($this->slug) && !empty($this->name) && $this->slug !== Str::slug($this->name);
         $this->is_affiliate_partner = $business->is_affiliate ? 1 : 0;
         $this->primary_keywords = $translation->primary_keywords ?? '';
         $this->secondary_keywords = $translation->secondary_keywords ?? '';
