@@ -474,7 +474,7 @@
 
                 // Add select all / clear all buttons
                 $('<div class="select2-buttons mt-2">' +
-                    '<button type="button" class="btn btn-sm btn-outline-primary select-all-countries me-2">Select All</button>' +
+                    '<button type="button" class="d-none btn btn-sm btn-outline-primary select-all-countries me-2">Select All</button>' +
                     '<button type="button" class="btn btn-sm btn-outline-secondary clear-all-countries">Clear All</button>' +
                     '</div>').insertAfter('#product-countries');
 
