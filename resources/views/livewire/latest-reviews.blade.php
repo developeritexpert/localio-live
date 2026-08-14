@@ -1,9 +1,9 @@
-<section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; padding: 60px 0 !important;">
+<section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; ">
     <style>
         /* Responsive adjustments */
         @media (max-width: 575px) {
             .latest_review_part_footer {
-                padding: 40px 0 !important;
+                padding: 20px 0 !important;
             }
             .latest_review_part_footer .container {
                 padding-left: 20px !important;
