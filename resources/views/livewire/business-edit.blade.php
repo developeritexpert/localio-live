@@ -365,39 +365,183 @@
                             <!-- Features -->
                             <div class="border p-3 rounded mb-3 bg-light">
                                 <h6 class="fw-bold mb-2">1. Features Section</h6>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="form-label text-muted">Introduction Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.features.intro_text" rows="2" placeholder="Intro text for Features..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_features_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.features.intro_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_features_intro"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.features.intro_text"
+                                            rows="3"
+                                            placeholder="Intro text for Features..."></textarea>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-0">
                                     <label class="form-label text-muted">End Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.features.end_text" rows="2" placeholder="End text for Features..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_features_end)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.features.end_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_features_end"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.features.end_text"
+                                            rows="3"
+                                            placeholder="End text for Features..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Ease of Use -->
                             <div class="border p-3 rounded mb-3 bg-light">
                                 <h6 class="fw-bold mb-2">2. Ease of Use Section</h6>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="form-label text-muted">Introduction Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.intro_text" rows="2" placeholder="Intro text for Ease of use..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_ease_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.ease_of_use.intro_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_ease_intro"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.ease_of_use.intro_text"
+                                            rows="3"
+                                            placeholder="Intro text for Ease of use..."></textarea>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-0">
                                     <label class="form-label text-muted">End Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.end_text" rows="2" placeholder="End text for Ease of use..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_ease_end)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.ease_of_use.end_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_ease_end"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.ease_of_use.end_text"
+                                            rows="3"
+                                            placeholder="End text for Ease of use..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Value for Money -->
                             <div class="border p-3 rounded mb-3 bg-light">
                                 <h6 class="fw-bold mb-2">3. Value for Money Section</h6>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="form-label text-muted">Introduction Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.intro_text" rows="2" placeholder="Intro text for Value for money..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_value_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.value_for_money.intro_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_value_intro"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.value_for_money.intro_text"
+                                            rows="3"
+                                            placeholder="Intro text for Value for money..."></textarea>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-0">
                                     <label class="form-label text-muted">End Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.end_text" rows="2" placeholder="End text for Value for money..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_value_end)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.value_for_money.end_text', editor.getData());
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_value_end"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.value_for_money.end_text"
+                                            rows="3"
+                                            placeholder="End text for Value for money..."></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
