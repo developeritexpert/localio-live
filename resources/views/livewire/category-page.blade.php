@@ -36,8 +36,8 @@
         text-decoration:underline !important;
     }
         .top-rated-heading-sec {
-            margin-top: 125px;
-            padding-top: 25px !important;
+            margin-top: 115px;
+            padding-top: 30px !important;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e8eef6;
             /* margin-bottom: 25px; */
@@ -231,7 +231,7 @@
                 <!-- section top-rated automaotive -->
     <section class="top-rated-heading-sec">
        <div class="container">
-                                <div class="row align-items-center mb-3">
+                                <div class="row align-items-center mb-1">
                                     <div class="col-8">
                                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                                             <ol class="breadcrumb m-0" style="background: transparent;padding: 0;display: flex;align-items: center;">
