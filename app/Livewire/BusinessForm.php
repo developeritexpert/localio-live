@@ -116,6 +116,11 @@ class BusinessForm extends Component
     public $faqAnswer = '';
     public $editingFAQId = null;
 
+    // JSON FAQ Upload
+    public string $faqJsonData = '';
+    public string $faqJsonApplyStatus = '';
+    public string $faqJsonApplyMessage = '';
+
     public $faqEditId;
     public $editingFAQ;
 
@@ -1919,7 +1924,75 @@ public function closeFAQSection()
     $this->businessFAQs = [];
 }
 
-private function resetFAQForm()
+public function uploadFaqJson(): void
+    {
+        $raw = trim($this->faqJsonData);
+
+        if ($raw === '') {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'Please paste JSON content first.';
+            return;
+        }
+
+        if (!$this->selectedBusinessForFAQ) {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'No business selected for FAQ.';
+            return;
+        }
+
+        $items = json_decode($raw, true);
+
+        if (!is_array($items)) {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'Invalid JSON format. Expected an array of FAQ objects.';
+            return;
+        }
+
+        $addedCount = 0;
+
+        DB::transaction(function () use ($items, &$addedCount) {
+            $currentPosition = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
+                ->max('position') ?? 0;
+
+            foreach ($items as $item) {
+                if (!is_array($item)) continue;
+
+                $question = trim($item['question'] ?? $item['faqQuestion'] ?? $item['q'] ?? '');
+                $answer = trim($item['answer'] ?? $item['faqAnswer'] ?? $item['a'] ?? '');
+
+                if (empty($question) || empty($answer)) continue;
+
+                $currentPosition++;
+
+                $faq = BusinessFaq::create([
+                    'business_id' => $this->selectedBusinessForFAQ,
+                    'position' => $currentPosition,
+                    'status' => 1
+                ]);
+
+                BusinessFaqTranslation::create([
+                    'business_faq_id' => $faq->id,
+                    'lang_id' => $this->lang_id,
+                    'question' => $question,
+                    'answer' => $answer
+                ]);
+
+                $addedCount++;
+            }
+        });
+
+        if ($addedCount > 0) {
+            $this->loadBusinessFAQs();
+            $this->faqJsonApplyStatus = 'success';
+            $this->faqJsonApplyMessage = '✓ Successfully uploaded and created ' . $addedCount . ' FAQ entries.';
+            $this->faqJsonData = '';
+        } else {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'No valid FAQ entries found. Make sure each item has question and answer keys.';
+        }
+    }
+
+    private function resetFAQForm()
 {
     $this->faqQuestion = '';
     $this->faqAnswer = '';

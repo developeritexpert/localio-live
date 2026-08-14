@@ -1419,6 +1419,120 @@
                 </div>
             @endif
 
+            {{-- JSON FAQ Upload Panel --}}
+            <div class="card card-bordered mb-3 border-primary"
+                 x-data="{
+                     open: true,
+                     copyFaqTemplate() {
+                         const t = JSON.stringify([
+                           {
+                             question: 'What are your opening hours?',
+                             answer: 'We are open Monday through Saturday from 8 AM to 9 PM.'
+                           },
+                           {
+                             question: 'Do you offer online support?',
+                             answer: 'Yes, our support team is available 24/7 via live chat.'
+                           }
+                         ], null, 2);
+                         if (navigator.clipboard && navigator.clipboard.writeText) {
+                             navigator.clipboard.writeText(t).then(function() {
+                                 alert('FAQ JSON template copied to clipboard!');
+                             }).catch(function() {
+                                 prompt('Copy this FAQ JSON template:', t);
+                             });
+                         } else {
+                             prompt('Copy this FAQ JSON template:', t);
+                         }
+                     }
+                 }">
+                <div class="card-header d-flex align-items-center justify-content-between py-2 px-3"
+                     style="cursor:pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 4px 4px 0 0;"
+                     @click="open = !open">
+                    <div class="d-flex align-items-center gap-2">
+                        <span style="font-size:1.1rem;">&#129302;</span>
+                        <span class="fw-semibold text-white" style="font-size:0.95rem; letter-spacing:0.01em;">
+                            JSON FAQ Upload
+                        </span>
+                        <span class="badge bg-white text-primary ms-1" style="font-size:0.72rem;">
+                            Bulk add FAQs easily
+                        </span>
+                    </div>
+                    <em class="icon ni text-white" :class="open ? 'ni-chevron-up' : 'ni-chevron-down'"></em>
+                </div>
+
+                <div x-show="open" x-cloak
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100">
+                    <div class="card-inner">
+                        <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-start" style="font-size:0.82rem;">
+                            <em class="icon ni ni-info me-1 mt-1 flex-shrink-0"></em>
+                            <div>
+                                <strong>How to use:</strong>
+                                Paste a JSON array containing FAQ objects below (each object with <code>question</code> and <code>answer</code> fields). Then click <strong>Upload JSON FAQs</strong>.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyFaqTemplate()">
+                                <em class="icon ni ni-copy me-1"></em> Copy JSON Template
+                            </button>
+                            <span class="text-muted ms-2" style="font-size:0.78rem;">
+                                Copies an example JSON array format to clipboard
+                            </span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold mb-1">
+                                Paste FAQ JSON Array below:
+                            </label>
+                            <textarea
+                                wire:model="faqJsonData"
+                                class="form-control font-monospace"
+                                rows="8"
+                                placeholder='[{"question": "Question 1?", "answer": "Answer 1"}, {"question": "Question 2?", "answer": "Answer 2"}]'
+                                style="resize:vertical; font-size:0.82rem; line-height:1.5; border: 2px solid #dee2e6; border-radius:6px;"
+                            ></textarea>
+                        </div>
+
+                        @if($faqJsonApplyStatus === 'success')
+                            <div class="alert alert-success py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size:0.84rem;">
+                                <em class="icon ni ni-check-circle-fill text-success"></em>
+                                {{ $faqJsonApplyMessage }}
+                            </div>
+                        @elseif($faqJsonApplyStatus === 'error')
+                            <div class="alert alert-danger py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size:0.84rem;">
+                                <em class="icon ni ni-alert-circle text-danger"></em>
+                                {{ $faqJsonApplyMessage }}
+                            </div>
+                        @endif
+
+                        <div class="d-flex gap-2 align-items-center">
+                            <button
+                                type="button"
+                                wire:click="uploadFaqJson"
+                                wire:loading.attr="disabled"
+                                class="btn btn-primary"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                <span wire:loading.remove wire:target="uploadFaqJson">
+                                    <em class="icon ni ni-upload-cloud me-1"></em> Upload JSON FAQs
+                                </span>
+                                <span wire:loading wire:target="uploadFaqJson">
+                                    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                                    Uploading...
+                                </span>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                    wire:click="$set('faqJsonData', '')"
+                                    wire:click.prevent
+                                    title="Clear the textarea">
+                                <em class="icon ni ni-trash"></em> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Add/Edit FAQ Form --}}
             <div class="card card-bordered mb-4">
                 <div class="card-header bg-light">
@@ -1486,7 +1600,7 @@
                 </div>
 
                 @if(count($businessFAQs) > 0)
-                    <div class="card-inner" style="max-height: 600px;">
+                    <div class="card-inner" style="max-height: 100%;">
                         <table class="table nk-tb-list nk-tb-ulist">
                             <thead>
                                 <tr class="nk-tb-item nk-tb-head">
