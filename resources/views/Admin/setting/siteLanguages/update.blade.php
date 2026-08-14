@@ -42,15 +42,16 @@
                                 <label class="form-label" for="base_language_id">Base Language (Optional)</label>
                                 <div class="form-control-wrap">
                                     <select class="form-control js-select2" name="base_language_id" id="base_language_id">
-                                        <option value="">-- Select Base Language --</option>
-                                        @foreach ($languagesforBase as $language)
-                                            <option value="{{ $language->id }}"
-                                                {{ old('base_language_id', $siteLanguage->base_language_id ?? '') == $language->id ? 'selected' : '' }}>
-                                                {{ $language->name }}
+                                        <option value="">-- No base language --</option>
+                                        @foreach ($baseLanguages as $bLang)
+                                            <option value="{{ $bLang->id }}"
+                                                {{ old('base_language_id', $siteLanguage->base_language_id ?? '') == $bLang->id ? 'selected' : '' }}>
+                                                {{ $bLang->name }} ({{ $bLang->code }}) @if($bLang->is_master) — Master @endif
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="form-text text-muted">Select the base language reference, or "No base language".</div>
                                 @error('base_language_id')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror

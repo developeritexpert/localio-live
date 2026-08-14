@@ -392,6 +392,45 @@
                                         </div>
                                         {{--  End Link Business Dropdown --}}
 
+                                        <!-- Related Subcategories -->
+                                        <div class="form-group mt-3" id="product-subcategories-section" style="{{ empty($selectedBusinessIds) ? 'display:none;' : '' }}">
+                                            <label class="form-label font-weight-bold">Related Subcategories</label>
+                                            <div class="d-flex mb-2">
+                                                <div class="form-check me-3">
+                                                    <input class="form-check-input subcategory-availability-radio" type="radio" id="active_all_subcategories_1"
+                                                        name="active_all_subcategories" value="1"
+                                                        {{ old('active_all_subcategories', '1') == '1' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="active_all_subcategories_1">All</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input subcategory-availability-radio" type="radio" id="active_all_subcategories_0"
+                                                        name="active_all_subcategories" value="0"
+                                                        {{ old('active_all_subcategories') == '0' ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="active_all_subcategories_0">Specific Subcategories</label>
+                                                </div>
+                                            </div>
+
+                                            <div id="product-subcategories-wrapper" style="{{ old('active_all_subcategories', '1') == '1' ? 'display:none;' : '' }}">
+                                                <x-google-input
+                                                    type="select"
+                                                    name="product_subcategories"
+                                                    id="product-subcategories"
+                                                    label="Related Subcategories"
+                                                    :options="[]"
+                                                    :selectedValues="old('product_subcategories', [])"
+                                                    :alwaysActive="true"
+                                                    multiple
+                                                    class="select2-multiple"
+                                                />
+                                                <div class="select2-buttons mt-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary clear-all-subcategories">Clear All</button>
+                                                </div>
+                                                @error('product_subcategories')
+                                                    <div class="text-danger small">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
                                          <!-- Active Countries/Regions -->
                                          <div class="form-group mt-3">
                                              <label class="form-label font-weight-bold">Active Countries/Regions</label>
@@ -460,6 +499,25 @@
                 }
             });
 
+            $('input[name="active_all_subcategories"]').on('change', function() {
+                if ($(this).val() == '1') {
+                    $('#product-subcategories-wrapper').slideUp();
+                } else {
+                    $('#product-subcategories-wrapper').slideDown();
+                }
+            });
+
+            $('#product-subcategories').select2({
+                placeholder: "Select Subcategories",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('.clear-all-subcategories').on('click', function() {
+                $('#product-subcategories option').prop('selected', false);
+                $('#product-subcategories').trigger('change');
+            });
+
             // Check if select2 is available
             if ($.fn.select2) {
                 console.log('Select2 is loaded ✅');
@@ -474,7 +532,7 @@
 
                 // Add select all / clear all buttons
                 $('<div class="select2-buttons mt-2">' +
-                    '<button type="button" class="btn btn-sm btn-outline-primary select-all-countries me-2">Select All</button>' +
+                    '<button type="button" class="d-none btn btn-sm btn-outline-primary select-all-countries me-2">Select All</button>' +
                     '<button type="button" class="btn btn-sm btn-outline-secondary clear-all-countries">Clear All</button>' +
                     '</div>').insertAfter('#product-countries');
 
@@ -551,23 +609,31 @@
                 const singleBusinessId = Array.isArray(businessId) ? businessId[0] : businessId;
 
                 if (singleBusinessId) {
-                    // Find the associated category for this business
+                    // Find the associated category and subcategories for this business
                     $.ajax({
-                        url: "/get-business-category", // You'll need to create this endpoint
+                        url: "/get-business-category",
                         type: "GET",
                         data: {
                             business_id: singleBusinessId
                         },
                         success: function(response) {
-                            if (response.success && response.category_id) {
-                                // Set the hidden category input
-                                $productCategory.val(response.category_id);
+                            if (response.success) {
+                                if (response.category_id) {
+                                    $productCategory.val(response.category_id);
+                                    $categoryDisplay.val(response.category_name);
+                                    loadFilters(response.category_id);
+                                }
 
-                                // Set display field with category name
-                                $categoryDisplay.val(response.category_name);
-
-                                // Load filters for this category
-                                loadFilters(response.category_id);
+                                // Populate subcategories
+                                $('#product-subcategories-section').slideDown();
+                                const $subSelect = $('#product-subcategories');
+                                $subSelect.empty();
+                                if (response.subcategories && response.subcategories.length > 0) {
+                                    response.subcategories.forEach(sub => {
+                                        $subSelect.append(new Option(sub.name, sub.id, false, false));
+                                    });
+                                }
+                                $subSelect.trigger('change');
                             }
                         }
                     });
@@ -575,6 +641,8 @@
                     // Clear category if no business selected
                     $productCategory.val('');
                     $categoryDisplay.val('');
+                    $('#product-subcategories-section').slideUp();
+                    $('#product-subcategories').empty().trigger('change');
                     $filterFields.html(
                         '<div class="alert alert-info"><em class="icon ni ni-info"></em> Select a business to load available filters</div>'
                     );

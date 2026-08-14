@@ -110,7 +110,7 @@
                                         </li>
                                         <li class="nk-menu-item">
                                             <a href="{{ route('admin.category-pro-cons') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Category Pros & Cons</span>
+                                                <span class="nk-menu-text">Pros & cons categories</span>
                                             </a>
                                         </li>
                                         <!-- <li class="nk-menu-item">
@@ -133,7 +133,7 @@
                                     <ul class="nk-menu-sub">
                                         <li class="nk-menu-item">
                                             <a href="{{ route('products') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">All starting price</span>
+                                                <span class="nk-menu-text">All starting prices</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item">
@@ -545,6 +545,12 @@
                                         <li class="nk-menu-item">
                                             <a href="{{ route('country.index') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Countries List</span>
+                                            </a>
+                                        </li>
+
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('base-languages.index') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Base languages</span>
                                             </a>
                                         </li>
                                     </ul>

@@ -112,7 +112,7 @@
                          x-data="{
                              open: false,
                              copyTemplate() {
-                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
+                                 const t = '[name]\nBusiness Name Here\n\n[short_description]\nA short summary.\n\n[description_title]\nWhat is Business Name?\n\n[business_description]\n<p>Full HTML description...</p>\n\n[features]\nFeature Name 1\nFeature Name 2\nFeature Name 3\n\n[features_intro_text]\n<p>Overview of key features and capabilities offered...</p>\n\n[features_end_text]\n<p>Summary of feature offerings and overall tool performance.</p>\n\n[ease_of_use_intro_text]\n<p>How intuitive and user-friendly the platform is...</p>\n\n[ease_of_use_end_text]\n<p>Final thoughts on the user interface and learning curve.</p>\n\n[value_for_money_intro_text]\n<p>Pricing breakdown, value evaluation, and plan flexibility...</p>\n\n[value_for_money_end_text]\n<p>Verdict on whether the pricing matches the provided feature set.</p>\n\n[usps]\nFree domain & SSL certificate\n24/7 customer support\n99.9% uptime guarantee\nOne-click WordPress install\nFree CDN included\n\n[pro_cons_headline]\nBusiness Name Pros and Cons\n\n[pro_cons_intro]\n<p>Here is a quick summary of the pros and cons...</p>\n\n[pro_cons_summary]\n<p>Overall, a solid choice for beginners.</p>\n\n[offerings_headline]\nWhat Does Business Name Offer?\n\n[offerings_top_text]\n<p>Business Name offers a range of services...</p>\n\n[after_image_description]\n<p>In addition to the main product, they also offer...</p>\n\n[alternatives_title]\nBest Business Name Alternatives\n\n[alternatives_description]\n<p>Looking for alternatives?...</p>\n\n[alternatives_title_2]\nMore Alternatives\n\n[alternatives_description_2]\n<p>Additional alternatives content...</p>\n\n[reviews_title]\nBusiness Name Reviews & Ratings\n\n[reviews_description]\n<p>Customers rate Business Name highly for...</p>\n\n[reviews_title_2]\nMore User Reviews\n\n[reviews_description_2]\n<p>Additional review content...</p>\n\n[faqs_title]\nBusiness Name Frequently Asked Questions\n\n[faqs_description]\n<p>Here are the most common questions...</p>\n\n[faqs_title_2]\nMore FAQs\n\n[faqs_description_2]\n<p>Additional FAQ content...</p>\n\n[comparison_title]\nBusiness Name vs Competitors\n\n[comparison_description]\n<p>When comparing Business Name to others...</p>\n\n[comparison_title_2]\nDetailed Comparison\n\n[comparison_description_2]\n<p>A deep dive into how Business Name stacks up...</p>\n\n[meta_title]\nBusiness Name Review 2025 – Pricing, Features & More\n\n[meta_description]\nRead our in-depth Business Name review. Compare plans, pricing, and features.\n\n[alternatives_meta_title]\nBest Business Name Alternatives 2025\n\n[alternatives_meta_description]\nDiscover the best alternatives to Business Name. Compare features, pricing, and more.\n\n[reviews_meta_title]\nBusiness Name Reviews 2025 – Is It Worth It?\n\n[reviews_meta_description]\nRead real user reviews of Business Name. See ratings, pros, cons, and expert analysis.\n\n[faqs_meta_title]\nBusiness Name FAQ – Your Questions Answered\n\n[faqs_meta_description]\nFind answers to the most common questions about Business Name, pricing, features, and support.\n\n[comparison_meta_title]\nBusiness Name vs Competitors – Detailed Comparison\n\n[comparison_meta_description]\nCompare Business Name side-by-side with top competitors. Features, pricing, and verdict.';
                                  navigator.clipboard.writeText(t).then(function() {
                                      alert('Format template copied to clipboard! Paste it in your AI chat and ask it to fill in the content, then paste the result back here.');
                                  }).catch(function() {
@@ -365,39 +365,213 @@
                             <!-- Features -->
                             <div class="border p-3 rounded mb-3 bg-light">
                                 <h6 class="fw-bold mb-2">1. Features Section</h6>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="form-label text-muted">Introduction Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.features.intro_text" rows="2" placeholder="Intro text for Features..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_features_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.features.intro_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.features_intro_text !== undefined) {
+                                                                editor.setData(e.detail.fields.features_intro_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_features_intro"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.features.intro_text"
+                                            rows="3"
+                                            placeholder="Intro text for Features..."></textarea>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-0">
                                     <label class="form-label text-muted">End Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.features.end_text" rows="2" placeholder="End text for Features..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_features_end)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.features.end_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.features_end_text !== undefined) {
+                                                                editor.setData(e.detail.fields.features_end_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_features_end"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.features.end_text"
+                                            rows="3"
+                                            placeholder="End text for Features..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Ease of Use -->
                             <div class="border p-3 rounded mb-3 bg-light">
                                 <h6 class="fw-bold mb-2">2. Ease of Use Section</h6>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="form-label text-muted">Introduction Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.intro_text" rows="2" placeholder="Intro text for Ease of use..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_ease_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.ease_of_use.intro_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.ease_of_use_intro_text !== undefined) {
+                                                                editor.setData(e.detail.fields.ease_of_use_intro_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_ease_intro"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.ease_of_use.intro_text"
+                                            rows="3"
+                                            placeholder="Intro text for Ease of use..."></textarea>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-0">
                                     <label class="form-label text-muted">End Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.ease_of_use.end_text" rows="2" placeholder="End text for Ease of use..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_ease_end)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.ease_of_use.end_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.ease_of_use_end_text !== undefined) {
+                                                                editor.setData(e.detail.fields.ease_of_use_end_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_ease_end"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.ease_of_use.end_text"
+                                            rows="3"
+                                            placeholder="End text for Ease of use..."></textarea>
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- Value for Money -->
                             <div class="border p-3 rounded mb-3 bg-light">
                                 <h6 class="fw-bold mb-2">3. Value for Money Section</h6>
-                                <div class="form-group mb-2">
+                                <div class="form-group mb-3">
                                     <label class="form-label text-muted">Introduction Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.intro_text" rows="2" placeholder="Intro text for Value for money..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_value_intro)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.value_for_money.intro_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.value_for_money_intro_text !== undefined) {
+                                                                editor.setData(e.detail.fields.value_for_money_intro_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_value_intro"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.value_for_money.intro_text"
+                                            rows="3"
+                                            placeholder="Intro text for Value for money..."></textarea>
+                                    </div>
                                 </div>
                                 <div class="form-group mb-0">
                                     <label class="form-label text-muted">End Text</label>
-                                    <textarea class="form-control" wire:model.live="ratingTexts.value_for_money.end_text" rows="2" placeholder="End text for Value for money..."></textarea>
+                                    <div wire:ignore x-data="{
+                                        editor: null,
+                                        init() {
+                                            this.$nextTick(() => {
+                                                ClassicEditor
+                                                    .create(this.$refs.editor_value_end)
+                                                    .then(editor => {
+                                                        this.editor = editor;
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.set('ratingTexts.value_for_money.end_text', editor.getData());
+                                                        });
+                                                        window.addEventListener('ai-content-applied', function(e) {
+                                                            if (e.detail && e.detail.fields && e.detail.fields.value_for_money_end_text !== undefined) {
+                                                                editor.setData(e.detail.fields.value_for_money_end_text);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            });
+                                        }
+                                    }">
+                                        <textarea
+                                            x-ref="editor_value_end"
+                                            class="form-control"
+                                            wire:model.live="ratingTexts.value_for_money.end_text"
+                                            rows="3"
+                                            placeholder="End text for Value for money..."></textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1149,28 +1323,57 @@
                                         </div>
                                     </div>
                                     <hr class="my-3">
-                                    <div class="form-group mt-3">
-                                        <label class="form-label fw-semibold" for="business-slug">
-                                            Permanent Link
-                                            <span class="text-muted fw-normal ms-1" style="font-size:0.8rem;">(URL slug)</span>
-                                        </label>
-                                        <div class="input-group @error('slug') has-error @enderror" style="border-radius:8px; overflow:hidden; border:1.5px solid #dee2e6; background:#fff;">
-                                            <span class="input-group-text" style="background:#f0f3f7; border:none; border-right:1.5px solid #dee2e6; color:#6c757d; font-size:0.85rem; padding:0 12px; white-space:nowrap; font-weight:500;">localio.com/</span>
-                                            <input
-                                                type="text"
-                                                id="business-slug"
-                                                wire:model.live="slug"
-                                                class="form-control"
-                                                style="border:none; background:#fff; font-size:0.9rem; box-shadow:none; padding:10px 14px;"
-                                                placeholder="your-business-name"
-                                                autocomplete="off"
-                                                spellcheck="false"
-                                            >
+                                    <div class="form-group mt-3" x-data="{ isEditing: false }">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label fw-semibold mb-0" for="business-slug">
+                                                Permanent Link
+                                            </label>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-icon btn-trigger" 
+                                                    @click="isEditing = !isEditing; if(isEditing) { $nextTick(() => $refs.slugInput.focus()); }"
+                                                    :title="isEditing ? 'Close edit' : 'Edit permanent link'">
+                                                <em class="icon ni" :class="isEditing ? 'ni-cross' : 'ni-edit-alt text-primary'"></em>
+                                            </button>
                                         </div>
+
+                                        {{-- Display Mode (Read-only styled box like image) --}}
+                                        <div x-show="!isEditing" 
+                                             @click="isEditing = true; $nextTick(() => $refs.slugInput.focus());" 
+                                             class="mb-4 border rounded-2 p-2 px-3 bg-light d-flex align-items-center justify-content-between"
+                                             style="cursor: pointer; min-height: 38px; border-color: #dee2e6 !important;">
+                                            <span class="font-monospace text-dark" style="font-size: 0.88rem;">
+                                                localio.com/<span class="text-primary fw-medium" x-text="$wire.slug || 'your-business-slug'"></span>
+                                            </span>
+                                            <em class=" ni ni-edit-alt text-muted fs-6"></em>
+                                        </div>
+
+                                        {{-- Edit Mode --}}
+                                        <div x-show="isEditing" x-cloak style="display: none;">
+                                            <div class="input-group @error('slug') has-error @enderror" style="border-radius:8px; overflow:hidden; border:1.5px solid #667eea; background:#fff;">
+                                                <span class="input-group-text" style="background:#f0f3f7; border:none; border-right:1.5px solid #dee2e6; color:#6c757d; font-size:0.85rem; padding:0 12px; white-space:nowrap; font-weight:500;">localio.com/</span>
+                                                <input
+                                                    type="text"
+                                                    id="business-slug"
+                                                    x-ref="slugInput"
+                                                    wire:model.live="slug"
+                                                    class="form-control"
+                                                    style="border:none; background:#fff; font-size:0.9rem; box-shadow:none; padding:8px 12px;"
+                                                    placeholder="your-business-name"
+                                                    autocomplete="off"
+                                                    spellcheck="false"
+                                                    @keydown.enter.prevent="isEditing = false"
+                                                    @keydown.escape="isEditing = false"
+                                                >
+                                                <button type="button" class="btn btn-primary btn-sm px-3" @click="isEditing = false" title="Done editing">
+                                                    <em class="icon ni ni-check"></em>
+                                                </button>
+                                            </div>
+                                        </div>
+
                                         @error('slug')
                                             <div class="text-danger mt-1" style="font-size:0.82rem;"><em class="icon ni ni-alert-circle me-1"></em>{{ $message }}</div>
                                         @enderror
-                                        <div class="text-muted mt-1" style="font-size:0.78rem;">Only letters, numbers, hyphens and underscores. This sets the public business URL.</div>
+                                        <div class="text-muted mt-1" style="font-size:0.75rem;">Auto-generates from Business Name. Click the pencil icon to customize manually.</div>
                                     </div>
                                     <hr class="my-3">
                                         <div class="form-group mt-3">

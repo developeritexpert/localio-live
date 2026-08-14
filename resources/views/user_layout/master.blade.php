@@ -2574,7 +2574,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     
 
                     <div class="text-center mb-4">
-                        <h3 class="fw-bold mb-2" style="color: #002655; font-size: 22px;">Create your profile</h3>
+                        <div class="hd_text">
+                        <h2 class="text-center">Create your profile</h2>
+                    </div>
                         <p class="text-muted m-0" style="font-size: 13.5px;">Please provide a few more details to set up your account.</p>
                     </div>
 

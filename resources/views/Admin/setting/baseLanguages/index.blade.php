@@ -1,11 +1,14 @@
 @extends('admin_layout.master')
 @section('content')
 
-<div class="nk-block nk-block-lg country-language">
+<div class="nk-block nk-block-lg">
     <div class="nk-block-head nk-block-head-sm">
         <div class="nk-block-between">
             <div class="nk-block-head-content">
-                <h3 class="nk-block-title page-title">Site Languages</h3>
+                <h3 class="nk-block-title page-title">Base Languages</h3>
+                <div class="nk-block-des text-soft">
+                    <p>Manage standardized base languages with Google Cloud Translate codes and language combination tags.</p>
+                </div>
             </div>
             <div class="nk-block-head-content">
                 <div class="toggle-wrap nk-block-tools-toggle">
@@ -14,12 +17,9 @@
                     <div class="toggle-expand-content" data-content="pageMenu">
                         <ul class="nk-block-tools g-3">
                             <li class="nk-block-tools-opt">
-                                @if(getCurrentLanguageID() === 1)
-                                    <a href="{{ route('site-languages-add')}}"
-                                    class=" btn btn-primary d-none d-md-inline-flex btn-localio"><em
-                                        class=""></em><span> Add Country/Region
-                                    </span></a>
-                                @endif
+                                <a href="{{ route('base-languages.add') }}"
+                                   class="btn btn-primary d-none d-md-inline-flex btn-localio"><em
+                                        class="icon ni ni-plus"></em><span>Add Base Language</span></a>
                             </li>
                         </ul>
                     </div>
@@ -28,16 +28,22 @@
         </div>
     </div>
 
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card card-bordered card-preview">
         <div class="card-inner">
             <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
                 <thead>
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Name</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Lang Code</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Country</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Base Language</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Combination tag</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Google Translate Code</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Language Tag</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Master</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                         <th class="nk-tb-col tb-tnx-action">
                             <span>Action</span>
@@ -45,42 +51,35 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($siteLanguages as $siteLanguage)
+                    @foreach ($baseLanguages as $lang)
                         <tr class="nk-tb-item">
                             <td class="nk-tb-col">
                                 <div class="user-card">
                                     <div class="user-info">
-                                        <span class="tb-lead">{{ $siteLanguage->name ?? '' }}</span>
+                                        <span class="tb-lead">{{ $lang->name }}</span>
                                     </div>
                                 </div>
                             </td>
                             <td class="nk-tb-col tb-col-mb">
-                                <span class="tb-amount">{{ $siteLanguage->lang_code ?? '' }}</span>
+                                <span class="badge bg-outline-info">{{ $lang->code }}</span>
                             </td>
                             <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">{{ $siteLanguage->country->name ?? '' }}</span>
+                                <span class="badge bg-outline-secondary">{{ $lang->language_tag }}</span>
                             </td>
-
                             <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">
-                                    {{ $siteLanguage->baseLanguage ? $siteLanguage->baseLanguage->name : '-' }}
-                                </span>
+                                @if($lang->is_master)
+                                    <span class="badge bg-primary">Master Language</span>
+                                @else
+                                    <span class="text-soft">-</span>
+                                @endif
                             </td>
-
                             <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">
-                                    {{ ($siteLanguage->baseLanguage && $siteLanguage->baseLanguage->language_tag) ? $siteLanguage->baseLanguage->language_tag : '-' }}
-                                </span>
-                            </td>
-
-                            <td class="nk-tb-col tb-col-md">
-                                @if($siteLanguage->status)
+                                @if($lang->status)
                                     <span class="badge bg-success">Active</span>
                                 @else
                                     <span class="badge bg-danger">Inactive</span>
                                 @endif
                             </td>
-
                             <td class="nk-tb-col nk-tb-col-tools">
                                 <ul class="nk-tb-actions gx-1">
                                     <li>
@@ -90,18 +89,17 @@
                                             <div class="dropdown-menu dropdown-menu-end edit-btn" style="height: 94px !important;">
                                                 <ul class="link-list-opt no-bdr">
                                                     <li>
-                                                        <a href="{{ route('site-language-update', $siteLanguage->id) }}">
+                                                        <a href="{{ route('base-languages.update', $lang->id) }}">
                                                             <em class="icon ni ni-edit-fill"></em>
                                                             <span>Edit</span>
                                                         </a>
                                                     </li>
-                                                    <li data-url="{{ route('site-language-toggle-status', $siteLanguage->id) }}">
-                                                        <a href="{{ route('site-language-toggle-status', $siteLanguage->id) }}">
-                                                            <em class="icon ni ni-{{ $siteLanguage->status ? 'cross' : 'check' }}-circle-fill"></em>
-                                                            <span>{{ $siteLanguage->status ? 'Disable' : 'Enable' }}</span>
+                                                    <li>
+                                                        <a href="{{ route('base-languages.toggle-status', $lang->id) }}">
+                                                            <em class="icon ni ni-{{ $lang->status ? 'cross' : 'check' }}-circle-fill"></em>
+                                                            <span>{{ $lang->status ? 'Disable' : 'Enable' }}</span>
                                                         </a>
                                                     </li>
-
                                                 </ul>
                                             </div>
                                         </div>

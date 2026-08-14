@@ -137,6 +137,11 @@ class BusinessEdit extends Component
     public $faqAnswer = '';
     public $editingFAQId = null;
 
+    // JSON FAQ Upload
+    public string $faqJsonData = '';
+    public string $faqJsonApplyStatus = '';
+    public string $faqJsonApplyMessage = '';
+
     public $faqEditId;
     public $editingFAQ;
 
@@ -196,6 +201,7 @@ class BusinessEdit extends Component
     public $content = '';
     public $editingPermanentUrl = false;
     public $slug = '';
+    public bool $isSlugCustomized = false;
     public $countryIsAffiliate = true;
     public $is_affiliate = 0;
     public $primary_keywords = '';
@@ -707,11 +713,11 @@ class BusinessEdit extends Component
     }
     public function updatedSlug($value)
     {
-        // Slug updated directly; no separate permanent_url needed
+        $this->isSlugCustomized = true;
     }
     public function updatedName($value)
     {
-        if (!$this->editMode) {
+        if (!$this->isSlugCustomized) {
             $this->slug = Str::slug($value);
         }
     }
@@ -1154,6 +1160,7 @@ class BusinessEdit extends Component
         $this->after_image_description = $translation->after_image_description ?? '';
         $this->permanent_url = $business->permanent_url ?? '';
         $this->slug = $translation->slug ?? '';
+        $this->isSlugCustomized = !empty($this->slug) && !empty($this->name) && $this->slug !== Str::slug($this->name);
         $this->is_affiliate_partner = $business->is_affiliate ? 1 : 0;
         $this->primary_keywords = $translation->primary_keywords ?? '';
         $this->secondary_keywords = $translation->secondary_keywords ?? '';
@@ -2067,8 +2074,81 @@ class BusinessEdit extends Component
             $populated++;
         }
 
+        // --- Rating Texts (Features, Ease of use, Value for money) ---
+        $ratingKeys = [
+            'features_intro_text'        => ['features', 'intro_text'],
+            'features_end_text'          => ['features', 'end_text'],
+            'ease_of_use_intro_text'     => ['ease_of_use', 'intro_text'],
+            'ease_of_use_end_text'       => ['ease_of_use', 'end_text'],
+            'value_for_money_intro_text' => ['value_for_money', 'intro_text'],
+            'value_for_money_end_text'   => ['value_for_money', 'end_text'],
+        ];
+        foreach ($ratingKeys as $sectionKey => [$critKey, $fieldKey]) {
+            if (array_key_exists($sectionKey, $sections) && $sections[$sectionKey] !== '') {
+                $this->ratingTexts[$critKey][$fieldKey] = $sections[$sectionKey];
+                $populated++;
+            }
+        }
+
+        // --- Features (line by line or JSON array) ---
+        if (array_key_exists('features', $sections) && $sections['features'] !== '') {
+            $featureRaw = trim($sections['features']);
+            $featureNames = [];
+            if (str_starts_with($featureRaw, '[') && str_ends_with($featureRaw, ']')) {
+                $decoded = json_decode($featureRaw, true);
+                if (is_array($decoded)) {
+                    foreach ($decoded as $item) {
+                        if (is_array($item)) {
+                            $name = trim($item['name'] ?? $item['feature_name'] ?? '');
+                            if ($name) $featureNames[] = $name;
+                        } elseif (is_string($item)) {
+                            $featureNames[] = trim($item);
+                        }
+                    }
+                }
+            } else {
+                $lines = array_values(array_filter(
+                    array_map('trim', explode(PHP_EOL, $featureRaw)),
+                    fn($l) => $l !== ''
+                ));
+                foreach ($lines as $l) {
+                    $cleaned = preg_replace('/^[-*•\d.]+\s*/', '', $l);
+                    if (!empty($cleaned)) $featureNames[] = $cleaned;
+                }
+            }
+
+            if (!empty($featureNames)) {
+                $lang_id = $this->lang_id ?? getCurrentLanguageID();
+                $matchedFeatureIds = \DB::table('feature_translations')
+                    ->where('lang_id', $lang_id)
+                    ->whereIn('name', $featureNames)
+                    ->pluck('feature_id')
+                    ->toArray();
+
+                if (empty($matchedFeatureIds)) {
+                    $matchedFeatureIds = \DB::table('feature_translations')
+                        ->where('lang_id', 1)
+                        ->whereIn('name', $featureNames)
+                        ->pluck('feature_id')
+                        ->toArray();
+                }
+
+                if (!empty($matchedFeatureIds)) {
+                    $this->selectedFeatures = array_values(array_unique(array_merge($this->selectedFeatures, $matchedFeatureIds)));
+                    $this->dispatch('featuresLoaded', options: $this->selectedFeatures);
+                    $populated++;
+                }
+            }
+        }
+
         // --- Dispatch browser event so Alpine.js can update CKEditor (wire:ignore) fields ---
         $this->dispatch('ai-content-applied', fields: [
+            'features_intro_text'        => $this->ratingTexts['features']['intro_text'] ?? '',
+            'features_end_text'          => $this->ratingTexts['features']['end_text'] ?? '',
+            'ease_of_use_intro_text'     => $this->ratingTexts['ease_of_use']['intro_text'] ?? '',
+            'ease_of_use_end_text'       => $this->ratingTexts['ease_of_use']['end_text'] ?? '',
+            'value_for_money_intro_text' => $this->ratingTexts['value_for_money']['intro_text'] ?? '',
+            'value_for_money_end_text'   => $this->ratingTexts['value_for_money']['end_text'] ?? '',
             'business_description'       => $this->business_description,
             'pro_cons_intro'             => $this->pro_cons_intro,
             'pro_cons_summary'           => $this->pro_cons_summary,
@@ -2366,6 +2446,74 @@ class BusinessEdit extends Component
         $this->resetFAQForm();
         $this->selectedBusinessForFAQ = null;
         $this->businessFAQs = [];
+    }
+
+    public function uploadFaqJson(): void
+    {
+        $raw = trim($this->faqJsonData);
+
+        if ($raw === '') {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'Please paste JSON content first.';
+            return;
+        }
+
+        if (!$this->selectedBusinessForFAQ) {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'No business selected for FAQ.';
+            return;
+        }
+
+        $items = json_decode($raw, true);
+
+        if (!is_array($items)) {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'Invalid JSON format. Expected an array of FAQ objects.';
+            return;
+        }
+
+        $addedCount = 0;
+
+        DB::transaction(function () use ($items, &$addedCount) {
+            $currentPosition = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
+                ->max('position') ?? 0;
+
+            foreach ($items as $item) {
+                if (!is_array($item)) continue;
+
+                $question = trim($item['question'] ?? $item['faqQuestion'] ?? $item['q'] ?? '');
+                $answer = trim($item['answer'] ?? $item['faqAnswer'] ?? $item['a'] ?? '');
+
+                if (empty($question) || empty($answer)) continue;
+
+                $currentPosition++;
+
+                $faq = BusinessFaq::create([
+                    'business_id' => $this->selectedBusinessForFAQ,
+                    'position' => $currentPosition,
+                    'status' => 1
+                ]);
+
+                BusinessFaqTranslation::create([
+                    'business_faq_id' => $faq->id,
+                    'lang_id' => $this->lang_id,
+                    'question' => $question,
+                    'answer' => $answer
+                ]);
+
+                $addedCount++;
+            }
+        });
+
+        if ($addedCount > 0) {
+            $this->loadBusinessFAQs();
+            $this->faqJsonApplyStatus = 'success';
+            $this->faqJsonApplyMessage = '✓ Successfully uploaded and created ' . $addedCount . ' FAQ entries.';
+            $this->faqJsonData = '';
+        } else {
+            $this->faqJsonApplyStatus = 'error';
+            $this->faqJsonApplyMessage = 'No valid FAQ entries found. Make sure each item has question and answer keys.';
+        }
     }
 
     private function resetFAQForm()

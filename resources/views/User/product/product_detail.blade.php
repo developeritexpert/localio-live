@@ -180,6 +180,9 @@
             </script>
         @endif
         <style>
+            a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
+                background-color: #e4e7ea !important;
+            }
             .sidebar-review-card .review-header div small {
                 font-size: 12px !important;
                 }
@@ -983,17 +986,18 @@
 
                             // Fixed dynamic top content
                             $staticBottomSections = [
-                                // ['id' => 'section9', 'label' => "Software like"],
-                                // ['id' => 'section15', 'label' => 'FAQ'],
                                 ['id' => 'section9', 'label' => 'Alternatives'],
-                                ['id' => 'section15' , 'label' => 'FAQs'],  
-                                ['id' => 'section-compare', 'label' => 'Compare'],
+                            ];
 
+                            if (isset($business->faqs) && $business->faqs->count() > 0) {
+                                $staticBottomSections[] = ['id' => 'section15', 'label' => 'FAQs'];
+                            }
+
+                            $staticBottomSections = array_merge($staticBottomSections, [
+                                ['id' => 'section-compare', 'label' => 'Compare'],
                                 ['id' => 'section14', 'label' => "Reviews"],
                                 ['id' => 'sectionDiscussions', 'label' => "Discussions"],
-                                
-                                // ['id' => 'section16', 'label' => 'Inbox'],
-                            ];
+                            ]);
 
                             // Dynamic middle sections from topics
                             // Start dynamic topic sections at a high number to avoid conflict
@@ -1109,7 +1113,9 @@
                                                                  @foreach($aggregatedPros as $pro)
                                                                  <li class="d-flex align-items-start mb-2">
                                                                      <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                                     <span style="color: #202124;">{{ $pro->text }} <small class="text-muted font-weight-normal">({{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                     <span style="color: #202124;">{{ $pro->text }} 
+                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 13px;">{{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                    </span>
                                                                  </li>
                                                                  @endforeach
                                                              </ul>
@@ -1124,7 +1130,9 @@
                                                                  @foreach($aggregatedCons as $con)
                                                                  <li class="d-flex align-items-start mb-2">
                                                                      <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                                     <span style="color: #202124;">{{ $con->text }} <small class="text-muted font-weight-normal">({{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }})</small></span>
+                                                                     <span style="color: #202124;">{{ $con->text }} 
+                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 13px;">{{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                    </span>
                                                                  </li>
                                                                  @endforeach
                                                              </ul>
@@ -1180,16 +1188,20 @@
                                             };
                                         @endphp
 
-                                        <div class="col-lg-12 mt-3 mb-4">
+                                        <div class="col-lg-12 mt-3">
+                                            @php
+                                                $effReviewCount = $ratingCount ?? ($business->reviews->where('status', 'active')->count() ?: 0);
+                                            @endphp
+
                                             {{-- 1. FEATURES SECTION --}}
-                                            @php $featRating = $getRatingForCriterion('Features', 'features'); @endphp
+                                            @php
+                                                $featRating = $getRatingForCriterion('Features', 'features');
+                                                $featRatingVal = $featRating > 0 ? $featRating : ($averageRating > 0 ? $averageRating : 4.0);
+                                                $featPercent = min(100, max(0, ($featRatingVal / 5) * 100));
+                                            @endphp
                                             <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
-                                                <div class="d-flex align-items-center mb-3" style="gap: 12px;">
-                                                    <h3 class="m-0" style="font-weight: 700; font-size: 22px; color: #1e3050;">{{ $businessName }} features</h3>
-                                                    <div class="d-inline-flex align-items-center px-2 py-1 bg-light border rounded" style="font-size: 14px; font-weight: 600; color: #1e3050; gap: 5px;">
-                                                        <span style="color: #f9633b;">★</span>
-                                                        <span>{{ number_format($featRating > 0 ? $featRating : ($averageRating > 0 ? $averageRating : 4.0), 1) }}</span>
-                                                    </div>
+                                                <div class="mb-3">
+                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} features</h2>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['intro_text']))
@@ -1198,13 +1210,14 @@
 
                                                 <!-- Community Rating Box -->
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                    <div class="fw-bold mb-1" style="color: #1e3050;">Community rating</div>
-                                                    <div class="d-flex align-items-center mb-1" style="gap: 6px; font-size: 15px; font-weight: 700;">
-                                                        <span>{{ number_format($featRating > 0 ? $featRating : ($averageRating > 0 ? $averageRating : 4.0), 1) }}</span>
-                                                        <span style="color: #f9633b;">★</span>
-                                                        <span>Features</span>
+                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Features community rating</div>
+                                                    <div class="d-flex align-items-center mb-2" style="gap: 12px;">
+                                                        <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($featRatingVal, 1) }}</span>
+                                                        <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                            <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                        </div>
                                                     </div>
-                                                    <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['end_text']))
@@ -1232,14 +1245,14 @@
                                             </div>
 
                                             {{-- 2. EASE OF USE SECTION --}}
-                                            @php $easeRating = $getRatingForCriterion('Ease of use', 'ease_of_use'); @endphp
+                                            @php
+                                                $easeRating = $getRatingForCriterion('Ease of use', 'ease_of_use');
+                                                $easeRatingVal = $easeRating > 0 ? $easeRating : ($averageRating > 0 ? $averageRating : 4.2);
+                                                $easePercent = min(100, max(0, ($easeRatingVal / 5) * 100));
+                                            @endphp
                                             <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
-                                                <div class="d-flex align-items-center mb-3" style="gap: 12px;">
-                                                    <h3 class="m-0" style="font-weight: 700; font-size: 22px; color: #1e3050;">Ease of use</h3>
-                                                    <div class="d-inline-flex align-items-center px-2 py-1 bg-light border rounded" style="font-size: 14px; font-weight: 600; color: #1e3050; gap: 5px;">
-                                                        <span style="color: #f9633b;">★</span>
-                                                        <span>{{ number_format($easeRating > 0 ? $easeRating : ($averageRating > 0 ? $averageRating : 4.2), 1) }}</span>
-                                                    </div>
+                                                <div class="mb-3">
+                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} ease of use</h2>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['intro_text']))
@@ -1247,13 +1260,14 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                    <div class="fw-bold mb-1" style="color: #1e3050;">Community rating</div>
-                                                    <div class="d-flex align-items-center mb-1" style="gap: 6px; font-size: 15px; font-weight: 700;">
-                                                        <span>{{ number_format($easeRating > 0 ? $easeRating : ($averageRating > 0 ? $averageRating : 4.2), 1) }}</span>
-                                                        <span style="color: #f9633b;">★</span>
-                                                        <span>Ease of use</span>
+                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Ease of use community rating</div>
+                                                    <div class="d-flex align-items-center mb-2" style="gap: 12px;">
+                                                        <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($easeRatingVal, 1) }}</span>
+                                                        <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                            <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                        </div>
                                                     </div>
-                                                    <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['end_text']))
@@ -1267,14 +1281,13 @@
                                                     @php
                                                         $crKey = (string)$cr->id;
                                                         $crRating = $cr->average_rating;
+                                                        $crRatingVal = $crRating > 0 ? $crRating : 4.0;
+                                                        $crPercent = min(100, max(0, ($crRatingVal / 5) * 100));
+                                                        $crDisplayName = ucfirst($cr->name);
                                                     @endphp
                                                     <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
-                                                        <div class="d-flex align-items-center mb-3" style="gap: 12px;">
-                                                            <h3 class="m-0" style="font-weight: 700; font-size: 22px; color: #1e3050;">{{ $cr->name }}</h3>
-                                                            <div class="d-inline-flex align-items-center px-2 py-1 bg-light border rounded" style="font-size: 14px; font-weight: 600; color: #1e3050; gap: 5px;">
-                                                                <span style="color: #f9633b;">★</span>
-                                                                <span>{{ number_format($crRating > 0 ? $crRating : 4.0, 1) }}</span>
-                                                            </div>
+                                                        <div class="mb-3">
+                                                            <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} {{ lcfirst($cr->name) }}</h2>
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['intro_text']))
@@ -1282,49 +1295,51 @@
                                                         @endif
 
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                            <div class="fw-bold mb-1" style="color: #1e3050;">Community rating</div>
-                                                            <div class="d-flex align-items-center mb-1" style="gap: 6px; font-size: 15px; font-weight: 700;">
-                                                                <span>{{ number_format($crRating > 0 ? $crRating : 4.0, 1) }}</span>
-                                                                <span style="color: #f9633b;">★</span>
-                                                                <span>{{ $cr->name }}</span>
+                                                            <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">{{ $crDisplayName }} community rating</div>
+                                                            <div class="d-flex align-items-center mb-2" style="gap: 12px;">
+                                                                <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($crRatingVal, 1) }}</span>
+                                                                <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                                    <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                                </div>
                                                             </div>
-                                                            <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                            <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['end_text']))
-                                                            <div class="mb-3 ">{!! $ratingTexts[$crKey]['end_text'] !!}</div>
+                                                            <div class="mb-3">{!! $ratingTexts[$crKey]['end_text'] !!}</div>
                                                         @endif
                                                     </div>
                                                 @endif
                                             @endforeach
 
                                             {{-- 4. VALUE FOR MONEY SECTION --}}
-                                            @php $vfmRating = $getRatingForCriterion('Value for money', 'value_for_money'); @endphp
+                                            @php
+                                                $vfmRating = $getRatingForCriterion('Value for money', 'value_for_money');
+                                                $vfmRatingVal = $vfmRating > 0 ? $vfmRating : ($averageRating > 0 ? $averageRating : 4.1);
+                                                $vfmPercent = min(100, max(0, ($vfmRatingVal / 5) * 100));
+                                            @endphp
                                             <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
-                                                <div class="d-flex align-items-center mb-3" style="gap: 12px;">
-                                                    <h3 class="m-0" style="font-weight: 700; font-size: 22px; color: #1e3050;">Value for money</h3>
-                                                    <div class="d-inline-flex align-items-center px-2 py-1 bg-light border rounded" style="font-size: 14px; font-weight: 600; color: #1e3050; gap: 5px;">
-                                                        <span style="color: #f9633b;">★</span>
-                                                        <span>{{ number_format($vfmRating > 0 ? $vfmRating : ($averageRating > 0 ? $averageRating : 4.1), 1) }}</span>
-                                                    </div>
+                                                <div class="mb-3">
+                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} value for money</h2>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['intro_text']))
-                                                    <div class="mb-3 ">{!! $ratingTexts['value_for_money']['intro_text'] !!}</div>
+                                                    <div class="mb-3">{!! $ratingTexts['value_for_money']['intro_text'] !!}</div>
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                    <div class="fw-bold mb-1" style="color: #1e3050;">Community rating</div>
-                                                    <div class="d-flex align-items-center mb-1" style="gap: 6px; font-size: 15px; font-weight: 700;">
-                                                        <span>{{ number_format($vfmRating > 0 ? $vfmRating : ($averageRating > 0 ? $averageRating : 4.1), 1) }}</span>
-                                                        <span style="color: #f9633b;">★</span>
-                                                        <span>Value for money</span>
+                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Value for money community rating</div>
+                                                    <div class="d-flex align-items-center mb-2" style="gap: 12px;">
+                                                        <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($vfmRatingVal, 1) }}</span>
+                                                        <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                            <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                        </div>
                                                     </div>
-                                                    <div class="" style="font-size: 12px;">Based on {{ $totalReviews > 0 ? $totalReviews : 327 }} ratings from the Localio community</div>
+                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['end_text']))
-                                                    <div class="mb-3 ">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
+                                                    <div class="mb-3">{!! $ratingTexts['value_for_money']['end_text'] !!}</div>
                                                 @endif
                                             </div>
                                         </div>
@@ -1389,7 +1404,7 @@
                                         @endphp
 
                                          @if ($business->is_affiliate && !empty($images))
-                                            <div class="col-lg-12">
+                                            <div class="col-lg-12 mb-4">
                                                 <div class="is-asana-rgt">
                                                     <div class="row is-asan-slider">
                                                         <!-- Main Slider -->
@@ -1599,7 +1614,7 @@
                                                             </div>
 
                                                             @if ($hasUserReviews)
-                                                                <span class="f-12" style="color: #666;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                                <span class="f-12" style="color: #666;">Community rating · {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                             @endif
                                                         </div>
 
@@ -2721,6 +2736,7 @@
                             </section>
 
                             {{-- faq --}}
+                            @if(isset($business->faqs) && $business->faqs->count() > 0)
                             <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15" style="background-color:#fdfdfd;">
                                 <div class="container">
                                     <div class="faq-inner">
@@ -2735,12 +2751,9 @@
                                                     </p> --}}
 
                                                     @php
-                                                    use App\Models\StaticContentKey;
-
-                                                    $faq_title = StaticContentKey::where('key', 'faq_title')->first();
-                                                    $faq_description = StaticContentKey::where('key', 'faq_description')->first();
-                                                    //dd($faq_title, $faq_description);
-                                                @endphp
+                                                        $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
+                                                        $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
+                                                    @endphp
 
                                                     <h2>{{ $faq_title?->default_value ?? '' }}</h2>
                                                     <p>{{ $faq_description?->default_value ?? '' }}</p>
@@ -2799,6 +2812,7 @@
                                     </div>
                                 </div>
                             </section>
+                            @endif
 
                             <!-- Compare Section -->
                             @php
@@ -3292,7 +3306,7 @@
                                     <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                         <div style="display: flex; align-items: center; gap: 16px;">
                                             <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
-                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                                                <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
                                             </div>
                                             <div>
                                                 <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Have you used {{ $business->translations->first()->name ?? 'this product' }} before?</h4>

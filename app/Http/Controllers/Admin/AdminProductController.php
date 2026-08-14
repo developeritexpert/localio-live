@@ -55,15 +55,36 @@ class AdminProductController extends Controller
     {
         $lang_id = getCurrentLanguageID();
         $businessId = $request->get('business_id');
-        $business = Business::with(['category.categoryTranslations' => function ($query) use ($lang_id) {
-            $query->where('lang_id', $lang_id);
-        }])->find($businessId);
+        $business = Business::with([
+            'translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
+            'category.categoryTranslations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
+            'subCategories.categoryTranslations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            }
+        ])->find($businessId);
 
-        if ($business && $business->category_id) {
+        if ($business) {
+            $subcategories = $business->subCategories ? $business->subCategories->map(function ($sub) use ($lang_id) {
+                $trans = $sub->categoryTranslations->where('lang_id', $lang_id)->first()
+                      ?? $sub->categoryTranslations->where('lang_id', 1)->first();
+                return [
+                    'id' => $sub->id,
+                    'name' => $trans->name ?? 'Subcategory #' . $sub->id,
+                ];
+            })->values()->toArray() : [];
+
+            $businessSlug = $business->translations->first()?->slug ?? ($business->slug ?? '');
+
             return response()->json([
                 'success' => true,
                 'category_id' => $business->category_id,
-                'category_name' => $business->category->categoryTranslations->first()->name ?? 'Unknown Category'
+                'category_name' => optional(optional($business->category)->categoryTranslations)->first()->name ?? 'Unknown Category',
+                'subcategories' => $subcategories,
+                'business_slug' => $businessSlug,
             ]);
         }
 
@@ -116,7 +137,7 @@ class AdminProductController extends Controller
             $query->where('lang_id', $lang_id);
         }])->get();
         $is_affiliate=1;
-        return view('Admin.products.add_product', compact('is_affiliate','categories', 'currencies', 'businesses', 'countries', 'pricingOptions'));
+        return view('Admin.products.add_product', compact('is_affiliate','categories', 'currencies', 'businesses', 'countries', 'pricingOptions', 'lang_id'));
     }
     public function productAddProccess(ProductRequest $request)
     {
@@ -139,6 +160,19 @@ class AdminProductController extends Controller
                 $product->active_all_countries = 1;
             } else {
                 $product->active_all_countries = 0;
+            }
+
+            if ($request->input('active_all_subcategories', '1') == '1') {
+                $product->active_all_subcategories = 1;
+            } else {
+                $product->active_all_subcategories = 0;
+            }
+
+            // Handle subcategory availability
+            if ($request->input('active_all_subcategories', '1') == '1') {
+                $product->active_all_subcategories = 1;
+            } else {
+                $product->active_all_subcategories = 0;
             }
             // dd($request->all());
             // Upload Product Icon with validation
@@ -265,8 +299,15 @@ class AdminProductController extends Controller
                 $product->businesses()->sync($businessIds);
             }
         }
-        // Attach categories
-        if ($request->has('product_category')) {
+        // Attach categories / subcategories
+        if ($request->input('active_all_subcategories', '1') == '0' && $request->has('product_subcategories')) {
+            $subCategoryIds = array_filter((array) $request->product_subcategories);
+            if (!empty($subCategoryIds)) {
+                $product->categories()->sync($subCategoryIds);
+            } elseif ($request->has('product_category')) {
+                $product->categories()->sync([$request->product_category]);
+            }
+        } elseif ($request->has('product_category')) {
             $product->categories()->sync([$request->product_category]);
         }
         // Attach countries
@@ -460,7 +501,20 @@ class AdminProductController extends Controller
         }])->get();
         $selectedPricingOptions = $product->pricingOptions->pluck('id')->toArray();
 
-        return view('Admin.products.update_product', compact('selectedFilters', 'currencies', 'product', 'product_category', 'product_business', 'businesses', 'categories', 'countries', 'selectedCountries', 'pricingOptions', 'selectedPricingOptions'));
+        // Subcategories of linked business
+        $linkedBusiness = $product_business->first();
+        $businessSubCategories = collect();
+        if ($linkedBusiness) {
+            $b = Business::with(['subCategories.categoryTranslations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            }])->find($linkedBusiness->id);
+            if ($b && $b->subCategories) {
+                $businessSubCategories = $b->subCategories;
+            }
+        }
+        $selectedSubCategories = $product->categories->pluck('id')->toArray();
+
+        return view('Admin.products.update_product', compact('selectedFilters', 'currencies', 'product', 'product_category', 'product_business', 'businesses', 'categories', 'countries', 'selectedCountries', 'pricingOptions', 'selectedPricingOptions', 'businessSubCategories', 'selectedSubCategories', 'lang_id'));
     }
     private function validatePriceData($request)
     {
@@ -495,9 +549,12 @@ class AdminProductController extends Controller
         $isAllCountries = $request->input('active_all_countries', '1') == '1';
         $targetCountryIds = $isAllCountries ? [] : array_filter((array) $request->input('product_countries', []));
 
+        $isAllSubcategories = $request->input('active_all_subcategories', '1') == '1';
+        $targetSubCategoryIds = $isAllSubcategories ? [] : array_filter((array) $request->input('product_subcategories', []));
+
         $query = Product::whereHas('businesses', function ($q) use ($businessIds) {
             $q->whereIn('business_id', $businessIds);
-        })->with(['countries', 'businesses.translations']);
+        })->with(['countries', 'categories', 'businesses.translations']);
 
         if ($productId) {
             $query->where('id', '!=', $productId);
@@ -508,15 +565,32 @@ class AdminProductController extends Controller
         foreach ($existingProducts as $existing) {
             $businessName = optional($existing->businesses->first())->translation->name ?? 'The selected business';
 
+            // Check subcategory overlap
+            $subcategoryOverlap = false;
+            if ($isAllSubcategories || $existing->active_all_subcategories == 1) {
+                $subcategoryOverlap = true;
+            } else {
+                $existingSubCategoryIds = $existing->categories->pluck('id')->toArray();
+                $subOverlap = array_intersect($targetSubCategoryIds, $existingSubCategoryIds);
+                if (!empty($subOverlap)) {
+                    $subcategoryOverlap = true;
+                }
+            }
+
+            if (!$subcategoryOverlap) {
+                // Different subcategories -> allow separate starting prices
+                continue;
+            }
+
             if ($isAllCountries) {
                 throw ValidationException::withMessages([
-                    'active_all_countries' => ["{$businessName} already has a starting price set for another country/region. A business cannot have more than one starting price per country/region."]
+                    'active_all_countries' => ["{$businessName} already has a starting price set for another country/region in this subcategory scope. A business cannot have more than one starting price per country/region."]
                 ]);
             }
 
             if ($existing->active_all_countries == 1) {
                 throw ValidationException::withMessages([
-                    'active_all_countries' => ["{$businessName} already has a starting price active for ALL countries/regions."]
+                    'active_all_countries' => ["{$businessName} already has a starting price active for ALL countries/regions in this subcategory scope."]
                 ]);
             }
 
@@ -526,7 +600,7 @@ class AdminProductController extends Controller
             if (!empty($overlap)) {
                 $countryNames = Country::whereIn('id', $overlap)->pluck('name')->implode(', ');
                 throw ValidationException::withMessages([
-                    'product_countries' => ["{$businessName} already has a starting price for: {$countryNames}. A business cannot have more than one starting price per country/region."]
+                    'product_countries' => ["{$businessName} already has a starting price for: {$countryNames} in this subcategory scope."]
                 ]);
             }
         }
@@ -603,6 +677,12 @@ class AdminProductController extends Controller
                 $product->active_all_countries = 0;
             }
 
+            if ($request->input('active_all_subcategories', '1') == '1') {
+                $product->active_all_subcategories = 1;
+            } else {
+                $product->active_all_subcategories = 0;
+            }
+
             // Upload Product Icon
             if ($request->hasFile('product_icon')) {
                 // Delete old icon if exists
@@ -632,8 +712,10 @@ class AdminProductController extends Controller
                 $product->businesses()->detach();
             }
 
-            // Sync categories
-            if ($request->has('product_category')) {
+            // Sync categories / subcategories
+            if ($request->input('active_all_subcategories', '1') == '0' && $request->has('product_subcategories')) {
+                $product->categories()->sync($request->product_subcategories);
+            } elseif ($request->has('product_category')) {
                 $product->categories()->sync([$request->product_category]);
             } else {
                 $product->categories()->detach();

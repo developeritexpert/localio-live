@@ -36,8 +36,8 @@
         text-decoration:underline !important;
     }
         .top-rated-heading-sec {
-            margin-top: 125px;
-            padding-top: 25px !important;
+            margin-top: 115px;
+            padding-top: 30px !important;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e8eef6;
             /* margin-bottom: 25px; */
@@ -144,7 +144,7 @@
 
         /* Filter section horizontal dividers */
         .filter-section {
-            border-bottom: 1px solid #e8eef6;
+            /* border-bottom: 1px solid #e8eef6; */
             padding-bottom: 14px;
             margin-bottom: 14px;
         }
@@ -231,7 +231,7 @@
                 <!-- section top-rated automaotive -->
     <section class="top-rated-heading-sec">
        <div class="container">
-                                <div class="row align-items-center mb-3">
+                                <div class="row align-items-center mb-1">
                                     <div class="col-8">
                                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                                             <ol class="breadcrumb m-0" style="background: transparent;padding: 0;display: flex;align-items: center;">
@@ -278,7 +278,7 @@
                                 <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                     <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
-                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences.</h6>
+                                        <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real experiences</h6>
                                     </div>
                                     <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                         Ratings and reviews are shared by real users from the Localio community.
@@ -327,7 +327,7 @@
                                     <div class="filter-section">
                                         <h3 class="fw-semibold text-dark mb-2">
                                             <!-- {{ static_text('user_rating') }} -->
-                                            User rating
+                                            Community rating
                                         </h3>
 
                                         <div class="form-check">
@@ -353,7 +353,7 @@
 
                                      <!-- Rating Criteria Filter Section -->
                                      @if(isset($availableCriteria) && count($availableCriteria) > 0)
-                                         <div class="filter-section mt-3 pt-3 border-top">
+                                         <div class="filter-section mt-3 ">
                                              <h3 class="fw-semibold text-dark mb-2">
                                                  Criteria ratings
                                              </h3>
@@ -719,10 +719,10 @@
                                                  <button type="button"
                                                          wire:click="setSortBy('{{ $val }}')"
                                                          class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
-                                                         style="font-size: 14px; color: #1e3050; cursor: pointer; transition: background-color 0.15s ease; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
+                                                         style="font-size: 13px; color: #1e3050; cursor: pointer; transition: background-color 0.15s ease; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
                                                          onmouseover="this.style.backgroundColor='#f1f5f9'"
                                                          onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
-                                                     <span style="{{ $currentSort === $val ? 'font-weight: 700;' : 'font-weight: 400;' }}">{{ $label }}</span>
+                                                     <span style="{{ $currentSort === $val ? 'font-weight: 500;' : 'font-weight: 400;' }}">{{ $label }}</span>
                                                      @if($currentSort === $val)
                                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3050" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-left: 8px;">
                                                              <polyline points="20 6 9 17 4 12"/>
@@ -1168,5 +1168,54 @@
             });
         });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sortWrapper = document.querySelector('.position-relative.d-inline-block');
+    if (!sortWrapper) return;
+
+    function isDropdownOpen() {
+        return !!sortWrapper.querySelector('.position-absolute.end-0');
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function (e) {
+        if (isDropdownOpen() && !sortWrapper.contains(e.target)) {
+            const sortButton = sortWrapper.querySelector('.sorting');
+            if (sortButton) {
+                sortButton.click();
+            }
+        }
+    });
+
+    // Block scroll events without hiding the scrollbar
+    function preventScroll(e) {
+        e.preventDefault();
+    }
+
+    function lockScroll() {
+        document.addEventListener('wheel', preventScroll, { passive: false });
+        document.addEventListener('touchmove', preventScroll, { passive: false });
+    }
+
+    function unlockScroll() {
+        document.removeEventListener('wheel', preventScroll);
+        document.removeEventListener('touchmove', preventScroll);
+    }
+
+    // Watch dropdown open/close state and lock/unlock accordingly
+    const dropdownObserver = new MutationObserver(function () {
+        if (isDropdownOpen()) {
+            lockScroll();
+        } else {
+            unlockScroll();
+        }
+    });
+
+    dropdownObserver.observe(sortWrapper, {
+        childList: true,
+        subtree: true
+    });
+});
+</script>
     </div>
 </div>

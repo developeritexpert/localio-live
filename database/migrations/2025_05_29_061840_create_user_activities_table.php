@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_activities', function (Blueprint $table) {
+        if (!Schema::hasTable('user_activities')) {
+            Schema::create('user_activities', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('user_id')->nullable(); // nullable for guest users
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->index(['product_id', 'created_at']);
             
         });
+        }
     }
 
     /**

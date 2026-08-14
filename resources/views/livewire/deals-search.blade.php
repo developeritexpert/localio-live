@@ -23,7 +23,7 @@
                                 style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
                                 
                                 <div class="ab_img" style="flex-shrink: 0;">
-                                    <img src="{{ asset($product->businesses->first()->icon_id ?? 'images/no-image.png') }}"
+                                    <img src="{{ asset($product->businesses->first()->icon_id ?? 'front/img/default_business_logo.svg') }}"
                                         class="header_img" alt="{{ $product->translations->name ?? 'Product' }}">
                                 </div>
     

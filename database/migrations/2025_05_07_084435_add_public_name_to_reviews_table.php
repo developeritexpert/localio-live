@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('reviews', function (Blueprint $table) {
+        if (!Schema::hasColumn('reviews', 'public_name')) {
+            Schema::table('reviews', function (Blueprint $table) {
             $table->string('public_name')->nullable()->after('status');
 
         });
+        }
     }
 
     /**
@@ -22,8 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('reviews', function (Blueprint $table) {
+        if (!Schema::hasColumn('reviews', 'public_name')) {
+            Schema::table('reviews', function (Blueprint $table) {
             $table->dropColumn('public_name');
         });
+        }
     }
 };

@@ -20,7 +20,7 @@ class Language extends Model
     }
     public function baseLanguage()
     {
-        return $this->belongsTo(Language::class, 'base_language_id');
+        return $this->belongsTo(BaseLanguage::class, 'base_language_id');
     }
 
     public function country()

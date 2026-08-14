@@ -1,9 +1,9 @@
-<section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; padding: 60px 0 !important;">
+<section class="latest_review_part_footer populr-alternative" style="background-color: #f9fafb !important; ">
     <style>
         /* Responsive adjustments */
         @media (max-width: 575px) {
             .latest_review_part_footer {
-                padding: 40px 0 !important;
+                padding: 20px 0 !important;
             }
             .latest_review_part_footer .container {
                 padding-left: 20px !important;
@@ -102,7 +102,7 @@
                                         <!-- Bottom part: Reviewed Business (icon & name) -->
                                         <div class="review-card-bottom" style="border-top: 1px solid #edf2f7; padding-top: 12px; display: flex; align-items: center; gap: 8px; margin-top: auto;">
                                             <div class="top-product-small-logo" style="">
-                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" style="">
+                                                <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" style="">
                                             </div>
                                             <div class="business-info" style="display: flex; flex-direction: column; overflow: hidden; min-width: 0; margin: 0; padding: 0; gap: 0;">
                                                 <span style="font-size: 13px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.2; margin: 0; padding: 0;">{{ $businessName }}</span>

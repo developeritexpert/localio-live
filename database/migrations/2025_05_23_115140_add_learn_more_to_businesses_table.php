@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('businesses', function (Blueprint $table) {
+        if (!Schema::hasColumn('businesses', 'learn_more')) {
+            Schema::table('businesses', function (Blueprint $table) {
                $table->longText('learn_more')->nullable();
         });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('businesses', function (Blueprint $table) {
+        if (!Schema::hasColumn('businesses', 'learn_more')) {
+            Schema::table('businesses', function (Blueprint $table) {
             //
         });
+        }
     }
 };

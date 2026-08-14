@@ -205,6 +205,17 @@ class Business extends Model
     }
 
     /**
+     * Get business icon/logo with fallback to default logo.
+     */
+    public function getIconIdAttribute($value)
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+        return 'front/img/default_business_logo.svg';
+    }
+
+    /**
      * Check if business has approved user reviews (for showing detailed rating bars).
      */
     public function getHasUserReviewsAttribute()

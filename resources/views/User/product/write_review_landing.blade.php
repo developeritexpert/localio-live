@@ -6,7 +6,7 @@
     <div class="container">
         <h1 class="fw-bold mb-3" style="color: #1e3050; font-weight: 700 !important; margin-bottom: 8px; font-size:28px !important"> Share your experience </h1>
         <p class="text-white-50 mb-5 mx-auto" style=" font-weight: 400 !important; font-size: 16px !important; color: #444 !important; margin-bottom: 0;">
-            Help the Localio community make better choices by sharing your experience with a business or product.
+            Help the Localio community make better choices by sharing your experience with a business or product
         </p>
         
         @livewire('write-review-search')
@@ -28,8 +28,8 @@
                     @endphp
                     <div class="col">
                         <div class="card h-100   p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; background: #fff;  border: 1px solid #e2e8f0; border-radius:15px;"onmouseout="this.style.transform='none'">
-                            <div style="width: 60px; height: 60px; border-radius: 10px; overflow: hidden; background: #f8fafc;  display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
-                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style=" object-fit: none;">
+                            <div style="" class="mb-3 top-product-logo">
+                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="">
                             </div>
                             <h5 class="mb-1 text-truncate w-100" style="color:#002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
@@ -69,8 +69,8 @@
                     @endphp
                     <div class="col">
                         <div class="card h-100 p-4 text-center d-flex flex-column align-items-center" style="border-radius: 15px; border:1px solid #e2e8f0; transition:unset !important; background: #fff;" >
-                            <div style="width: 60px; height: 60px; border-radius: 10px; overflow: hidden; background: #f8fafc;display: flex; align-items: center; justify-content: center; flex-shrink: 0;" class="mb-3">
-                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="max-width: 100%; max-height: 100%; object-fit: none;">
+                            <div style="" class="mb-3 top-product-logo">
+                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="">
                             </div>
                             <h5 class=" mb-2 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
