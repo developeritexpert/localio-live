@@ -3292,7 +3292,7 @@
                                     <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                         <div style="display: flex; align-items: center; gap: 16px;">
                                             <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
-                                                <img src="{{ asset($business->icon_id ?? 'no-image.png') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                                                <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
                                             </div>
                                             <div>
                                                 <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Have you used {{ $business->translations->first()->name ?? 'this product' }} before?</h4>
