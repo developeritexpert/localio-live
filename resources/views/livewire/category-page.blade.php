@@ -41,6 +41,14 @@
         color: unset !important;
         text-decoration: underline !important;
     }
+        .top-rated-heading-sec {
+            margin-top: 115px;
+            padding-top: 30px !important;
+            background-color: #f7f9fb;
+            border-bottom: 1px solid #e8eef6;
+            /* margin-bottom: 25px; */
+            padding-bottom: 20px;
+        }
 
     .top-rated-heading-sec {
         margin-top: 125px;

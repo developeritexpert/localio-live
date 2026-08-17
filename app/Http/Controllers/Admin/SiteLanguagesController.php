@@ -21,15 +21,15 @@ class SiteLanguagesController extends Controller
 
     public function add()
     {
-        $countries = Country::all();
-        $baseLanguages = BaseLanguage::where('status', 1)->orderBy('is_master', 'desc')->orderBy('name')->get();
+        $countries = Country::where('status', 1)->orderBy('name')->get();
+        $baseLanguages = BaseLanguage::where('status', 1)->orderBy('name')->get();
         return view('Admin.setting.siteLanguages.add', compact('countries', 'baseLanguages'));
     }
 
     public function addProcc(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:languages,name|string|max:255',
+            'name' => 'nullable|string|max:255',
             'lang_code' => 'required|alpha_dash|unique:languages,lang_code|string|max:255',
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:base_languages,id',
@@ -42,11 +42,14 @@ class SiteLanguagesController extends Controller
             'is_valid_language_code' => 'nullable|boolean',
         ]);
 
+        $country = Country::find($request->country_id);
+        $languageName = $request->filled('name') ? $request->name : ($country ? $country->name : $request->lang_code);
+
         $language = new Language();
-        $language->name = $request->name;
+        $language->name = $languageName;
         $language->lang_code = $request->lang_code;
         $language->country_id = $request->country_id;
-        $language->base_language_id = $request->filled('base_language_id') ? $request->base_language_id : null;
+        $language->base_language_id = ($request->filled('base_language_id') && $request->base_language_id != '' && $request->base_language_id != '0') ? $request->base_language_id : null;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
         $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->reviews_slug = $request->reviews_slug ?? 'reviews';
@@ -60,8 +63,12 @@ class SiteLanguagesController extends Controller
     public function update($id)
     {
         $siteLanguage = Language::findOrFail($id);
-        $countries = Country::all();
-        $baseLanguages = BaseLanguage::where('status', 1)->orderBy('is_master', 'desc')->orderBy('name')->get();
+        $countries = Country::where('status', 1)->orderBy('name')->get();
+        // The same country/region should not appear in the base language dropdown
+        $baseLanguages = BaseLanguage::where('status', 1)
+            ->where('name', '!=', $siteLanguage->name)
+            ->orderBy('name')
+            ->get();
         return view('Admin.setting.siteLanguages.update', compact('siteLanguage', 'countries', 'baseLanguages'));
     }
 
@@ -70,7 +77,7 @@ class SiteLanguagesController extends Controller
         $id = $request->id ?? $request->route('id');
     
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'lang_code' => 'required|string|unique:languages,lang_code,' . $id . ',id',
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:base_languages,id',
@@ -83,10 +90,13 @@ class SiteLanguagesController extends Controller
         ]);
     
         $language = Language::findOrFail($id);
-        $language->name = $request->name;
+        $country = Country::find($request->country_id);
+        $languageName = $request->filled('name') ? $request->name : ($country ? $country->name : $language->name);
+
+        $language->name = $languageName;
         $language->lang_code = $request->lang_code;
         $language->country_id = $request->country_id;
-        $language->base_language_id = $request->filled('base_language_id') ? $request->base_language_id : null;
+        $language->base_language_id = ($request->filled('base_language_id') && $request->base_language_id != '' && $request->base_language_id != '0') ? $request->base_language_id : null;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
         $language->alternatives_slug = $request->alternatives_slug ?? 'alternatives';
         $language->reviews_slug = $request->reviews_slug ?? 'reviews';

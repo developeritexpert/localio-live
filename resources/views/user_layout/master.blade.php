@@ -1232,6 +1232,32 @@
     }
     </style>
 
+
+    <style>
+        .action-icon-btn, .share-trigger-btn {
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            color: #94a3b8 !important;
+            cursor: pointer !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            transition: background-color 0.2s ease, color 0.2s ease !important;
+        }
+        .action-icon-btn:hover, .share-trigger-btn:hover {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+        }
+    </style>
 </head>
 
 <body class="@yield('body_class')">
@@ -3850,6 +3876,304 @@
 
     observe();
     </script>
+
+
+
+<!-- Global Booking.com-style Share Popover -->
+<div id="bookingSharePopover" class="booking-share-popover" style="display: none;" onclick="event.stopPropagation();">
+    <div class="booking-share-arrow"></div>
+    <div class="booking-share-inner">
+        <h4 class="booking-share-title">Share this</h4>
+        <div class="booking-share-list">
+            <button type="button" class="booking-share-item" id="btnShareCopyLink" onclick="triggerShareCopy(event)">
+                <div class="booking-share-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </div>
+                <span class="booking-share-label">Copy link</span>
+                <span id="shareCopiedFeedback" class="booking-share-copied-badge" style="display: none;">Copied!</span>
+            </button>
+            <a href="javascript:void(0)" class="booking-share-item" id="btnShareFacebook" onclick="triggerShareFacebook(event)">
+                <div class="booking-share-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </div>
+                <span class="booking-share-label">Facebook</span>
+            </a>
+            <a href="javascript:void(0)" class="booking-share-item" id="btnShareTwitter" onclick="triggerShareTwitter(event)">
+                <div class="booking-share-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#111827">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </div>
+                <span class="booking-share-label">X (formerly Twitter)</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Action icon buttons (Flag, Share, etc.) */
+    .action-icon-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 50% !important;
+        background: transparent !important;
+        border: none !important;
+        color: #94a3b8 !important;
+        cursor: pointer !important;
+        transition: background-color 0.2s ease, color 0.2s ease !important;
+        text-decoration: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    .action-icon-btn:hover {
+        background-color: #f1f5f9 !important;
+        color: #1e293b !important;
+    }
+    .action-icon-btn svg, .action-icon-btn i {
+        pointer-events: none;
+    }
+
+    /* Booking.com-style Share Popover */
+    .booking-share-popover {
+        position: fixed;
+        z-index: 999999;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.18), 0 4px 10px -2px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+        width: 280px;
+        padding: 16px;
+        animation: popoverFadeIn 0.15s ease-out;
+    }
+    .booking-share-arrow {
+        position: absolute;
+        top: -6px;
+        width: 12px;
+        height: 12px;
+        background: #ffffff;
+        border-left: 1px solid #e2e8f0;
+        border-top: 1px solid #e2e8f0;
+        transform: rotate(45deg);
+    }
+    .booking-share-arrow.arrow-bottom {
+        top: auto;
+        bottom: -6px;
+        border-left: none;
+        border-top: none;
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .booking-share-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 12px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f1f5f9;
+        font-family: inherit;
+    }
+    .booking-share-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .booking-share-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        color: #1e293b;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+    .booking-share-item:hover {
+        background-color: #f8fafc;
+        color: #0f172a;
+    }
+    .booking-share-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .booking-share-copied-badge {
+        margin-left: auto;
+        font-size: 11px;
+        font-weight: 600;
+        color: #16a34a;
+        background-color: #dcfce7;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    @keyframes popoverFadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    let currentShareUrl = window.location.href;
+    let currentShareTitle = document.title;
+    let activeTriggerEl = null;
+
+    window.openShareModal = function(url, title, event) {
+        if (event) {
+            event.stopPropagation();
+            activeTriggerEl = event.currentTarget || event.target.closest('.action-icon-btn, .share-trigger-btn, button, a');
+        }
+        
+        currentShareUrl = url || window.location.href;
+        currentShareTitle = title || document.title;
+        
+        const popover = document.getElementById('bookingSharePopover');
+        const badge = document.getElementById('shareCopiedFeedback');
+        if (badge) badge.style.display = 'none';
+        
+        if (!popover) return;
+        
+        // If already open for this element, toggle close
+        if (popover.style.display === 'block' && popover._activeElement === activeTriggerEl) {
+            window.closeShareModal();
+            return;
+        }
+        
+        popover._activeElement = activeTriggerEl;
+        popover.style.display = 'block';
+        
+        if (activeTriggerEl) {
+            const rect = activeTriggerEl.getBoundingClientRect();
+            const popoverWidth = 280;
+            const popoverHeight = popover.offsetHeight || 190;
+            const arrow = popover.querySelector('.booking-share-arrow');
+            
+            let left = rect.left + (rect.width / 2) - (popoverWidth / 2);
+            // Ensure within window bounds
+            if (left < 10) left = 10;
+            if (left + popoverWidth > window.innerWidth - 10) {
+                left = window.innerWidth - popoverWidth - 10;
+            }
+            
+            let top = rect.bottom + 8;
+            let isBottom = false;
+            
+            // If overflowing viewport bottom, position above button
+            if (top + popoverHeight > window.innerHeight - 10 && rect.top - popoverHeight - 8 > 10) {
+                top = rect.top - popoverHeight - 8;
+                isBottom = true;
+            }
+            
+            popover.style.left = `${left}px`;
+            popover.style.top = `${top}px`;
+            
+            if (arrow) {
+                if (isBottom) {
+                    arrow.classList.add('arrow-bottom');
+                } else {
+                    arrow.classList.remove('arrow-bottom');
+                }
+                const arrowCenter = rect.left + (rect.width / 2) - left;
+                arrow.style.left = `${Math.max(16, Math.min(popoverWidth - 28, arrowCenter - 6))}px`;
+            }
+        } else {
+            // Fallback center
+            popover.style.left = '50%';
+            popover.style.top = '50%';
+            popover.style.transform = 'translate(-50%, -50%)';
+        }
+    };
+
+    window.closeShareModal = function() {
+        const popover = document.getElementById('bookingSharePopover');
+        if (popover) {
+            popover.style.display = 'none';
+            popover._activeElement = null;
+        }
+    };
+
+    window.triggerShareCopy = async function(event) {
+        if (event) event.stopPropagation();
+        const badge = document.getElementById('shareCopiedFeedback');
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(currentShareUrl);
+            } else {
+                let ta = document.createElement('textarea');
+                ta.value = currentShareUrl;
+                ta.style.position = 'fixed';
+                ta.style.left = '-999999px';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+            if (badge) {
+                badge.style.display = 'inline-block';
+                setTimeout(() => {
+                    closeShareModal();
+                }, 1000);
+            }
+        } catch(e) {
+            console.error('Failed to copy', e);
+        }
+    };
+
+    window.triggerShareFacebook = function(event) {
+        if (event) event.stopPropagation();
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentShareUrl)}`;
+        window.open(url, '_blank', 'width=600,height=450');
+        closeShareModal();
+    };
+
+    window.triggerShareTwitter = function(event) {
+        if (event) event.stopPropagation();
+        const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentShareUrl)}&text=${encodeURIComponent(currentShareTitle)}`;
+        window.open(url, '_blank', 'width=600,height=450');
+        closeShareModal();
+    };
+
+    // Global click outside listener
+    document.addEventListener('click', function(e) {
+        const popover = document.getElementById('bookingSharePopover');
+        if (popover && popover.style.display === 'block') {
+            if (!popover.contains(e.target) && !e.target.closest('.share-trigger-btn, .action-icon-btn')) {
+                window.closeShareModal();
+            }
+        }
+    });
+
+    // Close on scroll or escape
+    window.addEventListener('scroll', function() {
+        window.closeShareModal();
+    }, { passive: true });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            window.closeShareModal();
+        }
+    });
+</script>
+
 </body>
 
 </html>

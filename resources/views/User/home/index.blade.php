@@ -92,7 +92,7 @@
                 <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
                     <!-- Left Sidebar Column: Category list -->
                     <div class="col-lg-3 col-12 mb-4 mb-lg-0">
-                        <h2 class="popular-categories-title">Most popular categories</h2>
+                        <h2 class="popular-categories-title">{{ !empty($homeContents['most_popular']) ? $homeContents['most_popular'] : 'Most popular categories' }}</h2>
                         <div class="popular-categories-sidebar">
                             <div class="nav flex-column nav-pills popular-categories-nav" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                 @php $activeSet = false; @endphp

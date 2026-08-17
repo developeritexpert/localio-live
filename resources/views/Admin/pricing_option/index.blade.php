@@ -1,6 +1,10 @@
 @extends('admin_layout.master')
 @section('content')
 <style>
+    span#select2-countrySelect-container {
+    padding-right: 3rem;
+    padding-top: 0rem;
+}
     .select2-container--default .select2-selection--single {
         border-color: #dbdfea;
         background-color: #fff;
@@ -37,7 +41,7 @@
                             <li>
                                 <div class="form-group" style="margin-bottom: 0;">
                                     <div class="form-control-wrap">
-                                        <select class="form-select js-select2 select2-hidden-accessible" data-placeholder="Select Country" id="countrySelect">
+                                        <select class="form-select js-select2" data-placeholder="Select Country" id="countrySelect" onchange="filterPricingByCountry(this.value)">
                                             @foreach ($countries as $country)
                                                 <option value="{{ $country->lang_code }}" {{ $country->lang_code == $langCode ? 'selected' : '' }}>
                                                     {{ $country->name }}
@@ -241,91 +245,17 @@
 
 {{-- pricing options script --}}
 <script>
-    $('#countrySelect').on('change', function () {
-        let langCode = $('#countrySelect').val();
+    function filterPricingByCountry(langCode) {
+        if (!langCode) return;
+        let url = new URL(window.location.href);
+        url.searchParams.set('lang', langCode);
+        window.location.href = url.toString();
+    }
 
-        $.ajax({
-            url: '{{ route("priceoptions") }}',
-            type: 'GET',
-            data: {
-                lang: langCode
-            },
-            success: function (response) {
-                let tbody = '';
-                if (response.price_options.length === 0) {
-                    tbody = `<tr><td colspan="6" class="text-center"><button class="btn btn-primary btn-localio">No data found</button></td></tr>`;
-                } else {
-                    response.price_options.forEach(option => {
-                        let scopeBadge = option.scope === 'category_specific'
-                            ? `<span class="badge bg-info mb-1">Category Specific</span><br><small class="text-muted">${(option.categories && option.categories.length > 0) ? option.categories.join(', ') : 'No categories assigned'}</small>`
-                            : `<span class="badge bg-success">Global</span>`;
-
-                        tbody += `
-                            <tr class="nk-tb-item">
-                                <td class="nk-tb-col">
-                                    <div class="user-card">
-                                        <div class="user-info">
-                                            <span class="tb-lead">${option.translated_name ?? ''}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="nk-tb-col">
-                                    <div class="user-card">
-                                        <div class="user-info">
-                                            <span class="tb-lead">${option.english_name ?? ""}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="nk-tb-col">
-                                    <span class="badge bg-outline-primary">${option.translated_button_text ?? 'Claim now'}</span>
-                                </td>
-                                <td class="nk-tb-col">
-                                    <span class="badge bg-outline-secondary">${option.english_button_text ?? 'Claim now'}</span>
-                                </td>
-                                <td class="nk-tb-col">
-                                    ${scopeBadge}
-                                </td>
-                                <td class="nk-tb-col nk-tb-col-tools">
-                                    <ul class="nk-tb-actions gx-1">
-                                        <li>
-                                            <div class="drodown">
-                                                <a href="#" class="dropdown-toggle btn btn-icon btn-trigger" data-bs-toggle="dropdown">
-                                                    <em class="icon ni ni-more-h"></em>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-end edit-btn">
-                                                    <ul class="link-list-opt no-bdr">
-                                                        <li>
-                                                            <a href="/admin-dashboard/businesses/pricing-options/add/${option.id}">
-                                                                <em class="icon ni ni-edit-fill"></em><span>Edit</span>
-                                                            </a>
-                                                        </li>
-                                                        <li class="removeConfermation" data-url="/admin-dashboard/businesses/pricing-options/remove/${option.id}">
-                                                            <a href="/admin-dashboard/businesses/pricing-options/remove/${option.id}">
-                                                                <em class="icon ni ni-trash-fill"></em><span>Remove</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a onclick="openOfferTranslateModal(${option.id}, '${(option.english_name || '').replace(/'/g, "\\'")}', '${(option.english_button_text || 'Claim now').replace(/'/g, "\\'")}')">
-                                                                <em class="icon ni ni-globe"></em> <span>Translations</span>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                $('table tbody').html(tbody);
-            },
-            error: function (xhr) {
-                console.error(xhr);
-                alert('Something went wrong.');
-            }
+    $(document).ready(function () {
+        $('#countrySelect').on('change select2:select', function () {
+            let langCode = $(this).val();
+            filterPricingByCountry(langCode);
         });
     });
 </script>
@@ -384,7 +314,7 @@
                     $('#translateOfferModal').modal('hide');
                     NioApp.Toast('Translation saved successfully!', 'success', { position: 'top-right' });
                     // Refresh table
-                    $('#countrySelect').trigger('change');
+                    window.location.reload();
                 } else {
                     NioApp.Toast(data.message || 'Failed to save translation.', 'error', { position: 'top-right' });
                 }

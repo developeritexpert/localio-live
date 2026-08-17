@@ -73,7 +73,7 @@
                                 </div>
                                 <div class="custom-control custom-radio custom-control-inline ms-3">
                                     <input type="radio" class="custom-control-input scope-radio" id="scope_category" name="scope" value="category_specific" {{ $currentScope === 'category_specific' ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="scope_category"><strong>Category Specific</strong> (Assign to selected categories/subcategories)</label>
+                                    <label class="custom-control-label" for="scope_category"><strong>Category Specific</strong> (Assign to selected categories)</label>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                         <!-- Category Selector (Shown when Category Specific is selected) -->
                         <div class="col-md-12" id="categoryContainer" style="{{ $currentScope === 'category_specific' ? '' : 'display: none;' }}">
                             <div class="form-group">
-                                <label class="form-label">Assign to Categories & Subcategories</label>
+                                <label class="form-label">Assign to Categories</label>
                                 @php
                                     $assignedCategoryIds = old('categories', isset($pricing_data) ? $pricing_data->categories->pluck('id')->toArray() : []);
                                 @endphp

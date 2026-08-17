@@ -1,4 +1,3 @@
-{{-- {{ dd($countries) }} --}}
 @extends('admin_layout.master')
 @section('content')
 
@@ -6,7 +5,7 @@
     <div class="nk-block-head nk-block-head-sm">
         <div class="nk-block-between">
             <div class="nk-block-head-content">
-                <h3 class="nk-block-title page-title">Country</h3>
+                <h3 class="nk-block-title page-title">Countries/Regions</h3>
             </div>
             <div class="nk-block-head-content">
                 <div class="toggle-wrap nk-block-tools-toggle">
@@ -16,11 +15,8 @@
                     <div class="toggle-expand-content" data-content="pageMenu">
                         <ul class="nk-block-tools g-3">
                             <li class="nk-block-tools-opt">
-                                <a href="{{ url('admin-dashboard/site-languages/add') }}" class="btn btn-icon btn-primary d-md-none">
-                                    <em class="icon ni ni-plus"></em>
-                                </a>
-                                <a href="{{ route('country.add') }}" class="btn btn-primary d-none d-md-inline-flex btn-localio">
-                                    <span>Add Country</span>
+                                <a href="{{ route('country.add') }}" class="btn btn-primary d-inline-flex btn-localio">
+                                    <em class="icon ni ni-plus"></em><span>Add Country/region</span>
                                 </a>
                             </li>
                         </ul>
@@ -35,7 +31,7 @@
             <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false" id="CountryDataTable">
                 <thead>
                     <tr class="nk-tb-item nk-tb-head">
-                        <th class="nk-tb-col"><span class="sub-text">Country Name</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Country/region</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Country Code</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Disclaimer Banner</span></th>
                         <th class="nk-tb-col tb-tnx-action"><span>Action</span></th>
@@ -74,7 +70,7 @@
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a href="{{ route('country.delete', ['id' => $country->id]) }}">
+                                                    <a href="{{ route('country.delete', ['id' => $country->id]) }}" onclick="return confirm('Are you sure you want to delete this country/region?')">
                                                         <em class="icon ni ni-trash-fill"></em>
                                                         <span>Delete</span>
                                                     </a>
@@ -85,9 +81,6 @@
                                 </li>
                             </ul>
                         </td>
-
-
-
                     </tr>
                     @endforeach
                 </tbody>

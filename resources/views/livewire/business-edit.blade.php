@@ -1547,6 +1547,7 @@
 
                             <!-- Default Redirect URL Box (Visible ONLY when Affiliate is ON) -->
                             <div x-show="isAffiliate" class="mb-3">
+                                <h6 class="mb-2 fs-6 text-muted fw-bold">Default</h6>
                                 <!-- Display Mode -->
                                 <div x-show="!editing" @click="startEdit()"
                                     class="border rounded-2 p-2 px-3 bg-white d-flex align-items-center justify-content-between"
@@ -1558,9 +1559,9 @@
                                 </div>
 
                                 <!-- Edit Mode -->
-                                <div x-show="editing" style="display: none;" class="border rounded-2 p-3 bg-white shadow-sm">
+                                <div x-show="editing" style="display: none;" class="border rounded-2 p-3 bg-white shadow-sm mt-4">
                                     <div class="form-group mb-2">
-                                        <label class="form-label mb-1 fs-7 text-muted">URL Address</label>
+                                        <label class="form-label mb-1 fs-7 text-muted">Default URL</label>
                                         <input type="url" class="form-control"
                                             x-model="tempUrl" x-ref="urlInput"
                                             placeholder="https://example.com/redirect-link"
@@ -1590,15 +1591,18 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="form-group mb-3">
-                                                <label class="form-label">Select Country</label>
+                                                <label class="form-label">Select Country / Region</label>
+                                                @php
+                                                    $footerLangs = \App\Models\Language::where('status', 1)
+                                                        ->whereNotNull('country_id')
+                                                        ->get()
+                                                        ->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE);
+                                                @endphp
                                                 <select class="form-control" wire:model="selectedCountryForUrl">
-                                                    <option value="">Choose a country</option>
-                                                    @foreach ($selectedCountries as $countryId)
-                                                        @php
-                                                            $country = collect($countries)->firstWhere('id', $countryId);
-                                                        @endphp
-                                                        @if ($country)
-                                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                    <option value="">Choose a country / region</option>
+                                                    @foreach ($footerLangs as $fLang)
+                                                        @if ($active_all_countries == 1 || empty($selectedCountries) || in_array($fLang->country_id, (array)$selectedCountries))
+                                                            <option value="{{ $fLang->id }}">{{ $fLang->name }}</option>
                                                         @endif
                                                     @endforeach
                                                 </select>

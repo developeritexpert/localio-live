@@ -544,7 +544,7 @@
 
                                         <li class="nk-menu-item">
                                             <a href="{{ route('country.index') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Countries List</span>
+                                                <span class="nk-menu-text">Countries/Regions List</span>
                                             </a>
                                         </li>
 
