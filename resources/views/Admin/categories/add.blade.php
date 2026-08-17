@@ -45,9 +45,16 @@
                             <div class="form-group">
                                 <label class="form-label" for="comparison_slug">Comparison Slug (SEO Route)</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="comparison_slug" name="comparison_slug"
-                                        value="{{ isset($category_data) ? ($category_data['comparison_slug'] ?? '') : old('comparison_slug') }}" placeholder="e.g. software-comparison" />
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="comparison_slug" name="comparison_slug"
+                                            value="{{ isset($category_data) ? ($category_data['comparison_slug'] ?? '') : old('comparison_slug') }}" 
+                                            placeholder="e.g. business-name-comparison" readonly />
+                                        <button class="btn btn-light" type="button" id="edit_comparison_slug_btn" title="Edit Comparison Slug">
+                                            <em class="icon ni ni-edit"></em>
+                                        </button>
+                                    </div>
                                 </div>
+                                <small class="text-muted d-block mt-1">Auto-assigned as <code>[category-name]-comparison</code>. Click the pencil icon to edit manually.</small>
                                 @error('comparison_slug')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -258,6 +265,70 @@
 
             if (isParentCheckbox) {
                 isParentCheckbox.addEventListener('change', toggleParentDropdown);
+            }
+
+            // Comparison Slug Auto-generate & Pencil Edit Toggle
+            const nameInput = document.getElementById('name');
+            const comparisonSlugInput = document.getElementById('comparison_slug');
+            const editComparisonSlugBtn = document.getElementById('edit_comparison_slug_btn');
+            let isSlugManuallyEdited = {{ (isset($category_data) && !empty($category_data['comparison_slug'])) || old('comparison_slug') ? 'true' : 'false' }};
+
+            function generateSlug(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .trim()
+                    .replace(/&/g, '-and-')
+                    .replace(/[\s\W-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+
+            function updateComparisonSlug() {
+                if (!isSlugManuallyEdited && nameInput && comparisonSlugInput) {
+                    const rawSlug = generateSlug(nameInput.value);
+                    comparisonSlugInput.value = rawSlug ? rawSlug + '-comparison' : '';
+                }
+            }
+
+            if (nameInput && comparisonSlugInput) {
+                if (!comparisonSlugInput.value && nameInput.value.trim()) {
+                    updateComparisonSlug();
+                }
+
+                nameInput.addEventListener('input', function() {
+                    updateComparisonSlug();
+                });
+
+                comparisonSlugInput.addEventListener('input', function() {
+                    isSlugManuallyEdited = true;
+                });
+
+                comparisonSlugInput.addEventListener('blur', function() {
+                    if (this.value.trim()) {
+                        this.value = generateSlug(this.value);
+                    }
+                });
+            }
+
+            if (editComparisonSlugBtn && comparisonSlugInput) {
+                editComparisonSlugBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (comparisonSlugInput.readOnly) {
+                        comparisonSlugInput.readOnly = false;
+                        comparisonSlugInput.focus();
+                        isSlugManuallyEdited = true;
+                        editComparisonSlugBtn.innerHTML = '<em class="icon ni ni-check"></em>';
+                        editComparisonSlugBtn.classList.remove('btn-outline-light', 'btn-white');
+                        editComparisonSlugBtn.classList.add('btn-primary');
+                        editComparisonSlugBtn.title = 'Lock Slug';
+                    } else {
+                        comparisonSlugInput.readOnly = true;
+                        editComparisonSlugBtn.innerHTML = '<em class="icon ni ni-edit"></em>';
+                        editComparisonSlugBtn.classList.add('btn-outline-light', 'btn-white');
+                        editComparisonSlugBtn.classList.remove('btn-primary');
+                        editComparisonSlugBtn.title = 'Edit Comparison Slug';
+                    }
+                });
             }
 
             // Rating Criteria Logic

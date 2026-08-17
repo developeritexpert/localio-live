@@ -467,6 +467,10 @@ class CategoriesController extends Controller
             // dump($category->id);
             // dump($language_id);
             // dd();
+            $comparisonSlug = !empty($validate['comparison_slug']) 
+                ? Str::slug($validate['comparison_slug']) 
+                : ($slug . '-comparison');
+
            CategoryTranslation::updateOrCreate(
                 [
                     'lang_id' => (int) $language_id,
@@ -479,7 +483,7 @@ class CategoriesController extends Controller
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
                     'slug'         => $slug,
-                    'comparison_slug' => $validate['comparison_slug'] ?? null,
+                    'comparison_slug' => $comparisonSlug,
                     'is_important' => $request->has('is_important') ?? 0,
                 ]
             );
