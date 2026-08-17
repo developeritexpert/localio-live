@@ -19,7 +19,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="country_id">Country/region</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-select js-select2" id="country_id" name="country_id">
+                                    <select class="form-select js-select2" id="country_id" name="country_id" required data-placeholder="Select Country/region">
                                         <option value="">Select a country/region</option>
                                         @foreach ($countries as $country)
                                             <option value="{{ $country->id }}"
@@ -40,11 +40,11 @@
                             <div class="form-group">
                                 <label class="form-label" for="base_language_id">Base Language (Optional)</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-select js-select2" id="base_language_id" name="base_language_id">
+                                    <select class="form-select js-select2" id="base_language_id" name="base_language_id" data-placeholder="No base language">
                                         <option value="">No base language</option>
                                         @foreach ($baseLanguages as $bl)
                                             <option value="{{ $bl->id }}" {{ old('base_language_id') == $bl->id ? 'selected' : '' }}>
-                                                {{ $bl->name }} ({{ $bl->language_tag }}){{ $bl->is_master ? ' - Master' : '' }}
+                                                {{ $bl->name }} ({{ $bl->code }})
                                             </option>
                                         @endforeach
                                     </select>
@@ -62,7 +62,7 @@
                                 <label class="form-label" for="lang_code">Lang code</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="lang_code" name="lang_code"
-                                        value="{{ old('lang_code') }}" placeholder="e.g. en-us, fr-fr" />
+                                        value="{{ old('lang_code') }}" placeholder="e.g. en-us, fr-fr" required />
                                 </div>
                                 @error('lang_code')
                                     <div class="error text-danger">{{ $message }}</div>
@@ -107,8 +107,14 @@
 
     <script>
         $(document).ready(function() {
-            $('#country_id, #base_language_id').select2({
-                placeholder: 'Select an option',
+            $('#country_id').select2({
+                placeholder: 'Select Country/region',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#base_language_id').select2({
+                placeholder: 'No base language',
                 allowClear: true,
                 width: '100%'
             });

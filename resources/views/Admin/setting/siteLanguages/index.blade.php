@@ -37,6 +37,7 @@
                         <th class="nk-tb-col"><span class="sub-text">Lang Code</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Country/region</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Base Language</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Combination tag</span></th>
                         <th class="nk-tb-col"><span class="sub-text">BCP 47 Language Tag</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                         <th class="nk-tb-col tb-tnx-action">
@@ -64,6 +65,12 @@
                             <td class="nk-tb-col tb-col-md">
                                 <span class="tb-amount">
                                     {{ $siteLanguage->baseLanguage ? $siteLanguage->baseLanguage->name : '-' }}
+                                </span>
+                            </td>
+
+                            <td class="nk-tb-col tb-col-md">
+                                <span class="tb-amount">
+                                    {{ ($siteLanguage->baseLanguage && $siteLanguage->baseLanguage->language_tag) ? $siteLanguage->baseLanguage->language_tag : '-' }}
                                 </span>
                             </td>
 
