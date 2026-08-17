@@ -171,20 +171,7 @@ function saveLog($fileName = null, $message = null, $name = null, $payload = [],
 
 function getLanguages($codes = false)
 {
-    $cacheKey = 'languages';
-    // $languages = json_decode(Redis::get($cacheKey), true);
-
-    if (isset($languages) && $languages) {
-        return $languages;
-    }
-
-    $languages = Language::all()->mapWithKeys(function ($lang) {
-        return [$lang->id => ['lang_code' => $lang->code, 'name' => $lang->name, 'id'=>$lang->id]];
-    })->toArray();
-
-    // Redis::set($cacheKey, json_encode($languages));
-
-    return $languages;
+    return Language::where('status', 1)->get();
 }
 
 
