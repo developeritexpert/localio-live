@@ -823,6 +823,7 @@
 
                             <!-- Default Redirect URL Box (Visible ONLY when Affiliate is ON) -->
                             <div x-show="isAffiliate" class="mb-3">
+                                <h6 class="mb-2 fs-6 text-muted fw-bold">Default</h6>
                                 <!-- Display Mode -->
                                 <div x-show="!editing" @click="startEdit()"
                                     class="border rounded-2 p-2 px-3 bg-white d-flex align-items-center justify-content-between"
@@ -836,7 +837,7 @@
                                 <!-- Edit Mode -->
                                 <div x-show="editing" style="display: none;" class="border rounded-2 p-3 bg-white shadow-sm">
                                     <div class="form-group mb-2">
-                                        <label class="form-label mb-1 fs-7 text-muted">URL Address</label>
+                                        <label class="form-label mb-1 fs-7 text-muted">Default URL</label>
                                         <input type="url" class="form-control"
                                             x-model="tempUrl" x-ref="urlInput"
                                             placeholder="https://example.com/redirect-link"
