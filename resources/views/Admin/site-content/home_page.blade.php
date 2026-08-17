@@ -734,17 +734,49 @@
                                                     <div class="row g-2 mb-3 align-items-center bg-light p-2 rounded">
                                                         <div class="col-md-8">
                                                             <select id="category_select_picker" class="form-select form-control">
-                                                                <option value="">-- Choose Category to Add to Homepage --</option>
+                                                                <option value="">-- Choose Category or Subcategory to Add to Homepage --</option>
                                                                 @if(isset($allCategories))
-                                                                    @foreach($allCategories as $catItem)
-                                                                        @if(!$catItem->parent_id) @continue @endif
-                                                                        @php
-                                                                            $cTrans = $catItem->translation ?? $catItem->translations ?? ($catItem->categoryTranslations ? $catItem->categoryTranslations->first() : null);
-                                                                        @endphp
-                                                                        <option value="{{ $catItem->id }}" data-name="{{ e($cTrans->name ?? 'Category #' . $catItem->id) }}">
-                                                                            {{ $cTrans->name ?? 'Category #' . $catItem->id }}
-                                                                        </option>
-                                                                    @endforeach
+                                                                    @php
+                                                                        $mainCategories = $allCategories->filter(fn($c) => empty($c->parent_id) || $c->parent_id == 0)->sortBy(function($c) {
+                                                                            $t = $c->translation ?? $c->translations ?? ($c->categoryTranslations ? $c->categoryTranslations->first() : null);
+                                                                            return $t ? $t->name : '';
+                                                                        }, SORT_NATURAL|SORT_FLAG_CASE);
+
+                                                                        $subCategories = $allCategories->filter(fn($c) => !empty($c->parent_id) && $c->parent_id > 0)->sortBy(function($c) {
+                                                                            $t = $c->translation ?? $c->translations ?? ($c->categoryTranslations ? $c->categoryTranslations->first() : null);
+                                                                            return $t ? $t->name : '';
+                                                                        }, SORT_NATURAL|SORT_FLAG_CASE);
+                                                                    @endphp
+
+                                                                    @if($mainCategories->isNotEmpty())
+                                                                        <optgroup label="-- Main Categories --">
+                                                                            @foreach($mainCategories as $mainCat)
+                                                                                @php
+                                                                                    $mTrans = $mainCat->translation ?? $mainCat->translations ?? ($mainCat->categoryTranslations ? $mainCat->categoryTranslations->first() : null);
+                                                                                    $mName = $mTrans->name ?? 'Category #' . $mainCat->id;
+                                                                                @endphp
+                                                                                <option value="{{ $mainCat->id }}" data-name="{{ e($mName) }}">
+                                                                                     {{ $mName }} (Main Category)
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endif
+
+                                                                    @if($subCategories->isNotEmpty())
+                                                                        <optgroup label="-- Subcategories --">
+                                                                            @foreach($subCategories as $subCat)
+                                                                                @php
+                                                                                    $sTrans = $subCat->translation ?? $subCat->translations ?? ($subCat->categoryTranslations ? $subCat->categoryTranslations->first() : null);
+                                                                                    $sName = $sTrans->name ?? 'Category #' . $subCat->id;
+                                                                                    $pTrans = $subCat->parent?->translation ?? $subCat->parent?->translations ?? ($subCat->parent?->categoryTranslations ? $subCat->parent->categoryTranslations->first() : null);
+                                                                                    $parentName = $pTrans ? $pTrans->name : null;
+                                                                                @endphp
+                                                                                <option value="{{ $subCat->id }}" data-name="{{ e($sName) }}">
+                                                                                     {{ $sName }} {{ $parentName ? "({$parentName})" : '' }}
+                                                                                </option>
+                                                                            @endforeach
+                                                                        </optgroup>
+                                                                    @endif
                                                                 @endif
                                                             </select>
                                                         </div>
