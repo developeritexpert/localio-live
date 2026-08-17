@@ -713,7 +713,28 @@ class ViewController extends Controller
             })
             ->values();
 
-        return view('User.product.write_review_landing', compact('trendingBusinesses', 'recentlyReviewed'));
+        // 3. Unreviewed Businesses: 8 businesses with 0 active reviews (chosen randomly)
+        $unreviewedBusinesses = \App\Models\Business::where('status', 1)
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->whereDoesntHave('reviews', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            ])
+            ->inRandomOrder()
+            ->take(8)
+            ->get();
+
+        return view('User.product.write_review_landing', compact('trendingBusinesses', 'unreviewedBusinesses', 'recentlyReviewed'));
     }
 
 }
