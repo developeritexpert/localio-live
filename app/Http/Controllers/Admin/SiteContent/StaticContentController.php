@@ -121,10 +121,24 @@ class StaticContentController extends Controller
         return back()->with('success', 'Section deleted successfully.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $langId = getCurrentLanguageID();
-        $defaultLangId =1;
+        $selectedLangCode = $request->get('lang');
+        if ($selectedLangCode) {
+            $selectedLang = Language::where('lang_code', $selectedLangCode)->first();
+            $langId = $selectedLang ? $selectedLang->id : getCurrentLanguageID();
+        } elseif ($request->has('lang_id')) {
+            $langId = (int)$request->get('lang_id');
+            $selectedLang = Language::find($langId);
+        } else {
+            $langId = getCurrentLanguageID();
+            $selectedLang = Language::find($langId);
+        }
+
+        $langCode = $selectedLang ? $selectedLang->lang_code : 'en-us';
+        $languages = Language::where('status', 1)->get();
+        $defaultLangId = 1;
+
         $keys = StaticContentKey::with(['translations' => function ($q) use ($langId, $defaultLangId) {
             if ($langId !== $defaultLangId) {
                 $q->where('lang_id', $langId);
@@ -212,13 +226,13 @@ class StaticContentController extends Controller
                 ],
             ],
         ];
-        return view('Admin.site-content.site_content', compact('keys', 'sections', 'langId'));
+        return view('Admin.site-content.site_content', compact('keys', 'sections', 'langId', 'langCode', 'languages'));
     }
 
     public function update(Request $request)
     {
         $texts = $request->input('texts', []);
-        $langId = getCurrentLanguageID();
+        $langId = $request->input('lang_id') ? (int)$request->input('lang_id') : getCurrentLanguageID();
         $defaultLangId = 1;
 
         DB::beginTransaction();

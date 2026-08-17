@@ -404,7 +404,7 @@
                             </div>
 
                             <!-- Product Filters Card -->
-                            <div class="card card-bordered mb-3 mt-3">
+                            <div class="card card-bordered mb-3 mt-3 d-none">
                                 <div class="card-inner">
                                     <h5 class="card-title">Product Filters</h5>
                                     <div class="filter-container">
