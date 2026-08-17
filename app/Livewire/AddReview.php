@@ -25,6 +25,8 @@ class AddReview extends Component
     public $availableCons = [];
     public $selectedPros = [];
     public $selectedCons = [];
+    public $proSearch = '';
+    public $conSearch = '';
     public $reviewId;
 
     #[On('openReviewModal')]
@@ -47,7 +49,8 @@ class AddReview extends Component
         $this->reset([
             'step', 'businessId', 'businessName', 'businessIcon', 'criteria',
             'criteriaRatings', 'recommend', 'title2', 'comment',
-            'availablePros', 'availableCons', 'selectedPros', 'selectedCons', 'reviewId'
+            'availablePros', 'availableCons', 'selectedPros', 'selectedCons',
+            'proSearch', 'conSearch', 'reviewId'
         ]);
 
         $this->step = 1;
@@ -126,7 +129,7 @@ class AddReview extends Component
         $this->show = true;
     }
 
-    public function togglePro($id)
+            public function togglePro($id)
     {
         $id = (int) $id;
         if (in_array($id, $this->selectedPros)) {
@@ -138,6 +141,7 @@ class AddReview extends Component
             }
             $this->selectedPros[] = $id;
         }
+        $this->proSearch = '';
     }
 
     public function toggleCon($id)
@@ -152,6 +156,17 @@ class AddReview extends Component
             }
             $this->selectedCons[] = $id;
         }
+        $this->conSearch = '';
+    }
+
+    public function clearProSearch()
+    {
+        $this->proSearch = '';
+    }
+
+    public function clearConSearch()
+    {
+        $this->conSearch = '';
     }
 
     public function goToStep2()
@@ -317,8 +332,44 @@ class AddReview extends Component
         $review->selectedProCons()->sync($selectedIds);
     }
 
+            public function getFilteredProsProperty()
+    {
+        $unselected = array_values(array_filter($this->availablePros, function($pro) {
+            return !in_array($pro['id'], $this->selectedPros);
+        }));
+
+        if (empty(trim($this->proSearch))) {
+            return $unselected;
+        }
+
+        $search = strtolower(trim($this->proSearch));
+        return array_values(array_filter($unselected, function($pro) use ($search) {
+            return str_contains(strtolower($pro['text']), $search);
+        }));
+    }
+
+    public function getFilteredConsProperty()
+    {
+        $unselected = array_values(array_filter($this->availableCons, function($con) {
+            return !in_array($con['id'], $this->selectedCons);
+        }));
+
+        if (empty(trim($this->conSearch))) {
+            return $unselected;
+        }
+
+        $search = strtolower(trim($this->conSearch));
+        return array_values(array_filter($unselected, function($con) use ($search) {
+            return str_contains(strtolower($con['text']), $search);
+        }));
+    }
+
     public function render()
     {
-        return view('livewire.add-review');
+        return view('livewire.add-review', [
+            'filteredPros' => $this->filteredPros,
+            'filteredCons' => $this->filteredCons,
+        ]);
     }
 }
+

@@ -31,6 +31,109 @@
         color: #ffffff;
         box-shadow: 0 4px 12px rgba(6, 73, 139, 0.25);
     }
+        .pro-con-box {
+        background-color: #fafafa;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+    }
+    .selected-chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #e2e8f0;
+    }
+    .selected-chip-badge {
+        background-color: #003f7d !important;
+        color: #ffffff !important;
+        border: 1px solid #003f7d !important;
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        line-height: 1.3;
+    }
+    .selected-chip-badge:hover {
+        background-color: #002b56 !important;
+        color: #ffffff !important;
+    }
+    .selected-chip-badge i.fa-times {
+        font-size: 11px;
+        opacity: 0.8;
+    }
+    .selected-chip-badge:hover i.fa-times {
+        opacity: 1;
+    }
+    .suggestions-chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-height: 115px;
+        overflow-y: auto;
+        padding: 2px 2px 2px 0;
+    }
+    .suggestions-chips-container::-webkit-scrollbar {
+        width: 5px;
+    }
+    .suggestions-chips-container::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 10px;
+    }
+    .pro-con-chip-btn {
+        border: 1px solid #e2e8f0;
+        background-color: #ffffff;
+        color: #334155;
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        outline: none;
+        line-height: 1.4;
+        text-align: left;
+    }
+    .pro-con-chip-btn:hover {
+        border-color: #003f7d;
+        background-color: #f1f5f9;
+        color: #003f7d;
+    }
+    .clear-search-btn {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent !important;
+        border: none !important;
+        color: #94a3b8 !important;
+        cursor: pointer !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 22px !important;
+        height: 22px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 13px !important;
+        line-height: 1 !important;
+        box-shadow: none !important;
+        border-radius: 50% !important;
+        z-index: 5;
+    }
+    .clear-search-btn:hover {
+        color: #0f172a !important;
+        background: #f1f5f9 !important;
+    }
 </style>
 
     @if($show)
@@ -174,11 +277,11 @@
                                      </div>
 
                                 @elseif($step === 4)
-                                    <!-- Step 4: Pros & Cons (Selectable Chips) -->
+                                    <!-- Step 4: Pros & Cons (Compact Search & Tag Cloud) -->
                                     <div class="step-content" wire:key="step-4">
                                         
                                         <!-- Pros Section -->
-                                        <div class="mb-4">
+                                        <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
                                                     <i class="fas fa-plus-circle text-success me-1"></i> Pros <span class="fw-normal text-muted" style="font-size: 12px;">(What you liked)</span>
@@ -187,24 +290,66 @@
                                                     {{ count($selectedPros) }}/5 selected
                                                 </span>
                                             </div>
-                                            <div class="d-flex flex-wrap gap-2 p-3 border rounded-3" style="background-color: #fafafa; min-height: 80px;">
-                                                @forelse($availablePros as $pro)
-                                                    @php $isSelected = in_array($pro['id'], $selectedPros); @endphp
-                                                    <button type="button" 
-                                                            wire:click="togglePro({{ $pro['id'] }})"
-                                                            class="btn btn-sm rounded-pill transition-all d-inline-flex align-items-center gap-1 {{ $isSelected ? 'btn-success text-white shadow-sm' : 'btn-outline-success bg-white' }}"
-                                                            style="font-size: 13px; padding: 6px 14px; font-weight: 500; border-width: 1px;">
-                                                        <i class="fas {{ $isSelected ? 'fa-check-circle' : 'fa-plus' }}" style="font-size: 11px;"></i>
-                                                        <span>{{ $pro['text'] }}</span>
-                                                    </button>
-                                                @empty
-                                                    <p class="text-muted small m-0 align-self-center">No pre-defined pros available for this category.</p>
-                                                @endforelse
+                                            
+                                            <div class="pro-con-box">
+                                                <div class="mb-2 position-relative" style="display: flex; align-items: center;">
+                                                    <i class="fas fa-search position-absolute text-muted" style="left: 12px; font-size: 12px; pointer-events: none; z-index: 5;"></i>
+                                                    <input type="text" 
+                                                           wire:model.live.debounce.100ms="proSearch" 
+                                                           class="form-control" 
+                                                           placeholder="Search or filter pros..." 
+                                                           style="border-radius: 20px; font-size: 12px; padding: 6px 32px 6px 32px; border: 1px solid #e2e8f0; background: #fff; width: 100%;">
+                                                    @if(!empty($proSearch))
+                                                        <button type="button" wire:click="clearProSearch" class="clear-search-btn" title="Clear search">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+
+                                                @if(count($selectedPros) > 0)
+                                                    <div class="selected-chips-container">
+                                                        @foreach($availablePros as $pro)
+                                                            @if(in_array($pro['id'], $selectedPros))
+                                                                <button type="button" 
+                                                                        wire:key="selected-pro-{{ $pro['id'] }}"
+                                                                        wire:click="togglePro({{ $pro['id'] }})"
+                                                                        class="selected-chip-badge"
+                                                                        title="Click to remove">
+                                                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                                                    <span>{{ $pro['text'] }}</span>
+                                                                    <i class="fas fa-times ms-1"></i>
+                                                                </button>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                                <div class="suggestions-chips-container">
+                                                    @forelse($filteredPros as $pro)
+                                                        <button type="button" 
+                                                                wire:key="pro-chip-{{ $pro['id'] }}"
+                                                                wire:click="togglePro({{ $pro['id'] }})"
+                                                                class="pro-con-chip-btn">
+                                                            <i class="fas fa-plus text-success" style="font-size: 10px;"></i>
+                                                            <span>{{ $pro['text'] }}</span>
+                                                        </button>
+                                                    @empty
+                                                        <p class="text-muted small m-0 py-1" style="font-size: 12px;">
+                                                            @if(!empty($proSearch))
+                                                                No matching pros found for "{{ $proSearch }}".
+                                                            @elseif(count($selectedPros) >= 5)
+                                                                Maximum of 5 pros selected.
+                                                            @else
+                                                                All available pros selected.
+                                                            @endif
+                                                        </p>
+                                                    @endforelse
+                                                </div>
                                             </div>
                                         </div>
 
                                         <!-- Cons Section -->
-                                        <div class="mb-4">
+                                        <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
                                                     <i class="fas fa-minus-circle text-danger me-1"></i> Cons <span class="fw-normal text-muted" style="font-size: 12px;">(What you disliked)</span>
@@ -213,19 +358,61 @@
                                                     {{ count($selectedCons) }}/5 selected
                                                 </span>
                                             </div>
-                                            <div class="d-flex flex-wrap gap-2 p-3 border rounded-3" style="background-color: #fafafa; min-height: 80px;">
-                                                @forelse($availableCons as $con)
-                                                    @php $isSelected = in_array($con['id'], $selectedCons); @endphp
-                                                    <button type="button" 
-                                                            wire:click="toggleCon({{ $con['id'] }})"
-                                                            class="btn btn-sm rounded-pill transition-all d-inline-flex align-items-center gap-1 {{ $isSelected ? 'btn-danger text-white shadow-sm' : 'btn-outline-danger bg-white' }}"
-                                                            style="font-size: 13px; padding: 6px 14px; font-weight: 500; border-width: 1px;">
-                                                        <i class="fas {{ $isSelected ? 'fa-check-circle' : 'fa-minus' }}" style="font-size: 11px;"></i>
-                                                        <span>{{ $con['text'] }}</span>
-                                                    </button>
-                                                @empty
-                                                    <p class="text-muted small m-0 align-self-center">No pre-defined cons available for this category.</p>
-                                                @endforelse
+                                            
+                                            <div class="pro-con-box">
+                                                <div class="mb-2 position-relative" style="display: flex; align-items: center;">
+                                                    <i class="fas fa-search position-absolute text-muted" style="left: 12px; font-size: 12px; pointer-events: none; z-index: 5;"></i>
+                                                    <input type="text" 
+                                                           wire:model.live.debounce.100ms="conSearch" 
+                                                           class="form-control" 
+                                                           placeholder="Search or filter cons..." 
+                                                           style="border-radius: 20px; font-size: 12px; padding: 6px 32px 6px 32px; border: 1px solid #e2e8f0; background: #fff; width: 100%;">
+                                                    @if(!empty($conSearch))
+                                                        <button type="button" wire:click="clearConSearch" class="clear-search-btn" title="Clear search">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    @endif
+                                                </div>
+
+                                                @if(count($selectedCons) > 0)
+                                                    <div class="selected-chips-container">
+                                                        @foreach($availableCons as $con)
+                                                            @if(in_array($con['id'], $selectedCons))
+                                                                <button type="button" 
+                                                                        wire:key="selected-con-{{ $con['id'] }}"
+                                                                        wire:click="toggleCon({{ $con['id'] }})"
+                                                                        class="selected-chip-badge"
+                                                                        title="Click to remove">
+                                                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                                                    <span>{{ $con['text'] }}</span>
+                                                                    <i class="fas fa-times ms-1"></i>
+                                                                </button>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+
+                                                <div class="suggestions-chips-container">
+                                                    @forelse($filteredCons as $con)
+                                                        <button type="button" 
+                                                                wire:key="con-chip-{{ $con['id'] }}"
+                                                                wire:click="toggleCon({{ $con['id'] }})"
+                                                                class="pro-con-chip-btn">
+                                                            <i class="fas fa-minus text-danger" style="font-size: 10px;"></i>
+                                                            <span>{{ $con['text'] }}</span>
+                                                        </button>
+                                                    @empty
+                                                        <p class="text-muted small m-0 py-1" style="font-size: 12px;">
+                                                            @if(!empty($conSearch))
+                                                                No matching cons found for "{{ $conSearch }}".
+                                                            @elseif(count($selectedCons) >= 5)
+                                                                Maximum of 5 cons selected.
+                                                            @else
+                                                                All available cons selected.
+                                                            @endif
+                                                        </p>
+                                                    @endforelse
+                                                </div>
                                             </div>
                                         </div>
 
@@ -240,7 +427,6 @@
                                          </div>
                                      </div>
                                 @endif
-
                             </div>
 
                             @if($step > 1)
