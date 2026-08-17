@@ -1676,9 +1676,21 @@
                                             </div>
                                         </div>
                                         {{-- End Feature Localio Review Breakdown --}}
-                                        @if($business->is_affiliate)
+                                        @php
+                                            $hasFreeTrial = false;
+                                            if ($business->relationLoaded('products')) {
+                                                $hasFreeTrial = $business->products->flatMap->pricingOptions->contains('slug', 'free-trial');
+                                            }
+                                            if (!$hasFreeTrial && $business->pricingOptions) {
+                                                $hasFreeTrial = $business->pricingOptions->contains('slug', 'free-trial');
+                                            }
+                                            $hasStartingPrice = !empty($startingPrice) && is_numeric($startingPrice) && $startingPrice > 0;
+                                        @endphp
+
+                                        @if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
                                         <div class="innr_price_trail">
 
+                                            @if($hasStartingPrice)
                                             <div class="main_feature_sm">
                                                 <div class="feture_box str_prc_box">
 
@@ -1686,15 +1698,9 @@
                                                         Starting price
                                                     </h6>
 
-                                                    @if ($startingPrice)
-                                                        <h2 class="starting-price-value">
-                                                            {{ $currency }}{{ $startingPrice }}
-                                                        </h2>
-                                                    @else
-                                                        <h2 class="starting-price-value">
-                                                            {{ $currency }}9
-                                                        </h2>
-                                                    @endif
+                                                    <h2 class="starting-price-value">
+                                                        {{ $currency }}{{ $startingPrice }}
+                                                    </h2>
 
                                                     <p class="starting-price-text">
                                                         Flat Rate, Per {{ ucfirst($timeUnit) }}
@@ -1714,7 +1720,9 @@
 
                                                 </div>
                                             </div>
+                                            @endif
 
+                                            @if($hasFreeTrial)
                                             <div class="main_feature_sm">
                                                 <div class="fre_trail feture_box size22">
                                                     <div class="grn_check_big">
@@ -1727,7 +1735,6 @@
                                                         <a class="cta cta_white blue_t_org_btn"
                                                             data-track="{{ json_encode([
                                                                 'type' => 'click',
-                                                                // 'product_id' => $product->id,
                                                                 'business_id' => $business->id,
                                                                 'action' => 'claim_now',
                                                                 'label' => 'Claim Now',
@@ -1736,6 +1743,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                         </div>
                                         @endif
                                       @php
