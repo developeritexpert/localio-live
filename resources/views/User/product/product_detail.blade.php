@@ -180,6 +180,11 @@
             </script>
         @endif
         <style>
+            .rating_bar_span {
+                font-size: 18px;
+                font-weight: 700;
+                color: #002347;
+            }
             a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
                 background-color: #e4e7ea !important;
             }
@@ -1114,7 +1119,7 @@
                                                                  <li class="d-flex align-items-start mb-2">
                                                                      <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
                                                                      <span style="color: #202124;">{{ $pro->text }} 
-                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 13px;">{{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
                                                                     </span>
                                                                  </li>
                                                                  @endforeach
@@ -1131,7 +1136,7 @@
                                                                  <li class="d-flex align-items-start mb-2">
                                                                      <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
                                                                      <span style="color: #202124;">{{ $con->text }} 
-                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 13px;">{{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                        <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
                                                                     </span>
                                                                  </li>
                                                                  @endforeach
@@ -1333,7 +1338,7 @@
                                             @endphp
                                             <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
                                                 <div class="mb-3">
-                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} features</h2>
+                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Features</h2>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['intro_text']))
@@ -1341,13 +1346,14 @@
                                                 @endif
 
                                                 <!-- Community Rating Box -->
-                                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Features community rating</div>
+                                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($featRatingVal, 1) }}</span>
-                                                        <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                        <span class="rating_bar_span">Features</span>
+                                                        <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
+                                                        <span class="rating_bar_span">{{ number_format($featRatingVal, 1) }}</span>
                                                     </div>
                                                     <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
@@ -1384,20 +1390,22 @@
                                             @endphp
                                             <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
                                                 <div class="mb-3">
-                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} ease of use</h2>
+                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Ease of use</h2>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['intro_text']))
                                                     <div class="mb-3">{!! $ratingTexts['ease_of_use']['intro_text'] !!}</div>
                                                 @endif
 
-                                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Ease of use community rating</div>
+                                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($easeRatingVal, 1) }}</span>
-                                                        <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                        <span class="rating_bar_span">ease of use</span>
+                                                        <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
+                                                        <span class="rating_bar_span">{{ number_format($easeRatingVal, 1) }}</span>
+
                                                     </div>
                                                     <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
@@ -1419,20 +1427,22 @@
                                                     @endphp
                                                     <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
                                                         <div class="mb-3">
-                                                            <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} {{ lcfirst($cr->name) }}</h2>
+                                                            <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $crDisplayName }}</h2>
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['intro_text']))
                                                             <div class="mb-3">{!! $ratingTexts[$crKey]['intro_text'] !!}</div>
                                                         @endif
 
-                                                        <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                            <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">{{ $crDisplayName }} community rating</div>
+                                                        <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
+                                                            <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                                <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($crRatingVal, 1) }}</span>
-                                                                <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                                <span class="rating_bar_span">service management</span>
+                                                                <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                                     <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                 </div>
+                                                                <span class="rating_bar_span">{{ number_format($crRatingVal, 1) }}</span>
+
                                                             </div>
                                                             <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                         </div>
@@ -1452,20 +1462,22 @@
                                             @endphp
                                             <div class="rating-criteria-section mb-5 p-4 bg-white rounded shadow-sm border">
                                                 <div class="mb-3">
-                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">{{ $businessName }} value for money</h2>
+                                                    <h2 class="m-0" style="font-weight: 600; font-size: 24px; color: #002347;">Value for money</h2>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['intro_text']))
                                                     <div class="mb-3">{!! $ratingTexts['value_for_money']['intro_text'] !!}</div>
                                                 @endif
 
-                                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; max-width: 450px;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Value for money community rating</div>
+                                                <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span style="font-size: 18px; font-weight: 700; color: #002347;">{{ number_format($vfmRatingVal, 1) }}</span>
-                                                        <div class="progress" style="height: 6px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
+                                                        <span class="rating_bar_span">value for money</span>
+                                                        <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
+                                                        <span class="rating_bar_span">{{ number_format($vfmRatingVal, 1) }}</span>
+
                                                     </div>
                                                     <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
