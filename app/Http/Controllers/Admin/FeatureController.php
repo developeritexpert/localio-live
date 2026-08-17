@@ -11,11 +11,12 @@ use Illuminate\Validation\Rule;
 
 class FeatureController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $lang_id = getCurrentLanguageID();
+        $selectedCategoryId = $request->query('category_id');
 
-        $features = Feature::whereHas('translations', function ($query) use ($lang_id) {
+        $featuresQuery = Feature::whereHas('translations', function ($query) use ($lang_id) {
             $query->where('lang_id', $lang_id);
         })->with([
             'category.translations' => function ($q) use ($lang_id) {
@@ -24,7 +25,13 @@ class FeatureController extends Controller
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             }
-        ])->get();
+        ]);
+
+        if (!empty($selectedCategoryId)) {
+            $featuresQuery->where('category_id', $selectedCategoryId);
+        }
+
+        $features = $featuresQuery->get();
 
         // Retrieve top-level categories only
         $categories = Category::where(function ($query) {
@@ -41,9 +48,9 @@ class FeatureController extends Controller
             }
             $cat->translated_name = $catName;
             return $cat;
-        });
+        })->sortBy('translated_name', SORT_NATURAL|SORT_FLAG_CASE)->values();
 
-        return view('Admin.features.index', compact('features', 'categories'));
+        return view('Admin.features.index', compact('features', 'categories', 'selectedCategoryId'));
     }
 
     public function create()
