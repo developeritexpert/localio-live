@@ -10858,6 +10858,17 @@ a.cta.btn_blue:hover,
     font-size: 15px;
 }
 
-#register-profile-modal .form-check-label a:focus{
+#register-profile-modal .form-check-label a:focus {
     text-decoration: underline;
+}
+
+.review-actions-bottom-right .action-icon-btn,
+button.action-icon-btn.share-trigger-btn {
+    color: #003f7d !important;
+}
+.review-actions-bottom-right a.action-icon-btn:hover,
+.review-actions-bottom-right button.action-icon-btn:hover,
+.sharing_ul button.action-icon-btn.share-trigger-btn:hover {
+    background: #a0aec03b !important;
+    color: #003f7d !important;
 }
