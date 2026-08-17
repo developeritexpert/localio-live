@@ -3926,6 +3926,37 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 20px;
+        margin-top: 15px;
+    }
+    .recommended-per {
+        right: 14px;
+        top: 22px;
+        font-size: 11px !important;
+    }
+    .sharing_icons {
+        margin-top: 5px;
+    }
+    .top-rated-heading-sec .breadcrumb-item a,
+    .breadcrumb-item + .breadcrumb-item::before,
+    .breadcrumb-item + .breadcrumb-item {
+        padding: 0 2px !important;
+    }
+      .sorting{
+        border-radius: 8px !important;
+        padding: 7px 5px !important;
+      }
+    .sorting,
+    .top-automotive-sec .auto-choice-rgt > div:first-child p {
+        font-size: 12px;
+    }
+
+    .blue-heart,
+    .automotive-card .wishlist {
+        width: 30px !important;
+        height: 30px !important;
+        top: 10px !important;
+        right: 10px !important;
+        box-shadow: none !important;
     }
 
     .auto-choice-hd .tp-btm {
@@ -11389,8 +11420,10 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
     .banner_text_col .search-box input {
         font-size: 12px !important;
     }
-    body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
-        font-size: 11px;
+    .top-rated-heading-sec .breadcrumb-item a,
+    .asn_main_sec .breadcrumb-item a,
+    .breadcrumb .breadcrumb-item {
+        font-size: 11px !important;
     }
     .inner_banner_sec .inner_banr_content {
         margin-bottom: 10px;
@@ -13494,6 +13527,9 @@ textarea#message {
     .top_rate_pg .top-rated-heading-block h1 {
         font-size: 24px !important;
     }
+    .automotive-card .inn_sl_hed {
+        gap: 1px !important;
+    }
 
     .most-populr-sec .popular-category-tab-btn span {
         font-size: 12px !important;
@@ -13534,12 +13570,11 @@ textarea#message {
     }
 
     .wishlist {
-        flex: 0 0 34px !important;
-        width: 34px !important;
-        height: 34px !important;
-        min-width: 34px !important;
-        min-height: 34px !important;
-        padding-bottom: 5px;
+        flex: 0 0 34px;
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        min-height: 34px;
     }
     .inside_sec_text {
         display: flex;
@@ -13563,6 +13598,9 @@ textarea#message {
         display: flex !important;
         margin-top: 20px;
         justify-content: center;
+    }
+    .top-rated-heading-sec {
+        padding-top: 15px !important;
     }
 }
 

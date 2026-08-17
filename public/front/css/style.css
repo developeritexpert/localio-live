@@ -1305,7 +1305,7 @@ textarea:focus-visible {
 
 .best-value-inline-container {
     display: flex !important;
-    /* justify-content: flex-end !important; */
+    justify-content: space-between !important;
     margin-top: 0 !important;
     margin-bottom: 4px !important;
     width: 100% !important;
@@ -10345,10 +10345,11 @@ h5.card-title.mb-3 {
     position: relative;
     right: -1px;
     top: -1px;
+    color: #003f7d;
 }
 
 .review-actions-bottom-right a:hover {
-    background: #003f7d;
+    background: #a0aec03b;
     color: #fff !important;
 }
 
@@ -10443,8 +10444,8 @@ section.most-populr-sec.ms_dv.light.p_120 {
 
 .rating-group {
     color: #333 !important;
-    line-height: 1 !important;
-    margin-top: 6px !important;
+    line-height: 0 !important;
+    margin-top: 4px !important;
     font-weight: 500 !important;
     font-size: 12px !important;
     gap: 3px !important;
@@ -10453,27 +10454,30 @@ section.most-populr-sec.ms_dv.light.p_120 {
 }
 
 .rating-group .rate_box_num {
-    padding-top: 1px;
+    /* padding-top: 1px; */
 }
 
 .rating-group div {
-    margin-bottom: 1px !important;
+    /* margin-bottom: 1px !important; */
     font-size: 9px !important;
 }
 
 .blue-heart {
-    background: #d3d3d3;
     border-radius: 50%;
-    padding: 4px 0px 2px 0px;
+    padding: 2px 0px 2px 0px;
     color: #fff;
     transition:
         transform 0.1s linear,
         background 0.1s linear;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .blue-heart:hover {
-    background: #ff5722;
-    color: #fff;
+    background: #a0aec03b;
 }
 
 .svg-share {
@@ -10486,6 +10490,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 .svg-share svg {
     width: 80%;
     height: 80%;
+    color: #003f7d;
 }
 
 .review-time {
@@ -10644,7 +10649,7 @@ a.cta.btn_blue:hover,
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -10652,8 +10657,8 @@ a.cta.btn_blue:hover,
 .top-product-small-logo img,
 .top-product-medium-logo img {
     width: 100%;
-    object-fit: cover;
-    transform: scale(1.25);
+    object-fit: contain;
+    /* transform: scale(1.25); */
     height: 100%;
 }
 
@@ -10712,12 +10717,10 @@ a.cta.btn_blue:hover,
 .blue-heart .wishlist a i {
     position: relative;
     top: -1px;
-    color: #000;
+    color: #003f7d;
     font-size: 13px;
 }
-.blue-heart:hover .wishlist a i {
-    color: #fff;
-}
+
 .review-brand-icon {
     display: flex;
     flex-direction: column;
@@ -10747,7 +10750,7 @@ a.cta.btn_blue:hover,
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border-radius: 10px;
+    border-radius: 4px;
     overflow: hidden;
 }
 .top-product-medium-logo {
@@ -10837,4 +10840,24 @@ a.cta.btn_blue:hover,
 }
 .rating-stars i {
     font-size: 11px !important;
+}
+
+/* ====style.css updated by-Kashish(17-aug-26)===== */
+
+.filter-by-title-row {
+    margin-top: 0;
+}
+
+.recommended-per {
+    position: absolute;
+    right: 30px;
+    top: 20px;
+}
+.form-check-label i.fas.fa-star.text-warning,
+.top-automotive-sec.cat_pg .auto-choice-lft .fa-star {
+    font-size: 15px;
+}
+
+#register-profile-modal .form-check-label a:focus{
+    text-decoration: underline;
 }
