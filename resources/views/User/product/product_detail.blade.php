@@ -1165,7 +1165,139 @@
                                             </div>
                                         </div>
                                         @endif
+             {{-- <div class="col-lg-12">
+                                    <div class="is-asana-rgt">
+                                        <div class="is-asan-slider">
+                                            <div class="asan-slider slider-for">
+                                                <div class="asan-slider-inr"><img
+                                                        src="{{ asset('front/img/video-img.png') }}" alt="">
+                                                    </div>
+                                                    <div class="asan-slider-inr"><img
+                                                            src="{{ asset('front/img/video-img3.png') }}" alt="">
+                                                    </div>
+                                                    <div class="asan-slider-inr"><img
+                                                            src="{{ asset('front/img/video-img.png') }}" alt="">
+                                                    </div>
+                                                    <div class="asan-slider-inr"><img
+                                                            src="{{ asset('front/img/video-img3.png') }}" alt="">
+                                                    </div>
+                                                    <div class="asan-slider-inr"><img
+                                                            src="{{ asset('front/img/video-img.png') }}" alt="">
+                                                    </div>
+                                                </div>
+                                                <div class="asan-slider asan-slider-btm slider-nav">
+                                                    <div><img src="{{ asset('front/img/small-video-img.png') }}"
+                                                            alt="">
+                                                    </div>
+                                                    <div><img src="{{ asset('front/img/sm-video-img3.png') }}"
+                                                            alt=""></div>
+                                                    <div><img src="{{ asset('front/img/small-video-img.png') }}"
+                                                            alt="">
+                                                    </div>
+                                                    <div><img src="{{ asset('front/img/sm-video-img3.png') }}"
+                                                            alt=""></div>
+                                                    <div><img src="{{ asset('front/img/small-video-img.png') }}"
+                                                            alt="">
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+                                    </div> --}}
 
+
+                                        {{-- Business Image slider --}}
+                                        @php
+                                            // Safely decode the business_images
+                                            $images = is_array($business->business_images)
+                                                ? $business->business_images
+                                                : json_decode($business->business_images ?? '[]', true);
+
+                                            // Fallback to screenshot_urls if no business_images are uploaded
+                                            if (empty($images) && !empty($business->screenshot_urls)) {
+                                                $urls = is_array($business->screenshot_urls)
+                                                    ? $business->screenshot_urls
+                                                    : json_decode($business->screenshot_urls ?? '[]', true);
+                                                $urls = array_values(array_filter((array)$urls));
+                                                if (!empty($urls)) {
+                                                    $images = $urls;
+                                                }
+                                            }
+                                        @endphp
+
+                                         @if ($business->is_affiliate && !empty($images))
+                                            <div class="col-lg-12 mb-4">
+                                                <div class="is-asana-rgt">
+                                                    <div class="row is-asan-slider">
+                                                        <!-- Main Slider -->
+                                                        <div class="col-md-12 asan-slider slider-for">
+                                                            @foreach ($images as $index => $image)
+                                                                @php
+                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
+                                                                @endphp
+                                                                 <div class="asan-slider-inr">
+                                                                     <a href="{{ $business->getTrackedUrl() }}"
+                                                                        data-track="{{ json_encode([
+                                                                            'type' => 'click',
+                                                                            'business_id' => $business->id,
+                                                                            'action' => 'visit_website',
+                                                                            'label' => 'Visit Website',
+                                                                        ]) }}"
+                                                                        target="_blank" style="display: block;">
+                                                                         <img src="{{ $imgSrc }}"
+                                                                             alt="Business Image {{ $index + 1 }}"
+                                                                             style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
+                                                                     </a>
+                                                                 </div>
+                                                            @endforeach
+                                                        </div>
+
+                                                        <!-- Thumbnail Slider -->
+                                                        <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
+                                                            style="margin-top: 15px !important;">
+                                                            @foreach ($images as $index => $image)
+                                                                @php
+                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
+                                                                @endphp
+                                                                <div style="padding: 0 5px; cursor: pointer;">
+                                                                    <img src="{{ $imgSrc }}"
+                                                                        alt="Thumbnail {{ $index + 1 }}"
+                                                                        style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                         @endif
+
+                                         <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                // Wait for slick to initialize
+                                                setTimeout(() => {
+                                                    var $slider = $('.asan-slider-btm');
+                                                    
+                                                    // Give the active slide the class initially
+                                                    $slider.find('.slick-current').addClass('hover_main');
+                                                    
+                                                    // On hover, add class and remove from others
+                                                    $slider.on('mouseenter', '.slick-slide', function() {
+                                                        $slider.find('.slick-slide').removeClass('hover_main');
+                                                        $(this).addClass('hover_main');
+                                                    });
+                                                }, 500);
+                                            });
+                                         </script>
+                                         {{-- End Business Images  --}}
+
+                                         @if (!empty($business->translations->first()->after_image_description))
+                                             <div class="col-lg-12 mt-2 after-image-desc">
+                                                 <div class="is_text">
+                                                     {!! $business->translations->first()->after_image_description !!}
+                                                 </div>
+                                             </div>
+                                         @endif
+
+                                    </div>
                                         {{-- RATING CRITERIA SECTIONS (Features, Ease of use, Category Criteria, Value for money) --}}
                                         @php
                                             $businessName = optional($business->translations->first())->name ?? 'Business';
@@ -1344,139 +1476,7 @@
                                             </div>
                                         </div>
 
-                                        {{-- <div class="col-lg-12">
-                                    <div class="is-asana-rgt">
-                                        <div class="is-asan-slider">
-                                            <div class="asan-slider slider-for">
-                                                <div class="asan-slider-inr"><img
-                                                        src="{{ asset('front/img/video-img.png') }}" alt="">
-                                                    </div>
-                                                    <div class="asan-slider-inr"><img
-                                                            src="{{ asset('front/img/video-img3.png') }}" alt="">
-                                                    </div>
-                                                    <div class="asan-slider-inr"><img
-                                                            src="{{ asset('front/img/video-img.png') }}" alt="">
-                                                    </div>
-                                                    <div class="asan-slider-inr"><img
-                                                            src="{{ asset('front/img/video-img3.png') }}" alt="">
-                                                    </div>
-                                                    <div class="asan-slider-inr"><img
-                                                            src="{{ asset('front/img/video-img.png') }}" alt="">
-                                                    </div>
-                                                </div>
-                                                <div class="asan-slider asan-slider-btm slider-nav">
-                                                    <div><img src="{{ asset('front/img/small-video-img.png') }}"
-                                                            alt="">
-                                                    </div>
-                                                    <div><img src="{{ asset('front/img/sm-video-img3.png') }}"
-                                                            alt=""></div>
-                                                    <div><img src="{{ asset('front/img/small-video-img.png') }}"
-                                                            alt="">
-                                                    </div>
-                                                    <div><img src="{{ asset('front/img/sm-video-img3.png') }}"
-                                                            alt=""></div>
-                                                    <div><img src="{{ asset('front/img/small-video-img.png') }}"
-                                                            alt="">
-                                                    </div>
-                                                </div>
-                                        </div>
-                                    </div>
-                                    </div> --}}
-
-
-                                        {{-- Business Image slider --}}
-                                        @php
-                                            // Safely decode the business_images
-                                            $images = is_array($business->business_images)
-                                                ? $business->business_images
-                                                : json_decode($business->business_images ?? '[]', true);
-
-                                            // Fallback to screenshot_urls if no business_images are uploaded
-                                            if (empty($images) && !empty($business->screenshot_urls)) {
-                                                $urls = is_array($business->screenshot_urls)
-                                                    ? $business->screenshot_urls
-                                                    : json_decode($business->screenshot_urls ?? '[]', true);
-                                                $urls = array_values(array_filter((array)$urls));
-                                                if (!empty($urls)) {
-                                                    $images = $urls;
-                                                }
-                                            }
-                                        @endphp
-
-                                         @if ($business->is_affiliate && !empty($images))
-                                            <div class="col-lg-12 mb-4">
-                                                <div class="is-asana-rgt">
-                                                    <div class="row is-asan-slider">
-                                                        <!-- Main Slider -->
-                                                        <div class="col-md-12 asan-slider slider-for">
-                                                            @foreach ($images as $index => $image)
-                                                                @php
-                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
-                                                                @endphp
-                                                                 <div class="asan-slider-inr">
-                                                                     <a href="{{ $business->getTrackedUrl() }}"
-                                                                        data-track="{{ json_encode([
-                                                                            'type' => 'click',
-                                                                            'business_id' => $business->id,
-                                                                            'action' => 'visit_website',
-                                                                            'label' => 'Visit Website',
-                                                                        ]) }}"
-                                                                        target="_blank" style="display: block;">
-                                                                         <img src="{{ $imgSrc }}"
-                                                                             alt="Business Image {{ $index + 1 }}"
-                                                                             style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
-                                                                     </a>
-                                                                 </div>
-                                                            @endforeach
-                                                        </div>
-
-                                                        <!-- Thumbnail Slider -->
-                                                        <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
-                                                            style="margin-top: 15px !important;">
-                                                            @foreach ($images as $index => $image)
-                                                                @php
-                                                                    $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
-                                                                @endphp
-                                                                <div style="padding: 0 5px; cursor: pointer;">
-                                                                    <img src="{{ $imgSrc }}"
-                                                                        alt="Thumbnail {{ $index + 1 }}"
-                                                                        style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                         @endif
-
-                                         <script>
-                                            document.addEventListener('DOMContentLoaded', function() {
-                                                // Wait for slick to initialize
-                                                setTimeout(() => {
-                                                    var $slider = $('.asan-slider-btm');
-                                                    
-                                                    // Give the active slide the class initially
-                                                    $slider.find('.slick-current').addClass('hover_main');
-                                                    
-                                                    // On hover, add class and remove from others
-                                                    $slider.on('mouseenter', '.slick-slide', function() {
-                                                        $slider.find('.slick-slide').removeClass('hover_main');
-                                                        $(this).addClass('hover_main');
-                                                    });
-                                                }, 500);
-                                            });
-                                         </script>
-                                         {{-- End Business Images  --}}
-
-                                         @if (!empty($business->translations->first()->after_image_description))
-                                             <div class="col-lg-12 mt-2 after-image-desc">
-                                                 <div class="is_text">
-                                                     {!! $business->translations->first()->after_image_description !!}
-                                                 </div>
-                                             </div>
-                                         @endif
-
-                                    </div>
+                           
                                 </div>
                             <!-- </div> -->
                             <!-- image right side end here -->
