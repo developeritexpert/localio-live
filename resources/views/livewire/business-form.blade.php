@@ -867,15 +867,18 @@
                                     <div class="row">
                                         <div class="col-lg-12">
                                             <div class="form-group mb-3">
-                                                <label class="form-label">Select Country</label>
+                                                <label class="form-label">Select Country / Region</label>
+                                                @php
+                                                    $footerLangs = \App\Models\Language::where('status', 1)
+                                                        ->whereNotNull('country_id')
+                                                        ->get()
+                                                        ->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE);
+                                                @endphp
                                                 <select class="form-control" wire:model="selectedCountryForUrl">
-                                                    <option value="">Choose a country</option>
-                                                    @foreach ($selectedCountries as $countryId)
-                                                        @php
-                                                            $country = collect($countries)->firstWhere('id', $countryId);
-                                                        @endphp
-                                                        @if ($country)
-                                                            <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                    <option value="">Choose a country / region</option>
+                                                    @foreach ($footerLangs as $fLang)
+                                                        @if ($active_all_countries == 1 || empty($selectedCountries) || in_array($fLang->country_id, (array)$selectedCountries))
+                                                            <option value="{{ $fLang->id }}">{{ $fLang->name }}</option>
                                                         @endif
                                                     @endforeach
                                                 </select>
