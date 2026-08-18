@@ -42,16 +42,16 @@
         text-decoration: underline !important;
     }
         .top-rated-heading-sec {
-            margin-top: 115px;
+            /* margin-top: 115px; */
             padding-top: 30px !important;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e8eef6;
             /* margin-bottom: 25px; */
-            padding-bottom: 20px;
+            /* padding-bottom: 20px; */
         }
 
     .top-rated-heading-sec {
-        margin-top: 125px;
+        margin-top: 115px;
         padding-top: 25px;
         background-color: #f7f9fb;
         border-bottom: 1px solid #e8eef6;
@@ -259,7 +259,7 @@
         <!-- section top-rated automaotive -->
         <section class="top-rated-heading-sec">
             <div class="container">
-                <div class="row align-items-center mb-3">
+                <div class=" bread_row row align-items-center mb-1">
                     <div class="col-12 col-lg-8">
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb m-0"
@@ -320,9 +320,7 @@
                                 <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                     Ratings and reviews are shared by real users from the Localio community.
                                 </p>
-                                <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn"
-                                    style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How
-                                    rankings work</a>
+                                <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How rankings work</a>
                             </div>
                         </div>
                     </div>

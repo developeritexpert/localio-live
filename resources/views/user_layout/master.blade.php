@@ -2666,6 +2666,42 @@
         </div>
     </div>
 
+    <!-- How Rankings Work Modal -->
+    <div class="modal-overlay" id="howRankingsWorkModal">
+        <div class="circle_11">
+            <button class="modal-close" onclick="closeRankingsModal()" aria-label="Close">&times;</button>
+            <div class="modal-content">
+                <div class="modal-header" style="display: block">
+                    <h2 class="modal-title" style="width: max-content">
+                        Real experiences, transparent rankings
+                    </h2>
+                </div>
+
+                <div class="modal-body" style="display: block; padding: 0;">
+                    <p style="margin-bottom: 12px; font-size: 14px; line-height: 1.6; color: #4b5563;">
+                        Localio brings together ratings and reviews shared by users from the Localio community about their experiences with businesses and products.
+                    </p>
+
+                    <p style="margin-bottom: 16px; font-size: 14px; line-height: 1.6; color: #4b5563;">
+                        Each review reflects the individual experience and opinion of the person who submitted it. Our commercial relationships with businesses do not influence user ratings or reviews, and businesses cannot pay to change, remove, or improve them.
+                    </p>
+
+                    <h2 class="modal-title" style="width: max-content; font-size: 1.25rem; margin-top: 20px; margin-bottom: 8px; font-weight: 700; color: #1e3050;">
+                        How this list is ranked
+                    </h2>
+
+                    <p style="margin-bottom: 16px; font-size: 14px; line-height: 1.6; color: #4b5563;">
+                        Businesses on this page are ranked using factors such as user ratings, review volume, recency, relevance, and other quality signals. Commercial relationships may also influence the order in which businesses appear, but they never affect a business's user rating.
+                    </p>
+
+                    <div class="mt-3">
+                        <a class="btn-g-link" href="{{ route('community-guidelines', ['locale' => session('lang_code', 'en-us')]) }}">Learn more in our Community guidelines</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Updated Modal Structure -->
     <div id="login-modal"
@@ -3149,10 +3185,35 @@
         }
     });
 
+    // How Rankings Work Modal Functions
+    function openRankingsModal() {
+        const modal = document.getElementById('howRankingsWorkModal');
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeRankingsModal() {
+        const modal = document.getElementById('howRankingsWorkModal');
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Close rankings modal when clicking outside
+    document.getElementById('howRankingsWorkModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeRankingsModal();
+        }
+    });
+
     // Close modal with Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeModal();
+            closeRankingsModal();
         }
     });
     </script>

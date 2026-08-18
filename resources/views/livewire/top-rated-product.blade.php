@@ -228,7 +228,7 @@
                             <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                 Ratings and reviews are shared by real users from the Localio community.
                             </p>
-                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn"
+                            <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
                                 style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How
                                 rankings work</a>
                         </div>
