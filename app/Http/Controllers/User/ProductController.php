@@ -231,56 +231,62 @@ class ProductController extends Controller
         });
 
         // dd($ratingBreakdown);
-        $alternativeBusiness = Business::where('category_id', $business->category_id)
-        ->where('id', '!=', $business->id)
-        ->where('is_affiliate', 1)
-        ->where('status', 1)
-        ->where(function ($query) {
-            $query->where('active_all_countries', 1)
-                  ->orWhereHas('countries', function ($q) {
-                      $q->where('country_id', getCurrentCountry());
-                  });
-        })
-        ->whereHas('languages', function ($query) use ($lang_id) {
-            $query->where('language_id', $lang_id);
-        })
-        ->with([
-            'translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'reviews' => fn($q) => $q->where('status', 'active'),
-            'websites' => fn($q) => $q->where('country_id', getCurrentCountry()),
-        ])
-        ->withCount([
-            'reviews as average_rating' => function ($query) {
-                $query->select(DB::raw('coalesce(avg(rating),0)'));
-            }
-        ])
-        ->orderByDesc('average_rating')
-        ->limit(3)
-        ->get();
+        $bizCategoryIds = array_filter(array_merge([$business->category_id], $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []));
 
-        $peerComparisons = Business::where('category_id', $business->category_id)
-            ->where('id', '!=', $business->id)
-            ->where('status', 1)
-            ->where(function ($query) {
-                $query->where('active_all_countries', 1)
-                      ->orWhereHas('countries', function ($q) {
-                          $q->where('country_id', getCurrentCountry());
-                      });
-            })
-            ->whereHas('languages', function ($query) use ($lang_id) {
-                $query->where('language_id', $lang_id);
-            })
-            ->with([
-                'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'reviews' => fn($q) => $q->where('status', 'active'),
-            ])
-            ->withCount([
-                'reviews as average_rating' => function ($query) {
-                    $query->select(DB::raw('coalesce(avg(rating),0)'));
-                }
-            ])
-            ->limit(4)
-            ->get();
+        $alternativeBusiness = !empty($bizCategoryIds)
+            ? Business::whereIn('category_id', $bizCategoryIds)
+                ->where('id', '!=', $business->id)
+                ->where('is_affiliate', 1)
+                ->where('status', 1)
+                ->where(function ($query) {
+                    $query->where('active_all_countries', 1)
+                          ->orWhereHas('countries', function ($q) {
+                              $q->where('country_id', getCurrentCountry());
+                          });
+                })
+                ->whereHas('languages', function ($query) use ($lang_id) {
+                    $query->where('language_id', $lang_id);
+                })
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'reviews' => fn($q) => $q->where('status', 'active'),
+                    'websites' => fn($q) => $q->where('country_id', getCurrentCountry()),
+                ])
+                ->withCount([
+                    'reviews as average_rating' => function ($query) {
+                        $query->select(DB::raw('coalesce(avg(rating),0)'));
+                    }
+                ])
+                ->orderByDesc('average_rating')
+                ->limit(3)
+                ->get()
+            : collect();
+
+        $peerComparisons = !empty($bizCategoryIds)
+            ? Business::whereIn('category_id', $bizCategoryIds)
+                ->where('id', '!=', $business->id)
+                ->where('status', 1)
+                ->where(function ($query) {
+                    $query->where('active_all_countries', 1)
+                          ->orWhereHas('countries', function ($q) {
+                              $q->where('country_id', getCurrentCountry());
+                          });
+                })
+                ->whereHas('languages', function ($query) use ($lang_id) {
+                    $query->where('language_id', $lang_id);
+                })
+                ->with([
+                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                    'reviews' => fn($q) => $q->where('status', 'active'),
+                ])
+                ->withCount([
+                    'reviews as average_rating' => function ($query) {
+                        $query->select(DB::raw('coalesce(avg(rating),0)'));
+                    }
+                ])
+                ->limit(4)
+                ->get()
+            : collect();
         $link = $business->websites->first()->website_url ?? $business->affiliate_link ?? $business->permanent_url ?? '#';
         $reviews = Review::where('business_id', $business->id)->get();
 
@@ -412,6 +418,7 @@ class ProductController extends Controller
                 $query->where('lang_id', $lang_id);
             },
             'products.prices',
+            'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
@@ -474,6 +481,7 @@ class ProductController extends Controller
         
         $businesses = Business::with([
             'products.prices',
+            'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
@@ -776,7 +784,13 @@ class ProductController extends Controller
             $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
         }
 
-        $peerComparisons = Business::where('category_id', $business->category_id)
+        $bizCategoryIds = array_filter(array_merge([$business->category_id], $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []));
+
+        $peerComparisonsQuery = !empty($bizCategoryIds)
+            ? Business::whereIn('category_id', $bizCategoryIds)
+            : Business::whereRaw('1 = 0');
+
+        $peerComparisons = $peerComparisonsQuery
             ->where('id', '!=', $business->id)
             ->where('status', 1)
             ->where(function ($query) {

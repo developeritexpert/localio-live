@@ -11,7 +11,20 @@
                         <a href="#" class="btn btn-icon btn-trigger toggle-expand me-n1" data-target="pageMenu"><em
                                 class="icon ni ni-more-v"></em></a>
                         <div class="toggle-expand-content" data-content="pageMenu">
-                            <ul class="nk-block-tools g-3">
+                            <ul class="nk-block-tools g-3 align-items-center">
+                                {{-- Category Filter Dropdown --}}
+                                <li>
+                                    <div class="form-control-wrap" style="min-width: 240px;">
+                                        <select class="form-select" id="categoryFilter" onchange="filterByCategory(this.value)">
+                                            <option value="">All Categories</option>
+                                            @foreach ($categories as $cat)
+                                                <option value="{{ $cat->id }}" {{ (isset($selectedCategoryId) && $selectedCategoryId == $cat->id) ? 'selected' : '' }}>
+                                                    {{ $cat->translated_name ?? ($cat->translations->name ?? 'Category #'.$cat->id) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </li>
                                 @if(getCurrentLanguageID() === 1)
                                 <li class="nk-block-tools-opt">
                                     <button class="btn btn-outline-primary d-none d-md-inline-flex me-2" data-bs-toggle="modal" data-bs-target="#uploadJsonModal">
@@ -38,6 +51,23 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- Active Category Filter Badge --}}
+        @if(!empty($selectedCategoryId))
+            @php
+                $activeCat = $categories->firstWhere('id', $selectedCategoryId);
+                $activeCatName = $activeCat->translated_name ?? ($activeCat->translations->name ?? 'Category #' . $selectedCategoryId);
+            @endphp
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="text-muted small">Filtered by category:</span>
+                <span class="badge bg-primary fs-7 d-inline-flex align-items-center px-2 py-1">
+                    {{ $activeCatName }} ({{ $features->count() }} features)
+                </span>
+                <a href="{{ route('features') }}" class="btn btn-xs btn-outline-secondary">
+                    <em class="icon ni ni-cross me-1"></em> Clear Filter
+                </a>
             </div>
         @endif
 
@@ -70,7 +100,7 @@
                                         @if ($feature->category && $feature->category->translations)
                                             {{ $feature->category->translations->name }}
                                         @else
-                                            <span class="text-muted">—</span>
+                                            <span class="text-muted">?</span>
                                         @endif
                                     </td>
 
@@ -111,6 +141,17 @@
                                     </td>
                                 </tr>
                             @endforeach
+                        @else
+                            <tr class="nk-tb-item">
+                                <td class="nk-tb-col text-center py-4" colspan="4">
+                                    <span class="text-muted">No features found{{ !empty($selectedCategoryId) ? ' for the selected category' : '' }}.</span>
+                                    @if(!empty($selectedCategoryId))
+                                        <div class="mt-2">
+                                            <a href="{{ route('features') }}" class="btn btn-sm btn-outline-primary">Show All Categories</a>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
@@ -164,8 +205,21 @@
     </div>
 
     <script>
+        function filterByCategory(categoryId) {
+            let url = new URL(window.location.href);
+            if (categoryId) {
+                url.searchParams.set('category_id', categoryId);
+            } else {
+                url.searchParams.delete('category_id');
+            }
+            window.location.href = url.toString();
+        }
+
         function copyExampleFormat() {
-            const exampleFormat = `[\n  { "name": "SSL included", "description": "Free SSL certificate provided" },\n  { "name": "Website backups", "description": "Automated daily backups" }\n]`;
+            const exampleFormat = `[
+  { "name": "SSL included", "description": "Free SSL certificate provided" },
+  { "name": "Website backups", "description": "Automated daily backups" }
+]`;
             navigator.clipboard.writeText(exampleFormat).then(() => {
                 NioApp.Toast('Example JSON format copied to clipboard!', 'info', { position: 'top-right' });
             }).catch(err => {

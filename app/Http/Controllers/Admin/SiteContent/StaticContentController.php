@@ -121,10 +121,24 @@ class StaticContentController extends Controller
         return back()->with('success', 'Section deleted successfully.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $langId = getCurrentLanguageID();
-        $defaultLangId =1;
+        $selectedLangCode = $request->get('lang');
+        if ($selectedLangCode) {
+            $selectedLang = Language::where('lang_code', $selectedLangCode)->first();
+            $langId = $selectedLang ? $selectedLang->id : getCurrentLanguageID();
+        } elseif ($request->has('lang_id')) {
+            $langId = (int)$request->get('lang_id');
+            $selectedLang = Language::find($langId);
+        } else {
+            $langId = getCurrentLanguageID();
+            $selectedLang = Language::find($langId);
+        }
+
+        $langCode = $selectedLang ? $selectedLang->lang_code : 'en-us';
+        $languages = Language::where('status', 1)->get();
+        $defaultLangId = 1;
+
         $keys = StaticContentKey::with(['translations' => function ($q) use ($langId, $defaultLangId) {
             if ($langId !== $defaultLangId) {
                 $q->where('lang_id', $langId);
@@ -212,17 +226,30 @@ class StaticContentController extends Controller
                 ],
             ],
         ];
-        return view('Admin.site-content.site_content', compact('keys', 'sections', 'langId'));
+        $currentLanguage = Language::find($langId);
+        return view('Admin.site-content.site_content', compact('keys', 'sections', 'langId', 'langCode', 'languages', 'currentLanguage'));
     }
 
     public function update(Request $request)
     {
         $texts = $request->input('texts', []);
-        $langId = getCurrentLanguageID();
+        $slugs = $request->input('slugs', []);
+        $langId = $request->input('lang_id') ? (int)$request->input('lang_id') : getCurrentLanguageID();
         $defaultLangId = 1;
 
         DB::beginTransaction();
         try {
+            // Update URL slugs on Language model if provided
+            if (!empty($slugs)) {
+                $langModel = Language::find($langId);
+                if ($langModel) {
+                    if (isset($slugs['faq_slug'])) $langModel->faq_slug = Str::slug($slugs['faq_slug']) ?: 'faqs';
+                    if (isset($slugs['alternatives_slug'])) $langModel->alternatives_slug = Str::slug($slugs['alternatives_slug']) ?: 'alternatives';
+                    if (isset($slugs['reviews_slug'])) $langModel->reviews_slug = Str::slug($slugs['reviews_slug']) ?: 'reviews';
+                    if (isset($slugs['comparisons_slug'])) $langModel->comparisons_slug = Str::slug($slugs['comparisons_slug']) ?: 'comparisons';
+                    $langModel->save();
+                }
+            }
             foreach ($texts as $key => $value) {
                 $keyModel = StaticContentKey::firstOrCreate(['key' => $key]);
 

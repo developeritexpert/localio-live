@@ -19,7 +19,8 @@
         
         <!-- Trending Section -->
         <div class="mb-5">
-            <h2 class=" mb-4" style="color: #002347; font-size: 24px; ">Trending products</h2>
+            <h2  style="color: #002347; font-size: 24px; ">Popular with our community</h2>
+            <p class=" mb-4">See what the Localio community is reviewing right now</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($trendingBusinesses as $business)
                     @php
@@ -58,9 +59,37 @@
             </div>
         </div>
 
+                <!-- Be the first to review Section -->
+        @if(isset($unreviewedBusinesses) && $unreviewedBusinesses->count() > 0)
+        <div class="mb-5">
+            <h2 style="color: #002347; font-size: 24px;">Be the first to review</h2>
+            <p class="mb-4">Share your experience and help our community</p>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @foreach($unreviewedBusinesses as $business)
+                    <div class="col">
+                        <div class="card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="border-radius: 15px; border:1px solid #e2e8f0; transition:unset !important; background: #fff;">
+                            <div class="d-flex flex-column align-items-center w-100">
+                                <div class="mb-3 top-product-logo">
+                                    <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}">
+                                </div>
+                                <h5 class="mb-4 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
+                                    {{ $business->translations->first()->name ?? 'Unnamed' }}
+                                </h5>
+                            </div>
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;">
+                                Review
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         <!-- Recently Reviewed Section -->
         <div>
-            <h2 class=" mb-4" style="color: #002347; font-size: 24px;">Recently Reviewed</h2>
+            <h2 style="color: #002347; font-size: 24px;">Recently reviewed</h2>
+            <p class=" mb-4">The latest experiences shared by the Localio community</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($recentlyReviewed as $business)
                     @php

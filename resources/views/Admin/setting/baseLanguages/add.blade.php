@@ -5,7 +5,7 @@
             <div class="nk-block-head-content">
                 <h4 class="title nk-block-title">Add Base Language</h4>
                 <div class="nk-block-des text-soft">
-                    <p>Create a base language supported by Google Cloud Translate.</p>
+                    <p>Select a country/region to define as a base language reference.</p>
                 </div>
             </div>
             <div class="nk-block-head-content">
@@ -31,13 +31,19 @@
                 <form action="{{ route('base-languages.addProcc') }}" class="form-validate" method="post">
                     @csrf
                     <div class="row g-gs">
-                        <!-- Language Name Field -->
+                        <!-- Country/region Dropdown -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label" for="name">Base Language Name</label>
+                                <label class="form-label" for="name">Country/region</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name') }}" placeholder="e.g. Spanish (Latin America)" required />
+                                    <select class="form-select js-select2" id="name" name="name" required data-placeholder="Select Country/region">
+                                        <option value="">Select Country/region</option>
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country->name }}" {{ old('name') == $country->name ? 'selected' : '' }}>
+                                                {{ $country->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 @error('name')
                                     <div class="error text-danger">{{ $message }}</div>
@@ -45,48 +51,16 @@
                             </div>
                         </div>
 
-                        <!-- Google Translate Code Field -->
+                        <!-- BCP 47 Language Tag Field -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label" for="code">Google Cloud Translate Code</label>
+                                <label class="form-label" for="code">BCP 47 Language Tag</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="code" name="code"
-                                        value="{{ old('code') }}" placeholder="e.g. es-419, pt-BR, en-US" required />
+                                        value="{{ old('code') }}" placeholder="e.g. es-ES, es-419, pt-BR, pt-PT, en-US, en-GB" required />
                                 </div>
-                                <div class="form-text text-muted">Use standard BCP-47 / Google Cloud Translate code (e.g. es-ES, es-419, pt-BR, pt-PT, en-US, en-GB).</div>
+                                <div class="form-text text-muted">Use standard BCP 47 code (e.g. es-ES, es-419, pt-BR, pt-PT, en-US, en-GB).</div>
                                 @error('code')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Language Tag Field -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="language_tag">Language Combination Tag</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="language_tag" name="language_tag"
-                                        value="{{ old('language_tag') }}" placeholder="e.g. Spanish, English, Portuguese, French" required />
-                                </div>
-                                <div class="form-text text-muted">Used for grouping reviews and translations (e.g. all Spanish variations share "Spanish").</div>
-                                @error('language_tag')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Master Language Toggle -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="is_master">Master Language</label>
-                                <div class="form-control-wrap d-flex align-items-center gap-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="is_master" name="is_master"
-                                            value="1" {{ old('is_master') == 1 ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_master">Primary source for translations (US English)</label>
-                                    </div>
-                                </div>
-                                @error('is_master')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -127,6 +101,12 @@
 
     <script>
         $(document).ready(function() {
+            $('#name').select2({
+                placeholder: 'Select Country/region',
+                allowClear: true,
+                width: '100%'
+            });
+
             $('#status').on('change', function() {
                 if ($(this).is(':checked')) {
                     $('#statusText').text('Active');

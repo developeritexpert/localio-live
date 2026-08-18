@@ -10,6 +10,8 @@
 
     $catName = $cat?->translation?->name ?? $cat?->translations?->first()?->name ?? null;
     $catSlug = $cat?->translation?->slug ?? $cat?->translations?->first()?->slug ?? null;
+
+    $hasAffiliated = $businesses->contains(fn($b) => !empty($b->is_affiliate));
 @endphp
 <section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
@@ -125,8 +127,10 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        @if(!empty($business->is_affiliate))
                                         <div class="auto-choice-btn fit-btn w-100 mt-3" style="max-width: 220px;">
-                                            <a href="{{ $business->permanent_url ?? $business->affiliate_link ?? 'javascript:void(0)' }}"
+                                            <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                                target="_blank"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center"
                                                 style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; border:none;"
                                                 onmouseover="this.style.backgroundColor='#e64a19';"
@@ -135,6 +139,7 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                             </a>
                                         </div>
+                                        @endif
 
                                         <!-- Thin horizontal line -->
                                         <hr class="w-100 my-3" style="border-top: 1px solid #e2e8f0; opacity: 1; margin-left: 0; margin-right: 0;">
@@ -220,15 +225,32 @@
                 </div>
             </div>
 
-
-
-                    <!-- Features div (styled like business details page) -->
+                    <!-- USPs / Features div (only for affiliated businesses) -->
+                    @php
+                        $hasAnyAffiliatedUsps = $businesses->contains(function($b) {
+                            return !empty($b->is_affiliate) && (($b->usps && $b->usps->count() > 0) || ($b->features && $b->features->count() > 0));
+                        });
+                    @endphp
+                    @if($hasAnyAffiliatedUsps)
                     <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
                             <div class="col-lg-6 col-md-6 mb-3">
+                                @if(!empty($business->is_affiliate))
                                 <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%;">
                                     <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
-                                        @if($business->features && $business->features->count() > 0)
+                                        @if($business->usps && $business->usps->count() > 0)
+                                            @foreach($business->usps as $usp)
+                                                @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
+                                                @if(!empty($uText))
+                                                <li class="d-flex align-items-center" style="gap: 12px;">
+                                                    <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                        <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                    </span>
+                                                    <span style="font-size: 16px; font-weight: 500; color: #000; line-height: 1.3;">{{ $uText }}</span>
+                                                </li>
+                                                @endif
+                                            @endforeach
+                                        @elseif($business->features && $business->features->count() > 0)
                                              @foreach($business->features as $feature)
                                                 <li class="d-flex align-items-center" style="gap: 12px;">
                                                     <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
@@ -242,14 +264,16 @@
                                                 <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
                                                     <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
                                                 </span>
-                                                <span style="font-size: 16px;  font-weight:500; color: #000;">No features available</span>
+                                                <span style="font-size: 16px; font-weight:500; color: #000;">No features available</span>
                                             </li>
                                         @endif
                                     </ul>
                                 </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
+                    @endif
 
                     <!-- what is product -->
                     <div class="row xrro_dv light pro-row-gp" data-aos="fade-up" data-aos-duration="1000">
@@ -265,7 +289,8 @@
                         @endforeach
                     </div>
 
-                    <!-- price start from -->
+                    <!-- price start from / offers (only for affiliated businesses) -->
+                    @if($hasAffiliated)
                     <div class="prc_dv_new my-4" data-aos="fade-up" data-aos-duration="1000">
                         <div class="row g-4">
                             @foreach ($businesses as $index => $business)
@@ -278,6 +303,7 @@
                                     $timeUnit = ucfirst($startingPrice['time_unit'] ?? 'One_time');
                                 @endphp
                                 <div class="col-lg-6 col-12">
+                                    @if(!empty($business->is_affiliate))
                                     <div class="d-flex align-items-center gap-2 mb-3">
                                         <div class="top-product-medium-logo">
                                         <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="">
@@ -299,7 +325,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="mt-3">
-                                                    <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -309,20 +335,22 @@
                                             <div class="p-3 bg-white border h-100 d-flex flex-column justify-content-between text-center" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                                 <div class="d-flex flex-column align-items-center">
                                                     <div class="grn_check_big">
-                                                        <img src="http://127.0.0.1:8000/front/img/new-grn-chk.svg">
+                                                        <img src="{{ asset('front/img/new-grn-chk.svg') }}" alt="Check">
                                                     </div>
                                                     <h6 class="blue-text big-bld mt-2">Free Trial<br>Available</h6>
                                                 </div>
                                                 <div class="mt-3">
-                                                    <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" class="blue-btn blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" class="blue-btn blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -364,36 +392,36 @@
                                             </div>
                                         </div>
 
-                                        {{-- Your original rating HTML with dynamic values --}}
+                                        {{-- Rating HTML with dynamic values --}}
                                         <div class="tp-btm d-flex rating-group">
-                                            <!-- <div class="rate_box_num"> -->
-                                                <span style="font-size:12px;">{{ $rating }}</span>
-                                            <!-- </div> -->
+                                            <span style="font-size:12px;">{{ $rating }}</span>
 
-                                                <div>
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($rating >= $i)
-                                                            <i class="r-star fas fa-star text-warning"></i>
-                                                        @elseif ($rating >= $i - 0.5)
-                                                            <i class="r-star fas fa-star-half-alt text-warning"></i>
-                                                        @else
-                                                            <i class="r-star far fa-star text-warning"></i>
-                                                        @endif
-                                                    @endfor
+                                            <div>
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($rating >= $i)
+                                                        <i class="r-star fas fa-star text-warning"></i>
+                                                    @elseif ($rating >= $i - 0.5)
+                                                        <i class="r-star fas fa-star-half-alt text-warning"></i>
+                                                    @else
+                                                        <i class="r-star far fa-star text-warning"></i>
+                                                    @endif
+                                                @endfor
                                             </div>
                                             <span class="">
                                                 ({{ $ratingCount }})
                                             </span>
                                         </div>
 
+                                        @if(!empty($business->is_affiliate))
                                         <div class="sftwre-alt-sftwre-alt-btn mt-2">
-                                            <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                            <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                                target="_blank"
                                                 class="btn-orng cta cta_orange d-flex align-items-center justify-content-center fw_500 mb-2">
                                                 Visit website
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                             </a>
-                                            
                                         </div>
+                                        @endif
                                         
                                     </div>
                                     
@@ -414,21 +442,6 @@
     </div>
 
     <section class="subs_sec light pt_120 ">
-        {{-- <div class="container">
-            <div class="subs_content" data-aos="fade-up" data-aos-duration="1000">
-                <h2>Send this comparison chart to my inbox</h2>
-                <div class="mail_field">
-                    <div class="email_box">
-                        <input type="email" id="email" name="email" placeholder="Email Address*">
-                    </div>
-                    <div class="accor-btn sbs_bttn">
-                        <a href="" class="cta cta_white">Get The Comparison</a>
-                    </div>
-                </div>
-                <p>By proceeding, you agree to our <span class="big-bld">Terms Of Use</span> and <span
-                        class="big-bld">Privacy Policy</span></p>
-            </div>
-        </div> --}}
         <x-news-letter-subscription/>
     </section>
     <script>

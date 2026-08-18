@@ -47,10 +47,10 @@ class SiteContentController extends Controller
             ->orderBy('homepage_order', 'asc')
             ->get();
 
-        $allCategories = \App\Models\Category::whereNotNull('parent_id')
-            ->where('parent_id', '>', 0)
-            ->with(['translation' => fn($q) => $q->where('lang_id', $lang_id)])
-            ->get();
+        $allCategories = \App\Models\Category::with([
+            'translation' => fn($q) => $q->where('lang_id', $lang_id),
+            'parent.translation' => fn($q) => $q->where('lang_id', $lang_id)
+        ])->get();
 
         return view('Admin.site-content.home_page', compact('allHomeContents', 'homeContents', 'homepageCategories', 'allCategories'));
     }

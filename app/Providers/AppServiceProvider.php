@@ -34,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         ini_set('max_execution_time', 120);
         Blade::component('faq-section', FaqSection::class);
         Schema::defaultStringLength(191);
-        $languages=  getLanguages();
+        $languages = \App\Models\Language::where('status', 1)->get();
         View::share('languages', $languages);
         app()->instance('languages', $languages);
     }

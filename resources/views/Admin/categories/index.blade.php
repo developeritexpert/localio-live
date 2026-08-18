@@ -206,11 +206,9 @@
 
                                                             <li><a href="{{ route('add-topic-category', $category->id) }}"><em class="icon ni ni-contact"></em><span>Business Topics</span></a></li>
 
-                                                            @if($category->translation_id)
-                                                                <li class="removeConfermation" data-url="{{ route('admin-remove-categories', $category->translation_id) }}">
-                                                                    <a href="{{ route('admin-remove-categories', $category->translation_id) }}"><em class="icon ni ni-trash-fill"></em><span>Delete</span></a>
-                                                                </li>
-                                                            @endif
+                                                            <li class="removeConfermation" data-url="{{ route('admin-remove-categories', $category->id) }}">
+                                                                <a href="{{ route('admin-remove-categories', $category->id) }}"><em class="icon ni ni-trash-fill"></em><span>Delete</span></a>
+                                                            </li>
 
                                                             <li>
                                                                 <a onclick="openCategoryTranslateModal({{ $category->id }}, '{{ addslashes($category->english_name) }}')">

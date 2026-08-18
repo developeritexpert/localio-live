@@ -9,8 +9,34 @@ class AffiliateTrackingService
 
     public static function trackClick($business)
     {
-        if (!$business->affiliate_link) return $business->affiliate_link;
-        
+        $countryId = function_exists('getCurrentCountry') ? getCurrentCountry() : null;
+        $targetUrl = null;
+        $isAffiliate = !empty($business->is_affiliate);
+
+        if ($countryId) {
+            $countryWebsite = $business->relationLoaded('websites')
+                ? $business->websites->firstWhere('country_id', $countryId)
+                : $business->websites()->where('country_id', $countryId)->first();
+
+            if ($countryWebsite && !empty($countryWebsite->website_url)) {
+                $targetUrl = $countryWebsite->website_url;
+                if (isset($countryWebsite->is_affiliate)) {
+                    $isAffiliate = (bool)$countryWebsite->is_affiliate;
+                }
+            }
+        }
+
+        if (!$targetUrl) {
+            $targetUrl = $business->affiliate_link ?: $business->permanent_url;
+        }
+
+        if (!$targetUrl) return '#';
+
+        // If not an affiliate link, return the direct URL
+        if (!$isAffiliate) {
+            return $targetUrl;
+        }
+
         // Generate unique click ID
         $clickId = 'c_' . Str::random(12) . '_' . time();
         
@@ -24,9 +50,9 @@ class AffiliateTrackingService
         ]);
         
         // Add subid to affiliate URL
-        $separator = strpos($business->affiliate_link, '?') ? '&' : '?';
-        // dd($business->affiliate_link . $separator . $business->subid_param . '=' . $clickId);
-        return $business->affiliate_link . $separator . $business->subid_param . '=' . $clickId;
+        $subidParam = !empty($business->subid_param) ? $business->subid_param : 'sid';
+        $separator = strpos($targetUrl, '?') !== false ? '&' : '?';
+        return $targetUrl . $separator . $subidParam . '=' . $clickId;
     }
 
     public static function recordConversion($clickId, $amount = 0)
@@ -47,5 +73,3 @@ class AffiliateTrackingService
     
 
 }
-
-?>

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\Business;
 use App\Models\Review;
 use App\Models\CategoryProCon;
 use Illuminate\Support\Facades\Auth;
@@ -10,29 +11,33 @@ use Livewire\Attributes\On;
 
 class AddReview extends Component
 {
+    public $show = false;
+    public $step = 1;
     public $businessId;
     public $businessName;
     public $businessIcon;
-    public $rating = 0;
-    public $title2 = '';
-    public $comment = '';
-    public $show = false;
-    public $step = 1;
-    public $reviewId;
-
     public $criteria = [];
     public $criteriaRatings = [];
-    public $recommend = 1;
-
-    // Available and selected Category Pros & Cons
+    public $recommend = null;
+    public $title2;
+    public $comment;
     public $availablePros = [];
     public $availableCons = [];
     public $selectedPros = [];
     public $selectedCons = [];
+    public $proSearch = '';
+    public $conSearch = '';
+    public $reviewId;
 
     #[On('openReviewModal')]
-    public function openReviewModal($businessId, $recommend = null)
+    #[On('openAddReviewModal')]
+    public function openReviewModal($businessId = null, $recommend = null)
     {
+        if (is_array($businessId)) {
+            $recommend = $businessId['recommend'] ?? $recommend;
+            $businessId = $businessId['businessId'] ?? ($businessId['id'] ?? null);
+        }
+
         if (!Auth::check()) {
             session([
                 'pending_review_business_id' => $businessId,
@@ -43,22 +48,25 @@ class AddReview extends Component
             return;
         }
 
-        $this->reset(['rating', 'comment', 'title2', 'selectedPros', 'selectedCons', 'criteriaRatings', 'recommend', 'step', 'reviewId']);
+        $this->reset([
+            'step', 'businessId', 'businessName', 'businessIcon', 'criteria',
+            'criteriaRatings', 'recommend', 'title2', 'comment',
+            'availablePros', 'availableCons', 'selectedPros', 'selectedCons',
+            'proSearch', 'conSearch', 'reviewId'
+        ]);
+
+        $this->step = 1;
         $this->businessId = $businessId;
-        
-        // If recommend parameter is passed from thumbs up/down, set it. Otherwise default to 1 (Yes)
         if ($recommend !== null) {
-            $this->recommend = $recommend ? 1 : 0;
-        } else {
-            $this->recommend = 1;
+            $this->recommend = filter_var($recommend, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
         }
 
-        $business = \App\Models\Business::find($businessId);
+        $business = Business::with(['translations', 'category', 'category.parent'])->find($businessId);
+
         if ($business) {
             $this->businessName = $business->translations->first()->name ?? 'Business';
             $this->businessIcon = $business->icon_id;
 
-            // Determine all relevant category IDs (direct category + parent category)
             $categoryIds = array_filter(array_unique([
                 $business->category_id,
                 $business->category ? $business->category->parent_id : null,
@@ -66,8 +74,10 @@ class AddReview extends Component
             ]));
 
             if ($business->category) {
-                $effectiveCriteria = $business->category->getEffectiveRatingCriteria();
-                $this->criteria = $effectiveCriteria->toArray();
+                $this->criteria = $business->category->ratingCriteria->toArray();
+                if (empty($this->criteria) && $business->category->parent) {
+                    $this->criteria = $business->category->parent->ratingCriteria->toArray();
+                }
                 foreach ($this->criteria as $criterion) {
                     $this->criteriaRatings[$criterion['id']] = 0;
                 }
@@ -76,7 +86,6 @@ class AddReview extends Component
             }
 
             if (!empty($categoryIds)) {
-                // Load category pre-defined pros & cons from direct or parent category
                 $allProCons = CategoryProCon::whereIn('category_id', $categoryIds)
                     ->where('status', 1)
                     ->get();
@@ -100,7 +109,9 @@ class AddReview extends Component
             ->first();
         if ($existingReview) {
             $this->reviewId = $existingReview->id;
-            $this->recommend = $existingReview->recommend ? 1 : 0;
+            if ($this->recommend === null) {
+                $this->recommend = $existingReview->recommend ? 1 : 0;
+            }
             $trans = $existingReview->translations->first();
             if ($trans) {
                 $this->title2 = $trans->title;
@@ -120,7 +131,7 @@ class AddReview extends Component
         $this->show = true;
     }
 
-    public function togglePro($id)
+            public function togglePro($id)
     {
         $id = (int) $id;
         if (in_array($id, $this->selectedPros)) {
@@ -132,6 +143,7 @@ class AddReview extends Component
             }
             $this->selectedPros[] = $id;
         }
+        $this->proSearch = '';
     }
 
     public function toggleCon($id)
@@ -146,38 +158,63 @@ class AddReview extends Component
             }
             $this->selectedCons[] = $id;
         }
+        $this->conSearch = '';
+    }
+
+    public function clearProSearch()
+    {
+        $this->proSearch = '';
+    }
+
+    public function clearConSearch()
+    {
+        $this->conSearch = '';
     }
 
     public function goToStep2()
     {
-        $rules = [];
-        foreach ($this->criteria as $criterion) {
-            $rules['criteriaRatings.' . $criterion['id']] = 'required|integer|min:1|max:5';
-        }
-        $rules['recommend'] = 'required|boolean';
+        $this->validate([
+            'recommend' => 'required|in:0,1',
+        ], [
+            'recommend.required' => 'Please select whether you recommend this business.',
+            'recommend.in'       => 'Please select whether you recommend this business.',
+        ]);
 
-        $this->validate($rules);
         $this->step = 2;
     }
 
-    public function submitStep2()
+    public function goToStep3()
+    {
+        $rules = [];
+        $messages = [];
+        foreach ($this->criteria as $criterion) {
+            $rules['criteriaRatings.' . $criterion['id']] = 'required|integer|min:1|max:5';
+            $messages['criteriaRatings.' . $criterion['id'] . '.min'] = 'Rating is required.';
+            $messages['criteriaRatings.' . $criterion['id'] . '.required'] = 'Rating is required.';
+        }
+
+        $this->validate($rules, $messages);
+        $this->step = 3;
+    }
+
+    public function submitStep3()
     {
         $this->validate([
             'title2'  => 'required|string|max:500',
             'comment' => 'required|string|max:1000',
         ]);
 
-        // Save review record in DB immediately so it persists even if user aborts at step 3
+        // Save review record in DB immediately so it persists even if user aborts at step 4
         $this->createReviewRecord();
 
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Review submitted successfully.']);
-        // Advance to step 3
-        $this->step = 3;
+        // Advance to step 4 (Pros & Cons)
+        $this->step = 4;
     }
 
     public function setStep($stepNum)
     {
-        $this->step = $stepNum;
+        $this->step = (int) $stepNum;
     }
 
     public function submit()
@@ -297,8 +334,44 @@ class AddReview extends Component
         $review->selectedProCons()->sync($selectedIds);
     }
 
+            public function getFilteredProsProperty()
+    {
+        $unselected = array_values(array_filter($this->availablePros, function($pro) {
+            return !in_array($pro['id'], $this->selectedPros);
+        }));
+
+        if (empty(trim($this->proSearch))) {
+            return $unselected;
+        }
+
+        $search = strtolower(trim($this->proSearch));
+        return array_values(array_filter($unselected, function($pro) use ($search) {
+            return str_contains(strtolower($pro['text']), $search);
+        }));
+    }
+
+    public function getFilteredConsProperty()
+    {
+        $unselected = array_values(array_filter($this->availableCons, function($con) {
+            return !in_array($con['id'], $this->selectedCons);
+        }));
+
+        if (empty(trim($this->conSearch))) {
+            return $unselected;
+        }
+
+        $search = strtolower(trim($this->conSearch));
+        return array_values(array_filter($unselected, function($con) use ($search) {
+            return str_contains(strtolower($con['text']), $search);
+        }));
+    }
+
     public function render()
     {
-        return view('livewire.add-review');
+        return view('livewire.add-review', [
+            'filteredPros' => $this->filteredPros,
+            'filteredCons' => $this->filteredCons,
+        ]);
     }
 }
+

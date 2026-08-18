@@ -79,7 +79,20 @@ class ViewController extends Controller
             $limit = $category->homepage_product_limit ?? 6;
             if ($limit <= 0) $limit = 6;
 
-            $businesses = $category->businesses()
+            $subCategoryIds = $category->subCategories ? $category->subCategories->pluck('id')->toArray() : [];
+
+            $businesses = Business::where(function ($query) use ($category, $subCategoryIds) {
+                    $query->where('category_id', $category->id);
+                    if (!empty($subCategoryIds)) {
+                        $query->orWhereIn('category_id', $subCategoryIds)
+                              ->orWhereHas('subCategories', function ($subQ) use ($subCategoryIds) {
+                                  $subQ->whereIn('categories.id', $subCategoryIds);
+                              });
+                    }
+                    $query->orWhereHas('subCategories', function ($subQ) use ($category) {
+                        $subQ->where('categories.id', $category->id);
+                    });
+                })
                 ->where('is_affiliate', 1)
                 ->where(function ($query) {
                     $query->where('active_all_countries', 1)
@@ -96,7 +109,7 @@ class ViewController extends Controller
                     'reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
                     'usps',
                 ])
-                ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC') // ⭐ FIX: handle nulls
+                ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC')
                 ->take($limit)
                 ->get();
 
@@ -700,7 +713,28 @@ class ViewController extends Controller
             })
             ->values();
 
-        return view('User.product.write_review_landing', compact('trendingBusinesses', 'recentlyReviewed'));
+        // 3. Unreviewed Businesses: 8 businesses with 0 active reviews (chosen randomly)
+        $unreviewedBusinesses = \App\Models\Business::where('status', 1)
+            ->whereHas('languages', function ($query) use ($lang_id) {
+                $query->where('language_id', $lang_id);
+            })
+            ->where(function ($query) {
+                $query->where('active_all_countries', 1)
+                      ->orWhereHas('countries', function ($q) {
+                          $q->where('country_id', getCurrentCountry());
+                      });
+            })
+            ->whereDoesntHave('reviews', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            ])
+            ->inRandomOrder()
+            ->take(8)
+            ->get();
+
+        return view('User.product.write_review_landing', compact('trendingBusinesses', 'unreviewedBusinesses', 'recentlyReviewed'));
     }
 
 }

@@ -841,19 +841,34 @@ class BusinessEdit extends Component
 
     public function addCountryWebsiteUrl()
     {
+        $selectedId = $this->selectedCountryForUrl;
+        $countryId = null;
+        if (Country::where('id', $selectedId)->exists()) {
+            $countryId = $selectedId;
+        } else {
+            $lang = Language::find($selectedId);
+            if ($lang && $lang->country_id) {
+                $countryId = $lang->country_id;
+            }
+        }
 
         $this->validate([
-            'selectedCountryForUrl' => 'required|exists:countries,id',
+            'selectedCountryForUrl' => 'required',
             'newWebsiteUrl' => 'required|url',
         ]);
 
+        if (!$countryId) {
+            $this->addError('selectedCountryForUrl', 'Please select a valid country/region.');
+            return;
+        }
+
         // Check if URL already exists for this country
-        if (isset($this->countryWebsiteUrls[$this->selectedCountryForUrl])) {
-            $existingUrls = $this->countryWebsiteUrls[$this->selectedCountryForUrl];
+        if (isset($this->countryWebsiteUrls[$countryId])) {
+            $existingUrls = $this->countryWebsiteUrls[$countryId];
             if (is_array($existingUrls)) {
                 foreach ($existingUrls as $existing) {
                     if (is_array($existing) && $existing['url'] === $this->newWebsiteUrl) {
-                        $this->addError('newWebsiteUrl', 'This URL already exists for the selected country.');
+                        $this->addError('newWebsiteUrl', 'This URL already exists for the selected country/region.');
                         return;
                     }
                 }
@@ -861,11 +876,11 @@ class BusinessEdit extends Component
         }
 
         // Add the new URL
-        if (!isset($this->countryWebsiteUrls[$this->selectedCountryForUrl])) {
-            $this->countryWebsiteUrls[$this->selectedCountryForUrl] = [];
+        if (!isset($this->countryWebsiteUrls[$countryId])) {
+            $this->countryWebsiteUrls[$countryId] = [];
         }
 
-        $this->countryWebsiteUrls[$this->selectedCountryForUrl][] = [
+        $this->countryWebsiteUrls[$countryId][] = [
             'url' => $this->newWebsiteUrl,
             'is_affiliate' => $this->countryIsAffiliate,
             'status' => 1

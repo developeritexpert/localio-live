@@ -278,8 +278,20 @@
                         </div>
 
                         <!-- 3. Starting Price & Free Trial -->
-                        @if(!is_null($startingPrice))
+                        @php
+                            $hasFreeTrial = false;
+                            if ($business->relationLoaded('products')) {
+                                $hasFreeTrial = $business->products->flatMap->pricingOptions->contains('slug', 'free-trial');
+                            }
+                            if (!$hasFreeTrial && $business->pricingOptions) {
+                                $hasFreeTrial = $business->pricingOptions->contains('slug', 'free-trial');
+                            }
+                            $hasStartingPrice = !empty($startingPrice) && is_numeric($startingPrice) && $startingPrice > 0;
+                        @endphp
+
+                        @if($hasStartingPrice || $hasFreeTrial)
                             <div class="innr_price_trail">
+                                @if($hasStartingPrice)
                                 <div class="main_feature_sm">
                                     <div class="feture_box str_prc_box">
                                         <h6 class="starting-price-title">Starting price</h6>
@@ -290,6 +302,8 @@
                                         </a>
                                     </div>
                                 </div>
+                                @endif
+                                @if($hasFreeTrial)
                                 <div class="main_feature_sm">
                                     <div class="fre_trail feture_box size22">
                                         <div class="grn_check_big">
@@ -301,6 +315,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             </div>
                         @endif
 

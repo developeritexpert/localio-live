@@ -87,18 +87,39 @@ class BusinessImages extends Component
     {
         $this->isTakingScreenshots = true;
         
-        $business = Business::findOrFail($this->selectedBusinessId);
-        $urls = $business->screenshot_urls ?? [];
+        $business = Business::with('websites')->findOrFail($this->selectedBusinessId);
+        $urls = [];
 
-        // If no custom screenshot URLs set, fall back to permanent_url or affiliate_link
-        if (empty(array_filter($urls))) {
-            if (!empty($business->permanent_url)) {
-                $urls[] = $business->permanent_url;
-            } elseif (!empty($business->affiliate_link)) {
-                $urls[] = $business->affiliate_link;
-            } else {
-                $urls[] = 'https://example.com';
+        // 1. First priority: affiliate_link
+        if (!empty(trim($business->affiliate_link ?? ''))) {
+            $urls[] = trim($business->affiliate_link);
+        }
+
+        // 2. Second priority: Country / regional website URLs (websites)
+        if (empty($urls) && $business->websites && $business->websites->isNotEmpty()) {
+            foreach ($business->websites as $web) {
+                if (!empty(trim($web->website_url ?? '')) && !in_array(trim($web->website_url), $urls)) {
+                    $urls[] = trim($web->website_url);
+                }
             }
+        }
+
+        // 3. Third priority: Configured screenshot URLs (from Screenshot URLs modal)
+        if (empty($urls) && !empty($business->screenshot_urls) && is_array($business->screenshot_urls)) {
+            $urls = array_values(array_filter($business->screenshot_urls, function ($u) {
+                return !empty(trim($u));
+            }));
+        }
+
+        // 4. Fourth priority: Business permanent_url
+        if (empty($urls) && !empty(trim($business->permanent_url ?? ''))) {
+            $urls[] = trim($business->permanent_url);
+        }
+
+        if (empty($urls)) {
+            session()->flash('modal_error', 'No website or screenshot URL found for this business. Please configure Screenshot URLs first.');
+            $this->isTakingScreenshots = false;
+            return;
         }
 
         $generatedImages = [];
@@ -107,7 +128,10 @@ class BusinessImages extends Component
             File::makeDirectory($destinationDir, 0755, true);
         }
 
-        foreach ($urls as $idx => $targetUrl) {
+        // Capture up to 5 URLs
+        $urlsToCapture = array_slice($urls, 0, 5);
+
+        foreach ($urlsToCapture as $idx => $targetUrl) {
             $targetUrl = trim($targetUrl);
             if (empty($targetUrl)) continue;
 
@@ -115,7 +139,7 @@ class BusinessImages extends Component
                 $targetUrl = "https://" . $targetUrl;
             }
 
-            $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.webp';
+            $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.png';
             $fullPath = $destinationDir . '/' . $filename;
 
             $captured = $this->captureRealScreenshot($fullPath, $targetUrl);
@@ -126,8 +150,9 @@ class BusinessImages extends Component
 
         if (!empty($generatedImages)) {
             $this->currentImages = array_merge($this->currentImages, $generatedImages);
+            $this->currentImages = array_slice($this->currentImages, 0, 5);
             $this->newUploads = [];
-            session()->flash('modal_success', 'Real website screenshots generated successfully!');
+            session()->flash('modal_success', count($generatedImages) . ' website screenshot(s) generated successfully via Microlink!');
         } else {
             session()->flash('modal_error', 'Could not capture screenshots. Please verify the URL or try uploading images manually.');
         }
@@ -137,50 +162,39 @@ class BusinessImages extends Component
 
     private function captureRealScreenshot($savePath, $url)
     {
-        // Remove trailing slash for cleaner API query
         $cleanUrl = trim($url);
+        if (empty($cleanUrl)) return false;
 
-        $services = [
-            // Provider 1: thum.io
-            "https://image.thum.io/get/width/1200/crop/800/noanimate/" . $cleanUrl,
-            // Provider 2: wordpress.com mshots
-            "https://s0.wp.com/mshots/v1/" . urlencode($cleanUrl) . "?w=1200&h=800",
-            // Provider 3: microlink screenshot
-            "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false"
-        ];
+        if (!preg_match("~^(?:f|ht)tps?://~i", $cleanUrl)) {
+            $cleanUrl = "https://" . $cleanUrl;
+        }
 
-        foreach ($services as $serviceUrl) {
-            try {
-                if (str_contains($serviceUrl, 'microlink.io')) {
-                    $response = Http::withoutVerifying()->timeout(15)->get($serviceUrl);
-                    if ($response->successful()) {
-                        $json = $response->json();
-                        $imgUrl = $json['data']['screenshot']['url'] ?? null;
-                        if ($imgUrl) {
-                            $imgResponse = Http::withoutVerifying()->timeout(15)->get($imgUrl);
-                            if ($imgResponse->successful() && strlen($imgResponse->body()) > 3000) {
-                                file_put_contents($savePath, $imgResponse->body());
-                                return true;
-                            }
-                        }
-                    }
-                } else {
-                    $response = Http::withoutVerifying()
-                        ->withHeaders([
-                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                        ])
-                        ->timeout(15)
-                        ->get($serviceUrl);
-
-                    if ($response->successful() && strlen($response->body()) > 3000) {
-                        file_put_contents($savePath, $response->body());
+        try {
+            // Dedicated Provider: Microlink Screenshot API
+            $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&waitForTimeout=1500";
+            
+            $response = Http::withoutVerifying()->timeout(35)->get($apiUrl);
+            if ($response->successful()) {
+                $json = $response->json();
+                $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
+                if ($screenshotUrl) {
+                    $imgResponse = Http::withoutVerifying()->timeout(35)->get($screenshotUrl);
+                    if ($imgResponse->successful() && strlen($imgResponse->body()) > 5000) {
+                        file_put_contents($savePath, $imgResponse->body());
                         return true;
                     }
                 }
-            } catch (\Exception $e) {
-                Log::warning("Screenshot provider failed ({$serviceUrl}): " . $e->getMessage());
-                continue;
             }
+
+            // Fallback: direct embed redirect on Microlink
+            $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
+            $embedResponse = Http::withoutVerifying()->timeout(35)->get($embedUrl);
+            if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
+                file_put_contents($savePath, $embedResponse->body());
+                return true;
+            }
+        } catch (\Exception $e) {
+            Log::warning("Microlink screenshot failed for {$cleanUrl}: " . $e->getMessage());
         }
 
         return false;

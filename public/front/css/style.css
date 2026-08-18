@@ -1126,7 +1126,7 @@ textarea:focus-visible {
     /* background-color: #06498b12; */
     border-radius: 100%;
     /* height: 40px; */
-    width: 30px;
+    /* width: 30px; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1305,7 +1305,7 @@ textarea:focus-visible {
 
 .best-value-inline-container {
     display: flex !important;
-    /* justify-content: flex-end !important; */
+    justify-content: space-between !important;
     margin-top: 0 !important;
     margin-bottom: 4px !important;
     width: 100% !important;
@@ -5672,7 +5672,7 @@ header .search_logo .search-box {
     width: 28px;
     height: 28px;
     padding: 3px;
-    background-color: rgb(237, 238, 241);
+    /* background-color: rgb(237, 238, 241); */
     border-radius: 50px;
     display: inline-block;
 }
@@ -5779,7 +5779,8 @@ header .search_logo .search-box {
 }
 
 .sharing_icons .sharing_ul a:hover {
-    background-color: rgb(0 63 125);
+    background: #a0aec03b !important;
+    color: #003f7d !important;
 }
 
 .sharing_ul a:hover svg path {
@@ -6190,8 +6191,7 @@ header .dropdown_menu li a .ab_img {
 }
 
 .sharing_icons .sharing_ul a {
-    background-color: #174889;
-    color: #fff;
+    color: #174889;
 }
 
 .sharing_ul .svg svg {
@@ -8945,7 +8945,7 @@ section.revie_img_sec {
         line-height: 1.25 !important;
         margin: 0 !important;
         padding-right: 10px !important;
-        white-space: normal !important;
+        white-space: nowrap;
         word-break: break-word !important;
         letter-spacing: -0.02em !important;
     }
@@ -9372,6 +9372,7 @@ header .sec_head {
 
 .ft-btm-rgt .select-menu.active .options {
     overflow-y: scroll;
+    border-top: 1px solid #e4e4e4;
 }
 
 footer .footer-wrp ul li {
@@ -10143,10 +10144,10 @@ a.underline:hover {
 .reviw_sec_new .review-cntnt-btm .review-card:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
 }
-
+/* 
 .social_wishlist_btn .wishlist a:hover {
     background-color: #174889 !important;
-}
+} */
 
 .right_tool_sec .tool-card-img .fa-star {
     color: #174889 !important;
@@ -10345,10 +10346,11 @@ h5.card-title.mb-3 {
     position: relative;
     right: -1px;
     top: -1px;
+    color: #003f7d;
 }
 
 .review-actions-bottom-right a:hover {
-    background: #003f7d;
+    background: #a0aec03b;
     color: #fff !important;
 }
 
@@ -10443,8 +10445,8 @@ section.most-populr-sec.ms_dv.light.p_120 {
 
 .rating-group {
     color: #333 !important;
-    line-height: 1 !important;
-    margin-top: 6px !important;
+    line-height: 0 !important;
+    margin-top: 4px !important;
     font-weight: 500 !important;
     font-size: 12px !important;
     gap: 3px !important;
@@ -10453,27 +10455,30 @@ section.most-populr-sec.ms_dv.light.p_120 {
 }
 
 .rating-group .rate_box_num {
-    padding-top: 1px;
+    /* padding-top: 1px; */
 }
 
 .rating-group div {
-    margin-bottom: 1px !important;
+    /* margin-bottom: 1px !important; */
     font-size: 9px !important;
 }
 
 .blue-heart {
-    background: #d3d3d3;
     border-radius: 50%;
-    padding: 4px 0px 2px 0px;
+    padding: 2px 0px 2px 0px;
     color: #fff;
     transition:
         transform 0.1s linear,
         background 0.1s linear;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .blue-heart:hover {
-    background: #ff5722;
-    color: #fff;
+    background: #a0aec03b;
 }
 
 .svg-share {
@@ -10486,6 +10491,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 .svg-share svg {
     width: 80%;
     height: 80%;
+    color: #003f7d;
 }
 
 .review-time {
@@ -10558,7 +10564,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 .form-floating > textarea:not(:placeholder-shown) ~ label {
     transform: scale(0.85) translateY(-1.5rem) translateX(0.15rem);
     color: #80868b;
-    font-size: 13px !important;
+    font-size: 14px !important;
     font-weight: 400;
 }
 
@@ -10644,7 +10650,7 @@ a.cta.btn_blue:hover,
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -10652,8 +10658,8 @@ a.cta.btn_blue:hover,
 .top-product-small-logo img,
 .top-product-medium-logo img {
     width: 100%;
-    object-fit: cover;
-    transform: scale(1.25);
+    object-fit: contain;
+    /* transform: scale(1.25); */
     height: 100%;
 }
 
@@ -10706,18 +10712,17 @@ a.cta.btn_blue:hover,
 }
 .social_wishlist_btn .wishlist a i {
     position: relative;
-    top: 1px;
+    top: 4px;
+    left: 4 px;
 }
 
 .blue-heart .wishlist a i {
     position: relative;
     top: -1px;
-    color: #000;
+    color: #003f7d;
     font-size: 13px;
 }
-.blue-heart:hover .wishlist a i {
-    color: #fff;
-}
+
 .review-brand-icon {
     display: flex;
     flex-direction: column;
@@ -10747,7 +10752,7 @@ a.cta.btn_blue:hover,
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border-radius: 10px;
+    border-radius: 4px;
     overflow: hidden;
 }
 .top-product-medium-logo {
@@ -10836,5 +10841,47 @@ a.cta.btn_blue:hover,
     background: #efefefde !important;
 }
 .rating-stars i {
-    font-size: 11px !important;
+    font-size: 11px;
+}
+
+/* ====style.css updated by-Kashish(17-aug-26)===== */
+
+.filter-by-title-row {
+    margin-top: 0;
+}
+
+.recommended-per {
+    position: absolute;
+    right: 30px;
+    top: 20px;
+}
+.form-check-label i.fas.fa-star.text-warning,
+.top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
+.top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
+.top_rate_pg .auto-choice-lft .fa-star {
+    font-size: 15px;
+}
+
+#register-profile-modal .form-check-label a:focus {
+    text-decoration: underline;
+}
+
+.review-actions-bottom-right .action-icon-btn,
+button.action-icon-btn.share-trigger-btn {
+    color: #003f7d !important;
+    padding: 7px !important;
+    width: 28px !important;
+    height: 28px !important;
+}
+.review-actions-bottom-right a.action-icon-btn:hover,
+.review-actions-bottom-right button.action-icon-btn:hover,
+.sharing_ul button.action-icon-btn.share-trigger-btn:hover {
+    background: #a0aec03b !important;
+    color: #003f7d !important;
+}
+
+/* ====style.css updated by-Kashish(18-aug-26)===== */
+.rating-stars {
+    display: flex;
+    gap: 0;
 }

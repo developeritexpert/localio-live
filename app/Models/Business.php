@@ -135,6 +135,23 @@ class Business extends Model
     }
 
 
+    public function getEffectiveWebsiteUrl($countryId = null)
+    {
+        $countryId = $countryId ?: (function_exists('getCurrentCountry') ? getCurrentCountry() : null);
+
+        if ($countryId) {
+            $countryWebsite = $this->relationLoaded('websites')
+                ? $this->websites->firstWhere('country_id', $countryId)
+                : $this->websites()->where('country_id', $countryId)->first();
+
+            if ($countryWebsite && !empty($countryWebsite->website_url)) {
+                return $countryWebsite->website_url;
+            }
+        }
+
+        return $this->affiliate_link ?: $this->permanent_url;
+    }
+
     public function getTrackedUrl()
     {
         return \App\Services\AffiliateTrackingService::trackClick($this);

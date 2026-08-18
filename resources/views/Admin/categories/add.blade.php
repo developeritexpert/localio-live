@@ -1,5 +1,10 @@
 @extends('admin_layout.master')
 @section('content')
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 160px;
+        }
+    </style>
     <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between">
             <div class="nk-block-head-content">
@@ -31,6 +36,20 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="page_title">Page Title (H1 Heading)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="page_title" name="page_title"
+                                        value="{{ isset($category_data) ? ($category_data['page_title'] ?? '') : old('page_title') }}" 
+                                        placeholder="e.g. Shared hosting comparison (defaults to Category Name if left blank)" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Defines the main title/H1 displayed on the category or subcategory page. Defaults to Name if empty.</small>
+                                @error('page_title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="title">Title (Most Popular Section)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="title" name="title"
@@ -45,9 +64,16 @@
                             <div class="form-group">
                                 <label class="form-label" for="comparison_slug">Comparison Slug (SEO Route)</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="comparison_slug" name="comparison_slug"
-                                        value="{{ isset($category_data) ? ($category_data['comparison_slug'] ?? '') : old('comparison_slug') }}" placeholder="e.g. software-comparison" />
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="comparison_slug" name="comparison_slug"
+                                            value="{{ isset($category_data) ? ($category_data['comparison_slug'] ?? '') : old('comparison_slug') }}" 
+                                            placeholder="e.g. business-name-comparison" readonly />
+                                        <button class="btn btn-light" type="button" id="edit_comparison_slug_btn" title="Edit Comparison Slug">
+                                            <em class="icon ni ni-edit"></em>
+                                        </button>
+                                    </div>
                                 </div>
+                                <small class="text-muted d-block mt-1">Auto-assigned as <code>[category-name]-comparison</code>. Click the pencil icon to edit manually.</small>
                                 @error('comparison_slug')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -58,9 +84,36 @@
                             <div class="form-group">
                                 <label class="form-label" for="description">Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea style="width: 100%; height: 151px;" name="description" rows="2" cols="20">{{ isset($category_data) ? strip_tags($category_data['description']) : old('description') }}</textarea>
+                                    <textarea class="form-control description" id="description" name="description" rows="5" placeholder="Enter category description">{{ isset($category_data) ? $category_data['description'] : old('description') }}</textarea>
                                 </div>
                                 @error('description')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="meta_title">Meta Title</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="meta_title" name="meta_title"
+                                        value="{{ isset($category_data) ? ($category_data['meta_title'] ?? '') : old('meta_title') }}" 
+                                        placeholder="Enter SEO meta title for this category/subcategory page" />
+                                </div>
+                                @error('meta_title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="meta_description">Meta Description</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control" id="meta_description" name="meta_description" rows="3" 
+                                        placeholder="Enter SEO meta description for this category/subcategory page">{{ isset($category_data) ? ($category_data['meta_description'] ?? '') : old('meta_description') }}</textarea>
+                                </div>
+                                @error('meta_description')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -82,7 +135,7 @@
                                         {{ $hasItems ? 'disabled' : '' }}
                                     >
                                     <label class="form-check-label" for="is_parent">
-                                        This is a parent category
+                                        Parent category
                                     </label>
                                 </div>
                                 @if($hasSubcategories)
@@ -258,6 +311,70 @@
 
             if (isParentCheckbox) {
                 isParentCheckbox.addEventListener('change', toggleParentDropdown);
+            }
+
+            // Comparison Slug Auto-generate & Pencil Edit Toggle
+            const nameInput = document.getElementById('name');
+            const comparisonSlugInput = document.getElementById('comparison_slug');
+            const editComparisonSlugBtn = document.getElementById('edit_comparison_slug_btn');
+            let isSlugManuallyEdited = {{ (isset($category_data) && !empty($category_data['comparison_slug'])) || old('comparison_slug') ? 'true' : 'false' }};
+
+            function generateSlug(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .trim()
+                    .replace(/&/g, '-and-')
+                    .replace(/[\s\W-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+
+            function updateComparisonSlug() {
+                if (!isSlugManuallyEdited && nameInput && comparisonSlugInput) {
+                    const rawSlug = generateSlug(nameInput.value);
+                    comparisonSlugInput.value = rawSlug ? rawSlug + '-comparison' : '';
+                }
+            }
+
+            if (nameInput && comparisonSlugInput) {
+                if (!comparisonSlugInput.value && nameInput.value.trim()) {
+                    updateComparisonSlug();
+                }
+
+                nameInput.addEventListener('input', function() {
+                    updateComparisonSlug();
+                });
+
+                comparisonSlugInput.addEventListener('input', function() {
+                    isSlugManuallyEdited = true;
+                });
+
+                comparisonSlugInput.addEventListener('blur', function() {
+                    if (this.value.trim()) {
+                        this.value = generateSlug(this.value);
+                    }
+                });
+            }
+
+            if (editComparisonSlugBtn && comparisonSlugInput) {
+                editComparisonSlugBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (comparisonSlugInput.readOnly) {
+                        comparisonSlugInput.readOnly = false;
+                        comparisonSlugInput.focus();
+                        isSlugManuallyEdited = true;
+                        editComparisonSlugBtn.innerHTML = '<em class="icon ni ni-check"></em>';
+                        editComparisonSlugBtn.classList.remove('btn-outline-light', 'btn-white');
+                        editComparisonSlugBtn.classList.add('btn-primary');
+                        editComparisonSlugBtn.title = 'Lock Slug';
+                    } else {
+                        comparisonSlugInput.readOnly = true;
+                        editComparisonSlugBtn.innerHTML = '<em class="icon ni ni-edit"></em>';
+                        editComparisonSlugBtn.classList.add('btn-outline-light', 'btn-white');
+                        editComparisonSlugBtn.classList.remove('btn-primary');
+                        editComparisonSlugBtn.title = 'Edit Comparison Slug';
+                    }
+                });
             }
 
             // Rating Criteria Logic

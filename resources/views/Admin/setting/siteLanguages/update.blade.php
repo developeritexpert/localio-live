@@ -10,18 +10,18 @@
         </div>
         <div class="card card-bordered">
             <div class="card-inner">
-                <form action="{{ url('admin-dashboard/site-language/updateProcc') }}" class="form-validate"
-                    novalidate="novalidate" method="post" enctype="multipart/form-data">
+                <form action="{{ route('site-language-updateProcc', $siteLanguage->id) }}" class="form-validate"
+                    novalidate="novalidate" method="post">
                     @csrf
                     <input type="hidden" name="id" value="{{ $siteLanguage->id }}" id="id">
                     <div class="row g-gs">
                         <!-- Country Select -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label" for="country_id">Country</label>
+                                <label class="form-label" for="country_id">Country/region</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-control js-select2" name="country_id" id="country_id">
-                                        <option value="">Select Country</option>
+                                    <select class="form-control js-select2" name="country_id" id="country_id" required data-placeholder="Select Country/region">
+                                        <option value="">Select Country/region</option>
                                         @foreach ($countries as $country)
                                             <option value="{{ $country->id }}"
                                                 {{ old('country_id', $siteLanguage->country_id ?? '') == $country->id ? 'selected' : '' }}>
@@ -36,37 +36,23 @@
                             </div>
                         </div>
 
-                        <!-- Base Language Select -->
+                        <!-- Base Language Select (Optional) -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label" for="base_language_id">Base Language (Optional)</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-control js-select2" name="base_language_id" id="base_language_id">
-                                        <option value="">-- No base language --</option>
-                                        @foreach ($baseLanguages as $bLang)
-                                            <option value="{{ $bLang->id }}"
-                                                {{ old('base_language_id', $siteLanguage->base_language_id ?? '') == $bLang->id ? 'selected' : '' }}>
-                                                {{ $bLang->name }} ({{ $bLang->code }}) @if($bLang->is_master) — Master @endif
+                                    <select class="form-control js-select2" name="base_language_id" id="base_language_id" data-placeholder="No base language">
+                                        <option value="">No base language</option>
+                                        @foreach ($baseLanguages as $bl)
+                                            <option value="{{ $bl->id }}"
+                                                {{ old('base_language_id', $siteLanguage->base_language_id) == $bl->id ? 'selected' : '' }}>
+                                                {{ $bl->name }} ({{ $bl->code }})
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-text text-muted">Select the base language reference, or "No base language".</div>
+                                <span class="form-note text-muted">Select the base language reference, or "No base language".</span>
                                 @error('base_language_id')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Language Name -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="name">Language</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name', $siteLanguage->name) }}" />
-                                </div>
-                                @error('name')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -78,65 +64,14 @@
                                 <label class="form-label" for="lang_code">Lang code</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="lang_code" name="lang_code"
-                                        value="{{ old('lang_code', $siteLanguage->lang_code) }}" />
+                                        value="{{ old('lang_code', $siteLanguage->lang_code) }}" required />
                                 </div>
                                 @error('lang_code')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
-                        <!-- FAQ URL Slug -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="faq_slug">FAQ URL Slug (e.g. faqs, preguntas-frecuentes)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="faq_slug" name="faq_slug"
-                                        value="{{ old('faq_slug', $siteLanguage->faq_slug ?? 'faqs') }}" placeholder="faqs" />
-                                </div>
-                                @error('faq_slug')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <!-- Alternatives URL Slug -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="alternatives_slug">Alternatives URL Slug (e.g. alternatives, alternativas)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="alternatives_slug" name="alternatives_slug"
-                                        value="{{ old('alternatives_slug', $siteLanguage->alternatives_slug ?? 'alternatives') }}" placeholder="alternatives" />
-                                </div>
-                                @error('alternatives_slug')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <!-- Reviews URL Slug -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="reviews_slug">Reviews URL Slug (e.g. reviews, resenas, all-review)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="reviews_slug" name="reviews_slug"
-                                        value="{{ old('reviews_slug', $siteLanguage->reviews_slug ?? 'reviews') }}" placeholder="reviews" />
-                                </div>
-                                @error('reviews_slug')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <!-- Comparisons URL Slug -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="comparisons_slug">Comparisons URL Slug (e.g. comparisons, comparativas)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="comparisons_slug" name="comparisons_slug"
-                                        value="{{ old('comparisons_slug', $siteLanguage->comparisons_slug ?? 'comparisons') }}" placeholder="comparisons" />
-                                </div>
-                                @error('comparisons_slug')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+
                         <!-- Status Toggle with Hidden Fallback -->
                         <div class="col-md-6">
                             <div class="form-group">
@@ -161,30 +96,6 @@
                             </div>
                         </div>
 
-                        <!-- Active Translation Toggle -->
-                        {{-- <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="is_active_translation">Active Translation</label>
-                                <div class="form-control-wrap d-flex align-items-center gap-2">
-                                    <!-- Hidden fallback -->
-                                    <input type="hidden" name="is_active_translation" value="0">
-                                    <!-- Checkbox -->
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="is_active_translation"
-                                            name="is_active_translation" value="1"
-                                            {{ old('is_active_translation', $siteLanguage->is_active_translation ?? 0) == 1 ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_active_translation"></label>
-                                    </div>
-                                    <span id="isActiveTranslationText" style="font-weight: 600;">
-                                        {{ old('is_active_translation', $siteLanguage->is_active_translation ?? 0) == 1 ? 'Yes' : 'No' }}
-                                    </span>
-                                </div>
-                                @error('is_active_translation')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div> --}}
-
                         <!-- Submit Button -->
                         <div class="col-md-12">
                             <div class="form-group">
@@ -198,9 +109,14 @@
     </div>
     <script>
         $(document).ready(function() {
-            // Initialize Select2 for dropdowns
-            $('#country_id, #base_language_id').select2({
-                placeholder: 'Select an option',
+            $('#country_id').select2({
+                placeholder: 'Select Country/region',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#base_language_id').select2({
+                placeholder: 'No base language',
                 allowClear: true,
                 width: '100%'
             });
@@ -208,11 +124,6 @@
             // Update text for Status toggle
             $('#status').on('change', function() {
                 $('#statusText').text($(this).is(':checked') ? 'Active' : 'Inactive');
-            });
-
-            // Update text for Active Translation toggle
-            $('#is_active_translation').on('change', function() {
-                $('#isActiveTranslationText').text($(this).is(':checked') ? 'Yes' : 'No');
             });
 
             // Sanitize lang_code input (letters, numbers, hyphens only)

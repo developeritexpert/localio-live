@@ -84,7 +84,7 @@
             /* margin-left: 27%; */
             margin-bottom: 24px;
             padding-bottom: 16px;
-            border-bottom: 2px solid #e8eef6;
+            /* border-bottom: 2px solid #e8eef6; */
         }
         .top-rated-heading-block h1 {
             /* font-size: 34px;

@@ -7,7 +7,7 @@
             <div class="nk-block-head-content">
                 <h3 class="nk-block-title page-title">Base Languages</h3>
                 <div class="nk-block-des text-soft">
-                    <p>Manage standardized base languages with Google Cloud Translate codes and language combination tags.</p>
+                    <p>Manage standardized base languages with BCP 47 tags.</p>
                 </div>
             </div>
             <div class="nk-block-head-content">
@@ -41,9 +41,7 @@
                 <thead>
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Name</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Google Translate Code</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Language Tag</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Master</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">BCP 47 Tag</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                         <th class="nk-tb-col tb-tnx-action">
                             <span>Action</span>
@@ -62,16 +60,6 @@
                             </td>
                             <td class="nk-tb-col tb-col-mb">
                                 <span class="badge bg-outline-info">{{ $lang->code }}</span>
-                            </td>
-                            <td class="nk-tb-col tb-col-md">
-                                <span class="badge bg-outline-secondary">{{ $lang->language_tag }}</span>
-                            </td>
-                            <td class="nk-tb-col tb-col-md">
-                                @if($lang->is_master)
-                                    <span class="badge bg-primary">Master Language</span>
-                                @else
-                                    <span class="text-soft">-</span>
-                                @endif
                             </td>
                             <td class="nk-tb-col tb-col-md">
                                 @if($lang->status)
