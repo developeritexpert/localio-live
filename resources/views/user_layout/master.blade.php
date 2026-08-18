@@ -1504,7 +1504,7 @@
                                     </li>
                                     <li class=" menu-item cat_menu_item">
                                         <a
-                                            href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated'] ?? 'Top Rated' }}</a>
+                                            href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated'] ?? 'Top rated' }}</a>
                                     </li>
                                     @foreach($categories as $category)
                                     <li class="menu-item">

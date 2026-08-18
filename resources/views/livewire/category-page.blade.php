@@ -311,8 +311,9 @@
                             <div class="verified-insights-card"
                                 style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                 <div class="d-flex align-items-center mb-2" style="gap: 8px;">
-                                    <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}"
-                                        style="width: 20px; height: 20px;" alt="Verified">
+                                    <!-- <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}"
+                                        style="width: 20px; height: 20px;" alt="Verified"> -->
+                                        <i class="far fa-star text-warning" style="margin-top: -4px; color: #1e3050 !important;"></i>
                                     <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real
                                         experiences</h6>
                                 </div>
