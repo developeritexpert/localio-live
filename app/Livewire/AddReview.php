@@ -41,9 +41,11 @@ class AddReview extends Component
         if (!Auth::check()) {
             session([
                 'pending_review_business_id' => $businessId,
-                'pending_review_recommend'   => $recommend
+                'pending_review_recommend'   => $recommend,
+                'register_from_modal'        => true,
             ]);
-            return redirect()->route('login');
+            $this->dispatch('show-login-modal');
+            return;
         }
 
         $this->reset([
