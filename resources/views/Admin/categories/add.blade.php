@@ -1,5 +1,10 @@
 @extends('admin_layout.master')
 @section('content')
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 160px;
+        }
+    </style>
     <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between">
             <div class="nk-block-head-content">
@@ -79,7 +84,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="description">Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea style="width: 100%; height: 151px;" name="description" rows="2" cols="20">{{ isset($category_data) ? strip_tags($category_data['description']) : old('description') }}</textarea>
+                                    <textarea class="form-control description" id="description" name="description" rows="5" placeholder="Enter category description">{{ isset($category_data) ? $category_data['description'] : old('description') }}</textarea>
                                 </div>
                                 @error('description')
                                     <div class="error text-danger">{{ $message }}</div>

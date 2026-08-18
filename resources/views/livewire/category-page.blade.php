@@ -303,9 +303,9 @@
                             @endif
                             <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
-                            <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
-                            </p>
+                            <div style="font-size: 15px; color: #444; margin-bottom: 0;" class="category-description-text">
+                                {!! $category->translations->description ?? 'Browse and compare the best options' !!}
+                            </div>
                         </div>
                         <div class="col-md-4 mt-4 mt-md-0 text-start">
                             <div class="verified-insights-card"

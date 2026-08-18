@@ -1,0 +1,324 @@
+resources/views/components/faq-section.blade.php:12:                        @if ($faqs->isNotEmpty() && $faqs->first()->translations->isNotEmpty())
+resources/views/components/faq-section.blade.php:17:                                    $faqtranslation = $faq->translations->first();
+resources/views/Vendor/vendor_how_it_work.blade.php:75:                        $businessTranslation = $business->translations->first();
+resources/views/Vendor/vendor_how_it_work.blade.php:77:                        $reviewTranslation = $review && $review->translations ? $review->translations->first() : null;
+resources/views/Vendor/vendor_register_list.blade.php:93:                            return [$business->id => $business->translations->first()?->name ?? ''];
+resources/views/user_dashboard/user_product.blade.php:29:                                    <h3>{{ $item->business->translations->first()->name }}</h3>
+resources/views/user_dashboard/user_product.blade.php:53:                                <p class="m-0">{!! $item->business->translations->first()->description !!}</p>
+resources/views/user_dashboard/user_review.blade.php:36:                                        {{ optional($review->business?->translations->first())->name ?? 'Business Name' }}
+resources/views/user_dashboard/user_review.blade.php:63:                                    <h6>{{ strip_tags($review->translations->first()->title ?? 'No title Available') }}</h6>
+resources/views/user_dashboard/user_review.blade.php:64:                                    <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+resources/views/Admin/products/add_product.blade.php:284:                            $translation = $option->translations->firstWhere('lang_id', getCurrentLanguageID()) ?? $option->translations->first();
+resources/views/Admin/products/add_product.blade.php:371:                                                    $name = optional($translations->first())->name ?? 'Business #' . $id;
+resources/views/Admin/products/add_product.blade.php:372:                                                    return [$translations->first()->business_id => $name];
+resources/views/Admin/products/update_product.blade.php:377:                                                            $translation = $option->translations->firstWhere('lang_id', getCurrentLanguageID()) ?? $option->translations->first();
+resources/views/Admin/products/update_product.blade.php:431:                                        $businessTranslation = $linkedBusiness->translations->where('lang_id', $currentLangId)->first()
+resources/views/Admin/products/update_product.blade.php:432:                                            ?? ($linkedBusiness->translations->where('lang_id', 1)->first() ?? $linkedBusiness->translations->first());
+resources/views/Admin/products/update_product.blade.php:472:                                                $name = optional($translations->first())->name ?? 'Business #' . $id;
+resources/views/Admin/products/update_product.blade.php:473:                                                return [$translations->first()->business_id => $name];
+resources/views/Admin/products/index.blade.php:63:                                                            {{ $business->translations->first()->name ?? 'Business #' . $business->id }}
+resources/views/Admin/ad-tracking/ad_tracking.blade.php:70:                            <td class="nk-tb-col">{{ $click->business->translations->first()->name ?? 'N/A' }}</td>
+resources/views/Admin/faqs/index.blade.php:143:                                            {{ $faq->translations->first()?->question ?? $faq->question }}
+resources/views/Admin/faqs/index.blade.php:146:                                            {{ strip_tags($faq->translations->first()?->answer ?? $faq->answer) }}
+resources/views/Admin/faqs/faqs_categories.blade.php:51:                                                    {{ $faq->translations->isNotEmpty() ? $faq->translations->first()->name : $faq->name }}
+resources/views/Admin/filters/update.blade.php:27:                                        value="{{ old('name', $filter->translations->first()?->name ?? $filter->name) }}">
+resources/views/Admin/filters/update.blade.php:40:                                        value="{{ old('slug', $filter->translations->first()->slug ?? $filter->slug) }}" />
+resources/views/Admin/filters/update.blade.php:58:                                                    {{ $category->translations->name ?? $category->name }}
+resources/views/Admin/filters/update.blade.php:115:                                                        value="{{ $option->translations->first()->name ?? $option->name }}">
+resources/views/Admin/filters/category_index.blade.php:45:                                                    {{ $category->translations->name ?? ($category->name ?? '') }}
+resources/views/Admin/filters/partials/duplicate_options.blade.php:7:                    {{ $filter->translations->first()->name ?? $filter->name }}
+resources/views/Admin/filters/index.blade.php:61:                                                    class="tb-lead">{{ $filter->translations->isNotEmpty() ? $filter->translations->first()->name : $filter->name ?? '' }}</span>
+resources/views/Admin/categories/add_topic.blade.php:72:                        <span class="topic-title">{{ $topic->translations->first()?->title ?? 'No title' }}</span>
+resources/views/Admin/categories/add_topic.blade.php:77:                                    data-title="{{ $topic->translations->first()?->title ?? '' }}">
+resources/views/Admin/categories/add_topic.blade.php:83:                                    data-title="{{ $topic->translations->first()?->title ?? '' }}">
+resources/views/Admin/pricing_option/index.blade.php:103:                                                $trans = $price_option->translations->where('lang_id', $lang_id)->first();
+resources/views/Admin/pricing_option/index.blade.php:104:                                                $eng = $price_option->translations->where('lang_id', 1)->first();
+resources/views/Admin/pricing_option/add.blade.php:29:                                            $engTrans = $pricing_data->translations->where('lang_id', 1)->first();
+resources/views/Admin/pricing_option/add.blade.php:30:                                            $editName = $engTrans->name ?? (optional($pricing_data->translations->first())->name ?? $pricing_data->slug);
+resources/views/Admin/pricing_option/add.blade.php:50:                                            $engTrans = $pricing_data->translations->where('lang_id', 1)->first();
+resources/views/Admin/pricing_option/add.blade.php:51:                                            $editButtonText = $engTrans->button_text ?? (optional($pricing_data->translations->first())->button_text ?? 'Claim now');
+resources/views/Admin/vendor-changes/all_request.blade.php:34:                                    {{ $request->business->translations->first()->name ?? 'N/A' }}
+resources/views/Admin/vendor-changes/user_review_feedback.blade.php:107:                                                    $translation = $feedback->review->translations->where('language_id', getCurrentLanguageID())->first();
+resources/views/Admin/site-content/get_listed.blade.php:161:                                                                $firstTranslation = $pageTile->translations->first();
+resources/views/Admin/site-content/experts_guides.blade.php:125:                                                            $firstTranslation = $pageTile->translations->first();
+resources/views/Admin/site-content/site_content.blade.php:129:                                                        $trans = $keyObj->translations->first();
+resources/views/Admin/site-content/who_we_are.blade.php:306:                                                                @if ($item->translations->first()->img)
+resources/views/Admin/site-content/who_we_are.blade.php:307:                                                                    <img src="{{ asset($item->translations->first()->img) }}"
+resources/views/Admin/site-content/who_we_are.blade.php:315:                                                                @if ($item->translations->first()->small_img)
+resources/views/Admin/site-content/who_we_are.blade.php:316:                                                                    <img src="{{ asset($item->translations->first()->small_img) }}"
+resources/views/Admin/site-content/who_we_are.blade.php:323:                                                            <td>{{ $item->translations->first()->title ?? 'No title' }}
+resources/views/Admin/site-content/who_we_are.blade.php:325:                                                            <td>{{ $item->translations->first()->description ?? 'No Description' }}
+resources/views/Admin/site-content/who_we_are.blade.php:335:                                                                    data-id="{{ $item->translations->first()->id }}"
+resources/views/Admin/site-content/who_we_are.blade.php:336:                                                                    data-title="{{ $item->translations->first()->title }}"
+resources/views/Admin/site-content/who_we_are.blade.php:337:                                                                    data-desc="{{ $item->translations->first()->description }}"
+resources/views/Admin/site-content/who_we_are.blade.php:338:                                                                    data-img="{{ asset($item->translations->first()->img) }}"
+resources/views/Admin/site-content/who_we_are.blade.php:339:                                                                    data-small_img="{{ asset($item->translations->first()->small_img) }}">Edit</button>
+resources/views/Admin/user/vendor_register_request.blade.php:42:                                        {{ $vendor->business->translations->first()->name }}
+resources/views/Admin/features/edit.blade.php:48:                                                {{ $category->translated_name ?? ($category->translations->name ?? 'Category #'.$category->id) }}
+resources/views/Admin/features/index.blade.php:22:                                                    {{ $cat->translated_name ?? ($cat->translations->name ?? 'Category #'.$cat->id) }}
+resources/views/Admin/features/index.blade.php:61:                $activeCatName = $activeCat->translated_name ?? ($activeCat->translations->name ?? 'Category #' . $selectedCategoryId);
+resources/views/Admin/features/index.blade.php:93:                                                {{ optional($feature->translations->first())->name ?? 'No name' }}
+resources/views/Admin/features/index.blade.php:101:                                            {{ $feature->category->translations->name }}
+resources/views/Admin/features/index.blade.php:180:                                        {{ $category->translated_name ?? ($category->translations->name ?? 'Category #'.$category->id) }}
+resources/views/Admin/features/add.blade.php:51:                                                {{ $category->translated_name ?? ($category->translations->name ?? 'Category #'.$category->id) }}
+resources/views/Admin/reviews/add_review.blade.php:43:                                                    <option value="{{ $busines->id }}"> {{ $busines->translations->first()->name ?? ''}}
+resources/views/Admin/reviews/index.blade.php:69:                                                        {{ $review->business?->translations->first()->name ?? 'Business not available' }}
+resources/views/Admin/reviews/index.blade.php:76:                                                {{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+resources/views/Admin/reviews/update_review.blade.php:116:                                            {{ $business->translations->first()->name ?? '' }}
+resources/views/Admin/article/index.blade.php:51:                                                {{ $article->translations->isNotEmpty() ? $article->translations->first()->name : $article->name ?? '' }}
+resources/views/Admin/article/index.blade.php:64:                                        {{strip_tags($article->translations->isNotEmpty() ? $article->translations->first()->description : $article->description ?? '' )}}
+resources/views/Admin/article/article_categories.blade.php:48:                                            {{ $category->translations->isNotEmpty() ? $category->translations->first()->name : $category->name }}
+resources/views/Admin/article/article_categories.blade.php:54:                                    <span class="tb-lead">{{ $category->translations->isNotEmpty() ? $category->translations->first()->slug : $category->slug }}</span>
+resources/views/Admin/article/article_categories.blade.php:58:                                    <!-- {{ $category->translations->isNotEmpty() ? $category->translations->first()->description : $category->description }} -->
+resources/views/Admin/article/article_categories.blade.php:59:                                    {!! \Illuminate\Support\Str::words( $category->translations->isNotEmpty() ? $category->translations->first()->description : $category->description ?? 'No description available', 10, '...') !!}
+resources/views/Admin/mail-templates/show.blade.php:75:                                                <span class="badge badge-secondary">{{ $mailTemplate->translations->count() }} translations</span>
+resources/views/Admin/mail-templates/show.blade.php:168:                            @if($mailTemplate->translations->count() > 0)
+resources/views/Admin/mail-templates/index.blade.php:82:                                            {{ $template->translations->count() }} translations
+resources/views/user_layout/master_old.blade.php:1561:                                                $translation = $category->translation ?? $category->translations->first();
+resources/views/user_layout/master_old.blade.php:1581:                                                $translation = $business->translations->first();
+resources/views/vendor_dashboard/review.blade.php:48:                              <span>{{ $review->translations->first()->title ?? 'Review Title' }}</span>
+resources/views/vendor_dashboard/review.blade.php:49:                              <p>{{ $review->translations->first()->description ?? 'Review Description' }}</p>
+resources/views/vendor_dashboard/dash.blade.php:154:                                 {{ $review->business->translations->first()->name ?? 'Business Name' }}
+resources/views/vendor_dashboard/dash.blade.php:181:                              {{ $review->translations->first()->title ?? 'Review Title' }}
+resources/views/vendor_dashboard/dash.blade.php:184:                              {{ $review->translations->first()->description ?? 'Review description' }}
+resources/views/vendor_dashboard/product/all_product.blade.php:23:                               <p class="m-0">{{$product->translations->name ?? 'Product name'}}</p>
+resources/views/vendor_dashboard/product/all_product.blade.php:26:                                    {{$product->translations->name ?? 'Product name'}}
+resources/views/User/category/index.blade.php:305:                                    {{ $category->translations->name ?? 'No Name' }}
+resources/views/User/category/index.blade.php:311:                                    {!! $category->translations->description ?? 'No Description Available' !!}
+resources/views/User/review/partials/reviews_list.blade.php:51:                        $translation = $review->translations->firstWhere('language_id', getCurrentLanguageID());
+resources/views/User/review/partials/reviews_list.blade.php:52:                        $title = $translation?->title ?? $review->translations->first()?->title ?? '';
+resources/views/User/review/user_review2.blade.php:12:    $bTranslation = $business->translations->firstWhere('language_id', $lang_id) ?? $business->translations->first();
+resources/views/User/review/user_review2.blade.php:29:        $rTrans = $rev->translations->where('language_id', $lang_id)->first() ?? $rev->translations->first();
+resources/views/User/review/user_review2.blade.php:79:                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+resources/views/User/review/user_review2.blade.php:283:                                @if($review->translations && $review->translations->first() && $review->translations->first()->title)
+resources/views/User/review/user_review2.blade.php:285:                                        {{ $review->translations->first()->title }}
+resources/views/User/review/user_review2.blade.php:301:                                @if($review->translations && $review->translations->first() && $review->translations->first()->description)
+resources/views/User/review/user_review2.blade.php:303:                                        {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description), 110) }}
+resources/views/User/faq/faq.blade.php:9:                    $translation = $category->translations->firstWhere('lang_id', getCurrentLanguageID());
+resources/views/User/faq/faq.blade.php:10:                    $hasFaqsInLang = $category->faqs->filter(fn($faq) => $faq->translations->firstWhere('lang_id', getCurrentLanguageID()))->isNotEmpty();
+resources/views/User/faq/faq.blade.php:40:                    $translation = $category->translations->firstWhere('lang_id', getCurrentLanguageID());
+resources/views/User/faq/faq.blade.php:42:                    $translatedFaqs = $category->faqs->filter(fn($faq) => $faq->translations->firstWhere('lang_id', getCurrentLanguageID()));
+resources/views/User/faq/faq.blade.php:62:                                    $faqTranslation = $faq->translations->firstWhere('lang_id', getCurrentLanguageID());
+resources/views/User/faq/faq.blade.php:114:            name: "{{ $category->translations->first()->name ?? 'No Name' }}",
+resources/views/User/faq/faq.blade.php:115:            slug: "{{ Str::slug($category->translations->first()->name ?? '') }}"
+resources/views/User/home/index.blade.php:116:                                            <span class="category-btn-text">{{ $category->translations->name }}</span>
+resources/views/User/home/index.blade.php:142:                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
+resources/views/User/home/index.blade.php:143:                                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
+resources/views/User/home/index.blade.php:157:                                                    $businessTranslation = $business->translations->first();
+resources/views/User/home/index.blade.php:159:                                                    $reviewTranslation = $review && $review->translations ? $review->translations->first() : null;
+resources/views/User/home/index.blade.php:212:                                                             @if(!empty($business->translations->first()->short_description))
+resources/views/User/home/index.blade.php:214:                                                                     {{ $business->translations->first()->short_description }}
+resources/views/User/home/index.blade.php:281:                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
+resources/views/User/home/index.blade.php:282:                                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
+resources/views/User/home/index.blade.php:335:                                            {{ $product->businesses->first()?->translations->first()?->name ?? 'Business Title' }}
+resources/views/User/home/index.blade.php:336:                                            - {{ $product->translations->name ?? '' }}
+resources/views/User/home/index.blade.php:350:                                        <a href="{{ $product->translations->product_link }}" class="cta cta_white">
+resources/views/User/home/index.blade.php:395:                                            optional(optional($business)->translations->first())->name ??
+resources/views/User/home/index.blade.php:408:                                                        alt="{{ $business->translations->first()->name ?? 'Business' }}">
+resources/views/User/home/index.blade.php:515:                                $catTranslation = $article->category ? $article->category->translations->first() : null;
+resources/views/User/product/all_comparisons.blade.php:6:    $translation = $business->translations->first();
+resources/views/User/product/all_comparisons.blade.php:58:                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+resources/views/User/product/all_comparisons.blade.php:138:                    $bSlug = $business->translations->first()->slug ?? ($business->slug ?? 'business');
+resources/views/User/product/all_comparisons.blade.php:223:                                    $popPeerName = $popPeer->translations->first()->name ?? 'Business';
+resources/views/User/product/all_comparisons.blade.php:259:                    $peerName = $peer->translations->first()->name ?? 'Business';
+resources/views/User/product/business_alternatives.blade.php:12:    $bName = $business->translations->first()?->name ?? 'Business';
+resources/views/User/product/business_alternatives.blade.php:48:                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+resources/views/User/product/business_alternatives.blade.php:66:                        $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
+resources/views/User/product/business_faqs.blade.php:9:    $bTranslation = $business->translations->first();
+resources/views/User/product/business_faqs.blade.php:141:                                    @php $translation = $faq->translations->first(); @endphp
+resources/views/User/product/business_faqs.blade.php:336:                                            $revTrans = $rev->translations->first();
+resources/views/User/product/partials/reviews_list.blade.php:58:                            {{ $review->translations->first()->title ?? '' }}
+resources/views/User/product/partials/reviews_list.blade.php:82:                            {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
+resources/views/User/product/partials/reviews_list.blade.php:108:            $bSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
+resources/views/User/product/partials/reviews_list.blade.php:173:                                {{ $review->translations->first()->title ?? '' }}
+resources/views/User/product/partials/reviews_list.blade.php:197:                                {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
+resources/views/User/product/partials/reviews_list.blade.php:290:                            {{ $review->translations->first()->title ?? '' }}
+resources/views/User/product/partials/reviews_list.blade.php:293:                        <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}</p>
+resources/views/User/product/partials/reviews.blade.php:15:                <p class="compari_p">"{{ Str::limit($review->content ?? $review->translations->where('locale', app()->getLocale())->first()->content ?? 'No review content', 200) }}"</p>
+resources/views/User/product/partials/review_navigation.blade.php:14:            <p class="compari_p">"{{ Str::limit($review->content ?? $review->translations->where('locale', app()->getLocale())->first()->content ?? 'No review content', 200) }}"</p>
+resources/views/User/product/product_detail.blade.php:6:@section('meta_title', isset($business->translations->first()->name) && isset($business->translations->first()->name) ?
+resources/views/User/product/product_detail.blade.php:7:    $business->translations->first()->name : 'Products')
+resources/views/User/product/product_detail.blade.php:906:                                    <span>{{ $business->translations->first()->name ?? '' }}</span>
+resources/views/User/product/product_detail.blade.php:936:                            <img src="{{ asset($business->icon_id) }}" alt="{{ $business->translations->first()->name }}">
+resources/views/User/product/product_detail.blade.php:946:                                                    {{ $business->translations->first()->name }} <span class="hide-on-sticky">review {{ date('Y') }}</span> </h1>
+resources/views/User/product/product_detail.blade.php:1022:                            $name = $business->translations->first()->name ?? 'This Business';
+resources/views/User/product/product_detail.blade.php:1044:                                        $topic->translations->first()?->title ?? 'Topic ' . ($index + 1);
+resources/views/User/product/product_detail.blade.php:1121:                                                <h2>{{ $business->translations->first()->description_title ?: ('What is ' . ($business->translations->first()->name ?? '')) }}</h2>
+resources/views/User/product/product_detail.blade.php:1123:                                                    {!! $business->translations->first()->description !!}
+resources/views/User/product/product_detail.blade.php:1132:                                                    {{ $business->translations->first()->name ?? 'Business' }} pros and cons
+resources/views/User/product/product_detail.blade.php:1283:                                         @if (!empty($business->translations->first()->after_image_description))
+resources/views/User/product/product_detail.blade.php:1286:                                                     {!! $business->translations->first()->after_image_description !!}
+resources/views/User/product/product_detail.blade.php:1294:                                            $businessName = optional($business->translations->first())->name ?? 'Business';
+resources/views/User/product/product_detail.blade.php:1355:                                                                    $featName = optional($feat->translations->first())->name ?? $feat->name;
+resources/views/User/product/product_detail.blade.php:1491:                                                                        $translation = $review->translations->firstWhere('language_id', $currentLangId);
+resources/views/User/product/product_detail.blade.php:1551:                                                                            <h2>{{ $business->translations->first()->name }} Alternatives & Competitors</h2>
+resources/views/User/product/product_detail.blade.php:1567:                                                                                        onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}'; }"
+resources/views/User/product/product_detail.blade.php:1616:                                                                                                @if ($altbusiness->translations->isNotEmpty())
+resources/views/User/product/product_detail.blade.php:1618:                                                                                                        {{ $altbusiness->translations->first()->name }}
+resources/views/User/product/product_detail.blade.php:1696:                                                                                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}"
+resources/views/User/product/product_detail.blade.php:1714:                                                                        <a href="{{ route('business.alternatives', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug ?? $business->slug ?? '', 'alternatives_slug' => $expectedAlternativesSlug]) }}"
+resources/views/User/product/product_detail.blade.php:1745:                                                                                                @php $translation = $faq->translations->first(); @endphp
+resources/views/User/product/product_detail.blade.php:1780:                                                                                            <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
+resources/views/User/product/product_detail.blade.php:1795:                                                                    $bName = $business->translations->first()->name ?? 'Business';
+resources/views/User/product/product_detail.blade.php:1814:                                                                                    $peerName = $peer->translations->first()->name ?? 'Business';
+resources/views/User/product/product_detail.blade.php:1876:                                                                                $bSlugStr = $business->translations->first()->slug ?? $business->slug;
+resources/views/User/product/product_detail.blade.php:1891:                                                                            {!! $product->translations->overview ?? "" !!}
+resources/views/User/product/product_detail.blade.php:2027:                                                                                        <p style="margin: 0; font-size: 13.5px; color: #4a5568;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
+resources/views/User/product/product_detail.blade.php:2385:                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+resources/views/User/product/product_detail.blade.php:2490:                                                ->first() ?? $review->translations->first();
+resources/views/User/product/product_detail.blade.php:2588:                                                            {{ $review->translations->first()->title ?? 'Review' }}
+resources/views/User/product/product_detail.blade.php:2606:                                                            {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description ?? ''),90) }}
+resources/views/User/product/product_detail.blade.php:2684:                                                            alt="{{ $business->translations->first()->name ?? '' }}"
+resources/views/User/product/product_detail.blade.php:2689:                                                        {{ $business->translations->first()->name ?? '' }}
+resources/views/User/product/product_detail.blade.php:3419:                                 alt="{{ $business->translations->first()->name }}"
+resources/views/User/product/product_detail.blade.php:3424:                                {{ $business->translations->first()->name }}
+resources/views/User/product/product_comparison.blade.php:40:                            {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}
+resources/views/User/product/product_comparison.blade.php:42:                            {{ $businesses[0]->translations->first()?->name ?? '' }}
+resources/views/User/product/product_comparison.blade.php:62:                                    {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}: Comparison
+resources/views/User/product/product_comparison.blade.php:64:                                    {{ $businesses[0]->translations->first()?->name ?? '' }}: Comparison
+resources/views/User/product/product_comparison.blade.php:100:                                                    alt="{{ $business->translations->first()?->name ?? '' }}" style="">
+resources/views/User/product/product_comparison.blade.php:104:                                                    <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()?->name ?? '' }}</h6>
+resources/views/User/product/product_comparison.blade.php:237:                                                    <span style="font-size: 16px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
+resources/views/User/product/product_comparison.blade.php:259:                                    <h6>What is {{ $business->translations->first()?->name ?? 'Product' }}?</h6>
+resources/views/User/product/product_comparison.blade.php:261:                                        <p>{!! $business->translations->first()?->description ?? 'No description available.' !!}</p>
+resources/views/User/product/product_comparison.blade.php:275:                                    $bName = $business->translations->first()?->name ?? '';
+resources/views/User/product/product_comparison.blade.php:349:                            $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? $business->slug;
+resources/views/User/product/product_comparison.blade.php:360:                                            <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
+resources/views/User/product/write_review_landing.blade.php:33:                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="">
+resources/views/User/product/write_review_landing.blade.php:36:                                {{ $business->translations->first()->name ?? 'Unnamed' }}
+resources/views/User/product/write_review_landing.blade.php:53:                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="blue-btn  w-100 py-2  fw-semibold" style="border-radius: 20px; font-size: 14px;  background-color:#003f7d; color: #fff; transition:unset !important;">
+resources/views/User/product/write_review_landing.blade.php:73:                                    <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}">
+resources/views/User/product/write_review_landing.blade.php:76:                                    {{ $business->translations->first()->name ?? 'Unnamed' }}
+resources/views/User/product/write_review_landing.blade.php:79:                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;">
+resources/views/User/product/write_review_landing.blade.php:102:                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="">
+resources/views/User/product/write_review_landing.blade.php:105:                                {{ $business->translations->first()->name ?? 'Unnamed' }}
+resources/views/User/product/write_review_landing.blade.php:122:                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;" >
+resources/views/User/meta-pages/site-pages/who_we_are.blade.php:124:                            <img src="{{ asset($item->translations->first()->img) }}">
+resources/views/User/meta-pages/site-pages/who_we_are.blade.php:128:                                <h6 class="big-bld">{{ $item->translations->first()->title ?? '' }}</h6>
+resources/views/User/meta-pages/site-pages/who_we_are.blade.php:129:                                <p>{{ $item->translations->first()->description ?? '' }}
+resources/views/User/meta-pages/site-pages/who_we_are.blade.php:133:                                <img src="{{ asset($item->translations->first()->small_img) }}">
+resources/views/livewire/category-page.blade.php:250:    @section('meta_title', !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page'))
+resources/views/livewire/category-page.blade.php:251:    @section('meta_description', !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? ''))
+resources/views/livewire/category-page.blade.php:274:                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+resources/views/livewire/category-page.blade.php:277:                                        {{ $category->parent->translations->name ?? 'Main Category' }}
+resources/views/livewire/category-page.blade.php:283:                                    {{ $category->translations->name ?? 'Category' }}
+resources/views/livewire/category-page.blade.php:297:                                {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Category') }} providers with
+resources/views/livewire/category-page.blade.php:302:                                {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products') }}</h1>
+resources/views/livewire/category-page.blade.php:307:                                {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
+resources/views/livewire/category-page.blade.php:338:                                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
+resources/views/livewire/category-page.blade.php:341:                                            {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
+resources/views/livewire/category-page.blade.php:455:                                            $subcatName = $subcat->translations->name ?? $subcat->name;
+resources/views/livewire/category-page.blade.php:476:                                            $filter->translations->where('language_id', $currentLangId)->first()
+resources/views/livewire/category-page.blade.php:604:                                                                unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+resources/views/livewire/category-page.blade.php:831:                                                                            {{ $item->translations->first()->name }}
+resources/views/livewire/category-page.blade.php:869:                                                    @if(!empty($item->translations->first()->short_description))
+resources/views/livewire/category-page.blade.php:872:                                                        {{ $item->translations->first()->short_description }}
+resources/views/livewire/product-form.blade.php:101:                                                            {{ $business->translations->first()->name }}
+resources/views/livewire/product-form.blade.php:121:                                                                : ($category->translations->first()->name ?? $category->name) }}
+resources/views/livewire/admin/exclusive-deals-table.blade.php:54:                            $name = $appliedModel->translations->name ?? '-';
+resources/views/livewire/deals-search.blade.php:27:                                        class="header_img" alt="{{ $product->translations->name ?? 'Product' }}">
+resources/views/livewire/deals-search.blade.php:32:                                        {{ $product->translations->name ?? 'Product' }}
+resources/views/livewire/deals-search.blade.php:70:                                            <strong>{{ $product->businesses->first()->translations->first()?->name ?? 'Business' }}</strong>
+resources/views/livewire/deals-search.blade.php:146:                        {{ Str::limit($product->translations->name ?? 'Product', 15) }}
+resources/views/livewire/business-images.blade.php:40:                                                {{ $business->translations->firstWhere('lang_id', $lang_id)?->name ?? $business->translations->first()?->name ?? 'N/A' }}
+resources/views/livewire/top-rated-product.blade.php:335:                                        $filter->translations->where('language_id', $currentLangId)->first()
+resources/views/livewire/top-rated-product.blade.php:463:                                                            unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+resources/views/livewire/top-rated-product.blade.php:688:                                                                        {{ $item->translations->first()->name }}</h6>
+resources/views/livewire/top-rated-product.blade.php:723:                                                @if(!empty($item->translations->first()->short_description))
+resources/views/livewire/top-rated-product.blade.php:726:                                                    {{ $item->translations->first()->short_description }}
+resources/views/livewire/business-alternatives.blade.php:135:                                        $bTrans = $business ? ($business->translations->where('language_id', getCurrentLanguageID())->first() ?? $business->translations->first()) : null;
+resources/views/livewire/business-alternatives.blade.php:196:                                $bName = $business->translations->first()?->name ?? $business->name ?? 'Business';
+resources/views/livewire/business-alternatives.blade.php:197:                                $bSlug = $business->translations->first()?->slug ?? $business->slug ?? 'business-' . $business->id;
+resources/views/livewire/business-alternatives.blade.php:336:                                                    $filter->translations->where('language_id', $currentLangId)->first()
+resources/views/livewire/business-alternatives.blade.php:472:                                                            unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+resources/views/livewire/business-alternatives.blade.php:619:                                                                                <h6 class="head">{{ $item->translations->first()?->name ?? '' }}</h6>
+resources/views/livewire/business-alternatives.blade.php:647:                                                            @if(!empty($item->translations->first()?->short_description))
+resources/views/livewire/business-alternatives.blade.php:649:                                                                    {{ $item->translations->first()?->short_description }}
+resources/views/livewire/product-search.blade.php:10:                        $translation = $business->translations->first();
+resources/views/livewire/product-search.blade.php:103:        return optional($business->translations->first())->name;
+resources/views/livewire/business-form.blade.php:242:                                                    {{ $feature->translations->first()->name ?? 'Unnamed Feature' }}
+resources/views/livewire/business-form.blade.php:393:                                $rawTitle = $topic->translations->firstWhere('lang_id', $lang_id)?->title ?? $topic->translations->first()?->title ?? 'Topic ' . $topic->id;
+resources/views/livewire/business-form.blade.php:427:                                $rawTitle = $topic->translations->firstWhere('lang_id', $lang_id)?->title ?? $topic->translations->first()?->title ?? 'Topic ' . $topic->id;
+resources/views/livewire/business-form.blade.php:1175:                                                    class="tb-lead">{{ $business->translations->first()?->name ?? 'N/A' }}</span>
+resources/views/livewire/business-form.blade.php:1290:                                        @if($selectedBusiness && $selectedBusiness->translations->isNotEmpty())
+resources/views/livewire/business-form.blade.php:1291:                                            <input type="text" class="form-control" value="{{ $selectedBusiness->translations->first()->name }}" readonly>
+resources/views/livewire/business-edit_old.blade.php:155:                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
+resources/views/livewire/business-edit_old.blade.php:156:                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
+resources/views/livewire/business-edit_old.blade.php:182:                                                    $translation = $feature->translations->firstWhere('lang_id', $lang_id)
+resources/views/livewire/business-edit_old.blade.php:183:                                                        ?? $feature->translations->firstWhere('lang_id', 1);
+resources/views/livewire/business-edit_old.blade.php:281:                                $rawTitle = $topic->translations->firstWhere('lang_id', $lang_id)?->title ?? $topic->translations->first()?->title ?? 'Topic ' . $topic->id;
+resources/views/livewire/latest-reviews.blade.php:44:                                    $translation = $review->translations->first();
+resources/views/livewire/compare-bar.blade.php:19:                                <img src="{{ asset($product->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $product->translations->first()->name ?? '' }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+resources/views/livewire/exclusive-businesses.blade.php:104:                                                    $filter->translations->where('language_id', $lang_id)->first()
+resources/views/livewire/exclusive-businesses.blade.php:236:                                                            unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+resources/views/livewire/exclusive-businesses.blade.php:392:                                                                        {{ $item->translations->first()->name }}</h6>
+resources/views/livewire/exclusive-businesses.blade.php:428:                                                    <p>{{ $item->translations->first()->description }}</p>
+resources/views/livewire/exclusive-businesses.blade.php:454:                                                                        $translation = $product->translations->first();
+resources/views/livewire/exclusive-businesses.blade.php:493:                                                                                    {{ $feature->translations->first()->name }}
+resources/views/livewire/category-sidebar.blade.php:15:                                    if (is_object($category->translations) && !empty($category->translations->name)) {
+resources/views/livewire/category-sidebar.blade.php:16:                                        $catItemName = $category->translations->name;
+resources/views/livewire/category-sidebar.blade.php:17:                                        $catItemSlug = $category->translations->slug ?? null;
+resources/views/livewire/category-sidebar.blade.php:18:                                    } elseif ($category->translations instanceof \Illuminate\Database\Eloquent\Collection && $category->translations->isNotEmpty()) {
+resources/views/livewire/category-sidebar.blade.php:19:                                        $catItemName = $category->translations->first()->name ?? null;
+resources/views/livewire/category-sidebar.blade.php:20:                                        $catItemSlug = $category->translations->first()->slug ?? null;
+resources/views/livewire/category-sidebar.blade.php:53:                            if (isset($subcat->translations) && is_object($subcat->translations) && !empty($subcat->translations->slug)) {
+resources/views/livewire/category-sidebar.blade.php:54:                                $catSlug = $subcat->translations->slug;
+resources/views/livewire/category-sidebar.blade.php:55:                            } elseif (isset($subcat->translations) && $subcat->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcat->translations->isNotEmpty()) {
+resources/views/livewire/category-sidebar.blade.php:56:                                $catSlug = $subcat->translations->first()->slug ?? null;
+resources/views/livewire/category-sidebar.blade.php:66:                            if (isset($subcat->translations) && is_object($subcat->translations) && !empty($subcat->translations->name)) {
+resources/views/livewire/category-sidebar.blade.php:67:                                $catName = $subcat->translations->name;
+resources/views/livewire/category-sidebar.blade.php:68:                            } elseif (isset($subcat->translations) && $subcat->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcat->translations->isNotEmpty()) {
+resources/views/livewire/category-sidebar.blade.php:69:                                $catName = $subcat->translations->first()->name ?? null;
+resources/views/livewire/category-sidebar.blade.php:79:                            if (isset($subcat->translations) && is_object($subcat->translations) && !empty($subcat->translations->description)) {
+resources/views/livewire/category-sidebar.blade.php:80:                                $descText = $subcat->translations->description;
+resources/views/livewire/category-sidebar.blade.php:81:                            } elseif (isset($subcat->translations) && $subcat->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcat->translations->isNotEmpty()) {
+resources/views/livewire/category-sidebar.blade.php:82:                                $descText = $subcat->translations->first()->description ?? '';
+resources/views/livewire/category-sidebar.blade.php:103:                                    $bizName = $business->translations->first()->name ?? $business->name ?? null;
+resources/views/livewire/category-sidebar.blade.php:142:                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
+resources/views/livewire/modify.blade.php:157:                                            $prisingTranslation = $pricingOption->translations->firstWhere('lang_id' , $lang_id)
+resources/views/livewire/modify.blade.php:158:                                                ?? $pricingOption->translations->firstwhere('lang_id' , 1);
+resources/views/livewire/modify.blade.php:184:                                                    $translation = $feature->translations->firstWhere('lang_id', $lang_id)
+resources/views/livewire/modify.blade.php:185:                                                        ?? $feature->translations->firstWhere('lang_id', 1);
+resources/views/livewire/modify.blade.php:217:                                $rawTitle = $topic->translations->firstWhere('lang_id', $lang_id)?->title ?? $topic->translations->first()?->title ?? 'Topic ' . $topic->id;
+resources/views/livewire/modify.blade.php:675:                                                    {{ $category->translations->name ?? $category->id }}
+resources/views/livewire/category-search.blade.php:22:                                        class="header_img" alt="{{ $category->translations->name ?? 'Category' }}"
+resources/views/livewire/category-search.blade.php:27:                                    {{ $category->translations->name ?? '' }}
+resources/views/livewire/category-search.blade.php:91:                    <button type="button" onclick="changeCategory('{{ $category->translations->slug ?? '' }}')"
+resources/views/livewire/category-search.blade.php:93:                        {{ $category->translations->name ?? '' }}
+resources/views/livewire/vendor/edit-listing.blade.php:22:                    $currentTranslation = $business->translations->firstWhere('lang_id', $lang_id);
+resources/views/livewire/vendor/edit-listing.blade.php:459:                                                    <h6>{{ $product->translations->first()?->name ?? 'Plan' }}</h6>
+resources/views/livewire/vendor/edit-listing.blade.php:540:                                        {{$business->translations->first()->name ?? 'Business'}} Pros & Cons
+resources/views/livewire/vendor/edit-listing.blade.php:682:                                                <h6 class="fw_700 h6_26">{{ $business->translations->firstWhere('lang_id', $lang_id)?->name }}</h6>
+resources/views/livewire/vendor/edit-listing.blade.php:720:                                                @if ($option->translations->isNotEmpty())
+resources/views/livewire/vendor/edit-listing.blade.php:723:                                                    {{ $option->translations->first()->name }}
+resources/views/livewire/vendor/edit-listing.blade.php:797:                                                @if (isset($alternativeBusiness[0]) && $alternativeBusiness[0]->translations->isNotEmpty())
+resources/views/livewire/vendor/edit-listing.blade.php:799:                                                    {{ $alternativeBusiness[0]->translations->first()->name }}
+resources/views/livewire/vendor/edit-listing.blade.php:869:                                                @if ($option->translations->isNotEmpty())
+resources/views/livewire/vendor/edit-listing.blade.php:872:                                                    {{ $option->translations->first()->name }}
+resources/views/livewire/vendor/edit-listing.blade.php:1000:                                                    <p class="size22 big-bld">{{ $review->translations->first()->title ?? 'Review' }}
+resources/views/livewire/vendor/edit-listing.blade.php:1002:                                                    <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+resources/views/livewire/vendor/edit-listing.blade.php:1010:                                                                    <p class="mb-0">{{ $review->translations->first()->pros }}</p>
+resources/views/livewire/vendor/edit-listing.blade.php:1016:                                                                    <p class="mb-0">{{ $review->translations->first()->cons }}</p>
+resources/views/livewire/vendor/edit-listing.blade.php:1025:                                        <a class="cta cta_white" href="{{ route('ReviewShow', ['locale' => getCurrentLocale(), 'slug' => $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug]) }}">View All Reviews</a>
+resources/views/livewire/vendor/edit-listing.blade.php:1109:                                    <h3>Software like {{ $business->translations->firstWhere('lang_id', $lang_id)?->name }}</h3>
+resources/views/livewire/vendor/edit-listing.blade.php:1122:                                                    <h6 class="m-0">{{ $business->translations->firstWhere('lang_id', $lang_id)?->name }}</h6>
+resources/views/livewire/vendor/edit-listing.blade.php:1238:                                                    @if ($altbusiness->translations->isNotEmpty())
+resources/views/livewire/vendor/edit-listing.blade.php:1239:                                                    <h6 class="m-0">{{ $altbusiness->translations->first()->name }}
+resources/views/livewire/vendor/edit-listing.blade.php:1663:                                                    <h6 class="head">{{ $business->translations->firstWhere('lang_id', $lang_id)?->name }}
+resources/views/livewire/vendor/edit-listing.blade.php:1765:                                        <h2>Localio {{ $business->translations->firstWhere('lang_id', $lang_id)?->name }} Reviews</h2>
+resources/views/livewire/vendor/edit-listing.blade.php:1862:                                                    {{ $review->translations->first()->title ?? '' }}
+resources/views/livewire/vendor/edit-listing.blade.php:1864:                                                <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+resources/views/livewire/vendor/edit-listing.blade.php:1871:                                            $translation = $business->translations->where('lang_id', getCurrentLanguageID())->first();
+resources/views/livewire/vendor/edit-listing.blade.php:1932:                                                    {{ $review->translations->first()->title ?? '' }}
+resources/views/livewire/vendor/edit-listing.blade.php:1934:                                                <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+resources/views/livewire/vendor/edit-listing.blade.php:1942:                                            $translation = $business->translations->where('lang_id', getCurrentLanguageID())->first();
+resources/views/livewire/vendor/edit-listing.blade.php:2001:                                                    {{ $review->translations->first()->title ?? '' }}
+resources/views/livewire/vendor/edit-listing.blade.php:2003:                                                <p>{{ strip_tags($review->translations->first()->description ?? 'No Description Available') }}
+resources/views/livewire/vendor/edit-listing.blade.php:2010:                                            $translation = $business->translations->where('lang_id', getCurrentLanguageID())->first();
+resources/views/livewire/vendor/review-filter.blade.php:83:                            $translation = $review->translations->where('language_id', getCurrentLanguageID())->first();
+resources/views/livewire/business-edit.blade.php:1201:                                                        $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
+resources/views/livewire/business-edit.blade.php:1251:                                                $subCatMap[$cat->id] = $cat->translations->name ?? $cat->categoryTranslations->first()->name ?? 'Category #' . $cat->id;
+resources/views/livewire/business-edit.blade.php:1279:                                                        $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
+resources/views/livewire/business-listing.blade.php:61:                                                class="tb-lead">{{ $business->translations->first()?->name ?? 'N/A' }}</span>
+resources/views/livewire/business-listing.blade.php:238:                                        @if($selectedBusiness && $selectedBusiness->translations->isNotEmpty())
+resources/views/livewire/business-listing.blade.php:239:                                            <input type="text" class="form-control" value="{{ $selectedBusiness->translations->first()->name }}" readonly>
