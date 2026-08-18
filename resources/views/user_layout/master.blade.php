@@ -2639,7 +2639,7 @@
                     not affect user reviews or user-generated ratings.
                 </div>
                 <div class="mt-3">
-                    <a class="btn-g-link" href="#">Read our Affiliate disclosure</a>
+                    <a class="btn-g-link" href="{{ url('/affiliate-disclosure') }}">Read our Affiliate disclosure</a>
                 </div>
                 @else
                 {{-- Extra fallback if there's no content at all in DB --}}
