@@ -1,4 +1,3 @@
-
 <section class="sfwr_sec cat_page_secs light p_120" style="background: #fdfdfd !important;">
     <div class="container">
         <h1 class="popular-categories-title" style="font-size: 28px !important; font-weight: 700 !important;">Browse all categories</h1>
@@ -140,7 +139,7 @@
                                     </div>
                                     <div class="d-flex gap-2 w-100 mt-auto">
                                         <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
-                                        class="btn-view-details btn py-1 px-2 fw-medium w-50">
+                                        class="btn-view-details btn py-1 px-2 fw-medium {{ !empty($business->is_affiliate) ? 'w-50' : 'w-100' }}">
                                             View details
                                         </a>
                                         @if(!empty($business->is_affiliate))
