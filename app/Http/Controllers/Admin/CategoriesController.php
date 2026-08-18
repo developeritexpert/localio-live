@@ -17,6 +17,7 @@ use Illuminate\Validation\Rule;
 use Session;
 
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -561,13 +562,29 @@ class CategoriesController extends Controller
     public function remove(Request $request, $id)
     {
         try {
-            $categoryTranslation = CategoryTranslation::findOrFail($id);
-            $category = Category::findOrFail($categoryTranslation->category_id);
+            // Resolve Category model by either Category ID or CategoryTranslation ID
+            $category = Category::find($id);
+            if (!$category) {
+                $categoryTranslation = CategoryTranslation::find($id);
+                if ($categoryTranslation) {
+                    $category = Category::find($categoryTranslation->category_id);
+                }
+            }
+
+            if (!$category) {
+                return redirect()->back()->with('error', 'Category not found.');
+            }
 
             if ($category->parent_id === null && $category->subCategories()->exists()) {
                 return redirect()->back()->with('error', 'Cannot delete a parent category that contains active sub-categories. Please delete or re-assign sub-categories first.');
             }
 
+            DB::beginTransaction();
+
+            // 1. Reassign businesses and clean up subcategory pivot relationships
+            $this->reassignBusinessesBeforeCategoryDelete($category);
+
+            // 2. Clean up media files
             if ($category->image) {
                 $imagePath = public_path('CategoryImages/' . $category->image);
                 if (File::exists($imagePath)) {
@@ -588,8 +605,21 @@ class CategoriesController extends Controller
                     File::delete($iconPath);
                 }
             }
-            $categoryTranslation->delete();
+
+            // 3. Clean up category-specific records
+            CategoryTranslation::where('category_id', $category->id)->delete();
+            $category->ratingCriteria()->delete();
+            $category->proCons()->delete();
             $category->features()->delete();
+
+            // Clean up category topics and their translations
+            $topics = BusinessCategoryTopic::where('category_id', $category->id)->get();
+            foreach ($topics as $topic) {
+                BusinessCategoryTopicTranslation::where('business_category_topic_id', $topic->id)->delete();
+                $topic->delete();
+            }
+
+            // 4. Detach products
             $products = $category->products;
             foreach ($products as $product) {
                 $product->categories()->detach($category->id);
@@ -600,11 +630,57 @@ class CategoriesController extends Controller
                     $product->delete();
                 }
             }
+
+            // 5. Delete category
             $category->delete();
-            return redirect()->back()->with('success', 'Category and related products (if unused elsewhere) deleted successfully.');
+
+            DB::commit();
+
+            return redirect()->route('categories')->with('success', 'Category deleted successfully. All associated businesses have been preserved.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Safely reassign businesses when their primary category/subcategory is deleted.
+     */
+    protected function reassignBusinessesBeforeCategoryDelete(Category $category)
+    {
+        $englishLangId = Language::where('lang_code', 'en-us')->value('id') ?? 1;
+
+        // 1. Get all businesses where primary category_id is this category
+        $businesses = Business::where('category_id', $category->id)->get();
+
+        foreach ($businesses as $business) {
+            // Find other subcategories this business belongs to in the pivot table (excluding the one being deleted)
+            $remainingSubcategories = $business->subCategories()
+                ->where('categories.id', '!=', $category->id)
+                ->with(['categoryTranslations'])
+                ->get();
+
+            if ($remainingSubcategories->isNotEmpty()) {
+                // Sort remaining subcategories alphabetically by English name (fallback to first translation name)
+                $nextSubcategory = $remainingSubcategories->sort(function ($a, $b) use ($englishLangId) {
+                    $nameA = $a->categoryTranslations->firstWhere('lang_id', $englishLangId)?->name
+                        ?? $a->categoryTranslations->first()?->name
+                        ?? ('Category #' . $a->id);
+                    $nameB = $b->categoryTranslations->firstWhere('lang_id', $englishLangId)?->name
+                        ?? $b->categoryTranslations->first()?->name
+                        ?? ('Category #' . $b->id);
+                    return strnatcasecmp(trim($nameA), trim($nameB));
+                })->first();
+
+                $business->update(['category_id' => $nextSubcategory->id]);
+            } else {
+                // No other subcategories: leave business without a primary subcategory
+                $business->update(['category_id' => null]);
+            }
+        }
+
+        // 2. Remove all pivot entries in business_sub_category for this category
+        DB::table('business_sub_category')->where('category_id', $category->id)->delete();
     }
     public function addTopic($id = null)
     {

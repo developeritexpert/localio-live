@@ -1296,9 +1296,9 @@
 
                                             // Primary / secondary subcategory info
                                             $primarySubcat = $business->subCategories->first() ?? $business->category;
-                                            $parentCat = $business->category->parent ?? $business->category;
-                                            $categorySlug = $parentCat->translations->slug ?? ($business->category->translations->slug ?? 'category');
-                                            $subcategorySlug = $primarySubcat->translations->slug ?? 'all';
+                                            $parentCat = $business->category?->parent ?? $business->category;
+                                            $categorySlug = $parentCat?->translations?->slug ?? ($business->category?->translations?->slug ?? 'category');
+                                            $subcategorySlug = $primarySubcat?->translations?->slug ?? 'all';
 
                                             // Helper closure to calculate rating average for a key/name
                                             $getRatingForCriterion = function($criterionName, $criterionKey = null) use ($criteria) {
