@@ -19,14 +19,15 @@
 
     ?>
     <title>@yield('meta_title', 'How to find the Best Product')</title>
-    <meta name="description" content="@yield('meta_description', '')">
+    @hasSection('meta_description')
+    <meta name="description" content="@yield('meta_description')">
+    @else
+    <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    @endif
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="clear-session-url" content="{{ route('clear.register.session') }}">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
 
 
     {{-- user Id session --}}

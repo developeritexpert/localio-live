@@ -366,9 +366,11 @@ class CategoriesController extends Controller
                 'required',
                 'min:3',
                 'max:255'
-                
             ],
+            'page_title' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
             'comparison_slug' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
             'image' => 'nullable',
@@ -481,11 +483,14 @@ class CategoriesController extends Controller
                     'category_id'  => $category->id,
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
+                    'page_title'   => $validate['page_title'] ?? null,
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
+                    'meta_title'   => $validate['meta_title'] ?? null,
+                    'meta_description' => $validate['meta_description'] ?? null,
                     'slug'         => $slug,
                     'comparison_slug' => $comparisonSlug,
-                    'is_important' => $request->has('is_important') ?? 0,
+                    'is_important' => $request->has('is_important') ? 1 : 0,
                 ]
             );
 

@@ -247,8 +247,8 @@
     }
     </style>
 
-    @section('meta_title', isset($category->translations->name) && isset($category->translations->name) ?
-    $category->translations->name : 'Category Page')
+    @section('meta_title', !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page'))
+    @section('meta_description', !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? ''))
     @if (session()->has('message'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{ session('message') }}
@@ -294,12 +294,12 @@
                         <div class="col-md-8 text-start">
                             @if(!empty($feature_slug))
                             <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                {{ $category->translations->name ?? 'Category' }} providers with
+                                {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Category') }} providers with
                                 {{ ucwords(str_replace('-', ' ', $feature_slug)) }}
                             </h1>
                             @else
                             <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                {{ $category->translations->name ?? 'Products' }}</h1>
+                                {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products') }}</h1>
                             @endif
                             <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                                 {{ now()->format('F j, Y') }}</p>

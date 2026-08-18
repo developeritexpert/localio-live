@@ -31,6 +31,20 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="page_title">Page Title (H1 Heading)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="page_title" name="page_title"
+                                        value="{{ isset($category_data) ? ($category_data['page_title'] ?? '') : old('page_title') }}" 
+                                        placeholder="e.g. Shared hosting comparison (defaults to Category Name if left blank)" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Defines the main title/H1 displayed on the category or subcategory page. Defaults to Name if empty.</small>
+                                @error('page_title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="title">Title (Most Popular Section)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="title" name="title"
@@ -68,6 +82,33 @@
                                     <textarea style="width: 100%; height: 151px;" name="description" rows="2" cols="20">{{ isset($category_data) ? strip_tags($category_data['description']) : old('description') }}</textarea>
                                 </div>
                                 @error('description')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="meta_title">Meta Title</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="meta_title" name="meta_title"
+                                        value="{{ isset($category_data) ? ($category_data['meta_title'] ?? '') : old('meta_title') }}" 
+                                        placeholder="Enter SEO meta title for this category/subcategory page" />
+                                </div>
+                                @error('meta_title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="meta_description">Meta Description</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control" id="meta_description" name="meta_description" rows="3" 
+                                        placeholder="Enter SEO meta description for this category/subcategory page">{{ isset($category_data) ? ($category_data['meta_description'] ?? '') : old('meta_description') }}</textarea>
+                                </div>
+                                @error('meta_description')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
