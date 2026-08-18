@@ -130,7 +130,7 @@
                                         {{ $hasItems ? 'disabled' : '' }}
                                     >
                                     <label class="form-check-label" for="is_parent">
-                                        This is a parent category
+                                        Parent category
                                     </label>
                                 </div>
                                 @if($hasSubcategories)
