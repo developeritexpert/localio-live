@@ -418,6 +418,7 @@ class ProductController extends Controller
                 $query->where('lang_id', $lang_id);
             },
             'products.prices',
+            'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
@@ -480,6 +481,7 @@ class ProductController extends Controller
         
         $businesses = Business::with([
             'products.prices',
+            'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
