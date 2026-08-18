@@ -192,7 +192,7 @@
                                     style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
                                     Top rated on Localio
                                 </a> -->
-                                <span style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">Top rated on Localio</span>
+                                <span style=" color: #1e3050 !important; text-decoration:none; font-weight: 500;">Top rated on Localio</span>
                                 
                             </li>
 

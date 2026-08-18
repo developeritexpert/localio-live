@@ -260,7 +260,7 @@
         <section class="top-rated-heading-sec">
             <div class="container">
                 <div class=" bread_row row align-items-center mb-1">
-                    <div class="col-12 col-lg-8">
+                    <div class="col-8 ">
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb m-0"
                                 style="background: transparent;padding: 0;display: flex;align-items: center;">
@@ -285,7 +285,7 @@
                             </ol>
                         </nav>
                     </div>
-                    <div class="col-12 col-lg-4 d-flex justify-content-end">
+                    <div class="col-4  d-flex justify-content-end">
                         <x-social-icon />
                     </div>
                 </div>

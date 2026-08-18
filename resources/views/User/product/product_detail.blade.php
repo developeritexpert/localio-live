@@ -179,6 +179,9 @@
             </script>
         @endif
         <style>
+            .rating-star i {
+                font-size: 9px !important;
+            }
             /* Sticky Right Sidebar Navigation */
             .revie_img_sec .image_revie_inr {
                 display: flex !important;
@@ -668,7 +671,7 @@
             }
 
             .rating-stars i{
-                font: size 12px;
+                /* font: size 12px; */
             }
 
             .main_feture .feture_box {
@@ -777,7 +780,7 @@
             }
 
             .rating-stars i{
-                font-size:12px;
+                /* font-size:12px; */
             }
 
             .str_prc_box{
@@ -1608,7 +1611,7 @@
                                                                                         @endphp
 
                                                                                         <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                                            <div class="asn-img">
+                                                                                            <div class="top-product-logo">
                                                                                                 <img src="{{ asset($altbusiness->icon_id ?? 'front/img/top-rate-img2.svg') }}"
                                                                                                     alt="">
                                                                                             </div>
@@ -1620,20 +1623,20 @@
                                                                                                 @else
                                                                                                     <h6 class="m-0 fw_700">Name not available</h6>
                                                                                                 @endif
-                                                                                                <div class="overall-rating-header d-flex align-items-center mt-2 flex-wrap" style="gap: 5px;">
-                                                                                                    <span class="rate_box_num fw-medium" style="font-size: 13px; color: #333; font-weight: 400 !important;">{{ number_format($altRatingAvg, 1) }}</span>
-                                                                                                    <div class="rating-stars" style="display: flex; gap: 2px;">
+                                                                                                <div class="rating-group" >
+                                                                                                    <span class="rate_box_num fw-medium" style="">{{ number_format($altRatingAvg, 1) }}</span>
+                                                                                                    <div class="rating-stars" style="">
                                                                                                         @for ($i = 1; $i <= 5; $i++)
                                                                                                             @if ($i <= floor($altRatingAvg))
-                                                                                                                <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                                                                                                <i class="fas fa-star text-warning"></i>
                                                                                                             @elseif ($i - 0.5 <= $altRatingAvg)
-                                                                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                                                                                                <i class="fas fa-star-half-alt text-warning"></i>
                                                                                                             @else
-                                                                                                                <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                                                                                                <i class="far fa-star text-warning"></i>
                                                                                                             @endif
                                                                                                         @endfor
                                                                                                     </div>
-                                                                                                    <span class="rate_box_text text-muted" style="font-size: 12px; font-weight: 400 !important;">
+                                                                                                    <span class="rate_box_text" style="">
                                                                                                         ({{ $count }})
                                                                                                     </span>
                                                                                                 </div>
@@ -2019,7 +2022,7 @@
 
                                                                             <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                                                                    <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
                                                                                         <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
                                                                                     </div>
                                                                                     <div>
@@ -2690,10 +2693,10 @@
                                                     </h3>
                                                     @if ($averageRating !== null)
                                                         <div
-                                                            class="sticky-nav-rating d-flex align-items-center justify-content-center gap-1 mb-3">
+                                                            class="rating-group sticky-nav-rating d-flex align-items-center justify-content-center gap-1 mb-3">
                                                             <span
-                                                                style="font-size: 13px; font-weight: 700; color: #002347;">{{ number_format($averageRating, 1) }}</span>
-                                                            <div class="text-warning d-flex" style="font-size: 12px; gap: 2px;">
+                                                                style="">{{ number_format($averageRating, 1) }}</span>
+                                                            <div class="rating-star" style="">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <= floor($averageRating))
                                                                         <i class="fas fa-star"></i>
@@ -2705,8 +2708,8 @@
                                                                 @endfor
                                                             </div>
                                                             @if ($hasUserReviews)
-                                                                <span class="text-muted"
-                                                                    style="font-size: 12px;">({{ $ratingCount }})</span>
+                                                                <span class=""
+                                                                    style="">({{ $ratingCount }})</span>
                                                             @endif
                                                         </div>
                                                     @endif
