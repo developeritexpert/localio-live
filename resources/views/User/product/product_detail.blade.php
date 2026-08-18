@@ -1567,17 +1567,17 @@
                                                                                         onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}'; }"
                                                                                         style="cursor: pointer; padding: 25px 20px;">
                                                                                         @php
-                                                                                            $startingPrice = 'N/A';
-                                                                                            $currency = '$';
-                                                                                            $additional_info = 'NA';
-                                                                                            $price = getBusinessesWithStartingPrice($altbusiness);
-                                                                                            if (!empty($price) && isset($price[0]['starting_price'])) {
-                                                                                                $businessprice = $price[0]['starting_price'];
-                                                                                                $startingPrice = $businessprice['amount'] ?? 'N/A';
-                                                                                                $currency = $businessprice['currency'] ?? '$';
-                                                                                                $timeUnit = ucfirst($businessprice['time_unit'] ?? 'month');
-                                                                                                $additional_info =
-                                                                                                    $businessprice['additional_info'] ?? 'NA';
+                                                                                            $altStartingPrice = 'N/A';
+                                                                                            $altCurrency = '$';
+                                                                                            $altAdditionalInfo = 'NA';
+                                                                                            $altPrice = getBusinessesWithStartingPrice($altbusiness);
+                                                                                            if (!empty($altPrice) && isset($altPrice[0]['starting_price'])) {
+                                                                                                $altBusinessPrice = $altPrice[0]['starting_price'];
+                                                                                                $altStartingPrice = $altBusinessPrice['amount'] ?? 'N/A';
+                                                                                                $altCurrency = $altBusinessPrice['currency'] ?? '$';
+                                                                                                $altTimeUnit = ucfirst($altBusinessPrice['time_unit'] ?? 'month');
+                                                                                                $altAdditionalInfo =
+                                                                                                    $altBusinessPrice['additional_info'] ?? 'NA';
                                                                                             }
 
                                                                                             // Get reviews for the current altbusiness
@@ -1687,9 +1687,9 @@
                                                                                         <div class="start-from p_top_btm_sftwre pt-3 pb-3">
                                                                                             <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
                                                                                             <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
-                                                                                                <span>{{ $currency }}{{ $startingPrice }}</span>
+                                                                                                <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
                                                                                             </h3>
-                                                                                            <small class="text-muted" style="font-size: 12px;">{{ $additional_info }}</small>
+                                                                                            <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
                                                                                         </div>
 
                                                                                         <div class="sftwre-alt-btn pt-2">
