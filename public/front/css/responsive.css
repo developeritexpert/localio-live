@@ -1961,8 +1961,8 @@
     }
 
     .slider_content_sec {
-        margin-top: 15px;
-        margin-bottom: 15px;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
     }
 
     .joh_box {
@@ -2203,7 +2203,7 @@
     }
 
     .banner_sec.inr-bnr {
-        padding-top: 150px;
+        padding-top: 100px;
     }
 
     .sfwr_name h6 {
@@ -2647,10 +2647,6 @@
 
     .prc_dv {
         padding: 30px 40px;
-    }
-
-    .crm_sec .crm_review_box {
-        margin-top: 65px;
     }
 
     .view-review .cta {
@@ -3515,8 +3511,11 @@
     }
 
     .ovr-progrs-div {
-        flex-direction: column;
+        /* flex-direction: column; */
         gap: 2px;
+    }
+    .view-review-link {
+        white-space: nowrap;
     }
 
     .ovr-progrs-div .prgs_br {
@@ -3555,6 +3554,9 @@
 
     .automotive-card .blue-chkbox {
         left: 0 !important;
+    }
+    .top-rated-heading-sec .top-rated-heading-block h1 {
+        font-size: 24px !important;
     }
 }
 
@@ -3766,7 +3768,8 @@
     }
 
     .banner_sec.inr-bnr {
-        padding-top: 160px;
+        padding-top: 80px;
+        padding-bottom: 30px;
     }
 
     .sfwr_sec .sfwr_content h2 {
@@ -3925,7 +3928,7 @@
     .auto-choice-hd {
         flex-direction: column;
         align-items: flex-start;
-        gap: 20px;
+        gap: 5px;
         margin-top: 15px;
     }
     .recommended-per {
@@ -3941,10 +3944,10 @@
     .breadcrumb-item + .breadcrumb-item {
         padding: 0 2px !important;
     }
-      .sorting{
+    .sorting {
         border-radius: 8px !important;
         padding: 7px 5px !important;
-      }
+    }
     .sorting,
     .top-automotive-sec .auto-choice-rgt > div:first-child p {
         font-size: 12px;
@@ -4226,16 +4229,20 @@
         width: 100%;
     }
 
-    .crm_sec .crm_review_box {
-        margin-top: 60px;
-    }
-
     .pdc_box {
         flex-direction: column;
-        gap: 30px;
+        gap: 15px;
         text-align: left;
     }
 
+    .versus-box p {
+        font-size: 20px;
+        height: 50px;
+        width: 50px;
+    }
+    .sl_h {
+        gap: 0 !important;
+    }
     .pdc_box .pdc_choice .auto-choice-hd .sl_h .inn_h {
         justify-content: start;
         gap: 10px;
@@ -4371,6 +4378,7 @@
 
     .sales-crm-pack.compari_crm_pck .inn_sl_hed {
         flex-direction: column;
+        align-items: center !important;
     }
 
     .sales-crm-pack.compari_crm_pc .sl_h {
@@ -4914,7 +4922,6 @@ div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-clo
     }
 
     .modal-content {
-        padding: 20px;
         margin: 10px;
         max-width: calc(100% - 20px);
     }
@@ -8510,10 +8517,6 @@ div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-clo
         width: 100%;
     }
 
-    .crm_sec .crm_review_box {
-        margin-top: 60px;
-    }
-
     .pdc_box {
         flex-direction: column;
         gap: 30px;
@@ -9184,7 +9187,6 @@ div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-clo
 
 @media (max-width: 768px) {
     .modal-content {
-        padding: 20px;
         margin: 10px;
         max-width: calc(100% - 20px);
     }
@@ -11853,6 +11855,9 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
         grid-template-columns: auto !important;
     }
 
+    .bg-white ul {
+        margin-bottom: 0px !important;
+    }
     .glass li {
         width: 100%;
     }
@@ -12159,6 +12164,9 @@ ul.list-unstyled.m-0 li:hover a .time span {
 
     .subs_sec .subs_content > div label {
         width: 100%;
+    }
+    #reviewPromptBanner {
+        justify-content: end !important;
     }
 }
 
@@ -12992,10 +13000,6 @@ textarea#message {
         height: unset !important;
     }
 
-    .crm_sec .crm_review_box {
-        margin-top: 40px;
-    }
-
     .business-integration-section .integration-items .integration-inboxs {
         padding: 12px 18px;
     }
@@ -13240,7 +13244,16 @@ textarea#message {
     }
 
     #pvc_section {
-        padding: 100px 0px 60px !important;
+        padding: 60px 0px 0px !important;
+    }
+    img.image-pattern2 {
+        position: absolute;
+        bottom: 0;
+        z-index: -1;
+    }
+
+    .policy-nav .legal-sidebar-menu li {
+        margin-bottom: 3px !important;
     }
 
     .login_form .contact_content {
@@ -13365,8 +13378,11 @@ textarea#message {
 
     .crm_sec.rev-tabi {
         padding-inline: 12px;
+        padding-bottom: 30px !important;
     }
-
+    .review-sidebar-sticky {
+        padding: 0 !important;
+    }
     footer .footer-wrp .foot-col.active .footer-title {
         margin-bottom: 10px;
     }
@@ -13521,7 +13537,27 @@ textarea#message {
 
     .write-review-hero {
         margin-top: 70px;
-        padding: 50px 20px;
+        padding: 30px 0px;
+    }
+    .recommend-card-btn {
+        padding: 10px;
+        white-space: nowrap;
+    }
+    #section-compare .comparison-box > div {
+        align-items: center !important  ;
+        gap: 5px;
+    }
+
+    .search-input-wrap.position-relative
+        input.form-control.py-3.px-4.shadow-sm.border-0,
+    .fa-magnifying-glass:before,
+    .fa-search:before {
+        font-size: 12px !important;
+    }
+
+    section.write-review-lists.write_revw_sec.py-5.bg-light {
+        padding: 10px !important;
+        padding-bottom: 40px !important;
     }
 
     .top_rate_pg .top-rated-heading-block h1 {
@@ -13599,8 +13635,31 @@ textarea#message {
         margin-top: 20px;
         justify-content: center;
     }
+    button.action-icon-btn.share-trigger-btn {
+        width: 25px !important;
+        height: 25px !important;
+        padding: 4px !important;
+    }
+    button.action-icon-btn.share-trigger-btn svg {
+        padding: 2px;
+    }
+    #compareBar .container {
+        padding: 0 !important;
+    }
+    .top-automotive-sec .start-comparing-btn {
+        border-radius: 20px;
+        font-size: 12px;
+        padding: 7px 7px;
+    }
+
     .top-rated-heading-sec {
-        padding-top: 15px !important;
+        margin-top: 50px !important;
+    }
+    .modal-header {
+        padding-right: 0;
+    }
+    div#learnMoreModal .circle_11 {
+        padding: 15px;
     }
 }
 
