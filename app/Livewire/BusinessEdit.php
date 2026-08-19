@@ -815,7 +815,7 @@ class BusinessEdit extends Component
 
     protected function loadCategories()
     {
-        $this->categories = Category::onlySubcategories()->with(['categoryTranslations' => function ($query) {
+        $this->categories = Category::with(['categoryTranslations' => function ($query) {
             $query->where('lang_id', $this->lang_id);
         }])->whereHas('categoryTranslations', function ($query) {
             $query->where('lang_id', $this->lang_id);

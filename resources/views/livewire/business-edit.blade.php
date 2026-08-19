@@ -1157,6 +1157,20 @@
                                      @php
                                         $langId = session('lang_id', 1);
 
+                                        $allPrimaryCategories = \App\Models\Category::with([
+                                                'parent.translations' => fn($q) => $q->where('lang_id', $langId),
+                                                'translations' => fn($q) => $q->where('lang_id', $langId)
+                                            ])
+                                            ->whereHas('translations', function ($query) use ($langId) {
+                                                $query->where('lang_id', $langId);
+                                            })
+                                            ->get()
+                                            ->sortBy(function($cat) {
+                                                $parentName = $cat->parent ? ($cat->parent->translations->name ?? '') : ($cat->translations->name ?? '');
+                                                $isSub = $cat->parent_id ? 1 : 0;
+                                                return $parentName . '_' . $isSub . '_' . ($cat->translations->name ?? '');
+                                            });
+
                                         $subCategories = \App\Models\Category::whereNotNull('parent_id')
                                             ->whereHas('translations', function ($query) use ($langId) {
                                                 $query->where('lang_id', $langId);
@@ -1181,40 +1195,47 @@
                                             $wire.set('selected_category', id);
                                         }
                                     }">
-                                        <label class="form-label">Primary sub-category</label>
+                                        <label class="form-label">Primary Category / Sub-category</label>
 
-                                        <!-- Search input for primary sub-category -->
+                                        <!-- Search input for primary category / sub-category -->
                                         <div class="mb-2">
-                                            <input type="text" x-model="search" class="form-control" placeholder="Search primary sub-category...">
+                                            <input type="text" x-model="search" class="form-control" placeholder="Search primary category or sub-category...">
                                         </div>
 
                                         <!-- Scrollable list of radio options -->
-                                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                        <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
                                             <div class="form-check py-1 border-bottom">
-                                                <input type="radio" id="primary_cat_none" name="primary_sub_category" class="form-check-input"
+                                                <input type="radio" id="primary_cat_none" name="primary_category" class="form-check-input"
                                                     value="" :checked="!$wire.selected_category" @change="selectCategory('')">
-                                                <label class="form-check-label w-100 text-muted" for="primary_cat_none">Select Category</label>
+                                                <label class="form-check-label w-100 text-muted" for="primary_cat_none">-- Select Category --</label>
                                             </div>
-                                            @if (isset($categories))
-                                                @foreach ($subCategories as $category)
-                                                    @php
-                                                        $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
-                                                    @endphp
-                                                    <div class="form-check py-1 border-bottom"
-                                                         x-show="'{{ strtolower(addslashes($catName)) }}'.includes(search.toLowerCase())">
-                                                        <input type="radio"
-                                                            id="primary_cat_{{ $category->id }}"
-                                                            name="primary_sub_category"
-                                                            class="form-check-input"
-                                                            value="{{ $category->id }}"
-                                                            :checked="$wire.selected_category == {{ $category->id }}"
-                                                            @change="selectCategory({{ $category->id }})">
-                                                        <label class="form-check-label w-100" for="primary_cat_{{ $category->id }}">
-                                                            {{ $catName }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
-                                            @endif
+                                            @foreach ($allPrimaryCategories as $category)
+                                                @php
+                                                    $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
+                                                    $isSub = !empty($category->parent_id);
+                                                    $parentName = $isSub && $category->parent ? ($category->parent->translations->name ?? $category->parent->categoryTranslations->first()->name ?? '') : '';
+                                                    $searchString = strtolower($catName . ' ' . $parentName . ($isSub ? ' subcategory sub category' : ' main category'));
+                                                @endphp
+                                                <div class="form-check py-1 border-bottom d-flex align-items-center"
+                                                     x-show="'{{ addslashes($searchString) }}'.includes(search.toLowerCase())">
+                                                    <input type="radio"
+                                                        id="primary_cat_{{ $category->id }}"
+                                                        name="primary_category"
+                                                        class="form-check-input me-2 mt-0"
+                                                        value="{{ $category->id }}"
+                                                        :checked="$wire.selected_category == {{ $category->id }}"
+                                                        @change="selectCategory({{ $category->id }})">
+                                                    <label class="form-check-label w-100 mb-0" for="primary_cat_{{ $category->id }}" style="cursor: pointer;">
+                                                        @if($isSub)
+                                                            <span class="text-muted">{{ $parentName }} &rsaquo;</span> <strong>{{ $catName }}</strong>
+                                                            <span class="badge bg-light text-secondary ms-1 border" style="font-size: 11px;">Sub-category</span>
+                                                        @else
+                                                            <strong class="text-primary">{{ $catName }}</strong>
+                                                            <span class="badge bg-primary-soft text-primary ms-1 border" style="font-size: 11px;">Main Category</span>
+                                                        @endif
+                                                    </label>
+                                                </div>
+                                            @endforeach
                                         </div>
 
                                         @error('selected_category')
