@@ -796,7 +796,7 @@
                                                             <div class="rating-group  d-flex flex-col-mob">
                                                                 <span class="rate_box_num"
                                                                     style="">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
-                                                                <div class="inn_ul">
+                                                                <div class="">
                                                                     <div class="rating-stars " style="gap:1px;">
                                                                         @for ($i = 1; $i <= 5; $i++) @if ($i
                                                                             <=floor($item->reviews->avg('rating')))

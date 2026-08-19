@@ -502,7 +502,7 @@
              }
 
                 #section1 .asn_dv {
-                padding-bottom: 0;
+                padding-bottom: 13px;
                }
                .slider-for:not(.slick-initialized) .asan-slider-inr:not(:first-child) {
                    display: none !important;
@@ -2489,7 +2489,7 @@
                                                         available
                                                     </h6>
                                                     <div class="accor-btn">
-                                                        <a class="cta cta_white blue_t_org_btn"
+                                                        <a class="cta cta_white blue-btn"
                                                             data-track="{{ json_encode([
                                                                 'type' => 'click',
                                                                 'business_id' => $business->id,

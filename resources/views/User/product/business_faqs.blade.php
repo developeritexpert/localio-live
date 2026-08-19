@@ -567,7 +567,7 @@
 
                     <!-- 1. USPs -->
                     @if(!empty($business->is_affiliate) && $business->usps && $business->usps->count() > 0)
-                        <div class="feture_box lft_check_box size15 bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
+                        <div class="feture_box lft_check_box size15 bg-white p-4 boxshadow_border" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                             <ul class="list-unstyled mb-0">
                                 @foreach($business->usps as $usp)
                                     @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
