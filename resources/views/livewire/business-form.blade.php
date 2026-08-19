@@ -1427,20 +1427,23 @@
             <div class="card card-bordered mb-3 border-primary"
                  x-data="{
                      open: true,
+                     existingCategories: {{ json_encode(array_column($businessFaqCategories ?? [], 'name')) }},
                      copyFaqTemplate() {
-                         const t = JSON.stringify([
-                           {
-                             question: 'What are your opening hours?',
-                             answer: 'We are open Monday through Saturday from 8 AM to 9 PM.'
-                           },
-                           {
-                             question: 'Do you offer online support?',
-                             answer: 'Yes, our support team is available 24/7 via live chat.'
-                           }
-                         ], null, 2);
+                         const cats = this.existingCategories && this.existingCategories.length > 0 ? this.existingCategories : ['General'];
+                         const sampleItems = [];
+                         
+                         cats.forEach(function(cat, idx) {
+                             sampleItems.push({
+                                 category: cat,
+                                 question: 'Sample question ' + (idx + 1) + ' for ' + cat + '?',
+                                 answer: 'Sample answer explaining details for ' + cat + '.'
+                             });
+                         });
+
+                         const t = JSON.stringify(sampleItems, null, 2);
                          if (navigator.clipboard && navigator.clipboard.writeText) {
                              navigator.clipboard.writeText(t).then(function() {
-                                 alert('FAQ JSON template copied to clipboard!');
+                                 alert('FAQ JSON template with existing categories copied to clipboard!');
                              }).catch(function() {
                                  prompt('Copy this FAQ JSON template:', t);
                              });
@@ -1473,7 +1476,7 @@
                             <em class="icon ni ni-info me-1 mt-1 flex-shrink-0"></em>
                             <div>
                                 <strong>How to use:</strong>
-                                Paste a JSON array containing FAQ objects below (each object with <code>question</code> and <code>answer</code> fields). Then click <strong>Upload JSON FAQs</strong>.
+                                Paste a JSON array containing FAQ objects below. In the <code>category</code> field, use only existing categories created below (e.g. @if(!empty($businessFaqCategories)) <strong>{{ implode(', ', array_column($businessFaqCategories, 'name')) }}</strong> @else <em>None created yet</em> @endif). Unmatched categories will default to General.
                             </div>
                         </div>
 
@@ -1494,7 +1497,7 @@
                                 wire:model="faqJsonData"
                                 class="form-control font-monospace"
                                 rows="8"
-                                placeholder='[{"question": "Question 1?", "answer": "Answer 1"}, {"question": "Question 2?", "answer": "Answer 2"}]'
+                                placeholder='[{"category": "General", "question": "Question 1?", "answer": "Answer 1"}, {"category": "Pricing", "question": "Question 2?", "answer": "Answer 2"}]'
                                 style="resize:vertical; font-size:0.82rem; line-height:1.5; border: 2px solid #dee2e6; border-radius:6px;"
                             ></textarea>
                         </div>
@@ -1537,6 +1540,42 @@
                 </div>
             </div>
 
+                        {{-- Manage FAQ Categories (Business Specific) --}}
+            <div class="card card-bordered mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0"><em class="icon ni ni-tags me-1"></em> Business FAQ Categories</h5>
+                    <span class="badge bg-primary">{{ count($businessFaqCategories) }} Categories</span>
+                </div>
+                <div class="card-inner">
+                    <div class="row g-3 align-items-end mb-3">
+                        <div class="col-md-8 col-sm-12">
+                            <label class="form-label" for="newCategoryName">New Category Name</label>
+                            <input type="text" class="form-control" id="newCategoryName" wire:model="newCategoryName" placeholder="e.g. Freelancer, Pricing, Services, General">
+                        </div>
+                        <div class="col-md-4 col-sm-12">
+                            <button type="button" class="btn btn-primary btn-localio w-100" wire:click="addFaqCategory">
+                                <em class="icon ni ni-plus"></em> + Add Category
+                            </button>
+                        </div>
+                    </div>
+
+                    @if(count($businessFaqCategories) > 0)
+                        <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                            @foreach($businessFaqCategories as $cat)
+                                <div class="badge bg-light text-dark border p-2 d-flex align-items-center gap-2">
+                                    <span class="fw-bold">{{ $cat['name'] }}</span>
+                                    <button type="button" class="btn btn-xs btn-outline-danger p-0 border-0" wire:click="deleteFaqCategory({{ $cat['id'] }})" title="Delete Category">
+                                        <em class="icon ni ni-cross-sm"></em>
+                                    </button>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-muted small mb-0">No categories created yet. Adding categories allows group-based FAQ tabs on the frontend.</p>
+                    @endif
+                </div>
+            </div>
+
             {{-- Add/Edit FAQ Form --}}
             <div class="card card-bordered mb-4">
                 <div class="card-header bg-light">
@@ -1547,6 +1586,20 @@
                 <div class="card-inner">
                     <form wire:submit.prevent="{{ $editingFAQId !== null ? 'updateFAQ' : 'addFAQ' }}" class="form-validate">
                         <div class="row g-gs">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label" for="faqCategoryId">FAQ Category (Optional)</label>
+                                    <div class="form-control-wrap">
+                                        <select class="form-select" id="faqCategoryId" wire:model="faqCategoryId">
+                                            <option value="">-- General / Uncategorized --</option>
+                                            @foreach($businessFaqCategories as $bCat)
+                                                <option value="{{ $bCat['id'] }}">{{ $bCat['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label class="form-label" for="faqQuestion">Question</label>
@@ -1609,6 +1662,7 @@
                             <thead>
                                 <tr class="nk-tb-item nk-tb-head">
                                     <th class="nk-tb-col">Position</th>
+                                    <th class="nk-tb-col">Category</th>
                                     <th class="nk-tb-col">Question</th>
                                     <th class="nk-tb-col">Answer</th>
                                     <th class="nk-tb-col tb-tnx-action">Action</th>
@@ -1622,6 +1676,9 @@
                                                 <div class="move-indicator me-2">⋮⋮</div>
                                                 <span class="position-badge">#{{ $faq['position'] }}</span>
                                             </div>
+                                        </td>
+                                        <td class="nk-tb-col">
+                                            <span class="badge bg-outline-info">{{ $faq['category_name'] ?? 'General' }}</span>
                                         </td>
                                         <td class="nk-tb-col">
                                             <div class="user-card">

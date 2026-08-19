@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Http;
 
 use App\Models\BusinessFaq;
 use App\Models\BusinessFaqTranslation;
+use App\Models\BusinessFaqCategory;
 
 class BusinessEdit extends Component
 {
@@ -133,6 +134,9 @@ class BusinessEdit extends Component
     public $showFAQSection = false;
     public $selectedBusinessForFAQ = null;
     public $businessFAQs = [];
+    public $faqCategoryId = null;
+    public $newCategoryName = '';
+    public $businessFaqCategories = [];
     public $faqQuestion = '';
     public $faqAnswer = '';
     public $editingFAQId = null;
@@ -2298,16 +2302,23 @@ class BusinessEdit extends Component
     {
         if (!$this->selectedBusinessForFAQ) return;
 
+        $this->businessFaqCategories = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)
+            ->ordered()
+            ->get()
+            ->toArray();
+
         $this->businessFAQs = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
             ->with(['translation' => function ($query) {
                 $query->where('lang_id', $this->lang_id);
-            }])
+            }, 'category'])
             ->ordered()
             ->get()
             ->map(function ($faq, $index) {
                 $translation = $faq->translation;
                 return [
                     'id' => $faq->id,
+                    'business_faq_category_id' => $faq->business_faq_category_id,
+                    'category_name' => $faq->category->name ?? 'General / Uncategorized',
                     'question' => $translation->question ?? '',
                     'answer' => $translation->answer ?? '',
                     'position' => $faq->position,
@@ -2315,6 +2326,39 @@ class BusinessEdit extends Component
                 ];
             })
             ->toArray();
+    }
+
+
+    public function addFaqCategory()
+    {
+        $this->validate([
+            'newCategoryName' => 'required|string|max:100',
+        ]);
+
+        if (!$this->selectedBusinessForFAQ) return;
+
+        $nextPos = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->max('position') + 1;
+        BusinessFaqCategory::create([
+            'business_id' => $this->selectedBusinessForFAQ,
+            'name' => trim($this->newCategoryName),
+            'position' => $nextPos,
+            'status' => 1
+        ]);
+
+        $this->newCategoryName = '';
+        $this->loadBusinessFAQs();
+        session()->flash('message', 'FAQ Category added successfully!');
+    }
+
+    public function deleteFaqCategory($catId)
+    {
+        $cat = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->find($catId);
+        if ($cat) {
+            BusinessFaq::where('business_faq_category_id', $catId)->update(['business_faq_category_id' => null]);
+            $cat->delete();
+            $this->loadBusinessFAQs();
+            session()->flash('message', 'FAQ Category deleted successfully!');
+        }
     }
 
     public function addFAQ()
@@ -2334,6 +2378,7 @@ class BusinessEdit extends Component
             // Create FAQ
             $faq = BusinessFaq::create([
                 'business_id' => $this->selectedBusinessForFAQ,
+                'business_faq_category_id' => !empty($this->faqCategoryId) ? $this->faqCategoryId : null,
                 'position' => $nextPosition,
                 'status' => 1
             ]);
@@ -2362,6 +2407,7 @@ class BusinessEdit extends Component
         if (!$faq || !$faq->translation) return;
 
         $this->editingFAQId = $faqId;
+        $this->faqCategoryId = $faq->business_faq_category_id;
         $this->faqQuestion = $faq->translation->question;
         $this->faqAnswer = $faq->translation->answer;
     }
@@ -2498,13 +2544,25 @@ class BusinessEdit extends Component
 
                 $question = trim($item['question'] ?? $item['faqQuestion'] ?? $item['q'] ?? '');
                 $answer = trim($item['answer'] ?? $item['faqAnswer'] ?? $item['a'] ?? '');
+                $categoryName = trim($item['category'] ?? $item['category_name'] ?? $item['cat'] ?? '');
 
                 if (empty($question) || empty($answer)) continue;
+
+                $categoryId = null;
+                if (!empty($categoryName)) {
+                    $catObj = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)
+                        ->whereRaw('LOWER(name) = ?', [strtolower($categoryName)])
+                        ->first();
+                    if ($catObj) {
+                        $categoryId = $catObj->id;
+                    }
+                }
 
                 $currentPosition++;
 
                 $faq = BusinessFaq::create([
                     'business_id' => $this->selectedBusinessForFAQ,
+                    'business_faq_category_id' => $categoryId,
                     'position' => $currentPosition,
                     'status' => 1
                 ]);
@@ -2535,6 +2593,7 @@ class BusinessEdit extends Component
     {
         $this->faqQuestion = '';
         $this->faqAnswer = '';
+        $this->faqCategoryId = null;
         $this->editingFAQId = null;
         $this->resetValidation(['faqQuestion', 'faqAnswer']);
     }

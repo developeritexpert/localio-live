@@ -163,6 +163,11 @@ class Business extends Model
         return $this->hasMany(BusinessFaq::class,'business_id')->active()->ordered();
     }
 
+    public function faqCategories()
+    {
+        return $this->hasMany(BusinessFaqCategory::class, 'business_id')->active()->ordered();
+    }
+
     public function allFaqs()
     {
         return $this->hasMany(BusinessFaq::class)->ordered();
