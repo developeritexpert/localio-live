@@ -1357,7 +1357,7 @@
                                                                 @php
                                                                     $featName = optional($feat->translations->first())->name ?? $feat->name;
                                                                     $featSlug = Str::slug($featName);
-                                                                    $featUrl = url("/{$langCode}/categories/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
+                                                                    $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
                                                                 @endphp
                                                                 <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px; transition: all 0.2s;">
                                                                     {{ $featName }}
@@ -1567,7 +1567,7 @@
                                                                                     @endif
                                                                                     <div class="sftware-alternative-pck" data-aos="fade-up"
                                                                                         data-aos-duration="1000"
-                                                                                        onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}'; }"
+                                                                                        onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}'; }"
                                                                                         style="cursor: pointer; padding: 25px 20px;">
                                                                                         @php
                                                                                             $altStartingPrice = 'N/A';
@@ -1695,7 +1695,7 @@
                                                                                         </div>
 
                                                                                         <div class="sftwre-alt-btn pt-2">
-                                                                                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}"
+                                                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
                                                                                                 class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                                                 style="  border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                                                                 View details

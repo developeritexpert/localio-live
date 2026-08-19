@@ -737,6 +737,42 @@ class ViewController extends Controller
         return view('User.product.write_review_landing', compact('trendingBusinesses', 'unreviewedBusinesses', 'recentlyReviewed'));
     }
 
+    public function resolveSlug(Request $request, $locale, $slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        // 1. Check if slug matches a Category or Subcategory
+        $category = \App\Models\Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+            $query->where('slug', $slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$category) {
+            $category = \App\Models\Category::whereHas('translations', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })->first();
+        }
+
+        if ($category) {
+            return app(\App\Http\Controllers\User\CategoryController::class)->categoryDetail($locale, $slug);
+        }
+
+        // 2. Check if slug matches a Business / Product
+        $business = \App\Models\Business::whereHas('translations', function ($query) use ($slug, $lang_id) {
+            $query->where('slug', $slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$business) {
+            $business = \App\Models\Business::whereHas('translations', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })->first();
+        }
+
+        if ($business) {
+            return app(\App\Http\Controllers\User\ProductController::class)->productDetail($locale, $slug, $request);
+        }
+
+        // 3. Neither category nor business found -> 404
+        abort(404);
+    }
+
 }
-
-

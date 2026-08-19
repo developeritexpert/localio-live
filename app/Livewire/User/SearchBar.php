@@ -80,7 +80,7 @@ class SearchBar extends Component
         
         if ($business && $business->translations->isNotEmpty()) {
             $business_slug = $business->translations->first()->slug;
-            return redirect()->route('product.details', [
+            return redirect()->route('user.product_detail', [
                 'locale' => app()->getLocale(), 
                 'slug' => $business_slug
             ]);

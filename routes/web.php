@@ -496,11 +496,25 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/new-password', [AuthenticationController::class, 'newPassword'])->name('new-passwod');
     Route::post('/new-password-procc', [AuthenticationController::class, 'newPasswordProcc'])->name('new-password-procc');
 
-    // Category Controller
-    Route::get('/categories', [CategoryController::class, 'index'])->name('category');
-    Route::get('/categories/{slug}/{page}', [CategoryController::class, 'categoryDetail'])->where('page', '[0-9]+')->name('category.detail.page');
-    Route::get('/categories/{category_slug}/{subcategory_slug}/{feature_slug}', [CategoryController::class, 'subCategoryFeatureDetail'])->name('category.subcategory.feature');
-    Route::get('/categories/{slug}', [CategoryController::class, 'categoryDetail'])->name('category.detail');
+    // 301 Redirects for Legacy Category URLs
+    Route::get('/categories/{slug}/{page}', function ($locale, $slug, $page) {
+        return redirect()->to('/' . $locale . '/' . $slug . '/' . $page, 301);
+    })->where('page', '[0-9]+');
+
+    Route::get('/categories/{category_slug}/{subcategory_slug}/{feature_slug}', function ($locale, $category_slug, $subcategory_slug, $feature_slug) {
+        return redirect()->to('/' . $locale . '/' . $category_slug . '/' . $subcategory_slug . '/' . $feature_slug, 301);
+    });
+
+    Route::get('/categories/{slug}', function ($locale, $slug) {
+        return redirect()->to('/' . $locale . '/' . $slug, 301);
+    });
+
+    Route::get('/categories', function ($locale) {
+        return redirect()->to('/' . $locale, 301);
+    })->name('category');
+
+    // 3-Segment Subcategory Feature Detail Route
+    Route::get('/{category_slug}/{subcategory_slug}/{feature_slug}', [CategoryController::class, 'subCategoryFeatureDetail'])->name('category.subcategory.feature');
     
 
 
@@ -622,6 +636,11 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
         Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
     });
 
+    // Numeric Category Pagination Route (must be before wildcard second_segment)
+    Route::get('/{slug}/{page}', [CategoryController::class, 'categoryDetail'])
+        ->where('page', '[0-9]+')
+        ->name('category.detail.page');
+
     // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
     Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
         ->where('comparison_businesses', '.*-.*-.*')
@@ -633,9 +652,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
     Route::get('/{slug}/{reviews_slug}', [ViewController::class, 'allReview'])->name('ReviewShow');
     Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
 
-    // Dynamic 1-Segment Catch-all Routes (Must be at the VERY END of localized group)
-    Route::get('/{slug}', [ProductController::class, 'productDetail'])->name('product.details');
-    Route::get('/{id}', [ProductController::class, 'productDetail'])->name('user.product_detail');
+    // Dynamic 1-Segment Catch-all Routes (Categories, Subcategories, and Businesses)
+    Route::get('/{slug}', [ViewController::class, 'resolveSlug'])->name('category.detail');
+    Route::get('/{id}', [ViewController::class, 'resolveSlug'])->name('user.product_detail');
 });
 
 

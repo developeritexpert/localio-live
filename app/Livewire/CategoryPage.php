@@ -835,9 +835,9 @@ class CategoryPage extends Component
         $locale = app()->getLocale();
 
         if ($page > 1) {
-            $url = '/' . $locale . '/categories/' . $this->slug . '/' . $page;
+            $url = '/' . $locale . '/' . $this->slug . '/' . $page;
         } else {
-            $url = '/' . $locale . '/categories/' . $this->slug;
+            $url = '/' . $locale . '/' . $this->slug;
         }
 
         // Append filter query params

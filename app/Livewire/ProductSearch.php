@@ -77,7 +77,7 @@ class ProductSearch extends Component
         }])->first();
 
         $business_slug = $Business->translations->first()->slug;
-        return redirect()->route('product.details', ['locale' => app()->getLocale(), 'slug' => $business_slug]);  // Redirect to product details page
+        return redirect()->route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business_slug]);  // Redirect to product details page
     }
 
     // Method to load products based on the search term (original functionality)

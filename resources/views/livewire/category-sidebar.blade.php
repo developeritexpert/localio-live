@@ -132,7 +132,7 @@
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2 w-100 mt-auto">
-                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
+                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
                                         class="btn-view-details btn py-1 px-2 fw-medium {{ !empty($business->is_affiliate) ? 'w-50' : 'w-100' }}">
                                             View details
                                         </a>

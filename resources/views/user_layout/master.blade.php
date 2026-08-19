@@ -3244,7 +3244,7 @@
     function changeCategory(categoryId) {
         let langCode = "{{ session('lang_code', 'en-us') }}";
         let url = new URL(window.location.href);
-        url.pathname = `/${langCode}/categories/${categoryId}`;
+        url.pathname = `/${langCode}/${categoryId}`;
         window.location.href = url.href;
     }
 

@@ -54,7 +54,7 @@
                     @endif
                     @if($business)
                         <li class="breadcrumb-item">
-                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
                         </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
@@ -224,7 +224,7 @@
                                         </div>
                                         <span class="f-12" style="color: #666;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                     </div>
-                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
+                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
                                         View all reviews
                                     </a>
                                 </div>
@@ -297,7 +297,7 @@
                                         <h6 class="starting-price-title">Starting price</h6>
                                         <h2 class="starting-price-value">{{ $currency }}{{ $startingPrice }}</h2>
                                         <p class="starting-price-text">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
-                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link">
+                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link">
                                             View pricing
                                         </a>
                                     </div>
@@ -326,7 +326,7 @@
 
                                     <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
                                         <h2 class="size22 big-bld m-0">Highlighted reviews</h2>
-                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link">
+                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link">
                                             View all reviews
                                         </a>
                                     </div>
@@ -395,7 +395,7 @@
                             <div class="feture_box review-breakdown-box">
                                 <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                     <h2 class="size22 big-bld m-0">Recent discussions</h2>
-                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="view-review-link">
+                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="view-review-link">
                                         View all discussions
                                     </a>
                                 </div>
