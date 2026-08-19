@@ -98,8 +98,7 @@
                                     <div class="auto-choice-hd w-100 d-flex flex-column align-items-center" style="border: none; padding: 0; margin-bottom: 0;">
                                         <div class="inn_sl_hed flex-column align-items-center text-center w-100" style="gap: 8px;">
                                             <div class=" top-product-logo mx-auto" style="margin-bottom: 8px;">
-                                                <img class="slider_img" src="{{ asset($business->icon_id) }}"
-                                                    alt="{{ $business->translations->first()?->name ?? '' }}" style="">
+                                                <x-business-logo :business="$business" />
                                             </div>
                                             <div class="sl_h text-center w-100">
                                                 <div class="inn_h d-flex align-items-center justify-content-center">
@@ -306,7 +305,7 @@
                                     @if(!empty($business->is_affiliate))
                                     <div class="d-flex align-items-center gap-2 mb-3">
                                         <div class="top-product-medium-logo">
-                                        <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="">
+                                        <x-business-logo :business="$business" :name="$bName" />
                                         </div>
                                         <h5 style="font-size: 16px; font-weight: 700; color: #1e3050; margin: 0;">{{ $bName }}</h5>
                                     </div>
@@ -381,7 +380,7 @@
                             <div class="sales-crm-pack crm-pack-lft compari_crm_pck">
                                 <div class="inn_sl_hed review-brand-icon ">
                                     <div class="top-product-logo ">
-                                        <img src="{{ asset($business->icon_id) }}" alt="No Image available">
+                                        <x-business-logo :business="$business" />
                                     </div>
                                     <div class="sl_h review-brand-icon-sl_h">
                                         <div class="inn_h d-flex align-items-center ">

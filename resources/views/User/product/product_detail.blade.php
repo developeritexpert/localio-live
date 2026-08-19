@@ -936,7 +936,7 @@
                 <div class="container-fluid">
                     <div class="asn_dv_contnt ">
                         <div class="top-product-logo">
-                            <img src="{{ asset($business->icon_id) }}" alt="{{ $business->translations->first()->name }}">
+                            <x-business-logo :business="$business" />
                         </div>
                         <div class="div_prent_ever">
 
@@ -1612,8 +1612,7 @@
 
                                                                                         <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
                                                                                             <div class="top-product-logo">
-                                                                                                <img src="{{ asset($altbusiness->icon_id ?? 'front/img/top-rate-img2.svg') }}"
-                                                                                                    alt="">
+                                                                                                <x-business-logo :business="$altbusiness" />
                                                                                             </div>
                                                                                             <div class="asn-rating">
                                                                                                 @if ($altbusiness->translations->isNotEmpty())
@@ -1833,7 +1832,7 @@
 
                                                                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                                                                 <div class="top-product-medium-logo">
-                                                                                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class=" flex-shrink-0" style="">
+                                                                                                    <x-business-logo :business="$business" :name="$bName" />
                                                                                                 </div>
 
                                                                                                 <div style="min-width: 0;">
@@ -1849,7 +1848,7 @@
 
                                                                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                                                                 <div class="top-product-medium-logo">
-                                                                                                <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="">
+                                                                                                <x-business-logo :business="$peer" :name="$peerName" />
                                                                                             </div>
                                                                                                 <div style="min-width: 0;">
                                                                                                     <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $peerName }}</div>
@@ -2023,7 +2022,7 @@
                                                                             <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
                                                                                     <div class="top-product-logo" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
-                                                                                        <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                                                                                        <x-business-logo :business="$business" />
                                                                                     </div>
                                                                                     <div>
                                                                                         <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
@@ -2682,10 +2681,10 @@
                                         <div class="main_feature_lg sticky-sidebar-nav-wrapper">
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
-                                                    <div class="sticky-nav-logo mb-2">
-                                                        <img src="{{ asset($business->icon_id) }}"
-                                                            alt="{{ $business->translations->first()->name ?? '' }}"
-                                                            style="max-height: 44px; max-width: 130px; object-fit: contain;">
+                                                    <div class="sticky-nav-logo mb-2 d-flex justify-content-center">
+                                                        <div style="width: 44px; height: 44px;">
+                                                            <x-business-logo :business="$business" />
+                                                        </div>
                                                     </div>
                                                     <h3 class="sticky-nav-title mb-1"
                                                         style="font-size: 17px; font-weight: 700; color: #002347;">
@@ -3418,9 +3417,7 @@
                 <div class="gallery-header">
                     <div class="gallery-header-left">
                         <div style="width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: #f9f9f9; display: flex; align-items: center; justify-content: center; border: 1px solid #eaeaea; flex-shrink: 0;">
-                            <img src="{{ asset($business->icon_id ?? 'front/img/big-asana.png') }}"
-                                 alt="{{ $business->translations->first()->name }}"
-                                 style="width: 100%; height: 100%; object-fit: contain;">
+                            <x-business-logo :business="$business" />
                         </div>
                         <div>
                             <h3 style="margin: 0 0 4px 0; font-size: 22px; font-weight: 700; color: #002347;">

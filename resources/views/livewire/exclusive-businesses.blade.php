@@ -379,10 +379,8 @@
                                                     <div class="inn_sl_hed">
                                                         <a
                                                             href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
-                                                            <div class="sli_img choice_img">
-                                                                <img class="slider_img"
-                                                                    src="{{ asset($item->icon_id) }}"
-                                                                    alt="No Images For This Product">
+                                                            <div class="sli_img choice_img top-product-logo">
+                                                                <x-business-logo :business="$item" />
                                                             </div>
                                                         </a>
                                                         <div class="sl_h">

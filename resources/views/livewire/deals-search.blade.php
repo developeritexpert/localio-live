@@ -22,9 +22,8 @@
                             <a href="javascript:void(0);" wire:click="redirectToProduct({{ $product->id }})"
                                 style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
                                 
-                                <div class="ab_img" style="flex-shrink: 0;">
-                                    <img src="{{ asset($product->businesses->first()->icon_id ?? 'front/img/default_business_logo.svg') }}"
-                                        class="header_img" alt="{{ $product->translations->name ?? 'Product' }}">
+                                <div class="ab_img top-product-logo" style="flex-shrink: 0; width: 45px; height: 45px;">
+                                    <x-business-logo :business="$product->businesses->first()" :name="$product->translations->name ?? 'Product'" />
                                 </div>
     
                                 <div class="hdr_insdiecont">

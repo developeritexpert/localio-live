@@ -222,14 +222,65 @@ class Business extends Model
     }
 
     /**
-     * Get business icon/logo with fallback to default logo.
+     * Check if business has an uploaded custom logo.
+     */
+    public function hasLogo()
+    {
+        $raw = $this->attributes['icon_id'] ?? null;
+        if (empty($raw)) {
+            return false;
+        }
+        $defaults = [
+            'front/img/default_business_logo.svg',
+            'front/img/logo.svg',
+            'front/img/default.png',
+            'images/default.png',
+            'front/img/top-rate-img2.svg',
+            'front/img/big-asana.png',
+            'front/img/sftare-img1.svg',
+            'front/img/poplr-zero.svg',
+            'front/img/lyt-rd-grey.svg'
+        ];
+        return !in_array($raw, $defaults, true);
+    }
+
+    public function getHasLogoAttribute()
+    {
+        return $this->hasLogo();
+    }
+
+    /**
+     * Get first initial of the business name in uppercase.
+     */
+    public function getInitialAttribute()
+    {
+        $name = '';
+        if ($this->relationLoaded('translations') && $this->translations->isNotEmpty()) {
+            $name = $this->translations->first()->name ?? '';
+        } elseif (method_exists($this, 'translations') && $this->translations()->exists()) {
+            $name = $this->translations()->first()?->name ?? '';
+        }
+        if (empty($name) && !empty($this->name)) {
+            $name = $this->name;
+        }
+        $name = trim($name);
+        return $name !== '' ? mb_strtoupper(mb_substr($name, 0, 1)) : 'B';
+    }
+
+    /**
+     * Get business icon/logo with fallback to null if not set.
      */
     public function getIconIdAttribute($value)
     {
-        if (!empty($value)) {
+        if (!empty($value) && !in_array($value, [
+            'front/img/default_business_logo.svg',
+            'front/img/logo.svg',
+            'front/img/default.png',
+            'images/default.png'
+        ], true)) {
             return $value;
         }
-        return 'front/img/default_business_logo.svg';
+        return null;
     }
 
     /**

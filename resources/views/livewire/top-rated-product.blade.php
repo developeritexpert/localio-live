@@ -677,8 +677,7 @@
                                                         <a
                                                             href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
                                                             <div class="top-product-logo">
-                                                                <img class="" src="{{ asset($item->icon_id) }}"
-                                                                    alt="No Images For This Product">
+                                                                <x-business-logo :business="$item" />
                                                             </div>
                                                         </a>
                                                         <div class="sl_h">

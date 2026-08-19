@@ -94,7 +94,7 @@
                 <div class=" top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
                     <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
-                        <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
+                        <x-business-logo :business="$business" :name="$bName" />
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
@@ -465,7 +465,7 @@
         <div class="review-prompt-banner mb-5" id="reviewPromptBanner" style="background-color: #f8fafc; border-radius: 16px; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
             <div style="display: flex; align-items: center; gap: 18px;">
                 <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
-                    <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
+                    <x-business-logo :business="$business" :name="$bName" />
                 </div>
                 <div>
                     <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
