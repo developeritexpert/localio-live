@@ -286,11 +286,11 @@
                                                 <span class="nk-menu-text">Help Center</span>
                                             </a>
                                         </li>
-                                        {{-- <li class="nk-menu-item">
+                                        <li class="nk-menu-item">
                                             <a href="{{ route('top-product-page-content') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Top Product</span>
+                                                <span class="nk-menu-text">Top Rated Page</span>
                                             </a>
-                                        </li> --}}
+                                        </li>
                                         <li class="nk-menu-item">
                                             <a href="{{ route('admin.legal_documents') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Legal Documents</span>

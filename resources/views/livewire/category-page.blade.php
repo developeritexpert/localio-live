@@ -245,6 +245,103 @@
             margin-bottom: 10px !important;
         }
     }
+
+    /* Category Page Enhanced Sections Styling */
+    .rich-text-content p {
+        margin-bottom: 12px;
+        line-height: 1.7;
+        color: #475569;
+        font-size: 15px;
+    }
+    .rich-text-content ul, .rich-text-content ol {
+        margin-left: 20px;
+        margin-bottom: 12px;
+        color: #475569;
+    }
+    .rich-text-content li {
+        margin-bottom: 6px;
+    }
+    .rich-text-content a {
+        color: #06498b;
+        text-decoration: underline;
+    }
+    .comparison-box:hover {
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;
+        transform: translateY(-2px);
+        transition: all 0.2s ease;
+    }
+    .top-product-medium-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+    }
+    .top-product-medium-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .explore-subcat-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 20px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .explore-subcat-card:hover {
+        border-color: #06498b;
+        box-shadow: 0 4px 12px rgba(6,73,139,0.08);
+        transform: translateY(-2px);
+    }
+    .explore-subcat-card:hover h6 {
+        color: #e56b46 !important;
+    }
+    .btn-view-details-outline {
+        border: 1.5px solid #174889 !important;
+        border-radius: 30px !important;
+        background: transparent !important;
+        color: #06498b !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .btn-view-details-outline:hover {
+        background: #174889 !important;
+        color: #fff !important;
+        text-decoration: none !important;
+    }
+    .btn-orng-pill {
+        background: #ff5722 !important;
+        border: 1px solid #ff5722 !important;
+        border-radius: 30px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: opacity 0.2s ease !important;
+    }
+    .btn-orng-pill:hover {
+        opacity: 0.9 !important;
+        color: #fff !important;
+    }
+
     </style>
 
     @section('meta_title', !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page'))
@@ -368,21 +465,29 @@
                                                 Community rating
                                             </h3>
 
-                                            <div class="form-check">
+                                            <div class="form-check mb-2">
                                                 <input type="checkbox" class="form-check-input"
                                                     wire:model.live="selectedRatings" value="4" id="rating-4">
-                                                <label class="form-check-label" for="rating-4">
-                                                    @for ($i = 1; $i <= 5; $i++) @if ($i <=4) <i
-                                                        class="fas fa-star text-warning"></i>
-                                                        @else
-                                                        <i class="far fa-star text-warning"></i>
-                                                        @endif
-                                                        @endfor
-                                                        <span class="filter1">&
-                                                            up</span>
-                                                        <span class="filter2">
-                                                            ({{ $ratingCounts[4] ?? 0 }})
-                                                        </span>
+                                                <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="far fa-star text-warning"></i>
+                                                    <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input"
+                                                    wire:model.live="selectedRatings" value="3" id="rating-3">
+                                                <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="far fa-star text-warning"></i>
+                                                    <i class="far fa-star text-warning"></i>
+                                                    <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
                                                 </label>
                                             </div>
                                         </div>
@@ -820,8 +925,7 @@
                                                             <a
                                                                 href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
                                                                 <div class="top-product-logo">
-                                                                    <img class="" src="{{ asset($item->icon_id) }}"
-                                                                        alt="No Images For This Product">
+                                                                    <x-business-logo :business="$item" />
                                                                 </div>
                                                             </a>
                                                             <div class="sl_h">
@@ -1122,6 +1226,276 @@
             <livewire:compare-bar :category-id="$category->id" />
         </section>
         <!-- Remaining sections stay the same -->
+        
+        <!-- 1. Dynamic Text Sections (H2 & H3 Sub-headlines) -->
+        @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
+        <section class="category-text-sections-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        @foreach($textSections as $section)
+                        <div class="content-section-block mb-5">
+                            @if(!empty($section['h2_title']))
+                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
+                                {{ $section['h2_title'] }}
+                            </h2>
+                            @endif
+
+                            @if(!empty($section['h2_text']))
+                            <div class="rich-text-content mb-4" style="font-size: 15px; color: #475569; line-height: 1.7;">
+                                {!! $section['h2_text'] !!}
+                            </div>
+                            @endif
+
+                            @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
+                                @foreach($section['sub_sections'] as $sub)
+                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style="border-left: 3px solid #06498b !important;">
+                                    @if(!empty($sub['h3_title']))
+                                    <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 8px;">
+                                        {{ $sub['h3_title'] }}
+                                    </h3>
+                                    @endif
+                                    @if(!empty($sub['h3_text']))
+                                    <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
+                                        {!! $sub['h3_text'] !!}
+                                    </div>
+                                    @endif
+                                </div>
+                                @endforeach
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
+        <!-- 2. Popular Category Comparisons Section -->
+        @if(isset($popularComparisons) && count($popularComparisons) > 0)
+        @php
+            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
+        @endphp
+        <section class="popular-comparisons-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="text-start mb-4">
+                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        Popular {{ strtolower($catCurrentName) }} comparisons
+                    </h2>
+                    <p style="font-size: 14px; color: #64748b; margin: 0;">
+                        Compare top-rated {{ strtolower($catCurrentName) }} providers side-by-side on features, reviews, and community scores.
+                    </p>
+                </div>
+
+                <div class="row g-3">
+                    @foreach($popularComparisons as $comp)
+                    <div class="col-lg-6 col-md-6 col-12">
+                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <!-- Business 1 -->
+                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                    <div class="top-product-medium-logo">
+                                        <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
+                                            {{ $comp['business_1_name'] }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1" style="font-size: 11px; color: #64748b;">
+                                            <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                            <span>{{ number_format($comp['business_1_rating'], 1) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- VS Circle -->
+                                <div class="px-3 text-muted flex-shrink-0 fw-bold" style="font-size: 14px; font-family: sans-serif; color: #94a3b8;">vs</div>
+
+                                <!-- Business 2 -->
+                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                    <div class="top-product-medium-logo">
+                                        <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
+                                            {{ $comp['business_2_name'] }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1" style="font-size: 11px; color: #64748b;">
+                                            <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                            <span>{{ number_format($comp['business_2_rating'], 1) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cmpre_btn w-100 mt-2">
+                                <a href="{{ $comp['url'] }}" class="cta btn_blue  text-decoration-none w-100" style="padding: 7px 18px !important; border-radius: 50px !important; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 100%; background: #174889; color: #fff;">
+                                    Compare
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+
+        <!-- 3. Explore Subcategories Section -->
+        @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+        <section class="explore-subcategories-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="text-start mb-4">
+                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        {{ $exploreSubcategories['title'] }}
+                    </h2>
+                    <p style="font-size: 14px; color: #64748b; margin: 0;">
+                        Browse specialized categories to find the exact tools and solutions for your requirements.
+                    </p>
+                </div>
+
+                <div class="row g-3">
+                    @foreach($exploreSubcategories['items'] as $subcatItem)
+                    @php
+                        $subTrans = null;
+                        if (isset($subcatItem->translations)) {
+                            if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                                $subTrans = $subcatItem->translations;
+                            } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
+                                $subTrans = $subcatItem->translations->first();
+                            }
+                        }
+                        $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
+                        $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
+                    @endphp
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="explore-subcat-card">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fa fa-folder-open-o text-primary" style="font-size: 16px;"></i>
+                                <h6 class="m-0 fw-bold" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
+                            </div>
+                            <span class="badge bg-light text-secondary border rounded-pill px-2 py-1" style="font-size: 11px;">
+                                {{ $subcatItem->businesses_count ?? 0 }} {{ ($subcatItem->businesses_count ?? 0) == 1 ? 'listing' : 'listings' }}
+                            </span>
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+
+        <!-- 4. Popular Category Businesses Section -->
+        @if(isset($popularBusinesses) && count($popularBusinesses) > 0)
+        @php
+            $catTitleName = $category->translations->name ?? $category->name ?? 'Category';
+        @endphp
+        <section class="popular-businesses-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="text-start mb-4">
+                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        Popular {{ strtolower($catTitleName) }} providers
+                    </h2>
+                    <p style="font-size: 14px; color: #64748b; margin: 0;">
+                        Top-rated businesses recommended by verified user feedback and community ratings.
+                    </p>
+                </div>
+
+                <div class="row g-3">
+                    @foreach($popularBusinesses as $biz)
+                    @php
+                        $bName = $biz->translations->first()->name ?? $biz->name ?? '';
+                        $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? (string)$biz->id;
+                    @endphp
+                    @if(!empty($bName))
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                    <x-business-logo :business="$biz" :name="$bName" />
+                                </div>
+                                <div class="top-product-info min-w-0 flex-grow-1">
+                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;" title="{{ $bName }}">
+                                        {{ $bName }}
+                                    </h6>
+                                    <div class="rating-group" style="">
+                                        <span class="rate_box_num">{{ number_format($biz->average_rating ?? 0, 1) }}</span>
+                                        <div class="rating-stars " >
+                                            @php $rating = round($biz->average_rating ?? 0); @endphp
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $rating)
+                                                    <i class="fas fa-star" ></i>
+                                                @else
+                                                    <i class="far fa-star"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span class="">({{ $biz->active_reviews_count ?? 0 }})</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 w-100 mt-auto">
+                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
+                                   class="btn-view-details-outline btn py-1 px-2 fw-medium {{ !empty($biz->is_affiliate) ? 'w-50' : 'w-100' }}">
+                                    View details
+                                </a>
+                                @if(!empty($biz->is_affiliate))
+                                <a href="{{ $biz->getTrackedUrl() }}"
+                                   target="_blank"
+                                   class="btn-orng-pill btn py-1 px-2 fw-medium w-50 text-white">
+                                    Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+
+        <!-- 5. Category Specific FAQ Section -->
+        @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
+        @php
+            $catFaqName = $category->translations->name ?? $category->name ?? 'Category';
+        @endphp
+        <section class="category-faqs-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="text-start mb-4">
+                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                                Frequently asked questions
+                            </h2>
+                            <p style="font-size: 14px; color: #64748b; margin: 0;">
+                                Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
+                            </p>
+                        </div>
+
+                        <div class="accordion" id="categoryFaqAccordion">
+                            @foreach($faqs as $fIndex => $faq)
+                            <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                                <h2 class="accordion-header" id="headingFaq{{ $fIndex }}">
+                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-size: 15px; font-weight: 600; color: #002347; background-color: #f8fafc;">
+                                        {{ $faq['question'] }}
+                                    </button>
+                                </h2>
+                                <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                        {!! $faq['answer'] !!}
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
         <section class="subs_sec light ">
             {{-- <div class="container">
                 <div class="subs_content">

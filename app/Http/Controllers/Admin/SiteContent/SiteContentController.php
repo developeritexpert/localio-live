@@ -674,7 +674,57 @@ if (!$headerLogo) {
             $topProductContents = TopProductContent::where('lang_id', $lang_id)->get();
         }
         $productFiles = TopProductContent::where('type', 'file')->Where('lang_id', 1)->get();
-        return view('Admin.site-content.top_product_page', compact('topProductContents', 'productFiles'));
+
+        $textSectionsContent = TopProductContent::where('meta_key', 'top_rated_text_sections')->where('lang_id', $lang_id)->first();
+        $textSections = $textSectionsContent && !empty($textSectionsContent->meta_value) ? json_decode($textSectionsContent->meta_value, true) : null;
+        if (!$textSections) {
+            $textSections = [
+                [
+                    'h2_title' => 'How Localio ratings work',
+                    'h2_text' => '',
+                    'sub_sections' => [
+                        [
+                            'h3_title' => 'Why are these listings considered top rated?',
+                            'h3_text' => 'Listings featured on this page represent the highest-rated solutions in their respective categories based on aggregated scores from authentic user reviews, overall satisfaction, and consistency over time.'
+                        ],
+                        [
+                            'h3_title' => 'How Localio ratings work',
+                            'h3_text' => 'Rankings on this page are based on ratings submitted by members of the Localio community. The order may also take factors such as the number of ratings into account, so a listing with a very small number of ratings does not automatically rank above one supported by substantially more community feedback.'
+                        ]
+                    ]
+                ],
+                [
+                    'h2_title' => 'What you can discover on Localio',
+                    'h2_text' => "Localio brings community ratings and user reviews together across a broad range of categories. Explore everything from software and online services to local businesses, financial services, travel and much more.\n\nStart with the categories that interest you, compare what other community members have experienced and explore the listings that stand out.",
+                    'sub_sections' => []
+                ]
+            ];
+        }
+
+        $faqsContent = TopProductContent::where('meta_key', 'top_rated_faqs')->where('lang_id', $lang_id)->first();
+        $faqs = $faqsContent && !empty($faqsContent->meta_value) ? json_decode($faqsContent->meta_value, true) : null;
+        if (!$faqs) {
+            $faqs = [
+                [
+                    'question' => 'How are top-rated products and businesses chosen?',
+                    'answer' => 'Top-rated listings are determined by verified community ratings, authentic review scores, user satisfaction metrics, and overall reliability across each industry category.'
+                ],
+                [
+                    'question' => 'How often are the top-rated rankings updated?',
+                    'answer' => 'Our rankings are updated continuously as new community reviews, verified feedback, and rating submissions are received.'
+                ],
+                [
+                    'question' => 'Can businesses pay to be featured as top-rated?',
+                    'answer' => 'No. Placement in top-rated rankings cannot be bought. Rankings strictly reflect actual community ratings and verified review performance.'
+                ],
+                [
+                    'question' => 'How can I submit a review for a business?',
+                    'answer' => 'Simply search for the business or visit its page on Localio, click "Write a review", rate the criteria, and share your experience.'
+                ]
+            ];
+        }
+
+        return view('Admin.site-content.top_product_page', compact('topProductContents', 'productFiles', 'textSections', 'faqs', 'lang_id'));
     }
     public function topProductPageUpdate(Request $request)
     {
@@ -730,6 +780,57 @@ if (!$headerLogo) {
                 }
             }
         }
+        $lang_id = $request->get('lang_id') ?: (session()->get('lang_id') ?: 1);
+
+        if ($request->has('text_sections')) {
+            $sectionsData = $request->input('text_sections', []);
+            $cleanedSections = [];
+            foreach ($sectionsData as $sec) {
+                if (empty($sec['h2_title']) && empty($sec['h2_text']) && empty($sec['sub_sections'])) {
+                    continue;
+                }
+                $cleanedSub = [];
+                if (isset($sec['sub_sections']) && is_array($sec['sub_sections'])) {
+                    foreach ($sec['sub_sections'] as $sub) {
+                        if (!empty($sub['h3_title']) || !empty($sub['h3_text'])) {
+                            $cleanedSub[] = [
+                                'h3_title' => $sub['h3_title'] ?? '',
+                                'h3_text' => $sub['h3_text'] ?? '',
+                            ];
+                        }
+                    }
+                }
+                $cleanedSections[] = [
+                    'h2_title' => $sec['h2_title'] ?? '',
+                    'h2_text' => $sec['h2_text'] ?? '',
+                    'sub_sections' => $cleanedSub,
+                ];
+            }
+
+            TopProductContent::updateOrCreate(
+                ['meta_key' => 'top_rated_text_sections', 'lang_id' => $lang_id],
+                ['meta_value' => json_encode($cleanedSections), 'type' => 'json']
+            );
+        }
+
+        if ($request->has('top_faqs')) {
+            $faqsData = $request->input('top_faqs', []);
+            $cleanedFaqs = [];
+            foreach ($faqsData as $faq) {
+                if (!empty($faq['question']) || !empty($faq['answer'])) {
+                    $cleanedFaqs[] = [
+                        'question' => $faq['question'] ?? '',
+                        'answer' => $faq['answer'] ?? '',
+                    ];
+                }
+            }
+
+            TopProductContent::updateOrCreate(
+                ['meta_key' => 'top_rated_faqs', 'lang_id' => $lang_id],
+                ['meta_value' => json_encode($cleanedFaqs), 'type' => 'json']
+            );
+        }
+
         return redirect()->back()->with('success', 'Top Product content updated successfully.');
     }
     private function uploadImagesTopProductPage(Request $request, $imageField)

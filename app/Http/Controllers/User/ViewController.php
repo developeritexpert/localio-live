@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Cookie;
 use App;
-use App\Models\{Business, Category, SiteLanguages, CategoryTranslation, ExpertGuideArticle, Product, WebSetting};
+use App\Models\{Business, Category, SiteLanguages, CategoryTranslation, ExpertGuideArticle, Product, WebSetting, BusinessFaq, BusinessFaqCategory, BusinessFaqFeedback};
 use Illuminate\Support\Facades\Redirect;
 use App\Models\User;
 use App\Models\Country;
@@ -590,10 +590,42 @@ class ViewController extends Controller
             ->take(2)
             ->get();
 
+        // FAQ Categories & Grouped FAQs
+        $faqCategories = \App\Models\BusinessFaqCategory::where('business_id', $business->id)
+            ->where('status', 1)
+            ->ordered()
+            ->with(['faqs' => function($q) use ($lang_id) {
+                $q->where('status', 1)
+                  ->orderedByHelpful()
+                  ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
+            }])
+            ->get();
+
+        $uncategorizedFaqs = \App\Models\BusinessFaq::where('business_id', $business->id)
+            ->whereNull('business_faq_category_id')
+            ->where('status', 1)
+            ->orderedByHelpful()
+            ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)])
+            ->get();
+
+        $allFaqs = \App\Models\BusinessFaq::where('business_id', $business->id)
+            ->where('status', 1)
+            ->orderedByHelpful()
+            ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id), 'category'])
+            ->get();
+
+        $userVotes = [];
+        if (auth()->check()) {
+            $userVotes = \App\Models\BusinessFaqFeedback::where('user_id', auth()->id())
+                ->whereNotNull('is_helpful')
+                ->pluck('is_helpful', 'business_faq_id')
+                ->toArray();
+        }
+
         return view('User.product.business_faqs', compact(
             'business', 'averageRating', 'totalReviews', 'recommendPercent', 
             'criteria', 'startingPrice', 'currency', 'timeUnit', 'additional_info', 
-            'topReviews', 'expectedSlug'
+            'topReviews', 'expectedSlug', 'faqCategories', 'uncategorizedFaqs', 'allFaqs', 'userVotes'
         ));
     }
 
@@ -737,6 +769,142 @@ class ViewController extends Controller
         return view('User.product.write_review_landing', compact('trendingBusinesses', 'unreviewedBusinesses', 'recentlyReviewed'));
     }
 
+    public function resolveSlug(Request $request, $locale, $slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        // 1. Check if slug matches a Category or Subcategory
+        $category = \App\Models\Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+            $query->where('slug', $slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$category) {
+            $category = \App\Models\Category::whereHas('translations', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })->first();
+        }
+
+        if ($category) {
+            return app(\App\Http\Controllers\User\CategoryController::class)->categoryDetail($locale, $slug);
+        }
+
+        // 2. Check if slug matches a Business / Product
+        $business = \App\Models\Business::whereHas('translations', function ($query) use ($slug, $lang_id) {
+            $query->where('slug', $slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$business) {
+            $business = \App\Models\Business::whereHas('translations', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })->first();
+        }
+
+        if ($business) {
+            return app(\App\Http\Controllers\User\ProductController::class)->productDetail($locale, $slug, $request);
+        }
+
+        // 3. Neither category nor business found -> 404
+        abort(404);
+    }
+
+
+    public function voteBusinessFaq(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'require_login' => true,
+                'message' => 'Please sign in to vote.'
+            ], 401);
+        }
+
+        $faqId = $request->input('faq_id');
+        $isHelpful = filter_var($request->input('is_helpful'), FILTER_VALIDATE_BOOLEAN);
+        $userId = auth()->id();
+
+        $faq = BusinessFaq::findOrFail($faqId);
+        $existing = BusinessFaqFeedback::where('business_faq_id', $faqId)
+            ->where('user_id', $userId)
+            ->whereNotNull('is_helpful')
+            ->first();
+
+        if ($existing) {
+            if ($existing->is_helpful === $isHelpful) {
+                return response()->json([
+                    'success' => true,
+                    'already_voted' => true,
+                    'helpful_count' => (int) $faq->helpful_count,
+                    'not_helpful_count' => (int) $faq->not_helpful_count,
+                    'user_vote' => $isHelpful ? 'yes' : 'no'
+                ]);
+            }
+
+            // Switch vote
+            if ($existing->is_helpful) {
+                $faq->decrement('helpful_count');
+                $faq->increment('not_helpful_count');
+            } else {
+                $faq->decrement('not_helpful_count');
+                $faq->increment('helpful_count');
+            }
+            $existing->update(['is_helpful' => $isHelpful]);
+        } else {
+            BusinessFaqFeedback::create([
+                'business_faq_id' => $faqId,
+                'user_id' => $userId,
+                'is_helpful' => $isHelpful,
+                'ip_address' => $request->ip()
+            ]);
+
+            if ($isHelpful) {
+                $faq->increment('helpful_count');
+            } else {
+                $faq->increment('not_helpful_count');
+            }
+        }
+
+        $faq->refresh();
+
+        return response()->json([
+            'success' => true,
+            'helpful_count' => (int) $faq->helpful_count,
+            'not_helpful_count' => (int) $faq->not_helpful_count,
+            'user_vote' => $isHelpful ? 'yes' : 'no'
+        ]);
+    }
+
+    public function reportBusinessFaq(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'require_login' => true,
+                'message' => 'Please sign in to report an issue.'
+            ], 401);
+        }
+
+        $request->validate([
+            'faq_id' => 'required|exists:business_faqs,id',
+            'report_reason' => 'required|string',
+            'report_details' => 'nullable|string|max:1000'
+        ]);
+
+        $faqId = $request->input('faq_id');
+        $reason = $request->input('report_reason');
+        $details = $request->input('report_details');
+
+        BusinessFaqFeedback::create([
+            'business_faq_id' => $faqId,
+            'user_id' => auth()->id(),
+            'report_reason' => $reason,
+            'report_details' => $details,
+            'ip_address' => $request->ip()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you! Your report has been submitted.'
+        ]);
+    }
+
 }
-
-

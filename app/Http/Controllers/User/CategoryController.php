@@ -69,6 +69,17 @@ class CategoryController extends Controller
         ));
     }
      public function categoryDetail($lang_code, $slug, $page = null){
+       $lang_id = getCurrentLanguageID();
+       $categoryExists = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+           $query->where('slug', $slug)->where('lang_id', $lang_id);
+       })->orWhereHas('translations', function ($query) use ($slug) {
+           $query->where('slug', $slug);
+       })->exists();
+
+       if (!$categoryExists) {
+           abort(404);
+       }
+
        return view('User.category.category_detail', compact('slug', 'page'));
      }
 

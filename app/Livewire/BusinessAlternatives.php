@@ -328,12 +328,21 @@ class BusinessAlternatives extends Component
         }
     }
 
+        protected function updatePriceFilterState()
+    {
+        $maxLimit = $this->maxPriceValue ?: 10000;
+        $isMinActive = (int)$this->minPrice > 0;
+        $isMaxActive = (int)$this->maxPrice < $maxLimit;
+
+        $this->isPriceFilterActive = ($isMinActive || $isMaxActive);
+    }
+
     public function setPriceRange($data)
     {
         if (is_array($data) && isset($data['min']) && isset($data['max'])) {
             $this->minPrice = (int)$data['min'];
             $this->maxPrice = (int)$data['max'];
-            $this->isPriceFilterActive = true;
+            $this->updatePriceFilterState();
             $this->resetPage();
         }
     }

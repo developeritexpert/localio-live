@@ -23,7 +23,7 @@
                         <div class="col-lg-9 save-lft p-0 ">
                             <div class="crt-lft-top d-flex">
                                 <div class="cart_img crt-lft-img">
-                                    <img src="{{ asset($item->business->icon_id) }}" class="img-fluid">
+                                    <x-business-logo :business="$item->business" />
                                 </div>
                                 <div class="cart_text">
                                     <h3>{{ $item->business->translations->first()->name }}</h3>

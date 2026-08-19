@@ -118,9 +118,63 @@
     @endif
 </div>
 
-<div class="pagination-wrap mt-4">
-    {{ $reviews->links('pagination::bootstrap-4') }}
-</div>
+@php
+    $currentPage = $reviews->currentPage();
+    $lastPage = $reviews->lastPage();
+    $maxVisible = 7;
+
+    $startPage = max(1, $currentPage - floor($maxVisible / 2));
+    $endPage = min($lastPage, $startPage + $maxVisible - 1);
+
+    if ($endPage - $startPage + 1 < $maxVisible) {
+        $startPage = max(1, $endPage - $maxVisible + 1);
+    }
+    $showLeftDots = $startPage > 2;
+    $showRightDots = $endPage < $lastPage - 1;
+@endphp
+
+@if ($lastPage > 1)
+    <div class="btn-pages">
+        {{-- Previous Button (only if there's a previous page) --}}
+        @if ($currentPage > 1)
+            <a href="{{ $reviews->url($currentPage - 1) }}" class="pagination-btn pagination-arrow">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+        @endif
+
+        {{-- First Page --}}
+        @if ($startPage > 1)
+            <a href="{{ $reviews->url(1) }}" class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}">1</a>
+            @if ($showLeftDots)
+                <span class="pagination-dots">...</span>
+            @endif
+        @endif
+
+        {{-- Page Numbers --}}
+        @for ($page = $startPage; $page <= $endPage; $page++)
+            <a href="{{ $reviews->url($page) }}" class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}">
+                {{ $page }}
+            </a>
+        @endfor
+
+        {{-- Last Page --}}
+        @if ($endPage < $lastPage)
+            @if ($showRightDots)
+                <span class="pagination-dots">...</span>
+            @endif
+            <a href="{{ $reviews->url($lastPage) }}" class="pagination-btn {{ $currentPage == $lastPage ? 'active' : '' }}">
+                {{ $lastPage }}
+            </a>
+        @endif
+
+        {{-- Next Button (only if there's a next page) --}}
+        @if ($currentPage < $lastPage)
+            <a href="{{ $reviews->url($currentPage + 1) }}" class="pagination-btn pagination-arrow next">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        @endif
+    </div>
+@endif
 
 <script>
     function copyToClipboard(text) {

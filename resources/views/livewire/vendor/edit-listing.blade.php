@@ -65,9 +65,8 @@
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         <!-- Current logo with upload overlay -->
-                                        <div style="position: relative; display: inline-block;">
-                                            <img src="{{ asset($business->icon_id) }}" alt="Business Icon" class="logo"
-                                                style="cursor: pointer; opacity: 0.8; border: 2px dashed #007bff; border-radius: 8px;">
+                                        <div style="position: relative; display: inline-block; width: 55px; height: 55px;">
+                                            <x-business-logo :business="$business" class="logo" style="cursor: pointer; opacity: 0.8; border: 2px dashed #007bff; border-radius: 8px;" />
 
                                             <!-- Upload icon overlay -->
                                             <div class="upload-overlay" style="position: absolute; top: 50%; left: 50%;
@@ -88,7 +87,7 @@
                                         @endif
                                     </div>
                                 @else
-                                    <img src="{{ asset($business->icon_id) }}" alt="Business Icon" class="logo" style="cursor: pointer;">
+                                    <x-business-logo :business="$business" class="logo" style="cursor: pointer; width: 55px; height: 55px;" />
                                 @endif
                             </div>
 
@@ -674,9 +673,8 @@
                                     </div>
                                     <div class="altr-mid-div">
                                         <div class="altr-mid-hd d-flex">
-                                            <div class="poplr-img">
-                                                <img src="{{ asset($business->icon_id ?? 'front/img/poplr-zero.svg') }}"
-                                                    alt="">
+                                            <div class="poplr-img top-product-logo">
+                                                <x-business-logo :business="$business" />
                                             </div>
                                             <div class="poplr-txt">
                                                 <h6 class="fw_700 h6_26">{{ $business->translations->firstWhere('lang_id', $lang_id)?->name }}</h6>
@@ -789,9 +787,8 @@
 
                                     <div class="altr-rgt-div">
                                         <div class="altr-mid-hd d-flex b_btm ">
-                                            <div class="poplr-img">
-                                                <img
-                                                    src="{{ asset($alternativeBusiness[0]->icon_id ?? 'front/img/lyt-rd-grey.svg') }}">
+                                            <div class="poplr-img top-product-logo">
+                                                <x-business-logo :business="$alternativeBusiness[0] ?? null" />
                                             </div>
                                             <div class="poplr-txt">
                                                 @if (isset($alternativeBusiness[0]) && $alternativeBusiness[0]->translations->isNotEmpty())

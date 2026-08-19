@@ -447,3 +447,44 @@ function media_fetch($path, $default = null)
     $manager = new AssetManager(); // You can pass basePath/publicUrl if needed
     return $manager->get($path, $default);
 }
+
+
+if (!function_exists('format_meta_text')) {
+    function format_meta_text($text, $default = '')
+    {
+        if (empty($text)) {
+            $text = $default;
+        }
+        if (empty($text)) {
+            return '';
+        }
+        // Decode HTML entities if needed and strip HTML tags
+        $clean = html_entity_decode(strip_tags($text), ENT_QUOTES, 'UTF-8');
+        $clean = trim($clean);
+        $currentYear = date('Y');
+        
+        // Replace all common year placeholders and raw blade/template tags
+        $placeholders = [
+            '[year]',
+            '{year}',
+            '%%year%%',
+            '%%currentyear%%',
+            '[current_year]',
+            '{current_year}',
+            '%%current_year%%',
+            '{{ now()->year }}',
+            '{{now()->year}}',
+            '{{ now()->format(\'Y\') }}',
+            '{{ now()->format("Y") }}',
+            '{{ date(\'Y\') }}',
+            '{{ date("Y") }}',
+            '{{date(\'Y\')}}',
+            '{{date("Y")}}',
+            '{{ year }}',
+            '{{year}}',
+            '[YEAR]',
+            '{YEAR}'
+        ];
+        return str_ireplace($placeholders, $currentYear, $clean);
+    }
+}

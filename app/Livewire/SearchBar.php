@@ -53,7 +53,7 @@ class SearchBar extends Component
         } ])->first();
     $busienss_slug=$Business->translations->first()->slug;
         // dd($product_slug);
-        return redirect()->route('product.details', ['locale' => app()->getLocale(),'slug' => $busienss_slug]);  // Redirect to product details page
+        return redirect()->route('user.product_detail', ['locale' => app()->getLocale(),'id' => $busienss_slug]);  // Redirect to product details page
     }
 
     public function render()

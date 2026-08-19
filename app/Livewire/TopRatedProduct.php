@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Business;
+use App\Models\Category;
 use App\Models\Log;
 use App\Models\Product;
+use App\Models\TopProductContent;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -291,14 +293,41 @@ class TopRatedProduct extends Component
         $priceStats = \App\Models\ProductPrice::selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
 
-        if ($priceStats) {
-            // Set the dynamic maximum price (ensure it's a number and not zero)
-            $this->maxPriceValue = max(ceil($priceStats->max_price), 100);
+        $maxVal = ($priceStats && $priceStats->max_price) ? max((int)ceil($priceStats->max_price), 100) : 5000;
+        $this->maxPriceValue = $maxVal;
 
-            // Allow URL parameters to override defaults
-            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : 0;
-            $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : $this->maxPriceValue;
+        $hasMinParam = request()->has('minPrice') && (int)request('minPrice') > 0;
+        $hasMaxParam = request()->has('maxPrice') && (int)request('maxPrice') < $maxVal;
+
+        $this->minPrice = $hasMinParam ? (int)request('minPrice') : 0;
+        $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : $maxVal;
+
+        $this->isPriceFilterActive = ($hasMinParam || $hasMaxParam);
+    }
+
+    public function updatePriceFilterState()
+    {
+        $maxLimit = $this->maxPriceValue ?: 5000;
+        $isMinActive = (int)$this->minPrice > 0;
+        $isMaxActive = (int)$this->maxPrice < $maxLimit;
+
+        $this->isPriceFilterActive = ($isMinActive || $isMaxActive);
+    }
+
+    public function setPriceRange($min = 0, $max = null)
+    {
+        if (is_array($min)) {
+            $max = $min['max'] ?? ($this->maxPriceValue ?: 5000);
+            $min = $min['min'] ?? 0;
         }
+
+        $maxLimit = $this->maxPriceValue ?: 5000;
+        $this->minPrice = is_numeric($min) ? (int)$min : 0;
+        $this->maxPrice = ($max !== null && is_numeric($max)) ? (int)$max : $maxLimit;
+
+        $this->updatePriceFilterState();
+        $this->resetPage();
+        $this->dispatch('scroll-to-middle');
     }
 
     protected function buildFilters($products)
@@ -659,26 +688,20 @@ class TopRatedProduct extends Component
 
     public function updatedMinPrice()
     {
-        $this->isPriceFilterActive = true;
-
-        // Make sure minPrice doesn't exceed maxPrice
         if ($this->minPrice > $this->maxPrice) {
             $this->minPrice = $this->maxPrice;
         }
-
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
     }
 
     public function updatedMaxPrice()
     {
-        $this->isPriceFilterActive = true;
-
-        // Make sure maxPrice is not less than minPrice
         if ($this->maxPrice < $this->minPrice) {
             $this->maxPrice = $this->minPrice;
         }
-
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
     }
@@ -819,12 +842,285 @@ class TopRatedProduct extends Component
         ]);
         
     }
+    public function getExploreCategoriesProperty()
+    {
+        $lang_id = $this->lang_id ?: getCurrentLanguageID();
+        $country_id = getCurrentCountry();
+
+        $categories = Category::onlyParents()
+            ->where('status', 1)
+            ->where(function ($q) {
+                $q->has('subCategories')->orWhereHas('businesses');
+            })
+            ->whereHas('translations', function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+            })
+            ->withCount('businesses')
+            ->orderByDesc('businesses_count')
+            ->with([
+                'translations' => function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                }
+            ])
+            ->take(5)
+            ->get();
+
+        foreach ($categories as $cat) {
+            $cat->top_businesses = $this->selectTopBusinessesForCategory($cat, $lang_id, $country_id);
+        }
+
+        return $categories;
+    }
+
+    protected function selectTopBusinessesForCategory($category, $lang_id, $country_id)
+    {
+        $subcategories = Category::where('parent_id', $category->id)
+            ->where('status', 1)
+            ->get();
+
+        $subcatIds = $subcategories->pluck('id')->toArray();
+        $allCatIds = array_merge([$category->id], $subcatIds);
+
+        $businesses = Business::where(function ($q) use ($allCatIds) {
+                $q->whereIn('category_id', $allCatIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($allCatIds) {
+                      $subQ->whereIn('categories.id', $allCatIds);
+                  });
+            })
+            ->where('status', 1)
+            ->whereHas('languages', function ($q) use ($lang_id) {
+                $q->where('language_id', $lang_id);
+            })
+            ->whereHas('translations', function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+            })
+            ->where(function ($q) use ($country_id) {
+                $q->where('active_all_countries', 1)
+                    ->orWhereHas('countries', function ($cq) use ($country_id) {
+                        $cq->where('country_id', $country_id);
+                    });
+            })
+            ->with([
+                'translations' => function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                },
+                'subCategories' => function ($q) {
+                    $q->select('categories.id');
+                }
+            ])
+            ->withCount(['reviews as active_reviews_count' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($q) {
+                $q->where('status', 'active');
+            }], 'rating')
+            ->get();
+
+        foreach ($businesses as $b) {
+            $avgRating = $b->average_rating !== null ? (float) $b->average_rating : null;
+            if ($avgRating !== null && $avgRating > 0) {
+                $b->average_rating = round($avgRating, 1);
+            } elseif ($b->admin_rating !== null && (float) $b->admin_rating > 0) {
+                $b->average_rating = (float) $b->admin_rating;
+            } else {
+                $b->average_rating = 0.0;
+            }
+        }
+
+        $sortComparator = function ($a, $b) {
+            if ($a->average_rating != $b->average_rating) {
+                return $b->average_rating <=> $a->average_rating;
+            }
+            if ($a->active_reviews_count != $b->active_reviews_count) {
+                return $b->active_reviews_count <=> $a->active_reviews_count;
+            }
+            return $a->id <=> $b->id;
+        };
+
+        $buckets = [];
+        if ($subcategories->isNotEmpty()) {
+            foreach ($subcategories as $sub) {
+                $subId = $sub->id;
+                $bizInSub = $businesses->filter(function ($b) use ($subId) {
+                    return $b->category_id == $subId || $b->subCategories->contains('id', $subId);
+                });
+
+                $aff = $bizInSub->filter(fn($b) => (int)$b->is_affiliate === 1)->sort($sortComparator)->values();
+                $nonAff = $bizInSub->filter(fn($b) => (int)$b->is_affiliate !== 1)->sort($sortComparator)->values();
+
+                $buckets[] = [
+                    'id' => $subId,
+                    'affiliated' => $aff,
+                    'non_affiliated' => $nonAff,
+                ];
+            }
+
+            $bizInParentOnly = $businesses->filter(function ($b) use ($category, $subcatIds) {
+                $inSub = false;
+                foreach ($subcatIds as $sId) {
+                    if ($b->category_id == $sId || $b->subCategories->contains('id', $sId)) {
+                        $inSub = true;
+                        break;
+                    }
+                }
+                return !$inSub && ($b->category_id == $category->id || $b->subCategories->contains('id', $category->id));
+            });
+
+            if ($bizInParentOnly->isNotEmpty()) {
+                $aff = $bizInParentOnly->filter(fn($b) => (int)$b->is_affiliate === 1)->sort($sortComparator)->values();
+                $nonAff = $bizInParentOnly->filter(fn($b) => (int)$b->is_affiliate !== 1)->sort($sortComparator)->values();
+                $buckets[] = [
+                    'id' => $category->id,
+                    'affiliated' => $aff,
+                    'non_affiliated' => $nonAff,
+                ];
+            }
+        } else {
+            $aff = $businesses->filter(fn($b) => (int)$b->is_affiliate === 1)->sort($sortComparator)->values();
+            $nonAff = $businesses->filter(fn($b) => (int)$b->is_affiliate !== 1)->sort($sortComparator)->values();
+            $buckets[] = [
+                'id' => $category->id,
+                'affiliated' => $aff,
+                'non_affiliated' => $nonAff,
+            ];
+        }
+
+        $selectedById = [];
+        $maxAffRanks = 0;
+        foreach ($buckets as $b) {
+            $maxAffRanks = max($maxAffRanks, count($b['affiliated']));
+        }
+
+        for ($rank = 0; $rank < $maxAffRanks; $rank++) {
+            if (count($selectedById) >= 6) {
+                break;
+            }
+            foreach ($buckets as $b) {
+                if (isset($b['affiliated'][$rank])) {
+                    $biz = $b['affiliated'][$rank];
+                    if (!isset($selectedById[$biz->id])) {
+                        $selectedById[$biz->id] = $biz;
+                    }
+                }
+            }
+        }
+
+        if (count($selectedById) < 6) {
+            $maxNonAffRanks = 0;
+            foreach ($buckets as $b) {
+                $maxNonAffRanks = max($maxNonAffRanks, count($b['non_affiliated']));
+            }
+
+            for ($rank = 0; $rank < $maxNonAffRanks; $rank++) {
+                if (count($selectedById) >= 6) {
+                    break;
+                }
+                foreach ($buckets as $b) {
+                    if (isset($b['non_affiliated'][$rank])) {
+                        $biz = $b['non_affiliated'][$rank];
+                        if (!isset($selectedById[$biz->id])) {
+                            $selectedById[$biz->id] = $biz;
+                        }
+                    }
+                }
+            }
+        }
+
+        $selectedList = array_values($selectedById);
+
+        $affSelected = collect($selectedList)
+            ->filter(fn($b) => (int)$b->is_affiliate === 1)
+            ->sort($sortComparator)
+            ->values();
+
+        $nonAffSelected = collect($selectedList)
+            ->filter(fn($b) => (int)$b->is_affiliate !== 1)
+            ->sort($sortComparator)
+            ->values();
+
+        return $affSelected->concat($nonAffSelected)->take(6);
+    }
+
+    public function getTextSectionsProperty()
+    {
+        $lang_id = $this->lang_id ?: getCurrentLanguageID();
+        $content = \App\Models\TopProductContent::where('meta_key', 'top_rated_text_sections')
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if ($content && !empty($content->meta_value)) {
+            $decoded = json_decode($content->meta_value, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        return [
+            [
+                'h2_title' => 'How Localio ratings work',
+                'h2_text' => '',
+                'sub_sections' => [
+                    [
+                        'h3_title' => 'Why are these listings considered top rated?',
+                        'h3_text' => 'Listings featured on this page represent the highest-rated solutions in their respective categories based on aggregated scores from authentic user reviews, overall satisfaction, and consistency over time.'
+                    ],
+                    [
+                        'h3_title' => 'How Localio ratings work',
+                        'h3_text' => 'Rankings on this page are based on ratings submitted by members of the Localio community. The order may also take factors such as the number of ratings into account, so a listing with a very small number of ratings does not automatically rank above one supported by substantially more community feedback.'
+                    ]
+                ]
+            ],
+            [
+                'h2_title' => 'What you can discover on Localio',
+                'h2_text' => "Localio brings community ratings and user reviews together across a broad range of categories. Explore everything from software and online services to local businesses, financial services, travel and much more.\n\nStart with the categories that interest you, compare what other community members have experienced and explore the listings that stand out.",
+                'sub_sections' => []
+            ]
+        ];
+    }
+
+    public function getFaqsProperty()
+    {
+        $lang_id = $this->lang_id ?: getCurrentLanguageID();
+        $content = \App\Models\TopProductContent::where('meta_key', 'top_rated_faqs')
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if ($content && !empty($content->meta_value)) {
+            $decoded = json_decode($content->meta_value, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        return [
+            [
+                'question' => 'How are top-rated products and businesses chosen?',
+                'answer' => 'Top-rated listings are determined by verified community ratings, authentic review scores, user satisfaction metrics, and overall reliability across each industry category.'
+            ],
+            [
+                'question' => 'How often are the top-rated rankings updated?',
+                'answer' => 'Our rankings are updated continuously as new community reviews, verified feedback, and rating submissions are received.'
+            ],
+            [
+                'question' => 'Can businesses pay to be featured as top-rated?',
+                'answer' => 'No. Placement in top-rated rankings cannot be bought. Rankings strictly reflect actual community ratings and verified review performance.'
+            ],
+            [
+                'question' => 'How can I submit a review for a business?',
+                'answer' => 'Simply search for the business or visit its page on Localio, click "Write a review", rate the criteria, and share your experience.'
+            ]
+        ];
+    }
+
     public function render()
     {
         return view('livewire.top-rated-product', [
             'products' => $this->products,
             'filters' => $this->filters,
             'lang_id' => getCurrentLanguageID(),
+            'exploreCategories' => $this->exploreCategories,
+            'textSections' => $this->textSections,
+            'faqs' => $this->faqs,
         ]);
     }
 }

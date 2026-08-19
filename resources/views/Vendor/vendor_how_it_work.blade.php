@@ -92,7 +92,7 @@
                                 @endif
 
                                 <div class="inn_sl_hed mst_hdn {{ $isBestValue ? 'mt-4 image-above' : '' }}">
-                                    <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
+                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                         <div class="sli_img">
                                             <img class="slider_img"
                                                 src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}"
@@ -102,7 +102,7 @@
                                     <div class="sl_h">
                                         <div class="inn_h">
                                             <div class="sl_main">
-                                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
+                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                                     <h6 class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
                                                     <div wire:key="wishlist-container-{{ $business->id }}">
                                                         @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))

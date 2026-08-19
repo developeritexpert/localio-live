@@ -3,8 +3,19 @@
 
 @section('body_class', 'product-page-body')
 
-@section('meta_title', isset($business->translations->first()->name) && isset($business->translations->first()->name) ?
-    $business->translations->first()->name : 'Products')
+@php
+    $lang_id = getCurrentLanguageID();
+    $bTranslation = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
+    $bName = $bTranslation->name ?? 'Product';
+    $pageMetaTitle = !empty($bTranslation->meta_title) ? $bTranslation->meta_title : (!empty($business->meta_title) ? $business->meta_title : $bName);
+    $pageMetaDescription = !empty($bTranslation->meta_description) ? $bTranslation->meta_description : (!empty($business->meta_description) ? $business->meta_description : ($bTranslation->short_description ?? ''));
+@endphp
+
+@section('meta_title', format_meta_text($pageMetaTitle, $bName))
+@if(!empty($pageMetaDescription))
+@section('meta_description', format_meta_text($pageMetaDescription))
+@endif
+
 @section('content')
     @php
         $images = is_array($business->business_images)
@@ -281,11 +292,7 @@
                 border-radius: 0 3px 3px 0;
             }
 
-            .rating_bar_span {
-                font-size: 18px;
-                font-weight: 700;
-                color: #002347;
-            }
+          
             a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
                 background-color: #e4e7ea !important;
             }
@@ -869,6 +876,25 @@
             a.view-more-link:hover {
                 text-decoration: underline !important;
             }
+
+
+
+            .community-rating {
+                font-size: 18px;
+                font-weight: 600;
+                color:#002347;
+            }
+
+            .community-base-rating {
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .rating_bar_span {
+                font-size: 16px;
+                font-weight: 500;
+                color: #002347;
+            }
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -936,7 +962,7 @@
                 <div class="container-fluid">
                     <div class="asn_dv_contnt ">
                         <div class="top-product-logo">
-                            <img src="{{ asset($business->icon_id) }}" alt="{{ $business->translations->first()->name }}">
+                            <x-business-logo :business="$business" />
                         </div>
                         <div class="div_prent_ever">
 
@@ -1017,7 +1043,7 @@
                     </div>
                 </div>
 
-                 <div class="Tab-outerlnk container-fluid">
+                 <div class="Tab-outerlnk container-fluid d-none">
                     <div class="inner_table2">
 
                         @php
@@ -1334,7 +1360,7 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                    <div class="community-rating mb-2" style="">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">Features</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1342,7 +1368,7 @@
                                                         </div>
                                                         <span class="rating_bar_span">{{ number_format($featRatingVal, 1) }}</span>
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['end_text']))
@@ -1357,7 +1383,7 @@
                                                                 @php
                                                                     $featName = optional($feat->translations->first())->name ?? $feat->name;
                                                                     $featSlug = Str::slug($featName);
-                                                                    $featUrl = url("/{$langCode}/categories/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
+                                                                    $featUrl = url("/{$langCode}/{$categorySlug}/{$subcategorySlug}/{$featSlug}");
                                                                 @endphp
                                                                 <a href="{{ $featUrl }}" class="badge rounded-pill bg-light text-dark border px-3 py-2 text-decoration-none" style="font-weight: 500; font-size: 13px; transition: all 0.2s;">
                                                                     {{ $featName }}
@@ -1383,7 +1409,7 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                    <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">ease of use</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1392,7 +1418,7 @@
                                                         <span class="rating_bar_span">{{ number_format($easeRatingVal, 1) }}</span>
 
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['end_text']))
@@ -1419,7 +1445,7 @@
                                                         @endif
 
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
-                                                            <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                            <div class="community-rating mb-2">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                                 <span class="rating_bar_span">service management</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1428,7 +1454,7 @@
                                                                 <span class="rating_bar_span">{{ number_format($crRatingVal, 1) }}</span>
 
                                                             </div>
-                                                            <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                            <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['end_text']))
@@ -1453,7 +1479,7 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                    <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">value for money</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1462,7 +1488,7 @@
                                                         <span class="rating_bar_span">{{ number_format($vfmRatingVal, 1) }}</span>
 
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['end_text']))
@@ -1567,7 +1593,7 @@
                                                                                     @endif
                                                                                     <div class="sftware-alternative-pck" data-aos="fade-up"
                                                                                         data-aos-duration="1000"
-                                                                                        onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}'; }"
+                                                                                        onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}'; }"
                                                                                         style="cursor: pointer; padding: 25px 20px;">
                                                                                         @php
                                                                                             $altStartingPrice = 'N/A';
@@ -1612,8 +1638,7 @@
 
                                                                                         <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
                                                                                             <div class="top-product-logo">
-                                                                                                <img src="{{ asset($altbusiness->icon_id ?? 'front/img/top-rate-img2.svg') }}"
-                                                                                                    alt="">
+                                                                                                <x-business-logo :business="$altbusiness" />
                                                                                             </div>
                                                                                             <div class="asn-rating">
                                                                                                 @if ($altbusiness->translations->isNotEmpty())
@@ -1696,7 +1721,7 @@
                                                                                         </div>
 
                                                                                         <div class="sftwre-alt-btn pt-2">
-                                                                                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $altbusiness->translations->first()->slug]) }}"
+                                                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
                                                                                                 class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                                                 style="  border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                                                                 View details
@@ -1827,13 +1852,13 @@
                                                                                         'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                                                     ]);
                                                                                 @endphp
-                                                                                <div class="col-lg-4 col-md-6 col-12">
+                                                                                <div class="col-lg-6 col-md-6 col-12">
                                                                                     <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                                                                                         <div class="d-flex align-items-center justify-content-between mb-3">
 
                                                                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                                                                 <div class="top-product-medium-logo">
-                                                                                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" class=" flex-shrink-0" style="">
+                                                                                                    <x-business-logo :business="$business" :name="$bName" />
                                                                                                 </div>
 
                                                                                                 <div style="min-width: 0;">
@@ -1849,7 +1874,7 @@
 
                                                                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                                                                 <div class="top-product-medium-logo">
-                                                                                                <img src="{{ asset($peer->icon_id) }}" alt="{{ $peerName }}" class="rounded-circle flex-shrink-0" style="">
+                                                                                                <x-business-logo :business="$peer" :name="$peerName" />
                                                                                             </div>
                                                                                                 <div style="min-width: 0;">
                                                                                                     <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;">{{ $peerName }}</div>
@@ -2023,30 +2048,30 @@
                                                                             <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
                                                                                     <div class="top-product-logo" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
-                                                                                        <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                                                                                        <x-business-logo :business="$business" />
                                                                                     </div>
                                                                                     <div>
-                                                                                        <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Share your experience with the community</h4>
-                                                                                        <p style="margin: 0; font-size: 13.5px; color: #4a5568;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
+                                                                                        <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
+                                                                                        <p style="margin: 0; font-size: 13.5px; color: #4a5568;">Share your experience with the community</p>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div style="display: flex; gap: 12px; align-items: center;">
                                                                                     @auth
-                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 14px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-up"></i>
+                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                            <i class="fas fa-thumbs-up"></i> 
+                                                                                            
                                                                                         </button>
-                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 14px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-down"></i>
+                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                            <i class="fas fa-thumbs-down"></i> 
                                                                                         </button>
                                                                                     @else
-                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 14px;    border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-up"></i>
+                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                            <i class="fas fa-thumbs-up"></i> 
                                                                                         </button>
-                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 14px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-down"></i>
+                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                            <i class="fas fa-thumbs-down"></i> 
                                                                                         </button>
                                                                                     @endauth
-
                                                                                 </div>
                                                                             </div>
 
@@ -2682,10 +2707,10 @@
                                         <div class="main_feature_lg sticky-sidebar-nav-wrapper">
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
-                                                    <div class="sticky-nav-logo mb-2">
-                                                        <img src="{{ asset($business->icon_id) }}"
-                                                            alt="{{ $business->translations->first()->name ?? '' }}"
-                                                            style="max-height: 44px; max-width: 130px; object-fit: contain;">
+                                                    <div class="sticky-nav-logo mb-2 d-flex justify-content-center">
+                                                        <div style="width: 44px; height: 44px;">
+                                                            <x-business-logo :business="$business" />
+                                                        </div>
                                                     </div>
                                                     <h3 class="sticky-nav-title mb-1"
                                                         style="font-size: 17px; font-weight: 700; color: #002347;">
@@ -3418,9 +3443,7 @@
                 <div class="gallery-header">
                     <div class="gallery-header-left">
                         <div style="width: 56px; height: 56px; border-radius: 8px; overflow: hidden; background: #f9f9f9; display: flex; align-items: center; justify-content: center; border: 1px solid #eaeaea; flex-shrink: 0;">
-                            <img src="{{ asset($business->icon_id ?? 'front/img/big-asana.png') }}"
-                                 alt="{{ $business->translations->first()->name }}"
-                                 style="width: 100%; height: 100%; object-fit: contain;">
+                            <x-business-logo :business="$business" />
                         </div>
                         <div>
                             <h3 style="margin: 0 0 4px 0; font-size: 22px; font-weight: 700; color: #002347;">

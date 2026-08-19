@@ -105,13 +105,7 @@
                                 <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background:#fdfdfd !important;">
                                     <div class="d-flex align-items-center gap-2 mb-3">
                                         <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                                            @if($business->icon_id)
-                                                <img src="{{ asset($business->icon_id) }}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
-                                            @else
-                                                <div class="avatar-placeholder" style="width: 100%; height: 100%; border-radius: 10px; font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #002347 0%, #00438a 100%); color: #fff; display: flex; align-items: center; justify-content: center;">
-                                                    {{ strtoupper(substr($bizName, 0, 1)) }}
-                                                </div>
-                                            @endif
+                                            <x-business-logo :business="$business" :name="$bizName" />
                                         </div>
                                         <div class="top-product-info min-w-0">
                                             <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
@@ -138,7 +132,7 @@
                                         </div>
                                     </div>
                                     <div class="d-flex gap-2 w-100 mt-auto">
-                                        <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? $business->slug]) }}"
+                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
                                         class="btn-view-details btn py-1 px-2 fw-medium {{ !empty($business->is_affiliate) ? 'w-50' : 'w-100' }}">
                                             View details
                                         </a>

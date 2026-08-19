@@ -14,8 +14,8 @@
                             <a href="javascript:void(0);"
                                 onclick="changeProducts('{{ $translation->slug }}')"
                                 style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-                                <span class="ab_img" style="flex-shrink: 0; align-items: center">
-                                    <img src="{{ asset($business->icon_id) }}" class="header_img" alt="{{ $translation->name }}">
+                                <span class="ab_img top-product-logo" style="flex-shrink: 0; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                                    <x-business-logo :business="$business" :name="$translation->name" />
                                 </span>
                                 <span class="hdr_insdiecont">
                                     {{ $translation->name }}

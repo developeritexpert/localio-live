@@ -8,19 +8,35 @@ use Illuminate\Database\Eloquent\Model;
 class BusinessFaq extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'business_id',
+        'business_faq_category_id',
         'position',
+        'helpful_count',
+        'not_helpful_count',
         'status'
     ];
 
     protected $casts = [
-        'status' => 'boolean'
+        'status' => 'boolean',
+        'helpful_count' => 'integer',
+        'not_helpful_count' => 'integer',
     ];
 
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(BusinessFaqCategory::class, 'business_faq_category_id');
+    }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(BusinessFaqFeedback::class, 'business_faq_id');
     }
 
     public function translations()
@@ -51,5 +67,10 @@ class BusinessFaq extends Model
     {
         return $query->orderBy('position', 'asc');
     }
-    
+
+    // Scope for ordered by helpful score
+    public function scopeOrderedByHelpful($query)
+    {
+        return $query->orderByRaw('(CAST(helpful_count AS SIGNED) - CAST(not_helpful_count AS SIGNED)) DESC')->orderBy('position', 'asc');
+    }
 }

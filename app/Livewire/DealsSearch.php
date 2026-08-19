@@ -89,7 +89,7 @@ class DealsSearch extends Component
             $business = $product->businesses->first();
             $business_slug = $business->translations->first()->slug ?? 'business';
 
-            return redirect()->route('product.details', ['locale' => app()->getLocale(), 'slug' => $business_slug]);
+            return redirect()->route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business_slug]);
         }
     }
 

@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Http;
 
 use App\Models\BusinessFaq;
 use App\Models\BusinessFaqTranslation;
+use App\Models\BusinessFaqCategory;
 
 
 
@@ -112,6 +113,9 @@ class BusinessForm extends Component
     public $showFAQSection = false;
     public $selectedBusinessForFAQ = null;
     public $businessFAQs = [];
+    public $faqCategoryId = null;
+    public $newCategoryName = '';
+    public $businessFaqCategories = [];
     public $faqQuestion = '';
     public $faqAnswer = '';
     public $editingFAQId = null;
@@ -869,7 +873,7 @@ class BusinessForm extends Component
 
     protected function loadCategories()
     {
-        $this->categories = Category::onlySubcategories()->with(['categoryTranslations' => function ($query) {
+        $this->categories = Category::with(['categoryTranslations' => function ($query) {
             $query->where('lang_id', $this->lang_id);
         }])->whereHas('categoryTranslations', function ($query) {
             $query->where('lang_id', $this->lang_id);
@@ -1375,15 +1379,11 @@ class BusinessForm extends Component
             'languages_supported' => 'required',
             'support_options' => 'nullable|string',
             'website_url' => 'nullable|url',
-            'selectedCountries' => 'required|array|min:1',
+            'selectedCountries' => (int)$this->active_all_countries === 1 ? 'nullable|array' : 'required|array|min:1',
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
-            'selected_category' => ['required', 'exists:categories,id', function($attribute, $value, $fail) {
-                if (\App\Models\Category::where('id', $value)->whereNull('parent_id')->exists()) {
-                    $fail('The selected category must be a sub-category.');
-                }
-            }],
+'selected_category' => 'required|exists:categories,id',
             'business_description' => 'nullable|string',
             'short_description' => 'nullable|string',
             'after_image_description' => 'nullable|string',
@@ -1552,7 +1552,7 @@ class BusinessForm extends Component
     protected function syncBusinessRelationships($business)
     {
         // Sync country relationships
-        $business->countries()->sync($this->selectedCountries);
+        $business->countries()->sync((int)$this->active_all_countries === 1 ? [] : ($this->selectedCountries ?? []));
 
         // Sync features
         $business->features()->sync($this->selectedFeatures);
@@ -1774,8 +1774,13 @@ public function loadBusinessFAQs()
 {
     if (!$this->selectedBusinessForFAQ) return;
     
+    $this->businessFaqCategories = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)
+        ->ordered()
+        ->get()
+        ->toArray();
+
     $this->businessFAQs = BusinessFaq::where('business_id', $this->selectedBusinessForFAQ)
-        ->with('translations')
+        ->with(['translations', 'category'])
         ->ordered()
         ->get()
         ->map(function($faq, $index) {
@@ -1783,6 +1788,8 @@ public function loadBusinessFAQs()
                 ?? $faq->translations->first();
             return [
                 'id' => $faq->id,
+                'business_faq_category_id' => $faq->business_faq_category_id,
+                'category_name' => $faq->category->name ?? 'General',
                 'question' => $translation->question ?? '',
                 'answer' => $translation->answer ?? '',
                 'position' => $faq->position,
@@ -1790,6 +1797,39 @@ public function loadBusinessFAQs()
             ];
         })
         ->toArray();
+}
+
+public function addFaqCategory()
+{
+    $this->validate([
+        'newCategoryName' => 'required|string|max:100',
+    ]);
+
+    if (!$this->selectedBusinessForFAQ) return;
+
+    $nextPos = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->max('position') + 1;
+    BusinessFaqCategory::create([
+        'business_id' => $this->selectedBusinessForFAQ,
+        'name' => trim($this->newCategoryName),
+        'position' => $nextPos,
+        'status' => 1
+    ]);
+
+    $this->newCategoryName = '';
+    $this->loadBusinessFAQs();
+    session()->flash('message', 'FAQ Category added successfully!');
+}
+
+public function deleteFaqCategory($catId)
+{
+    if (!$this->selectedBusinessForFAQ) return;
+    $cat = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)->find($catId);
+    if ($cat) {
+        BusinessFaq::where('business_faq_category_id', $catId)->update(['business_faq_category_id' => null]);
+        $cat->delete();
+        $this->loadBusinessFAQs();
+        session()->flash('message', 'FAQ Category deleted successfully!');
+    }
 }
 
 public function addFAQ()
@@ -1809,6 +1849,7 @@ public function addFAQ()
         // Create FAQ
         $faq = BusinessFaq::create([
             'business_id' => $this->selectedBusinessForFAQ,
+            'business_faq_category_id' => !empty($this->faqCategoryId) ? $this->faqCategoryId : null,
             'position' => $nextPosition,
             'status' => 1
         ]);
@@ -1838,6 +1879,7 @@ public function editFAQ($faqId)
         ?? $faq->translations->first();
     
     $this->editingFAQId = $faqId;
+    $this->faqCategoryId = $faq->business_faq_category_id;
     $this->faqQuestion = $translation->question ?? '';
     $this->faqAnswer = $translation->answer ?? '';
 }
@@ -1850,6 +1892,11 @@ public function updateFAQ()
     ]);
     
     if (!$this->editingFAQId) return;
+
+    $faqObj = BusinessFaq::find($this->editingFAQId);
+    if ($faqObj) {
+        $faqObj->update(['business_faq_category_id' => !empty($this->faqCategoryId) ? $this->faqCategoryId : null]);
+    }
     
     DB::transaction(function () {
         // Update or create translation
@@ -1974,13 +2021,25 @@ public function uploadFaqJson(): void
 
                 $question = trim($item['question'] ?? $item['faqQuestion'] ?? $item['q'] ?? '');
                 $answer = trim($item['answer'] ?? $item['faqAnswer'] ?? $item['a'] ?? '');
+                $categoryName = trim($item['category'] ?? $item['category_name'] ?? $item['cat'] ?? '');
 
                 if (empty($question) || empty($answer)) continue;
+
+                $categoryId = null;
+                if (!empty($categoryName)) {
+                    $catObj = BusinessFaqCategory::where('business_id', $this->selectedBusinessForFAQ)
+                        ->whereRaw('LOWER(name) = ?', [strtolower($categoryName)])
+                        ->first();
+                    if ($catObj) {
+                        $categoryId = $catObj->id;
+                    }
+                }
 
                 $currentPosition++;
 
                 $faq = BusinessFaq::create([
                     'business_id' => $this->selectedBusinessForFAQ,
+                    'business_faq_category_id' => $categoryId,
                     'position' => $currentPosition,
                     'status' => 1
                 ]);
@@ -2011,6 +2070,7 @@ public function uploadFaqJson(): void
 {
     $this->faqQuestion = '';
     $this->faqAnswer = '';
+    $this->faqCategoryId = null;
     $this->editingFAQId = null;
     $this->resetValidation(['faqQuestion', 'faqAnswer']);
 }
