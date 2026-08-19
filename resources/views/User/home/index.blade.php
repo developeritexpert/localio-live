@@ -175,7 +175,7 @@
                                                                 </div>
                                                             @endif
                                                             <div class="inn_sl_hed mst_hdn">
-                                                                <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
+                                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                                                     <div class="top-product-logo">
                                                                         <img class="" src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}" alt="">
                                                                     </div>
@@ -183,7 +183,7 @@
                                                                 <div class="sl_h">
                                                                     <div class="inn_h">
                                                                         <div class="sl_main">
-                                                                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $businessTranslation->slug]) }}">
+                                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
                                                                                 <h6 class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
                                                                             </a>
                                                                             <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
@@ -317,7 +317,7 @@
                         @foreach ($exclusive_products as $product)
                             <div class="xclusve-pack">
                                 <a
-                                href="{{ route('product.details', ['locale' => getCurrentLocale(), 'slug' => $product->businesses->first()->translations()->first()->slug ?? '#']) }}">
+                                href="{{ route('user.product_detail', ['locale' => getCurrentLocale(), 'id' => $product->businesses->first()->translations()->first()->slug ?? '#']) }}">
                                 <div class="save">
                                     <div class="save-txt">
                                         <p class="size22">Save {{ $product->discount_percentage }}%</p>
@@ -403,7 +403,7 @@
                                         <div class="inner_box_silder ">
                                             <div class="inn_sl_hed">
                                                 <div class="sli_img">
-                                                <a   href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations()->first()->slug]) }}">
+                                                <a   href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
                                                     <img src="{{ asset($business->icon_id) }}" class="header_img"
                                                         alt="{{ $business->translations->first()->name ?? 'Business' }}">
                                                     </a>
@@ -411,7 +411,7 @@
 
                                                 <div class="sl_h">
                                                     <div class="inn_h">
-                                                        <a   href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations()->first()->slug]) }}">
+                                                        <a   href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
                                                         <div class="sl_main">
                                                             <h6 class="head">{{ $businessName }}</h6>
                                                             <div class="wishlist">

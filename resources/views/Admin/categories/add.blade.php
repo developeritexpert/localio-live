@@ -2,7 +2,10 @@
 @section('content')
     <style>
         .ck-editor__editable_inline {
-            min-height: 160px;
+            min-height: 140px;
+        }
+        .sub-section-item .ck-editor__editable_inline {
+            min-height: 100px;
         }
     </style>
     <div class="nk-block nk-block-lg">
@@ -281,6 +284,106 @@
                             </div>
                         </div>
 
+                        <!-- Dynamic Rich Text Sections (H2 & H3 Sub-headlines) -->
+                        <div class="col-md-12 mt-4" id="text_sections_wrapper">
+                            <div class="card card-bordered">
+                                <div class="card-inner py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h5 class="title mb-0 text-primary"><i class="fa fa-file-text-o me-1"></i> Dynamic Content Sections (H2 & H3 Sub-headlines)</h5>
+                                            <p class="text-muted small mb-0">Add custom content sections with an H2 headline, rich text editor, and optional nested H3 sub-headlines.</p>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary" id="addCategoryTextSectionBtn">
+                                            <i class="fa fa-plus me-1"></i> + Add Section (H2)
+                                        </button>
+                                    </div>
+                                    <hr class="my-3">
+                                    <div id="categoryTextSectionsContainer">
+                                        @if(isset($text_sections) && is_array($text_sections))
+                                            @foreach($text_sections as $sIndex => $sec)
+                                            <div class="section-card border rounded p-3 mb-3 bg-white" data-section-index="{{ $sIndex }}">
+                                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                    <h6 class="fw-bold mb-0 text-dark">Section {{ $sIndex + 1 }}</h6>
+                                                    <button type="button" class="btn btn-sm btn-danger remove-section-btn">Delete Section</button>
+                                                </div>
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <label class="form-label fw-bold">Headline (H2)</label>
+                                                        <input type="text" class="form-control" name="text_sections[{{ $sIndex }}][h2_title]" value="{{ $sec['h2_title'] ?? '' }}" placeholder="e.g. About web hosting">
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
+                                                        <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{{ $sec['h2_text'] ?? '' }}</textarea>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
+                                                            <button type="button" class="btn btn-xs btn-outline-primary add-sub-section-btn" data-section-index="{{ $sIndex }}">+ Add Sub-headline (H3)</button>
+                                                        </div>
+                                                        <div class="sub-sections-container ps-3 border-start">
+                                                            @if(isset($sec['sub_sections']) && is_array($sec['sub_sections']))
+                                                                @foreach($sec['sub_sections'] as $subIndex => $sub)
+                                                                <div class="sub-section-item border rounded p-2 mb-2 bg-light" data-sub-index="{{ $subIndex }}">
+                                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                        <span class="small fw-bold text-muted">Sub-headline (H3)</span>
+                                                                        <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
+                                                                    </div>
+                                                                    <input type="text" class="form-control form-control-sm mb-2" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. What is web hosting?">
+                                                                    <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{{ $sub['h3_text'] ?? '' }}</textarea>
+                                                                </div>
+                                                                @endforeach
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Category Specific FAQs Repeater -->
+                        <div class="col-md-12 mt-4" id="category_faqs_wrapper">
+                            <div class="card card-bordered">
+                                <div class="card-inner py-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div>
+                                            <h5 class="title mb-0 text-primary"><i class="fa fa-question-circle me-1"></i> Category Specific FAQs</h5>
+                                            <p class="text-muted small mb-0">Add frequently asked questions specific to this category or subcategory.</p>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary" id="addCategoryFaqBtn">
+                                            <i class="fa fa-plus me-1"></i> + Add FAQ
+                                        </button>
+                                    </div>
+                                    <hr class="my-3">
+                                    <div id="categoryFaqsContainer">
+                                        @if(isset($category_faqs) && is_array($category_faqs))
+                                            @foreach($category_faqs as $fIndex => $faq)
+                                            <div class="faq-item-card border rounded p-3 mb-3 bg-white" data-faq-index="{{ $fIndex }}">
+                                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                    <h6 class="fw-bold mb-0 text-dark">FAQ #{{ $fIndex + 1 }}</h6>
+                                                    <button type="button" class="btn btn-sm btn-danger remove-faq-btn">Delete</button>
+                                                </div>
+                                                <div class="row g-2">
+                                                    <div class="col-12">
+                                                        <label class="form-label fw-bold">Question</label>
+                                                        <input type="text" class="form-control" name="category_faqs[{{ $fIndex }}][question]" value="{{ $faq['question'] ?? '' }}" placeholder="Enter FAQ question...">
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label class="form-label fw-bold">Answer (Rich Editor)</label>
+                                                        <textarea class="form-control rich-editor" rows="3" name="category_faqs[{{ $fIndex }}][answer]" placeholder="Enter FAQ answer...">{{ $faq['answer'] ?? '' }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Submit Button -->
                         <div class="col-md-12 mt-4">
                             <div class="form-group">
@@ -414,5 +517,147 @@
                 });
             }
         });
-    </script>
+    
+        // CKEditor helper functions
+        function initCKEditorForElement(element) {
+            if (typeof ClassicEditor === 'undefined' || element.classList.contains('ckeditor-initialized')) return;
+            ClassicEditor
+                .create(element, {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+                })
+                .then(editor => {
+                    element.classList.add('ckeditor-initialized');
+                    element.ckeditorInstance = editor;
+                    editor.model.document.on('change:data', () => {
+                        element.value = editor.getData();
+                    });
+                })
+                .catch(error => {
+                    console.error("CKEditor Init Error:", error);
+                });
+        }
+
+        function initAllCKEditors() {
+            document.querySelectorAll('textarea.rich-editor').forEach(el => {
+                if (!el.classList.contains('ckeditor-initialized')) {
+                    initCKEditorForElement(el);
+                }
+            });
+        }
+
+        // Initialize on load
+        initAllCKEditors();
+
+        let catSectionCounter = {{ isset($text_sections) && is_array($text_sections) ? count($text_sections) : 0 }};
+        let catFaqCounter = {{ isset($category_faqs) && is_array($category_faqs) ? count($category_faqs) : 0 }};
+
+        $('#addCategoryTextSectionBtn').on('click', function() {
+            let sIdx = catSectionCounter++;
+            let html = `
+            <div class="section-card border rounded p-3 mb-3 bg-white" data-section-index="${sIdx}">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">Section ${sIdx + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-section-btn">Delete Section</button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Headline (H2)</label>
+                        <input type="text" class="form-control" name="text_sections[${sIdx}][h2_title]" placeholder="e.g. About web hosting">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
+                        <textarea class="form-control rich-editor" rows="4" name="text_sections[${sIdx}][h2_text]" placeholder="Enter main content for this H2 section..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-sub-section-btn" data-section-index="${sIdx}">+ Add Sub-headline (H3)</button>
+                        </div>
+                        <div class="sub-sections-container ps-3 border-start"></div>
+                    </div>
+                </div>
+            </div>`;
+            $('#categoryTextSectionsContainer').append(html);
+            initAllCKEditors();
+        });
+
+        $(document).on('click', '.remove-section-btn', function() {
+            let card = $(this).closest('.section-card');
+            card.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
+                }
+            });
+            card.remove();
+        });
+
+        $(document).on('click', '.add-sub-section-btn', function() {
+            let sIdx = $(this).data('section-index');
+            let container = $(this).closest('.col-12').find('.sub-sections-container');
+            let subIdx = container.children('.sub-section-item').length;
+            let subHtml = `
+            <div class="sub-section-item border rounded p-2 mb-2 bg-light" data-sub-index="${subIdx}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-muted">Sub-headline (H3)</span>
+                    <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
+                </div>
+                <input type="text" class="form-control form-control-sm mb-2" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_title]" placeholder="e.g. What is web hosting?">
+                <textarea class="form-control rich-editor" rows="3" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_text]" placeholder="Enter sub-headline content..."></textarea>
+            </div>`;
+            container.append(subHtml);
+            initAllCKEditors();
+        });
+
+        $(document).on('click', '.remove-sub-btn', function() {
+            let item = $(this).closest('.sub-section-item');
+            item.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
+                }
+            });
+            item.remove();
+        });
+
+        $('#addCategoryFaqBtn').on('click', function() {
+            let fIdx = catFaqCounter++;
+            let html = `
+            <div class="faq-item-card border rounded p-3 mb-3 bg-white" data-faq-index="${fIdx}">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">FAQ #${fIdx + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-faq-btn">Delete</button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Question</label>
+                        <input type="text" class="form-control" name="category_faqs[${fIdx}][question]" placeholder="Enter FAQ question...">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Answer (Rich Editor)</label>
+                        <textarea class="form-control rich-editor" rows="3" name="category_faqs[${fIdx}][answer]" placeholder="Enter FAQ answer..."></textarea>
+                    </div>
+                </div>
+            </div>`;
+            $('#categoryFaqsContainer').append(html);
+            initAllCKEditors();
+        });
+
+        $(document).on('click', '.remove-faq-btn', function() {
+            let item = $(this).closest('.faq-item-card');
+            item.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
+                }
+            });
+            item.remove();
+        });
+
+        // Ensure CKEditor data syncs on form submit
+        $('form.form-validate').on('submit', function() {
+            document.querySelectorAll('textarea.rich-editor').forEach(el => {
+                if (el.ckeditorInstance) {
+                    el.value = el.ckeditorInstance.getData();
+                }
+            });
+        });
+</script>
 @endsection

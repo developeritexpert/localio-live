@@ -201,11 +201,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                     <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                                         <div class="d-flex align-items-center gap-2">
-                                            @if(!empty($business->icon_id))
-                                                <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                                </div>
-                                            @endif
+                                            <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                <x-business-logo :business="$business" :name="$bName" />
+                                            </div>
                                             <div>
                                                 <h3 style="font-size: 16px !important; font-weight: 500 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
                                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
@@ -279,23 +277,31 @@ section.top-automotive-sec.top_rate_pg.light {
                                         <h3 class="fw-semibold text-dark mb-2">
                                             {{ static_text('user_rating') }}</h3>
 
-                                        <div class="form-check">
+                                        <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
                                                 wire:model.live="selectedRatings" value="4"
                                                 id="rating-4">
-                                            <label class="form-check-label" for="rating-4">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= 4)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning"></i>
-                                                    @endif
-                                                @endfor
-                                                <span class="filter1">&
-                                                    up</span>
-                                                <span class="filter2">
-                                                    ({{ $ratingCounts[4] ?? 0 }})
-                                                </span>
+                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                wire:model.live="selectedRatings" value="3"
+                                                id="rating-3">
+                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
                                             </label>
                                         </div>
                                     </div>
@@ -609,8 +615,8 @@ section.top-automotive-sec.top_rate_pg.light {
                                                             <div class="auto-choice-hd" style="border: none; padding: 0; margin-bottom: 0;">
                                                                 <div class="inn_sl_hed" style="width: 100%;">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
-                                                                        <div class="sli_img choice_img">
-                                                                            <img class="slider_img" src="{{ asset($item->icon_id) }}" alt="No Images For This Product">
+                                                                        <div class="sli_img choice_img top-product-logo">
+                                                                            <x-business-logo :business="$item" />
                                                                         </div>
                                                                     </a>
                                                                     <div class="sl_h">

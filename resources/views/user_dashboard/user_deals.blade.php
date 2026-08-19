@@ -72,8 +72,10 @@
         const currency = deal.currency || '$';
         const discountPercent = Math.round(((original - discounted) / original) * 100);
         const logoPath = business.logo || business.icon_id;
-        const businessLogo = logoPath ? assetBaseUrl + logoPath : defaultImage;
         const businessName = business.name || 'Business';
+        const businessInitial = businessName.trim().charAt(0).toUpperCase() || 'B';
+        const isDefault = !logoPath || logoPath.includes('default') || logoPath.includes('logo.svg');
+        const businessLogo = !isDefault ? assetBaseUrl + logoPath : null;
         const businessDescription = business.description || `${business.name} is offering this deal.`;
         const businessLink = business.link || '#';
         const rating = business.reviews?.average ?? 0;
@@ -100,7 +102,7 @@
             <div class="child_re_1_review">
               <div class="re_child_1">
                 <div class="img_rechild_1">
-                  <img src="${businessLogo}" alt="${businessName} Logo" loading="lazy">
+                  ${businessLogo ? `<img src="${businessLogo}" alt="${businessName} Logo" loading="lazy">` : `<div class="business-initial-logo size-md">${businessInitial}</div>`}
                 </div>
                 <div class="">
                   <h3>${businessName}</h3>
@@ -132,9 +134,11 @@
 
         // Image fallback
         const img = wrapper.querySelector('img');
-        img.addEventListener('error', () => {
-          img.src = defaultImage;
-        }, { once: true });
+        if (img) {
+          img.addEventListener('error', () => {
+            img.outerHTML = `<div class="business-initial-logo size-md">${businessInitial}</div>`;
+          }, { once: true });
+        }
 
       // Delete handler
       const deleteBtn = wrapper.querySelector('.delete-deal');

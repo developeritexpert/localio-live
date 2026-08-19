@@ -1,602 +1,339 @@
 @extends('admin_layout.master')
 @section('content')
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 150px;
+        }
+        .sub-section-item .ck-editor__editable_inline {
+            min-height: 100px;
+        }
+    </style>
+
     <div class="nk-block nk-block-lg">
-        <div class="nk-block-head d-flex justify-content-between">
+        <div class="nk-block-head d-flex justify-content-between align-items-center mb-4">
             <div class="nk-block-head-content">
-                <h4 class="title nk-block-title">Add Top Product Content</h4>
+                <h4 class="title nk-block-title">Top Rated Page Content</h4>
+                <p class="text-muted">Manage header banner, rich text sections (H2 & H3), and FAQs on the Top-Rated page.</p>
             </div>
         </div>
-        <?php
 
-        $lang_code = getCurrentLocale();
-        ?>
-        @if (isset($productFiles) && !$productFiles->isEmpty())
-            <div class="card card-bordered">
-                <div class="card-inner">
-                    <div class="nk-block">
-                        <form action="{{ url('admin-dashboard/product-page-update') ?? '' }}" class="form-validate"
-                            novalidate="novalidate" method="post" enctype="multipart/form-data">
-                            @csrf
-                            <div class="row g-3">
-                                @if ($lang_code == 'en')
-                                    <div class="card border">
-                                        <div class="card-header mt-3">
-                                            Top Product Header Banner Section
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($productFiles as $content)
-                                                @if ($content->meta_key == 'banner_image')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Header Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_banner_image[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_banner_image')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}" class="mt-3"
-                                                                    alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-
-                                                    </div>
-                                                @elseif($content->meta_key == 'banner_bg_image')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Background
-                                                                Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_banner_bg_image[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_banner_bg_image')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}" class="mt-3"
-                                                                    alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($content->meta_key == 'facebook_icon')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Facebook Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_facebook_icon[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_facebook_icon')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}" class="mt-1"
-                                                                    alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($content->meta_key == 'pinterest_icon')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Pinterest Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_pinterest_icon[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_pinterest_icon')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}" class="mt-1"
-                                                                    alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($content->meta_key == 'twitter_icon')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Twitter Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_twitter_icon[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_twitter_icon')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}" class="mt-1"
-                                                                    alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($content->meta_key == 'copylink_icon')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">CopyLink Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_copylink_icon[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_copylink_icon')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}"
-                                                                    class="mt-1" alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($content->meta_key == 'more_icon')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">More Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_more_icon[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_more_icon')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}"
-                                                                    class="mt-1" alt="{{ $content->meta_key }}"
-                                                                    style="width: 100px; height: auto;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    <!-- new image add -->
-                                                @elseif($content->meta_key == 'mail_image')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Mail Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_mail_image[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_mail_image')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}"
-                                                                    class="mt-1" alt="{{ $content->meta_key }}"
-                                                                    style="width: 50px; height: 50px;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($content->meta_key == 'green_tick_img')
-                                                    <div class="col-md-12 mt-3">
-                                                        <div class="form-group">
-                                                            <label class="form-label" for="image">Green Tick
-                                                                Image</label>
-                                                            <div class="dz-message">
-                                                                <input type="file" class="form-control"
-                                                                    name="top_pro_green_tick_img[{{ $content->id }}]"
-                                                                    id="metaValue" value="{{ $content->value ?? '' }}">
-                                                            </div>
-                                                            @error('top_pro_green_tick_img')
-                                                                <div class="error text-danger">{{ $message }}</div>
-                                                            @enderror
-                                                            @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                                                <img src="{{ asset($content->meta_value) }}"
-                                                                    class="mt-1" alt="{{ $content->meta_key }}"
-                                                                    style="width: 50px; height: 50px;">
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-                                @if (isset($topProductContents) && !$topProductContents->isEmpty())
-                                    @foreach ($topProductContents as $key => $val)
-                                        @if ($val->meta_key === 'header_title')
-                                            <div class="card border">
-                                                <div class="card-header mt-3">
-                                                    Top Product Header Title Section
-                                                </div>
-                                                <div class="card-body">
-
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label"
-                                                            for="{{ $key }}">Automotive</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="header_title[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'header_sub_title')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">How to find
-                                                            text</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="header_sub_title[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'header_bottom_text')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Localio
-                                                            Provides Independent Text</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="header_bottom_text[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'learn_more')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Learn
-                                                            More</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="learn_more[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <div class="card border">
-                                                <div class="card-header mt-3">
-                                                    Top Product Left Menu Section
-                                                </div>
-                                                <div class="card-body">
-                                                @elseif($val->meta_key === 'search_placeholder')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Seach Product
-                                                            Placeholder</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="search_placeholder[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'user_rating')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">User
-                                                            Rating</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="user_rating[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'price')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Price</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="price[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'price_option')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Pricing
-                                                            Options</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="price_option[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'features')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label"
-                                                            for="{{ $key }}">Features</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="features[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'show_more')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Show
-                                                            more</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="show_more[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'deployment')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label"
-                                                            for="{{ $key }}">Deployment</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="deployment[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'company_size')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Company
-                                                            Size</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="company_size[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="card border">
-                                                <div class="card-header mt-3">
-                                                    Top Product Features Main Menu Section
-                                                </div>
-                                                <div class="card-body">
-                                                @elseif($val->meta_key === 'drop_down_text')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Top Rated
-                                                            Products</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="drop_down_text[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'visit_website')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Visit
-                                                            Website</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="visit_website[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'read_more')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Read
-                                                            more</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="read_more[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'key_features')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Key
-                                                            Features</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="key_features[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'starting_price')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Starting
-                                                            Price</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="starting_price[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'month')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label"
-                                                            for="{{ $key }}">Month</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="month[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'compare_products')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Compare
-                                                            Products</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="compare_products[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'rating')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label"
-                                                            for="{{ $key }}">Rating</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="rating[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'footer_title')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Top-rated
-                                                            Products of</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="footer_title[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'footer_sub_title')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Fill out the
-                                                            form</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="footer_sub_title[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'email_placeholder')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Email
-                                                            Placeholder</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="email_placeholder[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'subscribe_lable')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Subscribe
-                                                            Lable</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="subscribe_lable[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'you_agree')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">By
-                                                            proceeding, you agree to our</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="you_agree[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'terms_of_use')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">terms Of
-                                                            Use</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="terms_of_use[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'privacy_policy')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">Privacy
-                                                            Policy</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="privacy_policy[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                @elseif($val->meta_key === 'and')
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="form-label" for="{{ $key }}">And</label>
-                                                        <div class="form-control-wrap">
-                                                            <input type="text" class="form-control"
-                                                                id="{{ $key }}"
-                                                                name="and[{{ $val->id }}]"
-                                                                value="{{ $val->meta_value ?? '' }}" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                @endif
-                                <div class="col-md-12 mt-4">
-                                    <div class="form-group">
-                                        <button class="addCategory btn btn-primary btn-localio text-center"><em
-                                                class=""></em><span>Update Content</span></button>
-                                    </div>
-                                </div>
-                        </form>
-                    </div>
-                </div>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+
+        <div class="card card-bordered">
+            <div class="card-inner">
+                <form action="{{ url('admin-dashboard/product-page-update') }}" id="topProductForm" class="form-validate" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="lang_id" value="{{ $lang_id ?? 1 }}">
+
+                    {{-- 1. Header Images & Files (if any) --}}
+                    @if(isset($productFiles) && $productFiles->isNotEmpty())
+                    <div class="card border mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="m-0 fw-bold text-primary">Header Banner Images</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                @foreach ($productFiles as $content)
+                                    @if ($content->meta_key == 'banner_image')
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="image">Header Image</label>
+                                                <input type="file" class="form-control" name="top_pro_banner_image[{{ $content->id }}]">
+                                                @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
+                                                    <img src="{{ asset($content->meta_value) }}" class="mt-2 rounded" style="width: 100px; height: auto;">
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @elseif($content->meta_key == 'banner_bg_image')
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="image">Background Image</label>
+                                                <input type="file" class="form-control" name="top_pro_banner_bg_image[{{ $content->id }}]">
+                                                @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
+                                                    <img src="{{ asset($content->meta_value) }}" class="mt-2 rounded" style="width: 100px; height: auto;">
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- 2. Basic Header Text Contents --}}
+                    @if(isset($topProductContents) && $topProductContents->where('type', '!=', 'json')->isNotEmpty())
+                    <div class="card border mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="m-0 fw-bold text-primary">Header Texts & Labels</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                @foreach($topProductContents as $val)
+                                    @if(in_array($val->meta_key, ['header_title', 'header_sub_title', 'header_bottom_text', 'learn_more']))
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label text-capitalize">{{ str_replace('_', ' ', $val->meta_key) }}</label>
+                                            <input type="text" class="form-control" name="{{ $val->meta_key }}[{{ $val->id }}]" value="{{ $val->meta_value ?? '' }}">
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- 3. Dynamic Rich Text Sections Repeater --}}
+                    <div class="card border mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <h6 class="m-0 fw-bold text-primary">Dynamic Content Sections (H2 Headlines & H3 Sub-headlines)</h6>
+                                <small class="text-muted">Add customizable rich text sections with an H2 headline, rich editor, and optional H3 sub-headlines with rich editor.</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" id="addTextSectionBtn">
+                                <em class="icon ni ni-plus"></em> + Add Section (H2)
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="textSectionsContainer">
+                                @if(isset($textSections) && is_array($textSections))
+                                    @foreach($textSections as $sIndex => $sec)
+                                    <div class="section-card border rounded p-3 mb-3 bg-white" data-section-index="{{ $sIndex }}">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                            <h6 class="fw-bold mb-0 text-dark">Section {{ $sIndex + 1 }}</h6>
+                                            <button type="button" class="btn btn-sm btn-danger remove-section-btn">Delete Section</button>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label fw-bold">Headline (H2)</label>
+                                                <input type="text" class="form-control" name="text_sections[{{ $sIndex }}][h2_title]" value="{{ $sec['h2_title'] ?? '' }}" placeholder="e.g. How Localio ratings work">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
+                                                <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{{ $sec['h2_text'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
+                                                    <button type="button" class="btn btn-xs btn-outline-primary add-sub-section-btn" data-section-index="{{ $sIndex }}">+ Add Sub-headline (H3)</button>
+                                                </div>
+                                                <div class="sub-sections-container ps-3 border-start">
+                                                    @if(isset($sec['sub_sections']) && is_array($sec['sub_sections']))
+                                                        @foreach($sec['sub_sections'] as $subIndex => $sub)
+                                                        <div class="sub-section-item border rounded p-2 mb-2 bg-light" data-sub-index="{{ $subIndex }}">
+                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                <span class="small fw-bold text-muted">Sub-headline (H3)</span>
+                                                                <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
+                                                            </div>
+                                                            <input type="text" class="form-control form-control-sm mb-2" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. Why are these listings considered top rated?">
+                                                            <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{{ $sub['h3_text'] ?? '' }}</textarea>
+                                                        </div>
+                                                        @endforeach
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- 4. Dynamic Top-Rated FAQs Repeater --}}
+                    <div class="card border mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <h6 class="m-0 fw-bold text-primary">Top Rated Page FAQs</h6>
+                                <small class="text-muted">Add frequently asked questions specific to the top-rated rankings page.</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" id="addFaqBtn">
+                                <em class="icon ni ni-plus"></em> + Add FAQ
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="faqsContainer">
+                                @if(isset($faqs) && is_array($faqs))
+                                    @foreach($faqs as $fIndex => $faq)
+                                    <div class="faq-item-card border rounded p-3 mb-3 bg-white" data-faq-index="{{ $fIndex }}">
+                                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                            <h6 class="fw-bold mb-0 text-dark">FAQ #{{ $fIndex + 1 }}</h6>
+                                            <button type="button" class="btn btn-sm btn-danger remove-faq-btn">Delete</button>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-12">
+                                                <label class="form-label fw-bold">Question</label>
+                                                <input type="text" class="form-control" name="top_faqs[{{ $fIndex }}][question]" value="{{ $faq['question'] ?? '' }}" placeholder="Enter FAQ question...">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label fw-bold">Answer (Rich Editor)</label>
+                                                <textarea class="form-control rich-editor" rows="3" name="top_faqs[{{ $fIndex }}][answer]" placeholder="Enter FAQ answer...">{{ $faq['answer'] ?? '' }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mt-4 text-end">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <span>Update Content</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
-        $(document).ready(function() {
-            $(".site_text_input").on('keyup', function(e) {
-                e.preventDefault();
-                var buttonElement = $('<button>', {
-                    'text': 'save',
-                    'class': 'btn btn-primary mt-2 save_btn'
+    function initCKEditorForElement(element) {
+        if (typeof ClassicEditor === 'undefined' || element.classList.contains('ckeditor-initialized')) return;
+        ClassicEditor
+            .create(element, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+            })
+            .then(editor => {
+                element.classList.add('ckeditor-initialized');
+                element.ckeditorInstance = editor;
+                editor.model.document.on('change:data', () => {
+                    element.value = editor.getData();
                 });
-                thisObj = $(this);
-                // console.log(thisObj.next('button').length < 1);
-                if (thisObj.next('button').length < 1) {
-                    thisObj.after(buttonElement);
+            })
+            .catch(error => {
+                console.error("CKEditor Init Error:", error);
+            });
+    }
+
+    function initAllCKEditors() {
+        document.querySelectorAll('textarea.rich-editor').forEach(el => {
+            if (!el.classList.contains('ckeditor-initialized')) {
+                initCKEditorForElement(el);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        initAllCKEditors();
+
+        let sectionCounter = {{ isset($textSections) ? count($textSections) : 0 }};
+        let faqCounter = {{ isset($faqs) ? count($faqs) : 0 }};
+
+        $('#addTextSectionBtn').on('click', function() {
+            let sIdx = sectionCounter++;
+            let html = `
+            <div class="section-card border rounded p-3 mb-3 bg-white" data-section-index="${sIdx}">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">Section ${sIdx + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-section-btn">Delete Section</button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Headline (H2)</label>
+                        <input type="text" class="form-control" name="text_sections[${sIdx}][h2_title]" placeholder="e.g. How Localio ratings work">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
+                        <textarea class="form-control rich-editor" rows="4" name="text_sections[${sIdx}][h2_text]" placeholder="Enter main content for this H2 section..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
+                            <button type="button" class="btn btn-xs btn-outline-primary add-sub-section-btn" data-section-index="${sIdx}">+ Add Sub-headline (H3)</button>
+                        </div>
+                        <div class="sub-sections-container ps-3 border-start"></div>
+                    </div>
+                </div>
+            </div>`;
+            $('#textSectionsContainer').append(html);
+            initAllCKEditors();
+        });
+
+        $(document).on('click', '.remove-section-btn', function() {
+            let card = $(this).closest('.section-card');
+            card.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
                 }
             });
-            $(document).on('click', '.save_btn', function(e) {
-                e.preventDefault();
-                btnObj = $(this);
-                let textVal = btnObj.siblings('.site_text_input').val();
-                let textID = btnObj.siblings('.site_text_input').attr('id');
-                btnObj.siblings('.spinner-border').show();
-                btnObj.hide();
-                $.ajax({
-                    url: '{{ url('/admin-dashboard/update-lang-file') }}',
-                    method: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        data: {
-                            'textVal': textVal,
-                            'textID': textID,
-                        }
-                    },
-                    success: function(response) {
+            card.remove();
+        });
 
-                        btnObj.siblings('.spinner-border').hide();
-                        btnObj.remove();
-                    }
-                });
+        $(document).on('click', '.add-sub-section-btn', function() {
+            let sIdx = $(this).data('section-index');
+            let container = $(this).closest('.col-12').find('.sub-sections-container');
+            let subIdx = container.children('.sub-section-item').length;
+            let subHtml = `
+            <div class="sub-section-item border rounded p-2 mb-2 bg-light" data-sub-index="${subIdx}">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-muted">Sub-headline (H3)</span>
+                    <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
+                </div>
+                <input type="text" class="form-control form-control-sm mb-2" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_title]" placeholder="e.g. Why are these listings considered top rated?">
+                <textarea class="form-control rich-editor" rows="3" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_text]" placeholder="Enter sub-headline content..."></textarea>
+            </div>`;
+            container.append(subHtml);
+            initAllCKEditors();
+        });
+
+        $(document).on('click', '.remove-sub-btn', function() {
+            let item = $(this).closest('.sub-section-item');
+            item.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
+                }
+            });
+            item.remove();
+        });
+
+        $('#addFaqBtn').on('click', function() {
+            let fIdx = faqCounter++;
+            let html = `
+            <div class="faq-item-card border rounded p-3 mb-3 bg-white" data-faq-index="${fIdx}">
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">FAQ #${fIdx + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-danger remove-faq-btn">Delete</button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Question</label>
+                        <input type="text" class="form-control" name="top_faqs[${fIdx}][question]" placeholder="Enter FAQ question...">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Answer (Rich Editor)</label>
+                        <textarea class="form-control rich-editor" rows="3" name="top_faqs[${fIdx}][answer]" placeholder="Enter FAQ answer..."></textarea>
+                    </div>
+                </div>
+            </div>`;
+            $('#faqsContainer').append(html);
+            initAllCKEditors();
+        });
+
+        $(document).on('click', '.remove-faq-btn', function() {
+            let item = $(this).closest('.faq-item-card');
+            item.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
+                }
+            });
+            item.remove();
+        });
+
+        // Ensure CKEditor data syncs on form submit
+        $('#topProductForm').on('submit', function() {
+            document.querySelectorAll('textarea.rich-editor').forEach(el => {
+                if (el.ckeditorInstance) {
+                    el.value = el.ckeditorInstance.getData();
+                }
             });
         });
+    });
     </script>
-
 @endsection

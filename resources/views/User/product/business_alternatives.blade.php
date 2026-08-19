@@ -1,4 +1,18 @@
 @extends('user_layout.master')
+
+@php
+    $lang_id = getCurrentLanguageID();
+    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
+    $bNameTmp = $bTransTmp?->name ?? 'Business';
+    $alternativesMetaTitle = !empty($bTransTmp->alternatives_meta_title) ? $bTransTmp->alternatives_meta_title : "Best {$bNameTmp} Alternatives";
+    $alternativesMetaDesc = !empty($bTransTmp->alternatives_meta_description) ? $bTransTmp->alternatives_meta_description : ($bTransTmp->alternatives_description ?? '');
+@endphp
+
+@section('meta_title', format_meta_text($alternativesMetaTitle))
+@if(!empty($alternativesMetaDesc))
+@section('meta_description', format_meta_text($alternativesMetaDesc))
+@endif
+
 @section('content')
 
 @php
@@ -45,7 +59,7 @@
                     @endif
                     @if($business)
                         <li class="breadcrumb-item">
-                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
                         </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">

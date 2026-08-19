@@ -26,7 +26,9 @@ class CategoryTranslation extends Model
         'best_for_content',
         'integrations_content',
         'security_compliance_content',
-        'comparison_slug'
+        'comparison_slug',
+        'text_sections',
+        'faqs'
     ];
 
     public function category()

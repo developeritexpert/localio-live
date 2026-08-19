@@ -51,7 +51,7 @@ class HeaderSearchBar extends Component
             $query->where('lang_id', $lang_id);
         } ])->first();
     $busienss_slug=$Business->translations->first()->slug;
-        return redirect()->route('product.details', ['locale' => app()->getLocale(),'slug' => $busienss_slug]);  // Redirect to product details page
+        return redirect()->route('user.product_detail', ['locale' => app()->getLocale(),'id' => $busienss_slug]);  // Redirect to product details page
     }
 
 

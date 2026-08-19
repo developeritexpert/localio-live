@@ -173,6 +173,99 @@
             margin-top: 0 !important;
         }
     }
+
+    /* Explore categories exact styling matching all-categories page */
+    .explore-categories-sec .top-products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+    @media(max-width: 991px) {
+        .explore-categories-sec .top-products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media(max-width: 575px) {
+        .explore-categories-sec .top-products-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .explore-categories-sec .top-product-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+        background: #fdfdfd !important;
+        transition: all 0.2s ease;
+    }
+    .explore-categories-sec .top-product-card:hover {
+        box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
+    }
+    .explore-categories-sec .top-product-info h6 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e3050;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: color 0.2s ease;
+    }
+    .explore-categories-sec .top-product-card:hover .top-product-info h6 {
+        color: #e56b46;
+    }
+    .explore-categories-sec .top-product-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #777;
+        margin-top: 4px;
+    }
+    .explore-categories-sec .top-product-stars {
+        color: #ff5722 !important;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+    }
+    .explore-categories-sec .btn-view-details {
+        border: 1.5px solid #174889 !important;
+        border-radius: 30px !important;
+        background: transparent !important;
+        color: #06498b !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    .explore-categories-sec .btn-view-details:hover {
+        background: #174889 !important;
+        color: #fff !important;
+        text-decoration: none !important;
+    }
+    .explore-categories-sec .btn-orng {
+        background: #ff5722 !important;
+        border: 1px solid #ff5722 !important;
+        border-radius: 30px !important;
+        color: #fff !important;
+        font-size: 11px !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: opacity 0.2s ease !important;
+    }
+    .explore-categories-sec .btn-orng:hover {
+        opacity: 0.9 !important;
+        color: #fff !important;
+    }
+    .explore-categories-sec .subcat-link:hover {
+        text-decoration: underline !important;
+    }
+
     </style>
     <section class="top-rated-heading-sec">
         <div class="container">
@@ -277,21 +370,29 @@
                                             Community rating
                                         </h3>
 
-                                        <div class="form-check">
+                                        <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
                                                 wire:model.live="selectedRatings" value="4" id="rating-4">
-                                            <label class="form-check-label" for="rating-4">
-                                                @for ($i = 1; $i <= 5; $i++) @if ($i <=4) <i
-                                                    class="fas fa-star text-warning"></i>
-                                                    @else
-                                                    <i class="far fa-star text-warning"></i>
-                                                    @endif
-                                                    @endfor
-                                                    <span class="filter1">&
-                                                        up</span>
-                                                    <span class="filter2">
-                                                        ({{ $ratingCounts[4] ?? 0 }})
-                                                    </span>
+                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                wire:model.live="selectedRatings" value="3" id="rating-3">
+                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
                                             </label>
                                         </div>
                                     </div>
@@ -677,8 +778,7 @@
                                                         <a
                                                             href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}">
                                                             <div class="top-product-logo">
-                                                                <img class="" src="{{ asset($item->icon_id) }}"
-                                                                    alt="No Images For This Product">
+                                                                <x-business-logo :business="$item" />
                                                             </div>
                                                         </a>
                                                         <div class="sl_h">
@@ -696,7 +796,7 @@
                                                             <div class="rating-group  d-flex flex-col-mob">
                                                                 <span class="rate_box_num"
                                                                     style="">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
-                                                                <div class="inn_ul">
+                                                                <div class="">
                                                                     <div class="rating-stars " style="gap:1px;">
                                                                         @for ($i = 1; $i <= 5; $i++) @if ($i
                                                                             <=floor($item->reviews->avg('rating')))
@@ -982,32 +1082,181 @@
         </div>
         <livewire:compare-bar />
     </section>
+    <!-- Explore Top-Rated Categories Section -->
+    @if(isset($exploreCategories) && $exploreCategories->isNotEmpty())
+    <section class="explore-categories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
+        <div class="container">
+            <div class="text-start mb-4">
+                <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">Explore top-rated categories</h2>
+                <p style="font-size: 15px; color: #555; margin-bottom: 0;">Discover top-rated software, services, and solutions across our most popular categories.</p>
+            </div>
+
+            <div class="explore-categories-list d-flex flex-column gap-4">
+                @foreach($exploreCategories as $cat)
+                @php
+                    $trans = null;
+                    if (isset($cat->translations)) {
+                        if (is_object($cat->translations) && !($cat->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                            $trans = $cat->translations;
+                        } elseif ($cat->translations instanceof \Illuminate\Database\Eloquent\Collection && $cat->translations->isNotEmpty()) {
+                            $trans = $cat->translations->first();
+                        }
+                    }
+                    $catItemName = $trans->name ?? $cat->name ?? '';
+                    $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
+                    $catItemDesc = strip_tags($trans->description ?? $cat->description ?? '');
+                    if (empty($catItemDesc) && !empty($catItemName)) {
+                        $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions. Explore providers using features, starting prices, real user reviews, and community ratings to identify the right match.';
+                    }
+                @endphp
+                @if(!empty($catItemName))
+                <div class="subcat-block p-4" style="background: #f7f9fb; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catItemName }}</h3>
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;">
+                            See all {{ $catItemName }}
+                        </a>
+                    </div>
+
+                    <p style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">{{ $catItemDesc }}</p>
+
+                    <div class="top-products-grid">
+                        @foreach($cat->top_businesses ?? [] as $business)
+                        @php
+                            $bizName = $business->translations->first()->name ?? $business->name ?? '';
+                        @endphp
+                        @if(!empty($bizName))
+                        <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background:#fdfdfd !important;">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                    <x-business-logo :business="$business" :name="$bizName" />
+                                </div>
+                                <div class="top-product-info min-w-0">
+                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
+                                        {{ $bizName }}
+                                    </h6>
+                                    <div class="rating-group" >
+                                        <span class="rate_box_num">{{ number_format($business->average_rating, 1) }}</span>
+                                        <div class="rating-stars" >
+                                            @php $rating = round($business->average_rating); @endphp
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $rating)
+                                                    <i class="fas fa-star" ></i>
+                                                @else
+                                                    <i class="far fa-star" ></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span class="">({{ $business->active_reviews_count }})</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 w-100 mt-auto">
+                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
+                                   class="btn-view-details btn py-1 px-2 fw-medium {{ !empty($business->is_affiliate) ? 'w-50' : 'w-100' }}">
+                                    View details
+                                </a>
+                                @if(!empty($business->is_affiliate))
+                                <a href="{{ $business->getTrackedUrl() }}"
+                                   target="_blank"
+                                   class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
+                                   style="border-radius: 30px; font-size: 11px; text-align: center; transition:unset !important;">
+                                    Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Dynamic Text Sections -->
+    @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
+    <section class="top-rated-text-sections py-5" style="background: #ffffff; border-top: 1px solid #eef2f6;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    @foreach($textSections as $section)
+                    <div class="content-section-block mb-5">
+                        @if(!empty($section['h2_title']))
+                        <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                            {{ $section['h2_title'] }}
+                        </h2>
+                        @endif
+
+                        @if(!empty($section['h2_text']))
+                        <div class="rich-text-content" style="font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 20px;">
+                            {!! $section['h2_text'] !!}
+                        </div>
+                        @endif
+
+                        @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
+                            @foreach($section['sub_sections'] as $sub)
+                            <div class="sub-section-block mt-4 mb-3">
+                                @if(!empty($sub['h3_title']))
+                                <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 10px;">
+                                    {{ $sub['h3_title'] }}
+                                </h3>
+                                @endif
+                                @if(!empty($sub['h3_text']))
+                                <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
+                                    {!! $sub['h3_text'] !!}
+                                </div>
+                                @endif
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Top-Rated FAQs Section -->
+    @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
+    <section class="top-rated-faq-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="text-start mb-4">
+                        <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">Frequently asked questions</h2>
+                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">Everything you need to know about Localio top-rated rankings and community reviews.</p>
+                    </div>
+
+                    <div class="accordion" id="topRatedFaqAccordion">
+                        @foreach($faqs as $fIndex => $faq)
+                        <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
+                            <h2 class="accordion-header" id="faqHeading{{ $fIndex }}">
+                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
+                                    {{ $faq['question'] }}
+                                </button>
+                            </h2>
+                            <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
+                                <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                    {!! $faq['answer'] !!}
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
     <section class="subs_sec light top_rated_org_sec ">
-        {{-- <div class="container">
-            <div class="subs_content">
-                <h2 data-aos="fade-up" data-aos-duration="1000">{{ static_text('top_rated_mail_section_titile') }}
-        </h2>
-        <p data-aos="fade-up" data-aos-duration="1000">{{ static_text('top_rated_mail_section_desc') }}
-        </p>
-        <div class="mail_field" data-aos="fade-up" data-aos-duration="1000">
-            <div class="email_box">
-                <input type="email" id="email" name="email" placeholder="Email Address*">
-            </div>
-            <div class="accor-btn sbs_bttn">
-                <a href="javascript:void(0)" class="cta cta_white">{{ static_text('subscribe') }}</a>
-            </div>
-        </div>
-        <div class="checkbox_field" data-aos="fade-up" data-aos-duration="1000"
-            style="margin-top: 10px; display: flex; justify-content: center;">
-            <label style="display: flex; align-items: center; gap: 5px;">
-                <input type="checkbox" id="agree_terms" name="agree_terms" required>
-                <span>{{ static_text('mail_below_text') }}</span>
-            </label>
-        </div>
-</div>
-</div> --}}
-<x-news-letter-subscription />
-</section>
+        <x-news-letter-subscription />
+    </section>
 <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 <script>
 function initPriceSlider() {

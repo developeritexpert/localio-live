@@ -25,8 +25,8 @@
                                         <img src="{{ dimage() }}" alt="Default Image">
                                     @endif --}}
 
-                                    @if ($review->business && $review->business->icon_id)
-                                    <img src="{{ asset($review->business->icon_id) }}" alt="Business Image">
+                                    @if ($review->business)
+                                    <x-business-logo :business="$review->business" />
                                     @endif
 
                                 

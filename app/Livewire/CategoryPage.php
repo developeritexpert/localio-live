@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Filter;
 use App\Models\FilterType;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -29,7 +30,8 @@ class CategoryPage extends Component
 
     // Filter properties
     public $minPrice = 0;
-    public $maxPrice = 2000;
+    public $maxPrice = 5000;
+    public $maxPriceValue = 5000;
     public $selectedOptions = [];
     public $selectedRatings = [];
     public $selectedCriteriaRatings = [];
@@ -134,11 +136,25 @@ class CategoryPage extends Component
         $priceStats = \App\Models\ProductPrice::selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
 
-        if ($priceStats) {
-            // Set initial values and boundaries
-            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : 0;
-            $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : ceil($priceStats->max_price);
-        }
+        $maxVal = ($priceStats && $priceStats->max_price) ? max((int)ceil($priceStats->max_price), 100) : 5000;
+        $this->maxPriceValue = $maxVal;
+
+        $hasMinParam = request()->has('minPrice') && (int)request('minPrice') > 0;
+        $hasMaxParam = request()->has('maxPrice') && (int)request('maxPrice') < $maxVal;
+
+        $this->minPrice = $hasMinParam ? (int)request('minPrice') : 0;
+        $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : $maxVal;
+
+        $this->isPriceFilterActive = ($hasMinParam || $hasMaxParam);
+    }
+
+    public function updatePriceFilterState()
+    {
+        $maxLimit = $this->maxPriceValue ?: 5000;
+        $isMinActive = (int)$this->minPrice > 0;
+        $isMaxActive = (int)$this->maxPrice < $maxLimit;
+
+        $this->isPriceFilterActive = ($isMinActive || $isMaxActive);
     }
 
     protected function loadDefaultFilterOptions()
@@ -621,19 +637,20 @@ class CategoryPage extends Component
     }
 
     // Method to handle price range updates from slider
-    public function setPriceRange($min, $max)
+    public function setPriceRange($min = 0, $max = null)
     {
-        // Ensure we have valid numbers
-        $min = is_numeric($min) ? (int)$min : 0;
-        $max = is_numeric($max) ? (int)$max : 2000;
+        if (is_array($min)) {
+            $max = $min['max'] ?? ($this->maxPriceValue ?: 5000);
+            $min = $min['min'] ?? 0;
+        }
 
-        // Apply validations
-        $this->minPrice = $min;
-        $this->maxPrice = $max;
-        $this->isPriceFilterActive = true;
+        $maxLimit = $this->maxPriceValue ?: 5000;
+        $this->minPrice = is_numeric($min) ? (int)$min : 0;
+        $this->maxPrice = ($max !== null && is_numeric($max)) ? (int)$max : $maxLimit;
+
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-
     }
 
     // Livewire lifecycle hooks for updates
@@ -660,30 +677,22 @@ class CategoryPage extends Component
 
     public function updatedMinPrice()
     {
-        $this->isPriceFilterActive = true;
-
-        // Make sure minPrice doesn't exceed maxPrice
         if ($this->minPrice > $this->maxPrice) {
             $this->minPrice = $this->maxPrice;
         }
-
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-
     }
 
     public function updatedMaxPrice()
     {
-        $this->isPriceFilterActive = true;
-
-        // Make sure maxPrice is not less than minPrice
         if ($this->maxPrice < $this->minPrice) {
             $this->maxPrice = $this->minPrice;
         }
-
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-
     }
 
     // Filter operations
@@ -835,9 +844,9 @@ class CategoryPage extends Component
         $locale = app()->getLocale();
 
         if ($page > 1) {
-            $url = '/' . $locale . '/categories/' . $this->slug . '/' . $page;
+            $url = '/' . $locale . '/' . $this->slug . '/' . $page;
         } else {
-            $url = '/' . $locale . '/categories/' . $this->slug;
+            $url = '/' . $locale . '/' . $this->slug;
         }
 
         // Append filter query params
@@ -852,11 +861,231 @@ class CategoryPage extends Component
         return empty($queryParams) ? $url : $url . '?' . http_build_query($queryParams);
     }
 
+
+    public function getTextSectionsProperty()
+    {
+        $trans = $this->category->translations;
+        if ($trans && !empty($trans->text_sections)) {
+            $decoded = is_array($trans->text_sections) ? $trans->text_sections : json_decode($trans->text_sections, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        $catName = $trans->name ?? $this->category->name ?? 'this category';
+        return [
+            [
+                'h2_title' => 'About ' . strtolower($catName),
+                'h2_text' => 'Explore the leading providers and solutions in ' . strtolower($catName) . '. Compare key features, verified reviews, pricing, and ratings to make informed choices.',
+                'sub_sections' => [
+                    [
+                        'h3_title' => 'What is ' . strtolower($catName) . '?',
+                        'h3_text' => $catName . ' offers specialized services and technology designed to solve industry challenges, optimize workflows, and deliver measurable results.'
+                    ],
+                    [
+                        'h3_title' => 'How does ' . strtolower($catName) . ' work?',
+                        'h3_text' => 'Providers deliver tailored capabilities with varying tiers of support, integration, and features to meet different organizational or individual needs.'
+                    ],
+                    [
+                        'h3_title' => 'Types of ' . strtolower($catName),
+                        'h3_text' => 'Different solutions range from entry-level and self-service tools to enterprise-grade platforms and managed services.'
+                    ]
+                ]
+            ],
+            [
+                'h2_title' => 'What to consider when comparing ' . strtolower($catName) . ' providers',
+                'h2_text' => 'When evaluating options, consider factors such as feature set, pricing transparency, reliability, customer feedback, and ease of integration.',
+                'sub_sections' => []
+            ]
+        ];
+    }
+
+    public function getPopularComparisonsProperty()
+    {
+        $lang_id = $this->lang_id;
+        $catIds = [$this->category->id];
+        if ($this->category->parent_id === null) {
+            $childIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
+            $catIds = array_merge($catIds, $childIds);
+        }
+
+        $topBusinesses = Business::where(function ($q) use ($catIds) {
+                $q->whereIn('category_id', $catIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                      $subQ->whereIn('categories.id', $catIds);
+                  });
+            })
+            ->where('status', 1)
+            ->whereHas('translations', function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+            })
+            ->withCount(['reviews as active_reviews_count' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($q) {
+                $q->where('status', 'active');
+            }], 'rating')
+            ->with(['translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            }])
+            ->orderByDesc('active_reviews_count')
+            ->orderByDesc('average_rating')
+            ->take(4)
+            ->get();
+
+        $comparisons = [];
+        $count = count($topBusinesses);
+        if ($count >= 2) {
+            $compSlug = $this->category->translations->comparison_slug ?? 'compare';
+            $vsKey = static_text('vs_keyword') ?: 'vs';
+            if (empty($vsKey) || $vsKey === 'vs_keyword') $vsKey = 'vs';
+            $vsKeySlug = Str::slug($vsKey);
+
+            for ($i = 0; $i < $count; $i++) {
+                for ($j = $i + 1; $j < $count; $j++) {
+                    if (count($comparisons) >= 4) break 2;
+                    $b1 = $topBusinesses[$i];
+                    $b2 = $topBusinesses[$j];
+                    $b1Name = $b1->translations->first()->name ?? $b1->name ?? '';
+                    $b2Name = $b2->translations->first()->name ?? $b2->name ?? '';
+
+                    if (!empty($b1Name) && !empty($b2Name)) {
+                        $comparisons[] = [
+                            'business_1' => $b1,
+                            'business_1_name' => $b1Name,
+                            'business_1_rating' => $b1->average_rating ?? 0,
+                            'business_2' => $b2,
+                            'business_2_name' => $b2Name,
+                            'business_2_rating' => $b2->average_rating ?? 0,
+                            'url' => route('product-comparison.seo', [
+                                'locale' => app()->getLocale(),
+                                'comparison_slug' => $compSlug,
+                                'comparison_businesses' => Str::slug($b1Name) . '-' . $vsKeySlug . '-' . Str::slug($b2Name)
+                            ])
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $comparisons;
+    }
+
+    public function getExploreSubcategoriesProperty()
+    {
+        $lang_id = $this->lang_id;
+        if ($this->category->parent_id === null) {
+            $subcats = Category::where('parent_id', $this->category->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with(['translations' => function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                }])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            return [
+                'title' => 'Explore ' . ($this->category->translations->name ?? $this->category->name ?? '') . ' categories',
+                'items' => $subcats
+            ];
+        } else {
+            $parent = $this->category->parent;
+            $parentName = $parent ? ($parent->translations->name ?? $parent->name ?? '') : '';
+            $subcats = Category::where('parent_id', $this->category->parent_id)
+                ->where('id', '!=', $this->category->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with(['translations' => function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                }])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            return [
+                'title' => 'Explore other ' . (!empty($parentName) ? $parentName : ($this->category->translations->name ?? '')) . ' categories',
+                'items' => $subcats
+            ];
+        }
+    }
+
+    public function getPopularBusinessesProperty()
+    {
+        $lang_id = $this->lang_id;
+        $catIds = [$this->category->id];
+        if ($this->category->parent_id === null) {
+            $childIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
+            $catIds = array_merge($catIds, $childIds);
+        }
+
+        return Business::where(function ($q) use ($catIds) {
+                $q->whereIn('category_id', $catIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                      $subQ->whereIn('categories.id', $catIds);
+                  });
+            })
+            ->where('status', 1)
+            ->whereHas('translations', function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+            })
+            ->withCount(['reviews as active_reviews_count' => function ($q) {
+                $q->where('status', 'active');
+            }])
+            ->withAvg(['reviews as average_rating' => function ($q) {
+                $q->where('status', 'active');
+            }], 'rating')
+            ->with(['translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            }, 'products.prices', 'usps'])
+            ->orderByDesc('is_affiliate')
+            ->orderByDesc('average_rating')
+            ->orderByDesc('active_reviews_count')
+            ->take(6)
+            ->get();
+    }
+
+    public function getFaqsProperty()
+    {
+        $trans = $this->category->translations;
+        if ($trans && !empty($trans->faqs)) {
+            $decoded = is_array($trans->faqs) ? $trans->faqs : json_decode($trans->faqs, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
+            }
+        }
+
+        $catName = $trans->name ?? $this->category->name ?? 'this category';
+        return [
+            [
+                'question' => 'How do I choose the best ' . strtolower($catName) . ' provider?',
+                'answer' => 'Compare essential features, user ratings, transparent pricing, and reliability. Assess whether the provider aligns with your specific technical and budgetary requirements.'
+            ],
+            [
+                'question' => 'Are community ratings and reviews verified?',
+                'answer' => 'Yes, reviews and ratings on Localio are submitted by verified users and evaluated for authenticity by our moderation team.'
+            ],
+            [
+                'question' => 'How often are rankings and listings updated?',
+                'answer' => 'Our listings and rating scores are updated dynamically as community members submit feedback and ratings.'
+            ]
+        ];
+    }
+
     public function render()
     {
         return view('livewire.category-page', [
             'products' => $this->products,
             'lang_id' => getCurrentLanguageID(),
+            'textSections' => $this->textSections,
+            'popularComparisons' => $this->popularComparisons,
+            'exploreSubcategories' => $this->exploreSubcategories,
+            'popularBusinesses' => $this->popularBusinesses,
+            'faqs' => $this->faqs,
         ]);
     }
 }

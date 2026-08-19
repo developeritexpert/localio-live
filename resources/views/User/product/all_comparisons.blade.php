@@ -1,5 +1,18 @@
 @extends('user_layout.master')
 
+@php
+    $lang_id = getCurrentLanguageID();
+    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
+    $bNameTmp = $bTransTmp->name ?? 'Business';
+    $compMetaTitle = !empty($bTransTmp->comparison_meta_title) ? $bTransTmp->comparison_meta_title : "Compare {$bNameTmp} with Top Competitors";
+    $compMetaDesc = !empty($bTransTmp->comparison_meta_description) ? $bTransTmp->comparison_meta_description : ($bTransTmp->comparison_description ?? '');
+@endphp
+
+@section('meta_title', format_meta_text($compMetaTitle))
+@if(!empty($compMetaDesc))
+@section('meta_description', format_meta_text($compMetaDesc))
+@endif
+
 @section('content')
 @php
     $lang_id = getCurrentLanguageID();
@@ -55,7 +68,7 @@
                     @endif
                     @if($business)
                         <li class="breadcrumb-item">
-                            <a href="{{ route('product.details', ['locale' => app()->getLocale(), 'slug' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
                         </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
@@ -270,7 +283,7 @@
                             <!-- Business A -->
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
-                                    <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
+                                    <x-business-logo :business="$business" :name="$bName" />
                                 </div>
                                 <div style="min-width: 0;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
@@ -289,7 +302,7 @@
                             <!-- Business B (Peer) -->
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
-                                    <img src="{{ asset($peer->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="{{ $peerName }}" style="width: 100%; height: 100%; object-fit: contain;">
+                                    <x-business-logo :business="$peer" :name="$peerName" />
                                 </div>
                                 <div style="min-width: 0; text-align: left;">
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $peerName }}</div>

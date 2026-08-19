@@ -6,30 +6,43 @@
     button.btn.btn-sm.rounded-pill.transition-all.d-inline-flex.align-items-center.gap-1.btn-danger.text-white.shadow-sm {
         background: #033b74 !important;
     }
-    .recommend-card-btn {
-        border: 2px solid #e2e8f0;
-        background-color: #ffffff;
-        color: #002347;
-        border-radius: 30px;
-        padding: 12px 28px;
-        font-size: 15px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        outline: none;
+    .recommend-btn {
+        border: 1.5px solid #06498b !important;
+        background-color: #ffffff !important;
+        color: #002347 !important;
+        border-radius: 30px !important;
+        padding: 12px 25px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        outline: none !important;
+        text-decoration: none !important;
     }
-    .recommend-card-btn:hover {
-        border-color: #06498b;
-        background-color: #f8fafc;
+    .recommend-btn i {
+        font-size: 15px !important;
+        color: #06498b !important;
+        transition: color 0.2s ease !important;
     }
-    .recommend-card-btn.selected {
-        border-color: #06498b;
-        background-color: #06498b;
-        color: #ffffff;
-        box-shadow: 0 4px 12px rgba(6, 73, 139, 0.25);
+    .recommend-btn:hover {
+        background-color: #f0f6fc !important;
+        border-color: #06498b !important;
+        color: #06498b !important;
+    }
+    .recommend-btn.selected,
+    .recommend-btn.selected-recommend {
+        background-color: #06498b !important;
+        border-color: #06498b !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(6, 73, 139, 0.25) !important;
+    }
+    .recommend-btn.selected i,
+    .recommend-btn.selected-recommend i {
+        color: #ffffff !important;
     }
         .pro-con-box {
         background-color: #fafafa;
@@ -174,36 +187,25 @@
 
                                 @if($step === 1)
                                     <!-- Step 1: Recommendation (Separate First Page) -->
-                                    <div class="step-content text-center py-4" wire:key="step-1">
-                                        <div class="d-flex justify-content-center align-items-center gap-3 gap-md-4 flex-wrap my-4">
+                                    <div class="step-content text-center py-2" wire:key="step-1">
+                                        <div class="d-flex justify-content-between align-items-center gap-3 my-4">
                                             <button type="button" 
-                                                    wire:click="$set('recommend', 1)"
-                                                    class="recommend-card-btn {{ $recommend === 1 ? 'selected' : '' }}">
-                                                <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>
+                                                    class="recommend-btn w-50 {{ $recommend === 1 ? 'selected' : '' }}" 
+                                                    wire:click="selectRecommend(1)">
+                                                <i class="fas fa-thumbs-up"></i>
                                                 <span>Yes, I recommend it</span>
                                             </button>
 
                                             <button type="button" 
-                                                    wire:click="$set('recommend', 0)"
-                                                    class="recommend-card-btn {{ $recommend === 0 ? 'selected' : '' }}">
-                                                <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
+                                                    class="recommend-btn w-50 {{ $recommend === 0 && $recommend !== null ? 'selected' : '' }}" 
+                                                    wire:click="selectRecommend(0)">
+                                                <i class="fas fa-thumbs-down"></i>
                                                 <span>No, I don't recommend it</span>
                                             </button>
                                         </div>
                                         @error('recommend')
                                             <small class="text-danger d-block mt-2 text-center" style="font-size: 12px;">{{ $message }}</small>
                                         @enderror
-
-                                        <hr class="my-4">
-
-                                        <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                            <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="closeModal" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
-                                                Cancel
-                                            </button>
-                                            <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="goToStep2" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
-                                                Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
-                                            </button>
-                                        </div>
                                     </div>
 
                                 @elseif($step === 2)

@@ -11,7 +11,7 @@ class TopProductContent extends Model
     protected $fillable = [
         'meta_key',
         'meta_value',
-        'lang_code',
+        'lang_id',
         'type',
     ];
 }

@@ -30,7 +30,7 @@
                     <div class="col">
                         <div class="card h-100   p-4 text-center d-flex flex-column align-items-center" style="border-radius: 12px; background: #fff;  border: 1px solid #e2e8f0; border-radius:15px;"onmouseout="this.style.transform='none'">
                             <div style="" class="mb-3 top-product-logo">
-                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="">
+                                <x-business-logo :business="$business" />
                             </div>
                             <h5 class="mb-1 text-truncate w-100" style="color:#002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
@@ -70,13 +70,13 @@
                         <div class="card h-100 p-4 text-center d-flex flex-column align-items-center justify-content-between" style="border-radius: 15px; border:1px solid #e2e8f0; transition:unset !important; background: #fff;">
                             <div class="d-flex flex-column align-items-center w-100">
                                 <div class="mb-3 top-product-logo">
-                                    <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}">
+                                    <x-business-logo :business="$business" />
                                 </div>
                                 <h5 class="mb-4 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
                                     {{ $business->translations->first()->name ?? 'Unnamed' }}
                                 </h5>
                             </div>
-                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;">
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class=" blue-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;">
                                 Review
                             </a>
                         </div>
@@ -99,7 +99,7 @@
                     <div class="col">
                         <div class="card h-100 p-4 text-center d-flex flex-column align-items-center" style="border-radius: 15px; border:1px solid #e2e8f0; transition:unset !important; background: #fff;" >
                             <div style="" class="mb-3 top-product-logo">
-                                <img src="{{ asset($business->icon_id ?? 'front/img/logo.svg') }}" alt="{{ $business->translations->first()->name ?? '' }}" style="">
+                                <x-business-logo :business="$business" />
                             </div>
                             <h5 class=" mb-2 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
@@ -119,7 +119,7 @@
                                 </div>
                                 <span class="" style="">({{ $count }})</span>
                             </div>
-                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class="box-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;" >
+                            <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class=" blue-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;" >
                                 Review
                             </a>
                         </div>
