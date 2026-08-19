@@ -281,11 +281,7 @@
                 border-radius: 0 3px 3px 0;
             }
 
-            .rating_bar_span {
-                font-size: 18px;
-                font-weight: 700;
-                color: #002347;
-            }
+          
             a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
                 background-color: #e4e7ea !important;
             }
@@ -869,6 +865,25 @@
             a.view-more-link:hover {
                 text-decoration: underline !important;
             }
+
+
+
+            .community-rating {
+                font-size: 18px;
+                font-weight: 600;
+                color:#002347;
+            }
+
+            .community-base-rating {
+                font-size: 12px;
+                font-weight: 500;
+            }
+
+            .rating_bar_span {
+                font-size: 16px;
+                font-weight: 500;
+                color: #002347;
+            }
     </style>
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
@@ -1017,7 +1032,7 @@
                     </div>
                 </div>
 
-                 <div class="Tab-outerlnk container-fluid">
+                 <div class="Tab-outerlnk container-fluid d-none">
                     <div class="inner_table2">
 
                         @php
@@ -1334,7 +1349,7 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                    <div class="community-rating mb-2" style="">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">Features</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1342,7 +1357,7 @@
                                                         </div>
                                                         <span class="rating_bar_span">{{ number_format($featRatingVal, 1) }}</span>
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['features']['end_text']))
@@ -1383,7 +1398,7 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                    <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">ease of use</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1392,7 +1407,7 @@
                                                         <span class="rating_bar_span">{{ number_format($easeRatingVal, 1) }}</span>
 
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['ease_of_use']['end_text']))
@@ -1419,7 +1434,7 @@
                                                         @endif
 
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
-                                                            <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                            <div class="community-rating mb-2">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                                 <span class="rating_bar_span">service management</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1428,7 +1443,7 @@
                                                                 <span class="rating_bar_span">{{ number_format($crRatingVal, 1) }}</span>
 
                                                             </div>
-                                                            <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                            <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                         </div>
 
                                                         @if(!empty($ratingTexts[$crKey]['end_text']))
@@ -1453,7 +1468,7 @@
                                                 @endif
 
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
-                                                    <div class="fw-bold mb-2" style="color: #002347; font-size: 16px;">Community rating</div>
+                                                    <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">value for money</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
@@ -1462,7 +1477,7 @@
                                                         <span class="rating_bar_span">{{ number_format($vfmRatingVal, 1) }}</span>
 
                                                     </div>
-                                                    <div class="text-muted" style="font-size: 13px; color: #64748b;">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
+                                                    <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                                                 </div>
 
                                                 @if(!empty($ratingTexts['value_for_money']['end_text']))
