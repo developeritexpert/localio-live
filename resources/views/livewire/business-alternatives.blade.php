@@ -277,23 +277,31 @@ section.top-automotive-sec.top_rate_pg.light {
                                         <h3 class="fw-semibold text-dark mb-2">
                                             {{ static_text('user_rating') }}</h3>
 
-                                        <div class="form-check">
+                                        <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
                                                 wire:model.live="selectedRatings" value="4"
                                                 id="rating-4">
-                                            <label class="form-check-label" for="rating-4">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= 4)
-                                                        <i class="fas fa-star text-warning"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning"></i>
-                                                    @endif
-                                                @endfor
-                                                <span class="filter1">&
-                                                    up</span>
-                                                <span class="filter2">
-                                                    ({{ $ratingCounts[4] ?? 0 }})
-                                                </span>
+                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                wire:model.live="selectedRatings" value="3"
+                                                id="rating-3">
+                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="fas fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <i class="far fa-star text-warning"></i>
+                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
                                             </label>
                                         </div>
                                     </div>

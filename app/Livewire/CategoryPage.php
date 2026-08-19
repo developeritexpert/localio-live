@@ -29,7 +29,8 @@ class CategoryPage extends Component
 
     // Filter properties
     public $minPrice = 0;
-    public $maxPrice = 2000;
+    public $maxPrice = 5000;
+    public $maxPriceValue = 5000;
     public $selectedOptions = [];
     public $selectedRatings = [];
     public $selectedCriteriaRatings = [];
@@ -134,11 +135,25 @@ class CategoryPage extends Component
         $priceStats = \App\Models\ProductPrice::selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
 
-        if ($priceStats) {
-            // Set initial values and boundaries
-            $this->minPrice = request()->has('minPrice') ? (int)request('minPrice') : 0;
-            $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : ceil($priceStats->max_price);
-        }
+        $maxVal = ($priceStats && $priceStats->max_price) ? max((int)ceil($priceStats->max_price), 100) : 5000;
+        $this->maxPriceValue = $maxVal;
+
+        $hasMinParam = request()->has('minPrice') && (int)request('minPrice') > 0;
+        $hasMaxParam = request()->has('maxPrice') && (int)request('maxPrice') < $maxVal;
+
+        $this->minPrice = $hasMinParam ? (int)request('minPrice') : 0;
+        $this->maxPrice = request()->has('maxPrice') ? (int)request('maxPrice') : $maxVal;
+
+        $this->isPriceFilterActive = ($hasMinParam || $hasMaxParam);
+    }
+
+    public function updatePriceFilterState()
+    {
+        $maxLimit = $this->maxPriceValue ?: 5000;
+        $isMinActive = (int)$this->minPrice > 0;
+        $isMaxActive = (int)$this->maxPrice < $maxLimit;
+
+        $this->isPriceFilterActive = ($isMinActive || $isMaxActive);
     }
 
     protected function loadDefaultFilterOptions()
@@ -621,19 +636,20 @@ class CategoryPage extends Component
     }
 
     // Method to handle price range updates from slider
-    public function setPriceRange($min, $max)
+    public function setPriceRange($min = 0, $max = null)
     {
-        // Ensure we have valid numbers
-        $min = is_numeric($min) ? (int)$min : 0;
-        $max = is_numeric($max) ? (int)$max : 2000;
+        if (is_array($min)) {
+            $max = $min['max'] ?? ($this->maxPriceValue ?: 5000);
+            $min = $min['min'] ?? 0;
+        }
 
-        // Apply validations
-        $this->minPrice = $min;
-        $this->maxPrice = $max;
-        $this->isPriceFilterActive = true;
+        $maxLimit = $this->maxPriceValue ?: 5000;
+        $this->minPrice = is_numeric($min) ? (int)$min : 0;
+        $this->maxPrice = ($max !== null && is_numeric($max)) ? (int)$max : $maxLimit;
+
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-
     }
 
     // Livewire lifecycle hooks for updates
@@ -660,30 +676,22 @@ class CategoryPage extends Component
 
     public function updatedMinPrice()
     {
-        $this->isPriceFilterActive = true;
-
-        // Make sure minPrice doesn't exceed maxPrice
         if ($this->minPrice > $this->maxPrice) {
             $this->minPrice = $this->maxPrice;
         }
-
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-
     }
 
     public function updatedMaxPrice()
     {
-        $this->isPriceFilterActive = true;
-
-        // Make sure maxPrice is not less than minPrice
         if ($this->maxPrice < $this->minPrice) {
             $this->maxPrice = $this->minPrice;
         }
-
+        $this->updatePriceFilterState();
         $this->resetPage();
         $this->dispatch('scroll-to-middle');
-
     }
 
     // Filter operations

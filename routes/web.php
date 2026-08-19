@@ -509,9 +509,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
         return redirect()->to('/' . $locale . '/' . $slug, 301);
     });
 
-    Route::get('/categories', function ($locale) {
-        return redirect()->to('/' . $locale, 301);
-    })->name('category');
+    // All Categories page
+    Route::get('/categories', [CategoryController::class, 'index'])->name('category');
 
     // 3-Segment Subcategory Feature Detail Route
     Route::get('/{category_slug}/{subcategory_slug}/{feature_slug}', [CategoryController::class, 'subCategoryFeatureDetail'])->name('category.subcategory.feature');
