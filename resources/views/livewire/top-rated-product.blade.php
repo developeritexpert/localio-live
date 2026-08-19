@@ -1135,19 +1135,19 @@
                                     <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
                                         {{ $bizName }}
                                     </h6>
-                                    <div class="top-product-rating d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                        <span class="fw-medium text-dark">{{ number_format($business->average_rating, 1) }}</span>
-                                        <div class="top-product-stars d-flex" style="color: #ff5722;">
+                                    <div class="rating-group" >
+                                        <span class="rate_box_num">{{ number_format($business->average_rating, 1) }}</span>
+                                        <div class="rating-stars" >
                                             @php $rating = round($business->average_rating); @endphp
                                             @for($i = 1; $i <= 5; $i++)
                                                 @if($i <= $rating)
-                                                    <i class="fas fa-star" style="margin-right:1px; color: #ff5722;"></i>
+                                                    <i class="fas fa-star" ></i>
                                                 @else
-                                                    <i class="far fa-star" style="margin-right:1px; color: #ff5722;"></i>
+                                                    <i class="far fa-star" ></i>
                                                 @endif
                                             @endfor
                                         </div>
-                                        <span class="fw-medium text-dark">({{ $business->active_reviews_count }})</span>
+                                        <span class="">({{ $business->active_reviews_count }})</span>
                                     </div>
                                 </div>
                             </div>

@@ -106,9 +106,20 @@ class CategoriesController extends Controller
         $custom_criteria = [];
 
         $defaultMaster = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
+        $text_sections = [];
+        $category_faqs = [];
 
         if ($id != null) {
-            $category_data = CategoryTranslation::where('id', $id)->first()->toArray();
+            $catTransObj = CategoryTranslation::where('id', $id)->first();
+            $category_data = $catTransObj ? $catTransObj->toArray() : null;
+            if ($catTransObj) {
+                if (!empty($catTransObj->text_sections)) {
+                    $text_sections = is_array($catTransObj->text_sections) ? $catTransObj->text_sections : json_decode($catTransObj->text_sections, true);
+                }
+                if (!empty($catTransObj->faqs)) {
+                    $category_faqs = is_array($catTransObj->faqs) ? $catTransObj->faqs : json_decode($catTransObj->faqs, true);
+                }
+            }
             $categoryId = $category_data['category_id'];
             $category = Category::where('id', $categoryId)->first();
             if ($category) {
@@ -162,6 +173,8 @@ class CategoriesController extends Controller
             ->get();
 
         return view('Admin.categories.add', compact(
+            'text_sections',
+            'category_faqs',
             'category_data',
             'category',
             'category_image_url',
@@ -474,10 +487,50 @@ class CategoriesController extends Controller
                 ? Str::slug($validate['comparison_slug']) 
                 : ($slug . '-comparison');
 
+           // Process Dynamic Text Sections (H2 & H3)
+            $textSectionsInput = $request->input('text_sections', []);
+            $cleanTextSections = [];
+            if (is_array($textSectionsInput)) {
+                foreach ($textSectionsInput as $sec) {
+                    if (!empty($sec['h2_title']) || !empty($sec['h2_text'])) {
+                        $subList = [];
+                        if (isset($sec['sub_sections']) && is_array($sec['sub_sections'])) {
+                            foreach ($sec['sub_sections'] as $sub) {
+                                if (!empty($sub['h3_title']) || !empty($sub['h3_text'])) {
+                                    $subList[] = [
+                                        'h3_title' => $sub['h3_title'] ?? '',
+                                        'h3_text' => $sub['h3_text'] ?? ''
+                                    ];
+                                }
+                            }
+                        }
+                        $cleanTextSections[] = [
+                            'h2_title' => $sec['h2_title'] ?? '',
+                            'h2_text' => $sec['h2_text'] ?? '',
+                            'sub_sections' => $subList
+                        ];
+                    }
+                }
+            }
+
+            // Process Category FAQs
+            $faqsInput = $request->input('category_faqs', []);
+            $cleanFaqs = [];
+            if (is_array($faqsInput)) {
+                foreach ($faqsInput as $faq) {
+                    if (!empty($faq['question']) || !empty($faq['answer'])) {
+                        $cleanFaqs[] = [
+                            'question' => $faq['question'] ?? '',
+                            'answer' => $faq['answer'] ?? ''
+                        ];
+                    }
+                }
+            }
+
            CategoryTranslation::updateOrCreate(
                 [
                     'lang_id' => (int) $language_id,
-                    'category_id' => $category_id
+                    'category_id' => $category->id
                 ],
                 [
                     'category_id'  => $category->id,
@@ -486,6 +539,8 @@ class CategoriesController extends Controller
                     'page_title'   => $validate['page_title'] ?? null,
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
+                    'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
+                    'faqs'         => !empty($cleanFaqs) ? json_encode($cleanFaqs) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,
                     'meta_description' => $validate['meta_description'] ?? null,
                     'slug'         => $slug,
