@@ -1841,7 +1841,7 @@
                                                                                         'comparison_businesses' => Str::slug($bName) . '-' . $vsKey . '-' . Str::slug($peerName)
                                                                                     ]);
                                                                                 @endphp
-                                                                                <div class="col-lg-4 col-md-6 col-12">
+                                                                                <div class="col-lg-6 col-md-6 col-12">
                                                                                     <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                                                                                         <div class="d-flex align-items-center justify-content-between mb-3">
 
