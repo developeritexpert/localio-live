@@ -468,24 +468,25 @@
                     <img src="{{ asset($business->icon_id ?? 'front/img/default_business_logo.svg') }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div>
-                    <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Have you used {{ $bName }} before?</h4>
-                    <p style="margin: 0; font-size: 14px; color: #666;">Answer a few questions to help the community.</p>
+                    <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
+                    <p style="margin: 0; font-size: 14px; color: #666;">Share your experience with the community</p>
                 </div>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
                 @auth
                     <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                        <i class="fas fa-check" style="color: #06498b;"></i> Yes
+                        <i class="fas fa-thumbs-up"></i> 
+                        
                     </button>
                     <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                        <i class="fas fa-times" style="color: #e53e3e;"></i> No
+                        <i class="fas fa-thumbs-down"></i> 
                     </button>
                 @else
                     <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                        <i class="fas fa-check" style="color: #06498b;"></i> Yes
+                        <i class="fas fa-thumbs-up"></i> 
                     </button>
                     <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                        <i class="fas fa-times" style="color: #e53e3e;"></i> No
+                        <i class="fas fa-thumbs-down"></i> 
                     </button>
                 @endauth
             </div>
