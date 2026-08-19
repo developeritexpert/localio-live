@@ -1,4 +1,18 @@
 @extends('user_layout.master')
+
+@php
+    $lang_id = getCurrentLanguageID();
+    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
+    $bNameTmp = $bTransTmp?->name ?? 'Business';
+    $alternativesMetaTitle = !empty($bTransTmp->alternatives_meta_title) ? $bTransTmp->alternatives_meta_title : "Best {$bNameTmp} Alternatives";
+    $alternativesMetaDesc = !empty($bTransTmp->alternatives_meta_description) ? $bTransTmp->alternatives_meta_description : ($bTransTmp->alternatives_description ?? '');
+@endphp
+
+@section('meta_title', format_meta_text($alternativesMetaTitle))
+@if(!empty($alternativesMetaDesc))
+@section('meta_description', format_meta_text($alternativesMetaDesc))
+@endif
+
 @section('content')
 
 @php

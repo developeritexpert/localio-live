@@ -233,6 +233,19 @@
     </style>
 @endpush
 
+@php
+    $lang_id = getCurrentLanguageID();
+    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
+    $bNameTmp = $bTransTmp->name ?? 'Business';
+    $faqsMetaTitle = !empty($bTransTmp->faqs_meta_title) ? $bTransTmp->faqs_meta_title : "{$bNameTmp} FAQs & Questions Answered";
+    $faqsMetaDesc = !empty($bTransTmp->faqs_meta_description) ? $bTransTmp->faqs_meta_description : ($bTransTmp->faqs_description ?? '');
+@endphp
+
+@section('meta_title', format_meta_text($faqsMetaTitle))
+@if(!empty($faqsMetaDesc))
+@section('meta_description', format_meta_text($faqsMetaDesc))
+@endif
+
 @section('content')
 
 @php

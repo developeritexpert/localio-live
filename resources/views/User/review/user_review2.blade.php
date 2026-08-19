@@ -1,8 +1,21 @@
 @extends('user_layout.master')
-@section('content')
 
 @php
     $lang_id = getCurrentLanguageID();
+    $bTransTmp = $business->translations->firstWhere('language_id', $lang_id) ?? $business->translations->first();
+    $bNameTmp = $bTransTmp->name ?? 'Business';
+    $reviewsMetaTitle = !empty($bTransTmp->reviews_meta_title) ? $bTransTmp->reviews_meta_title : "{$bNameTmp} Reviews & Ratings";
+    $reviewsMetaDesc = !empty($bTransTmp->reviews_meta_description) ? $bTransTmp->reviews_meta_description : ($bTransTmp->reviews_description ?? '');
+@endphp
+
+@section('meta_title', format_meta_text($reviewsMetaTitle))
+@if(!empty($reviewsMetaDesc))
+@section('meta_description', format_meta_text($reviewsMetaDesc))
+@endif
+
+@section('content')
+
+@php
     $catTrans = $business->category->translation ?? null;
     $parentCatTrans = $business->category->parent->translation ?? null;
     $catName = $catTrans->name ?? '';

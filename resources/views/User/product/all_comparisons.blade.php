@@ -1,5 +1,18 @@
 @extends('user_layout.master')
 
+@php
+    $lang_id = getCurrentLanguageID();
+    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
+    $bNameTmp = $bTransTmp->name ?? 'Business';
+    $compMetaTitle = !empty($bTransTmp->comparison_meta_title) ? $bTransTmp->comparison_meta_title : "Compare {$bNameTmp} with Top Competitors";
+    $compMetaDesc = !empty($bTransTmp->comparison_meta_description) ? $bTransTmp->comparison_meta_description : ($bTransTmp->comparison_description ?? '');
+@endphp
+
+@section('meta_title', format_meta_text($compMetaTitle))
+@if(!empty($compMetaDesc))
+@section('meta_description', format_meta_text($compMetaDesc))
+@endif
+
 @section('content')
 @php
     $lang_id = getCurrentLanguageID();
