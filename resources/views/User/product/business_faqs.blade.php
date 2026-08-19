@@ -450,6 +450,11 @@
                             </div>
                         </div>
 
+                        <!-- 6. More about Business Card -->
+                        <div class="main_feature_lg">
+                            <x-more-about-business :business="$business" />
+                        </div>
+
                     </div>
                 </div>
             </div>

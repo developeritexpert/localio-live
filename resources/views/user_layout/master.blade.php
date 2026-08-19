@@ -3771,6 +3771,7 @@
     .view-all-link {
         color: #004692 !important;
     }
+
     </style>
 
     <script>
