@@ -171,6 +171,12 @@ class AddReview extends Component
         $this->conSearch = '';
     }
 
+    public function selectRecommend($val)
+    {
+        $this->recommend = (int) $val;
+        $this->step = 2;
+    }
+
     public function goToStep2()
     {
         $this->validate([
