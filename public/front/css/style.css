@@ -8793,7 +8793,7 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
 }
 
 .revie_img_sec .imges_left_sde {
-    width: 60%;
+    width: 70%;
 }
 
 .revie_img_sec .thre_revi_rgt {
@@ -10372,6 +10372,7 @@ h5.card-title.mb-3 {
     line-height: 1;
     align-items: center;
     display: flex;
+    font-size: 13px;
 }
 
 .inner_part_boxx {
@@ -10446,7 +10447,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
 .rating-group {
     color: #333 !important;
     line-height: 0 !important;
-    margin-top: 4px !important;
+    margin-top: 1px !important;
     font-weight: 500 !important;
     font-size: 12px !important;
     gap: 3px !important;
@@ -10667,6 +10668,7 @@ a.cta.btn_blue:hover,
     display: flex !important;
     align-items: center;
     gap: 10px;
+    margin-bottom: 5px;
 }
 
 .inner_box_silder .inn_sl_hed {
@@ -10712,8 +10714,9 @@ a.cta.btn_blue:hover,
 }
 .social_wishlist_btn .wishlist a i {
     position: relative;
-    top: 4px;
-    left: 4 px;
+    top: 6px;
+    font-size: 13px;
+    left: 4px;
 }
 
 .blue-heart .wishlist a i {
@@ -10766,9 +10769,9 @@ a.cta.btn_blue:hover,
     overflow: hidden;
 }
 
-#register-profile-modal .form-check-label {
+/* #register-profile-modal .form-check-label {
     font-size: 12px !important;
-}
+} */
 
 .recommend-txt {
     font-weight: 600;
@@ -10859,7 +10862,7 @@ a.cta.btn_blue:hover,
 .top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
 .top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
 .top_rate_pg .auto-choice-lft .fa-star {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 #register-profile-modal .form-check-label a:focus {
@@ -10869,7 +10872,7 @@ a.cta.btn_blue:hover,
 .review-actions-bottom-right .action-icon-btn,
 button.action-icon-btn.share-trigger-btn {
     color: #003f7d !important;
-    padding: 7px !important;
+    padding: 8px !important;
     width: 28px !important;
     height: 28px !important;
 }
@@ -10886,6 +10889,77 @@ button.action-icon-btn.share-trigger-btn {
     gap: 0;
 }
 
+/* ====style.css updated by-Kashish(19-aug-26)===== */
+
+.booking-share-popover {
+    max-width: 240px;
+}
+
+.booking-share-inner .booking-share-title {
+    font-size: 14px !important;
+    padding: 0;
+    margin-bottom: 3px;
+}
+
+.booking-share-icon svg {
+    position: relative;
+    left: 1px;
+}
+
+.booking-share-inner .booking-share-icon {
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+    border-radius: 50%;
+}
+
+.booking-share-item:hover .booking-share-icon {
+    background: #a0aec03b !important;
+}
+
+.booking-share-item {
+    gap: 6px;
+    padding: 4px 15px;
+}
+
+button#close-profile-modal-btn {
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+}
+
+button#close-profile-modal-btn:hover {
+    background: #a0aec03b !important;
+}
+
+.filter-by-title-row {
+    margin-top: 0;
+}
+
+.revie_img_sec .thre_revi_rgt {
+    width: 30% !important;
+}
+
+.sticky-nav-header.text-center {
+    border-bottom: 1px solid #e4e4e4;
+}
+
+a.btn-write-review-link:hover {
+    text-decoration: underline !important;
+}
+
+.sticky-nav-item:hover {
+    transform: translateX(0px) !important;
+}
+
+span.badge.bg-light.text-secondary.border {
+    font-weight: 500;
+}
+
+input#rating-4 {
+    width: 17px;
+    height: 16px;
+}
 /* Business Initial Avatar (when business has no logo) */
 .business-initial-logo,
 .business-logo-initial {

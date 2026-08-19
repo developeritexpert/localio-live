@@ -4830,7 +4830,8 @@ div#login-modal .modal-content .button-container a:first-child {
     background-color: #003f7d;
 }
 
-div#learnMoreModal .circle_11, div#howRankingsWorkModal .circle_11 {
+div#learnMoreModal .circle_11,
+div#howRankingsWorkModal .circle_11 {
     padding: 30px;
     background-color: #fff;
     border-radius: 12px;
@@ -4838,7 +4839,8 @@ div#learnMoreModal .circle_11, div#howRankingsWorkModal .circle_11 {
     position: relative;
 }
 
-div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-close {
+div#learnMoreModal button.modal-close,
+div#howRankingsWorkModal button.modal-close {
     position: absolute;
     top: 5px;
     right: 5px;
@@ -6347,32 +6349,39 @@ div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-clo
     }
 
     /* Style the scrollbar track */
-    #learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
+    #learnMoreModal .circle_11 .modal-content,
+    #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
         width: 8px;
         height: 8px;
         /* for horizontal scroll */
     }
 
     /* Style the track (background of the scrollbar) */
-    #learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-track {
+    #learnMoreModal .circle_11 .modal-content,
+    #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-track {
         background: #e0e0e0;
         border-radius: 4px;
     }
 
     /* Style the handle (thumb) */
-    #learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb {
+    #learnMoreModal .circle_11 .modal-content,
+    #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb {
         background-color: #003f7d;
         /* Blue thumb */
         border-radius: 4px;
     }
 
     /* On hover */
-    #learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb:hover {
+    #learnMoreModal .circle_11 .modal-content,
+    #howRankingsWorkModal
+        .circle_11
+        .modal-content::-webkit-scrollbar-thumb:hover {
         background: #003f7d;
     }
 
     /* Targeting the scroll container */
-    #learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content {
+    #learnMoreModal .circle_11 .modal-content,
+    #howRankingsWorkModal .circle_11 .modal-content {
         overflow-y: auto;
         scrollbar-width: none;
         /* Firefox */
@@ -6381,7 +6390,8 @@ div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-clo
     }
 
     /* Chrome, Safari and Edge */
-    #learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
+    #learnMoreModal .circle_11 .modal-content,
+    #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
         width: 0px;
         height: 0px;
         background: transparent;
@@ -6930,7 +6940,8 @@ div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-clo
         align-items: start;
     }
 
-    div#learnMoreModal .circle_11, div#howRankingsWorkModal .circle_11 {
+    div#learnMoreModal .circle_11,
+    div#howRankingsWorkModal .circle_11 {
         max-width: 700px;
     }
 
@@ -9099,7 +9110,8 @@ div#login-modal .modal-content .button-container a:first-child {
     background-color: #003f7d;
 }
 
-div#learnMoreModal .circle_11, div#howRankingsWorkModal .circle_11 {
+div#learnMoreModal .circle_11,
+div#howRankingsWorkModal .circle_11 {
     padding: 30px;
     background-color: #fff;
     border-radius: 12px;
@@ -9107,7 +9119,8 @@ div#learnMoreModal .circle_11, div#howRankingsWorkModal .circle_11 {
     position: relative;
 }
 
-div#learnMoreModal button.modal-close, div#howRankingsWorkModal button.modal-close {
+div#learnMoreModal button.modal-close,
+div#howRankingsWorkModal button.modal-close {
     position: absolute;
     top: 5px;
     right: 5px;
@@ -10604,32 +10617,37 @@ html {
 }
 
 /* Style the scrollbar track */
-#learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
+#learnMoreModal .circle_11 .modal-content,
+#howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
     width: 8px;
     height: 8px;
     /* for horizontal scroll */
 }
 
 /* Style the track (background of the scrollbar) */
-#learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-track {
+#learnMoreModal .circle_11 .modal-content,
+#howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-track {
     background: #e0e0e0;
     border-radius: 4px;
 }
 
 /* Style the handle (thumb) */
-#learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb {
+#learnMoreModal .circle_11 .modal-content,
+#howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb {
     background-color: #003f7d;
     /* Blue thumb */
     border-radius: 4px;
 }
 
 /* On hover */
-#learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb:hover {
+#learnMoreModal .circle_11 .modal-content,
+#howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar-thumb:hover {
     background: #003f7d;
 }
 
 /* Targeting the scroll container */
-#learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content {
+#learnMoreModal .circle_11 .modal-content,
+#howRankingsWorkModal .circle_11 .modal-content {
     overflow-y: auto;
     scrollbar-width: none;
     /* Firefox */
@@ -10638,7 +10656,8 @@ html {
 }
 
 /* Chrome, Safari and Edge */
-#learnMoreModal .circle_11 .modal-content, #howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
+#learnMoreModal .circle_11 .modal-content,
+#howRankingsWorkModal .circle_11 .modal-content::-webkit-scrollbar {
     width: 0px;
     height: 0px;
     background: transparent;
@@ -11192,7 +11211,8 @@ div#accordionExample .accordion-item .accordion-collapse .accordion-body {
     align-items: start;
 }
 
-div#learnMoreModal .circle_11, div#howRankingsWorkModal .circle_11 {
+div#learnMoreModal .circle_11,
+div#howRankingsWorkModal .circle_11 {
     max-width: 700px;
 }
 
@@ -11860,6 +11880,12 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
     }
     .glass li {
         width: 100%;
+    }
+    .blue-heart .wishlist a i {
+        top: 1px;
+    }
+    .policy-nav {
+        margin-top: 19px;
     }
 
     /* 11-jun-26  */
@@ -13058,6 +13084,9 @@ textarea#message {
         padding-right: 0;
     }
 
+    .section_heading_link .section_heading {
+        justify-content: unset !important;
+    }
     /*================ 28-july-26  =====================*/
     .most-populr-sec .popular-categories-sidebar {
         padding: 0 !important;
@@ -13574,11 +13603,17 @@ textarea#message {
     .most-populr-sec .inn_h .sl_main h6.head {
         font-size: 14px !important;
     }
-    .rating-group {
-        margin-top: 2px !important;
-        font-size: 11px !important;
+    .automotive-card .inn_sl_hed .sl_h {
+        gap: 1px !important;
     }
-
+    div#howRankingsWorkModal .circle_11 {
+        max-width: 300px;
+        padding: 15px;
+    }
+    h2.modal-title {
+        font-size: 20px !important;
+        display: inline;
+    }
     .most-populr-sec .popular-categories-title {
         margin-bottom: 0px !important;
     }
@@ -13660,6 +13695,9 @@ textarea#message {
     }
     div#learnMoreModal .circle_11 {
         padding: 15px;
+    }
+    .alert.alert-info p {
+        font-size: 14px !important;
     }
 }
 
