@@ -109,11 +109,13 @@
                     </div>
                 </div>
             </div>
+            @if(!empty($business->is_affiliate))
             <div class="col-md-4 col-12 text-md-end text-start">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
+            @endif
         </div>
     </div>
 </section>
@@ -169,7 +171,7 @@
                                 @endfor
                             </div>
 
-                            <span class="f-12" style="color: #666;">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                            <span class="f-12" style="color: #666;">Community rating · {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                         </div>
 
                         <a href="#reviews-section" class="card-h-link view-review-link underline" style=" padding-top: 5px;">
@@ -308,6 +310,44 @@
                     @else
                         <p style="font-size: 14px; color: #64748b; margin: 0;">No highlighted reviews available yet.</p>
                     @endif
+                </div>
+
+                <!-- More about Business Sub-pages Card -->
+                @php
+                    $bSlug = $business->translations->first()->slug ?? $business->slug ?? '';
+                    $currentLocale = app()->getLocale();
+                    $languageObj = \App\Models\Language::where('lang_code', $currentLocale)->first();
+                    $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+                    $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
+                    $expectedComparisonsSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
+                @endphp
+                <div class="boxshadow_border bg-white p-4 more-about-business-card" style="border-radius: 16px !important;">
+                    <div class="pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0;">
+                        <h5 class="m-0 card-h-title">More about {{ $bName }}</h5>
+                    </div>
+
+                    <div class="more-about-links-list d-flex flex-column">
+                        <a href="{{ route('user.product_detail', ['locale' => $currentLocale, 'id' => $bSlug]) }}" class="more-about-link-item d-flex align-items-center justify-content-between text-decoration-none">
+                            <span class="more-about-link-text">{{ $bName }} overview</span>
+                            <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
+                        </a>
+                        <a href="{{ route('business.alternatives', ['locale' => $currentLocale, 'business_slug' => $bSlug, 'alternatives_slug' => $expectedAlternativesSlug]) }}" class="more-about-link-item d-flex align-items-center justify-content-between text-decoration-none">
+                            <span class="more-about-link-text">{{ $bName }} alternatives</span>
+                            <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
+                        </a>
+                        <a href="{{ route('business.all_faqs', ['locale' => $currentLocale, 'business_slug' => $bSlug, 'faq_slug' => $expectedFaqSlug]) }}" class="more-about-link-item d-flex align-items-center justify-content-between text-decoration-none">
+                            <span class="more-about-link-text">{{ $bName }} FAQs</span>
+                            <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
+                        </a>
+                        <a href="{{ route('business.all_comparisons', ['locale' => $currentLocale, 'business_slug' => $bSlug]) }}" class="more-about-link-item d-flex align-items-center justify-content-between text-decoration-none">
+                            <span class="more-about-link-text">Compare {{ $bName }}</span>
+                            <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
+                        </a>
+                        <a href="{{ route('user.product_detail', ['locale' => $currentLocale, 'id' => $bSlug]) }}#sectionDiscussions" class="more-about-link-item d-flex align-items-center justify-content-between text-decoration-none">
+                            <span class="more-about-link-text">{{ $bName }} discussions</span>
+                            <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
+                        </a>
+                    </div>
                 </div>      
             </div>
         </div>
@@ -317,6 +357,38 @@
 <!-- Review Content Section -->
 <section class="review-section reviw_sec_new py-5" id="reviews-section" style="background-color: #ffffff; overflow: visible !important;">
     <style>
+        .more-about-link-item {
+            color: #1e3050;
+            transition: all 0.2s ease;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .more-about-link-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .more-about-link-item:first-child {
+            padding-top: 0;
+        }
+        .more-about-link-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1e3050;
+            transition: color 0.2s ease;
+        }
+        .more-about-link-arrow {
+            font-size: 14px;
+            color: #1e3050;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .more-about-link-item:hover .more-about-link-text {
+            color: #06498b;
+        }
+        .more-about-link-item:hover .more-about-link-arrow {
+            color: #06498b;
+            transform: translateX(4px);
+        }
+
         .review-sidebar-sticky {
             position: sticky !important;
             position: -webkit-sticky !important;
@@ -400,32 +472,20 @@
         .reviw_sec_new .filt_box li i.text-warning{
             color:#4a4a4a !important;
         }
-        /* Circular Pagination Styling */
-        .pagination-wrap {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-        .pagination-wrap .pagination {
+        /* Exact Pagination Style matching Top-Rated Page */
+        .btn-pages {
             display: flex !important;
-            gap: 12px !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 10px !important;
+            margin-top: 30px !important;
+        }
+        .btn-pages .pagination-btn {
+            display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            list-style: none !important;
-        }
-        .pagination-wrap .pagination .page-item {
-            margin: 0 !important;
-            border: none !important;
-        }
-        .pagination-wrap .pagination .page-item .page-link {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 42px !important;
-            height: 42px !important;
+            width: 44px !important;
+            height: 44px !important;
             border-radius: 50% !important;
             border: 1.5px solid #174889 !important;
             background-color: #ffffff !important;
@@ -436,19 +496,39 @@
             padding: 0 !important;
             transition: all 0.2s ease !important;
             box-shadow: none !important;
+            cursor: pointer !important;
         }
-        .pagination-wrap .pagination .page-item.active .page-link {
+        .btn-pages .pagination-btn.active {
             background-color: #174889 !important;
             border-color: #174889 !important;
             color: #ffffff !important;
         }
-        .pagination-wrap .pagination .page-item .page-link:hover {
+        .btn-pages .pagination-btn:hover {
             background-color: #174889 !important;
             border-color: #174889 !important;
             color: #ffffff !important;
         }
-        .pagination-wrap .pagination .page-item.disabled {
-            display: none !important;
+        .btn-pages .pagination-btn.pagination-arrow {
+            background-color: #ffffff !important;
+            border-color: #174889 !important;
+            color: #174889 !important;
+        }
+        .btn-pages .pagination-btn.pagination-arrow i {
+            font-size: 15px !important;
+            color: #174889 !important;
+            transition: color 0.2s ease !important;
+        }
+        .btn-pages .pagination-btn.pagination-arrow:hover {
+            background-color: #174889 !important;
+            border-color: #174889 !important;
+        }
+        .btn-pages .pagination-btn.pagination-arrow:hover i {
+            color: #ffffff !important;
+        }
+        .btn-pages .pagination-dots {
+            font-size: 16px !important;
+            color: #64748b !important;
+            padding: 0 4px !important;
         }
         @media (max-width: 991px) {
             .review-sidebar-sticky {
@@ -498,7 +578,7 @@
                 <div class="review-sidebar-sticky">
                     
                     <h2 style="font-size: 20px; font-weight: 700; color: #1e3050; margin-bottom: 16px;">
-                        All user reviews
+                        {{ $bName }} user reviews
                     </h2>
 
                     <!-- Rating Summary Card -->
@@ -757,7 +837,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    $(document).on('click', '#reviews-list-container .pagination a', function (e) {
+    $(document).on('click', '#reviews-list-container .btn-pages a.pagination-btn', function (e) {
         e.preventDefault();
         const url = $(this).attr('href');
         if (url) {

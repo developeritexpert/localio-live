@@ -88,11 +88,13 @@
                     </div>
                 </div>
             </div>
+            @if(!empty($business->is_affiliate))
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
+            @endif
         </div>
     </div>
 </section>
@@ -181,7 +183,7 @@
                     <div class="fetru_row d-flex justify-content-between" data-aos="fade-up" data-aos-duration="1000">
 
                         <!-- 1. USPs -->
-                        @if($business->usps && $business->usps->count() > 0)
+                        @if(!empty($business->is_affiliate) && $business->usps && $business->usps->count() > 0)
                             <div class="main_feature_lg">
                                 <div class="feture_box lft_check_box size15">
                                     <ul class="list-unstyled">
@@ -289,7 +291,7 @@
                             $hasStartingPrice = !empty($startingPrice) && is_numeric($startingPrice) && $startingPrice > 0;
                         @endphp
 
-                        @if($hasStartingPrice || $hasFreeTrial)
+                        @if(!empty($business->is_affiliate) && ($hasStartingPrice || $hasFreeTrial))
                             <div class="innr_price_trail">
                                 @if($hasStartingPrice)
                                 <div class="main_feature_sm">
