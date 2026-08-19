@@ -1379,7 +1379,7 @@ class BusinessForm extends Component
             'languages_supported' => 'required',
             'support_options' => 'nullable|string',
             'website_url' => 'nullable|url',
-            'selectedCountries' => 'required|array|min:1',
+            'selectedCountries' => (int)$this->active_all_countries === 1 ? 'nullable|array' : 'required|array|min:1',
             'year_found' => 'nullable|digits:4|integer|min:1900|max:' . date('Y'),
             'meta_title' => 'nullable|string|max:191',
             'meta_description' => 'nullable|string|max:255',
@@ -1556,7 +1556,7 @@ class BusinessForm extends Component
     protected function syncBusinessRelationships($business)
     {
         // Sync country relationships
-        $business->countries()->sync($this->selectedCountries);
+        $business->countries()->sync((int)$this->active_all_countries === 1 ? [] : ($this->selectedCountries ?? []));
 
         // Sync features
         $business->features()->sync($this->selectedFeatures);
