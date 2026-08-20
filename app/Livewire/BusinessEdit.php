@@ -689,23 +689,25 @@ class BusinessEdit extends Component
     }
     public function saveUrlEdit($countryId, $index)
     {
-        // dd($countryId, $index);
-        // dd( $this->editIsAffiliate );
-        // dd($this->editUrlValue);
-        $this->validate([
-            'editUrlValue' => 'required|url',
-        ]);
+        if ($this->editIsAffiliate) {
+            $this->validate([
+                'editUrlValue' => 'required|url',
+            ]);
+        } else {
+            $this->resetValidation(['editUrlValue']);
+            $this->editUrlValue = null;
+        }
 
         if (isset($this->countryWebsiteUrls[$countryId][$index])) {
             $this->countryWebsiteUrls[$countryId][$index] = [
-                'url' => $this->editUrlValue,
-                'is_affiliate' => $this->editIsAffiliate,
+                'url' => $this->editIsAffiliate ? $this->editUrlValue : null,
+                'is_affiliate' => (bool)$this->editIsAffiliate,
                 'status' => 1
             ];
         }
 
         $this->cancelUrlEdit();
-        $this->dispatch('notify', ['message' => 'URL updated successfully!', 'type' => 'success']);
+        $this->dispatch('notify', ['message' => 'Country setting updated successfully!', 'type' => 'success']);
     }
 
     public function cancelUrlEdit()
@@ -856,10 +858,17 @@ class BusinessEdit extends Component
             }
         }
 
-        $this->validate([
-            'selectedCountryForUrl' => 'required',
-            'newWebsiteUrl' => 'required|url',
-        ]);
+        if ($this->countryIsAffiliate) {
+            $this->validate([
+                'selectedCountryForUrl' => 'required',
+                'newWebsiteUrl' => 'required|url',
+            ]);
+        } else {
+            $this->validate([
+                'selectedCountryForUrl' => 'required',
+            ]);
+            $this->newWebsiteUrl = null;
+        }
 
         if (!$countryId) {
             $this->addError('selectedCountryForUrl', 'Please select a valid country/region.');
@@ -885,8 +894,8 @@ class BusinessEdit extends Component
         }
 
         $this->countryWebsiteUrls[$countryId][] = [
-            'url' => $this->newWebsiteUrl,
-            'is_affiliate' => $this->countryIsAffiliate,
+            'url' => $this->countryIsAffiliate ? $this->newWebsiteUrl : null,
+            'is_affiliate' => (bool)$this->countryIsAffiliate,
             'status' => 1
         ];
 
@@ -1883,11 +1892,11 @@ class BusinessEdit extends Component
 
                 // Handle multiple URLs per country
                 foreach ($urlsArray as $urlData) {
-                    if (is_array($urlData) && !empty($urlData['url'])) {
-                        $websiteUrl = str_replace('\/', '/', $urlData['url']);
-                        $isAffiliate = $urlData['is_affiliate'] ?? false;
+                    if (is_array($urlData)) {
+                        $websiteUrl = !empty($urlData['url']) ? str_replace('\/', '/', $urlData['url']) : null;
+                        $isAffiliate = !empty($urlData['is_affiliate']) ? 1 : 0;
 
-                        // Create new website URL record
+                        // Create new website URL record (saves even if websiteUrl is null if non-affiliated)
                         $business->websites()->create([
                             'business_id' => $business->id,
                             'country_id' => $countryId,

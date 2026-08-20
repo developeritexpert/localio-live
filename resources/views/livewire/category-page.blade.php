@@ -1467,11 +1467,14 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2 w-100 mt-auto">
+                                @php
+                                    $hasBizTrackedUrl = !empty($biz->getTrackedUrl());
+                                @endphp
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
-                                   class="btn-view-details-outline btn py-1 px-2 fw-medium {{ !empty($biz->is_affiliate) ? 'w-50' : 'w-100' }}">
+                                   class="btn-view-details-outline btn py-1 px-2 fw-medium {{ ($hasBizTrackedUrl) ? 'w-50' : 'w-100' }}">
                                     View details
                                 </a>
-                                @if(!empty($biz->is_affiliate))
+                                @if($hasBizTrackedUrl)
                                 <a href="{{ $biz->getTrackedUrl() }}"
                                    target="_blank"
                                    class="btn-orng-pill btn py-1 px-2 fw-medium w-50 text-white">

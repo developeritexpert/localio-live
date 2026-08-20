@@ -144,12 +144,22 @@ class Business extends Model
                 ? $this->websites->firstWhere('country_id', $countryId)
                 : $this->websites()->where('country_id', $countryId)->first();
 
-            if ($countryWebsite && !empty($countryWebsite->website_url)) {
-                return $countryWebsite->website_url;
+            if ($countryWebsite) {
+                // If country explicitly has affiliate disabled (0), it is non-affiliated for this country
+                if (isset($countryWebsite->is_affiliate) && !$countryWebsite->is_affiliate) {
+                    return null;
+                }
+                if (!empty($countryWebsite->website_url)) {
+                    return $countryWebsite->website_url;
+                }
             }
         }
 
-        return $this->affiliate_link ?: $this->permanent_url;
+        if ($this->is_affiliate) {
+            return $this->affiliate_link ?: $this->permanent_url;
+        }
+
+        return $this->permanent_url ?: $this->affiliate_link;
     }
 
     public function getTrackedUrl()
