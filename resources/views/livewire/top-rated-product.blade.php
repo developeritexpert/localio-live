@@ -1,5 +1,6 @@
 <div>
     <style>
+    [x-cloak] { display: none !important; }
     .automotive-card.auto-bg.aos-init.aos-animate {
         background-color: #f7f9fb !important;
     }
@@ -311,19 +312,15 @@
                     <div class="col-md-4 mt-4 mt-md-0 text-start">
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
-                            <div class="d-flex align-items-center mb-2" style="gap: 8px;">
-                                <!-- <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}"
-                                    style="width: 20px; height: 20px;" alt="Verified"> -->
-                                    <i class="far fa-star text-warning" style="margin-top: -4px; color: #1e3050 !important;"></i>
-                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real
-                                    experiences</h6>
+                            <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'From our community' }}</h6>
+                                <img src="{{ asset('front/img/20250704132226_specialists_small_img_0.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
                             </div>
                             <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                Ratings and reviews are shared by real users from the Localio community.
+                                {{ static_text('community_insights_desc') ?: 'Ratings and reviews are shared by real Localio users.' }}
                             </p>
                             <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
-                                style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How
-                                rankings work</a>
+                                style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                         </div>
                     </div>
                 </div>
@@ -684,21 +681,22 @@
                                 $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
                                 @endphp
 
-                                <div class="position-relative d-inline-block" id="sortDropdownWrapper">
-                                    <button type="button" id="sortToggleBtn"
+                                <div class="position-relative d-inline-block">
+                                    <button type="button" wire:click="toggleSortDropdown"
                                         class="sorting d-inline-flex align-items-center gap-2"
                                         style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
                                         <span>Sort: <span>{{ $currentLabel }}</span></span>
-                                        <svg id="sortToggleArrow" xmlns="http://www.w3.org/2000/svg" width="14"
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                             height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
                                             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                            style="transition: transform 0.2s ease;">
+                                            style="{{ !empty($showSortDropdown) ? 'transform: rotate(180deg);' : '' }} transition: transform 0.2s ease;">
                                             <polyline points="6 9 12 15 18 9" />
                                         </svg>
                                     </button>
 
-                                    {{-- Always rendered, just hidden with CSS --}}
-                                    <div id="sortDropdownMenu" class="position-absolute end-0 mt-2 bg-white py-2 d-none"
+                                    @if(!empty($showSortDropdown))
+                                    <div wire:click="$set('showSortDropdown', false)" class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 9998; cursor: default;"></div>
+                                    <div class="position-absolute end-0 mt-2 bg-white py-2"
                                         style="z-index: 9999; min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
                                         @foreach($sortOptionsMap as $val => $label)
                                         <button type="button" wire:click="setSortBy('{{ $val }}')"
@@ -719,6 +717,7 @@
                                         </button>
                                         @endforeach
                                     </div>
+                                    @endif
                                 </div>
                             </div>
                             @if (!empty($products))
@@ -1334,11 +1333,13 @@ document.addEventListener('livewire:initialized', () => {
 </script>
 <script>
 window.addEventListener('scroll-to-middle', function() {
-    const offset = window.innerHeight * 0.55;
-    window.scrollTo({
-        top: offset,
-        behavior: 'smooth'
-    });
+    const listSec = document.querySelector('.top-automotive-sec') || document.querySelector('.top-auto-choice');
+    if (listSec) {
+        listSec.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 });
 // Update browser URL when pagination changes
 window.addEventListener('update-pagination-url', function(event) {
@@ -1346,67 +1347,6 @@ window.addEventListener('update-pagination-url', function(event) {
 });
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const wrapper = document.getElementById('sortDropdownWrapper');
-    const toggleBtn = document.getElementById('sortToggleBtn');
-    const menu = document.getElementById('sortDropdownMenu');
-    const arrow = document.getElementById('sortToggleArrow');
-    if (!wrapper || !toggleBtn || !menu) return;
 
-    function openMenu() {
-        menu.classList.remove('d-none');
-        arrow.style.transform = 'rotate(180deg)';
-        lockScroll();
-    }
-
-    function closeMenu() {
-        menu.classList.add('d-none');
-        arrow.style.transform = '';
-        unlockScroll();
-    }
-
-    function isOpen() {
-        return !menu.classList.contains('d-none');
-    }
-
-    toggleBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        isOpen() ? closeMenu() : openMenu();
-    });
-
-    document.addEventListener('click', function(e) {
-        if (isOpen() && !wrapper.contains(e.target)) {
-            closeMenu();
-        }
-    });
-
-    // Close automatically once a sort option is picked (Livewire request starts)
-    document.addEventListener('livewire:navigating', closeMenu);
-    menu.addEventListener('click', function(e) {
-        if (e.target.closest('button')) {
-            closeMenu();
-        }
-    });
-
-    function preventScroll(e) {
-        e.preventDefault();
-    }
-
-    function lockScroll() {
-        document.addEventListener('wheel', preventScroll, {
-            passive: false
-        });
-        document.addEventListener('touchmove', preventScroll, {
-            passive: false
-        });
-    }
-
-    function unlockScroll() {
-        document.removeEventListener('wheel', preventScroll);
-        document.removeEventListener('touchmove', preventScroll);
-    }
-});
-</script>
 
 </div>

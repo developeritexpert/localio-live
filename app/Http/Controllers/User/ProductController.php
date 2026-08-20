@@ -395,6 +395,76 @@ class ProductController extends Controller
         ));
     }
 
+    public function topRatedFaq($lang)
+    {
+        $lang_id = getCurrentLanguageID();
+        
+        $faqs = [];
+        $content = \App\Models\TopProductContent::where('meta_key', 'top_rated_faqs')
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if ($content && !empty($content->meta_value)) {
+            $decoded = json_decode($content->meta_value, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $faqs = $decoded;
+            }
+        }
+
+        if (empty($faqs) && $lang_id != 1) {
+            $enContent = \App\Models\TopProductContent::where('meta_key', 'top_rated_faqs')
+                ->where('lang_id', 1)
+                ->first();
+            if ($enContent && !empty($enContent->meta_value)) {
+                $decoded = json_decode($enContent->meta_value, true);
+                if (is_array($decoded) && count($decoded) > 0) {
+                    $faqs = $decoded;
+                }
+            }
+        }
+
+        if (empty($faqs)) {
+            $faqs = [
+                [
+                    'question' => 'How are top-rated products and businesses chosen?',
+                    'answer' => 'Top-rated listings are determined by verified community ratings, authentic review scores, user satisfaction metrics, and overall reliability across each industry category.'
+                ],
+                [
+                    'question' => 'How often are the top-rated rankings updated?',
+                    'answer' => 'Our rankings are updated continuously as new community reviews, verified feedback, and rating submissions are received.'
+                ],
+                [
+                    'question' => 'Can businesses pay to be featured as top-rated?',
+                    'answer' => 'No. Placement in top-rated rankings cannot be bought. Rankings strictly reflect actual community ratings and verified review performance.'
+                ],
+                [
+                    'question' => 'How can I submit a review for a business?',
+                    'answer' => 'Simply search for the business or visit its page on Localio, click "Write a review", rate the criteria, and share your experience.'
+                ],
+                [
+                    'question' => 'What makes Localio ratings different from other review sites?',
+                    'answer' => 'Localio relies on genuine community feedback with strict moderation to eliminate fake reviews, ensuring honest ratings from real users.'
+                ],
+                [
+                    'question' => 'Are all listed products available in my region?',
+                    'answer' => 'Most top-rated products and businesses provide regional availability indicators and localized support information on their detail pages.'
+                ]
+            ];
+        }
+
+        $recentReviews = \App\Models\Review::with([
+            'user',
+            'translations' => fn($q) => $q->where('language_id', $lang_id),
+            'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
+        ])
+            ->where('status', 'active')
+            ->orderByDesc('created_at')
+            ->take(2)
+            ->get();
+
+        return view('User.product.top_rated_faqs', compact('faqs', 'recentReviews', 'lang_id'));
+    }
+
     public function topRatedProduct($lang, $category = null, $page = null)
     {
         if (is_numeric($category)) {

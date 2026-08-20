@@ -1080,6 +1080,8 @@ class CategoryPage extends Component
     {
         return view('livewire.category-page', [
             'products' => $this->products,
+            'sortBy' => $this->sortBy,
+            'showSortDropdown' => $this->showSortDropdown,
             'lang_id' => getCurrentLanguageID(),
             'textSections' => $this->textSections,
             'popularComparisons' => $this->popularComparisons,
