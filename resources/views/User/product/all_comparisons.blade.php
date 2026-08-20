@@ -303,6 +303,9 @@
                         </ul>
                     </div>
                 @endif
+
+                <!-- 6. More about Business Card -->
+                <x-more-about-business :business="$business" />
             </div>
         </div>
     </div>
