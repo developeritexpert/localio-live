@@ -213,7 +213,7 @@
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 100%;">
                                     <a href="{{route('top-rated-product')}}" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
-                                            <img src="{{ asset('front/img/pls-add.png') }}" style="width: 48px; height: 48px;">
+                                            <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 48px; height: 48px;">
                                             <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare </span>
                                         </div>
                                     </a>
