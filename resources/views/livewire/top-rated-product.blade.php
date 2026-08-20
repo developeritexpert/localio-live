@@ -1082,6 +1082,7 @@
         </div>
         <livewire:compare-bar />
     </section>
+@if(($products->currentPage() ?? ($page ?? 1)) == 1)
     <!-- Explore Top-Rated Categories Section -->
     @if(isset($exploreCategories) && $exploreCategories->isNotEmpty())
     <section class="explore-categories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
@@ -1257,6 +1258,7 @@
     <section class="subs_sec light top_rated_org_sec ">
         <x-news-letter-subscription />
     </section>
+    @endif
 <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
 <script>
 function initPriceSlider() {
