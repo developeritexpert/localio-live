@@ -487,11 +487,17 @@ class ProductController extends Controller
             'category.translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'category.ratingCriteria',
             'products.prices',
             'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'reviews' => function ($query) {
+                $query->where('status', 'active');
+            },
+            'reviews.ratings',
+            'reviews.user',
             'reviews.translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             },
@@ -550,11 +556,20 @@ class ProductController extends Controller
         }
         
         $businesses = Business::with([
+            'category.ratingCriteria',
+            'category.translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
             'products.prices',
             'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'reviews' => function ($query) {
+                $query->where('status', 'active');
+            },
+            'reviews.ratings',
+            'reviews.user',
             'reviews.translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             },

@@ -118,32 +118,65 @@
             gap: 10px;
         }
         .btn-vote-faq {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 12.5px;
-            font-weight: 600;
+            background: transparent;
+            border: none;
             color: #334155;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 2px;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+        }
+        .btn-vote-faq .vote-icon-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s ease;
+        }
+        .btn-vote-faq:hover .vote-icon-circle {
+            background: #e2e8f0;
+        }
+        .btn-vote-faq i {
+            font-size: 15px;
+            color: #475569;
+            font-weight: 400; /* Outline by default */
+            transition: all 0.15s ease;
+        }
+        /* Fill icon solid on hover */
+        .btn-vote-faq:hover i {
+            color: #002347;
+            font-weight: 900 !important;
+        }
+        /* Fill icon solid after voting */
+        .btn-vote-faq.voted-yes i.fa-thumbs-up,
+        .btn-vote-faq.voted-no i.fa-thumbs-down {
+            color: #002347 !important;
+            font-weight: 900 !important;
+        }
+        .faq-flag-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            padding: 0;
             transition: all 0.2s ease;
         }
-        .btn-vote-faq:hover {
-            background: #e2e8f0;
-            color: #0f172a;
-        }
-        .btn-vote-faq.voted-yes {
-            background: #e0f2fe;
-            border-color: #0284c7;
-            color: #0369a1;
-        }
-        .btn-vote-faq.voted-no {
-            background: #fee2e2;
-            border-color: #ef4444;
-            color: #b91c1c;
+        .faq-flag-btn:hover {
+            background: #a0aec03b;
+            color: #003f7d;
         }
 
         .dropdown-report-btn {
