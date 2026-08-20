@@ -29,9 +29,12 @@
         transition: color 0.2s ease !important;
     }
     .recommend-btn:hover {
-        background-color: #f0f6fc !important;
+        background-color: #06498b !important;
         border-color: #06498b !important;
-        color: #06498b !important;
+        color: #ffffff !important;
+    }
+    .recommend-btn:hover i {
+        color: #ffffff !important;
     }
     .recommend-btn.selected,
     .recommend-btn.selected-recommend {
@@ -167,7 +170,8 @@
                                     <div class="d-flex flex-column gap-4 w-100">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="top-product-small-logo">
-                                                <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}">
+                                                <!-- <img src="{{ asset($businessIcon ?? 'front/img/big-asana.png') }}" alt="{{ $businessName }}"> -->
+                                                <x-business-logo :icon="$businessIcon" :name="$businessName" />
                                             </div>
                                             <span class="fw-bold" style="color: #002655; font-size: 14px;">{{ $businessName }}</span>
                                         </div>
