@@ -328,6 +328,228 @@ class CategoryController extends Controller
 
 
 
+
+    public function categoryFaqs($locale, $slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+            $query->where('slug', $slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$category) {
+            $category = Category::whereHas('translations', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })->first();
+        }
+
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+
+        $categoryTranslation = $category->translations->firstWhere('lang_id', $lang_id) ?? $category->translations->first();
+        $parentCategory = $category->parent;
+        $parentTrans = $parentCategory ? ($parentCategory->translations->firstWhere('lang_id', $lang_id) ?? $parentCategory->translations->first()) : null;
+        $catName = $categoryTranslation->name ?? $category->name ?? 'Category';
+
+        $faqs = [];
+        if (!empty($categoryTranslation->faqs)) {
+            $decoded = is_array($categoryTranslation->faqs) ? $categoryTranslation->faqs : json_decode($categoryTranslation->faqs, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $faqs = $decoded;
+            }
+        }
+
+        if (empty($faqs)) {
+            $faqs = [
+                [
+                    'question' => "How do I choose the best " . strtolower($catName) . " provider?",
+                    'answer' => "Compare essential features, user ratings, transparent pricing, and reliability. Assess whether the provider aligns with your specific technical and budgetary requirements."
+                ],
+                [
+                    'question' => "What factors influence " . strtolower($catName) . " rankings on Localio?",
+                    'answer' => "Rankings are based on authentic customer reviews, verified user satisfaction scores, pricing value, and overall feature completeness."
+                ],
+                [
+                    'question' => "Are all " . strtolower($catName) . " providers verified by Localio?",
+                    'answer' => "We verify listing details and user reviews through automated checks and community moderation to ensure honest recommendations."
+                ],
+                [
+                    'question' => "Can I leave a review for a " . strtolower($catName) . " solution I use?",
+                    'answer' => "Yes, search for the provider on Localio, navigate to its profile, and submit your detailed rating and review."
+                ]
+            ];
+        }
+
+        $catIds = [$category->id];
+        if ($category->parent_id === null) {
+            $childIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
+            $catIds = array_merge($catIds, $childIds);
+        }
+
+        $recentReviews = \App\Models\Review::whereHas('business', function ($q) use ($catIds) {
+            $q->whereIn('category_id', $catIds)
+              ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                  $subQ->whereIn('categories.id', $catIds);
+              });
+        })
+        ->where('status', 'active')
+        ->with([
+            'user',
+            'translations' => fn($q) => $q->where('language_id', $lang_id),
+            'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
+        ])
+        ->orderByDesc('created_at')
+        ->take(2)
+        ->get();
+
+        if ($recentReviews->isEmpty()) {
+            $recentReviews = \App\Models\Review::where('status', 'active')
+                ->with([
+                    'user',
+                    'translations' => fn($q) => $q->where('language_id', $lang_id),
+                    'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
+                ])
+                ->orderByDesc('created_at')
+                ->take(2)
+                ->get();
+        }
+
+        return view('User.category.category_faqs', compact(
+            'category', 'categoryTranslation', 'parentCategory', 'parentTrans', 
+            'catName', 'faqs', 'recentReviews', 'lang_id'
+        ));
+    }
+
+    public function categoryComparisons($locale, $slug)
+    {
+        $lang_id = getCurrentLanguageID();
+
+        $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+            $query->where('slug', $slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$category) {
+            $category = Category::whereHas('translations', function ($query) use ($slug) {
+                $query->where('slug', $slug);
+            })->first();
+        }
+
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+
+        $categoryTranslation = $category->translations->firstWhere('lang_id', $lang_id) ?? $category->translations->first();
+        $parentCategory = $category->parent;
+        $parentTrans = $parentCategory ? ($parentCategory->translations->firstWhere('lang_id', $lang_id) ?? $parentCategory->translations->first()) : null;
+        $catName = $categoryTranslation->name ?? $category->name ?? 'Category';
+
+        $catIds = [$category->id];
+        if ($category->parent_id === null) {
+            $childIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
+            $catIds = array_merge($catIds, $childIds);
+        }
+
+        $businesses = \App\Models\Business::where(function ($q) use ($catIds) {
+            $q->whereIn('category_id', $catIds)
+              ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                  $subQ->whereIn('categories.id', $catIds);
+              });
+        })
+        ->where('status', 1)
+        ->whereHas('translations', function ($q) use ($lang_id) {
+            $q->where('lang_id', $lang_id);
+        })
+        ->withCount(['reviews as active_reviews_count' => fn($q) => $q->where('status', 'active')])
+        ->withAvg(['reviews as average_rating' => fn($q) => $q->where('status', 'active')], 'rating')
+        ->with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'products.prices'
+        ])
+        ->orderByDesc('is_affiliate')
+        ->orderByDesc('average_rating')
+        ->orderByDesc('active_reviews_count')
+        ->get();
+
+        $vsKey = static_text('vs_keyword') ?: 'vs';
+        $vsKeySlug = \Str::slug($vsKey);
+        $compSlug = $categoryTranslation->comparison_slug ?? 'compare';
+
+        // Build pairwise comparisons
+        $allPairs = [];
+        $count = $businesses->count();
+        for ($i = 0; $i < $count; $i++) {
+            for ($j = $i + 1; $j < $count; $j++) {
+                $b1 = $businesses[$i];
+                $b2 = $businesses[$j];
+                $b1Trans = $b1->translations->first();
+                $b2Trans = $b2->translations->first();
+                $b1Name = $b1Trans->name ?? $b1->name ?? 'Business 1';
+                $b2Name = $b2Trans->name ?? $b2->name ?? 'Business 2';
+                $b1Slug = $b1Trans->slug ?? $b1->slug;
+                $b2Slug = $b2Trans->slug ?? $b2->slug;
+
+                $url = route('product-comparison.seo', [
+                    'locale' => app()->getLocale(),
+                    'comparison_slug' => $compSlug,
+                    'comparison_businesses' => \Str::slug($b1Name) . '-' . $vsKeySlug . '-' . \Str::slug($b2Name)
+                ]);
+
+                $allPairs[] = [
+                    'business_1' => $b1,
+                    'business_1_name' => $b1Name,
+                    'business_1_rating' => (float)($b1->average_rating ?? 0),
+                    'business_1_reviews' => (int)($b1->active_reviews_count ?? 0),
+                    'business_2' => $b2,
+                    'business_2_name' => $b2Name,
+                    'business_2_rating' => (float)($b2->average_rating ?? 0),
+                    'business_2_reviews' => (int)($b2->active_reviews_count ?? 0),
+                    'url' => $url,
+                ];
+            }
+        }
+
+        // Paginate pairs
+        $page = request()->get('page', 1);
+        $perPage = 12;
+        $total = count($allPairs);
+        $slice = array_slice($allPairs, ($page - 1) * $perPage, $perPage);
+        $paginatedComparisons = new \Illuminate\Pagination\LengthAwarePaginator(
+            $slice, $total, $perPage, $page, ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        $recentReviews = \App\Models\Review::whereHas('business', function ($q) use ($catIds) {
+            $q->whereIn('category_id', $catIds)
+              ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                  $subQ->whereIn('categories.id', $catIds);
+              });
+        })
+        ->where('status', 'active')
+        ->with([
+            'user',
+            'translations' => fn($q) => $q->where('language_id', $lang_id),
+            'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
+        ])
+        ->orderByDesc('created_at')
+        ->take(2)
+        ->get();
+
+        if ($recentReviews->isEmpty()) {
+            $recentReviews = \App\Models\Review::where('status', 'active')
+                ->with([
+                    'user',
+                    'translations' => fn($q) => $q->where('language_id', $lang_id),
+                    'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
+                ])
+                ->orderByDesc('created_at')
+                ->take(2)
+                ->get();
+        }
+
+        return view('User.category.category_comparisons', compact(
+            'category', 'categoryTranslation', 'parentCategory', 'parentTrans',
+            'catName', 'paginatedComparisons', 'recentReviews', 'businesses', 'lang_id'
+        ));
+    }
+
 }
-
-

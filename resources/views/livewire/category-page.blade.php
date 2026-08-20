@@ -1381,6 +1381,12 @@
                     </div>
                     @endforeach
                 </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link">
+                        View more comparisons
+                    </a>
+                </div>
             </div>
         </section>
         @endif
@@ -1491,6 +1497,12 @@
                                 </div>
                             </div>
                             @endforeach
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
+                                View more FAQs
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -797,7 +797,30 @@ class ProductController extends Controller
             'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
             'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->where('status', 'active'),
-        ])->firstOrFail();
+        ])->first();
+
+        if (!$business) {
+            $business = Business::whereHas('translations', function ($q) use ($business_slug) {
+                $q->where('slug', $business_slug);
+            })->with([
+                'translations',
+                'category.translation',
+                'category.translations',
+                'category.parent.translation',
+                'category.parent.translations',
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])->first();
+        }
+
+        if (!$business) {
+            $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug) {
+                $query->where('slug', $business_slug);
+            })->first();
+            if ($category) {
+                return app(\App\Http\Controllers\User\CategoryController::class)->categoryComparisons($locale, $business_slug);
+            }
+            abort(404, 'Business or Category not found');
+        }
 
         $totalReviews = $business->reviews->count();
         $averageRating = $totalReviews > 0 ? round($business->reviews->avg('rating'), 1) : 0;

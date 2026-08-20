@@ -631,17 +631,39 @@ class ViewController extends Controller
 
     public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
     {
+        $lang_id = getCurrentLanguageID();
         $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
         $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
         $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
         $expectedComparisonsSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
 
+        // 1. Check if slug matches a Category or Subcategory
+        $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug, $lang_id) {
+            $query->where('slug', $business_slug)->where('lang_id', $lang_id);
+        })->first();
+
+        if (!$category) {
+            $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug) {
+                $query->where('slug', $business_slug);
+            })->first();
+        }
+
+        if ($category) {
+            if ($second_segment === $expectedFaqSlug || $second_segment === 'faqs' || $second_segment === 'faq') {
+                return app(\App\Http\Controllers\User\CategoryController::class)->categoryFaqs($locale, $business_slug);
+            }
+            if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
+                return app(\App\Http\Controllers\User\CategoryController::class)->categoryComparisons($locale, $business_slug);
+            }
+        }
+
+        // 2. Business Subpages
         if ($second_segment === $expectedAlternativesSlug || $second_segment === 'alternatives') {
             return $this->businessAlternatives($request, $locale, $business_slug, $second_segment);
         }
 
-        if ($second_segment === $expectedFaqSlug || $second_segment === 'faqs') {
+        if ($second_segment === $expectedFaqSlug || $second_segment === 'faqs' || $second_segment === 'faq') {
             return $this->businessFaqs($request, $locale, $business_slug, $second_segment);
         }
 

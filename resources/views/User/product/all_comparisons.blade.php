@@ -1,4 +1,58 @@
 @extends('user_layout.master')
+@push('styles')
+<style>
+    .auto-choice-rgt .btn-pages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-top: 50px;
+    }
+    .auto-choice-rgt .btn-pages .pagination-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50% !important;
+        border: 1.5px solid #174889;
+        background-color: #ffffff;
+        color: #174889;
+        font-size: 15px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .auto-choice-rgt .btn-pages .pagination-btn.active {
+        background-color: #174889 !important;
+        color: #ffffff !important;
+        border-color: #174889 !important;
+    }
+    .auto-choice-rgt .btn-pages .pagination-btn:hover {
+        background-color: #174889 !important;
+        color: #ffffff !important;
+        border-color: #174889 !important;
+    }
+    .auto-choice-rgt .btn-pages .pagination-btn:hover i {
+        color: #ffffff !important;
+    }
+    .auto-choice-rgt .btn-pages .pagination-arrow {
+        background-color: #ffffff;
+        border: 1.5px solid #174889;
+        border-radius: 50% !important;
+    }
+    .auto-choice-rgt .btn-pages .pagination-arrow i {
+        color: #174889;
+        font-size: 13px;
+    }
+    .auto-choice-rgt .btn-pages .pagination-dots {
+        font-size: 16px;
+        color: #64748b;
+        padding: 0 4px;
+    }
+</style>
+@endpush
+
 
 @php
     $lang_id = getCurrentLanguageID();
@@ -327,9 +381,65 @@
             @endforelse
         </div>
 
-        <div class="d-flex justify-content-center mt-5">
-            {{ $peerComparisons->links('pagination::bootstrap-4') }}
-        </div>
+        @php
+            $currentPage = $peerComparisons->currentPage();
+            $lastPage = $peerComparisons->lastPage() ?? 1;
+            $maxVisible = 7;
+
+            $startPage = max(1, $currentPage - floor($maxVisible / 2));
+            $endPage = min($lastPage, $startPage + $maxVisible - 1);
+
+            if ($endPage - $startPage + 1 < $maxVisible) {
+                $startPage = max(1, $endPage - $maxVisible + 1);
+            }
+            $showLeftDots = $startPage > 2;
+            $showRightDots = $endPage < $lastPage - 1;
+        @endphp
+
+        @if ($lastPage > 1)
+            <div class="auto-choice-rgt d-flex justify-content-center mt-5">
+                <div class="btn-pages">
+                    {{-- Previous Button (only if there's a previous page) --}}
+                    @if ($currentPage > 1)
+                        <a href="{{ $peerComparisons->url($currentPage - 1) }}" class="pagination-btn pagination-arrow">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </a>
+                    @endif
+
+                    {{-- First Page --}}
+                    @if ($startPage > 1)
+                        <a href="{{ $peerComparisons->url(1) }}" class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}">1</a>
+                        @if ($showLeftDots)
+                            <span class="pagination-dots">...</span>
+                        @endif
+                    @endif
+
+                    {{-- Page Numbers --}}
+                    @for ($page = $startPage; $page <= $endPage; $page++)
+                        <a href="{{ $peerComparisons->url($page) }}" class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}">
+                            {{ $page }}
+                        </a>
+                    @endfor
+
+                    {{-- Last Page --}}
+                    @if ($endPage < $lastPage)
+                        @if ($showRightDots)
+                            <span class="pagination-dots">...</span>
+                        @endif
+                        <a href="{{ $peerComparisons->url($lastPage) }}" class="pagination-btn {{ $currentPage == $lastPage ? 'active' : '' }}">
+                            {{ $lastPage }}
+                        </a>
+                    @endif
+
+                    {{-- Next Button (only if there's a next page) --}}
+                    @if ($currentPage < $lastPage)
+                        <a href="{{ $peerComparisons->url($currentPage + 1) }}" class="pagination-btn pagination-arrow next">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
 </section>
 @endsection
