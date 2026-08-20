@@ -845,7 +845,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
                                                                         {{ $usp->text }}</p>
                                                                 </div>
                                                                 @endforeach
@@ -857,7 +857,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
                                                                         Free domain & SSL certificate</p>
                                                                 </div>
                                                                 <div class="d-flex align-items-center size18">
@@ -867,7 +867,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
                                                                         Customizable automatic updates</p>
                                                                 </div>
                                                                 <div class="d-flex align-items-center size18">
@@ -877,7 +877,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
                                                                         Scalable performance management</p>
                                                                 </div>
                                                                 @endif

@@ -1317,7 +1317,7 @@
 
                             @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                                 @foreach($section['sub_sections'] as $sub)
-                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style="border-left: 3px solid #06498b !important;">
+                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style=">
                                     @if(!empty($sub['h3_title']))
                                     <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 8px;">
                                         {{ $sub['h3_title'] }}

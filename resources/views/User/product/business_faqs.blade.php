@@ -548,10 +548,10 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner">
                     <div>
-                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #fdfdfd !important;">
+                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
                             Still have a question about {{ $bName }}?
                         </h3>
-                        <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
+                        <p style="font-size: 15px; margin-bottom: 0;">
                             Ask the Localio community
                         </p>
                     </div>
