@@ -1309,6 +1309,8 @@ textarea:focus-visible {
     margin-top: 0 !important;
     margin-bottom: 4px !important;
     width: 100% !important;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .best-value-inline {
@@ -3260,6 +3262,10 @@ select:focus {
     margin-bottom: 5px;
 }
 
+.inn_h {
+    margin-bottom: 5px;
+}
+
 .top-automotive-sec {
     padding-top: 50px;
     padding-bottom: 200px;
@@ -4676,6 +4682,7 @@ header .container-fluid.top_hd_spacing {
 .pdc_box .pdc_choice .auto-choice-hd .sl_h .inn_h {
     justify-content: center;
     gap: 10px;
+    margin-bottom: 8px;
 }
 
 .pdc_box .pdc_choice .auto-choice-hd .tp-btm {
@@ -9691,9 +9698,9 @@ section.right_tool_sec .otr_rgtool h2 {
   background-color: #06498b1a;
 } */
 
-.top_rate_pg .automotive-card .inn_h {
+/* .top_rate_pg .automotive-card .inn_h {
     margin-bottom: 0 !important;
-}
+} */
 
 .blue-chkbox label {
     display: flex;
@@ -10382,6 +10389,7 @@ section.most-populr-sec.ms_dv.light.p_120 {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .blue-heart:hover {
@@ -10637,7 +10645,7 @@ a.cta.btn_blue:hover,
     top: 0px;
     left: 0px;
     color: #003f7d;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .review-brand-icon {
@@ -10778,11 +10786,11 @@ a.cta.btn_blue:hover,
     margin-top: 0;
 }
 
-.recommended-per {
+/* .recommended-per {
     position: absolute;
     right: 30px;
     top: 20px;
-}
+} */
 
 .form-check-label i.fas.fa-star.text-warning,
 .top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
@@ -10819,13 +10827,14 @@ button.action-icon-btn.share-trigger-btn {
 /* ====style.css updated by-Kashish(19-aug-26)===== */
 
 .booking-share-popover {
-    max-width: 240px;
+    max-width: 190px;
 }
 
 .booking-share-inner .booking-share-title {
-    font-size: 14px !important;
+    font-size: 15px !important;
     padding: 0;
     margin-bottom: 3px;
+    padding-bottom: 3px;
 }
 
 .booking-share-icon svg {
@@ -10863,10 +10872,6 @@ button#close-profile-modal-btn:hover {
     margin-top: 0;
 }
 
-.revie_img_sec .thre_revi_rgt {
-    width: 30% !important;
-}
-
 .sticky-nav-header.text-center {
     border-bottom: 1px solid #e4e4e4;
 }
@@ -10875,7 +10880,6 @@ a.btn-write-review-link:hover,
 button.btn-write-review-link:hover {
     text-decoration: underline !important;
 }
-
 
 .sticky-nav-item:hover {
     transform: translateX(0px) !important;
@@ -10942,4 +10946,91 @@ input#rating-4 {
     height: 75px;
     font-size: 30px;
     border-radius: 12px;
+}
+
+/* ====style.css updated by-Kashish(20-aug-26)===== */
+
+.booking-share-item {
+    gap: 12px;
+    line-height: 1;
+    padding: 5px 12px;
+}
+
+.revie_img_sec .image_revie_inr .thre_revi_rgt {
+    width: 30% !important;
+}
+
+.sticky-nav-item:hover {
+    font-weight: 500 !important;
+}
+
+.sticky-nav-item.active:hover {
+    font-weight: 700 !important;
+}
+
+.top-rated-heading-sec .row,
+.bread_row {
+    padding-bottom: 4px;
+}
+
+.accordion-button:focus {
+    box-shadow: inset 0 calc(-1 * var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color);
+}
+
+.sub-section-block {
+    border: none !important;
+}
+
+/* .fas {
+    line-height: 0 !important;
+}
+
+i.r-star.far.fa-star.text-warning,
+i.r-star.fas.fa-star.text-warning,
+i.r-star.fas.fa-star-half-alt.text-warning {
+    line-height: 0;
+} */
+
+.more-about-link-text {
+    color: #4a5568;
+    font-size: 14px;
+}
+
+.more-about-link-item:hover .more-about-link-arrow {
+    transform: translateX(0px);
+}
+
+.more-about-link-item:first-child {
+    padding-top: 10px !important;
+}
+
+.more-about-link-item:last-child {
+    padding-bottom: 10px !important;
+}
+
+.more-about-link-item {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+a.more-about-link-item:hover {
+    background-color: #f4f7fb;
+}
+
+.ask-community-banner {
+    background: #f7fafc !important;
+    border: 1.5px solid #e2e8f0;
+}
+
+.ask-community-banner div h3 {
+    color: #002347 !important;
+    font-weight: 600 !important;
+}
+
+.ask-community-banner p {
+    color: #4a5568 !important;
+}
+
+.ask-community-btn:hover {
+    transform: translateY(0px) !important;
 }

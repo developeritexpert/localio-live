@@ -395,6 +395,76 @@ class ProductController extends Controller
         ));
     }
 
+    public function topRatedFaq($lang)
+    {
+        $lang_id = getCurrentLanguageID();
+        
+        $faqs = [];
+        $content = \App\Models\TopProductContent::where('meta_key', 'top_rated_faqs')
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if ($content && !empty($content->meta_value)) {
+            $decoded = json_decode($content->meta_value, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                $faqs = $decoded;
+            }
+        }
+
+        if (empty($faqs) && $lang_id != 1) {
+            $enContent = \App\Models\TopProductContent::where('meta_key', 'top_rated_faqs')
+                ->where('lang_id', 1)
+                ->first();
+            if ($enContent && !empty($enContent->meta_value)) {
+                $decoded = json_decode($enContent->meta_value, true);
+                if (is_array($decoded) && count($decoded) > 0) {
+                    $faqs = $decoded;
+                }
+            }
+        }
+
+        if (empty($faqs)) {
+            $faqs = [
+                [
+                    'question' => 'How are top-rated products and businesses chosen?',
+                    'answer' => 'Top-rated listings are determined by verified community ratings, authentic review scores, user satisfaction metrics, and overall reliability across each industry category.'
+                ],
+                [
+                    'question' => 'How often are the top-rated rankings updated?',
+                    'answer' => 'Our rankings are updated continuously as new community reviews, verified feedback, and rating submissions are received.'
+                ],
+                [
+                    'question' => 'Can businesses pay to be featured as top-rated?',
+                    'answer' => 'No. Placement in top-rated rankings cannot be bought. Rankings strictly reflect actual community ratings and verified review performance.'
+                ],
+                [
+                    'question' => 'How can I submit a review for a business?',
+                    'answer' => 'Simply search for the business or visit its page on Localio, click "Write a review", rate the criteria, and share your experience.'
+                ],
+                [
+                    'question' => 'What makes Localio ratings different from other review sites?',
+                    'answer' => 'Localio relies on genuine community feedback with strict moderation to eliminate fake reviews, ensuring honest ratings from real users.'
+                ],
+                [
+                    'question' => 'Are all listed products available in my region?',
+                    'answer' => 'Most top-rated products and businesses provide regional availability indicators and localized support information on their detail pages.'
+                ]
+            ];
+        }
+
+        $recentReviews = \App\Models\Review::with([
+            'user',
+            'translations' => fn($q) => $q->where('language_id', $lang_id),
+            'business.translations' => fn($q) => $q->where('lang_id', $lang_id)
+        ])
+            ->where('status', 'active')
+            ->orderByDesc('created_at')
+            ->take(2)
+            ->get();
+
+        return view('User.product.top_rated_faqs', compact('faqs', 'recentReviews', 'lang_id'));
+    }
+
     public function topRatedProduct($lang, $category = null, $page = null)
     {
         if (is_numeric($category)) {
@@ -417,11 +487,17 @@ class ProductController extends Controller
             'category.translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'category.ratingCriteria',
             'products.prices',
             'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'reviews' => function ($query) {
+                $query->where('status', 'active');
+            },
+            'reviews.ratings',
+            'reviews.user',
             'reviews.translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             },
@@ -480,11 +556,20 @@ class ProductController extends Controller
         }
         
         $businesses = Business::with([
+            'category.ratingCriteria',
+            'category.translations' => function ($query) use ($lang_id) {
+                $query->where('lang_id', $lang_id);
+            },
             'products.prices',
             'usps',
             'translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
             },
+            'reviews' => function ($query) {
+                $query->where('status', 'active');
+            },
+            'reviews.ratings',
+            'reviews.user',
             'reviews.translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             },
@@ -727,7 +812,30 @@ class ProductController extends Controller
             'category.parent.translation' => fn($q) => $q->where('lang_id', $lang_id),
             'category.parent.translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->where('status', 'active'),
-        ])->firstOrFail();
+        ])->first();
+
+        if (!$business) {
+            $business = Business::whereHas('translations', function ($q) use ($business_slug) {
+                $q->where('slug', $business_slug);
+            })->with([
+                'translations',
+                'category.translation',
+                'category.translations',
+                'category.parent.translation',
+                'category.parent.translations',
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])->first();
+        }
+
+        if (!$business) {
+            $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug) {
+                $query->where('slug', $business_slug);
+            })->first();
+            if ($category) {
+                return app(\App\Http\Controllers\User\CategoryController::class)->categoryComparisons($locale, $business_slug);
+            }
+            abort(404, 'Business or Category not found');
+        }
 
         $totalReviews = $business->reviews->count();
         $averageRating = $totalReviews > 0 ? round($business->reviews->avg('rating'), 1) : 0;
@@ -784,14 +892,12 @@ class ProductController extends Controller
             $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
         }
 
-        $bizCategoryIds = array_filter(array_merge([$business->category_id], $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []));
+        $parentCat = $business->category->parent ?? $business->category;
+        $subCatIds = $parentCat ? $parentCat->children->pluck('id')->toArray() : [];
+        $bizCategoryIds = array_filter(array_unique(array_merge([$business->category_id], $subCatIds, $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [])));
 
-        $peerComparisonsQuery = !empty($bizCategoryIds)
-            ? Business::whereIn('category_id', $bizCategoryIds)
-            : Business::whereRaw('1 = 0');
-
-        $peerComparisons = $peerComparisonsQuery
-            ->where('id', '!=', $business->id)
+        // Base peer query
+        $basePeerQuery = Business::where('id', '!=', $business->id)
             ->where('status', 1)
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
@@ -801,14 +907,103 @@ class ProductController extends Controller
             })
             ->whereHas('languages', function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
-            })
+            });
+
+        if (!empty($bizCategoryIds)) {
+            $basePeerQuery->whereIn('category_id', $bizCategoryIds);
+        }
+
+        // Popular comparisons (6 items)
+        $popularComparisons = (clone $basePeerQuery)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'reviews' => fn($q) => $q->where('status', 'active'),
             ])
-            ->paginate(12);
+            ->limit(6)
+            ->get();
 
-        return view('User.product.all_comparisons', compact('business', 'businessRating', 'peerComparisons', 'criteria', 'averageRating', 'totalReviews', 'recommendPercent'));
+        # Subcategories that actually have comparisons for this business
+        $subCategoriesWithComparisons = \App\Models\Category::whereIn('id', $bizCategoryIds)
+            ->whereHas('businesses', function($q) use ($business, $lang_id) {
+                $q->where('id', '!=', $business->id)
+                  ->where('status', 1)
+                  ->where(function ($query) {
+                      $query->where('active_all_countries', 1)
+                            ->orWhereHas('countries', function ($c) {
+                                $c->where('country_id', getCurrentCountry());
+                            });
+                  })
+                  ->whereHas('languages', function ($query) use ($lang_id) {
+                      $query->where('language_id', $lang_id);
+                  });
+            })
+            ->with(['translation' => fn($q) => $q->where('lang_id', $lang_id)])
+            ->get();
+
+        # Filter by selected subcategory if present in request
+        $selectedSubcatSlug = request()->get('subcategory');
+        $filteredPeerQuery = clone $basePeerQuery;
+        if ($selectedSubcatSlug) {
+            $subcatObj = \App\Models\Category::whereHas('translations', function($q) use ($selectedSubcatSlug) {
+                $q->where('slug', $selectedSubcatSlug);
+            })->first();
+            if ($subcatObj) {
+                $filteredPeerQuery->where('category_id', $subcatObj->id);
+            }
+        }
+
+        $peerComparisons = $filteredPeerQuery
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'reviews' => fn($q) => $q->where('status', 'active'),
+            ])
+            ->paginate(12)
+            ->appends(request()->query());
+
+        # All searchable businesses for live comparison search box
+        $allSearchableBusinesses = Business::where('status', 1)
+            ->where('id', '!=', $business->id)
+            ->with(['translations'])
+            ->get()
+            ->map(function($b) use ($lang_id) {
+                $trans = $b->translations->firstWhere('lang_id', $lang_id) ?? $b->translations->first();
+                return [
+                    'id' => $b->id,
+                    'name' => trim($trans->name ?? $b->slug),
+                    'slug' => $trans->slug ?? $b->slug,
+                    'icon' => !empty($b->icon_id) ? asset($b->icon_id) : '',
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        # Recently viewed comparisons (from session with fallback to popular)
+        $recentIds = session()->get('recently_viewed_biz_' . $business->id, []);
+        $recentlyViewedComparisons = collect();
+        if (!empty($recentIds)) {
+            $recentlyViewedComparisons = Business::whereIn('id', $recentIds)
+                ->where('id', '!=', $business->id)
+                ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id), 'reviews' => fn($q) => $q->where('status', 'active')])
+                ->get();
+        }
+        if ($recentlyViewedComparisons->count() < 3) {
+            $additional = $popularComparisons->reject(fn($item) => $recentlyViewedComparisons->pluck('id')->contains($item->id))->take(6 - $recentlyViewedComparisons->count());
+            $recentlyViewedComparisons = $recentlyViewedComparisons->merge($additional);
+        }
+
+        return view('User.product.all_comparisons', compact(
+            'business',
+            'businessRating',
+            'peerComparisons',
+            'popularComparisons',
+            'recentlyViewedComparisons',
+            'subCategoriesWithComparisons',
+            'allSearchableBusinesses',
+            'criteria',
+            'averageRating',
+            'totalReviews',
+            'recommendPercent'
+        ));
     }
 
     // Key Feature Review Controller

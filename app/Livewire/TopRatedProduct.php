@@ -48,6 +48,9 @@ class TopRatedProduct extends Component
         $this->page = (int) $initialPage;
         $this->categorySlug = $category;
         $this->lang_id = getCurrentLanguageID();
+        if (request()->has('sortBy')) {
+            $this->sortBy = request('sortBy');
+        }
 
         // Load filters using all products
         $allProducts = Product::with([
@@ -154,7 +157,6 @@ class TopRatedProduct extends Component
     {
         $this->page = 1;
         $this->dispatchPaginationUrl();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function dispatchPaginationUrl()
@@ -168,15 +170,15 @@ class TopRatedProduct extends Component
 
         if ($page > 1) {
             if ($this->categorySlug) {
-                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug . '/' . $page;
+                $url = '/' . $locale . '/top-rated/' . $this->categorySlug . '/' . $page;
             } else {
-                $url = '/' . $locale . '/top-rated-products/' . $page;
+                $url = '/' . $locale . '/top-rated/' . $page;
             }
         } else {
             if ($this->categorySlug) {
-                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug;
+                $url = '/' . $locale . '/top-rated/' . $this->categorySlug;
             } else {
-                $url = '/' . $locale . '/top-rated-products';
+                $url = '/' . $locale . '/top-rated';
             }
         }
 
@@ -187,6 +189,7 @@ class TopRatedProduct extends Component
         if ($this->searchTerm !== '') $queryParams['searchTerm'] = $this->searchTerm;
         if ($this->minPrice != 0) $queryParams['minPrice'] = $this->minPrice;
         if ($this->maxPrice != $this->maxPriceValue) $queryParams['maxPrice'] = $this->maxPrice;
+        if (!empty($this->sortBy) && $this->sortBy !== 'highest_rated') $queryParams['sortBy'] = $this->sortBy;
 
         return empty($queryParams) ? $url : $url . '?' . http_build_query($queryParams);
     }
@@ -327,7 +330,6 @@ class TopRatedProduct extends Component
 
         $this->updatePriceFilterState();
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     protected function buildFilters($products)
@@ -670,20 +672,17 @@ class TopRatedProduct extends Component
     public function updatedSearchTerm()
     {
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function updatedSelectedOptions()
     {
         $this->updateActiveFilters();
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function updatedSelectedRatings()
     {
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function updatedMinPrice()
@@ -693,7 +692,6 @@ class TopRatedProduct extends Component
         }
         $this->updatePriceFilterState();
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function updatedMaxPrice()
@@ -703,7 +701,6 @@ class TopRatedProduct extends Component
         }
         $this->updatePriceFilterState();
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     // Filter operations
@@ -778,7 +775,6 @@ class TopRatedProduct extends Component
         // Update active filters display
         $this->updateActiveFilters();
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function hasActiveFilters()
@@ -801,7 +797,6 @@ class TopRatedProduct extends Component
         $this->sortBy = $sort;
         $this->showSortDropdown = false;
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function toggleSortDropdown()
@@ -812,7 +807,6 @@ class TopRatedProduct extends Component
     public function updatedSortBy()
     {
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
     }
 
     public function clearFilters()
@@ -836,7 +830,6 @@ class TopRatedProduct extends Component
         $this->updateActiveFilters();
 
         $this->resetPage();
-        $this->dispatch('scroll-to-middle');
         return redirect()->route('top-rated-product', [
             'locale' => getCurrentLocale(), // or app()->getLocale()
         ]);
@@ -1117,6 +1110,8 @@ class TopRatedProduct extends Component
         return view('livewire.top-rated-product', [
             'products' => $this->products,
             'filters' => $this->filters,
+            'sortBy' => $this->sortBy,
+            'showSortDropdown' => $this->showSortDropdown,
             'lang_id' => getCurrentLanguageID(),
             'exploreCategories' => $this->exploreCategories,
             'textSections' => $this->textSections,

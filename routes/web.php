@@ -518,9 +518,17 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
 
 
     // Product Controller
-    Route::get('/top-rated-products/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');
-    Route::get('/top-rated-products/{category}/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.category-page');
-    Route::get('/top-rated-products/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
+    // Top-Rated FAQs
+    Route::get('/top-rated/faq', [ProductController::class, 'topRatedFaq'])->name('top-rated.faq');
+    Route::get('/top-rated/faqs', [ProductController::class, 'topRatedFaq'])->name('top-rated.faqs');
+    Route::get('/top-rated/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');
+    Route::get('/top-rated/{category}/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.category-page');
+    Route::get('/top-rated/{category?}', [ProductController::class, 'topRatedProduct'])->name('top-rated-product');
+
+    // 301 Redirect for legacy /top-rated-products
+    Route::get('/top-rated-products/{any?}', function ($locale, $any = null) {
+        return redirect()->to('/' . $locale . '/top-rated' . ($any ? '/' . $any : ''), 301);
+    })->where('any', '.*');
     Route::get('/Exclusive-Businesses-Deals', [ProductController::class, 'ExclusiveBusinessDeals'])->name('exclusive-business-deals');
     Route::get('/product-comparison', [ProductController::class, 'productComparison'])->name('product-comparison');
     Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');

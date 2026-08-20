@@ -2057,18 +2057,18 @@
                                                                                 </div>
                                                                                 <div style="display: flex; gap: 12px; align-items: center;">
                                                                                     @auth
-                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                                                             <i class="fas fa-thumbs-up"></i> 
                                                                                             
                                                                                         </button>
-                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                                                             <i class="fas fa-thumbs-down"></i> 
                                                                                         </button>
                                                                                     @else
-                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                                                             <i class="fas fa-thumbs-up"></i> 
                                                                                         </button>
-                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 8px 26px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
                                                                                             <i class="fas fa-thumbs-down"></i> 
                                                                                         </button>
                                                                                     @endauth
@@ -2099,7 +2099,7 @@
                                                                                                             @endif
                                                                                                         @endfor
                                                                                                     </div>
-                                                                                                    <span style="font-size: 12px; color: #666;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                                                    <span style="font-size: 12px; color: #666;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                                                 </div>
 
                                                                                                 <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-top: 18px; margin-bottom: 14px;">Review breakdown</h5>
@@ -2707,37 +2707,44 @@
                                         <div class="main_feature_lg sticky-sidebar-nav-wrapper">
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
-                                                    <div class="sticky-nav-logo mb-2 d-flex justify-content-center">
-                                                        <div style="width: 44px; height: 44px;">
+                                                    <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
+                                                        <div style="width: 44px; height: 44px; margin-bottom:8px">
                                                             <x-business-logo :business="$business" />
                                                         </div>
-                                                    </div>
-                                                    <h3 class="sticky-nav-title mb-1"
-                                                        style="font-size: 17px; font-weight: 700; color: #002347;">
-                                                        {{ $business->translations->first()->name ?? '' }}
-                                                    </h3>
-                                                    @if ($averageRating !== null)
-                                                        <div
-                                                            class="rating-group sticky-nav-rating d-flex align-items-center justify-content-center gap-1 mb-3">
-                                                            <span
-                                                                style="">{{ number_format($averageRating, 1) }}</span>
-                                                            <div class="rating-star" style="">
-                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                    @if ($i <= floor($averageRating))
-                                                                        <i class="fas fa-star"></i>
-                                                                    @elseif ($i - 0.5 <= $averageRating)
-                                                                        <i class="fas fa-star-half-alt"></i>
-                                                                    @else
-                                                                        <i class="far fa-star"></i>
-                                                                    @endif
-                                                                @endfor
+
+                                                        <div class="sticky-wrap-mf">
+                                                        <h3 class="sticky-nav-title mb-1"
+                                                            style="font-size: 17px; font-weight: 700; color: #002347;">
+                                                            {{ $business->translations->first()->name ?? '' }}
+                                                        </h3>
+                                                        @if ($averageRating !== null)
+                                                            <div
+                                                                class="rating-group sticky-nav-rating mb-3">
+                                                                <span
+                                                                    style="">{{ number_format($averageRating, 1) }}</span>
+                                                                <div class="rating-star" style="">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        @if ($i <= floor($averageRating))
+                                                                            <i class="fas fa-star"></i>
+                                                                        @elseif ($i - 0.5 <= $averageRating)
+                                                                            <i class="fas fa-star-half-alt"></i>
+                                                                        @else
+                                                                            <i class="far fa-star"></i>
+                                                                        @endif
+                                                                    @endfor
+                                                                </div>
+                                                                @if ($hasUserReviews)
+                                                                    <span class=""
+                                                                        style="">({{ $ratingCount }})</span>
+                                                                @endif
                                                             </div>
-                                                            @if ($hasUserReviews)
-                                                                <span class=""
-                                                                    style="">({{ $ratingCount }})</span>
-                                                            @endif
-                                                        </div>
-                                                    @endif
+                                                        @endif
+                                                    </div>
+
+                                                    </div>
+
+                                                    
+
                                                     @if ($business->is_affiliate)
                                                         <a href="{{ $business->getTrackedUrl() }}"
                                                             data-track="{{ json_encode([

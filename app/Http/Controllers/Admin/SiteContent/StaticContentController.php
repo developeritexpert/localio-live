@@ -155,6 +155,14 @@ class StaticContentController extends Controller
                     'company_size_4',
                 ],
             ],
+            'community_card' => [
+                'title' => 'Community Insights Box (Category & Top-Rated Header)',
+                'keys' => [
+                    'community_insights_title',
+                    'community_insights_desc',
+                    'how_rankings_work',
+                ],
+            ],
             'common' => [
                 'title' => 'Common Page Text',
                 'keys' => [

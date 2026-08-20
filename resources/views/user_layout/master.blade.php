@@ -2410,7 +2410,7 @@
                                     </li>
                                     <li><a
                                             href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['top_ratedt'] ??
-                                                'Top-rated 
+                                                'Top rated 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ' }}
                                         </a>
                                     </li>
@@ -2488,6 +2488,10 @@
                                         <a
                                             href="{{ route('help-center', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['help_center'] ?? 'Help Center' }}</a>
                                 </li> --}}
+                                <li>
+                                    <a
+                                        href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['about-localio'] ?? 'About localio' }}</a>
+                                </li>
                                 <li>
                                     <a
                                         href="{{ route('contact', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['contact'] ?? 'Contact' }}</a>

@@ -1,5 +1,6 @@
 <div>
     <style>
+    [x-cloak] { display: none !important; }
     .auto-choice-hd {
         margin-bottom: 15px !important;
     }
@@ -407,17 +408,14 @@
                         <div class="col-md-4 mt-4 mt-md-0 text-start">
                             <div class="verified-insights-card"
                                 style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
-                                <div class="d-flex align-items-center mb-2" style="gap: 8px;">
-                                    <!-- <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}"
-                                        style="width: 20px; height: 20px;" alt="Verified"> -->
-                                        <i class="far fa-star text-warning" style="margin-top: -4px; color: #1e3050 !important;"></i>
-                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real
-                                        experiences</h6>
+                                <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'From our community' }}</h6>
+                                    <img src="{{ asset('front/img/20250704132226_specialists_small_img_0.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
                                 </div>
                                 <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                    Ratings and reviews are shared by real users from the Localio community.
+                                    {{ static_text('community_insights_desc') ?: 'Ratings and reviews are shared by real Localio users.' }}
                                 </p>
-                                <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">How rankings work</a>
+                                <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                             </div>
                         </div>
                     </div>
@@ -492,29 +490,34 @@
                                             </div>
                                         </div>
 
-                                        <!-- Rating Criteria Filter Section -->
-                                        @if(isset($availableCriteria) && count($availableCriteria) > 0)
-                                        <div class="filter-section mt-3 ">
-                                            <h3 class="fw-semibold text-dark mb-2">
-                                                Criteria ratings
+                                        <!-- Features Filter Section -->
+                                        @if(isset($availableFeatures) && count($availableFeatures) > 0)
+                                        <div class="filter-section mt-3 mb-3">
+                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                                Features
                                             </h3>
-                                            @foreach($availableCriteria as $crit)
-                                            <div class="mb-2">
-                                                <label class="form-label fw-bold mb-1 text-secondary"
-                                                    style="font-size: 13px;">
-                                                    {{ $crit->name }}
-                                                </label>
-                                                <select class="form-select form-select-sm"
-                                                    wire:model.live="selectedCriteriaRatings.{{ $crit->id }}"
-                                                    style="font-size: 12px;">
-                                                    <option value="">Any rating</option>
-                                                    <option value="4">4★ & above</option>
-                                                    <option value="3">3★ & above</option>
-                                                    <option value="2">2★ & above</option>
-                                                    <option value="1">1★ & above</option>
-                                                </select>
+                                            <div class="d-flex flex-column gap-2" style="max-height: 240px; overflow-y: auto;">
+                                                @foreach($availableFeatures as $feat)
+                                                    @php
+                                                        $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                        $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
+                                                        $featName = $featTrans->name ?? $feat->name ?? 'Feature';
+                                                        $featId = $feat->id;
+                                                        $isChecked = in_array($featId, $selectedFeatures ?? []);
+                                                    @endphp
+                                                    <div class="form-check" style="margin-bottom: 6px;">
+                                                        <input type="checkbox" class="form-check-input"
+                                                               wire:model.live="selectedFeatures"
+                                                               value="{{ $featId }}"
+                                                               id="feature-check-{{ $featId }}"
+                                                               style="margin-right: 8px; cursor: pointer;">
+                                                        <label class="form-check-label" for="feature-check-{{ $featId }}"
+                                                               style="font-size: 13px; color: #555; cursor: pointer; {{ $isChecked ? 'font-weight: 600; color: #002347;' : '' }}">
+                                                            {{ $featName }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                            @endforeach
                                         </div>
                                         @endif
 
@@ -799,6 +802,25 @@
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
                                 <!-- Product Count and Sort -->
+                                @if(!empty($selectedFeatures) && count($selectedFeatures) > 0)
+                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+                                        @foreach($availableFeatures ?? [] as $fItem)
+                                            @if(in_array($fItem->id, $selectedFeatures))
+                                                @php
+                                                    $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                    $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
+                                                @endphp
+                                                <span class="badge rounded-pill bg-white text-dark border d-inline-flex align-items-center gap-2 px-3 py-2" style="font-size: 13px; font-weight: 500; border-color: #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                                    {{ $fName }}
+                                                    <i class="fas fa-times cursor-pointer text-muted ms-1" style="cursor: pointer;" wire:click="toggleFeature({{ $fItem->id }})"></i>
+                                                </span>
+                                            @endif
+                                        @endforeach
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="small text-danger ms-2 text-decoration-none fw-semibold">Clear features</a>
+                                    </div>
+                                @endif
+
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         @if ($products->count() > 0)
@@ -830,22 +852,22 @@
                                     $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
                                     @endphp
 
-                                    <div class="position-relative d-inline-block" id="sortDropdownWrapper">
-                                        <button type="button" id="sortToggleBtn"
+                                    <div class="position-relative d-inline-block">
+                                        <button type="button" wire:click="toggleSortDropdown"
                                             class="sorting d-inline-flex align-items-center gap-2"
                                             style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
                                             <span>Sort: <span>{{ $currentLabel }}</span></span>
-                                            <svg id="sortToggleArrow" xmlns="http://www.w3.org/2000/svg" width="14"
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                                 height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
                                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                                style="transition: transform 0.2s ease;">
+                                                style="{{ !empty($showSortDropdown) ? 'transform: rotate(180deg);' : '' }} transition: transform 0.2s ease;">
                                                 <polyline points="6 9 12 15 18 9" />
                                             </svg>
                                         </button>
 
-                                        {{-- Always rendered, just hidden with CSS --}}
-                                        <div id="sortDropdownMenu"
-                                            class="position-absolute end-0 mt-2 bg-white py-2 d-none"
+                                        @if(!empty($showSortDropdown))
+                                        <div wire:click="$set('showSortDropdown', false)" class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 9998; cursor: default;"></div>
+                                        <div class="position-absolute end-0 mt-2 bg-white py-2"
                                             style="z-index: 9999; min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
                                             @foreach($sortOptionsMap as $val => $label)
                                             <button type="button" wire:click="setSortBy('{{ $val }}')"
@@ -866,6 +888,7 @@
                                             </button>
                                             @endforeach
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                                 @if (!empty($products))
@@ -888,20 +911,7 @@
                                             : 0;
                                             @endphp
 
-                                            @if($totalRevCount > 0 && !empty($item->is_affiliate))
-                                            <div class="d-flex align-items-center recommended-per"
-                                                style="color: #002347; font-size: 13px; font-weight: 600;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                    viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2"
-                                                    stroke-linecap="round" stroke-linejoin="round"
-                                                    style="margin-right: 5px; flex-shrink: 0;">
-                                                    <path
-                                                        d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
-                                                    </path>
-                                                </svg>
-                                                <span>{{ $recPercent }}% recommend this</span>
-                                            </div>
-                                            @endif
+
 
                                             @if($isRecommended)
                                             <div class="best-value-inline-container" style="padding-bottom:20px">
@@ -910,6 +920,22 @@
                                                     <i class="far fa-star text-warning"></i>
                                                     <span style="text-transform: none !important;">Top choice</span>
                                                 </div>
+
+                                            @if($totalRevCount > 0 && !empty($item->is_affiliate))
+                                                <div class="d-flex align-items-center recommended-per"
+                                                    style="color: #002347; font-size: 13px; font-weight: 600;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                        viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2"
+                                                        stroke-linecap="round" stroke-linejoin="round"
+                                                        style="margin-right: 5px; flex-shrink: 0;">
+                                                        <path
+                                                            d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
+                                                        </path>
+                                                    </svg>
+                                                    <span>{{ $recPercent }}% recommend this</span>
+                                                </div>
+                                            @endif
+
                                             </div>
                                             @endif
 
@@ -1227,6 +1253,51 @@
         </section>
         <!-- Remaining sections stay the same -->
         
+
+        <!-- 3. Explore Subcategories Section -->
+        @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+        <section class="explore-subcategories-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <div class="text-start mb-4">
+                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        {{ $exploreSubcategories['title'] }}
+                    </h2>
+                    <p style="font-size: 14px; color: #64748b; margin: 0;">
+                        Browse specialized categories to find the exact tools and solutions for your requirements.
+                    </p>
+                </div>
+
+                <div class="row g-3">
+                    @foreach($exploreSubcategories['items'] as $subcatItem)
+                    @php
+                        $subTrans = null;
+                        if (isset($subcatItem->translations)) {
+                            if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                                $subTrans = $subcatItem->translations;
+                            } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
+                                $subTrans = $subcatItem->translations->first();
+                            }
+                        }
+                        $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
+                        $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
+                    @endphp
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="explore-subcat-card">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fa fa-folder-open-o text-primary" style="font-size: 16px;"></i>
+                                <h6 class="m-0 fw-bold" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
+                            </div>
+                            <span class="badge bg-light text-secondary border rounded-pill px-2 py-1" style="font-size: 11px;">
+                                {{ $subcatItem->businesses_count ?? 0 }} {{ ($subcatItem->businesses_count ?? 0) == 1 ? 'listing' : 'listings' }}
+                            </span>
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+        @endif
+
         <!-- 1. Dynamic Text Sections (H2 & H3 Sub-headlines) -->
         @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
         <section class="category-text-sections-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
@@ -1249,7 +1320,7 @@
 
                             @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                                 @foreach($section['sub_sections'] as $sub)
-                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style="border-left: 3px solid #06498b !important;">
+                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style=">
                                     @if(!empty($sub['h3_title']))
                                     <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 8px;">
                                         {{ $sub['h3_title'] }}
@@ -1337,60 +1408,24 @@
                     </div>
                     @endforeach
                 </div>
-            </div>
-        </section>
-        @endif
 
-        <!-- 3. Explore Subcategories Section -->
-        @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
-        <section class="explore-subcategories-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
-            <div class="container">
-                <div class="text-start mb-4">
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
-                        {{ $exploreSubcategories['title'] }}
-                    </h2>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">
-                        Browse specialized categories to find the exact tools and solutions for your requirements.
-                    </p>
-                </div>
-
-                <div class="row g-3">
-                    @foreach($exploreSubcategories['items'] as $subcatItem)
-                    @php
-                        $subTrans = null;
-                        if (isset($subcatItem->translations)) {
-                            if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
-                                $subTrans = $subcatItem->translations;
-                            } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
-                                $subTrans = $subcatItem->translations->first();
-                            }
-                        }
-                        $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
-                        $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
-                    @endphp
-                    <div class="col-lg-4 col-md-6 col-12">
-                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="explore-subcat-card">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="fa fa-folder-open-o text-primary" style="font-size: 16px;"></i>
-                                <h6 class="m-0 fw-bold" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
-                            </div>
-                            <span class="badge bg-light text-secondary border rounded-pill px-2 py-1" style="font-size: 11px;">
-                                {{ $subcatItem->businesses_count ?? 0 }} {{ ($subcatItem->businesses_count ?? 0) == 1 ? 'listing' : 'listings' }}
-                            </span>
-                        </a>
-                    </div>
-                    @endforeach
+                <div class="text-center mt-4">
+                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link">
+                        View more comparisons
+                    </a>
                 </div>
             </div>
         </section>
         @endif
+
+
 
         <!-- 4. Popular Category Businesses Section -->
         @if(isset($popularBusinesses) && count($popularBusinesses) > 0)
         @php
             $catTitleName = $category->translations->name ?? $category->name ?? 'Category';
         @endphp
-        <section class="popular-businesses-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+        <section class="popular-businesses-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
@@ -1435,11 +1470,14 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2 w-100 mt-auto">
+                                @php
+                                    $hasBizTrackedUrl = !empty($biz->getTrackedUrl());
+                                @endphp
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
-                                   class="btn-view-details-outline btn py-1 px-2 fw-medium {{ !empty($biz->is_affiliate) ? 'w-50' : 'w-100' }}">
+                                   class="btn-view-details-outline btn py-1 px-2 fw-medium {{ ($hasBizTrackedUrl) ? 'w-50' : 'w-100' }}">
                                     View details
                                 </a>
-                                @if(!empty($biz->is_affiliate))
+                                @if($hasBizTrackedUrl)
                                 <a href="{{ $biz->getTrackedUrl() }}"
                                    target="_blank"
                                    class="btn-orng-pill btn py-1 px-2 fw-medium w-50 text-white">
@@ -1461,7 +1499,7 @@
         @php
             $catFaqName = $category->translations->name ?? $category->name ?? 'Category';
         @endphp
-        <section class="category-faqs-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <section class="category-faqs-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
@@ -1478,17 +1516,23 @@
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                                 <h2 class="accordion-header" id="headingFaq{{ $fIndex }}">
-                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-size: 15px; font-weight: 600; color: #002347; background-color: #f8fafc;">
+                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                         {{ $faq['question'] }}
                                     </button>
                                 </h2>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
                             </div>
                             @endforeach
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
+                                View more FAQs
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1644,68 +1688,7 @@ window.addEventListener('scroll-to-middle', function() {
 });
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const wrapper = document.getElementById('sortDropdownWrapper');
-    const toggleBtn = document.getElementById('sortToggleBtn');
-    const menu = document.getElementById('sortDropdownMenu');
-    const arrow = document.getElementById('sortToggleArrow');
-    if (!wrapper || !toggleBtn || !menu) return;
 
-    function openMenu() {
-        menu.classList.remove('d-none');
-        arrow.style.transform = 'rotate(180deg)';
-        lockScroll();
-    }
-
-    function closeMenu() {
-        menu.classList.add('d-none');
-        arrow.style.transform = '';
-        unlockScroll();
-    }
-
-    function isOpen() {
-        return !menu.classList.contains('d-none');
-    }
-
-    toggleBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        isOpen() ? closeMenu() : openMenu();
-    });
-
-    document.addEventListener('click', function(e) {
-        if (isOpen() && !wrapper.contains(e.target)) {
-            closeMenu();
-        }
-    });
-
-    // Close automatically once a sort option is picked (Livewire request starts)
-    document.addEventListener('livewire:navigating', closeMenu);
-    menu.addEventListener('click', function(e) {
-        if (e.target.closest('button')) {
-            closeMenu();
-        }
-    });
-
-    function preventScroll(e) {
-        e.preventDefault();
-    }
-
-    function lockScroll() {
-        document.addEventListener('wheel', preventScroll, {
-            passive: false
-        });
-        document.addEventListener('touchmove', preventScroll, {
-            passive: false
-        });
-    }
-
-    function unlockScroll() {
-        document.removeEventListener('wheel', preventScroll);
-        document.removeEventListener('touchmove', preventScroll);
-    }
-});
-</script>
 
 </div>
 </div>

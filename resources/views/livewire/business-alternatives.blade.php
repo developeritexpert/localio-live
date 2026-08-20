@@ -198,7 +198,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                 $reviewsUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                             @endphp
                             <div class="col-lg-4 mt-4 mt-md-0 text-start">
-                                <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                     <div class="review-header-box top_review_bx" style="display: flex;  flex-wrap; justify-content:space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                                         <div class="d-flex align-items-center gap-2">
                                             <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
@@ -262,9 +262,361 @@ section.top-automotive-sec.top_rate_pg.light {
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Widget 3: More About Business Card -->
+                                <x-more-about-business :business="$business" />
+                            </div>
+
+
+                        </div>
+                        
+                        <!-- Dynamic Section 1: Most popular alternatives (Cards) -->
+                        <!-- Dynamic Section 2: Compare alternatives (Affiliated Table 1) -->
+                        <!-- Dynamic Section 3: What the Localio community says (Pros/Cons Table 2) -->
+                        @php
+                            $lang_id = getCurrentLanguageID();
+                            $bCategoryIds = array_filter(array_unique(array_merge([$business->category_id], $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [])));
+
+                            // 1. Fetch 4-6 popular alternatives
+                            $popularAltBusinesses = \App\Models\Business::where('id', '!=', $business->id)
+                                ->where('status', 1)
+                                ->whereIn('category_id', $bCategoryIds)
+                                ->with([
+                                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                                    'reviews' => fn($q) => $q->where('status', 'active'),
+                                    'category.ratingCriteria',
+                                    'products.prices'
+                                ])
+                                ->get()
+                                ->sortByDesc(function($b) {
+                                    $r = $b->reviews->where('status', 'active');
+                                    return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                                })
+                                ->take(6);
+
+                            if ($popularAltBusinesses->count() < 4) {
+                                $morePop = \App\Models\Business::where('id', '!=', $business->id)
+                                    ->where('status', 1)
+                                    ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
+                                    ->with([
+                                        'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                                        'reviews' => fn($q) => $q->where('status', 'active'),
+                                        'category.ratingCriteria',
+                                        'products.prices'
+                                    ])
+                                    ->get()
+                                    ->take(6 - $popularAltBusinesses->count());
+                                $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
+                            }
+
+                            // 2. Fetch 10 affiliated businesses for tables
+                            $affiliatedTableBusinesses = \App\Models\Business::where('is_affiliate', 1)
+                                ->where('id', '!=', $business->id)
+                                ->where('status', 1)
+                                ->whereIn('category_id', $bCategoryIds)
+                                ->with([
+                                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                                    'reviews' => fn($q) => $q->where('status', 'active'),
+                                    'category.ratingCriteria'
+                                ])
+                                ->get()
+                                ->sortByDesc(function($b) {
+                                    $r = $b->reviews->where('status', 'active');
+                                    return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                                })
+                                ->take(10);
+
+                            if ($affiliatedTableBusinesses->count() < 10) {
+                                $moreAff = \App\Models\Business::where('is_affiliate', 1)
+                                    ->where('id', '!=', $business->id)
+                                    ->whereNotIn('id', $affiliatedTableBusinesses->pluck('id'))
+                                    ->where('status', 1)
+                                    ->with([
+                                        'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                                        'reviews' => fn($q) => $q->where('status', 'active'),
+                                        'category.ratingCriteria'
+                                    ])
+                                    ->get()
+                                    ->sortByDesc(function($b) {
+                                        $r = $b->reviews->where('status', 'active');
+                                        return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
+                                    })
+                                    ->take(10 - $affiliatedTableBusinesses->count());
+
+                                $affiliatedTableBusinesses = $affiliatedTableBusinesses->merge($moreAff);
+                            }
+
+                            $tableRowsList = collect([$business])->merge($affiliatedTableBusinesses);
+                        @endphp
+
+                        <!-- 1. Most popular alternatives (Matched design with product_detail.blade.php) -->
+                        @if($popularAltBusinesses->count() > 0)
+                            <section class="software-like p_50 product_integra_sec my-4" id="sectionAlternatives">
+                                <div class="container">
+                                    <div class="sftwre-like-innr">
+                                        <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
+                                            <h2>{{ $businessName }} Alternatives & Competitors</h2>
+                                            <p>Based on other buyer's searches, these are the products that could be a good fit for you.</p>
+                                        </div>
+                                        <div class="sft_ware_test" style="display: flex; justify-content:center; align-items: center;">
+                                            <div class="sftware-alternative d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-duration="1000">
+                                                @foreach ($popularAltBusinesses as $altbusiness)
+                                                    @php
+                                                        $altTrans = $altbusiness->translations->firstWhere('lang_id', $lang_id) ?? $altbusiness->translations->first();
+                                                        $altBizName = $altTrans->name ?? $altbusiness->name ?? 'Business';
+                                                        $altBizSlug = $altTrans->slug ?? $altbusiness->slug ?? 'business-' . $altbusiness->id;
+
+                                                        $altStartingPrice = 'N/A';
+                                                        $altCurrency = '$';
+                                                        $altAdditionalInfo = 'NA';
+                                                        $altPrice = getBusinessesWithStartingPrice($altbusiness);
+                                                        if (!empty($altPrice) && isset($altPrice[0]['starting_price'])) {
+                                                            $altBusinessPrice = $altPrice[0]['starting_price'];
+                                                            $altStartingPrice = $altBusinessPrice['amount'] ?? 'N/A';
+                                                            $altCurrency = $altBusinessPrice['currency'] ?? '$';
+                                                            $altAdditionalInfo = $altBusinessPrice['additional_info'] ?? 'NA';
+                                                        }
+
+                                                        $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)->get();
+                                                        $altEaseOfUseAvg = round($altReviews->avg('ease_of_use_rating'), 1);
+                                                        $altValueForMoneyAvg = round($altReviews->avg('value_for_money_rating'), 1);
+                                                        $altCustomerServiceAvg = round($altReviews->avg('customer_service_rating'), 1);
+                                                        $altExclusiveFeatureAvg = round($altReviews->avg('exclusive_service_rating'), 1);
+
+                                                        $altRatingAvg = $altbusiness->reviews->avg('rating');
+                                                        $count = $altbusiness->reviews->where('status', 'active')->count();
+                                                    @endphp
+                                                    <div class="sftware-alternative-pck" data-aos="fade-up" data-aos-duration="1000"
+                                                        onclick="if(!event.target.closest('a')) { window.location.href = '{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}'; }"
+                                                        style="cursor: pointer; padding: 25px 20px;">
+
+                                                        <div class="ans_lft p_top_btm_sftwre pt-0 pb-3" style="border-bottom: 1px solid #eee;">
+                                                            <div class="top-product-logo">
+                                                                <x-business-logo :business="$altbusiness" :name="$altBizName" />
+                                                            </div>
+                                                            <div class="asn-rating">
+                                                                <h6 class="m-0 fw_700">
+                                                                    {{ $altBizName }}
+                                                                </h6>
+                                                                <div class="rating-group">
+                                                                    <span class="rate_box_num fw-medium">{{ number_format($altRatingAvg, 1) }}</span>
+                                                                    <div class="rating-stars">
+                                                                        @for ($i = 1; $i <= 5; $i++)
+                                                                            @if ($i <= floor($altRatingAvg))
+                                                                                <i class="fas fa-star text-warning"></i>
+                                                                            @elseif ($i - 0.5 <= $altRatingAvg)
+                                                                                <i class="fas fa-star-half-alt text-warning"></i>
+                                                                            @else
+                                                                                <i class="far fa-star text-warning"></i>
+                                                                            @endif
+                                                                        @endfor
+                                                                    </div>
+                                                                    <span class="rate_box_text">
+                                                                        ({{ $count }})
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
+                                                            <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
+                                                            <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                                <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
+                                                                <div class="prgs_br d-flex align-items-center">
+                                                                    <progress class="progress-bar" value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}" max="100"></progress>
+                                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                                <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
+                                                                <div class="prgs_br d-flex align-items-center">
+                                                                    <progress class="progress-bar" value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}" max="100"></progress>
+                                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                                <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
+                                                                <div class="prgs_br d-flex align-items-center">
+                                                                    <progress class="progress-bar" value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}" max="100"></progress>
+                                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+                                                                <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
+                                                                <div class="prgs_br d-flex align-items-center">
+                                                                    <progress class="progress-bar" value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}" max="100"></progress>
+                                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="start-from p_top_btm_sftwre pt-3 pb-3">
+                                                            <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                            <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
+                                                                <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
+                                                            </h3>
+                                                            <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
+                                                        </div>
+
+                                                        <div class="sftwre-alt-btn pt-2">
+                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}"
+                                                                class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
+                                                                style="border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;">
+                                                                View details
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        @endif
+
+                        <!-- 2. Compare alternatives (Affiliated Table 1) -->
+                        <div class="comparison-table-section my-5 pt-3">
+                            <h3 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                                Compare {{ $businessName }} alternatives
+                            </h3>
+
+                            <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
+                                    <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                        <tr>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; min-width: 180px;">Business</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Overall rating</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Features</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Ease of use</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Value for money</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Performance & reliability</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Customer support</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Recommend</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($tableRowsList as $rowBiz)
+                                            @php
+                                                $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
+                                                $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
+                                                $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
+                                                $rRevs = $rowBiz->reviews->where('status', 'active');
+                                                $rCount = $rRevs->count();
+                                                $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
+                                                $rRec = $rCount > 0 ? round(($rRevs->where('recommend', 1)->count() / $rCount) * 100) . '%' : '-';
+
+                                                $rCriteria = $rowBiz->category ? $rowBiz->category->getEffectiveRatingCriteria() : collect();
+                                                $critScores = [];
+                                                foreach(['Features', 'Ease of use', 'Value for money', 'Performance & reliability', 'Customer support'] as $cKey) {
+                                                    $foundCrit = $rCriteria->first(fn($c) => strtolower($c->name) === strtolower($cKey) || (strtolower($cKey) === 'customer support' && strtolower($c->name) === 'customer service') || (strtolower($cKey) === 'performance & reliability' && strtolower($c->name) === 'service management'));
+                                                    if ($foundCrit) {
+                                                        $cScore = 0; $cCnt = 0;
+                                                        foreach($rRevs as $rev) {
+                                                            $rrRecord = \App\Models\ReviewRating::where('review_id', $rev->id)->where('criteria_id', $foundCrit->id)->first();
+                                                            if ($rrRecord) { $cScore += $rrRecord->rating; $cCnt++; }
+                                                        }
+                                                        $critScores[$cKey] = $cCnt > 0 ? round($cScore / $cCnt, 1) : number_format($rRating, 1);
+                                                    } else {
+                                                        $critScores[$cKey] = number_format($rRating, 1);
+                                                    }
+                                                }
+                                            @endphp
+                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
+                                                <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
+                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                        {{ $rName }}
+                                                    </a>
+                                                    @if($loop->first)
+                                                        <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050;">{{ number_format($rRating, 1) }}</td>
+                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Features'] }}</td>
+                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Ease of use'] }}</td>
+                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Value for money'] }}</td>
+                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Performance & reliability'] }}</td>
+                                                <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Customer support'] }}</td>
+                                                <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">{{ $rRec }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                        <h2 class="mt-3">All {{ $businessName }} alternatives </h2>
+
+                        <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
+                        <div class="community-feedback-table-section my-5 pt-3">
+                            <div class="mb-3">
+                                <h3 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
+                                    What the Localio community says
+                                </h3>
+                                <p style="font-size: 14px; color: #64748b; margin: 0;">
+                                    Most mentioned pros and cons shared by real users.
+                                </p>
+                            </div>
+
+                            <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                                <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
+                                    <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                        <tr>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; min-width: 180px;">Business</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 42%;">Most mentioned pro</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 42%;">Most mentioned con</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($tableRowsList as $rowBiz)
+                                            @php
+                                                $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
+                                                $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
+                                                $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
+
+                                                $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                                    ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                                    ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                                    ->where('reviews.business_id', $rowBiz->id)
+                                                    ->where('reviews.status', 'active')
+                                                    ->select('category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as cnt'))
+                                                    ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                                    ->orderByDesc('cnt')
+                                                    ->get();
+
+                                                $topProObj = $proCons->firstWhere('type', 'pro');
+                                                $topConObj = $proCons->firstWhere('type', 'con');
+
+                                                $proStr = $topProObj ? $topProObj->text . ' (' . $topProObj->cnt . ')' : '-';
+                                                $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
+                                            @endphp
+                                            <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
+                                                <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
+                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                        {{ $rName }}
+                                                    </a>
+                                                    @if($loop->first)
+                                                        <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
+                                                    @endif
+                                                </td>
+                                                <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
+                                                    @if($proStr !== '-')
+                                                        <span style="color: #166534; font-weight: 600;">{{ $proStr }}</span>
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>
+                                                <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
+                                                    @if($conStr !== '-')
+                                                        <span style="color: #991b1b; font-weight: 600;">{{ $conStr }}</span>
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+<h2 class="mt-3">All {{ $businessName }} alternatives </h2>
                     </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">

@@ -152,36 +152,52 @@
             align-items: center;
             gap: 10px;
         }
+        /* YouTube-style vote buttons */
         .btn-vote-faq {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 12.5px;
-            font-weight: 600;
+            background: transparent;
+            border: none;
             color: #334155;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            transition: all 0.2s ease;
+            gap: 2px;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
         }
-        .btn-vote-faq:hover {
+        .btn-vote-faq .vote-icon-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s ease;
+        }
+        .btn-vote-faq:hover .vote-icon-circle {
             background: #e2e8f0;
-            color: #0f172a;
         }
-        .btn-vote-faq.voted-yes {
-            background: #e0f2fe;
-            border-color: #0284c7;
-            color: #0369a1;
+        .btn-vote-faq i {
+            font-size: 15px;
+            color: #475569;
+            font-weight: 400; /* Outline by default */
+            transition: all 0.15s ease;
         }
-        .btn-vote-faq.voted-no {
-            background: #fee2e2;
-            border-color: #ef4444;
-            color: #b91c1c;
+        /* Fill icon solid on hover */
+        .btn-vote-faq:hover i {
+            color: #002347;
+            font-weight: 900 !important;
+        }
+        /* Fill icon solid after voting */
+        .btn-vote-faq.voted-yes i.fa-thumbs-up,
+        .btn-vote-faq.voted-no i.fa-thumbs-down {
+            color: #002347 !important;
+            font-weight: 900 !important;
         }
 
-        .dropdown-report-btn {
+        /* Flag icon button (same as reviews) */
+        .faq-flag-btn {
             background: transparent;
             border: none;
             color: #94a3b8;
@@ -189,14 +205,16 @@
             font-size: 13px;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 4px 8px;
-            border-radius: 6px;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            padding: 0;
             transition: all 0.2s ease;
         }
-        .dropdown-report-btn:hover {
-            color: #e11d48;
-            background: #fff1f2;
+        .faq-flag-btn:hover {
+            background: #a0aec03b;
+            color: #003f7d;
         }
 
         /* Ask Community Banner */
@@ -435,29 +453,22 @@
                                                 <div class="faq-feedback-row">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <span>Was this helpful?</span>
-                                                        <div class="faq-feedback-actions">
-                                                            <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)">
-                                                                👍 Yes (<span class="helpful-count">{{ $faq->helpful_count ?? 0 }}</span>)
+                                                        <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
+                                                            <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
+                                                                <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
+                                                                <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
                                                             </button>
-                                                            <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)">
-                                                                👎 No (<span class="not-helpful-count">{{ $faq->not_helpful_count ?? 0 }}</span>)
+                                                            <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
+                                                                <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
+                                                                <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
                                                             </button>
                                                         </div>
                                                     </div>
 
-                                                    <!-- Report Flag Dropdown -->
-                                                    <div class="dropdown">
-                                                        <button type="button" class="dropdown-report-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="fas fa-flag"></i> Report an issue
-                                                        </button>
-                                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13.5px; border-radius: 8px;">
-                                                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Outdated information')">Outdated information</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Incorrect information')">Incorrect information</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Unclear answer')">Unclear answer</a></li>
-                                                            <li><hr class="dropdown-divider my-1"></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Other')">Other</a></li>
-                                                        </ul>
-                                                    </div>
+                                                    <!-- Report Flag -->
+                                                    <button type="button" class="faq-flag-btn" onclick="openReportModal({{ $faq->id }})" title="Report an issue">
+                                                        <i class="fas fa-flag" style="font-size: 13px;"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -498,29 +509,22 @@
                                             <div class="faq-feedback-row">
                                                 <div class="d-flex align-items-center gap-2">
                                                     <span>Was this helpful?</span>
-                                                    <div class="faq-feedback-actions">
-                                                        <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)">
-                                                            👍 Yes (<span class="helpful-count">{{ $faq->helpful_count ?? 0 }}</span>)
+                                                    <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
+                                                        <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
+                                                            <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
+                                                            <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
                                                         </button>
-                                                        <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)">
-                                                            👎 No (<span class="not-helpful-count">{{ $faq->not_helpful_count ?? 0 }}</span>)
+                                                        <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
+                                                            <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
+                                                            <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
                                                         </button>
                                                     </div>
                                                 </div>
 
-                                                <!-- Report Flag Dropdown -->
-                                                <div class="dropdown">
-                                                    <button type="button" class="dropdown-report-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fas fa-flag"></i> Report an issue
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="font-size: 13.5px; border-radius: 8px;">
-                                                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Outdated information')">Outdated information</a></li>
-                                                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Incorrect information')">Incorrect information</a></li>
-                                                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Unclear answer')">Unclear answer</a></li>
-                                                        <li><hr class="dropdown-divider my-1"></li>
-                                                        <li><a class="dropdown-item" href="javascript:void(0)" onclick="openReportModal({{ $faq->id }}, 'Other')">Other</a></li>
-                                                    </ul>
-                                                </div>
+                                                <!-- Report Flag -->
+                                                <button type="button" class="faq-flag-btn" onclick="openReportModal({{ $faq->id }})" title="Report an issue">
+                                                    <i class="fas fa-flag" style="font-size: 13px;"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -544,10 +548,10 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner">
                     <div>
-                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #fdfdfd !important;">
+                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
                             Still have a question about {{ $bName }}?
                         </h3>
-                        <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
+                        <p style="font-size: 15px; margin-bottom: 0;">
                             Ask the Localio community
                         </p>
                     </div>
@@ -639,17 +643,17 @@
                             <div style="display: flex; gap: 8px;">
                                 @auth
                                     <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                        <i class="fas fa-thumbs-up"></i>
+                                        <i class="far fa-thumbs-up"></i>
                                     </a>
                                     <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                        <i class="fas fa-thumbs-down"></i>
+                                        <i class="far fa-thumbs-down"></i>
                                     </a>
                                 @else
                                     <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                        <i class="fas fa-thumbs-up"></i>
+                                        <i class="far fa-thumbs-up"></i>
                                     </a>
                                     <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                        <i class="fas fa-thumbs-down"></i>
+                                        <i class="far fa-thumbs-down"></i>
                                     </a>
                                 @endauth
                             </div>
@@ -822,29 +826,74 @@
 
 <!-- Report Issue Modal -->
 <div class="modal fade" id="reportIssueModal" tabindex="-1" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold" id="reportIssueModalLabel" style="color: #002347; font-size: 20px;">Tell us more</h5>
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
+            <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
+                <div>
+                    <h5 class="modal-title fw-bold m-0" id="reportIssueModalLabel" style="color: #002347; font-size: 18px;">Report an issue</h5>
+                    <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body pt-2">
-                <p class="text-muted small mb-3" id="reportModalReasonDisplay"></p>
+            <div class="modal-body" style="padding: 20px 24px;">
                 <input type="hidden" id="reportModalFaqId">
                 <input type="hidden" id="reportModalReason">
 
-                <div class="form-group mb-3">
-                    <label for="reportModalDetails" class="form-label small fw-bold text-dark">Details (optional)</label>
-                    <textarea class="form-control" id="reportModalDetails" rows="4" placeholder="Add more details..." style="border-radius: 10px; font-size: 14px;"></textarea>
+                <!-- Radio option cards -->
+                <div class="d-flex flex-column gap-2" id="reportReasonOptions">
+                    @foreach([
+                        ['value' => 'Outdated information',   'icon' => 'fa-clock',           'desc' => 'The information is no longer accurate'],
+                        ['value' => 'Incorrect information',  'icon' => 'fa-times-circle',     'desc' => 'The answer contains factual errors'],
+                        ['value' => 'Unclear answer',         'icon' => 'fa-question-circle',  'desc' => 'The answer is confusing or incomplete'],
+                        ['value' => 'Spam or advertising',    'icon' => 'fa-ban',              'desc' => 'Promotional or irrelevant content'],
+                        ['value' => 'Other',                  'icon' => 'fa-ellipsis-h',       'desc' => 'Something else is wrong'],
+                    ] as $opt)
+                    <label class="report-option-card d-flex align-items-center gap-3 p-3 rounded-3 cursor-pointer" style="border: 1.5px solid #e2e8f0; cursor: pointer; transition: all 0.15s ease;" onclick="selectReportReason('{{ $opt['value'] }}', this)">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas {{ $opt['icon'] }}" style="color: #64748b; font-size: 14px;"></i>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size: 14px; font-weight: 600; color: #1e3050;">{{ $opt['value'] }}</div>
+                            <div style="font-size: 12px; color: #64748b;">{{ $opt['desc'] }}</div>
+                        </div>
+                        <div class="report-check" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease;">
+                            <i class="fas fa-check" style="font-size: 10px; color: transparent; transition: color 0.15s ease;"></i>
+                        </div>
+                    </label>
+                    @endforeach
+                </div>
+
+                <!-- Optional details textarea (hidden until option selected) -->
+                <div id="reportDetailsWrapper" style="display: none; margin-top: 16px;">
+                    <label for="reportModalDetails" style="font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px; display: block;">Additional details <span style="font-weight: 400; color: #94a3b8;">(optional)</span></label>
+                    <textarea class="form-control" id="reportModalDetails" rows="3" placeholder="Describe the issue..." style="border-radius: 10px; font-size: 14px; border-color: #e2e8f0; resize: none;"></textarea>
                 </div>
             </div>
-            <div class="modal-footer border-top-0 pt-0">
-                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary rounded-pill px-4" id="submitReportBtn" style="background: #002347; border-color: #002347;" onclick="submitFaqReport()">Submit report</button>
+            <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="btn rounded-pill px-4" id="submitReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitFaqReport()">Submit report</button>
             </div>
         </div>
     </div>
 </div>
+<style>
+    .report-option-card.selected {
+        border-color: #002347 !important;
+        background: #f0f4ff;
+    }
+    .report-option-card.selected .report-check {
+        background: #002347;
+        border-color: #002347;
+    }
+    .report-option-card.selected .report-check i {
+        color: #ffffff !important;
+    }
+    .report-option-card.selected > div:first-child + div + div + div,
+    .report-option-card.selected .report-check {
+        background: #002347;
+        border-color: #002347;
+    }
+</style>
 
 @livewire('add-review')
 
@@ -1003,20 +1052,42 @@
     }
 
     // 5. Report Issue Modal Handler
-    function openReportModal(faqId, reason) {
+    function openReportModal(faqId) {
         @if(!auth()->check())
             alert('Please sign in to report an issue.');
             return;
         @endif
 
+        // Reset state
         document.getElementById('reportModalFaqId').value = faqId;
-        document.getElementById('reportModalReason').value = reason;
-        document.getElementById('reportModalReasonDisplay').textContent = 'Reason: ' + reason;
+        document.getElementById('reportModalReason').value = '';
         document.getElementById('reportModalDetails').value = '';
+        document.getElementById('reportDetailsWrapper').style.display = 'none';
+        document.getElementById('submitReportBtn').disabled = true;
+        document.getElementById('submitReportBtn').style.opacity = '0.5';
+
+        // Deselect all option cards
+        document.querySelectorAll('.report-option-card').forEach(c => c.classList.remove('selected'));
 
         const modalEl = document.getElementById('reportIssueModal');
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
+    }
+
+    function selectReportReason(reason, card) {
+        document.getElementById('reportModalReason').value = reason;
+
+        // Highlight selected card
+        document.querySelectorAll('.report-option-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+
+        // Show details textarea
+        document.getElementById('reportDetailsWrapper').style.display = 'block';
+
+        // Enable submit
+        const btn = document.getElementById('submitReportBtn');
+        btn.disabled = false;
+        btn.style.opacity = '1';
     }
 
     function submitFaqReport() {

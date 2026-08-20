@@ -3049,7 +3049,8 @@
     }
 
     .succes_sec .succes_infp .succs_grp {
-        margin-top: 15px;
+        margin: auto;
+        max-width: 180px;
     }
 
     .succes_sec .succes_rw > div {
@@ -10938,7 +10939,7 @@ body:has(.fixed_sigup) .fixed_sigup {
     right: 16px;
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     color: #9ca3af;
     cursor: pointer;
     width: 32px;
@@ -12695,9 +12696,9 @@ textarea#message {
     box-shadow: 0px 30px 40px 0px #06498b1a;
 }
 
-.succes_sec .succs_box .succes_text p {
+/* .succes_sec .succs_box .succes_text p {
     line-height: 27px;
-}
+} */
 
 .login_modal .login_box a:hover {
     background-color: #003f7de8 !important;
@@ -13499,6 +13500,16 @@ textarea#message {
 
     .asn_dv_contnt .asn-img img {
         min-width: unset;
+    }
+
+    .inner_part_boxx {
+        padding: 15px;
+    }
+    
+    .top-pro-btn.snd_bttn .cta {
+        font-weight: 600;
+        display: inline-block !important;
+        width: fit-content !important;
     }
 
     /*==================== 28-july-26 ================ */

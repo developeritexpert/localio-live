@@ -213,7 +213,7 @@
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 100%;">
                                     <a href="{{route('top-rated-product')}}" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
-                                            <img src="{{ asset('front/img/pls-add.png') }}" style="width: 48px; height: 48px;">
+                                            <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 48px; height: 48px;">
                                             <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare </span>
                                         </div>
                                     </a>
@@ -376,62 +376,118 @@
                             $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? $business->slug;
                         @endphp
 
-                        <div class="col-md-6">
-                            <div class="sales-crm-pack crm-pack-lft compari_crm_pck">
-                                <div class="inn_sl_hed review-brand-icon ">
-                                    <div class="top-product-logo ">
-                                        <x-business-logo :business="$business" />
-                                    </div>
-                                    <div class="sl_h review-brand-icon-sl_h">
-                                        <div class="inn_h d-flex align-items-center ">
-                                            <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
+                        <div class="col-md-6 mb-4 ">
+                            @php
+                                $activeReviews = $business->reviews;
+                                $bAvgRating = $activeReviews->count() > 0
+                                    ? round($activeReviews->avg('rating'), 1)
+                                    : (float)($business->admin_rating ?? 0);
+                                $bTotalReviews = $activeReviews->count();
+                                $bHasReviews = $bTotalReviews > 0;
+                                $bName = $business->translations->first()?->name ?? '';
+                            @endphp
 
-                                            <div class="d-none">
-                                                <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
+                            <div class="p-4 bg-white rounded-3 border h-100 d-flex flex-column" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+
+                                {{-- Header: logo + name + stars + visit --}}
+                                <div class="review-header-box top_review_bx" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                            <x-business-logo :business="$business" :name="$bName" />
+                                        </div>
+                                        <div>
+                                            <h3 style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0; color: #1e3050;">{{ $bName }}</h3>
+                                            <div style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                                                <span style="font-weight: 600; color: #334155;">{{ number_format($bAvgRating, 1) }}</span>
+                                                <div style="display: flex; gap: 2px;">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($bAvgRating))
+                                                            <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                                        @elseif ($i - 0.5 <= $bAvgRating)
+                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                                        @else
+                                                            <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span style="color: #64748b;">({{ number_format($bTotalReviews) }})</span>
                                             </div>
                                         </div>
-
-                                        {{-- Rating HTML with dynamic values --}}
-                                        <div class="tp-btm d-flex rating-group">
-                                            <span style="font-size:12px;">{{ $rating }}</span>
-
-                                            <div>
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($rating >= $i)
-                                                        <i class="r-star fas fa-star text-warning"></i>
-                                                    @elseif ($rating >= $i - 0.5)
-                                                        <i class="r-star fas fa-star-half-alt text-warning"></i>
-                                                    @else
-                                                        <i class="r-star far fa-star text-warning"></i>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <span class="">
-                                                ({{ $ratingCount }})
-                                            </span>
-                                        </div>
-
-                                        @if(!empty($business->is_affiliate))
-                                        <div class="sftwre-alt-sftwre-alt-btn mt-2">
-                                            <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
-                                                target="_blank"
-                                                class="btn-orng cta cta_orange d-flex align-items-center justify-content-center fw_500 mb-2">
-                                                Visit website
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                            </a>
-                                        </div>
-                                        @endif
-                                        
                                     </div>
-                                    
+
+                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; border-radius: 30px; padding: 9px 20px; white-space: nowrap;">
+                                        Visit website
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                    </a>
                                 </div>
-                                
-                            </div>
-                            <div class="my-2 text-center">
-                                <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}"
-                                    style="" class="btn-g-link">
-                                    View all reviews
-                                </a>
+
+                                {{-- Actual Review Cards --}}
+                                @if($bHasReviews)
+                                    @php $recentReviews = $activeReviews->sortByDesc('created_at')->take(2); @endphp
+                                    @if($recentReviews->count() > 0)
+                                        <div class="mt-3 pt-3 " style="">
+                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Recent reviews</h6>
+                                            @foreach($recentReviews as $rev)
+                                                @php
+                                                    $revTrans = $rev->translations->first();
+                                                    $revTitle = $revTrans->title ?? 'Review';
+                                                    $revDesc = \Illuminate\Support\Str::limit(strip_tags($revTrans->description ?? ''), 120);
+                                                    $revUser = $rev->user;
+                                                @endphp
+                                                <div class="sidebar-review-card" style="margin-bottom: 16px; padding-bottom: 16px; {{ !$loop->last ? 'border-bottom: 1px solid #f0f0f0;' : '' }}">
+                                                    {{-- Reviewer header --}}
+                                                    <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 8px;">
+                                                        <div class="review-user" style="display: flex; align-items: center; gap: 10px;">
+                                                            @if($revUser && $revUser->profile_image && $revUser->profile_image !== 'front/img/default.png')
+                                                                <img src="{{ asset($revUser->profile_image) }}" class="rounded-circle" width="36" height="36" style="object-fit:cover;">
+                                                            @else
+                                                                <div style="width: 36px; height: 36px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                                    <span style="color: white; font-weight: bold; font-size: 15px;">{{ strtoupper(substr($revUser->first_name ?? 'A', 0, 1)) }}</span>
+                                                                </div>
+                                                            @endif
+                                                            <div>
+                                                                <div style="font-size: 13px; font-weight: 600; color: #1e3050;">{{ $revUser ? $revUser->displayName() : 'Anonymous' }}</div>
+                                                                @if($revUser && $revUser->job_title)
+                                                                    <div style="font-size: 11px; color: #777;">{{ $revUser->job_title }}</div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $rev->created_at->diffForHumans() }}</small>
+                                                    </div>
+
+                                                    {{-- Stars + Title --}}
+                                                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                                        @for($i=1;$i<=5;$i++)
+                                                            @if($i<=floor($rev->rating))
+                                                                <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                            @elseif($i-0.5<=$rev->rating)
+                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 11px;"></i>
+                                                            @else
+                                                                <i class="far fa-star text-warning" style="font-size: 11px;"></i>
+                                                            @endif
+                                                        @endfor
+                                                        <span style="font-size: 12px; font-weight: 600; color: #334155;">{{ number_format($rev->rating, 1) }}</span>
+                                                    </div>
+
+                                                    @if($revTitle && $revTitle !== 'Review')
+                                                        <div style="font-size: 13.5px; font-weight: 600; color: #1e3050; margin-bottom: 3px;">{{ $revTitle }}</div>
+                                                    @endif
+
+                                                    @if($revDesc)
+                                                        <p style="font-size: 13px; line-height: 1.5; color: #4a5568; margin: 0;">{{ $revDesc }}</p>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                @endif
+
+                                {{-- View all reviews link --}}
+                                <div class="mt-3 pt-3 text-center" style="border-top: 1px solid #f0f0f0;">
+                                    <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="btn-g-link">
+                                        View all reviews
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     @endforeach

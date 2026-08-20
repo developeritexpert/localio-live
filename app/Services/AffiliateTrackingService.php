@@ -18,23 +18,29 @@ class AffiliateTrackingService
                 ? $business->websites->firstWhere('country_id', $countryId)
                 : $business->websites()->where('country_id', $countryId)->first();
 
-            if ($countryWebsite && !empty($countryWebsite->website_url)) {
-                $targetUrl = $countryWebsite->website_url;
-                if (isset($countryWebsite->is_affiliate)) {
-                    $isAffiliate = (bool)$countryWebsite->is_affiliate;
+            if ($countryWebsite) {
+                // If country setting exists and is_affiliate is 0, this business is non-affiliated for this country
+                if (isset($countryWebsite->is_affiliate) && !$countryWebsite->is_affiliate) {
+                    return null;
+                }
+                if (!empty($countryWebsite->website_url)) {
+                    $targetUrl = $countryWebsite->website_url;
+                    $isAffiliate = true;
                 }
             }
         }
 
         if (!$targetUrl) {
-            $targetUrl = $business->affiliate_link ?: $business->permanent_url;
+            if ($isAffiliate) {
+                $targetUrl = $business->affiliate_link ?: $business->permanent_url;
+            }
         }
 
-        if (!$targetUrl) return '#';
+        if (!$targetUrl) return null;
 
-        // If not an affiliate link, return the direct URL
+        // If not an affiliate link, return null (no button/link)
         if (!$isAffiliate) {
-            return $targetUrl;
+            return null;
         }
 
         // Generate unique click ID
