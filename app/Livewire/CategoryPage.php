@@ -52,6 +52,7 @@ class CategoryPage extends Component
     // Configure URL parameters - page is now path-based
     protected $queryString = [
         'selectedOptions' => ['except' => []],
+        'selectedFeatures' => ['except' => []],
         'selectedSubCategories' => ['except' => []],
         'searchTerm' => ['except' => ''],
         'selectedRatings' => ['except' => []],
@@ -62,6 +63,8 @@ class CategoryPage extends Component
     ];
 
     public $feature_slug = null;
+    public $selectedFeatures = [];
+    public $availableFeatures = [];
 
     public function mount($slug, $initialPage = 1, $feature_slug = null)
     {
@@ -102,6 +105,7 @@ class CategoryPage extends Component
         $this->calculateRatingCounts();
         // Load default filter options
         $this->loadDefaultFilterOptions();
+        $this->loadAvailableFeatures();
         // Update active filters if there are URL parameters
         if (!empty($this->selectedOptions)) {
             $this->updateActiveFilters();
@@ -324,7 +328,14 @@ class CategoryPage extends Component
             $query = Business::where('category_id', $this->category->id);
         }
 
-        if (!empty($this->feature_slug)) {
+        if (!empty($this->selectedFeatures)) {
+            $featIds = array_filter($this->selectedFeatures);
+            if (!empty($featIds)) {
+                $query->whereHas('features', function ($q) use ($featIds) {
+                    $q->whereIn('features.id', $featIds);
+                });
+            }
+        } elseif (!empty($this->feature_slug)) {
             $featureSlug = $this->feature_slug;
             $query->whereHas('features', function ($q) use ($featureSlug) {
                 $q->whereHas('translations', function ($tq) use ($featureSlug) {
@@ -788,6 +799,7 @@ class CategoryPage extends Component
         $this->sortBy = 'highest_rated';
         $this->initializePriceRange();
         $this->loadDefaultFilterOptions();
+        $this->loadAvailableFeatures();
        
         // Reset active filters
         // dd($this->activeFilters);
@@ -1074,6 +1086,58 @@ class CategoryPage extends Component
                 'answer' => 'Our listings and rating scores are updated dynamically as community members submit feedback and ratings.'
             ]
         ];
+    }
+
+    
+    public function loadAvailableFeatures()
+    {
+        if (!$this->category) return;
+        $catIds = array_filter(array_unique(array_merge([$this->category->id], $this->subCategories ? array_column($this->subCategories, 'id') : [])));
+
+        $this->availableFeatures = \App\Models\Feature::whereIn('category_id', $catIds)
+            ->orWhereHas('businesses', function($bq) use ($catIds) {
+                $bq->whereIn('category_id', $catIds);
+            })
+            ->with(['translations' => function ($query) {
+                $query->where('lang_id', $this->lang_id);
+            }])
+            ->get()
+            ->unique('id');
+
+        if (!empty($this->feature_slug) && empty($this->selectedFeatures)) {
+            $slugToMatch = $this->feature_slug;
+            $matched = $this->availableFeatures->first(function($f) use ($slugToMatch) {
+                $fSlug = $f->translations->first()?->slug ?? \Illuminate\Support\Str::slug($f->name);
+                $fName = $f->translations->first()?->name ?? $f->name;
+                return \Illuminate\Support\Str::slug($fSlug) === \Illuminate\Support\Str::slug($slugToMatch) || \Illuminate\Support\Str::slug($fName) === \Illuminate\Support\Str::slug($slugToMatch);
+            });
+
+            if (!$matched) {
+                $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
+                    $q->where('slug', $slugToMatch)->orWhere('name', 'LIKE', str_replace('-', ' ', $slugToMatch));
+                })->first();
+            }
+
+            if ($matched && !in_array($matched->id, $this->selectedFeatures)) {
+                $this->selectedFeatures[] = $matched->id;
+            }
+        }
+    }
+
+    public function toggleFeature($featureId)
+    {
+        if (in_array($featureId, $this->selectedFeatures)) {
+            $this->selectedFeatures = array_diff($this->selectedFeatures, [$featureId]);
+        } else {
+            $this->selectedFeatures[] = $featureId;
+        }
+        $this->resetPage();
+    }
+
+    public function clearAllFeatures()
+    {
+        $this->selectedFeatures = [];
+        $this->resetPage();
     }
 
     public function render()

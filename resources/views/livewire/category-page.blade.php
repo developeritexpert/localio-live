@@ -490,29 +490,34 @@
                                             </div>
                                         </div>
 
-                                        <!-- Rating Criteria Filter Section -->
-                                        @if(isset($availableCriteria) && count($availableCriteria) > 0)
-                                        <div class="filter-section mt-3 ">
-                                            <h3 class="fw-semibold text-dark mb-2">
-                                                Criteria ratings
+                                        <!-- Features Filter Section -->
+                                        @if(isset($availableFeatures) && count($availableFeatures) > 0)
+                                        <div class="filter-section mt-3 mb-3">
+                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                                Features
                                             </h3>
-                                            @foreach($availableCriteria as $crit)
-                                            <div class="mb-2">
-                                                <label class="form-label fw-bold mb-1 text-secondary"
-                                                    style="font-size: 13px;">
-                                                    {{ $crit->name }}
-                                                </label>
-                                                <select class="form-select form-select-sm"
-                                                    wire:model.live="selectedCriteriaRatings.{{ $crit->id }}"
-                                                    style="font-size: 12px;">
-                                                    <option value="">Any rating</option>
-                                                    <option value="4">4★ & above</option>
-                                                    <option value="3">3★ & above</option>
-                                                    <option value="2">2★ & above</option>
-                                                    <option value="1">1★ & above</option>
-                                                </select>
+                                            <div class="d-flex flex-column gap-2" style="max-height: 240px; overflow-y: auto;">
+                                                @foreach($availableFeatures as $feat)
+                                                    @php
+                                                        $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                        $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
+                                                        $featName = $featTrans->name ?? $feat->name ?? 'Feature';
+                                                        $featId = $feat->id;
+                                                        $isChecked = in_array($featId, $selectedFeatures ?? []);
+                                                    @endphp
+                                                    <div class="form-check" style="margin-bottom: 6px;">
+                                                        <input type="checkbox" class="form-check-input"
+                                                               wire:model.live="selectedFeatures"
+                                                               value="{{ $featId }}"
+                                                               id="feature-check-{{ $featId }}"
+                                                               style="margin-right: 8px; cursor: pointer;">
+                                                        <label class="form-check-label" for="feature-check-{{ $featId }}"
+                                                               style="font-size: 13px; color: #555; cursor: pointer; {{ $isChecked ? 'font-weight: 600; color: #002347;' : '' }}">
+                                                            {{ $featName }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
                                             </div>
-                                            @endforeach
                                         </div>
                                         @endif
 
@@ -797,6 +802,25 @@
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
                                 <!-- Product Count and Sort -->
+                                @if(!empty($selectedFeatures) && count($selectedFeatures) > 0)
+                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+                                        @foreach($availableFeatures ?? [] as $fItem)
+                                            @if(in_array($fItem->id, $selectedFeatures))
+                                                @php
+                                                    $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                    $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
+                                                @endphp
+                                                <span class="badge rounded-pill bg-white text-dark border d-inline-flex align-items-center gap-2 px-3 py-2" style="font-size: 13px; font-weight: 500; border-color: #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                                    {{ $fName }}
+                                                    <i class="fas fa-times cursor-pointer text-muted ms-1" style="cursor: pointer;" wire:click="toggleFeature({{ $fItem->id }})"></i>
+                                                </span>
+                                            @endif
+                                        @endforeach
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="small text-danger ms-2 text-decoration-none fw-semibold">Clear features</a>
+                                    </div>
+                                @endif
+
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         @if ($products->count() > 0)
