@@ -1,6 +1,6 @@
 <div class="hdr_ryt">
 <div class="hdr_info">
-    <div class="notf drop_menu">
+    <div class="notf drop_menu d-none">
         <a class="notfictn_lnk">
             <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" class="img-fluid">
             <span class="badge custom-badge badge-success">6</span>
