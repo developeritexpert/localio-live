@@ -168,15 +168,15 @@ class TopRatedProduct extends Component
 
         if ($page > 1) {
             if ($this->categorySlug) {
-                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug . '/' . $page;
+                $url = '/' . $locale . '/top-rated/' . $this->categorySlug . '/' . $page;
             } else {
-                $url = '/' . $locale . '/top-rated-products/' . $page;
+                $url = '/' . $locale . '/top-rated/' . $page;
             }
         } else {
             if ($this->categorySlug) {
-                $url = '/' . $locale . '/top-rated-products/' . $this->categorySlug;
+                $url = '/' . $locale . '/top-rated/' . $this->categorySlug;
             } else {
-                $url = '/' . $locale . '/top-rated-products';
+                $url = '/' . $locale . '/top-rated';
             }
         }
 
