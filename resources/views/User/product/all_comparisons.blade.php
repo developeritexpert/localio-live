@@ -50,14 +50,62 @@
         color: #64748b;
         padding: 0 4px;
     }
+
+    /* Subcategory filter tabs without arrows */
+    .subcat-filter-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 28px;
+    }
+    .subcat-filter-item {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1e3050;
+        text-decoration: none;
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+    .subcat-filter-item:hover {
+        color: #002347;
+        border-color: #002347;
+        background: #f8fafc;
+    }
+    .subcat-filter-item.active {
+        background: #002347;
+        color: #ffffff !important;
+        border-color: #002347;
+    }
+
+    /* Live Search Dropdown item */
+    .search-preview-item {
+        padding: 10px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e3050;
+        transition: background 0.15s ease;
+    }
+    .search-preview-item:hover {
+        background: #f1f5f9;
+        color: #002347;
+    }
 </style>
 @endpush
-
 
 @php
     $lang_id = getCurrentLanguageID();
     $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
     $bNameTmp = $bTransTmp->name ?? 'Business';
+    $bSlug = $bTransTmp->slug ?? $business->slug;
     $compMetaTitle = !empty($bTransTmp->comparison_meta_title) ? $bTransTmp->comparison_meta_title : "Compare {$bNameTmp} with Top Competitors";
     $compMetaDesc = !empty($bTransTmp->comparison_meta_description) ? $bTransTmp->comparison_meta_description : ($bTransTmp->comparison_description ?? '');
 @endphp
@@ -85,14 +133,13 @@
 
     $compTitle1 = $translation->comparison_title ?? ('Compare ' . $bName);
     $compDesc1  = $translation->comparison_description ?? '';
-    $compTitle2 = $translation->comparison_title_2 ?? '';
-    $compDesc2  = $translation->comparison_description_2 ?? '';
 
     $vsKey = static_text('vs_keyword');
     if (empty($vsKey) || $vsKey === 'vs_keyword') {
         $vsKey = 'vs';
     }
     $vsKeySlug = Str::slug($vsKey);
+    $currentSubcat = request()->get('subcategory');
 @endphp
 
 <!-- Upper Header Section -->
@@ -101,7 +148,7 @@
         <!-- Breadcrumb & Social Share Row -->
         <div class="asn_dv d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
             <nav aria-label="breadcrumb">
-                <ol class="breadcrumb " style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
+                <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     @if($parentCatName)
                         <li class="breadcrumb-item">
                             @if($parentCatSlug)
@@ -122,7 +169,7 @@
                     @endif
                     @if($business)
                         <li class="breadcrumb-item">
-                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
                         </li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
@@ -152,24 +199,19 @@
                     </p>
                 </div>
             </div>
-            <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="d-none btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
-                    Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
-                </a>
-            </div>
         </div>
     </div>
 </section>
 
-<!-- Top Content Section: Both Titles & Descriptions on Left, Both Widgets on Right -->
+<!-- Top Content Section: Description 1 Left, Interactive Compare Box + Sidebars Right -->
 <section class="py-5 common_detail_sec" style="background-color: #ffffff;">
     <div class="container">
         <div class="row g-4">
-            <!-- Left Side: Title 1 & Description 1 AND Title 2 & Description 2 -->
+            <!-- Left Side: Title 1 & Description 1 AND Interactive Compare Tool -->
             <div class="col-lg-8 col-12">
-                <!-- Section 1 -->
+                <!-- Section 1: Intro Text -->
                 @if($compTitle1)
-                    <div class="mb-5">
+                    <div class="mb-4">
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
                             {{ $compTitle1 }}
                         </h2>
@@ -181,28 +223,46 @@
                     </div>
                 @endif
 
-                <!-- Section 2 -->
-                @if($compTitle2 || $compDesc2)
-                    <div class="mb-4">
-                        @if($compTitle2)
-                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                                {{ $compTitle2 }}
-                            </h2>
-                        @endif
-                        @if($compDesc2)
-                            <div class="content_box" style="font-size: 15px; color: #4a5568; line-height: 1.6;">
-                                {!! $compDesc2 !!}
+                <!-- Section 2: Interactive Compare Tool Box (Replacing 2nd text) -->
+                <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1.5px solid #e2e8f0 !important; box-shadow: 0 4px 14px rgba(0,0,0,0.03); overflow: visible !important;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                        Compare {{ $bName }} with any provider
+                    </h3>
+
+                    <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
+                        <!-- Business A (Fixed) -->
+                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+                                <x-business-logo :business="$business" :name="$bName" />
                             </div>
-                        @endif
+                            <span style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap;">{{ $bName }}</span>
+                        </div>
+
+                        <!-- VS Label -->
+                        <span class="fw-bold text-muted px-1" style="font-size: 15px; font-family: sans-serif; flex-shrink: 0;">vs</span>
+
+                        <!-- Business B Search Input + Auto-complete Dropdown -->
+                        <div class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none;"></i>
+                                <input type="text" id="compareSearchInput" class="form-control rounded-pill" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 44px;" autocomplete="off">
+                            </div>
+                            <!-- Custom Auto-complete Container -->
+                            <div id="compareSearchDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; width: 100%; max-height: 260px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 99999; margin-top: 6px;"></div>
+                        </div>
+
+                        <!-- Compare Action Button -->
+                        <button type="button" id="btnRunCompare" class="btn rounded-pill px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 44px; opacity: 0.6; flex-shrink: 0;" disabled>
+                            Compare
+                        </button>
                     </div>
-                @endif
+                </div>
             </div>
 
-            <!-- Right Side: Rating Breakdown Widget & Popular Comparisons Widget -->
+            <!-- Right Side: Rating Breakdown, Popular Comparisons & More About Business -->
             <div class="col-lg-4 col-12 d-flex flex-column gap-4">
-                <!-- Widget 1: Rating Breakdown (Identical to business details page) -->
+                <!-- Widget 1: Rating Breakdown -->
                 @php
-                    $bSlug = $business->translations->first()->slug ?? ($business->slug ?? 'business');
                     $rWordRaw = static_text('reviews_word');
                     $rSlug = (!empty($rWordRaw) && $rWordRaw !== 'reviews_word') ? $rWordRaw : 'reviews';
                     $reviewsPageUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
@@ -210,11 +270,9 @@
                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                     <div class="review-header-box top_review_bx" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                         <div class="d-flex align-items-center gap-2">
-                            @if(!empty($business->icon_id))
-                                <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
-                                    <img src="{{ asset($business->icon_id) }}" alt="{{ $bName }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                </div>
-                            @endif
+                            <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                <x-business-logo :business="$business" :name="$bName" />
+                            </div>
                             <div>
                                 <h3 style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
@@ -249,7 +307,7 @@
                                     <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #333;  min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                     </div>
                                 </div>
                             @endforeach
@@ -274,18 +332,18 @@
                     </div>
                 </div>
 
-                <!-- Widget 2: Popular Comparisons -->
-                @if(count($peerComparisons) > 0)
+                <!-- Widget 2: Popular Comparisons Sidebar -->
+                @if(isset($popularComparisons) && count($popularComparisons) > 0)
                     <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 1px solid #f0f0f0;">
                             <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin: 0;">Popular comparisons</h6>
-                            <a href="#grid-comparisons-section" style="color: #002347; font-weight: 600; font-size: 13px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                            <a href="#grid-all-comparisons-section" style="color: #002347; font-weight: 600; font-size: 13px; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                                 View all comparisons
                             </a>
                         </div>
 
                         <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px;">
-                            @foreach($peerComparisons->take(5) as $popPeer)
+                            @foreach($popularComparisons->take(5) as $popPeer)
                                 @php
                                     $popPeerName = $popPeer->translations->first()->name ?? 'Business';
                                     $popUrl = route('product-comparison.seo', [
@@ -304,26 +362,190 @@
                     </div>
                 @endif
 
-                <!-- 6. More about Business Card -->
+                <!-- Widget 3: More About Business Card -->
                 <x-more-about-business :business="$business" />
             </div>
         </div>
     </div>
 </section>
 
-<!-- Comparisons Grid Section -->
-<section id="grid-comparisons-section" class="compare-section all_comparisons_sec py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
+<!-- Section 2: Popular {{ $bName }} comparisons (Top 6 Most Clicked/Popular) -->
+@if(isset($popularComparisons) && count($popularComparisons) > 0)
+<section class="compare-section py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
     <div class="container">
-        <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
+        <div class="hd_text mb-4">
             <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 6px;">
-                Compare {{ $bName }}
+                Popular {{ $bName }} comparisons
             </h2>
             <p style="font-size: 15px; color: #64748b; margin: 0;">
-                See how {{ $bName }} compares to other {{ $catName }} providers.
+                See how {{ $bName }} compares to top competitors.
             </p>
         </div>
 
-        <div class="row g-4" data-aos="fade-up" data-aos-duration="1000">
+        <div class="row g-4">
+            @foreach($popularComparisons->take(6) as $popItem)
+                @php
+                    $popItemName = $popItem->translations->first()->name ?? 'Business';
+                    $popItemRating = round($popItem->reviews->avg('rating'), 1);
+                    $seoUrlPop = route('product-comparison.seo', [
+                        'locale' => app()->getLocale(),
+                        'comparison_slug' => $compSlug,
+                        'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($popItemName)
+                    ]);
+                @endphp
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                    <x-business-logo :business="$business" :name="$bName" />
+                                </div>
+                                <div style="min-width: 0;">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($businessRating, 1) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                    <x-business-logo :business="$popItem" :name="$popItemName" />
+                                </div>
+                                <div style="min-width: 0; text-align: left;">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
+                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($popItemRating, 1) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cmpre_btn w-100 mt-auto">
+                            <a href="{{ $seoUrlPop }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                Compare
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Section 3: Recently viewed comparisons (3-6 items) -->
+@if(isset($recentlyViewedComparisons) && count($recentlyViewedComparisons) > 0)
+<section class="compare-section py-5" style="background-color: #ffffff !important; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+        <div class="hd_text mb-4">
+            <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 6px;">
+                Recently viewed comparisons
+            </h2>
+            <p style="font-size: 15px; color: #64748b; margin: 0;">
+                Comparisons of {{ $bName }} recently viewed by users.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            @foreach($recentlyViewedComparisons->take(6) as $recentItem)
+                @php
+                    $recItemName = $recentItem->translations->first()->name ?? 'Business';
+                    $recItemRating = round($recentItem->reviews->avg('rating'), 1);
+                    $seoUrlRec = route('product-comparison.seo', [
+                        'locale' => app()->getLocale(),
+                        'comparison_slug' => $compSlug,
+                        'comparison_businesses' => Str::slug($bName) . '-' . $vsKeySlug . '-' . Str::slug($recItemName)
+                    ]);
+                @endphp
+                <div class="col-lg-4 col-md-6 col-12">
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                    <x-business-logo :business="$business" :name="$bName" />
+                                </div>
+                                <div style="min-width: 0;">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
+                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($businessRating, 1) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                                    <x-business-logo :business="$recentItem" :name="$recItemName" />
+                                </div>
+                                <div style="min-width: 0; text-align: left;">
+                                    <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $recItemName }}</div>
+                                    <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($recItemRating, 1) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cmpre_btn w-100 mt-auto">
+                            <a href="{{ $seoUrlRec }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                Compare
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Section 4: Browse all comparisons of [main category] + Subcategories Filter + Grid + Pagination -->
+<section id="grid-all-comparisons-section" class="compare-section all_comparisons_sec py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+        @php
+            $mainCategoryTitle = $parentCatName ?: $catName;
+        @endphp
+        <div class="hd_text mb-4">
+            <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 6px;">
+                Browse all comparisons of {{ $mainCategoryTitle }}
+            </h2>
+            <p style="font-size: 15px; color: #64748b; margin: 0;">
+                All side-by-side comparisons of {{ $bName }} and top {{ strtolower($mainCategoryTitle) }} providers.
+            </p>
+        </div>
+
+        <!-- Subcategories Filter List (Vertical list matching reference design, without arrows) -->
+        @if(isset($subCategoriesWithComparisons) && $subCategoriesWithComparisons->count() > 0)
+            <div class="subcat-filter-list mb-4" style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="{{ route('business.all_comparisons', ['locale' => app()->getLocale(), 'business_slug' => $bSlug]) }}"
+                   style="font-size: 16px; font-weight: {{ empty($currentSubcat) ? '700' : '600' }}; color: {{ empty($currentSubcat) ? '#002347' : '#2b6cb0' }}; text-decoration: none; width: fit-content;"
+                   onmouseover="this.style.textDecoration='underline'"
+                   onmouseout="this.style.textDecoration='none'">
+                    All {{ $mainCategoryTitle }} comparisons
+                </a>
+                @foreach($subCategoriesWithComparisons as $scat)
+                    @php
+                        $scatTrans = $scat->translation ?? $scat->translations->first();
+                        $scatName = $scatTrans->name ?? $scat->name ?? '';
+                        $scatSlug = $scatTrans->slug ?? $scat->slug ?? '';
+                        $isActive = ($currentSubcat === $scatSlug);
+                    @endphp
+                    @if($scatName)
+                        <a href="{{ route('business.all_comparisons', ['locale' => app()->getLocale(), 'business_slug' => $bSlug, 'subcategory' => $scatSlug]) }}"
+                           style="font-size: 16px; font-weight: {{ $isActive ? '700' : '500' }}; color: {{ $isActive ? '#002347' : '#2b6cb0' }}; text-decoration: none; width: fit-content;"
+                           onmouseover="this.style.textDecoration='underline'"
+                           onmouseout="this.style.textDecoration='none'">
+                            {{ $scatName }}
+                        </a>
+                    @endif
+                @endforeach
+            </div>
+        @endif
+
+        <!-- Grid of Comparisons -->
+        <div class="row g-4">
             @forelse($peerComparisons as $peer)
                 @php
                     $peerName = $peer->translations->first()->name ?? 'Business';
@@ -335,7 +557,7 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);" >
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                         <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
                             <!-- Business A -->
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
@@ -352,10 +574,8 @@
                             </div>
 
                             <!-- VS Keyword -->
-                            <!-- <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">
-                                {{ strtoupper($vsKey) }}
-                            </div> -->
-                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px;font-family: sans-serif;">vs</div>
+                            <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+
                             <!-- Business B (Peer) -->
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1; justify-content: flex-end;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
@@ -373,17 +593,18 @@
 
                         <!-- Compare Button -->
                         <div class="cmpre_btn w-100 mt-auto">
-                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;" >
+                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
                                 Compare
                             </a>
                         </div>
                     </div>
                 </div>
             @empty
-                <div class="col-12 text-muted">No comparisons available for this business yet.</div>
+                <div class="col-12 text-muted">No comparisons available for this subcategory yet.</div>
             @endforelse
         </div>
 
+        <!-- Pagination -->
         @php
             $currentPage = $peerComparisons->currentPage();
             $lastPage = $peerComparisons->lastPage() ?? 1;
@@ -402,14 +623,12 @@
         @if ($lastPage > 1)
             <div class="auto-choice-rgt d-flex justify-content-center mt-5">
                 <div class="btn-pages">
-                    {{-- Previous Button (only if there's a previous page) --}}
                     @if ($currentPage > 1)
                         <a href="{{ $peerComparisons->url($currentPage - 1) }}" class="pagination-btn pagination-arrow">
                             <i class="fa-solid fa-chevron-left"></i>
                         </a>
                     @endif
 
-                    {{-- First Page --}}
                     @if ($startPage > 1)
                         <a href="{{ $peerComparisons->url(1) }}" class="pagination-btn {{ $currentPage == 1 ? 'active' : '' }}">1</a>
                         @if ($showLeftDots)
@@ -417,14 +636,12 @@
                         @endif
                     @endif
 
-                    {{-- Page Numbers --}}
                     @for ($page = $startPage; $page <= $endPage; $page++)
                         <a href="{{ $peerComparisons->url($page) }}" class="pagination-btn {{ $currentPage == $page ? 'active' : '' }}">
                             {{ $page }}
                         </a>
                     @endfor
 
-                    {{-- Last Page --}}
                     @if ($endPage < $lastPage)
                         @if ($showRightDots)
                             <span class="pagination-dots">...</span>
@@ -434,7 +651,6 @@
                         </a>
                     @endif
 
-                    {{-- Next Button (only if there's a next page) --}}
                     @if ($currentPage < $lastPage)
                         <a href="{{ $peerComparisons->url($currentPage + 1) }}" class="pagination-btn pagination-arrow next">
                             <i class="fa-solid fa-chevron-right"></i>
@@ -445,4 +661,93 @@
         @endif
     </div>
 </section>
+
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchableBusinesses = @json($allSearchableBusinesses ?? []);
+        const input = document.getElementById('compareSearchInput');
+        const dropdown = document.getElementById('compareSearchDropdown');
+        const btn = document.getElementById('btnRunCompare');
+        const compSlug = @json($compSlug);
+        const vsKeySlug = @json($vsKeySlug);
+        const bNameSlug = @json(Str::slug($bName));
+        const currentLocale = @json(app()->getLocale());
+
+        let selectedTargetSlug = null;
+
+        if (!input || !dropdown || !btn) return;
+
+        function renderResults(query) {
+            const trimmed = query.toLowerCase().trim();
+            selectedTargetSlug = null;
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+
+            let matches = searchableBusinesses;
+            if (trimmed.length > 0) {
+                matches = searchableBusinesses.filter(b => b.name.toLowerCase().includes(trimmed));
+            }
+
+            if (matches.length === 0) {
+                dropdown.innerHTML = '<div class="p-3 text-muted small text-center">No businesses found matching "' + query + '"</div>';
+                dropdown.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+            matches.slice(0, 10).forEach(b => {
+                const iconHtml = b.icon ? `<img src="${b.icon}" width="24" height="24" style="border-radius:50%; object-fit:cover; flex-shrink:0;">` : `<div style="width:24px;height:24px;border-radius:50%;background:#002347;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${b.name.charAt(0).toUpperCase()}</div>`;
+                html += `
+                    <div class="search-preview-item" data-slug="${b.slug}" data-name="${b.name}">
+                        ${iconHtml}
+                        <span>${b.name}</span>
+                    </div>
+                `;
+            });
+
+            dropdown.innerHTML = html;
+            dropdown.style.display = 'block';
+
+            dropdown.querySelectorAll('.search-preview-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    input.value = this.dataset.name;
+                    selectedTargetSlug = this.dataset.slug;
+                    dropdown.style.display = 'none';
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                });
+            });
+        }
+
+        input.addEventListener('focus', function() {
+            renderResults(this.value);
+        });
+
+        input.addEventListener('input', function() {
+            renderResults(this.value);
+        });
+
+        input.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter' && selectedTargetSlug) {
+                btn.click();
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        btn.addEventListener('click', function() {
+            if (!selectedTargetSlug) return;
+            const targetUrl = `/${currentLocale}/${compSlug}/${bNameSlug}-${vsKeySlug}-${selectedTargetSlug}`;
+            window.location.href = targetUrl;
+        });
+    });
+</script>
+@endpush
