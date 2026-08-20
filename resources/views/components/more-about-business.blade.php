@@ -20,7 +20,7 @@
     .more-about-link-item {
         color: #1e3050;
         transition: all 0.2s ease;
-        padding: 10px 0;
+        padding: 10px;
         border-bottom: 1px solid #f1f5f9;
     }
     .more-about-link-item:last-child {
@@ -46,7 +46,7 @@
     }
     .more-about-link-item:hover .more-about-link-arrow {
         color: #06498b;
-        transform: translateX(4px);
+        /* transform: translateX(4px); */
     }
     /* new sec css end*/
    

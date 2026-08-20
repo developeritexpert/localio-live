@@ -1516,12 +1516,12 @@
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                                 <h2 class="accordion-header" id="headingFaq{{ $fIndex }}">
-                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-size: 15px; font-weight: 600; color: #002347; background-color: #f8fafc;">
+                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                         {{ $faq['question'] }}
                                     </button>
                                 </h2>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>

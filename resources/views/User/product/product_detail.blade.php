@@ -2707,37 +2707,44 @@
                                         <div class="main_feature_lg sticky-sidebar-nav-wrapper">
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
-                                                    <div class="sticky-nav-logo mb-2 d-flex justify-content-center">
-                                                        <div style="width: 44px; height: 44px;">
+                                                    <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
+                                                        <div style="width: 44px; height: 44px; margin-bottom:8px">
                                                             <x-business-logo :business="$business" />
                                                         </div>
-                                                    </div>
-                                                    <h3 class="sticky-nav-title mb-1"
-                                                        style="font-size: 17px; font-weight: 700; color: #002347;">
-                                                        {{ $business->translations->first()->name ?? '' }}
-                                                    </h3>
-                                                    @if ($averageRating !== null)
-                                                        <div
-                                                            class="rating-group sticky-nav-rating d-flex align-items-center justify-content-center gap-1 mb-3">
-                                                            <span
-                                                                style="">{{ number_format($averageRating, 1) }}</span>
-                                                            <div class="rating-star" style="">
-                                                                @for ($i = 1; $i <= 5; $i++)
-                                                                    @if ($i <= floor($averageRating))
-                                                                        <i class="fas fa-star"></i>
-                                                                    @elseif ($i - 0.5 <= $averageRating)
-                                                                        <i class="fas fa-star-half-alt"></i>
-                                                                    @else
-                                                                        <i class="far fa-star"></i>
-                                                                    @endif
-                                                                @endfor
+
+                                                        <div class="sticky-wrap-mf">
+                                                        <h3 class="sticky-nav-title mb-1"
+                                                            style="font-size: 17px; font-weight: 700; color: #002347;">
+                                                            {{ $business->translations->first()->name ?? '' }}
+                                                        </h3>
+                                                        @if ($averageRating !== null)
+                                                            <div
+                                                                class="rating-group sticky-nav-rating mb-3">
+                                                                <span
+                                                                    style="">{{ number_format($averageRating, 1) }}</span>
+                                                                <div class="rating-star" style="">
+                                                                    @for ($i = 1; $i <= 5; $i++)
+                                                                        @if ($i <= floor($averageRating))
+                                                                            <i class="fas fa-star"></i>
+                                                                        @elseif ($i - 0.5 <= $averageRating)
+                                                                            <i class="fas fa-star-half-alt"></i>
+                                                                        @else
+                                                                            <i class="far fa-star"></i>
+                                                                        @endif
+                                                                    @endfor
+                                                                </div>
+                                                                @if ($hasUserReviews)
+                                                                    <span class=""
+                                                                        style="">({{ $ratingCount }})</span>
+                                                                @endif
                                                             </div>
-                                                            @if ($hasUserReviews)
-                                                                <span class=""
-                                                                    style="">({{ $ratingCount }})</span>
-                                                            @endif
-                                                        </div>
-                                                    @endif
+                                                        @endif
+                                                    </div>
+
+                                                    </div>
+
+                                                    
+
                                                     @if ($business->is_affiliate)
                                                         <a href="{{ $business->getTrackedUrl() }}"
                                                             data-track="{{ json_encode([

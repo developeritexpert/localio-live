@@ -3,7 +3,7 @@
 @section('meta_description', isset($whoWeAre) && isset($whoWeAre->meta_description) ? $whoWeAre->meta_description : '')
 
 @section('content')
-<section class="banner_sec help-cntr-bnr inr-bnr dark" style="background-color: #003F7D;">
+<section class="banner_sec help-cntr-bnr inr-bnr dark d-none" style="background-color: #003F7D;">
 
     <div class="banner_content">
         <div class="container">
