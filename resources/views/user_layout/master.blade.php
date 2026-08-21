@@ -2492,7 +2492,7 @@
                                 </li> --}}
                                 <li>
                                     <a
-                                        href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['about-localio'] ?? 'About localio' }}</a>
+                                        href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['about-localio'] ?? 'About Localio' }}</a>
                                 </li>
                                 <li>
                                     <a

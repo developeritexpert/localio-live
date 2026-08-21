@@ -68,6 +68,19 @@
                             </div>
                         </div>
 
+                                                <!-- Keep Capitalized Checkbox -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label d-block">Capitalization Format</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input type="checkbox" class="custom-control-input" id="keep_capitalized" name="keep_capitalized" value="1"
+                                        {{ old('keep_capitalized', $feature->keep_capitalized ?? 0) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="keep_capitalized">Keep capitalized in headlines (e.g. DNS, SSL, API)</label>
+                                </div>
+                                <small class="text-muted d-block mt-1">If checked, the first letter will not be forced to lowercase in automated titles.</small>
+                            </div>
+                        </div>
+
                         <!-- Submit -->
                         <div class="col-md-12 mt-4">
                             <div class="form-group">

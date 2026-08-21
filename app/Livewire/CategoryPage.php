@@ -783,6 +783,12 @@ class CategoryPage extends Component
         $this->showSortDropdown = !$this->showSortDropdown;
     }
 
+    public function updatedSelectedFeatures()
+    {
+        $this->feature_slug = null;
+        $this->resetPage();
+    }
+
     public function updatedSortBy()
     {
         $this->resetPage();
@@ -793,6 +799,8 @@ class CategoryPage extends Component
     {
         $this->selectedOptions = [];
         $this->selectedSubCategories = [];
+        $this->selectedFeatures = [];
+        $this->feature_slug = null;
         $this->searchTerm = '';
         $this->selectedRatings = [];
         $this->isPriceFilterActive = false;
@@ -874,8 +882,67 @@ class CategoryPage extends Component
     }
 
 
+        public function getFeatureDescriptionProperty()
+    {
+        if (!empty($this->feature_slug) && $this->category) {
+            $activeFeatId = null;
+            if (!empty($this->selectedFeatures)) {
+                $activeFeatId = reset($this->selectedFeatures);
+            } else {
+                $slugToMatch = $this->feature_slug;
+                $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
+                    $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
+                      ->orWhere('name', 'LIKE', $slugToMatch);
+                })->first();
+                $activeFeatId = $matched?->id;
+            }
+
+            if ($activeFeatId) {
+                $featContent = \App\Models\CategoryFeatureContent::where('category_id', $this->category->id)
+                    ->where('feature_id', $activeFeatId)
+                    ->where('lang_id', $this->lang_id)
+                    ->first();
+
+                if ($featContent && !empty($featContent->description)) {
+                    return $featContent->description;
+                }
+            }
+        }
+
+        return $this->category->translations->description ?? null;
+    }
+
     public function getTextSectionsProperty()
     {
+        // 1. If feature_slug is present, check CategoryFeatureContent for this category + feature + language
+        if (!empty($this->feature_slug) && $this->category) {
+            $activeFeatId = null;
+            if (!empty($this->selectedFeatures)) {
+                $activeFeatId = reset($this->selectedFeatures);
+            } else {
+                $slugToMatch = $this->feature_slug;
+                $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
+                    $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
+                      ->orWhere('name', 'LIKE', $slugToMatch);
+                })->first();
+                $activeFeatId = $matched?->id;
+            }
+
+            if ($activeFeatId) {
+                $featContent = \App\Models\CategoryFeatureContent::where('category_id', $this->category->id)
+                    ->where('feature_id', $activeFeatId)
+                    ->where('lang_id', $this->lang_id)
+                    ->first();
+
+                if ($featContent && !empty($featContent->text_sections)) {
+                    $decoded = is_array($featContent->text_sections) ? $featContent->text_sections : json_decode($featContent->text_sections, true);
+                    if (is_array($decoded) && count($decoded) > 0) {
+                        return $decoded;
+                    }
+                }
+            }
+        }
+
         $trans = $this->category->translations;
         if ($trans && !empty($trans->text_sections)) {
             $decoded = is_array($trans->text_sections) ? $trans->text_sections : json_decode($trans->text_sections, true);
@@ -900,14 +967,9 @@ class CategoryPage extends Component
                     ],
                     [
                         'h3_title' => 'Types of ' . strtolower($catName),
-                        'h3_text' => 'Different solutions range from entry-level and self-service tools to enterprise-grade platforms and managed services.'
+                        'h3_text' => 'Different solutions exist depending on specific goals, feature depth, and operational scale.'
                     ]
                 ]
-            ],
-            [
-                'h2_title' => 'What to consider when comparing ' . strtolower($catName) . ' providers',
-                'h2_text' => 'When evaluating options, consider factors such as feature set, pricing transparency, reliability, customer feedback, and ease of integration.',
-                'sub_sections' => []
             ]
         ];
     }
@@ -1114,29 +1176,37 @@ class CategoryPage extends Component
 
             if (!$matched) {
                 $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
-                    $q->where('slug', $slugToMatch)->orWhere('name', 'LIKE', str_replace('-', ' ', $slugToMatch));
+                    $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
+                      ->orWhere('name', 'LIKE', $slugToMatch);
                 })->first();
             }
 
             if ($matched && !in_array($matched->id, $this->selectedFeatures)) {
-                $this->selectedFeatures[] = $matched->id;
+                $this->selectedFeatures[] = (string)$matched->id;
             }
         }
     }
 
     public function toggleFeature($featureId)
     {
-        if (in_array($featureId, $this->selectedFeatures)) {
-            $this->selectedFeatures = array_diff($this->selectedFeatures, [$featureId]);
+        $idStr = (string)$featureId;
+        $idInt = (int)$featureId;
+
+        $exists = in_array($idStr, array_map('strval', $this->selectedFeatures)) || in_array($idInt, array_map('intval', $this->selectedFeatures));
+        if ($exists) {
+            $this->selectedFeatures = array_values(array_filter($this->selectedFeatures, fn($v) => (int)$v !== $idInt));
         } else {
-            $this->selectedFeatures[] = $featureId;
+            $this->selectedFeatures[] = $idStr;
         }
+
+        $this->feature_slug = null;
         $this->resetPage();
     }
 
     public function clearAllFeatures()
     {
         $this->selectedFeatures = [];
+        $this->feature_slug = null;
         $this->resetPage();
     }
 
@@ -1147,6 +1217,7 @@ class CategoryPage extends Component
             'sortBy' => $this->sortBy,
             'showSortDropdown' => $this->showSortDropdown,
             'lang_id' => getCurrentLanguageID(),
+            'featureDescription' => $this->featureDescription,
             'textSections' => $this->textSections,
             'popularComparisons' => $this->popularComparisons,
             'exploreSubcategories' => $this->exploreSubcategories,

@@ -170,6 +170,15 @@
                                         <span class="nk-menu-text">Features</span>
                                     </a>
                                 </li>
+                                <!-- Category Feature Content -->
+                                <li class="nk-menu-item">
+                                    <a href="{{ route('admin.category-feature-content.index') }}" class="nk-menu-link">
+                                        <span class="nk-menu-icon">
+                                             <em class="icon ni ni-file-docs"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Feature Content</span>
+                                    </a>
+                                </li>
 
                                 <!-- Filter -->
                                 <li class="nk-menu-item">

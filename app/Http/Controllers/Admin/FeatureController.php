@@ -94,6 +94,7 @@ class FeatureController extends Controller
             $feature = Feature::create([
                 'category_id' => $request->category_ids,
                 'status' => $request->status,
+                'keep_capitalized' => $request->has('keep_capitalized') ? 1 : 0,
             ]);
 
             // Create translations
@@ -239,6 +240,7 @@ class FeatureController extends Controller
             $feature->update([
                 'category_id' => $request->category_ids,
                 'status' => $request->status,
+                'keep_capitalized' => $request->has('keep_capitalized') ? 1 : 0,
             ]);
 
             // Update or create translation for current language

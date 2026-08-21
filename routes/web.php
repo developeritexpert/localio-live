@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\BaseLanguageController;
 use App\Http\Controllers\Admin\{AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
+use App\Http\Controllers\Admin\CategoryFeatureContentController;
 
 use App\Http\Controllers\AdminDealController;
 use App\Http\Controllers\Auth\AuthenticationController;
@@ -245,6 +246,18 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/features/update/{id}', [FeatureController::class, 'update'])->name('features.update');
 
     Route::get('/features/delete/{id}', [FeatureController::class, 'destroy'])->name('features.delete');
+
+    // Category Feature Content Controller :
+    Route::get('/admin-dashboard/category-feature-content', [CategoryFeatureContentController::class, 'index'])->name('admin.category-feature-content.index');
+    Route::get('/admin-dashboard/category-feature-content/create', [CategoryFeatureContentController::class, 'create'])->name('admin.category-feature-content.create');
+    Route::post('/admin-dashboard/category-feature-content/store', [CategoryFeatureContentController::class, 'store'])->name('admin.category-feature-content.store');
+    Route::get('/admin-dashboard/category-feature-content/edit/{id}', [CategoryFeatureContentController::class, 'edit'])->name('admin.category-feature-content.edit');
+    Route::post('/admin-dashboard/category-feature-content/update/{id}', [CategoryFeatureContentController::class, 'update'])->name('admin.category-feature-content.update');
+    Route::delete('/admin-dashboard/category-feature-content/delete/{id}', [CategoryFeatureContentController::class, 'destroy'])->name('admin.category-feature-content.destroy');
+    Route::get('/admin-dashboard/category-feature-content/json-import', [CategoryFeatureContentController::class, 'jsonImportView'])->name('admin.category-feature-content.json-import-view');
+    Route::post('/admin-dashboard/category-feature-content/json-import', [CategoryFeatureContentController::class, 'jsonImportProcess'])->name('admin.category-feature-content.json-import-process');
+    Route::get('/admin-dashboard/category-feature-content/export', [CategoryFeatureContentController::class, 'exportJson'])->name('admin.category-feature-content.export');
+
 
 
     // ArticleController
