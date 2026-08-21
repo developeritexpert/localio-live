@@ -537,14 +537,26 @@ section.top-automotive-sec.top_rate_pg.light {
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                                        {{ $rName }}
-                                                    </a>
-                                                    @if($loop->first)
-                                                        <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
-                                                    @endif
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                            <x-business-logo :business="$rowBiz" :name="$rName" />
+                                                        </div>
+                                                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                                {{ $rName }}
+                                                            </a>
+                                                            @if($loop->first)
+                                                                <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                 </td>
-                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050;">{{ number_format($rRating, 1) }}</td>
+                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                    <span class="d-inline-flex align-items-center gap-1">
+                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                        <span>{{ number_format($rRating, 1) }}</span>
+                                                    </span>
+                                                </td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Features'] }}</td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Ease of use'] }}</td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Value for money'] }}</td>
@@ -561,9 +573,9 @@ section.top-automotive-sec.top_rate_pg.light {
                         <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
-                                <h3 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
+                                <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
                                     What the Localio community says
-                                </h3>
+                                </h2>
                                 <p style="font-size: 14px; color: #64748b; margin: 0;">
                                     Most mentioned pros and cons shared by real users.
                                 </p>
@@ -603,12 +615,19 @@ section.top-automotive-sec.top_rate_pg.light {
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                                        {{ $rName }}
-                                                    </a>
-                                                    @if($loop->first)
-                                                        <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
-                                                    @endif
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                            <x-business-logo :business="$rowBiz" :name="$rName" />
+                                                        </div>
+                                                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                                {{ $rName }}
+                                                            </a>
+                                                            @if($loop->first)
+                                                                <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                     @if($proStr !== '-')
