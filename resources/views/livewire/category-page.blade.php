@@ -1684,9 +1684,14 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 window.addEventListener('scroll-to-middle', function() {
-    const offset = window.innerHeight * 0.55;
     window.scrollTo({
-        top: offset,
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+window.addEventListener('scroll-to-top', function() {
+    window.scrollTo({
+        top: 0,
         behavior: 'smooth'
     });
 });

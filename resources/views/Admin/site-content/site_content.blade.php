@@ -117,6 +117,62 @@
                                     </button>
                                 </div>
                                 <div class="card-body">
+                                    @if ($sectionKey === 'rating_labels')
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-striped align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width: 20%;">Rating Range</th>
+                                                        <th style="width: 25%;">Min Threshold (0.0 - 5.0)</th>
+                                                        <th style="width: 55%;">Word Label for Current Language ({{ $currentLanguage->name ?? 'English' }})</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        $tiers = [
+                                                            ['range' => '4.5 – 5.0', 'label_key' => 'rating_label_excellent', 'thresh_key' => 'rating_threshold_excellent', 'default_word' => 'Excellent', 'default_t' => '4.5'],
+                                                            ['range' => '4.0 – 4.4', 'label_key' => 'rating_label_great', 'thresh_key' => 'rating_threshold_great', 'default_word' => 'Great', 'default_t' => '4.0'],
+                                                            ['range' => '3.0 – 3.9', 'label_key' => 'rating_label_good', 'thresh_key' => 'rating_threshold_good', 'default_word' => 'Good', 'default_t' => '3.0'],
+                                                            ['range' => '2.0 – 2.9', 'label_key' => 'rating_label_satisfactory', 'thresh_key' => 'rating_threshold_satisfactory', 'default_word' => 'Satisfactory', 'default_t' => '2.0'],
+                                                            ['range' => '1.0 – 1.9', 'label_key' => 'rating_label_poor', 'thresh_key' => 'rating_threshold_poor', 'default_word' => 'Poor', 'default_t' => '1.0'],
+                                                        ];
+                                                    @endphp
+                                                    @foreach ($tiers as $tier)
+                                                        @php
+                                                            $lblObj = $keys[$tier['label_key']] ?? null;
+                                                            $lblVal = '';
+                                                            if ($lblObj) {
+                                                                if ($langId == 1) {
+                                                                    $lblVal = $lblObj->default_value ?? $tier['default_word'];
+                                                                } else {
+                                                                    $trans = $lblObj->translations->first();
+                                                                    $lblVal = $trans ? $trans->value : ($lblObj->default_value ?? $tier['default_word']);
+                                                                }
+                                                            } else {
+                                                                $lblVal = $tier['default_word'];
+                                                            }
+
+                                                            $thrObj = $keys[$tier['thresh_key']] ?? null;
+                                                            $thrVal = $thrObj->default_value ?? $tier['default_t'];
+                                                        @endphp
+                                                        <tr>
+                                                            <td>
+                                                                <span class="badge bg-primary fs-13px">{{ $tier['range'] }}</span>
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" step="0.1" min="0" max="5" class="form-control"
+                                                                    name="texts[{{ $tier['thresh_key'] }}]" value="{{ $thrVal }}" placeholder="{{ $tier['default_t'] }}" />
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control fw-bold"
+                                                                    name="texts[{{ $tier['label_key'] }}]" value="{{ $lblVal }}" placeholder="{{ $tier['default_word'] }}" />
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @else
                                     <div class="row g-3">
                                         @foreach ($section['keys'] as $key)
                                             @php
@@ -147,6 +203,7 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                    @endif
                                     <div class="text-end mt-3">
                                         <button type="submit" class="btn btn-primary btn-localio">
                                             Update {{ $section['title'] }}

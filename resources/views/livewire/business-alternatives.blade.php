@@ -1329,9 +1329,14 @@ section.top-automotive-sec.top_rate_pg.light {
     </script>
     <script>
         window.addEventListener('scroll-to-middle', function() {
-            const offset = window.innerHeight * 0.55;
             window.scrollTo({
-                top: offset,
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        window.addEventListener('scroll-to-top', function() {
+            window.scrollTo({
+                top: 0,
                 behavior: 'smooth'
             });
         });

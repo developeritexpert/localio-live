@@ -596,7 +596,12 @@
                                 <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                     {{ number_format($averageRating, 1) }}
                                 </span>
-                                <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                @if($ratingWord = get_rating_label($averageRating))
+                                    <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 5px; margin-bottom: 2px; line-height: 1.2;">
+                                        {{ $ratingWord }}
+                                    </span>
+                                @endif
+                                <div class="rating-stars" style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($averageRating))
                                             <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
