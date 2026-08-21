@@ -991,6 +991,30 @@ class ProductController extends Controller
             $recentlyViewedComparisons = $recentlyViewedComparisons->merge($additional);
         }
 
+                # Explore subcategories of parent category (matching category-page)
+        $parentCat = $business->category ? ($business->category->parent ?? $business->category) : null;
+        $exploreSubcategories = ['title' => '', 'items' => collect()];
+        if ($parentCat) {
+            $parentTrans = $parentCat->translations->firstWhere('lang_id', $lang_id) ?? $parentCat->translations->first();
+            $parentName = $parentTrans->name ?? $parentCat->name ?? '';
+            $subcats = \App\Models\Category::where('parent_id', $parentCat->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with(['translations' => function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                }])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            $exploreSubcategories = [
+                'title' => 'Explore ' . (!empty($parentName) ? $parentName : ($business->category->translations->firstWhere('lang_id', $lang_id)->name ?? '')) . ' categories',
+                'items' => $subcats
+            ];
+        }
+
         return view('User.product.all_comparisons', compact(
             'business',
             'businessRating',
@@ -998,6 +1022,7 @@ class ProductController extends Controller
             'popularComparisons',
             'recentlyViewedComparisons',
             'subCategoriesWithComparisons',
+            'exploreSubcategories',
             'allSearchableBusinesses',
             'criteria',
             'averageRating',

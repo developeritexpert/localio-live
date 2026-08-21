@@ -289,7 +289,7 @@
         object-fit: cover;
     }
     .explore-subcat-card {
-        background: #ffffff;
+        background: #fdfdfd;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
         padding: 16px 20px;
@@ -1260,7 +1260,7 @@
 
         <!-- 3. Explore Subcategories Section -->
         @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
-        <section class="explore-subcategories-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
@@ -1304,7 +1304,7 @@
 
         <!-- 1. Dynamic Text Sections (H2 & H3 Sub-headlines) -->
         @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
-        <section class="category-text-sections-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <section class="category-text-sections-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
