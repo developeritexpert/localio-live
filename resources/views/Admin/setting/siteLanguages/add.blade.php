@@ -35,21 +35,21 @@
                             </div>
                         </div>
 
-                        <!-- Base Language Select (Optional) -->
+                        <!-- BCP 47 Language Select -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label" for="base_language_id">Base Language (Optional)</label>
+                                <label class="form-label" for="base_language_id">BCP 47 Language (Optional)</label>
                                 <div class="form-control-wrap">
-                                    <select class="form-select js-select2" id="base_language_id" name="base_language_id" data-placeholder="No base language">
-                                        <option value="">No base language</option>
-                                        @foreach ($baseLanguages as $bl)
-                                            <option value="{{ $bl->id }}" {{ old('base_language_id') == $bl->id ? 'selected' : '' }}>
-                                                {{ $bl->name }} ({{ $bl->code }})
+                                    <select class="form-select js-select2" id="base_language_id" name="base_language_id" data-placeholder="No BCP 47 language">
+                                        <option value="">No BCP 47 language</option>
+                                        @foreach ($bcp47Languages as $bcp47)
+                                            <option value="{{ $bcp47->id }}" {{ old('base_language_id') == $bcp47->id ? 'selected' : '' }}>
+                                                {{ $bcp47->code }}{{ $bcp47->name ? ' — ' . $bcp47->name : '' }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <span class="form-note text-muted">Select the base language reference, or "No base language".</span>
+                                <span class="form-note text-muted">Select the BCP 47 translation language for this country/region.</span>
                                 @error('base_language_id')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -114,7 +114,7 @@
             });
 
             $('#base_language_id').select2({
-                placeholder: 'No base language',
+                placeholder: 'No BCP 47 language',
                 allowClear: true,
                 width: '100%'
             });

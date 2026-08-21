@@ -562,6 +562,12 @@
                                                 <span class="nk-menu-text">Base languages</span>
                                             </a>
                                         </li>
+
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('bcp47-languages.index') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">BCP 47 Languages</span>
+                                            </a>
+                                        </li>
                                     </ul>
 
                                 </li>

@@ -51,16 +51,23 @@
                             </div>
                         </div>
 
-                        <!-- BCP 47 Language Tag Field -->
+                        <!-- BCP 47 Language Dropdown -->
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="form-label" for="code">BCP 47 Language Tag</label>
+                                <label class="form-label" for="bcp47_language_id">BCP 47 Language <span class="text-danger">*</span></label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="code" name="code"
-                                        value="{{ old('code') }}" placeholder="e.g. es-ES, es-419, pt-BR, pt-PT, en-US, en-GB" required />
+                                    <select class="form-select js-select2" id="bcp47_language_id" name="bcp47_language_id"
+                                        required data-placeholder="Select BCP 47 Language">
+                                        <option value="">Select BCP 47 Language</option>
+                                        @foreach ($bcp47Languages as $bcp47)
+                                            <option value="{{ $bcp47->id }}" {{ old('bcp47_language_id') == $bcp47->id ? 'selected' : '' }}>
+                                                {{ $bcp47->code }}{{ $bcp47->name ? ' — ' . $bcp47->name : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <div class="form-text text-muted">Use standard BCP 47 code (e.g. es-ES, es-419, pt-BR, pt-PT, en-US, en-GB).</div>
-                                @error('code')
+                                <div class="form-text text-muted">Same BCP 47 code can be assigned to multiple countries.</div>
+                                @error('bcp47_language_id')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -103,6 +110,12 @@
         $(document).ready(function() {
             $('#name').select2({
                 placeholder: 'Select Country/region',
+                allowClear: true,
+                width: '100%'
+            });
+
+            $('#bcp47_language_id').select2({
+                placeholder: 'Select BCP 47 Language',
                 allowClear: true,
                 width: '100%'
             });

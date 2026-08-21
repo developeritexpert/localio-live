@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\BaseLanguageController;
+use App\Http\Controllers\Admin\Bcp47LanguageController;
 use App\Http\Controllers\Admin\{AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
 use App\Http\Controllers\Admin\CategoryFeatureContentController;
@@ -174,6 +175,15 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/base-languages/updateProcc/{id}', [BaseLanguageController::class, 'updateProcc'])->name('base-languages.updateProcc');
     Route::get('/admin-dashboard/base-languages/delete/{id}', [BaseLanguageController::class, 'delete'])->name('base-languages.delete');
     Route::get('/admin-dashboard/base-languages/toggle-status/{id}', [BaseLanguageController::class, 'toggleStatus'])->name('base-languages.toggle-status');
+
+    // BCP 47 Languages Management
+    Route::get('/admin-dashboard/bcp47-languages', [Bcp47LanguageController::class, 'index'])->name('bcp47-languages.index');
+    Route::get('/admin-dashboard/bcp47-languages/add', [Bcp47LanguageController::class, 'add'])->name('bcp47-languages.add');
+    Route::post('/admin-dashboard/bcp47-languages/addProcc', [Bcp47LanguageController::class, 'addProcc'])->name('bcp47-languages.addProcc');
+    Route::get('/admin-dashboard/bcp47-languages/update/{id}', [Bcp47LanguageController::class, 'update'])->name('bcp47-languages.update');
+    Route::post('/admin-dashboard/bcp47-languages/updateProcc/{id}', [Bcp47LanguageController::class, 'updateProcc'])->name('bcp47-languages.updateProcc');
+    Route::get('/admin-dashboard/bcp47-languages/delete/{id}', [Bcp47LanguageController::class, 'delete'])->name('bcp47-languages.delete');
+    Route::get('/admin-dashboard/bcp47-languages/toggle-status/{id}', [Bcp47LanguageController::class, 'toggleStatus'])->name('bcp47-languages.toggle-status');
 
 
 
