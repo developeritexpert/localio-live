@@ -1324,9 +1324,9 @@
 
                             @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                                 @foreach($section['sub_sections'] as $sub)
-                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style=">
+                                <div class="sub-section-block mt-4 mb-3  border-start" >
                                     @if(!empty($sub['h3_title']))
-                                    <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 8px;">
+                                    <h3 >
                                         {{ $sub['h3_title'] }}
                                     </h3>
                                     @endif
@@ -1365,7 +1365,7 @@
                 <div class="row g-3">
                     @foreach($popularComparisons as $comp)
                     <div class="col-lg-6 col-md-6 col-12">
-                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #fdfdfd !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <!-- Business 1 -->
                                 <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
@@ -1413,8 +1413,8 @@
                     @endforeach
                 </div>
 
-                <div class="text-center mt-4">
-                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link">
+                <div class="text-center mt-5">
+                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link btn-comparisons" >
                         View more comparisons
                     </a>
                 </div>
@@ -1448,7 +1448,7 @@
                     @endphp
                     @if(!empty($bName))
                     <div class="col-lg-4 col-md-6 col-12">
-                        <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                        <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                     <x-business-logo :business="$biz" :name="$bName" />
