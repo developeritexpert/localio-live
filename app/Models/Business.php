@@ -162,9 +162,17 @@ class Business extends Model
         return $this->permanent_url ?: $this->affiliate_link;
     }
 
-    public function getTrackedUrl()
+    public function getTrackedUrl($locale = null)
     {
-        return \App\Services\AffiliateTrackingService::trackClick($this);
+        $targetUrl = $this->getEffectiveWebsiteUrl();
+        if (!$targetUrl) {
+            return null;
+        }
+
+        $loc = $locale ?: (session('lang_code') ?: (request()->route('locale') ?: 'en-us'));
+        $slug = $this->translation->slug ?? ($this->translations->first()->slug ?? \Illuminate\Support\Str::slug($this->name));
+
+        return url('/' . strtolower($loc) . '/go/' . $slug);
     }
 
 

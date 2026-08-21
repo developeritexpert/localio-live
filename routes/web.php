@@ -656,6 +656,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutom
         Route::post('/vendor-dashboard-configuration-update', [HomeController::class, 'updatePassword'])->name('vendor-updatePassword');
     });
 
+    // Internal /go/{slug} 301 redirect route for external business websites
+    Route::get('/go/{slug}', [ViewController::class, 'goBusiness'])->name('business.go');
+
     // Numeric Category Pagination Route (must be before wildcard second_segment)
     Route::get('/{slug}/{page}', [CategoryController::class, 'categoryDetail'])
         ->where('page', '[0-9]+')

@@ -55,10 +55,8 @@ class AffiliateTrackingService
             'clicked_at' => now()
         ]);
         
-        // Add subid to affiliate URL
-        $subidParam = !empty($business->subid_param) ? $business->subid_param : 'sid';
-        $separator = strpos($targetUrl, '?') !== false ? '&' : '?';
-        return $targetUrl . $separator . $subidParam . '=' . $clickId;
+        // Return clean URL without subid appending
+        return $targetUrl;
     }
 
     public static function recordConversion($clickId, $amount = 0)
