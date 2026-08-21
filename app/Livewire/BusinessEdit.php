@@ -272,9 +272,14 @@ class BusinessEdit extends Component
             $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
             $this->selectedFeatures = $business->features->pluck('id')->toArray();
             $this->selectedCountries = $business->countries->pluck('id')->toArray();
-            $this->countryWebsiteUrls = $business->websites->groupBy('country_id')
-                ->map(fn($websites) => $websites->pluck('website_url')->toArray())
-                ->toArray();
+            $this->countryWebsiteUrls = [];
+            foreach ($business->websites as $website) {
+                $this->countryWebsiteUrls[$website->country_id] = [
+                    'url' => $website->website_url,
+                    'is_affiliate' => !empty($website->is_affiliate),
+                    'status' => $website->status ?? 1
+                ];
+            }
             if ($business && $business->business_images) {
                 $this->business_images = $business->business_images;
             }
@@ -672,22 +677,20 @@ class BusinessEdit extends Component
             $this->permanent_url = 'https://localio.com/' . $this->slug;
         }
     }
-    public function editUrl($countryId, $index)
+    public function editUrl($countryId, $index = 0)
     {
+        $this->editingUrl = (string) $countryId;
 
-        $this->editingUrl = $countryId . '-' . $index;
-
-        if (isset($this->countryWebsiteUrls[$countryId][$index])) {
-            $urlData = $this->countryWebsiteUrls[$countryId][$index];
-            $this->editUrlValue = is_array($urlData) ? $urlData['url'] : $urlData;
-
-            // $this->editIsAffiliate = is_array($urlData) ? ($urlData['is_affiliate'] ?? false) : false;
-
-            // Convert affiliate flag to proper boolean to avoid checkbox issues
-            $this->editIsAffiliate = is_array($urlData) ? (bool)($urlData['is_affiliate'] ?? false) : false;
+        if (isset($this->countryWebsiteUrls[$countryId])) {
+            $setting = $this->countryWebsiteUrls[$countryId];
+            if (isset($setting[0]) && is_array($setting[0])) {
+                $setting = $setting[0];
+            }
+            $this->editUrlValue = is_array($setting) ? ($setting['url'] ?? '') : (is_string($setting) ? $setting : '');
+            $this->editIsAffiliate = is_array($setting) ? !empty($setting['is_affiliate']) : false;
         }
     }
-    public function saveUrlEdit($countryId, $index)
+    public function saveUrlEdit($countryId, $index = 0)
     {
         if ($this->editIsAffiliate) {
             $this->validate([
@@ -698,8 +701,8 @@ class BusinessEdit extends Component
             $this->editUrlValue = null;
         }
 
-        if (isset($this->countryWebsiteUrls[$countryId][$index])) {
-            $this->countryWebsiteUrls[$countryId][$index] = [
+        if (isset($this->countryWebsiteUrls[$countryId])) {
+            $this->countryWebsiteUrls[$countryId] = [
                 'url' => $this->editIsAffiliate ? $this->editUrlValue : null,
                 'is_affiliate' => (bool)$this->editIsAffiliate,
                 'status' => 1
@@ -847,9 +850,10 @@ class BusinessEdit extends Component
 
     public function addCountryWebsiteUrl()
     {
-        $selectedId = $this->selectedCountryForUrl;
+        $selectedId = (int) $this->selectedCountryForUrl;
         $countryId = null;
-        if (Country::where('id', $selectedId)->exists()) {
+
+        if ($selectedId && Country::where('id', $selectedId)->exists()) {
             $countryId = $selectedId;
         } else {
             $lang = Language::find($selectedId);
@@ -858,7 +862,9 @@ class BusinessEdit extends Component
             }
         }
 
-        if ($this->countryIsAffiliate) {
+        $isAff = !empty($this->countryIsAffiliate);
+
+        if ($isAff) {
             $this->validate([
                 'selectedCountryForUrl' => 'required',
                 'newWebsiteUrl' => 'required|url',
@@ -875,62 +881,26 @@ class BusinessEdit extends Component
             return;
         }
 
-        // Check if URL already exists for this country
-        if (isset($this->countryWebsiteUrls[$countryId])) {
-            $existingUrls = $this->countryWebsiteUrls[$countryId];
-            if (is_array($existingUrls)) {
-                foreach ($existingUrls as $existing) {
-                    if (is_array($existing) && $existing['url'] === $this->newWebsiteUrl) {
-                        $this->addError('newWebsiteUrl', 'This URL already exists for the selected country/region.');
-                        return;
-                    }
-                }
-            }
-        }
-
-        // Add the new URL
-        if (!isset($this->countryWebsiteUrls[$countryId])) {
-            $this->countryWebsiteUrls[$countryId] = [];
-        }
-
-        $this->countryWebsiteUrls[$countryId][] = [
-            'url' => $this->countryIsAffiliate ? $this->newWebsiteUrl : null,
-            'is_affiliate' => (bool)$this->countryIsAffiliate,
+        // Save or update the country setting
+        $this->countryWebsiteUrls[$countryId] = [
+            'url' => $isAff ? $this->newWebsiteUrl : null,
+            'is_affiliate' => $isAff,
             'status' => 1
         ];
 
         $this->showUrlForm = false;
         $this->resetUrlForm();
 
-        $this->dispatch('notify', ['message' => 'Country-specific URL added successfully!', 'type' => 'success']);
+        $this->dispatch('notify', ['message' => 'Country setting saved successfully!', 'type' => 'success']);
     }
-    public function removeCountryWebsiteUrl($countryId, $index)
+    public function removeCountryWebsiteUrl($countryId, $index = 0)
     {
-
-        // dd($countryId, $index );
-        // Validate parameters
-        if (!isset($this->countryWebsiteUrls[$countryId][$index])) {
-            $this->dispatch('notify', ['message' => 'URL not found!', 'type' => 'error']);
-            return;
-        }
-
-        // Remove the URL
-        // dd($this->countryWebsiteUrls[$countryId][$index]);
-        unset($this->countryWebsiteUrls[$countryId][$index]);
-
-        // Reindex the array to prevent gaps
-        $this->countryWebsiteUrls[$countryId] = array_values($this->countryWebsiteUrls[$countryId]);
-
-        // Remove country entry if no URLs left
-        if (empty($this->countryWebsiteUrls[$countryId])) {
+        if (isset($this->countryWebsiteUrls[$countryId])) {
             unset($this->countryWebsiteUrls[$countryId]);
+            $this->dispatch('notify', ['message' => 'Country setting removed successfully!', 'type' => 'success']);
+        } else {
+            $this->dispatch('notify', ['message' => 'Setting not found!', 'type' => 'error']);
         }
-
-        // dd('After removal', $this->countryWebsiteUrls);
-
-
-        // Show success message
-        $this->dispatch('notify', ['message' => 'URL removed successfully!', 'type' => 'success']);
     }
 
 
@@ -1197,13 +1167,9 @@ class BusinessEdit extends Component
         // Load website URLs grouped by country
         $this->countryWebsiteUrls = [];
         foreach ($business->websites as $website) {
-            if (!isset($this->countryWebsiteUrls[$website->country_id])) {
-                $this->countryWebsiteUrls[$website->country_id] = [];
-            }
-
-            $this->countryWebsiteUrls[$website->country_id][] = [
+            $this->countryWebsiteUrls[$website->country_id] = [
                 'url' => $website->website_url,
-                'is_affiliate' => $website->is_affiliate ?? false,
+                'is_affiliate' => !empty($website->is_affiliate),
                 'status' => $website->status ?? 1
             ];
         }
@@ -1881,30 +1847,25 @@ class BusinessEdit extends Component
 
         // Sync website URLs for each country
         if (!empty($this->countryWebsiteUrls)) {
-            // First, delete existing URLs for this business
+            foreach ($this->countryWebsiteUrls as $countryId => $urlData) {
+                if (empty($urlData)) continue;
 
+                // Normalize if nested
+                if (isset($urlData[0]) && is_array($urlData[0])) {
+                    $urlData = $urlData[0];
+                }
 
-            // dd('To save in DB:', $this->countryWebsiteUrls);
+                if (is_array($urlData)) {
+                    $websiteUrl = !empty($urlData['url']) ? str_replace('\/', '/', $urlData['url']) : null;
+                    $isAffiliate = !empty($urlData['is_affiliate']) ? 1 : 0;
 
-
-            foreach ($this->countryWebsiteUrls as $countryId => $urlsArray) {
-                if (empty($urlsArray)) continue;
-
-                // Handle multiple URLs per country
-                foreach ($urlsArray as $urlData) {
-                    if (is_array($urlData)) {
-                        $websiteUrl = !empty($urlData['url']) ? str_replace('\/', '/', $urlData['url']) : null;
-                        $isAffiliate = !empty($urlData['is_affiliate']) ? 1 : 0;
-
-                        // Create new website URL record (saves even if websiteUrl is null if non-affiliated)
-                        $business->websites()->create([
-                            'business_id' => $business->id,
-                            'country_id' => $countryId,
-                            'website_url' => $websiteUrl,
-                            'is_affiliate' => $isAffiliate,
-                            'status' => $urlData['status'] ?? 1
-                        ]);
-                    }
+                    $business->websites()->create([
+                        'business_id' => $business->id,
+                        'country_id' => $countryId,
+                        'website_url' => $websiteUrl,
+                        'is_affiliate' => $isAffiliate,
+                        'status' => $urlData['status'] ?? 1
+                    ]);
                 }
             }
         }

@@ -1,4 +1,9 @@
 @extends('user_layout.master')
+@php
+    $catGuideName = $articles->translationForCurrentLang->name ?? 'Expert Guide Category';
+@endphp
+@section('meta_title', format_meta_text("{$catGuideName} - Expert Guides | Localio"))
+@section('meta_description', format_meta_text("Explore in-depth articles, tutorials, and expert guides for {$catGuideName} on Localio."))
 @section('content')
 <section class="banner_sec help-cntr-bnr dark expert-guide-banner" style="background-color: #003F7D;">
          <div class="bubble-wrp">

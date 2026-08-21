@@ -1,6 +1,6 @@
 @extends('user_layout.master')
-@section('meta_title', isset($whoWeAre) && isset($whoWeAre->meta_title) ? $whoWeAre->meta_title : 'Who We Are')
-@section('meta_description', isset($whoWeAre) && isset($whoWeAre->meta_description) ? $whoWeAre->meta_description : '')
+@section('meta_title', format_meta_text(isset($whoWeAre) && isset($whoWeAre->meta_title) ? $whoWeAre->meta_title : 'Who We Are'))
+@section('meta_description', format_meta_text(isset($whoWeAre) && isset($whoWeAre->meta_description) ? $whoWeAre->meta_description : ''))
 
 @section('content')
 <section class="banner_sec help-cntr-bnr inr-bnr dark d-none" style="background-color: #003F7D;">
@@ -52,7 +52,7 @@
     <div class="container">
         <div class="most-popular-wrp">
             <div class="hd_text">
-                <h2 data-aos="zoom-in" data-aos-duration="1000" class="text-center">{{ $whoWeAre->mp_heading ?? '' }}</h2>
+                <h1 data-aos="zoom-in" data-aos-duration="1000" class="text-center mb-4">{{ $whoWeAre->mp_heading ?? '' }}</h1>
                 <p>{{ $whoWeAre->mp_sub_heading ?? '' }}</p>
             </div>
             <div class="popular-accordion-wrp mst_wrp" data-aos="fade-up" data-aos-duration="1000">

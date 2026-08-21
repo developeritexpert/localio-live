@@ -104,6 +104,9 @@
                     </li>
                 </ol>
             </nav>
+            <div class="col-4 d-flex justify-content-end">
+                <x-social-icon />
+            </div>
         </div>
 
         <!-- Category Header Row -->

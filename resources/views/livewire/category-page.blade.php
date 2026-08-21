@@ -289,7 +289,7 @@
         object-fit: cover;
     }
     .explore-subcat-card {
-        background: #ffffff;
+        background: #fdfdfd;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
         padding: 16px 20px;
@@ -303,6 +303,47 @@
         border-color: #06498b;
         box-shadow: 0 4px 12px rgba(6,73,139,0.08);
         transform: translateY(-2px);
+    }
+    /* Active Feature Filter Chip */
+    .active-feat-chip {
+        background: #ffffff;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 50px !important;
+        padding: 5px 14px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #1e293b !important;
+        text-decoration: none !important;
+        cursor: pointer !important;
+        transition: all 0.18s ease-in-out !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        outline: none !important;
+    }
+    .active-feat-chip:hover {
+        background: #f8fafc !important;
+        border-color: #94a3b8 !important;
+        color: #002347 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.07) !important;
+    }
+    .active-feat-chip:hover i {
+        color: #e11d48 !important;
+    }
+    .clear-features-link {
+        color: #007bff !important;
+        font-size: 13px !important;
+        font-weight: 400 !important;
+        text-decoration: none !important;
+        margin-left: 8px !important;
+        cursor: pointer !important;
+        transition: color 0.15s ease !important;
+    }
+    .clear-features-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline !important;
     }
     .explore-subcat-card:hover h6 {
         color: #e56b46 !important;
@@ -345,8 +386,12 @@
 
     </style>
 
-    @section('meta_title', !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page'))
-    @section('meta_description', !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? ''))
+    @php
+        $catMetaTitle = !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page');
+        $catMetaDescription = !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? '');
+    @endphp
+    @section('meta_title', format_meta_text($catMetaTitle, 'Category Page'))
+    @section('meta_description', format_meta_text($catMetaDescription))
     @if (session()->has('message'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{ session('message') }}
@@ -357,7 +402,7 @@
         <!-- section top-rated automaotive -->
         <section class="top-rated-heading-sec">
             <div class="container">
-                <div class=" bread_row row align-items-center mb-1">
+                <div class=" bread_row row align-items-center mb-2">
                     <div class="col-8 ">
                         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                             <ol class="breadcrumb m-0"
@@ -391,18 +436,39 @@
                     <div class="row align-items-start">
                         <div class="col-md-8 text-start">
                             @if(!empty($feature_slug))
-                            <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Category') }} providers with
-                                {{ ucwords(str_replace('-', ' ', $feature_slug)) }}
-                            </h1>
+                                @php
+                                    $catCompName = !empty($category->translations->comparison_name) 
+                                        ? $category->translations->comparison_name 
+                                        : (!empty($category->translations->page_title) ? $category->translations->page_title : (($category->translations->name ?? 'Category') . ' providers'));
+
+                                    $featureObj = null;
+                                    if (!empty($selectedFeatures)) {
+                                        $featureObj = \App\Models\Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->find(reset($selectedFeatures));
+                                    }
+                                    if (!$featureObj && !empty($availableFeatures)) {
+                                        $featureObj = $availableFeatures->first(function($f) use ($feature_slug) {
+                                            $fName = $f->translations->first()?->name ?? $f->name;
+                                            return \Illuminate\Support\Str::slug($fName) === \Illuminate\Support\Str::slug($feature_slug);
+                                        });
+                                    }
+
+                                    $rawFeatName = $featureObj ? ($featureObj->translations->first()->name ?? $featureObj->name) : str_replace('-', ' ', $feature_slug);
+                                    $keepCap = $featureObj ? (bool)$featureObj->keep_capitalized : false;
+
+                                    $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
+                                @endphp
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                    {{ $catCompName }} with {{ $formattedFeatName }}
+                                </h1>
                             @else
-                            <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products') }}</h1>
+                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                    {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products') }}
+                                </h1>
                             @endif
                             <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
                             <div style="font-size: 15px; color: #444; margin-bottom: 0;" class="category-description-text">
-                                {!! $category->translations->description ?? 'Browse and compare the best options' !!}
+                                {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
                         <div class="col-md-4 mt-4 mt-md-0 text-start">
@@ -502,12 +568,13 @@
                                                         $currentLangId = $lang_id ?? getCurrentLanguageID();
                                                         $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
                                                         $featName = $featTrans->name ?? $feat->name ?? 'Feature';
-                                                        $featId = $feat->id;
-                                                        $isChecked = in_array($featId, $selectedFeatures ?? []);
+                                                        $featId = (string)$feat->id;
+                                                        $isChecked = in_array($featId, array_map('strval', $selectedFeatures ?? []));
                                                     @endphp
-                                                    <div class="form-check" style="margin-bottom: 6px;">
+                                                    <div class="form-check" style="margin-bottom: 6px;" wire:key="feat-wrap-{{ $featId }}">
                                                         <input type="checkbox" class="form-check-input"
                                                                wire:model.live="selectedFeatures"
+                                                               wire:key="feat-input-{{ $featId }}-{{ $isChecked ? '1' : '0' }}"
                                                                value="{{ $featId }}"
                                                                id="feature-check-{{ $featId }}"
                                                                style="margin-right: 8px; cursor: pointer;">
@@ -806,18 +873,18 @@
                                     <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
                                         <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
                                         @foreach($availableFeatures ?? [] as $fItem)
-                                            @if(in_array($fItem->id, $selectedFeatures))
+                                            @if(in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? [])))
                                                 @php
                                                     $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
                                                     $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
                                                 @endphp
-                                                <span class="badge rounded-pill bg-white text-dark border d-inline-flex align-items-center gap-2 px-3 py-2" style="font-size: 13px; font-weight: 500; border-color: #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                                                    {{ $fName }}
-                                                    <i class="fas fa-times cursor-pointer text-muted ms-1" style="cursor: pointer;" wire:click="toggleFeature({{ $fItem->id }})"></i>
-                                                </span>
+                                                <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                                    <span>{{ $fName }}</span>
+                                                    <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
+                                                </button>
                                             @endif
                                         @endforeach
-                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="small text-danger ms-2 text-decoration-none fw-semibold">Clear features</a>
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
                                     </div>
                                 @endif
 
@@ -1256,7 +1323,7 @@
 
         <!-- 3. Explore Subcategories Section -->
         @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
-        <section class="explore-subcategories-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
@@ -1300,7 +1367,7 @@
 
         <!-- 1. Dynamic Text Sections (H2 & H3 Sub-headlines) -->
         @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
-        <section class="category-text-sections-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <section class="category-text-sections-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
@@ -1320,9 +1387,9 @@
 
                             @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                                 @foreach($section['sub_sections'] as $sub)
-                                <div class="sub-section-block mt-4 mb-3 ps-3 border-start" style=">
+                                <div class="sub-section-block mt-4 mb-3  border-start" >
                                     @if(!empty($sub['h3_title']))
-                                    <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 8px;">
+                                    <h3 >
                                         {{ $sub['h3_title'] }}
                                     </h3>
                                     @endif
@@ -1361,7 +1428,7 @@
                 <div class="row g-3">
                     @foreach($popularComparisons as $comp)
                     <div class="col-lg-6 col-md-6 col-12">
-                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #fdfdfd !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <!-- Business 1 -->
                                 <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
@@ -1409,8 +1476,8 @@
                     @endforeach
                 </div>
 
-                <div class="text-center mt-4">
-                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link">
+                <div class="text-center mt-5">
+                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link btn-comparisons" >
                         View more comparisons
                     </a>
                 </div>
@@ -1444,7 +1511,7 @@
                     @endphp
                     @if(!empty($bName))
                     <div class="col-lg-4 col-md-6 col-12">
-                        <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                        <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                     <x-business-logo :business="$biz" :name="$bName" />
@@ -1680,9 +1747,14 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 window.addEventListener('scroll-to-middle', function() {
-    const offset = window.innerHeight * 0.55;
     window.scrollTo({
-        top: offset,
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+window.addEventListener('scroll-to-top', function() {
+    window.scrollTo({
+        top: 0,
         behavior: 'smooth'
     });
 });

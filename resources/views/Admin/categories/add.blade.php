@@ -37,6 +37,20 @@
                             @enderror
                             </div>
                         </div>
+                                                <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="comparison_name">Category name for comparison</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="comparison_name" name="comparison_name"
+                                        value="{{ isset($category_data) ? ($category_data['comparison_name'] ?? '') : old('comparison_name') }}" 
+                                        placeholder="e.g. Shared hosting providers" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Used to generate feature page headlines (e.g. <i>Shared hosting providers with noise cancellation</i>). Defaults to Category Name if left blank.</small>
+                                @error('comparison_name')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="page_title">Page Title (H1 Heading)</label>

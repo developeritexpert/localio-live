@@ -1528,18 +1528,16 @@
 
                     
 
-                    <div class="card card-bordered mb-3">
+                                        <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <!-- Headline & Add URL Button -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <label class="form-label m-0 fs-6 fw-bold">Redirect URL</label>
                                 <div x-show="isAffiliate">
-                                    @if (!empty($selectedCountries))
-                                        <button type="button" class="btn btn-sm text-white"
-                                            wire:click="showAddUrlForm" style="background-color: #F9633B; border-color: #F9633B;">
-                                            <em class="icon ni ni-plus me-1"></em>Add URL
-                                        </button>
-                                    @endif
+                                    <button type="button" class="btn btn-sm text-white"
+                                        wire:click="showAddUrlForm" style="background-color: #F9633B; border-color: #F9633B;">
+                                        <em class="icon ni ni-plus me-1"></em>Add URL
+                                    </button>
                                 </div>
                             </div>
 
@@ -1549,7 +1547,9 @@
                                     <span class="fw-bold text-dark">Affiliate</span>
                                     <div class="form-check form-switch m-0">
                                         <input class="form-check-input" type="checkbox" role="switch"
-                                            x-model="isAffiliate" id="affiliateToggleMain" style="cursor: pointer; width: 2.75rem; height: 1.35rem;">
+                                            x-model="isAffiliate" 
+                                            @change="$wire.set('is_affiliate', isAffiliate ? 1 : 0); $wire.set('is_affiliate_partner', isAffiliate ? 1 : 0)"
+                                            id="affiliateToggleMain" style="cursor: pointer; width: 2.75rem; height: 1.35rem;">
                                     </div>
                                 </div>
                                 <div>
@@ -1569,37 +1569,10 @@
                             <!-- Default Redirect URL Box (Visible ONLY when Affiliate is ON) -->
                             <div x-show="isAffiliate" class="mb-3">
                                 <h6 class="mb-2 fs-6 text-muted fw-bold">Default</h6>
-                                <!-- Display Mode -->
-                                <div x-show="!editing" @click="startEdit()"
-                                    class="border rounded-2 p-2 px-3 bg-white d-flex align-items-center justify-content-between"
-                                    style="cursor: pointer; transition: all 0.2s ease-in-out;">
-                                    <span class="text-truncate text-dark fw-medium" x-text="tempUrl || 'Enter redirect URL'" :title="tempUrl"></span>
-                                    <button type="button" class="btn btn-icon btn-sm btn-soft-primary" title="Edit URL">
-                                        <em class="icon ni ni-edit fs-5"></em>
-                                    </button>
+                                <div class="form-control-wrap">
+                                    <input type="url" class="form-control" wire:model="affiliate_link"
+                                        placeholder="https://example.com/redirect-link">
                                 </div>
-
-                                <!-- Edit Mode -->
-                                <div x-show="editing" style="display: none;" class="border rounded-2 p-3 bg-white shadow-sm mt-4">
-                                    <div class="form-group mb-2">
-                                        <label class="form-label mb-1 fs-7 text-muted">Default URL</label>
-                                        <input type="url" class="form-control"
-                                            x-model="tempUrl" x-ref="urlInput"
-                                            placeholder="https://example.com/redirect-link"
-                                            @keydown.enter="saveEdit()" @keydown.escape="cancelEdit()">
-                                        <div x-show="validationError" class="text-danger small mt-1" x-text="validationError"></div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-end gap-2 mt-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary px-3" @click="cancelEdit()">
-                                            Cancel
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-primary px-3" @click="saveEdit()">
-                                            <em class="icon ni ni-check me-1"></em> Save
-                                        </button>
-                                    </div>
-                                </div>
-
                                 @error('affiliate_link')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
@@ -1622,9 +1595,7 @@
                                                 <select class="form-control" wire:model.live="selectedCountryForUrl">
                                                     <option value="">Choose a country / region</option>
                                                     @foreach ($footerLangs as $fLang)
-                                                        @if ($active_all_countries == 1 || empty($selectedCountries) || in_array($fLang->country_id, (array)$selectedCountries))
-                                                            <option value="{{ $fLang->id }}">{{ $fLang->name }}</option>
-                                                        @endif
+                                                        <option value="{{ $fLang->country_id }}">{{ $fLang->name }}</option>
                                                     @endforeach
                                                 </select>
                                                 @error('selectedCountryForUrl')
@@ -1690,100 +1661,96 @@
                                 <div x-show="isAffiliate" class="country-urls-list mt-3">
                                     @foreach ($countryWebsiteUrls as $countryId => $urlData)
                                         @php
-                                            $country = collect($countries)->firstWhere('id', $countryId);
-                                            $countryDisplayName = $country ? ($country->name . ($country->language ? ' – ' . $country->language->name : '')) : '';
+                                            $setting = (isset($urlData[0]) && is_array($urlData[0])) ? $urlData[0] : (is_array($urlData) ? $urlData : ['url' => $urlData, 'is_affiliate' => (!empty($urlData))]);
+                                            $isAff = isset($setting['is_affiliate']) ? !empty($setting['is_affiliate']) : (!empty($setting['url']) || (is_string($urlData) && !empty($urlData)));
+                                            $uVal = $setting['url'] ?? (is_string($urlData) ? $urlData : null);
+
+                                            $country = collect($countries)->firstWhere('id', $countryId) ?? \App\Models\Country::find($countryId);
+                                            $countryDisplayName = $country ? $country->name : ('Country #' . $countryId);
                                         @endphp
                                         @if ($country)
-                                            <div class="country-url-group mb-3">
+                                            <div class="country-url-group mb-3" wire:key="country-group-{{ $countryId }}">
                                                 <h6 class="mb-2 fs-6 text-muted fw-bold">{{ $countryDisplayName }}</h6>
 
-                                                @if (is_array($urlData) || is_object($urlData))
-                                                    @foreach ((array) $urlData as $index => $urlInfo)
-                                                        @php
-                                                            $isAff = is_array($urlInfo) ? !empty($urlInfo['is_affiliate']) : false;
-                                                            $uVal = is_array($urlInfo) ? ($urlInfo['url'] ?? null) : $urlInfo;
-                                                        @endphp
-                                                        <div class="url-item border rounded-2 p-3 mb-2 bg-white shadow-sm">
-                                                            @if ($editingUrl == $countryId . '-' . $index)
-                                                                <!-- Edit Mode -->
-                                                                <div class="row g-2 align-items-center">
-                                                                    <div class="col-md-9">
-                                                                        <div class="d-flex align-items-center gap-3 mb-2">
-                                                                            <span class="small fw-bold text-muted">Affiliate:</span>
-                                                                            <div class="form-check form-switch m-0">
-                                                                                <input class="form-check-input" type="checkbox"
-                                                                                    wire:model.live="editIsAffiliate"
-                                                                                    style="width: 2.2rem; height: 1.1rem; cursor: pointer;">
-                                                                            </div>
-                                                                            <span class="small fw-bold {{ $editIsAffiliate ? 'text-success' : 'text-danger' }}">
-                                                                                {{ $editIsAffiliate ? 'Affiliated' : 'Non-Affiliated (Disabled)' }}
-                                                                            </span>
-                                                                        </div>
-
-                                                                        @if ($editIsAffiliate)
-                                                                            <div class="form-group mb-2">
-                                                                                <label class="form-label mb-1 small text-muted">Country Affiliate URL</label>
-                                                                                <input type="url" class="form-control"
-                                                                                    wire:model="editUrlValue"
-                                                                                    placeholder="https://example.com/country-affiliate-link">
-                                                                                @error('editUrlValue')
-                                                                                    <div class="text-danger small mt-1">{{ $message }}</div>
-                                                                                @enderror
-                                                                            </div>
-                                                                        @endif
+                                                <div class="url-item border rounded-2 p-3 mb-2 bg-white shadow-sm">
+                                                    @if ($editingUrl == (string)$countryId)
+                                                        <!-- Edit Mode -->
+                                                        <div class="row g-2 align-items-center">
+                                                            <div class="col-md-9">
+                                                                <div class="d-flex align-items-center gap-3 mb-2">
+                                                                    <span class="small fw-bold text-muted">Affiliate:</span>
+                                                                    <div class="form-check form-switch m-0">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            wire:model.live="editIsAffiliate"
+                                                                            style="width: 2.2rem; height: 1.1rem; cursor: pointer;">
                                                                     </div>
-
-                                                                    <div class="col-md-3 text-end">
-                                                                        <button type="button" class="btn btn-success btn-sm me-1"
-                                                                            wire:click="saveUrlEdit({{ $countryId }}, {{ $index }})"
-                                                                            wire:loading.attr="disabled"
-                                                                            wire:target="saveUrlEdit({{ $countryId }}, {{ $index }})">
-                                                                            <em class="icon ni ni-check"></em> Save
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-secondary btn-sm"
-                                                                            wire:click="cancelUrlEdit">
-                                                                            <em class="icon ni ni-cross"></em>
-                                                                        </button>
-                                                                    </div>
+                                                                    <span class="small fw-bold {{ $editIsAffiliate ? 'text-success' : 'text-danger' }}">
+                                                                        {{ $editIsAffiliate ? 'Affiliated (URL Required)' : 'Non-Affiliated (No URL / Disabled)' }}
+                                                                    </span>
                                                                 </div>
-                                                            @else
-                                                                <!-- Display Mode -->
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-md-8">
-                                                                        <div class="d-flex align-items-center gap-2">
-                                                                            @if ($isAff)
-                                                                                <span class="badge badge-dim bg-outline-success">Affiliated</span>
-                                                                                @if ($uVal)
-                                                                                    <em class="icon ni ni-link text-muted me-1 fs-5"></em>
-                                                                                    <a href="{{ $uVal }}" target="_blank" class="text-primary text-decoration-none text-truncate">
-                                                                                        {{ $uVal }}
-                                                                                    </a>
-                                                                                @endif
-                                                                            @else
-                                                                                <span class="badge badge-dim bg-outline-danger">Non-Affiliated (Disabled)</span>
-                                                                                <span class="text-muted small fst-italic ms-1">No URL (Website buttons hidden for this country)</span>
-                                                                            @endif
-                                                                        </div>
+
+                                                                @if ($editIsAffiliate)
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="form-label mb-1 small text-muted">Country Affiliate URL</label>
+                                                                        <input type="url" class="form-control"
+                                                                            wire:model="editUrlValue"
+                                                                            placeholder="https://example.com/country-affiliate-link">
+                                                                        @error('editUrlValue')
+                                                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                                                        @enderror
                                                                     </div>
-                                                                    <div class="col-md-4 d-flex justify-content-end">
-                                                                        <button type="button" class="btn btn-light btn-icon btn-sm text-primary"
-                                                                            wire:click="editUrl({{ $countryId }}, {{ $index }})"
-                                                                            title="Edit Setting" style="margin-right: 10px;">
-                                                                            <em class="icon ni ni-edit"></em>
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-light btn-icon btn-sm text-danger"
-                                                                            wire:loading.attr="disabled"
-                                                                            wire:target="removeCountryWebsiteUrl({{ $countryId }}, {{ $index }})"
-                                                                            title="Remove Setting"
-                                                                            onclick="event.preventDefault(); if(confirm('Are you sure you want to remove this country setting?')) { @this.removeCountryWebsiteUrl({{ $countryId }}, {{ $index }}) }">
-                                                                            <em class="icon ni ni-trash"></em>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
+                                                                @endif
+                                                            </div>
+
+                                                            <div class="col-md-3 text-end">
+                                                                <button type="button" class="btn btn-success btn-sm me-1"
+                                                                    wire:click="saveUrlEdit({{ $countryId }})"
+                                                                    wire:loading.attr="disabled"
+                                                                    wire:target="saveUrlEdit({{ $countryId }})">
+                                                                    <em class="icon ni ni-check"></em> Save
+                                                                </button>
+                                                                <button type="button" class="btn btn-secondary btn-sm"
+                                                                    wire:click="cancelUrlEdit">
+                                                                    <em class="icon ni ni-cross"></em>
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    @endforeach
-                                                @endif
+                                                    @else
+                                                        <!-- Display Mode -->
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-8">
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    @if ($isAff)
+                                                                        <span class="badge badge-dim bg-outline-success">Affiliated</span>
+                                                                        @if ($uVal)
+                                                                            <em class="icon ni ni-link text-muted me-1 fs-5"></em>
+                                                                            <a href="{{ $uVal }}" target="_blank" class="text-primary text-decoration-none text-truncate">
+                                                                                {{ $uVal }}
+                                                                            </a>
+                                                                        @endif
+                                                                    @else
+                                                                        <span class="badge badge-dim bg-outline-danger">Non-Affiliated (Disabled)</span>
+                                                                        <span class="text-muted small fst-italic ms-1">No URL (Website buttons hidden for this country)</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4 d-flex justify-content-end">
+                                                                <button type="button" class="btn btn-light btn-icon btn-sm text-primary"
+                                                                    wire:click="editUrl({{ $countryId }})"
+                                                                    title="Edit Setting" style="margin-right: 10px;">
+                                                                    <em class="icon ni ni-edit"></em>
+                                                                </button>
+                                                                <button type="button" class="btn btn-light btn-icon btn-sm text-danger"
+                                                                    wire:loading.attr="disabled"
+                                                                    wire:target="removeCountryWebsiteUrl({{ $countryId }})"
+                                                                    title="Remove Setting"
+                                                                    wire:click="removeCountryWebsiteUrl({{ $countryId }})">
+                                                                    <em class="icon ni ni-trash"></em>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         @endif
                                     @endforeach
@@ -1791,7 +1758,7 @@
                             @endif
                         </div>
                     </div>
-                                      <!-- Media Upload Section -->
+<!-- Media Upload Section -->
 
                                      <div class="card card-bordered mb-3">
                                          <div class="card-inner">

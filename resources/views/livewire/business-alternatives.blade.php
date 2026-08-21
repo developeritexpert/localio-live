@@ -205,7 +205,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 <x-business-logo :business="$business" :name="$bName" />
                                             </div>
                                             <div>
-                                                <h3 style="font-size: 16px !important; font-weight: 500 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                                <h3 style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
                                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                                                     <span style="">{{ number_format($bAvgRating, 1) }}</span>
                                                     <div class="rating-stars" style="display: flex; gap: 0px;">
@@ -291,9 +291,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                     $r = $b->reviews->where('status', 'active');
                                     return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
                                 })
-                                ->take(6);
+                                ->take(3);
 
-                            if ($popularAltBusinesses->count() < 4) {
+                            if ($popularAltBusinesses->count() < 3) {
                                 $morePop = \App\Models\Business::where('id', '!=', $business->id)
                                     ->where('status', 1)
                                     ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
@@ -304,7 +304,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         'products.prices'
                                     ])
                                     ->get()
-                                    ->take(6 - $popularAltBusinesses->count());
+                                    ->take(3 - $popularAltBusinesses->count());
                                 $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
                             }
 
@@ -353,13 +353,28 @@ section.top-automotive-sec.top_rate_pg.light {
                             <section class="software-like p_50 product_integra_sec my-4" id="sectionAlternatives">
                                 <div class="container">
                                     <div class="sftwre-like-innr">
+                                        @php
+                                            $altPopHeadlineRaw = static_text('alternatives_page_most_popular_headline');
+                                            if (empty($altPopHeadlineRaw) || $altPopHeadlineRaw === 'alternatives_page_most_popular_headline') {
+                                                $altPopHeadlineRaw = 'Most popular [business] alternatives';
+                                            }
+                                            $altPopHeadline = str_replace(
+                                                ['[business]', ':business', 'XXXXX', 'XXXX'],
+                                                $businessName,
+                                                $altPopHeadlineRaw
+                                            );
+                                            $altPopDesc = static_text('alternatives_page_most_popular_desc');
+                                            if (empty($altPopDesc) || $altPopDesc === 'alternatives_page_most_popular_desc') {
+                                                $altPopDesc = "Based on other buyer's searches, these are the products that could be a good fit for you.";
+                                            }
+                                        @endphp
                                         <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
-                                            <h2>{{ $businessName }} Alternatives & Competitors</h2>
-                                            <p>Based on other buyer's searches, these are the products that could be a good fit for you.</p>
+                                            <h2>{{ $altPopHeadline }}</h2>
+                                            <p>{{ $altPopDesc }}</p>
                                         </div>
                                         <div class="sft_ware_test" style="display: flex; justify-content:center; align-items: center;">
                                             <div class="sftware-alternative d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-duration="1000">
-                                                @foreach ($popularAltBusinesses as $altbusiness)
+                                                @foreach ($popularAltBusinesses->take(3) as $altbusiness)
                                                     @php
                                                         $altTrans = $altbusiness->translations->firstWhere('lang_id', $lang_id) ?? $altbusiness->translations->first();
                                                         $altBizName = $altTrans->name ?? $altbusiness->name ?? 'Business';
@@ -475,9 +490,9 @@ section.top-automotive-sec.top_rate_pg.light {
 
                         <!-- 2. Compare alternatives (Affiliated Table 1) -->
                         <div class="comparison-table-section my-5 pt-3">
-                            <h3 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
                                 Compare {{ $businessName }} alternatives
-                            </h3>
+                            </h2>
 
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
@@ -522,14 +537,26 @@ section.top-automotive-sec.top_rate_pg.light {
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                                        {{ $rName }}
-                                                    </a>
-                                                    @if($loop->first)
-                                                        <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
-                                                    @endif
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                            <x-business-logo :business="$rowBiz" :name="$rName" />
+                                                        </div>
+                                                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                                {{ $rName }}
+                                                            </a>
+                                                            @if($loop->first)
+                                                                <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                 </td>
-                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050;">{{ number_format($rRating, 1) }}</td>
+                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                    <span class="d-inline-flex align-items-center gap-1">
+                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                        <span>{{ number_format($rRating, 1) }}</span>
+                                                    </span>
+                                                </td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Features'] }}</td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Ease of use'] }}</td>
                                                 <td class="text-center" style="padding: 14px; color: #475569;">{{ $critScores['Value for money'] }}</td>
@@ -546,9 +573,9 @@ section.top-automotive-sec.top_rate_pg.light {
                         <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
-                                <h3 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
+                                <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
                                     What the Localio community says
-                                </h3>
+                                </h2>
                                 <p style="font-size: 14px; color: #64748b; margin: 0;">
                                     Most mentioned pros and cons shared by real users.
                                 </p>
@@ -588,12 +615,19 @@ section.top-automotive-sec.top_rate_pg.light {
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                                                        {{ $rName }}
-                                                    </a>
-                                                    @if($loop->first)
-                                                        <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
-                                                    @endif
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                            <x-business-logo :business="$rowBiz" :name="$rName" />
+                                                        </div>
+                                                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $rSlug]) }}" style="color: #002347; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                                                                {{ $rName }}
+                                                            </a>
+                                                            @if($loop->first)
+                                                                <span class="badge bg-primary ms-1" style="font-size: 10px; font-weight: 600;">Current</span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                     @if($proStr !== '-')
@@ -1329,9 +1363,14 @@ section.top-automotive-sec.top_rate_pg.light {
     </script>
     <script>
         window.addEventListener('scroll-to-middle', function() {
-            const offset = window.innerHeight * 0.55;
             window.scrollTo({
-                top: offset,
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        window.addEventListener('scroll-to-top', function() {
+            window.scrollTo({
+                top: 0,
                 behavior: 'smooth'
             });
         });

@@ -170,6 +170,15 @@
                                         <span class="nk-menu-text">Features</span>
                                     </a>
                                 </li>
+                                <!-- Category Feature Content -->
+                                <li class="nk-menu-item">
+                                    <a href="{{ route('admin.category-feature-content.index') }}" class="nk-menu-link">
+                                        <span class="nk-menu-icon">
+                                             <em class="icon ni ni-file-docs"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Feature Content</span>
+                                    </a>
+                                </li>
 
                                 <!-- Filter -->
                                 <li class="nk-menu-item">
@@ -551,6 +560,12 @@
                                         <li class="nk-menu-item">
                                             <a href="{{ route('base-languages.index') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Base languages</span>
+                                            </a>
+                                        </li>
+
+                                        <li class="nk-menu-item">
+                                            <a href="{{ route('bcp47-languages.index') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">BCP 47 Languages</span>
                                             </a>
                                         </li>
                                     </ul>

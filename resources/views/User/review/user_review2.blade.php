@@ -123,7 +123,7 @@
                 </div>
             </div>
             @if(!empty($business->is_affiliate))
-            <div class="col-md-4 col-12 text-md-end text-start">
+            <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn" style="align-self: baseline; ">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
@@ -171,8 +171,13 @@
                             <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                 {{ number_format($averageRating, 1) }}
                             </span>
+                            @if($ratingWord = get_rating_label($averageRating))
+                                <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 5px; margin-bottom: 2px; line-height: 1.2;">
+                                    {{ $ratingWord }}
+                                </span>
+                            @endif
 
-                            <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                            <div class="rating-stars" style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
                                 @for ($i = 1; $i <= 5; $i++)
                                     @if ($i <= floor($averageRating))
                                         <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -532,7 +537,12 @@
                     <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);">
                         <!-- Average Rating Number & Stars -->
                         <div class="d-flex flex-column align-items-start mb-3">
-                            <span style="font-size: 42px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 8px;">{{ number_format($averageRating, 1) }}</span>
+                            <span style="font-size: 42px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 4px;">{{ number_format($averageRating, 1) }}</span>
+                            @if($ratingWord = get_rating_label($averageRating))
+                                <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 2px; margin-bottom: 4px; line-height: 1.2;">
+                                    {{ $ratingWord }}
+                                </span>
+                            @endif
                             <div class="d-flex align-items-center gap-1 mb-1">
                                 @for ($j = 1; $j <= 5; $j++)
                                     @if ($j <= floor($averageRating))

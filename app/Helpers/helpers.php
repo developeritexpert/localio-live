@@ -488,3 +488,33 @@ if (!function_exists('format_meta_text')) {
         return str_ireplace($placeholders, $currentYear, $clean);
     }
 }
+
+if (!function_exists('get_rating_label')) {
+    function get_rating_label($rating)
+    {
+        $r = floatval($rating);
+        if ($r <= 0) {
+            return '';
+        }
+
+        $tExcellent = floatval(static_text('rating_threshold_excellent') ?: 4.5);
+        $tGreat = floatval(static_text('rating_threshold_great') ?: 4.0);
+        $tGood = floatval(static_text('rating_threshold_good') ?: 3.0);
+        $tSatisfactory = floatval(static_text('rating_threshold_satisfactory') ?: 2.0);
+        $tPoor = floatval(static_text('rating_threshold_poor') ?: 1.0);
+
+        if ($r >= $tExcellent) {
+            return static_text('rating_label_excellent') ?: 'Excellent';
+        } elseif ($r >= $tGreat) {
+            return static_text('rating_label_great') ?: 'Great';
+        } elseif ($r >= $tGood) {
+            return static_text('rating_label_good') ?: 'Good';
+        } elseif ($r >= $tSatisfactory) {
+            return static_text('rating_label_satisfactory') ?: 'Satisfactory';
+        } elseif ($r >= $tPoor) {
+            return static_text('rating_label_poor') ?: 'Poor';
+        }
+
+        return '';
+    }
+}

@@ -25,17 +25,7 @@
                             </div>
                         </div>
                         <!--Feature description-->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="description">Feature Description</label>
-                                <div class="form-control-wrap">
-                                    <textarea class="form-control" id="description" name="description" rows="3">{{ old('description', $feature->translations()->first()->description ?? '')}}</textarea>
-                                </div>
-                                @error('description')
-                                <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+
                         <!-- Categories -->
                         <div class="col-md-12">
                             <div class="form-group">
@@ -65,6 +55,19 @@
                                         <option value="0" {{ old('status', $feature->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+
+                                                <!-- Keep Capitalized Checkbox -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label d-block">Capitalization Format</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input type="checkbox" class="custom-control-input" id="keep_capitalized" name="keep_capitalized" value="1"
+                                        {{ old('keep_capitalized', $feature->keep_capitalized ?? 0) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="keep_capitalized">Keep capitalized in headlines (e.g. DNS, SSL, API)</label>
+                                </div>
+                                <small class="text-muted d-block mt-1">If checked, the first letter will not be forced to lowercase in automated titles.</small>
                             </div>
                         </div>
 

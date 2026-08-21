@@ -929,4 +929,34 @@ class ViewController extends Controller
         ]);
     }
 
+
+    public function goBusiness($locale, $slug)
+    {
+        // Find business translation by slug
+        $translation = \App\Models\BusinessTranslation::where('slug', $slug)->first();
+        if ($translation) {
+            $business = $translation->business;
+        } else {
+            $business = \App\Models\Business::where('id', $slug)->first();
+            if (!$business) {
+                $business = \App\Models\Business::whereHas('translations', function($q) use ($slug) {
+                    $q->where('slug', $slug);
+                })->first();
+            }
+        }
+
+        if (!$business || !$business->status) {
+            abort(404);
+        }
+
+        // Get the target destination URL for current country
+        $targetUrl = $business->getEffectiveWebsiteUrl();
+
+        if (!$targetUrl) {
+            abort(404);
+        }
+
+        // 301 Permanent Redirect directly to the clean business website URL
+        return redirect()->away($targetUrl, 301);
+    }
 }

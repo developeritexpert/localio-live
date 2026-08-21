@@ -146,6 +146,21 @@ class StaticContentController extends Controller
         }])->get()->keyBy('key');
 
         $sections = [
+            'rating_labels' => [
+                'title' => 'Rating Breakdown Word Labels & Thresholds',
+                'keys' => [
+                    'rating_label_excellent',
+                    'rating_threshold_excellent',
+                    'rating_label_great',
+                    'rating_threshold_great',
+                    'rating_label_good',
+                    'rating_threshold_good',
+                    'rating_label_satisfactory',
+                    'rating_threshold_satisfactory',
+                    'rating_label_poor',
+                    'rating_threshold_poor',
+                ],
+            ],
             'company_size' => [
                 'title' => 'Company Size Options',
                 'keys' => [
@@ -208,7 +223,10 @@ class StaticContentController extends Controller
                     'business_reviews_subheadline',
                     'business_faqs_subheadline',
                     'business_comparisons_subheadline',
+                    'compare_with_any_provider_desc',
                     'business_alternatives_subheadline',
+                    'alternatives_page_most_popular_headline',
+                    'alternatives_page_most_popular_desc',
                 ],
             ],
             'help' => [

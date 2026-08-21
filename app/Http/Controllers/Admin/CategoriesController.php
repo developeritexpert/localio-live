@@ -380,6 +380,7 @@ class CategoriesController extends Controller
                 'min:3',
                 'max:255'
             ],
+            'comparison_name' => 'nullable|string|max:255',
             'page_title' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'meta_title' => 'nullable|string|max:255',
@@ -536,6 +537,7 @@ class CategoriesController extends Controller
                     'category_id'  => $category->id,
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
+                    'comparison_name' => $validate['comparison_name'] ?? null,
                     'page_title'   => $validate['page_title'] ?? null,
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],

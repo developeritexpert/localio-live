@@ -1,5 +1,6 @@
 @extends('user_layout.master')
-@section('meta_title', isset($categoriesContents['meta_title']) && isset($categoriesContents['meta_title']) ? $categoriesContents['meta_title'] : 'Categories')
+@section('meta_title', format_meta_text($categoriesContents['meta_title'] ?? '', 'Categories'))
+@section('meta_description', format_meta_text($categoriesContents['meta_description'] ?? '', 'Browse all software and business categories on Localio.'))
 @section('content')
 <style>
     /* Sidebar */

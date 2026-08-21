@@ -73,67 +73,6 @@
             border-color: #002347;
         }
 
-        /* FAQ Accordion Styling Matching Design */
-        .business-faq-card {
-            background: #ffffff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            overflow: hidden;
-            transition: all 0.2s ease;
-        }
-        .business-faq-card:hover {
-            border-color: #cbd5e1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        .business-faq-header {
-            padding: 18px 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            user-select: none;
-            background: #ffffff;
-        }
-        .business-faq-header h4 {
-            font-size: 16px;
-            font-weight: 700;
-            color: #002347;
-            margin: 0;
-            padding-right: 15px;
-            line-height: 1.4;
-        }
-        .faq-toggle-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #002347;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-size: 16px;
-            font-weight: 700;
-            transition: all 0.2s ease;
-        }
-        .business-faq-card.open .faq-toggle-circle {
-            background: #002347;
-        }
-        .business-faq-body {
-            display: none;
-            padding: 0 24px 20px 24px;
-            font-size: 14.5px;
-            color: #475569;
-            line-height: 1.7;
-            border-top: 1px solid #f1f5f9;
-            background: #ffffff;
-        }
-        .business-faq-card.open .business-faq-body {
-            display: block;
-            padding-top: 16px;
-        }
-
         /* FAQ Feedback Row (Was this helpful?) */
         .faq-feedback-row {
             display: flex;
@@ -360,7 +299,7 @@
 </section>
 
 <!-- Content & Right Sidebar Section -->
-<section class="revie_img_sec py-5" style="background-color: #ffffff;">
+<section class="revie_img_sec py-5" style="background-color: #f8fafc; border-top: 1px solid #eef2f6;">
     <div class="container">
         <div class="row g-4">
 
@@ -419,119 +358,127 @@
                     </div>
                     @endif
 
-                    <!-- FAQs Accordion List -->
+                    <!-- FAQs Accordion List - Matching Top Rated Style -->
                     <div id="faqAccordionContainer">
                         @php $totalFaqCount = 0; @endphp
 
-                        {{-- Grouped by Categories --}}
-                        @if(isset($faqCategories) && $faqCategories->count() > 0)
-                            @foreach($faqCategories as $cat)
-                                @if($cat->faqs && $cat->faqs->count() > 0)
-                                <div class="faq-category-group mb-4" data-category-group="{{ $cat->id }}">
-                                    <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
-                                        {{ $cat->name }}
-                                    </h4>
+                        <div class="accordion" id="businessFaqAccordion">
+                            {{-- Grouped by Categories --}}
+                            @if(isset($faqCategories) && $faqCategories->count() > 0)
+                                @foreach($faqCategories as $cat)
+                                    @if($cat->faqs && $cat->faqs->count() > 0)
+                                    <div class="faq-category-group mb-4" data-category-group="{{ $cat->id }}">
+                                        <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
+                                            {{ $cat->name }}
+                                        </h4>
 
-                                    @foreach($cat->faqs as $faq)
+                                        @foreach($cat->faqs as $faq)
+                                            @php
+                                                $totalFaqCount++;
+                                                $trans = $faq->translations->first();
+                                                $userVoted = $userVotes[$faq->id] ?? null;
+                                            @endphp
+                                            @if($trans)
+                                            <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="{{ $cat->id }}" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
+                                                <h2 class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                                    <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                        {{ $trans->question }}
+                                                    </button>
+                                                </h2>
+                                                <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                        <div class="faq-answer-text mb-3">
+                                                            {!! nl2br(e(strip_tags($trans->answer))) !!}
+                                                        </div>
+
+                                                        <!-- Was this helpful? Row -->
+                                                        <div class="faq-feedback-row">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <span>Was this helpful?</span>
+                                                                <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
+                                                                    <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
+                                                                        <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
+                                                                        <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
+                                                                    </button>
+                                                                    <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
+                                                                        <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
+                                                                        <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Report Flag -->
+                                                            <button type="button" class="faq-flag-btn" onclick="openReportModal({{ $faq->id }})" title="Report an issue">
+                                                                <i class="fas fa-flag" style="font-size: 13px;"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                @endforeach
+                            @endif
+
+                            {{-- Uncategorized / General FAQs --}}
+                            @if(isset($uncategorizedFaqs) && $uncategorizedFaqs->count() > 0)
+                                <div class="faq-category-group mb-4" data-category-group="general">
+                                    @if(isset($faqCategories) && $faqCategories->count() > 0)
+                                    <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
+                                        General
+                                    </h4>
+                                    @endif
+
+                                    @foreach($uncategorizedFaqs as $faq)
                                         @php
                                             $totalFaqCount++;
                                             $trans = $faq->translations->first();
                                             $userVoted = $userVotes[$faq->id] ?? null;
                                         @endphp
                                         @if($trans)
-                                        <div class="business-faq-card" data-faq-id="{{ $faq->id }}" data-category="{{ $cat->id }}">
-                                            <div class="business-faq-header" onclick="toggleFaqCard(this)">
-                                                <h4>{{ $trans->question }}</h4>
-                                                <div class="faq-toggle-circle">+</div>
-                                            </div>
-                                            <div class="business-faq-body">
-                                                <div class="faq-answer-text">
-                                                    {!! nl2br(e(strip_tags($trans->answer))) !!}
-                                                </div>
-
-                                                <!-- Was this helpful? Row -->
-                                                <div class="faq-feedback-row">
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <span>Was this helpful?</span>
-                                                        <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
-                                                            <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
-                                                                <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
-                                                                <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
-                                                            </button>
-                                                            <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
-                                                                <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
-                                                                <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
-                                                            </button>
-                                                        </div>
+                                        <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="general" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
+                                            <h2 class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                                <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                    {{ $trans->question }}
+                                                </button>
+                                            </h2>
+                                            <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
+                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                    <div class="faq-answer-text mb-3">
+                                                        {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                     </div>
 
-                                                    <!-- Report Flag -->
-                                                    <button type="button" class="faq-flag-btn" onclick="openReportModal({{ $faq->id }})" title="Report an issue">
-                                                        <i class="fas fa-flag" style="font-size: 13px;"></i>
-                                                    </button>
+                                                    <!-- Was this helpful? Row -->
+                                                    <div class="faq-feedback-row">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span>Was this helpful?</span>
+                                                            <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
+                                                                <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
+                                                                    <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
+                                                                    <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
+                                                                </button>
+                                                                <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
+                                                                    <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
+                                                                    <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Report Flag -->
+                                                        <button type="button" class="faq-flag-btn" onclick="openReportModal({{ $faq->id }})" title="Report an issue">
+                                                            <i class="fas fa-flag" style="font-size: 13px;"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         @endif
                                     @endforeach
                                 </div>
-                                @endif
-                            @endforeach
-                        @endif
-
-                        {{-- Uncategorized / General FAQs --}}
-                        @if(isset($uncategorizedFaqs) && $uncategorizedFaqs->count() > 0)
-                            <div class="faq-category-group mb-4" data-category-group="general">
-                                @if(isset($faqCategories) && $faqCategories->count() > 0)
-                                <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
-                                    General
-                                </h4>
-                                @endif
-
-                                @foreach($uncategorizedFaqs as $faq)
-                                    @php
-                                        $totalFaqCount++;
-                                        $trans = $faq->translations->first();
-                                        $userVoted = $userVotes[$faq->id] ?? null;
-                                    @endphp
-                                    @if($trans)
-                                    <div class="business-faq-card" data-faq-id="{{ $faq->id }}" data-category="general">
-                                        <div class="business-faq-header" onclick="toggleFaqCard(this)">
-                                            <h4>{{ $trans->question }}</h4>
-                                            <div class="faq-toggle-circle">+</div>
-                                        </div>
-                                        <div class="business-faq-body">
-                                            <div class="faq-answer-text">
-                                                {!! nl2br(e(strip_tags($trans->answer))) !!}
-                                            </div>
-
-                                            <!-- Was this helpful? Row -->
-                                            <div class="faq-feedback-row">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <span>Was this helpful?</span>
-                                                    <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
-                                                        <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
-                                                            <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
-                                                            <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
-                                                        </button>
-                                                        <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
-                                                            <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
-                                                            <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Report Flag -->
-                                                <button type="button" class="faq-flag-btn" onclick="openReportModal({{ $faq->id }})" title="Report an issue">
-                                                    <i class="fas fa-flag" style="font-size: 13px;"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
+                            @endif
+                        </div>
 
                         @if($totalFaqCount === 0)
                             <div class="p-4 text-center text-muted bg-light rounded border">
@@ -556,7 +503,7 @@
                         </p>
                     </div>
                     <div>
-                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="ask-community-btn">
+                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="blue-btn ask-community-btn">
                             Ask a question <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
@@ -596,7 +543,12 @@
                                 <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
                                     {{ number_format($averageRating, 1) }}
                                 </span>
-                                <div class="rating-stars" style="margin-top: 10px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                @if($ratingWord = get_rating_label($averageRating))
+                                    <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 5px; margin-bottom: 2px; line-height: 1.2;">
+                                        {{ $ratingWord }}
+                                    </span>
+                                @endif
+                                <div class="rating-stars" style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($averageRating))
                                             <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -925,45 +877,29 @@
 
 @push('scripts')
 <script>
-    // 1. Toggle Accordion Card with +/- icon
-    function toggleFaqCard(element) {
-        const card = element.closest('.business-faq-card');
-        const circle = card.querySelector('.faq-toggle-circle');
-        const isOpen = card.classList.contains('open');
-
-        if (isOpen) {
-            card.classList.remove('open');
-            circle.textContent = '+';
-        } else {
-            card.classList.add('open');
-            circle.textContent = '−';
-        }
-    }
-
-    // 2. Real-Time Search Filter
+    // 1. Real-Time Search Filter
     document.getElementById('faqSearchInput')?.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.business-faq-card');
+        const items = document.querySelectorAll('#businessFaqAccordion .accordion-item');
         const groups = document.querySelectorAll('.faq-category-group');
         let totalVisible = 0;
 
-        cards.forEach(card => {
-            const question = card.querySelector('.business-faq-header h4')?.textContent.toLowerCase() || '';
-            const answer = card.querySelector('.faq-answer-text')?.textContent.toLowerCase() || '';
+        items.forEach(item => {
+            const question = item.querySelector('.accordion-button')?.textContent.toLowerCase() || '';
+            const answer = item.querySelector('.faq-answer-text')?.textContent.toLowerCase() || '';
             const isMatch = question.includes(query) || answer.includes(query);
 
             if (isMatch) {
-                card.style.display = 'block';
+                item.style.display = 'block';
                 totalVisible++;
             } else {
-                card.style.display = 'none';
+                item.style.display = 'none';
             }
         });
 
         // Hide empty category groups
         groups.forEach(group => {
-            const visibleInGroup = group.querySelectorAll('.business-faq-card[style="display: block;"]').length;
-            const allInGroup = group.querySelectorAll('.business-faq-card').length;
+            const visibleInGroup = group.querySelectorAll('.accordion-item[style="display: block;"]').length;
             if (query !== '' && visibleInGroup === 0) {
                 group.style.display = 'none';
             } else {
@@ -977,7 +913,7 @@
         }
     });
 
-    // 3. In-Page Category Tab Filter
+    // 2. In-Page Category Tab Filter
     document.querySelectorAll('.faq-cat-tab').forEach(tab => {
         tab.addEventListener('click', function() {
             document.querySelectorAll('.faq-cat-tab').forEach(t => t.classList.remove('active'));
@@ -994,7 +930,7 @@
                 const groupCat = group.dataset.categoryGroup;
                 if (categoryId === 'all' || groupCat === categoryId) {
                     group.style.display = 'block';
-                    group.querySelectorAll('.business-faq-card').forEach(c => c.style.display = 'block');
+                    group.querySelectorAll('.accordion-item').forEach(c => c.style.display = 'block');
                 } else {
                     group.style.display = 'none';
                 }
@@ -1004,7 +940,7 @@
         });
     });
 
-    // 4. Helpful / Not Helpful Vote Handler
+    // 3. Helpful / Not Helpful Vote Handler
     function voteFaq(faqId, isHelpful, button) {
         @if(!auth()->check())
             alert('Please sign in to vote on FAQs.');
@@ -1033,7 +969,7 @@
         .then(data => {
             if (!data || !data.success) return;
 
-            const card = button.closest('.business-faq-card');
+            const card = button.closest('.accordion-item');
             const yesBtn = card.querySelector('.btn-vote-faq:first-child');
             const noBtn = card.querySelector('.btn-vote-faq:last-child');
 
@@ -1051,7 +987,7 @@
         .catch(err => console.error('Vote Error:', err));
     }
 
-    // 5. Report Issue Modal Handler
+    // 4. Report Issue Modal Handler
     function openReportModal(faqId) {
         @if(!auth()->check())
             alert('Please sign in to report an issue.');

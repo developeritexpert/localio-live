@@ -270,7 +270,7 @@
     </style>
     <section class="top-rated-heading-sec">
         <div class="container">
-            <div class=" bread_row row align-items-center mb-1">
+            <div class=" bread_row row align-items-center mb-2">
                 <div class="col-8">
                     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                         <ol class="breadcrumb m-0"
@@ -1253,6 +1253,12 @@
                         </div>
                         @endforeach
                     </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link">
+                            View more FAQs
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1338,13 +1344,16 @@ document.addEventListener('livewire:initialized', () => {
 </script>
 <script>
 window.addEventListener('scroll-to-middle', function() {
-    const listSec = document.querySelector('.top-automotive-sec') || document.querySelector('.top-auto-choice');
-    if (listSec) {
-        listSec.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+window.addEventListener('scroll-to-top', function() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 });
 // Update browser URL when pagination changes
 window.addEventListener('update-pagination-url', function(event) {

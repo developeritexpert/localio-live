@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use App\Models\{Country, Currency, Language, SiteLanguages, BaseLanguage};
+use App\Models\{Country, Currency, Language, SiteLanguages, BaseLanguage, Bcp47Language};
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Session;
@@ -22,8 +22,10 @@ class SiteLanguagesController extends Controller
     public function add()
     {
         $countries = Country::where('status', 1)->orderBy('name')->get();
-        $baseLanguages = BaseLanguage::where('status', 1)->orderBy('name')->get();
-        return view('Admin.setting.siteLanguages.add', compact('countries', 'baseLanguages'));
+
+        $bcp47Languages = Bcp47Language::where('status', 1)->orderBy('code')->get();
+
+        return view('Admin.setting.siteLanguages.add', compact('countries', 'bcp47Languages'));
     }
 
     public function addProcc(Request $request)
@@ -62,14 +64,13 @@ class SiteLanguagesController extends Controller
 
     public function update($id)
     {
-        $siteLanguage = Language::findOrFail($id);
-        $countries = Country::where('status', 1)->orderBy('name')->get();
-        // The same country/region should not appear in the base language dropdown
-        $baseLanguages = BaseLanguage::where('status', 1)
-            ->where('name', '!=', $siteLanguage->name)
-            ->orderBy('name')
-            ->get();
-        return view('Admin.setting.siteLanguages.update', compact('siteLanguage', 'countries', 'baseLanguages'));
+        $siteLanguage   = Language::findOrFail($id);
+
+        $countries      = Country::where('status', 1)->orderBy('name')->get();
+
+        $bcp47Languages = Bcp47Language::where('status', 1)->orderBy('code')->get();
+
+        return view('Admin.setting.siteLanguages.update', compact('siteLanguage', 'countries', 'bcp47Languages'));
     }
 
     public function updateProcc(Request $request)

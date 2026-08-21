@@ -25,19 +25,7 @@
                             </div>
                         </div>
 
-                        {{-- Add feature description --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="name">Feature Description</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="description" name="description"
-                                        value="{{ old('description') }}">
-                                </div>
-                                @error('description')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+
 
                         <!-- Categories -->
                         <div class="col-md-12">
@@ -70,6 +58,19 @@
                                         </option>
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+
+                                                <!-- Keep Capitalized Checkbox -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label d-block">Capitalization Format</label>
+                                <div class="custom-control custom-checkbox mt-2">
+                                    <input type="checkbox" class="custom-control-input" id="keep_capitalized" name="keep_capitalized" value="1"
+                                        {{ old('keep_capitalized') ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="keep_capitalized">Keep capitalized in headlines (e.g. DNS, SSL, API)</label>
+                                </div>
+                                <small class="text-muted d-block mt-1">If checked, the first letter will not be forced to lowercase in automated titles.</small>
                             </div>
                         </div>
 

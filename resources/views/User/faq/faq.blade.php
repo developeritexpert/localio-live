@@ -1,4 +1,6 @@
 @extends('user_layout.master')
+@section('meta_title', format_meta_text('Frequently Asked Questions | Localio'))
+@section('meta_description', format_meta_text('Find answers to common questions about Localio, categories, business reviews, and software ratings.'))
 @section('content')
 <section class="blog-sec terms-sec">
 

@@ -14,15 +14,17 @@
         ->first();
 
     // Fetch meta title and description from database
-    $metaTitle = HomeContent::where('meta_key', 'meta_home_title')->value('meta_value') ?? 'Default Title';
-    $metaDescription = HomeContent::where('meta_key', 'Meta_home_description')->value('meta_value') ?? 'Default Description';
+    $rawMetaTitle = HomeContent::where('meta_key', 'meta_home_title')->value('meta_value') ?? 'How to find the Best Product';
+    $rawMetaDescription = HomeContent::where('meta_key', 'Meta_home_description')->value('meta_value') ?? (HomeContent::where('meta_key', 'meta_home_description')->value('meta_value') ?? 'Default Description');
+    $metaTitle = format_meta_text($rawMetaTitle, 'How to find the Best Product');
+    $metaDescription = format_meta_text($rawMetaDescription, 'Default Description');
 
     ?>
-    <title>@yield('meta_title', 'How to find the Best Product')</title>
+    <title>@yield('meta_title', $metaTitle)</title>
     @hasSection('meta_description')
     <meta name="description" content="@yield('meta_description')">
     @else
-    <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="description" content="{{ $metaDescription }}">
     @endif
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -64,7 +66,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-    <title><?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?></title>
+    
     @if ($favicon)
     <link rel="shortcut icon" href="{{ asset($favicon) }}">
     @endif
@@ -2490,7 +2492,7 @@
                                 </li> --}}
                                 <li>
                                     <a
-                                        href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['about-localio'] ?? 'About localio' }}</a>
+                                        href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['about-localio'] ?? 'About Localio' }}</a>
                                 </li>
                                 <li>
                                     <a
@@ -2584,7 +2586,7 @@
                                 <div class="footer-langs-container">
                                     @foreach ($languages->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $language)
                                     <li>
-                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}">
+                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($language->lang_code) }};path=/;max-age=31536000';">
                                             {{ $language->name }}
                                         </a>
                                     </li>
@@ -2612,6 +2614,7 @@
     $sectionsAvailable = $sections->isNotEmpty();
     @endphp
 
+    
     <div class="modal-overlay" id="learnMoreModal">
         <div class="circle_11">
             <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
@@ -3362,6 +3365,15 @@
         $(this).closest('.select-menu').toggleClass('open');
     });
 
+    @if(session('show_country_modal'))
+        $(document).ready(function() {
+            $('.select-menu').addClass('open');
+            $('html, body').animate({
+                scrollTop: $('.select-menu').offset().top - 200
+            }, 600);
+        });
+    @endif
+
     // Optional: Close the dropdown if the user clicks outside of it
     $(document).on('click', function(event) {
         if (!$(event.target).closest('.select-menu').length) {
@@ -3970,14 +3982,14 @@
                 </div>
                 <span class="booking-share-label">Facebook</span>
             </a>
-            <!-- <a href="javascript:void(0)" class="booking-share-item" id="btnShareTwitter" onclick="triggerShareTwitter(event)">
+            <a href="javascript:void(0)" class="booking-share-item" id="btnShareTwitter" onclick="triggerShareTwitter(event)">
                 <div class="booking-share-icon">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="#111827">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
                 </div>
-                <span class="booking-share-label">X (formerly Twitter)</span>
-            </a> -->
+                <span class="booking-share-label">X</span>
+            </a>
         </div>
     </div>
 </div>
