@@ -2586,7 +2586,7 @@
                                 <div class="footer-langs-container">
                                     @foreach ($languages->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $language)
                                     <li>
-                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}">
+                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($language->lang_code) }};path=/;max-age=31536000';">
                                             {{ $language->name }}
                                         </a>
                                     </li>
@@ -2614,6 +2614,7 @@
     $sectionsAvailable = $sections->isNotEmpty();
     @endphp
 
+    
     <div class="modal-overlay" id="learnMoreModal">
         <div class="circle_11">
             <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
@@ -3363,6 +3364,15 @@
     $('.select-btn').on('click', function() {
         $(this).closest('.select-menu').toggleClass('open');
     });
+
+    @if(session('show_country_modal'))
+        $(document).ready(function() {
+            $('.select-menu').addClass('open');
+            $('html, body').animate({
+                scrollTop: $('.select-menu').offset().top - 200
+            }, 600);
+        });
+    @endif
 
     // Optional: Close the dropdown if the user clicks outside of it
     $(document).on('click', function(event) {
