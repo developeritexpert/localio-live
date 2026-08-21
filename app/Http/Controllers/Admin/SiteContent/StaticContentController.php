@@ -223,6 +223,7 @@ class StaticContentController extends Controller
                     'business_reviews_subheadline',
                     'business_faqs_subheadline',
                     'business_comparisons_subheadline',
+                    'compare_with_any_provider_desc',
                     'business_alternatives_subheadline',
                 ],
             ],

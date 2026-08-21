@@ -225,13 +225,22 @@
 
                 <!-- Section 2: Interactive Compare Tool Box (Replacing 2nd text) -->
                 <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1.5px solid #e2e8f0 !important; box-shadow: 0 4px 14px rgba(0,0,0,0.03); overflow: visible !important;">
-                    <h3 style="font-size: 18px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: #002347; margin-bottom: 6px;">
                         Compare {{ $bName }} with any provider
                     </h3>
+                    @php
+                        $compareSubtext = static_text('compare_with_any_provider_desc');
+                        if (empty($compareSubtext) || $compareSubtext === 'compare_with_any_provider_desc') {
+                            $compareSubtext = 'Select another provider from the search box below to generate an instant side-by-side comparison.';
+                        }
+                    @endphp
+                    <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">
+                        {{ $compareSubtext }}
+                    </p>
 
                     <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
                         <!-- Business A (Fixed) -->
-                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0;">
+                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
                             <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
@@ -241,18 +250,30 @@
                         <!-- VS Label -->
                         <span class="fw-bold text-muted px-1" style="font-size: 15px; font-family: sans-serif; flex-shrink: 0;">vs</span>
 
-                        <!-- Business B Search Input + Auto-complete Dropdown -->
-                        <div class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
+                        <!-- Business B Search Input Container (Shown when nothing selected) -->
+                        <div id="compareSearchInputWrapper" class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
                             <div style="position: relative; display: flex; align-items: center;">
                                 <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none;"></i>
-                                <input type="text" id="compareSearchInput" class="form-control rounded-pill" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 44px;" autocomplete="off">
+                                <input type="text" id="compareSearchInput" class="form-control rounded-pill" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
                             </div>
                             <!-- Custom Auto-complete Container -->
                             <div id="compareSearchDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; width: 100%; max-height: 260px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 99999; margin-top: 6px;"></div>
                         </div>
 
+                        <!-- Business B Selected Pill (Shown when business selected, same style as left with cross) -->
+                        <div id="selectedBusinessPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white rounded-pill border flex-grow-1" style="display: none !important; border-color: #cbd5e1 !important; min-width: 170px; height: 48px;">
+                            <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                <div id="selectedBusinessLogo" style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                </div>
+                                <span id="selectedBusinessName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+                            </div>
+                            <button type="button" id="btnRemoveSelectedBusiness" class="btn p-0 border-0 d-flex align-items-center justify-content-center" style="width: 0px; height: 0px; border-radius: 50%; background: #f1f5f9; color: #64748b; font-size: 12px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" title="Remove selection" onmouseover="this.style.background='#e2e8f0'; this.style.color='#002347';" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
                         <!-- Compare Action Button -->
-                        <button type="button" id="btnRunCompare" class="btn rounded-pill px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 44px; opacity: 0.6; flex-shrink: 0;" disabled>
+                        <button type="button" id="btnRunCompare" class="btn rounded-pill px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 48px; opacity: 0.6; flex-shrink: 0;" disabled>
                             Compare
                         </button>
                     </div>
@@ -669,6 +690,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchableBusinesses = @json($allSearchableBusinesses ?? []);
         const input = document.getElementById('compareSearchInput');
+        const inputWrapper = document.getElementById('compareSearchInputWrapper');
+        const selectedPill = document.getElementById('selectedBusinessPill');
+        const selectedLogo = document.getElementById('selectedBusinessLogo');
+        const selectedName = document.getElementById('selectedBusinessName');
+        const btnRemove = document.getElementById('btnRemoveSelectedBusiness');
         const dropdown = document.getElementById('compareSearchDropdown');
         const btn = document.getElementById('btnRunCompare');
         const compSlug = @json($compSlug);
@@ -682,9 +708,6 @@
 
         function renderResults(query) {
             const trimmed = query.toLowerCase().trim();
-            selectedTargetSlug = null;
-            btn.disabled = true;
-            btn.style.opacity = '0.6';
 
             let matches = searchableBusinesses;
             if (trimmed.length > 0) {
@@ -701,7 +724,7 @@
             matches.slice(0, 10).forEach(b => {
                 const iconHtml = b.icon ? `<img src="${b.icon}" width="24" height="24" style="border-radius:50%; object-fit:cover; flex-shrink:0;">` : `<div style="width:24px;height:24px;border-radius:50%;background:#002347;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${b.name.charAt(0).toUpperCase()}</div>`;
                 html += `
-                    <div class="search-preview-item" data-slug="${b.slug}" data-name="${b.name}">
+                    <div class="search-preview-item" data-slug="${b.slug}" data-name="${b.name}" data-icon="${b.icon || ''}">
                         ${iconHtml}
                         <span>${b.name}</span>
                     </div>
@@ -714,12 +737,46 @@
             dropdown.querySelectorAll('.search-preview-item').forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    input.value = this.dataset.name;
-                    selectedTargetSlug = this.dataset.slug;
+                    const name = this.dataset.name;
+                    const slug = this.dataset.slug;
+                    const icon = this.dataset.icon;
+
+                    selectedTargetSlug = slug;
+                    input.value = name;
                     dropdown.style.display = 'none';
+
+                    // Update selected pill
+                    if (selectedName) selectedName.textContent = name;
+                    if (selectedLogo) {
+                        if (icon && icon.trim() !== '') {
+                            selectedLogo.innerHTML = `<img src="${icon}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                        } else {
+                            const initial = name.charAt(0).toUpperCase();
+                            selectedLogo.innerHTML = `<div style="width: 100%; height: 100%; background: #002347; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700;">${initial}</div>`;
+                        }
+                    }
+
+                    // Show selected pill, hide input wrapper
+                    if (inputWrapper) inputWrapper.style.display = 'none';
+                    if (selectedPill) selectedPill.style.setProperty('display', 'flex', 'important');
+
                     btn.disabled = false;
                     btn.style.opacity = '1';
                 });
+            });
+        }
+
+        // Remove selected business action
+        if (btnRemove) {
+            btnRemove.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectedTargetSlug = null;
+                input.value = '';
+                if (selectedPill) selectedPill.style.setProperty('display', 'none', 'important');
+                if (inputWrapper) inputWrapper.style.display = 'block';
+                input.focus();
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
             });
         }
 
@@ -729,12 +786,6 @@
 
         input.addEventListener('input', function() {
             renderResults(this.value);
-        });
-
-        input.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter' && selectedTargetSlug) {
-                btn.click();
-            }
         });
 
         document.addEventListener('click', function(e) {
