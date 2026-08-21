@@ -291,9 +291,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                     $r = $b->reviews->where('status', 'active');
                                     return $r->count() > 0 ? $r->avg('rating') : ($b->admin_rating ?? 0);
                                 })
-                                ->take(6);
+                                ->take(3);
 
-                            if ($popularAltBusinesses->count() < 4) {
+                            if ($popularAltBusinesses->count() < 3) {
                                 $morePop = \App\Models\Business::where('id', '!=', $business->id)
                                     ->where('status', 1)
                                     ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
@@ -304,7 +304,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         'products.prices'
                                     ])
                                     ->get()
-                                    ->take(6 - $popularAltBusinesses->count());
+                                    ->take(3 - $popularAltBusinesses->count());
                                 $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
                             }
 
@@ -353,13 +353,28 @@ section.top-automotive-sec.top_rate_pg.light {
                             <section class="software-like p_50 product_integra_sec my-4" id="sectionAlternatives">
                                 <div class="container">
                                     <div class="sftwre-like-innr">
+                                        @php
+                                            $altPopHeadlineRaw = static_text('alternatives_page_most_popular_headline');
+                                            if (empty($altPopHeadlineRaw) || $altPopHeadlineRaw === 'alternatives_page_most_popular_headline') {
+                                                $altPopHeadlineRaw = 'Most popular [business] alternatives';
+                                            }
+                                            $altPopHeadline = str_replace(
+                                                ['[business]', ':business', 'XXXXX', 'XXXX'],
+                                                $businessName,
+                                                $altPopHeadlineRaw
+                                            );
+                                            $altPopDesc = static_text('alternatives_page_most_popular_desc');
+                                            if (empty($altPopDesc) || $altPopDesc === 'alternatives_page_most_popular_desc') {
+                                                $altPopDesc = "Based on other buyer's searches, these are the products that could be a good fit for you.";
+                                            }
+                                        @endphp
                                         <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
-                                            <h2>{{ $businessName }} Alternatives & Competitors</h2>
-                                            <p>Based on other buyer's searches, these are the products that could be a good fit for you.</p>
+                                            <h2>{{ $altPopHeadline }}</h2>
+                                            <p>{{ $altPopDesc }}</p>
                                         </div>
                                         <div class="sft_ware_test" style="display: flex; justify-content:center; align-items: center;">
                                             <div class="sftware-alternative d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-duration="1000">
-                                                @foreach ($popularAltBusinesses as $altbusiness)
+                                                @foreach ($popularAltBusinesses->take(3) as $altbusiness)
                                                     @php
                                                         $altTrans = $altbusiness->translations->firstWhere('lang_id', $lang_id) ?? $altbusiness->translations->first();
                                                         $altBizName = $altTrans->name ?? $altbusiness->name ?? 'Business';
@@ -475,9 +490,9 @@ section.top-automotive-sec.top_rate_pg.light {
 
                         <!-- 2. Compare alternatives (Affiliated Table 1) -->
                         <div class="comparison-table-section my-5 pt-3">
-                            <h3 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
                                 Compare {{ $businessName }} alternatives
-                            </h3>
+                            </h2>
 
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
