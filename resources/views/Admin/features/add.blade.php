@@ -25,19 +25,7 @@
                             </div>
                         </div>
 
-                        {{-- Add feature description --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="name">Feature Description</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="description" name="description"
-                                        value="{{ old('description') }}">
-                                </div>
-                                @error('description')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+
 
                         <!-- Categories -->
                         <div class="col-md-12">

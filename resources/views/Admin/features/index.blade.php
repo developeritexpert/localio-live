@@ -190,8 +190,8 @@
                                 </button>
                             </div>
                             <textarea class="form-control" name="json_data" id="json_data" rows="8" placeholder='[
-  { "name": "SSL included", "description": "Free SSL certificate provided" },
-  { "name": "Website backups", "description": "Automated daily backups" }
+  { "name": "SSL included"},
+  { "name": "Website backups"}
 ]' required></textarea>
                         </div>
                     </div>
@@ -217,8 +217,8 @@
 
         function copyExampleFormat() {
             const exampleFormat = `[
-  { "name": "SSL included", "description": "Free SSL certificate provided" },
-  { "name": "Website backups", "description": "Automated daily backups" }
+  { "name": "SSL included" },
+  { "name": "Website backups" }
 ]`;
             navigator.clipboard.writeText(exampleFormat).then(() => {
                 NioApp.Toast('Example JSON format copied to clipboard!', 'info', { position: 'top-right' });

@@ -25,17 +25,7 @@
                             </div>
                         </div>
                         <!--Feature description-->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="description">Feature Description</label>
-                                <div class="form-control-wrap">
-                                    <textarea class="form-control" id="description" name="description" rows="3">{{ old('description', $feature->translations()->first()->description ?? '')}}</textarea>
-                                </div>
-                                @error('description')
-                                <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
+
                         <!-- Categories -->
                         <div class="col-md-12">
                             <div class="form-group">

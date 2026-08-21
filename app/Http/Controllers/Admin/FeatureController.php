@@ -101,7 +101,6 @@ class FeatureController extends Controller
             $feature->translations()->create([
                 'lang_id' => $lang_id,
                 'name' => $request->name,
-                'description' => $request->description ?? null,
             ]);
             DB::commit();
 
@@ -139,7 +138,6 @@ class FeatureController extends Controller
                     continue;
                 }
                 $name = trim($item['name'] ?? $item['feature_name']);
-                $description = trim($item['description'] ?? $item['feature_description'] ?? '');
 
                 // Check existing feature translation for language
                 $existingTranslation = DB::table('feature_translations')
@@ -151,11 +149,6 @@ class FeatureController extends Controller
                     $feature = Feature::find($existingTranslation->feature_id);
                     if ($feature) {
                         $feature->update(['category_id' => $request->category_id]);
-                        if (!empty($description)) {
-                            DB::table('feature_translations')
-                                ->where('id', $existingTranslation->id)
-                                ->update(['description' => $description]);
-                        }
                     }
                 } else {
                     $feature = Feature::create([
@@ -166,7 +159,6 @@ class FeatureController extends Controller
                     $feature->translations()->create([
                         'lang_id' => $lang_id,
                         'name' => $name,
-                        'description' => $description,
                     ]);
                 }
                 $importedCount++;
@@ -248,7 +240,6 @@ class FeatureController extends Controller
                 ['lang_id' => $lang_id],
                 [
                     'name' => $request->name,
-                    'description' => $request->description,
                 ]
             );
             DB::commit();
