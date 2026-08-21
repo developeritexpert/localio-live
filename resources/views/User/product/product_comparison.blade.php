@@ -1,4 +1,18 @@
 @extends('user_layout.master')
+@php
+    $bizNames = isset($businesses) && is_iterable($businesses) ? collect($businesses)->map(function($b) {
+        $trans = $b->translations ?? collect();
+        $t = is_iterable($trans) ? collect($trans)->firstWhere('lang_id', getCurrentLanguageID()) : null;
+        if (!$t && is_iterable($trans)) {
+            $t = collect($trans)->first();
+        }
+        return $t->name ?? ($b->name ?? '');
+    })->filter()->implode(' vs ') : '';
+    $compPageTitle = !empty($bizNames) ? "{$bizNames} Comparison | Localio" : 'Product Comparison | Localio';
+    $compPageDesc = !empty($bizNames) ? "Compare {$bizNames} side-by-side on pricing, features, user reviews, pros, and cons on Localio." : 'Compare products side-by-side on Localio.';
+@endphp
+@section('meta_title', format_meta_text($compPageTitle))
+@section('meta_description', format_meta_text($compPageDesc))
 @section('content')
 @php
     $firstBiz = isset($businesses[0]) ? $businesses[0] : null;

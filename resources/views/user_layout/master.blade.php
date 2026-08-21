@@ -14,15 +14,17 @@
         ->first();
 
     // Fetch meta title and description from database
-    $metaTitle = HomeContent::where('meta_key', 'meta_home_title')->value('meta_value') ?? 'Default Title';
-    $metaDescription = HomeContent::where('meta_key', 'Meta_home_description')->value('meta_value') ?? 'Default Description';
+    $rawMetaTitle = HomeContent::where('meta_key', 'meta_home_title')->value('meta_value') ?? 'How to find the Best Product';
+    $rawMetaDescription = HomeContent::where('meta_key', 'Meta_home_description')->value('meta_value') ?? (HomeContent::where('meta_key', 'meta_home_description')->value('meta_value') ?? 'Default Description');
+    $metaTitle = format_meta_text($rawMetaTitle, 'How to find the Best Product');
+    $metaDescription = format_meta_text($rawMetaDescription, 'Default Description');
 
     ?>
-    <title>@yield('meta_title', 'How to find the Best Product')</title>
+    <title>@yield('meta_title', $metaTitle)</title>
     @hasSection('meta_description')
     <meta name="description" content="@yield('meta_description')">
     @else
-    <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="description" content="{{ $metaDescription }}">
     @endif
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -64,7 +66,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-    <title><?= htmlspecialchars($metaTitle, ENT_QUOTES, 'UTF-8') ?></title>
+    
     @if ($favicon)
     <link rel="shortcut icon" href="{{ asset($favicon) }}">
     @endif

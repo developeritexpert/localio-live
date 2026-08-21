@@ -1,5 +1,6 @@
 @extends('user_layout.master')
-
+@section('meta_title', format_meta_text(isset($work) && isset($work->meta_title) ? $work->meta_title : 'How It Works | Localio'))
+@section('meta_description', format_meta_text(isset($work) && isset($work->meta_description) ? $work->meta_description : ''))
 
 @section('content')
 

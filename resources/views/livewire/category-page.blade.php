@@ -345,8 +345,12 @@
 
     </style>
 
-    @section('meta_title', !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page'))
-    @section('meta_description', !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? ''))
+    @php
+        $catMetaTitle = !empty($category->translations->meta_title) ? $category->translations->meta_title : ($category->translations->name ?? 'Category Page');
+        $catMetaDescription = !empty($category->translations->meta_description) ? $category->translations->meta_description : strip_tags($category->translations->description ?? '');
+    @endphp
+    @section('meta_title', format_meta_text($catMetaTitle, 'Category Page'))
+    @section('meta_description', format_meta_text($catMetaDescription))
     @if (session()->has('message'))
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         {{ session('message') }}

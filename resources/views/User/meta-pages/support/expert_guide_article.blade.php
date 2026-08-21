@@ -1,4 +1,10 @@
 @extends('user_layout.master')
+@php
+    $artTitle = $translationarticle->articleTranslations->first()?->title ?? 'Expert Guide Article';
+    $artDesc = $translationarticle->articleTranslations->first()?->short_description ?? "Read our comprehensive guide on {$artTitle} on Localio.";
+@endphp
+@section('meta_title', format_meta_text("{$artTitle} | Localio"))
+@section('meta_description', format_meta_text($artDesc))
 @section('content')
 <section class="banner_sec help-cntr-bnr dark" style="background-color: #003F7D;">
     <div class="bubble-wrp">

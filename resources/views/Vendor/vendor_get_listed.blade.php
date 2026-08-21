@@ -1,7 +1,7 @@
 @extends('user_layout.master')
 @section('content')
-@section('meta_title', isset($getListed) && isset($getListed->meta_title) ? $getListed->meta_title : 'Expert Guide')
-@section('meta_description', isset($getListed) && isset($getListed->meta_description) ? $getListed->meta_description : '')
+@section('meta_title', format_meta_text(isset($getListed) && isset($getListed->meta_title) ? $getListed->meta_title : 'Get Listed | Localio'))
+@section('meta_description', format_meta_text(isset($getListed) && isset($getListed->meta_description) ? $getListed->meta_description : ''))
 
 {{-- Banner Section --}}
 <section class="banner_sec help-cntr-bnr inr-bnr dark" style="background-color: #003F7D;">

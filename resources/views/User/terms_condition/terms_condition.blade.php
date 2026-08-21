@@ -1,4 +1,5 @@
 @extends('user_layout.master')
+@section('meta_title', format_meta_text('Terms of Service | Localio'))
 @section('content')
 
     <section class="pvc_sec py-5" id="pvc_section">

@@ -1,6 +1,6 @@
 @extends('user_layout.master')
-@section('meta_title', isset($whoWeAre) && isset($whoWeAre->meta_title) ? $whoWeAre->meta_title : 'Who We Are')
-@section('meta_description', isset($whoWeAre) && isset($whoWeAre->meta_description) ? $whoWeAre->meta_description : '')
+@section('meta_title', format_meta_text(isset($whoWeAre) && isset($whoWeAre->meta_title) ? $whoWeAre->meta_title : 'Who We Are'))
+@section('meta_description', format_meta_text(isset($whoWeAre) && isset($whoWeAre->meta_description) ? $whoWeAre->meta_description : ''))
 
 @section('content')
 <section class="banner_sec help-cntr-bnr inr-bnr dark d-none" style="background-color: #003F7D;">

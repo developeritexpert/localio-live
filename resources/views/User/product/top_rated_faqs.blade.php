@@ -231,8 +231,8 @@
     </style>
 @endpush
 
-@section('meta_title', 'Top-Rated FAQs & Questions Answered | Localio')
-@section('meta_description', 'Find answers to frequently asked questions about top-rated products, businesses, user reviews, and how rankings work on Localio.')
+@section('meta_title', format_meta_text('Top-Rated FAQs & Questions Answered | Localio'))
+@section('meta_description', format_meta_text('Find answers to frequently asked questions about top-rated products, businesses, user reviews, and how rankings work on Localio.'))
 
 @section('content')
 
