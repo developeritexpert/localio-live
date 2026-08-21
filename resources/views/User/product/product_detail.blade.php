@@ -2084,7 +2084,7 @@
                                                                                             User reviews
                                                                                         </h2>
                                                                                         <div class="review-filter-sec">
-                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border " style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
 
                                                                                                 <div class="d-flex flex-column align-items-start mb-3">
                                                                                                     <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
@@ -2164,6 +2164,18 @@
                                                                                 <div class="col-lg-12">
 
                                                                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;  margin-top: 25px;">
+                                                                                        
+
+                                                                                        <a class="write-review-link"
+                                                                                            @auth
+                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                                                                            @else
+                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                                                                            @endauth
+                                                                                            style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
+                                                                                        ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
+
+
                                                                                         <div class="selct_box">
                                                                                             <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
                                                                                                 <label for="rating-select" style="font-size: 14px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
@@ -2175,15 +2187,6 @@
                                                                                                 </select>
                                                                                             </form>
                                                                                         </div>
-
-                                                                                        <a class="write-review-link"
-                                                                                            @auth
-                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                                                                            @else
-                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                                                                            @endauth
-                                                                                            style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
-                                                                                        ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
                                                                                     </div>
 
                                                                                     <div id="reviews-list-container">
@@ -2387,7 +2390,7 @@
                                                         </div>
 
                                                         @if ($hasUserReviews)
-                                                            <a href="#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
+                                                            <a href="#section14" class="view-review-link" style="">
                                                                 View all reviews
                                                             </a>
                                                         @endif
@@ -2718,7 +2721,7 @@
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
                                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
-                                                        <div style="width: 44px; height: 44px; margin-bottom:8px">
+                                                        <div class="business-initial-logo" style="width: 44px; height: 44px; margin-bottom:8px">
                                                             <x-business-logo :business="$business" />
                                                         </div>
 

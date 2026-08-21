@@ -123,7 +123,7 @@
                 </div>
             </div>
             @if(!empty($business->is_affiliate))
-            <div class="col-md-4 col-12 text-md-end text-start">
+            <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn" style="align-self: baseline; ">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset " onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>

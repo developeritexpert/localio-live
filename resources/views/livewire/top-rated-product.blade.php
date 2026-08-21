@@ -270,7 +270,7 @@
     </style>
     <section class="top-rated-heading-sec">
         <div class="container">
-            <div class=" bread_row row align-items-center mb-1">
+            <div class=" bread_row row align-items-center mb-2">
                 <div class="col-8">
                     <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                         <ol class="breadcrumb m-0"

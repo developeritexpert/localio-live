@@ -61,7 +61,7 @@
 
                 <!-- Be the first to review Section -->
         @if(isset($unreviewedBusinesses) && $unreviewedBusinesses->count() > 0)
-        <div class="mb-5">
+        <div class="mb-5 share_exp_wrp">
             <h2 style="color: #002347; font-size: 24px;">Be the first to review</h2>
             <p class="mb-4">Share your experience and help our community</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
@@ -87,7 +87,7 @@
         @endif
 
         <!-- Recently Reviewed Section -->
-        <div>
+        <div class="recently_reviewed_wrp">
             <h2 style="color: #002347; font-size: 24px;">Recently reviewed</h2>
             <p class=" mb-4">The latest experiences shared by the Localio community</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">

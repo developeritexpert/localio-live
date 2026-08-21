@@ -292,7 +292,7 @@
                         </div>
 
                         <!-- Compare Action Button -->
-                        <button type="button" id="btnRunCompare" class="btn rounded-pill px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 48px; opacity: 0.6; flex-shrink: 0;" disabled>
+                        <button type="button" id="btnRunCompare" class="blue-btn btn rounded-pill px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 48px; opacity: 0.6; flex-shrink: 0;" disabled>
                             Compare
                         </button>
                     </div>

@@ -52,7 +52,7 @@
     <div class="container">
         <div class="most-popular-wrp">
             <div class="hd_text">
-                <h2 data-aos="zoom-in" data-aos-duration="1000" class="text-center">{{ $whoWeAre->mp_heading ?? '' }}</h2>
+                <h1 data-aos="zoom-in" data-aos-duration="1000" class="text-center mb-4">{{ $whoWeAre->mp_heading ?? '' }}</h1>
                 <p>{{ $whoWeAre->mp_sub_heading ?? '' }}</p>
             </div>
             <div class="popular-accordion-wrp mst_wrp" data-aos="fade-up" data-aos-duration="1000">

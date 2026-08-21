@@ -205,7 +205,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 <x-business-logo :business="$business" :name="$bName" />
                                             </div>
                                             <div>
-                                                <h3 style="font-size: 16px !important; font-weight: 500 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                                <h3 style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
                                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                                                     <span style="">{{ number_format($bAvgRating, 1) }}</span>
                                                     <div class="rating-stars" style="display: flex; gap: 0px;">
