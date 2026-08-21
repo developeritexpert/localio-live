@@ -5540,11 +5540,11 @@ div#howRankingsWorkModal button.modal-close {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         border-radius: 10px;
     }
-
+    /* 
     .fa-star {
         font-size: 16px;
         margin-right: 1px;
-    }
+    } */
 
     .text-truncate-3-lines {
         overflow: hidden;
@@ -11448,9 +11448,14 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
     .breadcrumb .breadcrumb-item {
         font-size: 11px !important;
     }
-    .inner_banner_sec .inner_banr_content {
-        margin-bottom: 10px;
+
+    .best-value-inline-container{
+        padding-bottom: 1px !important;
     }
+
+    /* .inner_banner_sec .inner_banr_content {
+        margin-bottom: 10px;
+    } */
 
     .top-product-logo {
         width: 35px;
@@ -13327,7 +13332,7 @@ textarea#message {
     .product_sec .container-fluid,
     .asn_main_sec_2 .container-fluid {
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 0 15px;
     }
 
     .asn_main_sec_2 .asn_dv.fixed-div .asn-img {
@@ -13505,7 +13510,7 @@ textarea#message {
     .inner_part_boxx {
         padding: 15px;
     }
-    
+
     .top-pro-btn.snd_bttn .cta {
         font-weight: 600;
         display: inline-block !important;
@@ -13682,10 +13687,16 @@ textarea#message {
         justify-content: center;
     }
     button.action-icon-btn.share-trigger-btn {
-        width: 25px !important;
-        height: 25px !important;
-        padding: 4px !important;
+        width: 28px !important;
+        height: 28px !important;
+        padding: 5px !important;
     }
+
+    .social_wishlist_btn .wishlist a i {
+        top: 0px;
+        left: 0px;
+    }
+
     button.action-icon-btn.share-trigger-btn svg {
         padding: 2px;
     }
