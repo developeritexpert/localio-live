@@ -254,19 +254,22 @@
                     </li>
                 </ol>
             </nav>
+            <div class="col-4  d-flex justify-content-end">
+                <x-social-icon />
+            </div>
         </div>
 
         <!-- Top-Rated Header Row -->
         <div class="row align-items-center justify-content-between">
             <div class="col-md-8 col-12">
                 <div class="top_head d-flex align-items-center gap-3">
-                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <!-- <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <i class="fas fa-question" style="font-size: 24px; color: #002347;"></i>
-                    </div>
+                    </div> -->
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
-                                Top-Rated FAQs
+                                Top rated on Localio FAQs
                             </h1>
                         </div>
                         <p style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight:400;">
@@ -275,11 +278,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
-                    Explore top-rated <i class="fas fa-arrow-right" style="font-size: 13px;"></i>
-                </a>
-            </div>
+            
+           
         </div>
     </div>
 </section>
@@ -389,7 +389,7 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner">
                     <div>
-                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #fdfdfd !important;">
+                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
                             Still have a question about top-rated rankings?
                         </h3>
                         <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
