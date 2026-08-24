@@ -925,6 +925,94 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <hr class="preview-hr my-4">
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Reviews page pros & cons intro text</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor_reviews_pro_cons_intro)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_pro_cons_intro = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_pro_cons_intro !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_pro_cons_intro);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor_reviews_pro_cons_intro"
+                                        class="form-control @error('reviews_pro_cons_intro') is-invalid @enderror"
+                                        wire:model.live="reviews_pro_cons_intro"
+                                        rows="4"
+                                        placeholder="Introductory text shown above the Pros and Cons on the Reviews page...">
+                                    </textarea>
+                                    @error('reviews_pro_cons_intro')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <hr class="preview-hr my-4">
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Reviews page pros & cons end / summary text</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor_reviews_pro_cons_summary)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_pro_cons_summary = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_pro_cons_summary !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_pro_cons_summary);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor_reviews_pro_cons_summary"
+                                        class="form-control @error('reviews_pro_cons_summary') is-invalid @enderror"
+                                        wire:model.live="reviews_pro_cons_summary"
+                                        rows="4"
+                                        placeholder="Summary text shown below the Pros and Cons on the Reviews page...">
+                                    </textarea>
+                                    @error('reviews_pro_cons_summary')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
 

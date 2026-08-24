@@ -33,6 +33,8 @@ class BusinessTranslation extends Model
         'reviews_description',
         'reviews_title_2',
         'reviews_description_2',
+        'reviews_pro_cons_intro',
+        'reviews_pro_cons_summary',
         'faqs_title',
         'faqs_description',
         'faqs_title_2',

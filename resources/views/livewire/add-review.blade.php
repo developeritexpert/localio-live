@@ -19,14 +19,14 @@
         justify-content: center !important;
         gap: 8px !important;
         cursor: pointer !important;
-        transition: all 0.2s ease !important;
+        /* transition: all 0.2s ease !important; */
         outline: none !important;
         text-decoration: none !important;
     }
     .recommend-btn i {
         font-size: 15px !important;
         color: #06498b !important;
-        transition: color 0.2s ease !important;
+        /* transition: color 0.2s ease !important; */
     }
     .recommend-btn:hover {
         background-color: #06498b !important;
@@ -194,14 +194,14 @@
                                     <div class="step-content text-center py-2" wire:key="step-1">
                                         <div class="d-flex justify-content-between align-items-center gap-3 my-4">
                                             <button type="button" 
-                                                    class="recommend-btn w-50 {{ $recommend === 1 ? 'selected' : '' }}" 
+                                                    class="recommend-btn w-50 {{ $recommend === 1 ? 'selected_btn_recommend' : '' }}" 
                                                     wire:click="selectRecommend(1)">
                                                 <i class="fas fa-thumbs-up"></i>
                                                 <span>Yes, I recommend it</span>
                                             </button>
 
                                             <button type="button" 
-                                                    class="recommend-btn w-50 {{ $recommend === 0 && $recommend !== null ? 'selected' : '' }}" 
+                                                    class="recommend-btn w-50 {{ $recommend === 0 && $recommend !== null ? 'selected_btn_recommend' : '' }}" 
                                                     wire:click="selectRecommend(0)">
                                                 <i class="fas fa-thumbs-down"></i>
                                                 <span>No, I don't recommend it</span>

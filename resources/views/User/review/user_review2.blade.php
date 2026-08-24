@@ -160,6 +160,87 @@
                         @endif
                     </div>
                 </div>
+
+                @php
+                    $reviewsProConsIntro = $bTranslation->reviews_pro_cons_intro ?? '';
+                    $reviewsProConsSummary = $bTranslation->reviews_pro_cons_summary ?? '';
+                @endphp
+
+                @if((isset($aggregatedPros) && count($aggregatedPros) > 0 && isset($aggregatedCons) && count($aggregatedCons) > 0) || (isset($pros) && $pros->count() > 0 && isset($cons) && $cons->count() > 0))
+                <div class="pros-cons-section mt-5 pt-2">
+                    <div class="pros-cons-header mb-3">
+                        <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">
+                            What the Localio community says
+                        </h2>
+                        @if(!empty($reviewsProConsIntro))
+                            <div class="mb-3" style="font-size: 14.5px; color: #475569; line-height: 1.7;">
+                                {!! $reviewsProConsIntro !!}
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                <div class="card-body p-3 p-md-4">
+                                    <h5 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</h5>
+                                    <ul class="list-unstyled mb-0">
+                                        @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
+                                            @foreach($aggregatedPros as $pro)
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                <span style="color: #202124; font-size: 14px;">{{ $pro->text }}
+                                                    <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                </span>
+                                            </li>
+                                            @endforeach
+                                        @else
+                                            @foreach($pros as $p)
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                <span style="color: #202124; font-size: 14px;">{{ $p }}</span>
+                                            </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                <div class="card-body p-3 p-md-4">
+                                    <h5 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</h5>
+                                    <ul class="list-unstyled mb-0">
+                                        @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
+                                            @foreach($aggregatedCons as $con)
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                <span style="color: #202124; font-size: 14px;">{{ $con->text }}
+                                                    <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11.5px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                </span>
+                                            </li>
+                                            @endforeach
+                                        @else
+                                            @foreach($cons as $c)
+                                            <li class="d-flex align-items-start mb-2">
+                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                <span style="color: #202124; font-size: 14px;">{{ $c }}</span>
+                                            </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if(!empty($reviewsProConsSummary))
+                    <div class="mt-4" style="font-size: 14.5px; color: #475569; line-height: 1.7;">
+                        {!! $reviewsProConsSummary !!}
+                    </div>
+                    @endif
+                </div>
+                @endif
             </div>
 
             <!-- Right Column: Rating Widget, Pros, and Cons -->
