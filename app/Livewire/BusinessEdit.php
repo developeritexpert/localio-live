@@ -625,6 +625,20 @@ class BusinessEdit extends Component
         // Clear the selected features when category changes
         $this->selectedFeatures = [];
 
+        // Prune any selected subcategories that do not belong to the newly selected main category
+        if ($value) {
+            $selectedCat = \App\Models\Category::find($value);
+            if ($selectedCat) {
+                $mainCatId = $selectedCat->parent_id ?: $selectedCat->id;
+                $validSubIds = \App\Models\Category::where('parent_id', $mainCatId)->pluck('id')->toArray();
+                $this->selected_sub_categories = array_values(array_intersect($this->selected_sub_categories ?? [], $validSubIds));
+            } else {
+                $this->selected_sub_categories = [];
+            }
+        } else {
+            $this->selected_sub_categories = [];
+        }
+
         // Load features for the new category
         $this->loadCategoryFeatures($value);
 
@@ -1832,8 +1846,17 @@ class BusinessEdit extends Component
         $business->countries()->sync((int)$this->active_all_countries === 1 ? [] : ($this->selectedCountries ?? []));
 
 
-        // Sync sub categories
-        $business->subCategories()->sync($this->selected_sub_categories ?? []);
+        // Sync sub categories (only allowed subcategories of the primary category's parent/main category)
+        $validSubCategoryIds = [];
+        if ($this->selected_category) {
+            $selectedCat = \App\Models\Category::find($this->selected_category);
+            if ($selectedCat) {
+                $mainCatId = $selectedCat->parent_id ?: $selectedCat->id;
+                $allowedIds = \App\Models\Category::where('parent_id', $mainCatId)->pluck('id')->toArray();
+                $validSubCategoryIds = array_values(array_intersect($this->selected_sub_categories ?? [], $allowedIds));
+            }
+        }
+        $business->subCategories()->sync($validSubCategoryIds);
 
         // Sync features
         $business->features()->sync($this->selectedFeatures);
