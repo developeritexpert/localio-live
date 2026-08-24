@@ -6673,7 +6673,7 @@ div#howRankingsWorkModal button.modal-close {
         right: 16px;
         background: none;
         border: none;
-        font-size: 24px;
+        font-size: 16px;
         color: #9ca3af;
         cursor: pointer;
         width: 32px;
@@ -10939,7 +10939,7 @@ body:has(.fixed_sigup) .fixed_sigup {
     right: 16px;
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 16px;
     color: #9ca3af;
     cursor: pointer;
     width: 32px;
@@ -12640,8 +12640,8 @@ textarea#message {
 
 .main_feture .feture_box ul .grn_chk img {
     width: 16px;
-    height: 13px;
-    margin-bottom: 5px;
+    height: 10px;
+    margin-top: 5px;
 }
 
 .main_feture .feture_box ul .grn_chk {
