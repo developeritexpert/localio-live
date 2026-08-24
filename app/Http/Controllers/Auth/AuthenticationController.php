@@ -101,33 +101,35 @@ class AuthenticationController extends Controller
             return redirect()->back()->with('error', 'Your account has been deactivated.');
         }
 
-            // Create a token once at login and save it to session
-            $token = $user->createToken('user_token')->plainTextToken;
-            session([
-                'api_token' => $token,
-                'user_id' => $user->id,
-            ]);
+        // Create a token once at login and save it to session
+        $token = $user->createToken('user_token')->plainTextToken;
+        session([
+            'api_token' => $token,
+            'user_id' => $user->id,
+        ]);
 
+        if ($user->user_type === 'admin') {
+            session()->forget(['url.intended', 'pending_review_business_id', 'register_from_modal']);
+            return redirect()->route('admin_dashboard')->with('success', 'Welcome Admin!');
+        }
 
-            $isFromModal = $request->has('is_modal') || session('register_from_modal') || session()->has('pending_review_business_id');
+        $isFromModal = $request->has('is_modal') || session('register_from_modal') || session()->has('pending_review_business_id');
 
-            // Store intended URL in session if passed from form
-            if ($request->filled('url_intended')) {
-                session(['url.intended' => $request->input('url_intended')]);
-            }
+        // Store intended URL in session if passed from form
+        if ($request->filled('url_intended')) {
+            session(['url.intended' => $request->input('url_intended')]);
+        }
 
-            // Redirect to intended if set
-            if (session()->has('url.intended')) {
-                return redirect()->intended();
-            }
+        // Redirect to intended if set
+        if (session()->has('url.intended')) {
+            return redirect()->intended();
+        }
 
-            if ($isFromModal) {
-                return redirect()->back();
-            }
+        if ($isFromModal) {
+            return redirect()->back();
+        }
 
         switch ($user->user_type) {
-            case 'admin':
-                return redirect()->route('admin_dashboard')->with('success', 'Welcome Admin!');
             case 'user':
                 return redirect()->route('user-dashboard', ['locale' => session('lang_code', 'en-us')]);
             case 'vendor':
