@@ -338,6 +338,9 @@
                                                                 class="pro-con-chip-btn">
                                                             <i class="fas fa-plus text-success" style="font-size: 10px;"></i>
                                                             <span>{{ $pro['text'] }}</span>
+                                                            @if(!empty($pro['matched_alias']))
+                                                                <small class="text-muted ms-1" style="font-size: 10px; font-weight: normal; opacity: 0.85;">(matches "{{ $pro['matched_alias'] }}")</small>
+                                                            @endif
                                                         </button>
                                                     @empty
                                                         <p class="text-muted small m-0 py-1" style="font-size: 12px;">
@@ -406,6 +409,9 @@
                                                                 class="pro-con-chip-btn">
                                                             <i class="fas fa-minus text-danger" style="font-size: 10px;"></i>
                                                             <span>{{ $con['text'] }}</span>
+                                                            @if(!empty($con['matched_alias']))
+                                                                <small class="text-muted ms-1" style="font-size: 10px; font-weight: normal; opacity: 0.85;">(matches "{{ $con['matched_alias'] }}")</small>
+                                                            @endif
                                                         </button>
                                                     @empty
                                                         <p class="text-muted small m-0 py-1" style="font-size: 12px;">
