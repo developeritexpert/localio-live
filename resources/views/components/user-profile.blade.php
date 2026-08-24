@@ -1,3 +1,11 @@
+@php
+    $reviewCount = 0;
+
+    if (Auth::check()) {
+        $reviewCount = \App\Models\Review::where('user_id', Auth::id())->count();
+    }
+@endphp
+
 <div class="hdr_ryt">
 <div class="hdr_info">
     <div class="notf drop_menu d-none">
@@ -269,9 +277,23 @@
                             @endif
                         </div>
                         <div class="user_name">
-                            <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
-                            <p>{{ Auth::user()->email }}</p>
-                        </div>
+    <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
+    <p>{{ Auth::user()->email }}</p>
+
+    @if ($reviewCount >= 1 && $reviewCount <= 2)
+    <span class="contributor-badge">🏅 New contributor</span>
+@elseif ($reviewCount >= 3 && $reviewCount <= 5)
+    <span class="contributor-badge">🏅 Contributor</span>
+@elseif ($reviewCount >= 6 && $reviewCount <= 10)
+    <span class="contributor-badge">🏅 Active contributor</span>
+@elseif ($reviewCount >= 11 && $reviewCount <= 25)
+    <span class="contributor-badge">🏅 Experienced contributor</span>
+@elseif ($reviewCount >= 26 && $reviewCount <= 50)
+    <span class="contributor-badge">🏅 Top contributor</span>
+@elseif ($reviewCount >= 51)
+    <span class="contributor-badge">🏅 Community expert</span>
+@endif
+</div>
                     </div>
                 </a>
                 <div class="dash-icon">

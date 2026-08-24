@@ -242,6 +242,8 @@ class ViewController extends Controller
                 return $product;
             });
             $default_image=WebSetting::where('key','user_default_image')->value('value');
+
+
         return view('User.home.index', compact('default_image','exclusive_products','homeContents', 'latestReviews', 'categories', 'homeContantImages', 'reviews', 'expertGuide', 'pageTileTranslationEducation', 'pageTileTranslationRightTools', 'articles'));
     }
 

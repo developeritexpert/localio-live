@@ -462,7 +462,10 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/vendor-review-feedback',[AdminBusinessController::class,'allUserReviewFeedback'])->name('admin-vendor-review-feedback');
     // routes/web.php
     Route::get('/admin-dashboard//feedback/handle/{id}/{action}', [AdminBusinessController::class, 'handleReviewFeedback'])->name('admin.review.feedback.handle');
+    
 
+    Route::get('/admin/contributor-badges', [ContributorBadgeController::class, 'index'])
+    ->name('admin.contributor-badges.index');
 
 });
 
