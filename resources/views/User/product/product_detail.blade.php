@@ -1749,69 +1749,63 @@
                                                                 </section>
 
                                                                 @if(isset($business->faqs) && $business->faqs->count() > 0)
-                                                                <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15" style="background-color:#fdfdfd;">
+                                                                @php
+                                                                    $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
+                                                                    $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
+                                                                    $bName = $business->translations->first()->name ?? $business->name ?? 'this provider';
+                                                                @endphp
+                                                                <!-- Business FAQs Section -->
+                                                                <section class="faq-section product_inr_faq py-5 light" id="section15">
                                                                     <div class="container">
-                                                                        <div class="faq-inner">
-                                                                            <div class="row">
-                                                                                <div class="">
-                                                                                    <div class="d-flex flex-column w-auto">
-
-                                                                                        @php
-                                                                                            $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
-                                                                                            $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
-                                                                                        @endphp
-
-                                                                                        <h2>{{ $faq_title?->default_value ?? '' }}</h2>
-                                                                                        <p>{{ $faq_description?->default_value ?? '' }}</p>
-
-                                                                                    </div>
+                                                                        <div class="row">
+                                                                            <div class="col-lg-10 mx-auto">
+                                                                                <div class="text-start mb-4">
+                                                                                    <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                                                                                        {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
+                                                                                    </h2>
+                                                                                    <p style="font-size: 15px; color: #555; margin-bottom: 0;">
+                                                                                        {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
+                                                                                    </p>
                                                                                 </div>
-                                                                                <div class="">
-                                                                                    <div class="faq-accor">
-                                                                                        <div class="accordion" id="accordionExample">
-                                                                                            @forelse ($business->faqs->take(10) as $index => $faq)
-                                                                                                @php $translation = $faq->translations->first(); @endphp
-                                                                                                @if ($translation)
-                                                                                                    <div class="accordion-item">
-                                                                                                        <h2 class="accordion-header"
-                                                                                                            id="heading{{ $index }}">
-                                                                                                            <button
-                                                                                                                class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
-                                                                                                                type="button" data-bs-toggle="collapse"
-                                                                                                                data-bs-target="#collapse{{ $index }}"
-                                                                                                                aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                                                                                                aria-controls="collapse{{ $index }}">
-                                                                                                                <span>{{ $translation->question }}</span>
-                                                                                                            </button>
-                                                                                                        </h2>
-                                                                                                        <div id="collapse{{ $index }}"
-                                                                                                            class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
-                                                                                                            aria-labelledby="heading{{ $index }}"
-                                                                                                            data-bs-parent="#accordionExample">
-                                                                                                            <div class="accordion-body">
-                                                                                                                {{ $translation->answer }}
-                                                                                                            </div>
-                                                                                                        </div>
+
+                                                                                <div class="accordion" id="businessFaqAccordion">
+                                                                                    @foreach ($business->faqs->take(10) as $index => $faq)
+                                                                                        @php $translation = $faq->translations->first(); @endphp
+                                                                                        @if ($translation)
+                                                                                            <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
+                                                                                                <h2 class="accordion-header" id="faqHeading{{ $index }}">
+                                                                                                    <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
+                                                                                                        type="button" data-bs-toggle="collapse"
+                                                                                                        data-bs-target="#faqCollapse{{ $index }}"
+                                                                                                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                                                                                        aria-controls="faqCollapse{{ $index }}"
+                                                                                                        style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                                                                        <span>{{ $translation->question }}</span>
+                                                                                                    </button>
+                                                                                                </h2>
+                                                                                                <div id="faqCollapse{{ $index }}"
+                                                                                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                                                                    aria-labelledby="faqHeading{{ $index }}"
+                                                                                                    data-bs-parent="#businessFaqAccordion">
+                                                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                                                                        {!! $translation->answer !!}
                                                                                                     </div>
-                                                                                                @endif
-                                                                                            @empty
-                                                                                                <p>No FAQs available for this business.</p>
-                                                                                            @endforelse
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                </div>
 
-                                                                                        </div>
-
-                                                                                        @php
-                                                                                            $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
-                                                                                            $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
-                                                                                        @endphp
-                                                                                        <div class="mt-4 text-center">
-                                                                                            <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
-                                                                                            class="view-more-link"
-                                                                                            style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                                                                View more FAQs
-                                                                                            </a>
-                                                                                        </div>
-                                                                                    </div>
+                                                                                @php
+                                                                                    $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
+                                                                                    $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
+                                                                                    $bizSlugVal = $business->translations->first()->slug ?? $business->slug ?? '';
+                                                                                @endphp
+                                                                                <div class="text-center mt-4">
+                                                                                    <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $bizSlugVal, 'faq_slug' => $faqSlugVal]) }}"
+                                                                                       class="btn-g-link">
+                                                                                        View more FAQs
+                                                                                    </a>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
