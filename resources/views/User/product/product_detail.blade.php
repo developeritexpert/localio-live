@@ -713,7 +713,7 @@
 
             .view-review-link{
                 color:#002655;
-                font-size:13px;
+                font-size:12px;
                 font-weight:600;
                 text-decoration:none;
             }
@@ -1411,7 +1411,7 @@
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                                     <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span class="rating_bar_span">ease of use</span>
+                                                        <span class="rating_bar_span">Ease of use</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
@@ -1447,7 +1447,7 @@
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
                                                             <div class="community-rating mb-2">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                                <span class="rating_bar_span">service management</span>
+                                                                <span class="rating_bar_span">Reliability</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                                     <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                 </div>
@@ -1481,7 +1481,7 @@
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                                     <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span class="rating_bar_span">value for money</span>
+                                                        <span class="rating_bar_span">Value for money</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
@@ -2045,9 +2045,9 @@
                                                                         </style>
                                                                         <div class="crm_review_box review_sec" id="all-reviews">
 
-                                                                            <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+                                                                            <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
                                                                                         <x-business-logo :business="$business" />
                                                                                     </div>
                                                                                     <div>
@@ -2089,7 +2089,7 @@
                                                                                                 <div class="d-flex flex-column align-items-start mb-3">
                                                                                                     <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
                                                                                                     @if($ratingWord = get_rating_label($averageRating))
-                                                                                                        <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 2px; margin-bottom: 4px; line-height: 1.2;">
+                                                                                                        <span class="rating-word-label">
                                                                                                             {{ $ratingWord }}
                                                                                                         </span>
                                                                                                     @endif
@@ -2328,25 +2328,25 @@
                                             <div class="main_feature_lg">
                                                 <div class="feture_box lft_check_box size15">
                                                     <ul class="list-unstyled">
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Free domain & SSL certificate</p>
                                                         </li>
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Customizable automatic updates</p>
                                                         </li>
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Scalable performance management</p>
                                                         </li>
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
@@ -2367,7 +2367,7 @@
                                                                 {{ number_format($averageRating,1) }}
                                                             </span>
                                                             @if($ratingWord = get_rating_label($averageRating))
-                                                                <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 5px; margin-bottom: 2px; line-height: 1.2;">
+                                                                <span class="rating-word-label">
                                                                     {{ $ratingWord }}
                                                                 </span>
                                                             @endif
