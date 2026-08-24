@@ -11068,7 +11068,7 @@ input#rating-4 {
 }
 
 .accordion-button:focus {
-    box-shadow:none;
+    box-shadow: none;
 }
 
 .sub-section-block {
@@ -11165,11 +11165,11 @@ a.sticky-nav-item {
 }
 
 .more-about-business-card .card-h-title {
-    padding-bottom: 3px;
+    padding-bottom: 8px;
 }
 
 .more-about-links-list {
-    margin-top: 3px;
+    margin-top: 8px;
 }
 
 .more-about-link-item {
@@ -11187,4 +11187,37 @@ a.sticky-nav-item {
     font-weight: 600;
     color: #1e3050;
     line-height: 0.5;
+}
+
+button.faq-cat-tab.active {
+    background: transparent;
+    color: #000;
+    border-bottom: 1px solid #000;
+    border-radius: unset;
+}
+
+.faq-cat-tab {
+    background: transparent;
+    color: #000;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0;
+    line-height: 1;
+    font-size: 15px;
+}
+
+.faq-cat-tab:hover {
+    color: unset;
+    background: unset;
+    border-radius: unset;
+    padding-bottom: 0;
+}
+
+.top-product-medium-logo .business-initial-logo,
+.top-product-small-logo .business-initial-logo {
+    font-size: 20px;
+}
+
+.btn-vote-faq i {
+    color: grey !important;
 }
