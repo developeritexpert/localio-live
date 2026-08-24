@@ -33,11 +33,7 @@
             <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
                 <thead>
                     <tr class="nk-tb-item nk-tb-head">
-                        <th class="nk-tb-col"><span class="sub-text">Name</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Lang Code</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Country/region</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Base Language</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Combination tag</span></th>
                         <th class="nk-tb-col"><span class="sub-text">BCP 47 Language Tag</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                         <th class="nk-tb-col tb-tnx-action">
@@ -49,35 +45,15 @@
                     @foreach ($siteLanguages as $siteLanguage)
                         <tr class="nk-tb-item">
                             <td class="nk-tb-col">
-                                <div class="user-card">
-                                    <div class="user-info">
-                                        <span class="tb-lead">{{ $siteLanguage->name ?? '' }}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="nk-tb-col tb-col-mb">
-                                <span class="tb-amount">{{ $siteLanguage->lang_code ?? '' }}</span>
-                            </td>
-                            <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">{{ $siteLanguage->country->name ?? '' }}</span>
+                                <span class="tb-lead">{{ $siteLanguage->name ?? $siteLanguage->country->name ?? '' }}</span>
                             </td>
 
                             <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">
-                                    {{ $siteLanguage->baseLanguage ? $siteLanguage->baseLanguage->name : '-' }}
-                                </span>
-                            </td>
-
-                            <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">
-                                    {{ ($siteLanguage->baseLanguage && $siteLanguage->baseLanguage->language_tag) ? $siteLanguage->baseLanguage->language_tag : '-' }}
-                                </span>
-                            </td>
-
-                            <td class="nk-tb-col tb-col-md">
-                                <span class="tb-amount">
-                                    {{ $siteLanguage->lang_code ?? '-' }}
-                                </span>
+                                @if($siteLanguage->bcp47Label)
+                                    <span class="badge bg-outline-info">{{ $siteLanguage->bcp47Label }}</span>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
                             </td>
 
                             <td class="nk-tb-col tb-col-md">

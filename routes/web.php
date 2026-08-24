@@ -496,27 +496,27 @@ Route::post('/user/review-add-procc', [ReviewController::class, 'reviewAddProc']
 Route::get('/user/review-delete/{id}', [ReviewController::class, 'destroy'])->name('review.delete')->middleware('auth');
 
 // --------------- USER ROUTES ----------------------
-Route::group(['prefix' => '{locale?}', 'middleware' => ['guest', 'AddLocaleAutomatically','CaptureAdClickId']], function () {
-
-
+Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically','CaptureAdClickId']], function () {
 
     Route::get('/', [ViewController::class, 'home'])->name('home');
     Route::get('/write-review', [ViewController::class, 'writeReviewPage'])->name('write-review');
-    Route::get('/sign-in', [AuthenticationController::class, 'index'])->name('sign-in');
-    Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
-    Route::get('/register', [AuthenticationController::class, 'index'])->name('register');
-    Route::get('/sign-in/details', [AuthenticationController::class, 'registerDetailsForm'])->name('register.details');
+
+    // Auth routes for guests only
+    Route::group(['middleware' => ['guest']], function () {
+        Route::get('/sign-in', [AuthenticationController::class, 'index'])->name('sign-in');
+        Route::get('/login', [AuthenticationController::class, 'index'])->name('login');
+        Route::get('/register', [AuthenticationController::class, 'index'])->name('register');
+        Route::get('/sign-in/details', [AuthenticationController::class, 'registerDetailsForm'])->name('register.details');
+        Route::get('/recover-password', [AuthenticationController::class, 'forgotPassword'])->name('recover-password');
+        Route::get('/otp-confirm', [AuthenticationController::class, 'otpConfirm'])->name('get-otp');
+        Route::get('/new-password', [AuthenticationController::class, 'newPassword'])->name('new-passwod');
+    });
+
     Route::post('/sign-in/details', [AuthenticationController::class, 'registerDetailsStore'])->name('register.details.store');
     Route::post('/clear-registration-session', [AuthenticationController::class, 'clearRegistrationSession'])->name('clear.registration.session');
-    // Vendor Register Route
-    // Route::get('/vendor-register', [AuthenticationController::class, 'vendorRegisterForm'])->name('vendor-register');
-    // End Vendor Register Route
 
-    Route::get('/recover-password', [AuthenticationController::class, 'forgotPassword'])->name('recover-password');
     Route::post('/password-procc', [AuthenticationController::class, 'forgotProcc'])->name('password-procc');
-    Route::get('/otp-confirm', [AuthenticationController::class, 'otpConfirm'])->name('get-otp');
     Route::post('/opt-procc', [AuthenticationController::class, 'optProcc'])->name('opt-procc');
-    Route::get('/new-password', [AuthenticationController::class, 'newPassword'])->name('new-passwod');
     Route::post('/new-password-procc', [AuthenticationController::class, 'newPasswordProcc'])->name('new-password-procc');
 
     // 301 Redirects for Legacy Category URLs

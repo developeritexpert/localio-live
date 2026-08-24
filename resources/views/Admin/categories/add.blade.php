@@ -7,6 +7,22 @@
         .sub-section-item .ck-editor__editable_inline {
             min-height: 100px;
         }
+        .ck-content strong,
+        .ck-content b,
+        .ck-editor__editable strong,
+        .ck-editor__editable b,
+        .ck-editor__editable_inline strong,
+        .ck-editor__editable_inline b {
+            font-weight: 700 !important;
+        }
+        .ck-content em,
+        .ck-content i,
+        .ck-editor__editable em,
+        .ck-editor__editable i,
+        .ck-editor__editable_inline em,
+        .ck-editor__editable_inline i {
+            font-style: italic !important;
+        }
     </style>
     <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between">
@@ -101,7 +117,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="description">Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control description" id="description" name="description" rows="5" placeholder="Enter category description">{{ isset($category_data) ? $category_data['description'] : old('description') }}</textarea>
+                                    <textarea class="form-control description rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{{ isset($category_data) ? $category_data['description'] : old('description') }}</textarea>
                                 </div>
                                 @error('description')
                                     <div class="error text-danger">{{ $message }}</div>
