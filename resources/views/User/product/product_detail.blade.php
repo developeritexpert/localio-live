@@ -2181,17 +2181,54 @@
                                                                                             </span>
                                                                                         </div>
 
-                                                                                        <!-- Sort Dropdown on Right -->
-                                                                                        <div class="selct_box">
-                                                                                            <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                                                                <label for="rating-select" style="font-size: 14px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
-                                                                                                <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 13px; border-radius: 6px; cursor: pointer; width: auto; min-width: 130px; border: 1px solid #ced4da;">
-                                                                                                    <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
-                                                                                                    <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
-                                                                                                    <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
-                                                                                                    <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
-                                                                                                </select>
-                                                                                            </form>
+                                                                                        @php
+                                                                                            $reviewSortOptions = [
+                                                                                                'recent' => 'Most recent',
+                                                                                                'high-to-low' => 'Highest rated',
+                                                                                                'low-to-high' => 'Lowest rated',
+                                                                                            ];
+                                                                                            $currentSort = request('sort', 'recent');
+                                                                                            if (!array_key_exists($currentSort, $reviewSortOptions)) {
+                                                                                                $currentSort = ($currentSort === 'best') ? 'high-to-low' : 'recent';
+                                                                                            }
+                                                                                            $currentSortLabel = $reviewSortOptions[$currentSort] ?? 'Most recent';
+                                                                                        @endphp
+
+                                                                                        <!-- Sort Dropdown on Right (Top Rated Style) -->
+                                                                                        <div class="dropdown" id="reviewSortDropdownWrap">
+                                                                                            <button type="button" 
+                                                                                                class="sorting d-inline-flex align-items-center gap-2" 
+                                                                                                id="reviewSortDropdownBtn"
+                                                                                                data-bs-toggle="dropdown" 
+                                                                                                aria-expanded="false"
+                                                                                                style="background-color: #fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
+                                                                                                <span>Sort: <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sort-chevron-icon">
+                                                                                                    <polyline points="6 9 12 15 18 9" />
+                                                                                                </svg>
+                                                                                            </button>
+
+                                                                                            <div class="dropdown-menu dropdown-menu-end shadow-sm" 
+                                                                                                 aria-labelledby="reviewSortDropdownBtn"
+                                                                                                 style="min-width: 200px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.12); padding: 6px 0; margin-top: 6px; overflow: hidden;">
+                                                                                                @foreach($reviewSortOptions as $val => $label)
+                                                                                                <button type="button"
+                                                                                                    data-sort-value="{{ $val }}"
+                                                                                                    data-sort-label="{{ $label }}"
+                                                                                                    class="review-sort-option dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
+                                                                                                    style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; font-weight: {{ $currentSort === $val ? '600' : '400' }};">
+                                                                                                    <span>{{ $label }}</span>
+                                                                                                    <span class="sort-check-icon {{ $currentSort === $val ? '' : 'd-none' }}">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                                                                            viewBox="0 0 24 24" fill="none" stroke="#1e3050" stroke-width="2.5"
+                                                                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                                                                            style="flex-shrink: 0; margin-left: 8px;">
+                                                                                                            <polyline points="20 6 9 17 4 12" />
+                                                                                                        </svg>
+                                                                                                    </span>
+                                                                                                </button>
+                                                                                                @endforeach
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -2204,22 +2241,37 @@
                                                                         <script>
                                                                         document.addEventListener('DOMContentLoaded', function () {
                                                                             const checkboxes = document.querySelectorAll('.rating-filter-checkbox');
-                                                                            const sortSelect = document.getElementById('rating-select');
                                                                             const clearBtns = document.querySelectorAll('.clear-filters-btn');
                                                                             const filterBadge = document.getElementById('filter-count-badge');
                                                                             const filterBtn = document.getElementById('reviewFilterDropdownBtn');
                                                                             const container = document.getElementById('reviews-list-container');
+                                                                            const sortOptions = document.querySelectorAll('.review-sort-option');
+                                                                            const sortLabelSpan = document.getElementById('current-sort-label');
 
-                                                                            const sortForm = document.getElementById('sort-form');
-                                                                            if (sortForm) {
-                                                                                sortForm.addEventListener('submit', function (e) {
+                                                                            let currentSortValue = '{{ $currentSort }}';
+
+                                                                            sortOptions.forEach(opt => {
+                                                                                opt.addEventListener('click', function(e) {
                                                                                     e.preventDefault();
+                                                                                    const val = this.getAttribute('data-sort-value');
+                                                                                    const label = this.getAttribute('data-sort-label');
+                                                                                    currentSortValue = val;
+                                                                                    if (sortLabelSpan) {
+                                                                                        sortLabelSpan.textContent = label;
+                                                                                    }
+                                                                                    sortOptions.forEach(o => {
+                                                                                        const isMatch = (o.getAttribute('data-sort-value') === val);
+                                                                                        o.style.backgroundColor = isMatch ? '#f8fafc' : 'transparent';
+                                                                                        o.style.fontWeight = isMatch ? '600' : '400';
+                                                                                        const icon = o.querySelector('.sort-check-icon');
+                                                                                        if (icon) {
+                                                                                            if (isMatch) icon.classList.remove('d-none');
+                                                                                            else icon.classList.add('d-none');
+                                                                                        }
+                                                                                    });
+                                                                                    fetchReviews();
                                                                                 });
-                                                                            }
-
-                                                                            if (sortSelect) {
-                                                                                sortSelect.addEventListener('change', fetchReviews);
-                                                                            }
+                                                                            });
 
                                                                             checkboxes.forEach(cb => {
                                                                                 cb.addEventListener('change', function() {
@@ -2278,7 +2330,7 @@
                                                                                     .filter(cb => cb.checked)
                                                                                     .map(cb => cb.value);
 
-                                                                                const sortValue = sortSelect ? sortSelect.value : 'recent';
+                                                                                const sortValue = currentSortValue || 'recent';
 
                                                                                 if (container) {
                                                                                     container.style.opacity = '0.5';
