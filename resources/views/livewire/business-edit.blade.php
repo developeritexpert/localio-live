@@ -925,6 +925,94 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <hr class="preview-hr my-4">
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Reviews page pros & cons intro text</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor_reviews_pro_cons_intro)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_pro_cons_intro = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_pro_cons_intro !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_pro_cons_intro);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor_reviews_pro_cons_intro"
+                                        class="form-control @error('reviews_pro_cons_intro') is-invalid @enderror"
+                                        wire:model.live="reviews_pro_cons_intro"
+                                        rows="4"
+                                        placeholder="Introductory text shown above the Pros and Cons on the Reviews page...">
+                                    </textarea>
+                                    @error('reviews_pro_cons_intro')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <hr class="preview-hr my-4">
+
+                            <div class="form-group d-flex justify-content-between align-items-center">
+                                <label class="form-label">Reviews page pros & cons end / summary text</label>
+                            </div>
+
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        ClassicEditor
+                                            .create(this.$refs.editor_reviews_pro_cons_summary)
+                                            .then(editor => {
+                                                this.editor = editor;
+                                                editor.model.document.on('change:data', () => {
+                                                    this.$wire.reviews_pro_cons_summary = editor.getData();
+                                                });
+                                                // AI Output Upload listener
+                                                window.addEventListener('ai-content-applied', function(e) {
+                                                    if (e.detail && e.detail.fields && e.detail.fields.reviews_pro_cons_summary !== undefined) {
+                                                        editor.setData(e.detail.fields.reviews_pro_cons_summary);
+                                                    }
+                                                });
+                                            })
+                                            .catch(error => {
+                                                console.error(error);
+                                            });
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="editor_reviews_pro_cons_summary"
+                                        class="form-control @error('reviews_pro_cons_summary') is-invalid @enderror"
+                                        wire:model.live="reviews_pro_cons_summary"
+                                        rows="4"
+                                        placeholder="Summary text shown below the Pros and Cons on the Reviews page...">
+                                    </textarea>
+                                    @error('reviews_pro_cons_summary')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1134,8 +1222,15 @@
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <div class="d-flex justify-content-between mb-3">
-                                        <a href="#" class="btn btn-link text-center"><span><b>View
-                                                    Page</b></span></a>
+                                        @php
+                                            $viewPageSlug = !empty($slug) ? $slug : $businessId;
+                                            $viewPageUrl = $viewPageSlug ? route('user.product_detail', ['locale' => app()->getLocale() ?: 'en-us', 'id' => $viewPageSlug]) : '#';
+                                        @endphp
+                                        @if($viewPageSlug)
+                                            <a href="{{ $viewPageUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-link text-center"><span><b>View Page</b></span></a>
+                                        @else
+                                            <a href="#" class="btn btn-link text-center disabled" style="opacity: 0.5; pointer-events: none;" onclick="return false;"><span><b>View Page</b></span></a>
+                                        @endif
                                         <button type="submit" class="btn btn-primary btn-localio" wire:loading.attr="disabled">
                                             <span wire:loading.remove>{{ $businessId ? 'Update' : 'Save' }}</span>
                                             <span wire:loading><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...</span>
@@ -1171,14 +1266,26 @@
                                                 return $parentName . '_' . $isSub . '_' . ($cat->translations->name ?? '');
                                             });
 
-                                        $subCategories = \App\Models\Category::whereNotNull('parent_id')
-                                            ->whereHas('translations', function ($query) use ($langId) {
-                                                $query->where('lang_id', $langId);
-                                            })
-                                            ->with(['translations' => function ($query) use ($langId) {
-                                                $query->where('lang_id', $langId);
-                                            }])
-                                            ->get();
+                                        $selectedCategoryModel = $selected_category ? \App\Models\Category::with([
+                                                'parent.translations' => fn($q) => $q->where('lang_id', $langId),
+                                                'translations' => fn($q) => $q->where('lang_id', $langId)
+                                            ])->find($selected_category) : null;
+                                        $selectedMainCategoryId = $selectedCategoryModel ? ($selectedCategoryModel->parent_id ?: $selectedCategoryModel->id) : null;
+
+                                        $subCategories = collect();
+                                        if ($selectedMainCategoryId) {
+                                            $subCategories = \App\Models\Category::where('parent_id', $selectedMainCategoryId)
+                                                ->whereHas('translations', function ($query) use ($langId) {
+                                                    $query->where('lang_id', $langId);
+                                                })
+                                                ->with(['translations' => function ($query) use ($langId) {
+                                                    $query->where('lang_id', $langId);
+                                                }])
+                                                ->get()
+                                                ->sortBy(function($cat) {
+                                                    return $cat->translations->name ?? $cat->categoryTranslations->first()->name ?? '';
+                                                });
+                                        }
                                     @endphp
                                     <hr class="my-3">
                                     <div class="form-group mt-3">
@@ -1241,9 +1348,9 @@
                                         @error('selected_category')
                                             <div class="text-danger">{{ $message }}</div>
                                         @enderror
+                                    </div>
                                     
-                                    {{-- All sub-category --}}
-
+                                    {{-- Secondary sub-categories --}}
                                     <div class="form-group mt-3" x-data="{
                                         search: '',
                                         toggleCategory(id) {
@@ -1263,7 +1370,18 @@
                                             $wire.set('selected_sub_categories', []);
                                         }
                                     }">
-                                        <label class="form-label">Secondary sub-categories</label>
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <label class="form-label mb-0">Secondary sub-categories</label>
+                                            @if($selectedCategoryModel)
+                                                @php
+                                                    $mainCatModel = $selectedCategoryModel->parent ?: $selectedCategoryModel;
+                                                    $mainCatName = $mainCatModel->translations->name ?? $mainCatModel->categoryTranslations->first()->name ?? 'Category';
+                                                @endphp
+                                                <span class="badge bg-light text-primary border" style="font-size: 11px;">
+                                                    Under: {{ $mainCatName }}
+                                                </span>
+                                            @endif
+                                        </div>
                                         
                                         @php
                                             $allSubCatIds = $subCategories->pluck('id')->toArray();
@@ -1273,75 +1391,85 @@
                                             }
                                         @endphp
 
-                                        <!-- Search & Bulk Control Buttons -->
-                                        <div class="row mb-2">
-                                            <div class="col-md-12">
-                                                <div class="input-group">
-                                                    <input type="text" x-model="search" class="form-control" placeholder="Search sub-categories...">
-                                                    <div class="input-group-append">
-                                                        <button class="btn btn-outline-primary btn-sm d-none" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
-                                                            Select All
-                                                        </button>
-                                                        <button class="btn btn-outline-danger btn-sm d-none" @click="clearAll()" type="button">
-                                                            Clear All
-                                                        </button>
+                                        @if(!$selectedCategoryModel)
+                                            <div class="border rounded p-3 text-center bg-light text-muted small">
+                                                <em class="icon ni ni-info me-1"></em> Please select a Primary Category first to assign secondary sub-categories.
+                                            </div>
+                                        @elseif($subCategories->isEmpty())
+                                            <div class="border rounded p-3 text-center bg-light text-muted small">
+                                                <em class="icon ni ni-alert-circle me-1"></em> No sub-categories exist under {{ $mainCatName ?? 'this category' }}.
+                                            </div>
+                                        @else
+                                            <!-- Search & Bulk Control Buttons -->
+                                            <div class="row mb-2">
+                                                <div class="col-md-12">
+                                                    <div class="input-group">
+                                                        <input type="text" x-model="search" class="form-control" placeholder="Search sub-categories in {{ $mainCatName }}...">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-primary btn-sm d-none" @click="selectAll({{ json_encode($allSubCatIds) }})" type="button">
+                                                                Select All
+                                                            </button>
+                                                            <button class="btn btn-outline-danger btn-sm d-none" @click="clearAll()" type="button">
+                                                                Clear All
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <!-- Scrollable List of Checkboxes -->
-                                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto; ">
-                                            @if($subCategories->isEmpty())
-                                                <p class="text-center text-muted my-2">No sub-categories found</p>
-                                            @else
+                                            <!-- Scrollable List of Checkboxes -->
+                                            <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto; ">
                                                 @foreach($subCategories as $category)
                                                     @php
                                                         $catName = $category->translations->name ?? $category->categoryTranslations->first()->name ?? 'Category #' . $category->id;
+                                                        $isCurrentPrimary = ($selected_category == $category->id);
                                                     @endphp
-                                                    <div class="form-check py-1 border-bottom"
+                                                    <div class="form-check py-1 border-bottom d-flex align-items-center"
                                                          x-show="'{{ strtolower(addslashes($catName)) }}'.includes(search.toLowerCase())">
                                                         <input type="checkbox"
                                                             id="subcat_{{ $category->id }}"
-                                                            class="form-check-input"
+                                                            class="form-check-input me-2 mt-0"
                                                             :checked="$wire.selected_sub_categories.includes({{ $category->id }})"
                                                             @change="toggleCategory({{ $category->id }})">
-                                                        <label class="form-check-label w-100" for="subcat_{{ $category->id }}">
+                                                        <label class="form-check-label w-100 mb-0" for="subcat_{{ $category->id }}" style="cursor: pointer;">
                                                             {{ $catName }}
+                                                            @if($isCurrentPrimary)
+                                                                <span class="badge bg-primary-soft text-primary ms-1 border" style="font-size: 10px;">Primary</span>
+                                                            @endif
                                                         </label>
                                                     </div>
                                                 @endforeach
-                                            @endif
-                                        </div>
-
-                                        <!-- Selected Sub-Categories Display Badges -->
-                                        <div class="mt-2">
-                                            <label class="form-label">Selected Sub-categories:
-                                                <span class="badge bg-primary" x-text="$wire.selected_sub_categories.length"></span>
-                                            </label>
-                                            <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto; height: 150px;">
-                                                <template x-if="$wire.selected_sub_categories && $wire.selected_sub_categories.length > 0">
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        @php
-                                                            $subCatJsMap = json_encode($subCatMap);
-                                                        @endphp
-                                                        <template x-for="catId in $wire.selected_sub_categories" :key="catId">
-                                                            <span class="badge bg-primary position-relative m-1" style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
-                                                                <span x-text="({{ $subCatJsMap }})[catId] || ('Category #' + catId)"></span>
-                                                                <button type="button"
-                                                                    @click="toggleCategory(catId)"
-                                                                    class="btn-close btn-close-white position-absolute"
-                                                                    style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
-                                                                    aria-label="Remove"></button>
-                                                            </span>
-                                                        </template>
-                                                    </div>
-                                                </template>
-                                                <template x-if="!$wire.selected_sub_categories || $wire.selected_sub_categories.length === 0">
-                                                    <p class="text-center text-muted my-1 mb-0 small">No sub-categories selected</p>
-                                                </template>
                                             </div>
-                                        </div>
+
+                                            <!-- Selected Sub-Categories Display Badges -->
+                                            <div class="mt-2">
+                                                <label class="form-label">Selected Sub-categories:
+                                                    <span class="badge bg-primary" x-text="$wire.selected_sub_categories.length"></span>
+                                                </label>
+                                                <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto; min-height: 50px;">
+                                                    <template x-if="$wire.selected_sub_categories && $wire.selected_sub_categories.length > 0">
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            @php
+                                                                $subCatJsMap = json_encode($subCatMap);
+                                                            @endphp
+                                                            <template x-for="catId in $wire.selected_sub_categories" :key="catId">
+                                                                <span class="badge bg-primary position-relative m-1" style="padding: 5px 20px 5px 8px; font-size: 0.75rem;">
+                                                                    <span x-text="({{ $subCatJsMap }})[catId] || ('Category #' + catId)"></span>
+                                                                    <button type="button"
+                                                                        @click="toggleCategory(catId)"
+                                                                        class="btn-close btn-close-white position-absolute"
+                                                                        style="top: 50%; right: 4px; transform: translateY(-50%); font-size: 0.5rem;"
+                                                                        aria-label="Remove"></button>
+                                                                </span>
+                                                            </template>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="!$wire.selected_sub_categories || $wire.selected_sub_categories.length === 0">
+                                                        <p class="text-center text-muted my-1 mb-0 small">No sub-categories selected</p>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
                                     <hr class="my-3">
                                     <div class="form-group mt-3" x-data="{ isEditing: false }">

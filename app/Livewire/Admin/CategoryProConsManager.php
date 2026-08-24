@@ -26,6 +26,7 @@ class CategoryProConsManager extends Component
     public $category_id = '';
     public $type = 'pro';
     public $text = '';
+    public $aliases = '';
     public $status = 1;
     public $showModal = false;
 
@@ -40,6 +41,7 @@ class CategoryProConsManager extends Component
         'category_id' => 'required|exists:categories,id',
         'type'        => 'required|in:pro,con',
         'text'        => 'required|string|max:255',
+        'aliases'     => 'nullable|string',
         'status'      => 'required|boolean',
     ];
 
@@ -50,6 +52,7 @@ class CategoryProConsManager extends Component
         $this->category_id = $this->selectedCategoryFilter ?: '';
         $this->type = 'pro';
         $this->text = '';
+        $this->aliases = '';
         $this->status = 1;
         $this->showModal = true;
     }
@@ -62,6 +65,7 @@ class CategoryProConsManager extends Component
         $this->category_id = $item->category_id;
         $this->type = $item->type;
         $this->text = $item->text;
+        $this->aliases = is_array($item->aliases) ? implode("\n", $item->aliases) : '';
         $this->status = (int)$item->status;
         $this->showModal = true;
     }
@@ -70,11 +74,14 @@ class CategoryProConsManager extends Component
     {
         $this->showModal = false;
         $this->editingId = null;
+        $this->aliases = '';
     }
 
     public function save()
     {
         $this->validate();
+
+        $parsedAliases = $this->parseAliasesInput($this->aliases);
 
         CategoryProCon::updateOrCreate(
             ['id' => $this->editingId],
@@ -82,12 +89,37 @@ class CategoryProConsManager extends Component
                 'category_id' => $this->category_id,
                 'type'        => $this->type,
                 'text'        => trim($this->text),
+                'aliases'     => !empty($parsedAliases) ? $parsedAliases : null,
                 'status'      => $this->status,
             ]
         );
 
         session()->flash('message', $this->editingId ? 'Pro/Con updated successfully.' : 'Pro/Con added successfully.');
         $this->closeModal();
+    }
+
+    public function parseAliasesInput($input)
+    {
+        if (empty($input)) {
+            return [];
+        }
+
+        if (is_array($input)) {
+            $rawList = $input;
+        } else {
+            // Split by newline and/or comma
+            $rawList = preg_split('/[\r\n,]+/', (string)$input);
+        }
+
+        $result = [];
+        foreach ($rawList as $item) {
+            $clean = trim((string)$item);
+            if ($clean !== '' && !in_array($clean, $result, true)) {
+                $result[] = $clean;
+            }
+        }
+
+        return $result;
     }
 
     public function delete($id)
@@ -173,17 +205,28 @@ class CategoryProConsManager extends Component
                     continue;
                 }
 
-                CategoryProCon::create([
-                    'category_id' => $catId,
-                    'type'        => $type,
-                    'text'        => $text,
-                    'status'      => isset($item['status']) ? (bool)$item['status'] : true,
-                ]);
+                // Parse aliases if present
+                $aliases = [];
+                if (isset($item['aliases'])) {
+                    $aliases = $this->parseAliasesInput($item['aliases']);
+                }
+
+                CategoryProCon::updateOrCreate(
+                    [
+                        'category_id' => $catId,
+                        'type'        => $type,
+                        'text'        => $text,
+                    ],
+                    [
+                        'aliases'     => !empty($aliases) ? $aliases : null,
+                        'status'      => isset($item['status']) ? (bool)$item['status'] : true,
+                    ]
+                );
 
                 $imported++;
             }
 
-            $this->jsonUploadMessage = "Successfully imported {$imported} Pros & Cons." . ($skipped > 0 ? " ({$skipped} skipped due to missing category or text)" : "");
+            $this->jsonUploadMessage = "Successfully imported/updated {$imported} Pros & Cons." . ($skipped > 0 ? " ({$skipped} skipped due to missing category or text)" : "");
             $this->reset('jsonText');
         } catch (\Exception $e) {
             Log::error('Error importing Pros & Cons JSON: ' . $e->getMessage());
@@ -212,7 +255,11 @@ class CategoryProConsManager extends Component
         }
 
         if (!empty($this->search)) {
-            $query->where('text', 'like', '%' . trim($this->search) . '%');
+            $searchTerm = trim($this->search);
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('text', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('aliases', 'like', '%' . $searchTerm . '%');
+            });
         }
 
         $items = $query->orderBy('category_id')->orderBy('type')->orderBy('id', 'desc')->paginate(20);

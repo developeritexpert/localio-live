@@ -75,6 +75,8 @@ class BusinessEdit extends Component
     public $reviews_description = '';
     public $reviews_title_2 = '';
     public $reviews_description_2 = '';
+    public $reviews_pro_cons_intro = '';
+    public $reviews_pro_cons_summary = '';
     public $faqs_title = '';
     public $faqs_description = '';
     public $faqs_title_2 = '';
@@ -625,6 +627,20 @@ class BusinessEdit extends Component
         // Clear the selected features when category changes
         $this->selectedFeatures = [];
 
+        // Prune any selected subcategories that do not belong to the newly selected main category
+        if ($value) {
+            $selectedCat = \App\Models\Category::find($value);
+            if ($selectedCat) {
+                $mainCatId = $selectedCat->parent_id ?: $selectedCat->id;
+                $validSubIds = \App\Models\Category::where('parent_id', $mainCatId)->pluck('id')->toArray();
+                $this->selected_sub_categories = array_values(array_intersect($this->selected_sub_categories ?? [], $validSubIds));
+            } else {
+                $this->selected_sub_categories = [];
+            }
+        } else {
+            $this->selected_sub_categories = [];
+        }
+
         // Load features for the new category
         $this->loadCategoryFeatures($value);
 
@@ -1138,6 +1154,8 @@ class BusinessEdit extends Component
         $this->reviews_description = $translation->reviews_description ?? '';
         $this->reviews_title_2 = $translation->reviews_title_2 ?? '';
         $this->reviews_description_2 = $translation->reviews_description_2 ?? '';
+        $this->reviews_pro_cons_intro = $translation->reviews_pro_cons_intro ?? '';
+        $this->reviews_pro_cons_summary = $translation->reviews_pro_cons_summary ?? '';
         $this->faqs_title = $translation->faqs_title ?? '';
         $this->faqs_description = $translation->faqs_description ?? '';
         $this->faqs_title_2 = $translation->faqs_title_2 ?? '';
@@ -1535,6 +1553,8 @@ class BusinessEdit extends Component
     $this->reviews_description       = $translation->reviews_description ?? '';
     $this->reviews_title_2           = $translation->reviews_title_2 ?? '';
     $this->reviews_description_2     = $translation->reviews_description_2 ?? '';
+        $this->reviews_pro_cons_intro     = $translation->reviews_pro_cons_intro ?? '';
+        $this->reviews_pro_cons_summary   = $translation->reviews_pro_cons_summary ?? '';
     $this->faqs_title                = $translation->faqs_title ?? '';
     $this->faqs_description          = $translation->faqs_description ?? '';
     $this->faqs_title_2              = $translation->faqs_title_2 ?? '';
@@ -1598,6 +1618,8 @@ class BusinessEdit extends Component
             'reviews_description' => 'nullable|string',
             'reviews_title_2' => 'nullable|string|max:255',
             'reviews_description_2' => 'nullable|string',
+            'reviews_pro_cons_intro' => 'nullable|string',
+            'reviews_pro_cons_summary' => 'nullable|string',
             'faqs_title' => 'nullable|string|max:255',
             'faqs_description' => 'nullable|string',
             'faqs_title_2' => 'nullable|string|max:255',
@@ -1710,6 +1732,8 @@ class BusinessEdit extends Component
             'reviews_description' => $this->reviews_description,
             'reviews_title_2' => $this->reviews_title_2,
             'reviews_description_2' => $this->reviews_description_2,
+            'reviews_pro_cons_intro' => $this->reviews_pro_cons_intro,
+            'reviews_pro_cons_summary' => $this->reviews_pro_cons_summary,
             'faqs_title' => $this->faqs_title,
             'faqs_description' => $this->faqs_description,
             'faqs_title_2' => $this->faqs_title_2,
@@ -1799,6 +1823,8 @@ class BusinessEdit extends Component
                 'reviews_description' => $this->reviews_description,
                 'reviews_title_2' => $this->reviews_title_2,
                 'reviews_description_2' => $this->reviews_description_2,
+            'reviews_pro_cons_intro' => $this->reviews_pro_cons_intro,
+            'reviews_pro_cons_summary' => $this->reviews_pro_cons_summary,
                 'faqs_title' => $this->faqs_title,
                 'faqs_description' => $this->faqs_description,
                 'faqs_title_2' => $this->faqs_title_2,
@@ -1832,8 +1858,17 @@ class BusinessEdit extends Component
         $business->countries()->sync((int)$this->active_all_countries === 1 ? [] : ($this->selectedCountries ?? []));
 
 
-        // Sync sub categories
-        $business->subCategories()->sync($this->selected_sub_categories ?? []);
+        // Sync sub categories (only allowed subcategories of the primary category's parent/main category)
+        $validSubCategoryIds = [];
+        if ($this->selected_category) {
+            $selectedCat = \App\Models\Category::find($this->selected_category);
+            if ($selectedCat) {
+                $mainCatId = $selectedCat->parent_id ?: $selectedCat->id;
+                $allowedIds = \App\Models\Category::where('parent_id', $mainCatId)->pluck('id')->toArray();
+                $validSubCategoryIds = array_values(array_intersect($this->selected_sub_categories ?? [], $allowedIds));
+            }
+        }
+        $business->subCategories()->sync($validSubCategoryIds);
 
         // Sync features
         $business->features()->sync($this->selectedFeatures);
@@ -1992,6 +2027,8 @@ class BusinessEdit extends Component
             'reviews_description'        => 'reviews_description',
             'reviews_title_2'            => 'reviews_title_2',
             'reviews_description_2'      => 'reviews_description_2',
+            'reviews_pro_cons_intro'      => 'reviews_pro_cons_intro',
+            'reviews_pro_cons_summary'    => 'reviews_pro_cons_summary',
             'faqs_title'                 => 'faqs_title',
             'faqs_description'           => 'faqs_description',
             'faqs_title_2'               => 'faqs_title_2',
@@ -2147,6 +2184,8 @@ class BusinessEdit extends Component
             'alternatives_description_2' => $this->alternatives_description_2,
             'reviews_description'        => $this->reviews_description,
             'reviews_description_2'      => $this->reviews_description_2,
+            'reviews_pro_cons_intro'      => $this->reviews_pro_cons_intro,
+            'reviews_pro_cons_summary'    => $this->reviews_pro_cons_summary,
             'faqs_description'           => $this->faqs_description,
             'faqs_description_2'         => $this->faqs_description_2,
             'comparison_description'     => $this->comparison_description,

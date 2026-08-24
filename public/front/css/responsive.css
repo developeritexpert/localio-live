@@ -3937,9 +3937,11 @@
         top: 22px;
         font-size: 11px !important;
     }
-    .sharing_icons {
+
+    /* .sharing_icons {
         margin-top: 5px;
-    }
+    } */
+
     .top-rated-heading-sec .breadcrumb-item a,
     .breadcrumb-item + .breadcrumb-item::before,
     .breadcrumb-item + .breadcrumb-item {
@@ -6673,7 +6675,7 @@ div#howRankingsWorkModal button.modal-close {
         right: 16px;
         background: none;
         border: none;
-        font-size: 24px;
+        font-size: 16px;
         color: #9ca3af;
         cursor: pointer;
         width: 32px;
@@ -10939,7 +10941,7 @@ body:has(.fixed_sigup) .fixed_sigup {
     right: 16px;
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 16px;
     color: #9ca3af;
     cursor: pointer;
     width: 32px;
@@ -12640,8 +12642,8 @@ textarea#message {
 
 .main_feture .feture_box ul .grn_chk img {
     width: 16px;
-    height: 13px;
-    margin-bottom: 5px;
+    height: 10px;
+    margin-top: 5px;
 }
 
 .main_feture .feture_box ul .grn_chk {
@@ -13518,18 +13520,6 @@ textarea#message {
     }
 
     /*==================== 28-july-26 ================ */
-    .home_bnr_sec .search-box i {
-        padding: 9px 20px;
-    }
-
-    .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
-        flex-wrap: wrap;
-    }
-
-    .asn_main_sec_2 .asn_dv.fixed-div .frst_rw > div {
-        width: 100%;
-    }
-
     .asn_main_sec .asn_dv_contnt .top-pro-btn.tp_visit {
         margin-top: 0 !important;
     }
@@ -13539,6 +13529,18 @@ textarea#message {
 
     .asn_main_sec .top-pro-btn .cta.cta_orange {
         padding: 10px 20px;
+    }
+
+     .home_bnr_sec .search-box i {
+        padding: 9px 20px;
+    }
+
+    .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
+        flex-wrap: wrap;
+    }
+
+    .asn_main_sec_2 .asn_dv.fixed-div .frst_rw > div {
+        width: 100%;
     }
 
     .sfwr_sec.cat_page_secs {
@@ -13563,19 +13565,6 @@ textarea#message {
         margin: 0 !important;
     }
 
-    #login-modal .modal-content .close-btn {
-        top: 10px;
-        right: 10px;
-    }
-
-    div#login-modal .modal-content h2 {
-        font-size: 22px !important;
-    }
-
-    .top-automotive-sec .auto-choice-card .card-compare-m {
-        padding: 20px;
-    }
-
     .banner_sec.home_bnr_sec {
         padding: 110px 0 50px;
     }
@@ -13587,6 +13576,18 @@ textarea#message {
     .recommend-card-btn {
         padding: 10px;
         white-space: nowrap;
+    }
+      #login-modal .modal-content .close-btn {
+        top: 10px;
+        right: 10px;
+    }
+
+    div#login-modal .modal-content h2 {
+        font-size: 22px !important;
+    }
+
+    .top-automotive-sec .auto-choice-card .card-compare-m {
+        padding: 20px;
     }
     #section-compare .comparison-box > div {
         align-items: center !important  ;
@@ -13612,6 +13613,10 @@ textarea#message {
         gap: 1px !important;
     }
 
+    h2.modal-title {
+        font-size: 20px !important;
+        display: inline;
+    }
     .most-populr-sec .popular-category-tab-btn span {
         font-size: 12px !important;
     }
@@ -13623,13 +13628,10 @@ textarea#message {
         gap: 1px !important;
     }
     div#howRankingsWorkModal .circle_11 {
-        max-width: 300px;
+        max-width: 352  px;
         padding: 15px;
     }
-    h2.modal-title {
-        font-size: 20px !important;
-        display: inline;
-    }
+
     .most-populr-sec .popular-categories-title {
         margin-bottom: 0px !important;
     }

@@ -57,21 +57,6 @@
                                 @enderror
                             </div>
                         </div>
-
-                        <!-- Lang Code -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="lang_code">Lang code</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="lang_code" name="lang_code"
-                                        value="{{ old('lang_code', $siteLanguage->lang_code) }}" required />
-                                </div>
-                                @error('lang_code')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
                         <!-- Status Toggle with Hidden Fallback -->
                         <div class="col-md-6">
                             <div class="form-group">
@@ -124,12 +109,6 @@
             // Update text for Status toggle
             $('#status').on('change', function() {
                 $('#statusText').text($(this).is(':checked') ? 'Active' : 'Inactive');
-            });
-
-            // Sanitize lang_code input (letters, numbers, hyphens only)
-            $('#lang_code').on('input', function() {
-                const sanitized = $(this).val().replace(/[^a-zA-Z0-9-]/g, '');
-                $(this).val(sanitized);
             });
         });
     </script>

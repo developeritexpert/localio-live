@@ -260,7 +260,7 @@
                     <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
                         <!-- Business A (Fixed) -->
                         <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
-                            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+                            <div class="top-product-medium-logo" >
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
                             <span style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap;">{{ $bName }}</span>
@@ -281,11 +281,15 @@
 
                         <!-- Business B Selected Pill (Shown when business selected, same style as left with cross) -->
                         <div id="selectedBusinessPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white rounded-pill border flex-grow-1" style="display: none !important; border-color: #cbd5e1 !important; min-width: 170px; height: 48px;">
+
                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                <div id="selectedBusinessLogo" style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+
+                                <div class="top-product-small-logo" id="selectedBusinessLogo" >
                                 </div>
+
                                 <span id="selectedBusinessName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
                             </div>
+
                             <button type="button" id="btnRemoveSelectedBusiness" class="btn p-0 border-0 d-flex align-items-center justify-content-center" style="width: 0px; height: 0px; border-radius: 50%; background: #f1f5f9; color: #64748b; font-size: 12px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" title="Remove selection" onmouseover="this.style.background='#e2e8f0'; this.style.color='#002347';" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -654,7 +658,7 @@
                             selectedLogo.innerHTML = `<img src="${icon}" alt="${name}" style="width: 100%; height: 100%; object-fit: cover;">`;
                         } else {
                             const initial = name.charAt(0).toUpperCase();
-                            selectedLogo.innerHTML = `<div style="width: 100%; height: 100%; background: #002347; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700;">${initial}</div>`;
+                            selectedLogo.innerHTML = `<div class="business-initial-logo" >${initial}</div>`;
                         }
                     }
 

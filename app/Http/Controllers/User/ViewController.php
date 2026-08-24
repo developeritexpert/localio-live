@@ -446,11 +446,25 @@ class ViewController extends Controller
 
         $totalReviews = $ratingsCount->sum();
 
+        // Aggregate User Selected Pros and Cons for this business from active reviews
+        $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+            ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+            ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+            ->where('reviews.business_id', $business->id)
+            ->where('reviews.status', 'active')
+            ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+            ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+            ->orderByDesc('review_count')
+            ->get();
+
+        $aggregatedPros = $aggregatedProCons->where('type', 'pro')->values();
+        $aggregatedCons = $aggregatedProCons->where('type', 'con')->values();
+
         if ($request->ajax()) {
             return view('User.review.partials.reviews_list', compact('reviews', 'business'))->render();
         }
 
-        return view('User.review.user_review2', compact('totalReviews', 'ratingsCount', 'reviews', 'business', 'averageRating', 'ratingCount', 'criteria', 'recommendPercent'));
+        return view('User.review.user_review2', compact('totalReviews', 'ratingsCount', 'reviews', 'business', 'averageRating', 'ratingCount', 'criteria', 'recommendPercent', 'aggregatedPros', 'aggregatedCons'));
     }
 
     //Review Transalation function

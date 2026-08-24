@@ -14,7 +14,7 @@ class SiteLanguagesController extends Controller
 {
     public function index()
     {
-        $siteLanguages = Language::with(['country', 'baseLanguage'])->get();
+        $siteLanguages = Language::with(['country', 'baseLanguage', 'bcp47Language'])->get();
 
         return view('Admin.setting.siteLanguages.index', compact('siteLanguages'));
     }
@@ -79,7 +79,7 @@ class SiteLanguagesController extends Controller
     
         $request->validate([
             'name' => 'nullable|string|max:255',
-            'lang_code' => 'required|string|unique:languages,lang_code,' . $id . ',id',
+            'lang_code' => 'nullable|string|unique:languages,lang_code,' . $id . ',id',
             'country_id' => 'required|exists:countries,id',
             'base_language_id' => 'nullable|exists:base_languages,id',
             'faq_slug' => 'nullable|string|max:255',
@@ -95,7 +95,9 @@ class SiteLanguagesController extends Controller
         $languageName = $request->filled('name') ? $request->name : ($country ? $country->name : $language->name);
 
         $language->name = $languageName;
-        $language->lang_code = $request->lang_code;
+        if ($request->filled('lang_code')) {
+            $language->lang_code = $request->lang_code;
+        }
         $language->country_id = $request->country_id;
         $language->base_language_id = ($request->filled('base_language_id') && $request->base_language_id != '' && $request->base_language_id != '0') ? $request->base_language_id : null;
         $language->faq_slug = $request->faq_slug ?? 'faqs';
