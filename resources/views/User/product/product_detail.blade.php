@@ -713,7 +713,7 @@
 
             .view-review-link{
                 color:#002655;
-                font-size:13px;
+                font-size:12px;
                 font-weight:600;
                 text-decoration:none;
             }
@@ -1051,19 +1051,21 @@
                             $name = $business->translations->first()->name ?? 'This Business';
 
                             // Fixed dynamic top content
-                            $staticBottomSections = [
-                                ['id' => 'section9', 'label' => 'Alternatives'],
-                            ];
+                            $staticBottomSections = [];
+
+                            if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0) {
+                                $staticBottomSections[] = ['id' => 'section9', 'label' => 'Alternatives'];
+                            }
 
                             if (isset($business->faqs) && $business->faqs->count() > 0) {
                                 $staticBottomSections[] = ['id' => 'section15', 'label' => 'FAQs'];
                             }
 
-                            $staticBottomSections = array_merge($staticBottomSections, [
-                                ['id' => 'section-compare', 'label' => 'Compare'],
-                                ['id' => 'section14', 'label' => "Reviews"],
-                                ['id' => 'sectionDiscussions', 'label' => "Discussions"],
-                            ]);
+                            if (isset($peerComparisons) && count($peerComparisons) > 0) {
+                                $staticBottomSections[] = ['id' => 'section-compare', 'label' => 'Compare'];
+                            }
+
+                            $staticBottomSections[] = ['id' => 'section14', 'label' => "Reviews"];
 
                             // Dynamic middle sections from topics
                             // Start dynamic topic sections at a high number to avoid conflict
@@ -1411,7 +1413,7 @@
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                                     <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span class="rating_bar_span">ease of use</span>
+                                                        <span class="rating_bar_span">Ease of use</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
@@ -1447,7 +1449,7 @@
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
                                                             <div class="community-rating mb-2">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                                <span class="rating_bar_span">service management</span>
+                                                                <span class="rating_bar_span">Reliability</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                                     <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                 </div>
@@ -1481,7 +1483,7 @@
                                                 <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
                                                     <div class="community-rating mb-2">Community rating</div>
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                        <span class="rating_bar_span">value for money</span>
+                                                        <span class="rating_bar_span">Value for money</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                             <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
@@ -1572,6 +1574,7 @@
 
                                                                 @endphp
 
+                                                                @if(isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
                                                                 <section class="software-like p_50 product_integra_sec " id="section9">
                                                                 <div class="container">
                                                                     <div class="sftwre-like-innr">
@@ -1747,71 +1750,66 @@
                                                                     </div>
                                                                 </div>
                                                                 </section>
+                                                                @endif
 
                                                                 @if(isset($business->faqs) && $business->faqs->count() > 0)
-                                                                <section class="faq-section  faq-section_1 product_inr_faq p_50 pt-2 light" id="section15" style="background-color:#fdfdfd;">
+                                                                @php
+                                                                    $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
+                                                                    $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
+                                                                    $bName = $business->translations->first()->name ?? $business->name ?? 'this provider';
+                                                                @endphp
+                                                                <!-- Business FAQs Section -->
+                                                                <section class="faq-section product_inr_faq py-5 light" id="section15">
                                                                     <div class="container">
-                                                                        <div class="faq-inner">
-                                                                            <div class="row">
-                                                                                <div class="">
-                                                                                    <div class="d-flex flex-column w-auto">
-
-                                                                                        @php
-                                                                                            $faq_title = \App\Models\StaticContentKey::where('key', 'faq_title')->first();
-                                                                                            $faq_description = \App\Models\StaticContentKey::where('key', 'faq_description')->first();
-                                                                                        @endphp
-
-                                                                                        <h2>{{ $faq_title?->default_value ?? '' }}</h2>
-                                                                                        <p>{{ $faq_description?->default_value ?? '' }}</p>
-
-                                                                                    </div>
+                                                                        <div class="row">
+                                                                            <div class="col-lg-10 mx-auto">
+                                                                                <div class="text-start mb-4">
+                                                                                    <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                                                                                        {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
+                                                                                    </h2>
+                                                                                    <p style="font-size: 15px; color: #555; margin-bottom: 0;">
+                                                                                        {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
+                                                                                    </p>
                                                                                 </div>
-                                                                                <div class="">
-                                                                                    <div class="faq-accor">
-                                                                                        <div class="accordion" id="accordionExample">
-                                                                                            @forelse ($business->faqs->take(10) as $index => $faq)
-                                                                                                @php $translation = $faq->translations->first(); @endphp
-                                                                                                @if ($translation)
-                                                                                                    <div class="accordion-item">
-                                                                                                        <h2 class="accordion-header"
-                                                                                                            id="heading{{ $index }}">
-                                                                                                            <button
-                                                                                                                class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}"
-                                                                                                                type="button" data-bs-toggle="collapse"
-                                                                                                                data-bs-target="#collapse{{ $index }}"
-                                                                                                                aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                                                                                                aria-controls="collapse{{ $index }}">
-                                                                                                                <span>{{ $translation->question }}</span>
-                                                                                                            </button>
-                                                                                                        </h2>
-                                                                                                        <div id="collapse{{ $index }}"
-                                                                                                            class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
-                                                                                                            aria-labelledby="heading{{ $index }}"
-                                                                                                            data-bs-parent="#accordionExample">
-                                                                                                            <div class="accordion-body">
-                                                                                                                {{ $translation->answer }}
-                                                                                                            </div>
-                                                                                                        </div>
+
+                                                                                <div class="accordion" id="businessFaqAccordion">
+                                                                                    @foreach ($business->faqs->take(10) as $index => $faq)
+                                                                                        @php $translation = $faq->translations->first(); @endphp
+                                                                                        @if ($translation)
+                                                                                            <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
+                                                                                                <h2 class="accordion-header" id="faqHeading{{ $index }}">
+                                                                                                    <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
+                                                                                                        type="button" data-bs-toggle="collapse"
+                                                                                                        data-bs-target="#faqCollapse{{ $index }}"
+                                                                                                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                                                                                        aria-controls="faqCollapse{{ $index }}"
+                                                                                                        style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                                                                        <span>{{ $translation->question }}</span>
+                                                                                                    </button>
+                                                                                                </h2>
+                                                                                                <div id="faqCollapse{{ $index }}"
+                                                                                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                                                                                    aria-labelledby="faqHeading{{ $index }}"
+                                                                                                    data-bs-parent="#businessFaqAccordion">
+                                                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                                                                        {!! $translation->answer !!}
                                                                                                     </div>
-                                                                                                @endif
-                                                                                            @empty
-                                                                                                <p>No FAQs available for this business.</p>
-                                                                                            @endforelse
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endif
+                                                                                    @endforeach
+                                                                                </div>
 
-                                                                                        </div>
-
-                                                                                        @php
-                                                                                            $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
-                                                                                            $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
-                                                                                        @endphp
-                                                                                        <div class="mt-4 text-center">
-                                                                                            <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $business->translations->first()->slug, 'faq_slug' => $faqSlugVal]) }}"
-                                                                                            class="view-more-link"
-                                                                                            style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                                                                View more FAQs
-                                                                                            </a>
-                                                                                        </div>
-                                                                                    </div>
+                                                                                @php
+                                                                                    $currentLangObj = \App\Models\Language::where('lang_code', app()->getLocale())->first();
+                                                                                    $faqSlugVal = !empty($currentLangObj->faq_slug) ? $currentLangObj->faq_slug : 'faqs';
+                                                                                    $bizSlugVal = $business->translations->first()->slug ?? $business->slug ?? '';
+                                                                                @endphp
+                                                                                <div class="text-center mt-4">
+                                                                                    <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $bizSlugVal, 'faq_slug' => $faqSlugVal]) }}"
+                                                                                       class="btn-g-link">
+                                                                                        View more FAQs
+                                                                                    </a>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -1819,6 +1817,7 @@
                                                                 </section>
                                                                 @endif
 
+                                                                @if(isset($peerComparisons) && count($peerComparisons) > 0)
                                                                 @php
                                                                     $bName = $business->translations->first()->name ?? 'Business';
                                                                     $catTrans = $business->category->translation ?? null;
@@ -1854,7 +1853,7 @@
                                                                                 @endphp
                                                                                 <div class="col-lg-6 col-md-6 col-12">
                                                                                     <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                                                                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                                                                        <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
 
                                                                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                                                                 <div class="top-product-medium-logo">
@@ -1898,19 +1897,18 @@
                                                                             @endforelse
                                                                         </div>
 
-                                                                        @if(count($peerComparisons) > 0)
-                                                                            @php
-                                                                                $cCompSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
-                                                                                $bSlugStr = $business->translations->first()->slug ?? $business->slug;
-                                                                            @endphp
-                                                                            <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
-                                                                                <a href="{{ url(app()->getLocale() . '/' . $bSlugStr . '/' . $cCompSlug) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                                                    View more comparisons
-                                                                                </a>
-                                                                            </div>
-                                                                        @endif
+                                                                        @php
+                                                                            $cCompSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
+                                                                            $bSlugStr = $business->translations->first()->slug ?? $business->slug;
+                                                                        @endphp
+                                                                        <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
+                                                                            <a href="{{ url(app()->getLocale() . '/' . $bSlugStr . '/' . $cCompSlug) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                                                View more comparisons
+                                                                            </a>
+                                                                        </div>
                                                                     </div>
                                                                 </section>
+                                                                @endif
 
                                                                 <section class="about_asn_2 light pt-0 p_50 d-none">
 
@@ -2045,9 +2043,9 @@
                                                                         </style>
                                                                         <div class="crm_review_box review_sec" id="all-reviews">
 
-                                                                            <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+                                                                            <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
                                                                                         <x-business-logo :business="$business" />
                                                                                     </div>
                                                                                     <div>
@@ -2081,15 +2079,15 @@
                                                                                     <div class="review-sidebar-sticky">
 
                                                                                         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-                                                                                            User reviews
+                                                                                            {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
                                                                                         </h2>
-                                                                                        <div class="review-filter-sec">
-                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border " style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                                                                        <div class="review-filter-sec" style="display: block;">
+                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
 
                                                                                                 <div class="d-flex flex-column align-items-start mb-3">
                                                                                                     <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
                                                                                                     @if($ratingWord = get_rating_label($averageRating))
-                                                                                                        <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 2px; margin-bottom: 4px; line-height: 1.2;">
+                                                                                                        <span class="rating-word-label">
                                                                                                             {{ $ratingWord }}
                                                                                                         </span>
                                                                                                     @endif
@@ -2126,66 +2124,115 @@
                                                                                                     <strong style="color: #002347; font-size: 14px; font-weight:600">{{ $recommendPercent }}%</strong>
                                                                                                 </div>
                                                                                             </div>
-
-                                                                                            <div class="wrap-review-filter">
-
-                                                                                                <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
-                                                                                                    <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
-                                                                                                    <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear filter</span>
-                                                                                                </div>
-
-                                                                                                <div class="review-star-box">
-                                                                                                    <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
-                                                                                                        @for ($i = 5; $i >= 1; $i--)
-                                                                                                            @php
-                                                                                                                $count = $ratingCounts[$i] ?? 0;
-                                                                                                                $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
-                                                                                                            @endphp
-                                                                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
-                                                                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
-                                                                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
-                                                                                                                    <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #555; flex-shrink: 0;">
-                                                                                                                        <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
-                                                                                                                    </span>
-                                                                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
-                                                                                                                        <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
-                                                                                                                    </div>
-                                                                                                                    <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
-                                                                                                                </label>
-                                                                                                            </li>
-                                                                                                        @endfor
-                                                                                                    </ul>
-                                                                                                </div>
-                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
 
                                                                                 <div class="col-lg-12">
 
-                                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;  margin-top: 25px;">
+                                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 25px; flex-wrap: wrap; gap: 12px;">
                                                                                         
+                                                                                        <!-- Filter Button with Dropdown & Clear filter on Left -->
+                                                                                        <div class="d-flex align-items-center gap-2">
+                                                                                            <div class="dropdown" id="reviewFilterDropdownWrap">
+                                                                                                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" 
+                                                                                                        type="button" 
+                                                                                                        id="reviewFilterDropdownBtn" 
+                                                                                                        data-bs-toggle="dropdown" 
+                                                                                                        data-bs-auto-close="outside"
+                                                                                                        aria-expanded="false" 
+                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff;">
+                                                                                                    <i class="fas fa-filter text-muted"></i>
+                                                                                                    <span>Filter by rating</span>
+                                                                                                    <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
+                                                                                                </button>
+                                                                                                <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm" 
+                                                                                                     aria-labelledby="reviewFilterDropdownBtn" 
+                                                                                                     style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                                                                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                                                                        <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
+                                                                                                        <span class="clear-filters-btn text-primary" id="clear-filters-dropdown" style="display: none; font-size: 12px; font-weight: 600; cursor: pointer;">Clear all</span>
+                                                                                                    </div>
 
-                                                                                        <a class="write-review-link"
-                                                                                            @auth
-                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                                                                            @else
-                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                                                                            @endauth
-                                                                                            style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
-                                                                                        ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
+                                                                                                    <div class="review-star-box">
+                                                                                                        <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
+                                                                                                            @for ($i = 5; $i >= 1; $i--)
+                                                                                                                @php
+                                                                                                                    $count = $ratingCounts[$i] ?? 0;
+                                                                                                                    $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+                                                                                                                @endphp
+                                                                                                                <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
+                                                                                                                    <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
+                                                                                                                    <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
+                                                                                                                        <span style="display: inline-flex; align-items: center; width: 45px; font-size: 13px; color: #555; flex-shrink: 0;">
+                                                                                                                            <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
+                                                                                                                        </span>
+                                                                                                                        <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
+                                                                                                                            <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
+                                                                                                                        </div>
+                                                                                                                        <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
+                                                                                                                    </label>
+                                                                                                                </li>
+                                                                                                            @endfor
+                                                                                                        </ul>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
 
+                                                                                            <!-- Clear filter link next to button -->
+                                                                                            <span class="clear-filters-btn ms-2" id="clear-filters" style="display: none; color: #06498b; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline;">
+                                                                                                <i class="fas fa-times me-1"></i>Clear filter
+                                                                                            </span>
+                                                                                        </div>
 
-                                                                                        <div class="selct_box">
-                                                                                            <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                                                                <label for="rating-select" style="font-size: 14px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
-                                                                                                <select class="form-select" id="rating-select" name="sort" style="padding: 5px 30px 5px 10px; font-size: 13px; border-radius: 6px; cursor: pointer; width: auto; min-width: 130px; border: 1px solid #ced4da;">
-                                                                                                    <option value="recent" {{ request('sort') == 'recent' || !request('sort') ? 'selected' : '' }}>Most Recent</option>
-                                                                                                    <option value="best" {{ request('sort') == 'best' ? 'selected' : '' }}>Best Rating</option>
-                                                                                                    <option value="high-to-low" {{ request('sort') == 'high-to-low' ? 'selected' : '' }}>High to Low</option>
-                                                                                                    <option value="low-to-high" {{ request('sort') == 'low-to-high' ? 'selected' : '' }}>Low to High</option>
-                                                                                                </select>
-                                                                                            </form>
+                                                                                        @php
+                                                                                            $reviewSortOptions = [
+                                                                                                'recent' => 'Most recent',
+                                                                                                'high-to-low' => 'Highest rated',
+                                                                                                'low-to-high' => 'Lowest rated',
+                                                                                            ];
+                                                                                            $currentSort = request('sort', 'recent');
+                                                                                            if (!array_key_exists($currentSort, $reviewSortOptions)) {
+                                                                                                $currentSort = ($currentSort === 'best') ? 'high-to-low' : 'recent';
+                                                                                            }
+                                                                                            $currentSortLabel = $reviewSortOptions[$currentSort] ?? 'Most recent';
+                                                                                        @endphp
+
+                                                                                        <!-- Sort Dropdown on Right (Top Rated Style) -->
+                                                                                        <div class="dropdown" id="reviewSortDropdownWrap">
+                                                                                            <button type="button" 
+                                                                                                class="sorting d-inline-flex align-items-center gap-2" 
+                                                                                                id="reviewSortDropdownBtn"
+                                                                                                data-bs-toggle="dropdown" 
+                                                                                                aria-expanded="false"
+                                                                                                style="background-color: #fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
+                                                                                                <span>Sort: <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sort-chevron-icon">
+                                                                                                    <polyline points="6 9 12 15 18 9" />
+                                                                                                </svg>
+                                                                                            </button>
+
+                                                                                            <div class="dropdown-menu dropdown-menu-end shadow-sm" 
+                                                                                                 aria-labelledby="reviewSortDropdownBtn"
+                                                                                                 style="min-width: 200px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.12); padding: 6px 0; margin-top: 6px; overflow: hidden;">
+                                                                                                @foreach($reviewSortOptions as $val => $label)
+                                                                                                <button type="button"
+                                                                                                    data-sort-value="{{ $val }}"
+                                                                                                    data-sort-label="{{ $label }}"
+                                                                                                    class="review-sort-option dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
+                                                                                                    style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; font-weight: {{ $currentSort === $val ? '600' : '400' }};">
+                                                                                                    <span>{{ $label }}</span>
+                                                                                                    <span class="sort-check-icon {{ $currentSort === $val ? '' : 'd-none' }}">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                                                                            viewBox="0 0 24 24" fill="none" stroke="#1e3050" stroke-width="2.5"
+                                                                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                                                                            style="flex-shrink: 0; margin-left: 8px;">
+                                                                                                            <polyline points="20 6 9 17 4 12" />
+                                                                                                        </svg>
+                                                                                                    </span>
+                                                                                                </button>
+                                                                                                @endforeach
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
 
@@ -2198,20 +2245,37 @@
                                                                         <script>
                                                                         document.addEventListener('DOMContentLoaded', function () {
                                                                             const checkboxes = document.querySelectorAll('.rating-filter-checkbox');
-                                                                            const sortSelect = document.getElementById('rating-select');
-                                                                            const clearBtn = document.getElementById('clear-filters');
+                                                                            const clearBtns = document.querySelectorAll('.clear-filters-btn');
+                                                                            const filterBadge = document.getElementById('filter-count-badge');
+                                                                            const filterBtn = document.getElementById('reviewFilterDropdownBtn');
                                                                             const container = document.getElementById('reviews-list-container');
+                                                                            const sortOptions = document.querySelectorAll('.review-sort-option');
+                                                                            const sortLabelSpan = document.getElementById('current-sort-label');
 
-                                                                            const sortForm = document.getElementById('sort-form');
-                                                                            if (sortForm) {
-                                                                                sortForm.addEventListener('submit', function (e) {
+                                                                            let currentSortValue = '{{ $currentSort }}';
+
+                                                                            sortOptions.forEach(opt => {
+                                                                                opt.addEventListener('click', function(e) {
                                                                                     e.preventDefault();
+                                                                                    const val = this.getAttribute('data-sort-value');
+                                                                                    const label = this.getAttribute('data-sort-label');
+                                                                                    currentSortValue = val;
+                                                                                    if (sortLabelSpan) {
+                                                                                        sortLabelSpan.textContent = label;
+                                                                                    }
+                                                                                    sortOptions.forEach(o => {
+                                                                                        const isMatch = (o.getAttribute('data-sort-value') === val);
+                                                                                        o.style.backgroundColor = isMatch ? '#f8fafc' : 'transparent';
+                                                                                        o.style.fontWeight = isMatch ? '600' : '400';
+                                                                                        const icon = o.querySelector('.sort-check-icon');
+                                                                                        if (icon) {
+                                                                                            if (isMatch) icon.classList.remove('d-none');
+                                                                                            else icon.classList.add('d-none');
+                                                                                        }
+                                                                                    });
+                                                                                    fetchReviews();
                                                                                 });
-                                                                            }
-
-                                                                            if (sortSelect) {
-                                                                                sortSelect.addEventListener('change', fetchReviews);
-                                                                            }
+                                                                            });
 
                                                                             checkboxes.forEach(cb => {
                                                                                 cb.addEventListener('change', function() {
@@ -2220,19 +2284,49 @@
                                                                                 });
                                                                             });
 
-                                                                            if (clearBtn) {
-                                                                                clearBtn.addEventListener('click', function() {
+                                                                            clearBtns.forEach(btn => {
+                                                                                btn.addEventListener('click', function() {
                                                                                     checkboxes.forEach(cb => cb.checked = false);
                                                                                     updateClearButtonVisibility();
                                                                                     fetchReviews();
                                                                                 });
-                                                                            }
+                                                                            });
 
                                                                             function updateClearButtonVisibility() {
-                                                                                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-                                                                                if (clearBtn) {
-                                                                                    clearBtn.style.display = anyChecked ? 'inline' : 'none';
+                                                                                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                                                                                clearBtns.forEach(btn => {
+                                                                                    btn.style.display = checkedCount > 0 ? 'inline' : 'none';
+                                                                                });
+                                                                                if (filterBadge) {
+                                                                                    if (checkedCount > 0) {
+                                                                                        filterBadge.textContent = checkedCount;
+                                                                                        filterBadge.classList.remove('d-none');
+                                                                                    } else {
+                                                                                        filterBadge.classList.add('d-none');
+                                                                                    }
                                                                                 }
+                                                                                if (filterBtn) {
+                                                                                    if (checkedCount > 0) {
+                                                                                        filterBtn.style.borderColor = '#06498b';
+                                                                                        filterBtn.style.color = '#06498b';
+                                                                                    } else {
+                                                                                        filterBtn.style.borderColor = '#ced4da';
+                                                                                        filterBtn.style.color = '#1e3050';
+                                                                                    }
+                                                                                }
+                                                                            }
+
+                                                                            // Check pre-selected stars from URL query params
+                                                                            const urlParams = new URLSearchParams(window.location.search);
+                                                                            const starsParam = urlParams.get('stars');
+                                                                            if (starsParam) {
+                                                                                const starsArr = starsParam.split(',');
+                                                                                checkboxes.forEach(cb => {
+                                                                                    if (starsArr.includes(cb.value)) {
+                                                                                        cb.checked = true;
+                                                                                    }
+                                                                                });
+                                                                                updateClearButtonVisibility();
                                                                             }
 
                                                                             function fetchReviews() {
@@ -2240,9 +2334,11 @@
                                                                                     .filter(cb => cb.checked)
                                                                                     .map(cb => cb.value);
 
-                                                                                const sortValue = sortSelect ? sortSelect.value : 'recent';
+                                                                                const sortValue = currentSortValue || 'recent';
 
-                                                                                container.style.opacity = '0.5';
+                                                                                if (container) {
+                                                                                    container.style.opacity = '0.5';
+                                                                                }
 
                                                                                 const url = new URL(window.location.href);
                                                                                 url.searchParams.set('sort', sortValue);
@@ -2259,15 +2355,19 @@
                                                                                 })
                                                                                 .then(response => response.text())
                                                                                 .then(html => {
-                                                                                    container.innerHTML = html;
-                                                                                    container.style.opacity = '1';
+                                                                                    if (container) {
+                                                                                        container.innerHTML = html;
+                                                                                        container.style.opacity = '1';
+                                                                                    }
                                                                                     if (typeof AOS !== 'undefined') {
                                                                                         AOS.refresh();
                                                                                     }
                                                                                 })
                                                                                 .catch(err => {
                                                                                     console.error('Error fetching reviews:', err);
-                                                                                    container.style.opacity = '1';
+                                                                                    if (container) {
+                                                                                        container.style.opacity = '1';
+                                                                                    }
                                                                                 });
                                                                             }
                                                                         });
@@ -2328,25 +2428,25 @@
                                             <div class="main_feature_lg">
                                                 <div class="feture_box lft_check_box size15">
                                                     <ul class="list-unstyled">
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Free domain & SSL certificate</p>
                                                         </li>
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Customizable automatic updates</p>
                                                         </li>
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
                                                             <p class="m-0">Scalable performance management</p>
                                                         </li>
-                                                        <li class="d-flex flex-row align-items-center size15">
+                                                        <li class="d-flex flex-row size15">
                                                             <div class="grn_chk">
                                                                 <img src="{{ asset('front/img/tick-img.png') }}">
                                                             </div>
@@ -2367,7 +2467,7 @@
                                                                 {{ number_format($averageRating,1) }}
                                                             </span>
                                                             @if($ratingWord = get_rating_label($averageRating))
-                                                                <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 5px; margin-bottom: 2px; line-height: 1.2;">
+                                                                <span class="rating-word-label">
                                                                     {{ $ratingWord }}
                                                                 </span>
                                                             @endif
@@ -2779,20 +2879,23 @@
                                                     <a href="#section1" class="sticky-nav-item active" data-target="section1">
                                                         <span>Overview</span>
                                                     </a>
-                                                    <a href="#section9" class="sticky-nav-item" data-target="section9">
-                                                        <span>Alternatives</span>
-                                                    </a>
-                                                    <a href="#section15" class="sticky-nav-item" data-target="section15">
-                                                        <span>FAQs</span>
-                                                    </a>
-                                                    <a href="#section-compare" class="sticky-nav-item" data-target="section-compare">
-                                                        <span>Compare</span>
-                                                    </a>
+                                                    @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
+                                                        <a href="#section9" class="sticky-nav-item" data-target="section9">
+                                                            <span>Alternatives</span>
+                                                        </a>
+                                                    @endif
+                                                    @if (isset($business->faqs) && $business->faqs->count() > 0)
+                                                        <a href="#section15" class="sticky-nav-item" data-target="section15">
+                                                            <span>FAQs</span>
+                                                        </a>
+                                                    @endif
+                                                    @if (isset($peerComparisons) && count($peerComparisons) > 0)
+                                                        <a href="#section-compare" class="sticky-nav-item" data-target="section-compare">
+                                                            <span>Compare</span>
+                                                        </a>
+                                                    @endif
                                                     <a href="#section14" class="sticky-nav-item" data-target="section14">
                                                         <span>Reviews</span>
-                                                    </a>
-                                                    <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
-                                                        <span>Discussions</span>
                                                     </a>
                                                 </div>
 
@@ -3594,8 +3697,7 @@
                     { id: 'section9', target: 'section9' },
                     { id: 'section15', target: 'section15' },
                     { id: 'section-compare', target: 'section-compare' },
-                    { id: 'section14', target: 'section14' },
-                    { id: 'sectionDiscussions', target: 'sectionDiscussions' }
+                    { id: 'section14', target: 'section14' }
                 ];
 
                 window.addEventListener('scroll', function() {

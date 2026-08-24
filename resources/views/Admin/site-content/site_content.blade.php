@@ -39,19 +39,16 @@
 
     <div class="card card-bordered">
         <div class="card-inner">
-            <div class="row g-4">
+            <div class="row g-4 gy-5">
                 {{-- 1. URL Slugs / Page URL Translations Section --}}
-                <div class="col-12">
+                <div class="col-12 mb-3">
                     <form action="{{ route('admin.text-content.update') }}" class="form-validate" method="POST">
                         @csrf
                         <input type="hidden" name="lang_id" value="{{ $langId }}">
 
                         <div class="card border w-100">
-                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <div class="card-header bg-light">
                                 <h6 class="mb-0">Page URL Slugs</h6>
-                                <button type="submit" class="btn btn-sm btn-primary btn-localio">
-                                    Update Page URL Slugs
-                                </button>
                             </div>
                             <div class="card-body">
                                 <div class="row g-3">
@@ -104,17 +101,14 @@
 
                 {{-- 2. Other Text Content Sections --}}
                 @foreach ($sections as $sectionKey => $section)
-                    <div class="col-12">
+                    <div class="col-12 mb-3">
                         <form action="{{ route('admin.text-content.update') }}" class="form-validate" method="POST">
                             @csrf
                             <input type="hidden" name="lang_id" value="{{ $langId }}">
 
                             <div class="card border w-100">
-                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <div class="card-header bg-light">
                                     <h6 class="mb-0">{{ $section['title'] }}</h6>
-                                    <button type="submit" class="btn btn-sm btn-primary btn-localio">
-                                        Update {{ $section['title'] }}
-                                    </button>
                                 </div>
                                 <div class="card-body">
                                     @if ($sectionKey === 'rating_labels')

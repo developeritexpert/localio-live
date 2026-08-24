@@ -23,6 +23,26 @@ class Language extends Model
         return $this->belongsTo(BaseLanguage::class, 'base_language_id');
     }
 
+    public function bcp47Language()
+    {
+        return $this->belongsTo(Bcp47Language::class, 'base_language_id');
+    }
+
+    public function getBcp47LabelAttribute(): ?string
+    {
+        if ($this->bcp47Language) {
+            return $this->bcp47Language->code . ($this->bcp47Language->name ? ' — ' . $this->bcp47Language->name : '');
+        }
+        if ($this->baseLanguage) {
+            $bcp = $this->baseLanguage->bcp47Language;
+            if ($bcp) {
+                return $bcp->code . ($bcp->name ? ' — ' . $bcp->name : '');
+            }
+            return $this->baseLanguage->name;
+        }
+        return null;
+    }
+
     public function country()
     {
         return $this->hasOne(Country::class, 'id', 'country_id');

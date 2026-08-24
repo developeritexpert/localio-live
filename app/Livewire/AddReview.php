@@ -131,7 +131,7 @@ class AddReview extends Component
         $this->show = true;
     }
 
-            public function togglePro($id)
+    public function togglePro($id)
     {
         $id = (int) $id;
         if (in_array($id, $this->selectedPros)) {
@@ -340,36 +340,103 @@ class AddReview extends Component
         $review->selectedProCons()->sync($selectedIds);
     }
 
-            public function getFilteredProsProperty()
+    protected function filterProCons(array $availableItems, array $selectedIds, string $searchQuery): array
     {
-        $unselected = array_values(array_filter($this->availablePros, function($pro) {
-            return !in_array($pro['id'], $this->selectedPros);
+        $unselected = array_values(array_filter($availableItems, function ($item) use ($selectedIds) {
+            return !in_array($item['id'], $selectedIds);
         }));
 
-        if (empty(trim($this->proSearch))) {
-            return $unselected;
+        $query = trim(strtolower($searchQuery));
+        if (empty($query)) {
+            return array_map(function ($item) {
+                $item['matched_alias'] = null;
+                return $item;
+            }, $unselected);
         }
 
-        $search = strtolower(trim($this->proSearch));
-        return array_values(array_filter($unselected, function($pro) use ($search) {
-            return str_contains(strtolower($pro['text']), $search);
-        }));
+        $searchWords = array_values(array_filter(explode(' ', $query), fn($w) => strlen($w) > 0));
+
+        $matchedList = [];
+        foreach ($unselected as $item) {
+            $text = strtolower($item['text'] ?? '');
+            $aliases = $item['aliases'] ?? [];
+            if (is_string($aliases)) {
+                $aliases = json_decode($aliases, true) ?: [$aliases];
+            }
+            if (!is_array($aliases)) {
+                $aliases = [];
+            }
+
+            $isMatch = false;
+            $matchedAlias = null;
+
+            // 1. Direct match on primary text
+            if (str_contains($text, $query)) {
+                $isMatch = true;
+            }
+
+            // 2. Token match on primary text (all search words present in primary text)
+            if (!$isMatch && count($searchWords) > 1) {
+                $allWordsMatch = true;
+                foreach ($searchWords as $w) {
+                    if (!str_contains($text, $w)) {
+                        $allWordsMatch = false;
+                        break;
+                    }
+                }
+                if ($allWordsMatch) {
+                    $isMatch = true;
+                }
+            }
+
+            // 3. Match against aliases
+            if (!$isMatch) {
+                foreach ($aliases as $alias) {
+                    $aliasStr = strtolower(trim((string)$alias));
+                    if (empty($aliasStr)) continue;
+
+                    // Direct substring in alias, or search query contains the alias
+                    if (str_contains($aliasStr, $query) || str_contains($query, $aliasStr)) {
+                        $isMatch = true;
+                        $matchedAlias = $alias;
+                        break;
+                    }
+
+                    // Token match on alias (all search words present in this alias)
+                    if (count($searchWords) > 1) {
+                        $allWordsInAlias = true;
+                        foreach ($searchWords as $w) {
+                            if (!str_contains($aliasStr, $w)) {
+                                $allWordsInAlias = false;
+                                break;
+                            }
+                        }
+                        if ($allWordsInAlias) {
+                            $isMatch = true;
+                            $matchedAlias = $alias;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ($isMatch) {
+                $item['matched_alias'] = $matchedAlias;
+                $matchedList[] = $item;
+            }
+        }
+
+        return $matchedList;
+    }
+
+    public function getFilteredProsProperty()
+    {
+        return $this->filterProCons($this->availablePros, $this->selectedPros, (string)$this->proSearch);
     }
 
     public function getFilteredConsProperty()
     {
-        $unselected = array_values(array_filter($this->availableCons, function($con) {
-            return !in_array($con['id'], $this->selectedCons);
-        }));
-
-        if (empty(trim($this->conSearch))) {
-            return $unselected;
-        }
-
-        $search = strtolower(trim($this->conSearch));
-        return array_values(array_filter($unselected, function($con) use ($search) {
-            return str_contains(strtolower($con['text']), $search);
-        }));
+        return $this->filterProCons($this->availableCons, $this->selectedCons, (string)$this->conSearch);
     }
 
     public function render()
@@ -380,4 +447,3 @@ class AddReview extends Component
         ]);
     }
 }
-

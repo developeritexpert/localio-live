@@ -78,7 +78,11 @@
                                 <div class="card shadow-sm border-0">
                                     <div class="col-md-12 mt-1 d-flex justify-content-between">
                                         @if($isEditing && $product)
-                                            <a href="#" class="btn btn-link text-center"><span><b>View Page</b></span></a>
+                                            @php
+                                                $productSlug = $product->slug ?? ($product->translations->first()->slug ?? $product->id);
+                                                $viewProductUrl = route('user.product_detail', ['locale' => app()->getLocale() ?: 'en-us', 'id' => $productSlug]);
+                                            @endphp
+                                            <a href="{{ $viewProductUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-link text-center"><span><b>View Page</b></span></a>
                                         @else
                                             <div></div>
                                         @endif

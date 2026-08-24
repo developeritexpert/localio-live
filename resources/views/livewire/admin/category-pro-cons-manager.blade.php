@@ -50,7 +50,7 @@
                 </div>
                 <div class="col-md-5">
                     <label class="form-label">Search</label>
-                    <input type="text" class="form-control" placeholder="Search Pro/Con text..." wire:model.live.debounce.300ms="search">
+                    <input type="text" class="form-control" placeholder="Search Pro/Con text or aliases..." wire:model.live.debounce.300ms="search">
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Category</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Type</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Text</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Text & Aliases</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Status</span></th>
                         <th class="nk-tb-col tb-tnx-action text-end"><span class="sub-text">Action</span></th>
                     </tr>
@@ -87,7 +87,16 @@
                                 @endif
                             </td>
                             <td class="nk-tb-col">
-                                <span class="tb-amount">{{ $item->text }}</span>
+                                <span class="tb-amount fw-bold">{{ $item->text }}</span>
+                                @if(!empty($item->aliases) && is_array($item->aliases))
+                                    <div class="mt-1 d-flex flex-wrap gap-1" style="gap: 4px;">
+                                        @foreach($item->aliases as $alias)
+                                            <span class="badge bg-light text-secondary border" style="font-size: 11px; font-weight: normal;">
+                                                {{ $alias }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </td>
                             <td class="nk-tb-col">
                                 <button type="button" class="btn btn-xs {{ $item->status ? 'btn-outline-success' : 'btn-outline-secondary' }}" wire:click="toggleStatus({{ $item->id }})">
@@ -166,9 +175,18 @@
                             @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Text <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('text') is-invalid @enderror" wire:model="text" placeholder="e.g. Beginner-friendly website setup">
+                            <label class="form-label">Primary Text <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('text') is-invalid @enderror" wire:model="text" placeholder="e.g. Helpful customer support">
                             @error('text') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Aliases <small class="text-muted">(Optional - one per line or comma-separated)</small></label>
+                            <textarea class="form-control @error('aliases') is-invalid @enderror" 
+                                      wire:model="aliases" 
+                                      rows="4" 
+                                      placeholder="helpful support&#10;helpful customer service&#10;support was helpful&#10;customer service was helpful"></textarea>
+                            <div class="form-text text-muted small">Alternative phrases that will detect and suggest this Pro/Con when typed during review writing.</div>
+                            @error('aliases') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Status</label>
@@ -232,15 +250,27 @@
                                     <em class="icon ni ni-copy me-1"></em> Copy Sample JSON
                                 </button>
                             </div>
-                            <pre id="sampleJsonText" class="m-0 text-dark" style="font-size: 11px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid #cbd5e1; max-height: 160px; overflow-y: auto;">
+                            <pre id="sampleJsonText" class="m-0 text-dark" style="font-size: 11px; background: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid #cbd5e1; max-height: 180px; overflow-y: auto;">
 [
   {
     "type": "pro",
-    "text": "Beginner-friendly website and WordPress setup"
+    "text": "Helpful customer support",
+    "aliases": [
+      "helpful support",
+      "helpful customer service",
+      "support was helpful",
+      "customer service was helpful"
+    ]
   },
   {
     "type": "con",
-    "text": "Promotional prices increase upon renewal"
+    "text": "Expensive renewal pricing",
+    "aliases": [
+      "high renewal prices",
+      "renewal costs are expensive",
+      "costly renewals",
+      "renewal price is too high"
+    ]
   }
 ]
                             </pre>

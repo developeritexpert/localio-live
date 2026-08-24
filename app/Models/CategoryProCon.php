@@ -15,7 +15,13 @@ class CategoryProCon extends Model
         'category_id',
         'type',
         'text',
+        'aliases',
         'status',
+    ];
+
+    protected $casts = [
+        'aliases' => 'array',
+        'status'  => 'boolean',
     ];
 
     public function category()
