@@ -1051,19 +1051,21 @@
                             $name = $business->translations->first()->name ?? 'This Business';
 
                             // Fixed dynamic top content
-                            $staticBottomSections = [
-                                ['id' => 'section9', 'label' => 'Alternatives'],
-                            ];
+                            $staticBottomSections = [];
+
+                            if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0) {
+                                $staticBottomSections[] = ['id' => 'section9', 'label' => 'Alternatives'];
+                            }
 
                             if (isset($business->faqs) && $business->faqs->count() > 0) {
                                 $staticBottomSections[] = ['id' => 'section15', 'label' => 'FAQs'];
                             }
 
-                            $staticBottomSections = array_merge($staticBottomSections, [
-                                ['id' => 'section-compare', 'label' => 'Compare'],
-                                ['id' => 'section14', 'label' => "Reviews"],
-                                ['id' => 'sectionDiscussions', 'label' => "Discussions"],
-                            ]);
+                            if (isset($peerComparisons) && count($peerComparisons) > 0) {
+                                $staticBottomSections[] = ['id' => 'section-compare', 'label' => 'Compare'];
+                            }
+
+                            $staticBottomSections[] = ['id' => 'section14', 'label' => "Reviews"];
 
                             // Dynamic middle sections from topics
                             // Start dynamic topic sections at a high number to avoid conflict
@@ -1572,6 +1574,7 @@
 
                                                                 @endphp
 
+                                                                @if(isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
                                                                 <section class="software-like p_50 product_integra_sec " id="section9">
                                                                 <div class="container">
                                                                     <div class="sftwre-like-innr">
@@ -1747,6 +1750,7 @@
                                                                     </div>
                                                                 </div>
                                                                 </section>
+                                                                @endif
 
                                                                 @if(isset($business->faqs) && $business->faqs->count() > 0)
                                                                 @php
@@ -1813,6 +1817,7 @@
                                                                 </section>
                                                                 @endif
 
+                                                                @if(isset($peerComparisons) && count($peerComparisons) > 0)
                                                                 @php
                                                                     $bName = $business->translations->first()->name ?? 'Business';
                                                                     $catTrans = $business->category->translation ?? null;
@@ -1892,19 +1897,18 @@
                                                                             @endforelse
                                                                         </div>
 
-                                                                        @if(count($peerComparisons) > 0)
-                                                                            @php
-                                                                                $cCompSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
-                                                                                $bSlugStr = $business->translations->first()->slug ?? $business->slug;
-                                                                            @endphp
-                                                                            <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
-                                                                                <a href="{{ url(app()->getLocale() . '/' . $bSlugStr . '/' . $cCompSlug) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                                                                                    View more comparisons
-                                                                                </a>
-                                                                            </div>
-                                                                        @endif
+                                                                        @php
+                                                                            $cCompSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
+                                                                            $bSlugStr = $business->translations->first()->slug ?? $business->slug;
+                                                                        @endphp
+                                                                        <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
+                                                                            <a href="{{ url(app()->getLocale() . '/' . $bSlugStr . '/' . $cCompSlug) }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                                                View more comparisons
+                                                                            </a>
+                                                                        </div>
                                                                     </div>
                                                                 </section>
+                                                                @endif
 
                                                                 <section class="about_asn_2 light pt-0 p_50 d-none">
 
@@ -2875,20 +2879,23 @@
                                                     <a href="#section1" class="sticky-nav-item active" data-target="section1">
                                                         <span>Overview</span>
                                                     </a>
-                                                    <a href="#section9" class="sticky-nav-item" data-target="section9">
-                                                        <span>Alternatives</span>
-                                                    </a>
-                                                    <a href="#section15" class="sticky-nav-item" data-target="section15">
-                                                        <span>FAQs</span>
-                                                    </a>
-                                                    <a href="#section-compare" class="sticky-nav-item" data-target="section-compare">
-                                                        <span>Compare</span>
-                                                    </a>
+                                                    @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
+                                                        <a href="#section9" class="sticky-nav-item" data-target="section9">
+                                                            <span>Alternatives</span>
+                                                        </a>
+                                                    @endif
+                                                    @if (isset($business->faqs) && $business->faqs->count() > 0)
+                                                        <a href="#section15" class="sticky-nav-item" data-target="section15">
+                                                            <span>FAQs</span>
+                                                        </a>
+                                                    @endif
+                                                    @if (isset($peerComparisons) && count($peerComparisons) > 0)
+                                                        <a href="#section-compare" class="sticky-nav-item" data-target="section-compare">
+                                                            <span>Compare</span>
+                                                        </a>
+                                                    @endif
                                                     <a href="#section14" class="sticky-nav-item" data-target="section14">
                                                         <span>Reviews</span>
-                                                    </a>
-                                                    <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
-                                                        <span>Discussions</span>
                                                     </a>
                                                 </div>
 
@@ -3690,8 +3697,7 @@
                     { id: 'section9', target: 'section9' },
                     { id: 'section15', target: 'section15' },
                     { id: 'section-compare', target: 'section-compare' },
-                    { id: 'section14', target: 'section14' },
-                    { id: 'sectionDiscussions', target: 'sectionDiscussions' }
+                    { id: 'section14', target: 'section14' }
                 ];
 
                 window.addEventListener('scroll', function() {
