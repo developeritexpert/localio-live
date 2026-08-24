@@ -586,8 +586,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
                                             <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; min-width: 180px;">Business</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 42%;">Most mentioned pro</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 42%;">Most mentioned con</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; min-width: 180px;">Overall rating</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned pro</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned con</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -596,6 +597,9 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 $rTrans = $rowBiz->translations->firstWhere('lang_id', $lang_id) ?? $rowBiz->translations->first();
                                                 $rName = $rTrans->name ?? $rowBiz->name ?? 'Business';
                                                 $rSlug = $rTrans->slug ?? $rowBiz->slug ?? 'business-' . $rowBiz->id;
+                                                $rRevs = $rowBiz->reviews->where('status', 'active');
+                                                $rCount = $rRevs->count();
+                                                $rRating = $rCount > 0 ? round($rRevs->avg('rating'), 1) : (float)($rowBiz->admin_rating ?? 0);
 
                                                 $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
                                                     ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
@@ -616,7 +620,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
                                                     <div class="d-flex align-items-center gap-2">
-                                                        <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                        <div class="top-product-small-logo">
                                                             <x-business-logo :business="$rowBiz" :name="$rName" />
                                                         </div>
                                                         <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -628,6 +632,12 @@ section.top-automotive-sec.top_rate_pg.light {
                                                             @endif
                                                         </div>
                                                     </div>
+                                                </td>
+                                                <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                                    <span class="d-inline-flex align-items-center gap-1">
+                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                        <span>{{ number_format($rRating, 1) }}</span>
+                                                    </span>
                                                 </td>
                                                 <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                     @if($proStr !== '-')
