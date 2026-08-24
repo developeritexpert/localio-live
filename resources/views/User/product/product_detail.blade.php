@@ -2075,10 +2075,10 @@
                                                                                     <div class="review-sidebar-sticky">
 
                                                                                         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-                                                                                            User reviews
+                                                                                            {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
                                                                                         </h2>
-                                                                                        <div class="review-filter-sec">
-                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border " style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                                                                        <div class="review-filter-sec" style="display: block;">
+                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
 
                                                                                                 <div class="d-flex flex-column align-items-start mb-3">
                                                                                                     <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
@@ -2120,56 +2120,68 @@
                                                                                                     <strong style="color: #002347; font-size: 14px; font-weight:600">{{ $recommendPercent }}%</strong>
                                                                                                 </div>
                                                                                             </div>
-
-                                                                                            <div class="wrap-review-filter">
-
-                                                                                                <div class="filter-by-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 6px;">
-                                                                                                    <span style="font-size: 15px; font-weight: 600; color: #002655;">Filter by rating</span>
-                                                                                                    <span class="clear-filters-btn" id="clear-filters" style="display: none; color: #007bff; font-size: 13px; cursor: pointer;">Clear filter</span>
-                                                                                                </div>
-
-                                                                                                <div class="review-star-box">
-                                                                                                    <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
-                                                                                                        @for ($i = 5; $i >= 1; $i--)
-                                                                                                            @php
-                                                                                                                $count = $ratingCounts[$i] ?? 0;
-                                                                                                                $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
-                                                                                                            @endphp
-                                                                                                            <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
-                                                                                                                <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
-                                                                                                                <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
-                                                                                                                    <span style="display: inline-flex; align-items: center; width: 45px; font-size: 14px; color: #555; flex-shrink: 0;">
-                                                                                                                        <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
-                                                                                                                    </span>
-                                                                                                                    <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
-                                                                                                                        <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
-                                                                                                                    </div>
-                                                                                                                    <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
-                                                                                                                </label>
-                                                                                                            </li>
-                                                                                                        @endfor
-                                                                                                    </ul>
-                                                                                                </div>
-                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
 
                                                                                 <div class="col-lg-12">
 
-                                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;  margin-top: 25px;">
+                                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; margin-top: 25px; flex-wrap: wrap; gap: 12px;">
                                                                                         
+                                                                                        <!-- Filter Button with Dropdown & Clear filter on Left -->
+                                                                                        <div class="d-flex align-items-center gap-2">
+                                                                                            <div class="dropdown" id="reviewFilterDropdownWrap">
+                                                                                                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" 
+                                                                                                        type="button" 
+                                                                                                        id="reviewFilterDropdownBtn" 
+                                                                                                        data-bs-toggle="dropdown" 
+                                                                                                        data-bs-auto-close="outside"
+                                                                                                        aria-expanded="false" 
+                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff;">
+                                                                                                    <i class="fas fa-filter text-muted"></i>
+                                                                                                    <span>Filter by rating</span>
+                                                                                                    <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
+                                                                                                </button>
+                                                                                                <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm" 
+                                                                                                     aria-labelledby="reviewFilterDropdownBtn" 
+                                                                                                     style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                                                                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                                                                        <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
+                                                                                                        <span class="clear-filters-btn text-primary" id="clear-filters-dropdown" style="display: none; font-size: 12px; font-weight: 600; cursor: pointer;">Clear all</span>
+                                                                                                    </div>
 
-                                                                                        <a class="write-review-link"
-                                                                                            @auth
-                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                                                                            @else
-                                                                                                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
-                                                                                            @endauth
-                                                                                            style="cursor: pointer; font-size: 15px; font-weight: 600; color: #06498b; text-decoration: none;"
-                                                                                        ><i class="fas fa-pencil-alt me-1"></i>Write review</a>
+                                                                                                    <div class="review-star-box">
+                                                                                                        <ul class="progress-list" style="list-style: none; padding: 0; margin: 0;">
+                                                                                                            @for ($i = 5; $i >= 1; $i--)
+                                                                                                                @php
+                                                                                                                    $count = $ratingCounts[$i] ?? 0;
+                                                                                                                    $percent = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+                                                                                                                @endphp
+                                                                                                                <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
+                                                                                                                    <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
+                                                                                                                    <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
+                                                                                                                        <span style="display: inline-flex; align-items: center; width: 45px; font-size: 13px; color: #555; flex-shrink: 0;">
+                                                                                                                            <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
+                                                                                                                        </span>
+                                                                                                                        <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
+                                                                                                                            <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
+                                                                                                                        </div>
+                                                                                                                        <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
+                                                                                                                    </label>
+                                                                                                                </li>
+                                                                                                            @endfor
+                                                                                                        </ul>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
 
+                                                                                            <!-- Clear filter link next to button -->
+                                                                                            <span class="clear-filters-btn ms-2" id="clear-filters" style="display: none; color: #06498b; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline;">
+                                                                                                <i class="fas fa-times me-1"></i>Clear filter
+                                                                                            </span>
+                                                                                        </div>
 
+                                                                                        <!-- Sort Dropdown on Right -->
                                                                                         <div class="selct_box">
                                                                                             <form method="GET" id="sort-form" style="margin: 0; display: flex; align-items: center; gap: 8px;">
                                                                                                 <label for="rating-select" style="font-size: 14px; font-weight: 600; color: #555; margin: 0; white-space: nowrap;">Sort by:</label>
@@ -2193,7 +2205,9 @@
                                                                         document.addEventListener('DOMContentLoaded', function () {
                                                                             const checkboxes = document.querySelectorAll('.rating-filter-checkbox');
                                                                             const sortSelect = document.getElementById('rating-select');
-                                                                            const clearBtn = document.getElementById('clear-filters');
+                                                                            const clearBtns = document.querySelectorAll('.clear-filters-btn');
+                                                                            const filterBadge = document.getElementById('filter-count-badge');
+                                                                            const filterBtn = document.getElementById('reviewFilterDropdownBtn');
                                                                             const container = document.getElementById('reviews-list-container');
 
                                                                             const sortForm = document.getElementById('sort-form');
@@ -2214,19 +2228,49 @@
                                                                                 });
                                                                             });
 
-                                                                            if (clearBtn) {
-                                                                                clearBtn.addEventListener('click', function() {
+                                                                            clearBtns.forEach(btn => {
+                                                                                btn.addEventListener('click', function() {
                                                                                     checkboxes.forEach(cb => cb.checked = false);
                                                                                     updateClearButtonVisibility();
                                                                                     fetchReviews();
                                                                                 });
-                                                                            }
+                                                                            });
 
                                                                             function updateClearButtonVisibility() {
-                                                                                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-                                                                                if (clearBtn) {
-                                                                                    clearBtn.style.display = anyChecked ? 'inline' : 'none';
+                                                                                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                                                                                clearBtns.forEach(btn => {
+                                                                                    btn.style.display = checkedCount > 0 ? 'inline' : 'none';
+                                                                                });
+                                                                                if (filterBadge) {
+                                                                                    if (checkedCount > 0) {
+                                                                                        filterBadge.textContent = checkedCount;
+                                                                                        filterBadge.classList.remove('d-none');
+                                                                                    } else {
+                                                                                        filterBadge.classList.add('d-none');
+                                                                                    }
                                                                                 }
+                                                                                if (filterBtn) {
+                                                                                    if (checkedCount > 0) {
+                                                                                        filterBtn.style.borderColor = '#06498b';
+                                                                                        filterBtn.style.color = '#06498b';
+                                                                                    } else {
+                                                                                        filterBtn.style.borderColor = '#ced4da';
+                                                                                        filterBtn.style.color = '#1e3050';
+                                                                                    }
+                                                                                }
+                                                                            }
+
+                                                                            // Check pre-selected stars from URL query params
+                                                                            const urlParams = new URLSearchParams(window.location.search);
+                                                                            const starsParam = urlParams.get('stars');
+                                                                            if (starsParam) {
+                                                                                const starsArr = starsParam.split(',');
+                                                                                checkboxes.forEach(cb => {
+                                                                                    if (starsArr.includes(cb.value)) {
+                                                                                        cb.checked = true;
+                                                                                    }
+                                                                                });
+                                                                                updateClearButtonVisibility();
                                                                             }
 
                                                                             function fetchReviews() {
@@ -2236,7 +2280,9 @@
 
                                                                                 const sortValue = sortSelect ? sortSelect.value : 'recent';
 
-                                                                                container.style.opacity = '0.5';
+                                                                                if (container) {
+                                                                                    container.style.opacity = '0.5';
+                                                                                }
 
                                                                                 const url = new URL(window.location.href);
                                                                                 url.searchParams.set('sort', sortValue);
@@ -2253,15 +2299,19 @@
                                                                                 })
                                                                                 .then(response => response.text())
                                                                                 .then(html => {
-                                                                                    container.innerHTML = html;
-                                                                                    container.style.opacity = '1';
+                                                                                    if (container) {
+                                                                                        container.innerHTML = html;
+                                                                                        container.style.opacity = '1';
+                                                                                    }
                                                                                     if (typeof AOS !== 'undefined') {
                                                                                         AOS.refresh();
                                                                                     }
                                                                                 })
                                                                                 .catch(err => {
                                                                                     console.error('Error fetching reviews:', err);
-                                                                                    container.style.opacity = '1';
+                                                                                    if (container) {
+                                                                                        container.style.opacity = '1';
+                                                                                    }
                                                                                 });
                                                                             }
                                                                         });
