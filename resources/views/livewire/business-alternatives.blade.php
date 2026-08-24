@@ -538,7 +538,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                                 <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
                                                     <div class="d-flex align-items-center gap-2">
-                                                        <div style="width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                                        <div class="top-product-small-logo" >
                                                             <x-business-logo :business="$rowBiz" :name="$rName" />
                                                         </div>
                                                         <div class="d-flex align-items-center gap-1 flex-wrap">
