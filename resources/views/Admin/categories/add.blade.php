@@ -236,24 +236,52 @@
                             <h5 class="title mb-1">Rating Criteria</h5>
                             <p class="text-muted small mb-3">Configure default rating criteria descriptions and define category or subcategory specific criteria.</p>
 
+                            @php
+                                $isSubcategory = isset($category) && $category->parent_id !== null;
+                            @endphp
+
                             <!-- Default Rating Criteria (3 Mandatory Defaults) -->
-                            <div class="card card-bordered bg-light mb-3">
-                                <div class="card-inner py-3">
-                                    <h6 class="title mb-2 text-primary"><i class="fa fa-lock me-1"></i> Default Rating Criteria (Global Defaults)</h6>
-                                    <p class="text-muted small mb-3">These 3 criteria apply to all categories and cannot be removed. You can add category-specific short descriptions for each.</p>
-                                    <div class="row g-2">
-                                        @foreach($default_criteria as $def)
-                                            <div class="col-md-12 mb-3 p-2 bg-white rounded border">
-                                                <div class="d-flex align-items-center mb-1">
-                                                    <span class="fw-bold me-2">{{ $def['name'] }}</span>
-                                                    <span class="badge bg-secondary">Default</span>
+                            @if($isSubcategory)
+                                <!-- Read-Only Inherited View for Subcategories -->
+                                <div class="card card-bordered bg-light mb-3">
+                                    <div class="card-inner py-3">
+                                        <h6 class="title mb-2 text-info"><i class="fa fa-lock me-1"></i> Default Rating Criteria (Global Defaults)</h6>
+                                        <p class="text-muted small mb-3">These 3 criteria apply to all subcategories and are inherited from the parent main category.</p>
+                                        <div class="row g-2">
+                                            @foreach($default_criteria as $def)
+                                                <div class="col-md-12 p-2 bg-white rounded border mb-2">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <span class="fw-bold me-2">{{ $def['name'] }}</span>
+                                                        <span class="badge bg-info">Inherited from Main Category</span>
+                                                    </div>
+                                                    @if(!empty($def['description']))
+                                                        <small class="text-muted d-block">{{ $def['description'] }}</small>
+                                                    @endif
                                                 </div>
-                                                <input type="text" class="form-control form-control-sm" name="default_rating_criteria[{{ $def['key'] }}][description]" value="{{ $def['description'] ?? '' }}" placeholder="Add short description for {{ $def['name'] }} (shown in review modal)" />
-                                            </div>
-                                        @endforeach
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @else
+                                <!-- Editable View for Parent/Main Categories -->
+                                <div class="card card-bordered bg-light mb-3">
+                                    <div class="card-inner py-3">
+                                        <h6 class="title mb-2 text-primary"><i class="fa fa-lock me-1"></i> Default Rating Criteria (Global Defaults)</h6>
+                                        <p class="text-muted small mb-3">These 3 criteria apply to all categories and cannot be removed. You can add category-specific short descriptions for each.</p>
+                                        <div class="row g-2">
+                                            @foreach($default_criteria as $def)
+                                                <div class="col-md-12 mb-3 p-2 bg-white rounded border">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <span class="fw-bold me-2">{{ $def['name'] }}</span>
+                                                        <span class="badge bg-secondary">Default</span>
+                                                    </div>
+                                                    <input type="text" class="form-control form-control-sm" name="default_rating_criteria[{{ $def['key'] }}][description]" value="{{ $def['description'] ?? '' }}" placeholder="Add short description for {{ $def['name'] }} (shown in review modal)" />
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
                             <!-- Inherited Main Category Criteria (if subcategory) -->
                             @if(isset($inherited_criteria) && count($inherited_criteria) > 0)
