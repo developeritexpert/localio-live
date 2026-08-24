@@ -927,7 +927,7 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                                 height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
                                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                                style="{{ !empty($showSortDropdown) ? 'transform: rotate(180deg);' : '' }} transition: transform 0.2s ease;">
+                                                style="{{ !empty($showSortDropdown) ? 'transform: rotate(180deg);' : '' }}">
                                                 <polyline points="6 9 12 15 18 9" />
                                             </svg>
                                         </button>
@@ -939,7 +939,7 @@
                                             @foreach($sortOptionsMap as $val => $label)
                                             <button type="button" wire:click="setSortBy('{{ $val }}')"
                                                 class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
-                                                style="font-size: 13px; color: #1e3050; cursor: pointer; transition: background-color 0.15s ease; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
+                                                style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
                                                 onmouseover="this.style.backgroundColor='#f1f5f9'"
                                                 onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
                                                 <span
@@ -960,7 +960,7 @@
                                 </div>
                                 @if (!empty($products))
                                 @foreach ($products as $index => $item)
-                                <div class="automotive-card" data-aos="fade-up" data-aos-duration="1000"
+                                <div class="automotive-card"
                                     wire:key="product-{{ $item->id }}">
                                     <div class="auto-choice-card" style="position: relative; ">
                                         @php

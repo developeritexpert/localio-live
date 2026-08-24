@@ -172,7 +172,7 @@
                                 {{ number_format($averageRating, 1) }}
                             </span>
                             @if($ratingWord = get_rating_label($averageRating))
-                                <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 5px; margin-bottom: 2px; line-height: 1.2;">
+                                <span class="rating-word-label">
                                     {{ $ratingWord }}
                                 </span>
                             @endif
@@ -496,7 +496,7 @@
         <!-- Review Prompt Banner -->
         <div class="review-prompt-banner mb-5" id="reviewPromptBanner" style="background-color: #f8fafc; border-radius: 16px; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
             <div style="display: flex; align-items: center; gap: 18px;">
-                <div class="banner-icon" style="width: 52px; height: 52px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                <div class="banner-icon" style="width: 52px; height: 52px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                     <x-business-logo :business="$business" :name="$bName" />
                 </div>
                 <div>
@@ -539,7 +539,7 @@
                         <div class="d-flex flex-column align-items-start mb-3">
                             <span style="font-size: 42px; font-weight: 700; color: #1e3050; line-height: 1; margin-bottom: 4px;">{{ number_format($averageRating, 1) }}</span>
                             @if($ratingWord = get_rating_label($averageRating))
-                                <span class="rating-word-label" style="font-size: 15px; font-weight: 600; color: #1e3050; margin-top: 2px; margin-bottom: 4px; line-height: 1.2;">
+                                <span class="rating-word-label" >
                                     {{ $ratingWord }}
                                 </span>
                             @endif

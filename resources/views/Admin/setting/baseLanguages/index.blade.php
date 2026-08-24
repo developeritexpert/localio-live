@@ -59,7 +59,13 @@
                                 </div>
                             </td>
                             <td class="nk-tb-col tb-col-mb">
-                                <span class="badge bg-outline-info">{{ $lang->code }}</span>
+                                <span class="badge bg-outline-info">
+                                    @if($lang->bcp47Language)
+                                        {{ $lang->bcp47Language->code }}{{ $lang->bcp47Language->name ? ' — ' . $lang->bcp47Language->name : '' }}
+                                    @else
+                                        {{ $lang->code ?? '-' }}
+                                    @endif
+                                </span>
                             </td>
                             <td class="nk-tb-col tb-col-md">
                                 @if($lang->status)

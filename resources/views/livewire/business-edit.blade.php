@@ -1134,8 +1134,15 @@
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <div class="d-flex justify-content-between mb-3">
-                                        <a href="#" class="btn btn-link text-center"><span><b>View
-                                                    Page</b></span></a>
+                                        @php
+                                            $viewPageSlug = !empty($slug) ? $slug : $businessId;
+                                            $viewPageUrl = $viewPageSlug ? route('user.product_detail', ['locale' => app()->getLocale() ?: 'en-us', 'id' => $viewPageSlug]) : '#';
+                                        @endphp
+                                        @if($viewPageSlug)
+                                            <a href="{{ $viewPageUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-link text-center"><span><b>View Page</b></span></a>
+                                        @else
+                                            <a href="#" class="btn btn-link text-center disabled" style="opacity: 0.5; pointer-events: none;" onclick="return false;"><span><b>View Page</b></span></a>
+                                        @endif
                                         <button type="submit" class="btn btn-primary btn-localio" wire:loading.attr="disabled">
                                             <span wire:loading.remove>{{ $businessId ? 'Update' : 'Save' }}</span>
                                             <span wire:loading><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Saving...</span>

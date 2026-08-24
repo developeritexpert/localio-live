@@ -32,7 +32,6 @@
                 <thead>
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Country/region</span></th>
-                        <th class="nk-tb-col"><span class="sub-text">Country Code</span></th>
                         <th class="nk-tb-col"><span class="sub-text">URL Locale Code</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Disclaimer Banner</span></th>
                         <th class="nk-tb-col tb-tnx-action"><span>Action</span></th>
@@ -43,10 +42,6 @@
                     <tr class="nk-tb-item">
                         <td class="nk-tb-col">
                             <span class="tb-lead">{{ $country->name }}</span>
-                        </td>
-
-                        <td class="nk-tb-col">
-                            <span class="tb-lead">{{ $country->country_code }}</span>
                         </td>
 
                         <td class="nk-tb-col">

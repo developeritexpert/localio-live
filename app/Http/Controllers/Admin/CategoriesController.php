@@ -552,25 +552,32 @@ class CategoriesController extends Controller
             );
 
             // Handle rating criteria
-            // 1. Process Default Criteria Descriptions for this Category
-            $submittedDefaultCriteria = $request->input('default_rating_criteria', []);
-            $defaultMaster = \App\Models\DefaultRatingCriteria::all();
-            foreach ($defaultMaster as $def) {
-                $desc = isset($submittedDefaultCriteria[$def->key]['description'])
-                    ? trim($submittedDefaultCriteria[$def->key]['description'])
-                    : null;
+            // 1. Process Default Criteria Descriptions (Only for Main Categories; Subcategories inherit from parent)
+            if (!$category->parent_id) {
+                $submittedDefaultCriteria = $request->input('default_rating_criteria', []);
+                $defaultMaster = \App\Models\DefaultRatingCriteria::all();
+                foreach ($defaultMaster as $def) {
+                    $desc = isset($submittedDefaultCriteria[$def->key]['description'])
+                        ? trim($submittedDefaultCriteria[$def->key]['description'])
+                        : null;
 
-                CategoryRatingCriteria::updateOrCreate(
-                    [
-                        'category_id' => $category->id,
-                        'default_key' => $def->key,
-                    ],
-                    [
-                        'name' => $def->name,
-                        'description' => $desc,
-                        'is_default' => true,
-                    ]
-                );
+                    CategoryRatingCriteria::updateOrCreate(
+                        [
+                            'category_id' => $category->id,
+                            'default_key' => $def->key,
+                        ],
+                        [
+                            'name' => $def->name,
+                            'description' => $desc,
+                            'is_default' => true,
+                        ]
+                    );
+                }
+            } else {
+                // If it is a subcategory, clean up any subcategory-level default criteria records so it inherits directly from parent
+                CategoryRatingCriteria::where('category_id', $category->id)
+                    ->where('is_default', true)
+                    ->delete();
             }
 
             // 2. Process Custom Criteria (Category or Subcategory specific)

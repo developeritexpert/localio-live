@@ -61,24 +61,8 @@ class Category extends Model
 
         // 1. Resolve 3 Default Criteria for this category
         foreach ($defaultMaster as $def) {
-            // First check if there is an existing criteria record with matching default_key or name
-            $criterion = CategoryRatingCriteria::where('category_id', $this->id)
-                ->where(function ($q) use ($def) {
-                    $q->where('default_key', $def->key)
-                      ->orWhereRaw('LOWER(name) = ?', [strtolower($def->name)]);
-                })
-                ->first();
-
-            if ($criterion && !$criterion->default_key) {
-                $criterion->update([
-                    'is_default' => true,
-                    'default_key' => $def->key,
-                    'name' => $def->name,
-                ]);
-            }
-
-            if (!$criterion && $this->parent_id) {
-                // Try inheriting default criterion description from parent
+            if ($this->parent_id) {
+                // Subcategory: Inherit default criterion description directly from parent category
                 $parentCriterion = CategoryRatingCriteria::where('category_id', $this->parent_id)
                     ->where(function ($q) use ($def) {
                         $q->where('default_key', $def->key)
@@ -86,7 +70,35 @@ class Category extends Model
                     })
                     ->first();
 
-                if ($parentCriterion) {
+                $description = ($parentCriterion && !empty($parentCriterion->description))
+                    ? $parentCriterion->description
+                    : $def->default_description;
+
+                $criterion = new CategoryRatingCriteria([
+                    'category_id' => $this->id,
+                    'default_key' => $def->key,
+                    'name' => $def->name,
+                    'description' => $description,
+                    'is_default' => true,
+                ]);
+            } else {
+                // Main Category: Fetch or initialize local default criterion
+                $criterion = CategoryRatingCriteria::where('category_id', $this->id)
+                    ->where(function ($q) use ($def) {
+                        $q->where('default_key', $def->key)
+                          ->orWhereRaw('LOWER(name) = ?', [strtolower($def->name)]);
+                    })
+                    ->first();
+
+                if ($criterion && !$criterion->default_key) {
+                    $criterion->update([
+                        'is_default' => true,
+                        'default_key' => $def->key,
+                        'name' => $def->name,
+                    ]);
+                }
+
+                if (!$criterion) {
                     $criterion = CategoryRatingCriteria::firstOrCreate(
                         [
                             'category_id' => $this->id,
@@ -94,26 +106,11 @@ class Category extends Model
                         ],
                         [
                             'name' => $def->name,
-                            'description' => $parentCriterion->description,
+                            'description' => $def->default_description,
                             'is_default' => true,
                         ]
                     );
                 }
-            }
-
-            if (!$criterion) {
-                // Create default criterion row for this category
-                $criterion = CategoryRatingCriteria::firstOrCreate(
-                    [
-                        'category_id' => $this->id,
-                        'default_key' => $def->key,
-                    ],
-                    [
-                        'name' => $def->name,
-                        'description' => $def->default_description,
-                        'is_default' => true,
-                    ]
-                );
             }
 
             $effectiveCriteria->push($criterion);

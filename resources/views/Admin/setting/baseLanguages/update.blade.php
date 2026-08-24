@@ -31,19 +31,14 @@
                 <form action="{{ route('base-languages.updateProcc', $baseLanguage->id) }}" class="form-validate" method="post">
                     @csrf
                     <div class="row g-gs">
-                        <!-- Country/region Name -->
+                        <!-- Country/region Name (Disabled Input) -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label" for="name">Country/region</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="name" name="name" required
-                                        value="{{ old('name', $baseLanguage->name) }}"
-                                        placeholder="e.g. English (Australia), Spanish (Spain)" />
+                                    <input type="text" class="form-control" id="name" name="name"
+                                        value="{{ $baseLanguage->name }}" disabled style="cursor: not-allowed;" />
                                 </div>
-                                <div class="form-text text-muted">Label for this base language entry.</div>
-                                @error('name')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
 
