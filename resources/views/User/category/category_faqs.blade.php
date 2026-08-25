@@ -271,7 +271,16 @@
                                                 </div>
                                             @endif
                                             <div>
-                                                <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $displayName }}</h6>
+                                                <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+        @if(isset($rev) && $rev->user_id)
+            <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ $displayName }}
+            </a>
+        @else
+            {{ $displayName }}
+        @endif
+        </h6>
+        
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
                                                 @endphp

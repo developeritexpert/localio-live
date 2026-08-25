@@ -33,7 +33,15 @@
                                 @if ($review->user && $review->user->user_type === 'admin')
                                     {{ $review->public_name ?? 'Public' }}
                                 @else
-                                    {{ $review->user ? (method_exists($review->user, 'displayName') ? $review->user->displayName() : ($review->user->first_name ?? 'Anonymous')) : 'Anonymous' }}
+                                    
+        @if($review->user)
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ method_exists($review->user, 'displayName') ? $review->user->displayName() : ($review->user->first_name ?? 'Anonymous') }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        
                                 @endif
                             </h6>
                             @if($review->user && $review->user->job_title)

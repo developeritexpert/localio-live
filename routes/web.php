@@ -551,6 +551,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
 
     // Product Controller
     // Top-Rated FAQs
+    Route::get('/reviewer/{id}', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/top-rated/faq', [ProductController::class, 'topRatedFaq'])->name('top-rated.faq');
     Route::get('/top-rated/faqs', [ProductController::class, 'topRatedFaq'])->name('top-rated.faqs');
     Route::get('/top-rated/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');

@@ -2041,7 +2041,15 @@
                                                                   @endif
 
                                                                     <div>
-                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
+        @if($review->user)
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ $review->user->displayName() }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        </h6>
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
                                                 @endphp
