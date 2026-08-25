@@ -330,7 +330,6 @@ class CategoriesController extends Controller
     //                 'title'        => $validate['title'] ?? null,
     //                 'homepage_link_text' => $validate['homepage_link_text'] ?? null,
     //                 'description'  => $validate['description'],
-                    'top_rated_description' => $request->input('top_rated_description'),
     //                 'slug'         => $slug,
     //                 'comparison_slug' => $validate['comparison_slug'] ?? null,
     //                 'is_important' => $request->has('is_important') ? 1 : 0,
