@@ -2584,12 +2584,14 @@
                             <div class="container">
                                 <h3 style="color: black;">Choose your Country/Region</h3>
                                 <div class="footer-langs-container">
-                                    @foreach ($languages->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $language)
+                                    @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
+                                    @if($country->language)
                                     <li>
-                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($language->lang_code) }};path=/;max-age=31536000';">
-                                            {{ $language->name }}
+                                        <a href="{{ url('/' . strtolower($country->language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';">
+                                            {{ $country->name }}
                                         </a>
                                     </li>
+                                    @endif
                                     @endforeach
                                 </div>
                             </div>
