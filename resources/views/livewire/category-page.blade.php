@@ -1568,7 +1568,7 @@
         @endphp
         <section class="category-faqs-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <div class="container">
-                <div class="row justify-content-center">
+                <div class="row ">
                     <div class="col-lg-10">
                         <div class="text-start mb-4">
                             <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 8px;">

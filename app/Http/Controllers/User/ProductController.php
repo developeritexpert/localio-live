@@ -426,30 +426,46 @@ class ProductController extends Controller
         if (empty($faqs)) {
             $faqs = [
                 [
+                    'category' => 'Rankings & Calculation',
                     'question' => 'How are top-rated products and businesses chosen?',
                     'answer' => 'Top-rated listings are determined by verified community ratings, authentic review scores, user satisfaction metrics, and overall reliability across each industry category.'
                 ],
                 [
+                    'category' => 'Rankings & Calculation',
                     'question' => 'How often are the top-rated rankings updated?',
                     'answer' => 'Our rankings are updated continuously as new community reviews, verified feedback, and rating submissions are received.'
                 ],
                 [
+                    'category' => 'Rankings & Calculation',
                     'question' => 'Can businesses pay to be featured as top-rated?',
                     'answer' => 'No. Placement in top-rated rankings cannot be bought. Rankings strictly reflect actual community ratings and verified review performance.'
                 ],
                 [
+                    'category' => 'Reviews & Community',
                     'question' => 'How can I submit a review for a business?',
                     'answer' => 'Simply search for the business or visit its page on Localio, click "Write a review", rate the criteria, and share your experience.'
                 ],
                 [
+                    'category' => 'Reviews & Community',
                     'question' => 'What makes Localio ratings different from other review sites?',
                     'answer' => 'Localio relies on genuine community feedback with strict moderation to eliminate fake reviews, ensuring honest ratings from real users.'
                 ],
                 [
+                    'category' => 'General & Availability',
                     'question' => 'Are all listed products available in my region?',
                     'answer' => 'Most top-rated products and businesses provide regional availability indicators and localized support information on their detail pages.'
                 ]
             ];
+        }
+
+        $groupedFaqs = [];
+        $faqCategories = [];
+        foreach ($faqs as $f) {
+            $cat = !empty($f['category']) ? trim($f['category']) : 'General';
+            if (!in_array($cat, $faqCategories)) {
+                $faqCategories[] = $cat;
+            }
+            $groupedFaqs[$cat][] = $f;
         }
 
         $recentReviews = \App\Models\Review::with([
@@ -462,7 +478,7 @@ class ProductController extends Controller
             ->take(2)
             ->get();
 
-        return view('User.product.top_rated_faqs', compact('faqs', 'recentReviews', 'lang_id'));
+        return view('User.product.top_rated_faqs', compact('faqs', 'faqCategories', 'groupedFaqs', 'recentReviews', 'lang_id'));
     }
 
     public function topRatedProduct($lang, $category = null, $page = null)

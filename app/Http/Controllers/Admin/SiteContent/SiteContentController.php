@@ -706,18 +706,22 @@ if (!$headerLogo) {
         if (!$faqs) {
             $faqs = [
                 [
+                    'category' => 'Rankings & Calculation',
                     'question' => 'How are top-rated products and businesses chosen?',
                     'answer' => 'Top-rated listings are determined by verified community ratings, authentic review scores, user satisfaction metrics, and overall reliability across each industry category.'
                 ],
                 [
+                    'category' => 'Rankings & Calculation',
                     'question' => 'How often are the top-rated rankings updated?',
                     'answer' => 'Our rankings are updated continuously as new community reviews, verified feedback, and rating submissions are received.'
                 ],
                 [
+                    'category' => 'Rankings & Calculation',
                     'question' => 'Can businesses pay to be featured as top-rated?',
                     'answer' => 'No. Placement in top-rated rankings cannot be bought. Rankings strictly reflect actual community ratings and verified review performance.'
                 ],
                 [
+                    'category' => 'Reviews & Community',
                     'question' => 'How can I submit a review for a business?',
                     'answer' => 'Simply search for the business or visit its page on Localio, click "Write a review", rate the criteria, and share your experience.'
                 ]
@@ -819,6 +823,7 @@ if (!$headerLogo) {
             foreach ($faqsData as $faq) {
                 if (!empty($faq['question']) || !empty($faq['answer'])) {
                     $cleanedFaqs[] = [
+                        'category' => !empty($faq['category']) ? trim($faq['category']) : 'General',
                         'question' => $faq['question'] ?? '',
                         'answer' => $faq['answer'] ?? '',
                     ];
