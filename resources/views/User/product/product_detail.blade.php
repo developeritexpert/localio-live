@@ -2148,23 +2148,25 @@
                                                                                         <!-- Filter Button with Dropdown & Clear filter on Left -->
                                                                                         <div class="d-flex align-items-center gap-2">
                                                                                             <div class="dropdown" id="reviewFilterDropdownWrap">
-                                                                                                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" 
+                                                                                                <button class="btn btn-outline-secondary d-flex align-items-center" 
                                                                                                         type="button" 
                                                                                                         id="reviewFilterDropdownBtn" 
                                                                                                         data-bs-toggle="dropdown" 
                                                                                                         data-bs-auto-close="outside"
                                                                                                         aria-expanded="false" 
-                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff;">
+                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff; gap: 4px;">
                                                                                                     <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
                                                                                                     <span>Filter by rating</span>
                                                                                                     <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; flex-shrink: 0;">
+                                                                                                        <polyline points="6 9 12 15 18 9" />
+                                                                                                    </svg>
                                                                                                 </button>
                                                                                                 <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm" 
                                                                                                      aria-labelledby="reviewFilterDropdownBtn" 
                                                                                                      style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                                                                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                                                                    <div class="mb-2 pb-2 border-bottom">
                                                                                                         <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
-                                                                                                        <span class="clear-filters-btn text-primary" id="clear-filters-dropdown" style="display: none; font-size: 12px; font-weight: 600; cursor: pointer;">Clear all</span>
                                                                                                     </div>
 
                                                                                                     <div class="review-star-box">
@@ -2193,7 +2195,7 @@
                                                                                             </div>
 
                                                                                             <!-- Clear filter link next to button -->
-                                                                                            <span class="clear-filters-btn ms-2" id="clear-filters" style="display: none; color: #06498b; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline;">
+                                                                                            <span class="clear-filters-btn ms-2" id="clear-filters" style="display: none; font-size: 13px; font-weight: 600;">
                                                                                                 <i class="fas fa-times me-1"></i>Clear filter
                                                                                             </span>
                                                                                         </div>
