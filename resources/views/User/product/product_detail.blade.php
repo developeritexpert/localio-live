@@ -1762,7 +1762,7 @@
                                                                 <section class="faq-section product_inr_faq py-5 light" id="section15">
                                                                     <div class="container">
                                                                         <div class="row">
-                                                                            <div class="col-lg-10 mx-auto">
+                                                                            <div class="">
                                                                                 <div class="text-start mb-4">
                                                                                     <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
                                                                                         {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
@@ -2082,46 +2082,59 @@
                                                                                             {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
                                                                                         </h2>
                                                                                         <div class="review-filter-sec" style="display: block;">
-                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
-
-                                                                                                <div class="d-flex flex-column align-items-start mb-3">
-                                                                                                    <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
-                                                                                                    @if($ratingWord = get_rating_label($averageRating))
-                                                                                                        <span class="rating-word-label">
-                                                                                                            {{ $ratingWord }}
-                                                                                                        </span>
-                                                                                                    @endif
-                                                                                                    <div class="d-flex align-items-center gap-1 mb-1">
-                                                                                                        @for ($j = 1; $j <= 5; $j++)
-                                                                                                            @if ($j <= floor($averageRating))
-                                                                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                                                            @elseif ($j - 0.5 <= $averageRating)
-                                                                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                                                                            @else
-                                                                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                            <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                                                                                <div class="row align-items-start g-4">
+                                                                                                    <!-- Left Column: Big Rating & Stars -->
+                                                                                                    <div class="col-lg-4 col-md-5 col-12 mt-0">
+                                                                                                        <div class="d-flex flex-column align-items-start">
+                                                                                                            <span style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 4px;">{{ number_format($averageRating, 1) }}</span>
+                                                                                                            @if($ratingWord = get_rating_label($averageRating))
+                                                                                                                <span class="rating-word-label mb-1" style="font-size: 15px; font-weight: 700; color: #1e3050;">
+                                                                                                                    {{ $ratingWord }}
+                                                                                                                </span>
                                                                                                             @endif
-                                                                                                        @endfor
-                                                                                                    </div>
-                                                                                                    <span style="font-size: 12px; color: #666;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
-                                                                                                </div>
-
-                                                                                                <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-top: 18px; margin-bottom: 14px;">Review breakdown</h5>
-
-                                                                                                <div class="mb-3">
-                                                                                                    @foreach ($criteria as $criterion)
-                                                                                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                                                        <span style="font-size: 13px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
-                                                                                                        <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                                                                                            <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px; border-radius: 4px;"></progress>
-                                                                                                            <span style="font-size: 12px; font-weight: 600; color: #334155; margin-left: 8px; min-width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                                                            <div class="d-flex align-items-center gap-1 mb-2">
+                                                                                                                @for ($j = 1; $j <= 5; $j++)
+                                                                                                                    @if ($j <= floor($averageRating))
+                                                                                                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                                    @elseif ($j - 0.5 <= $averageRating)
+                                                                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                                                                    @else
+                                                                                                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                                    @endif
+                                                                                                                @endfor
+                                                                                                            </div>
+                                                                                                            <span style="font-size: 13px; color: #64748b;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    @endforeach
-                                                                                                </div>
 
-                                                                                                <div class="pt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                                                                    <strong style="color: #002347; font-size: 14px; font-weight:600">{{ $recommendPercent }}%</strong>
+                                                                                                    <!-- Right Column: Review Breakdown & Recommendation -->
+                                                                                                    <div class="col-lg-8 col-md-7 col-12 mt-0">
+                                                                                                        @if(isset($criteria) && count($criteria) > 0)
+                                                                                                            <h5 style="font-size: 15px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
+
+                                                                                                            <div class="mb-2">
+                                                                                                                @foreach ($criteria as $criterion)
+                                                                                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                                                                    <span style="font-size: 13.5px; font-weight: 500; color: #475569; min-width: 130px;">{{ $criterion->name }}</span>
+                                                                                                                    <div class="d-flex align-items-center flex-grow-1 mx-3" style="max-width: 65%;">
+                                                                                                                        <div class="progress rounded-pill w-100" style="height: 7px; background-color: #e2e8f0;">
+                                                                                                                            <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #2CC464;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                    <span style="font-size: 13px; font-weight: 600; color: #334155; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                                                                </div>
+                                                                                                                @endforeach
+                                                                                                            </div>
+                                                                                                        @endif
+
+                                                                                                        @if(isset($recommendPercent) && $recommendPercent > 0)
+                                                                                                            <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
+                                                                                                                <span style="font-weight: 700; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                                                                                <strong style="color: #002347; font-size: 14px; font-weight: 700;">{{ $recommendPercent }}%</strong>
+                                                                                                            </div>
+                                                                                                        @endif
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -2142,7 +2155,7 @@
                                                                                                         data-bs-auto-close="outside"
                                                                                                         aria-expanded="false" 
                                                                                                         style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff;">
-                                                                                                    <i class="fas fa-filter text-muted"></i>
+                                                                                                    <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
                                                                                                     <span>Filter by rating</span>
                                                                                                     <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
                                                                                                 </button>
