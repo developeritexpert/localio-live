@@ -170,6 +170,18 @@
                                         <span class="nk-menu-text">Features</span>
                                     </a>
                                 </li>
+
+                               <!-- Contributor Batches -->
+                   <li class="nk-menu-item">
+                   <a href="{{ route('contributor-batches') }}" class="nk-menu-link">
+                 <span class="nk-menu-icon">
+                 <em class="icon ni ni-award"></em>
+                 </span>
+                  <span class="nk-menu-text">Contributor Batches</span>
+                     </a>
+                          </li>
+
+
                                 <!-- Category Feature Content -->
                                 <li class="nk-menu-item">
                                     <a href="{{ route('admin.category-feature-content.index') }}" class="nk-menu-link">

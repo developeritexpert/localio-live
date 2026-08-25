@@ -5,13 +5,16 @@
             .latest_review_part_footer {
                 padding: 20px 0 !important;
             }
+
             .latest_review_part_footer .container {
                 padding-left: 20px !important;
                 padding-right: 20px !important;
             }
+
             .latest_review_part_footer .reviews_slider {
                 margin: 0 !important;
             }
+
             .latest_review_part_footer .review_card {
                 height: auto !important;
                 min-height: 240px !important;
@@ -38,80 +41,140 @@
             <div class="row">
                 <div class="latest-reviews-slider reviews_slider" style="margin: 0 -10px;">
                     @foreach ($latestReviews->chunk(2) as $chunk)
-                        <div class="review-slide-column" style="padding: 10px; box-sizing: border-box;">
-                            @foreach ($chunk as $review)
-                                @php
-                                    $translation = $review->translations->first();
-                                    $business = $review->business;
-                                    $businessTranslation = $business?->translations?->firstWhere('lang_id', $lang_id);
-                                    $businessName = $businessTranslation?->name ?? 'Default Business Name';
-                                    $businessRating = $review->rating ?? 0;
-                                    $reviewTitle = $translation?->title ?? 'No Title';
-                                    $reviewDescription = $translation?->description ?? null;
-                                    $user = $review->user ?? null;
-                                    $userImage = $user?->profile_image ?? $default_image;
-                                    $userName = $user ? $user->displayName() : 'Anonymous';
-                                    $userType = $user?->user_type ?? 'Anonymous';
-                                @endphp
+                    <div class="review-slide-column" style="padding: 10px; box-sizing: border-box;">
+                        @foreach ($chunk as $review)
+                        @php
+                        $translation = $review->translations->first();
+                        $business = $review->business;
+                        $businessTranslation = $business?->translations?->firstWhere('lang_id', $lang_id);
+                        $businessName = $businessTranslation?->name ?? 'Default Business Name';
+                        $businessRating = $review->rating ?? 0;
+                        $reviewTitle = $translation?->title ?? 'No Title';
+                        $reviewDescription = $translation?->description ?? null;
+                        $user = $review->user ?? null;
+                        $userId = $user?->id ?? null;
+                        $userImage = $user?->profile_image ?? $default_image;
+                        $userName = $user ? $user->displayName() : 'Anonymous';
+                        $userType = $user?->user_type ?? 'Anonymous';
 
-                                @if ($business && $businessTranslation)
-                                    @php
-                                        $bSlug = $businessTranslation->slug ?? ($business->slug ?? 'business');
-                                        $rWordRaw = static_text('reviews_word');
-                                        $rSlug = (!empty($rWordRaw) && $rWordRaw !== 'reviews_word') ? $rWordRaw : 'reviews';
-                                        $reviewsPageUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
-                                    @endphp
-                                    <a href="{{ $reviewsPageUrl }}" class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: unset; margin-bottom: 20px; text-decoration: none; color: inherit;">
-                                        <!-- Top part: user icon, name, rating -->
-                                        <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                            <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                @if ($user && $user->profile_image && $user->profile_image !== 'front/img/default.png')
-                                                    <img src="{{ asset($user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
-                                                @else
-                                                    <span style="font-weight: 600; color: #ffffff; font-size: 18px;">{{ strtoupper(substr($userName, 0, 1)) }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="user-info" style="display: flex; flex-direction: column; gap: 2px;">
-                                                <div class="user-name" style="font-size: 14px; font-weight: 600; color: #1a202c; line-height: 1.2;">{{ $userName }}</div>
-                                                @if ($user && $user->job_title)
-                                                    <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
-                                                @endif
-                                                @if ($user && $user->company_size)
-                                                    <div class="user-company-size d-none" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ static_text('company_size_' . $user->company_size) ?: $user->company_size }}</div>
-                                                @endif
-                                            </div>
-                                        </div>
+                        $reviewCount = \App\Models\User::find($userId)
+                        ->reviews()
+                        ->where('status', 'active')
+                        ->count();
 
-                                        <!-- Middle part: Title & Description -->
-                                        <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
-                                            <h5 style="color: #0d1b2a; font-size: 14px; font-weight: 600; margin: 0 0 6px 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">{{ $reviewTitle }}</h5>
-                                            <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= floor($review->rating))
-                                                        <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
-                                                    @else
-                                                        <i class="far fa-star text-warning" style="font-size: 12px;"></i>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <p style="font-size: 13.5px; color: #4a5568; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                                                {{ $reviewDescription ? strip_tags($reviewDescription) : 'No review content available.' }}
-                                            </p>
-                                        </div>
+                        $contributorBatch = \App\Models\ContributorBatch::where('status', 'active')
+                        ->where('min_reviews', '<=', $reviewCount)
+                            ->where(function ($query) use ($reviewCount) {
+                            $query->whereNull('max_reviews')
+                            ->orWhere('max_reviews', '>=', $reviewCount);
+                            })
+                            ->orderBy('min_reviews', 'desc')
+                            ->first();
+                            @endphp
 
-                                        <!-- Bottom part: Reviewed Business (icon & name) -->
-                                        <div class="review-card-bottom" style="border-top: 1px solid #edf2f7; padding-top: 12px; display: flex; align-items: center; gap: 8px; margin-top: auto;">
-                                            <div class="top-product-small-logo" style="">
-                                                <x-business-logo :business="$business" :name="$businessName" />
-                                            </div>
-                                            <div class="business-info" style="display: flex; flex-direction: column; overflow: hidden; min-width: 0; margin: 0; padding: 0; gap: 0;">
-                                                <span style="font-size: 13px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.2; margin: 0; padding: 0;">{{ $businessName }}</span>
-                                            </div>
-                                        </div>
-                                    </a>
-                                @endif
+                            @if ($business && $businessTranslation)
+                            @php
+                            $bSlug = $businessTranslation->slug ?? ($business->slug ?? 'business');
+                            $rWordRaw = static_text('reviews_word');
+                            $rSlug = (!empty($rWordRaw) && $rWordRaw !== 'reviews_word') ? $rWordRaw : 'reviews';
+                            $reviewsPageUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
+                            @endphp
+                            <a href="{{ $reviewsPageUrl }}" class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: unset; margin-bottom: 20px; text-decoration: none; color: inherit;">
+                                <!-- Top part: user icon, name, rating -->
+                                <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                                    <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        @if ($user && $user->profile_image && $user->profile_image !== 'front/img/default.png')
+                                        <img src="{{ asset($user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        @else
+                                        <span style="font-weight: 600; color: #ffffff; font-size: 18px;">{{ strtoupper(substr($userName, 0, 1)) }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="user-info" style="display: flex; flex-direction: column; gap: 2px;">
+                                        <div class="user-name" style="font-size: 14px; font-weight: 600; color: #1a202c; line-height: 1.2;">{{ $userName }}</div>
+                                        @if ($user && $user->job_title)
+                                        <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
+                                        @endif
+                                        @if ($user && $user->company_size)
+                                        <div class="user-company-size d-none" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ static_text('company_size_' . $user->company_size) ?: $user->company_size }}</div>
+                                        @endif
+                                        @if($contributorBatch)
+    <div class="contributor-batch"
+        style="
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 5px;
+            margin-top: 4px;
+            max-width: 100%;
+            padding: 2px 7px;
+            background: #f0f7ff;
+            border: 1px solid #dbeafe;
+            border-radius: 20px;
+            box-sizing: border-box;
+        ">
+
+        @if($contributorBatch->icon)
+            <img
+                src="{{ asset('storage/' . $contributorBatch->icon) }}"
+                alt="{{ $contributorBatch->badge_name }}"
+                style="
+                    width: 18px;
+                    height: 18px;
+                    object-fit: contain;
+                    flex-shrink: 0;
+                "
+            >
+        @endif
+
+        <span
+            style="
+                font-size: 11px;
+                font-weight: 600;
+                color: #2563eb;
+                line-height: 1.2;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            "
+        >
+            {{ $contributorBatch->badge_name }}
+        </span>
+    </div>
+@endif
+
+                                    </div>
+                                </div>
+
+                                <!-- Middle part: Title & Description -->
+                                <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
+                                    <h5 style="color: #0d1b2a; font-size: 14px; font-weight: 600; margin: 0 0 6px 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">{{ $reviewTitle }}</h5>
+                                    <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            @if ($i <=floor($review->rating))
+                                            <i class="fas fa-star text-warning" style="font-size: 12px;"></i>
+                                            @else
+                                            <i class="far fa-star text-warning" style="font-size: 12px;"></i>
+                                            @endif
+                                            @endfor
+                                    </div>
+                                    <p style="font-size: 13.5px; color: #4a5568; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                        {{ $reviewDescription ? strip_tags($reviewDescription) : 'No review content available.' }}
+                                    </p>
+                                </div>
+
+                                <!-- Bottom part: Reviewed Business (icon & name) -->
+                                <div class="review-card-bottom" style="border-top: 1px solid #edf2f7; padding-top: 12px; display: flex; align-items: center; gap: 8px; margin-top: auto;">
+                                    <div class="top-product-small-logo" style="">
+                                        <x-business-logo :business="$business" :name="$businessName" />
+                                    </div>
+                                    <div class="business-info" style="display: flex; flex-direction: column; overflow: hidden; min-width: 0; margin: 0; padding: 0; gap: 0;">
+                                        <span style="font-size: 13px; font-weight: 600; color: #2d3748; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; line-height: 1.2; margin: 0; padding: 0;">{{ $businessName }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                            @endif
                             @endforeach
-                        </div>
+                    </div>
                     @endforeach
                 </div>
             </div>

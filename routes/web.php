@@ -21,6 +21,9 @@ use App\Models\ExpertGuides;
 use App\Models\ProductFeature;
 use App\Models\Rule;
 use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\Admin\ContributorBatchController;
+
 // use Illuminate\Support\Facades\Redis;
 
 // Route::get('tttttt',function(){
@@ -56,6 +59,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin/page-tile-translation/update', [AdminDashController::class, 'MPSsectionUpdate'])->name('admin.page_tile_translation.update');
     Route::post('/admin/page-tile-specialist-translation/update', [AdminDashController::class, 'SpecialistUpdate'])->name('admin.page_tile_specialist_translation.update');
 
+
+
+    
     // Admin Queries Route
     Route::get('/queries', [QueryController::class, 'index'])
         ->name('admin.queries.index');
@@ -256,6 +262,31 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/features/update/{id}', [FeatureController::class, 'update'])->name('features.update');
 
     Route::get('/features/delete/{id}', [FeatureController::class, 'destroy'])->name('features.delete');
+
+    //contributor batches routes//
+
+Route::get('/admin-dashboard/contributor-batches', [ContributorBatchController::class, 'index'])
+    ->name('contributor-batches');
+
+Route::get('/contributor-batches/add', [ContributorBatchController::class, 'create'])
+    ->name('contributor-batches.create');
+
+Route::post('/contributor-batches/store', [ContributorBatchController::class, 'store'])
+    ->name('contributor-batches.store');
+
+Route::get('/contributor-batches/edit/{id}', [ContributorBatchController::class, 'edit'])
+    ->name('contributor-batches.edit');
+
+Route::post('/contributor-batches/update/{id}', [ContributorBatchController::class, 'update'])
+    ->name('contributor-batches.update');
+
+Route::get('/contributor-batches/delete/{id}', [ContributorBatchController::class, 'destroy'])
+    ->name('contributor-batches.delete');
+
+
+
+
+
 
     // Category Feature Content Controller :
     Route::get('/admin-dashboard/category-feature-content', [CategoryFeatureContentController::class, 'index'])->name('admin.category-feature-content.index');

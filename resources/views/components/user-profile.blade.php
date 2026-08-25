@@ -1,3 +1,23 @@
+@php
+    $profileUrl = Auth::user()->user_type === 'vendor'
+        ? route('vendor-profile', ['locale' => app()->getLocale()])
+        : route('user-dashboard', ['locale' => app()->getLocale()]);
+
+    $reviewCount = Auth::user()
+        ->reviews()
+        ->where('status', 'active')
+        ->count();
+
+    $contributorBatch = \App\Models\ContributorBatch::where('status', 'active')
+        ->where('min_reviews', '<=', $reviewCount)
+        ->where(function ($query) use ($reviewCount) {
+            $query->whereNull('max_reviews')
+                ->orWhere('max_reviews', '>=', $reviewCount);
+        })
+        ->orderBy('min_reviews', 'desc')
+        ->first();
+@endphp
+
 <div class="hdr_ryt">
 <div class="hdr_info">
     <div class="notf drop_menu d-none">
@@ -267,11 +287,40 @@
                                 </span>
                             </div>
                             @endif
-                        </div>
-                        <div class="user_name">
-                            <h5>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h5>
-                            <p>{{ Auth::user()->email }}</p>
-                        </div>
+                       <div class="user_name">
+    <h5>
+        {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+    </h5>
+
+    <p>{{ Auth::user()->email }}</p>
+
+    @if($contributorBatch)
+        <div class="d-flex align-items-center mt-1">
+
+            @if($contributorBatch->icon)
+                <img
+                    src="{{ asset('storage/' . $contributorBatch->icon) }}"
+                    alt="{{ $contributorBatch->badge_name }}"
+                    style="
+                        width: 22px;
+                        height: 22px;
+                        object-fit: contain;
+                        margin-right: 6px;
+                    "
+                >
+            @endif
+
+            <span style="
+                font-size: 12px;
+                font-weight: 600;
+            ">
+                {{ $contributorBatch->badge_name }}
+            </span>
+
+        </div>
+    @endif
+</div>              </div>
+          
                     </div>
                 </a>
                 <div class="dash-icon">
