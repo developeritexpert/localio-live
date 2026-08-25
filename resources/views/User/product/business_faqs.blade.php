@@ -1,7 +1,8 @@
 @extends('user_layout.master')
 @push('styles')
     <link rel="stylesheet" href="{{ asset('front/css/product-detail-components.css') }}">
-    <style>
+    @include('User.partials.business_detail_styles')
+<style>
         /* FAQ Search Box Styling */
         .faq-search-wrapper {
             background: #ffffff;
@@ -187,6 +188,84 @@
             opacity: 0.92;
             transform: translateY(-1px);
         }
+            /* Sticky Sidebar & Table of contents */
+        .sticky-sidebar-nav-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0, 35, 71, 0.04);
+            padding: 20px;
+            border: 1px solid #eef2f6;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .sticky-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 8px 0 0 0;
+        }
+        .sticky-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 9px 14px;
+            border-radius: 8px;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        .sticky-nav-item:hover {
+            background-color: #f4f7fb;
+            color: #003f7d;
+            font-weight: 600;
+            transform: translateX(3px);
+        }
+        .sticky-nav-item.active {
+            background-color: #eaf1f9;
+            color: #003f7d;
+            font-weight: 700;
+        }
+        .sticky-nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 3.5px;
+            background-color: #003f7d;
+            border-radius: 0 3px 3px 0;
+        }
+        .revie_img_sec .image_revie_inr {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 40px !important;
+        }
+        .revie_img_sec .imges_left_sde {
+            width: 62% !important;
+            flex: 1 1 62% !important;
+            min-width: 0 !important;
+        }
+        .revie_img_sec .thre_revi_rgt {
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 38% !important;
+            flex: 0 0 38% !important;
+            max-width: 38% !important;
+            height: auto !important;
+            gap: 20px !important;
+        }
+        .sticky-sidebar-nav-wrapper {
+            position: -webkit-sticky !important;
+            position: sticky !important;
+            top: 90px !important;
+            z-index: 30 !important;
+            width: 100% !important;
+            margin-top: 0 !important;
+        }
     </style>
 @endpush
 
@@ -271,7 +350,7 @@
             <div class="col-md-8 col-12">
                 <div class="top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
-                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
                         <x-business-logo :business="$business" :name="$bName" />
                     </div>
                     <div>
@@ -308,7 +387,7 @@
                 
                 <!-- Section 1: Title 1 & Description 1 -->
                 @if(!empty($faqTitle1) || !empty($faqDesc1))
-                <div class="faq-top-intro mb-4">
+                <div class="faq-top-intro mb-4" id="section-about-faq">
                     @if($faqTitle1)
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">{{ $faqTitle1 }}</h2>
                     @endif
@@ -321,7 +400,7 @@
                 @endif
 
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
-                <div class="faq-search-wrapper">
+                <div class="faq-search-wrapper" id="section-search-faq">
                     <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 14px;">
                         Search {{ $bName }} FAQs
                     </h3>
@@ -332,7 +411,7 @@
                 </div>
 
                 <!-- Main FAQ Section: Headline & In-Page Navigation -->
-                <div class="main-faq-container">
+                <div class="main-faq-container" id="section-faq-list">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin: 0;">
                             Frequently asked questions about {{ $bName }}
@@ -368,9 +447,9 @@
                                 @foreach($faqCategories as $cat)
                                     @if($cat->faqs && $cat->faqs->count() > 0)
                                     <div class="faq-category-group mb-4" data-category-group="{{ $cat->id }}">
-                                        <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
+                                        <h3 class="category-group-headline mb-3" style="">
                                             {{ $cat->name }}
-                                        </h4>
+                                        </h3>
 
                                         @foreach($cat->faqs as $faq)
                                             @php
@@ -426,9 +505,9 @@
                             @if(isset($uncategorizedFaqs) && $uncategorizedFaqs->count() > 0)
                                 <div class="faq-category-group mb-4" data-category-group="general">
                                     @if(isset($faqCategories) && $faqCategories->count() > 0)
-                                    <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
+                                    <h3 class="category-group-headline mb-3" style=" ">
                                         General
-                                    </h4>
+                                    </h3>
                                     @endif
 
                                     @foreach($uncategorizedFaqs as $faq)
@@ -493,7 +572,7 @@
                 </div>
 
                 <!-- Section 4: Ask Community Bottom Banner -->
-                <div class="ask-community-banner">
+                <div class="ask-community-banner" id="section-ask-community">
                     <div>
                         <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
                             Still have a question about {{ $bName }}?
@@ -514,7 +593,88 @@
 
             <!-- Right Side: Sidebar -->
             <div class="col-lg-4 col-12">
-                <div class="d-flex flex-column gap-4">
+                <div class="faq-sidebar-sticky d-flex flex-column gap-4">
+
+                    <!-- Sticky Sidebar Navigation Card (Exact structure from product_detail.blade.php) -->
+                    <div class="d-none main_feature_lg sticky-sidebar-nav-wrapper">
+                        <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
+                            <div class="sticky-nav-header text-center">
+                                <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
+                                    <div class="business-initial-logo" style="width: 44px; height: 44px; margin-bottom:8px">
+                                        <x-business-logo :business="$business" />
+                                    </div>
+
+                                    <div class="sticky-wrap-mf">
+                                        <h3 class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
+                                            {{ $business->translations->first()->name ?? '' }}
+                                        </h3>
+                                        @if (isset($averageRating) && $averageRating !== null)
+                                            <div class="rating-group sticky-nav-rating mb-3">
+                                                <span>{{ number_format($averageRating, 1) }}</span>
+                                                <div class="rating-star">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= floor($averageRating))
+                                                            <i class="fas fa-star"></i>
+                                                        @elseif ($i - 0.5 <= $averageRating)
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                @if (isset($totalReviews) && $totalReviews > 0)
+                                                    <span>({{ $totalReviews }})</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                @if ($business->is_affiliate)
+                                    <a href="{{ $business->getTrackedUrl() }}"
+                                        target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
+                                        style="border-radius: 30px; font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                                        Visit website <i class="fas fa-external-link-alt ms-2" style="font-size: 11px;"></i>
+                                    </a>
+                                @endif
+                            </div>
+
+                            <div class="sticky-nav-links">
+                                @if(!empty($faqTitle1) || !empty($faqDesc1))
+                                    <a href="#section-about-faq" class="sticky-nav-item active" data-target="section-about-faq">
+                                        <span>About {{ $bName }}</span>
+                                    </a>
+                                @endif
+                                <a href="#section-search-faq" class="sticky-nav-item" data-target="section-search-faq">
+                                    <span>Search FAQs</span>
+                                </a>
+                                <a href="#section-faq-list" class="sticky-nav-item" data-target="section-faq-list">
+                                    <span>Frequently asked questions</span>
+                                </a>
+                                <a href="#section-ask-community" class="sticky-nav-item" data-target="section-ask-community">
+                                    <span>Ask the community</span>
+                                </a>
+                            </div>
+
+                            <div class="sticky-nav-footer pt-3 mt-2 border-top text-center">
+                                @auth
+                                    <button type="button"
+                                        onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                        class="btn-write-review-link"
+                                        style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                                        <i class="fas fa-pencil-alt"></i> Write a review
+                                    </button>
+                                @else
+                                    <a href="javascript:void(0)"
+                                        onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
+                                        class="btn-write-review-link"
+                                        style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                                        <i class="fas fa-pencil-alt"></i> Write a review
+                                    </a>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- 1. USPs -->
                     @if(!empty($business->is_affiliate) && $business->usps && $business->usps->count() > 0)
@@ -828,6 +988,7 @@
         </div>
     </div>
 </div>
+@include('User.partials.business_detail_styles')
 <style>
     .report-option-card.selected {
         border-color: #002347 !important;
@@ -845,7 +1006,85 @@
         background: #002347;
         border-color: #002347;
     }
-</style>
+        /* Sticky Sidebar & Table of contents */
+        .sticky-sidebar-nav-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0, 35, 71, 0.04);
+            padding: 20px;
+            border: 1px solid #eef2f6;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .sticky-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 8px 0 0 0;
+        }
+        .sticky-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 9px 14px;
+            border-radius: 8px;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        .sticky-nav-item:hover {
+            background-color: #f4f7fb;
+            color: #003f7d;
+            font-weight: 600;
+            transform: translateX(3px);
+        }
+        .sticky-nav-item.active {
+            background-color: #eaf1f9;
+            color: #003f7d;
+            font-weight: 700;
+        }
+        .sticky-nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 3.5px;
+            background-color: #003f7d;
+            border-radius: 0 3px 3px 0;
+        }
+        .revie_img_sec .image_revie_inr {
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 40px !important;
+        }
+        .revie_img_sec .imges_left_sde {
+            width: 62% !important;
+            flex: 1 1 62% !important;
+            min-width: 0 !important;
+        }
+        .revie_img_sec .thre_revi_rgt {
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            width: 38% !important;
+            flex: 0 0 38% !important;
+            max-width: 38% !important;
+            height: auto !important;
+            gap: 20px !important;
+        }
+        .sticky-sidebar-nav-wrapper {
+            position: -webkit-sticky !important;
+            position: sticky !important;
+            top: 90px !important;
+            z-index: 30 !important;
+            width: 100% !important;
+            margin-top: 0 !important;
+        }
+    </style>
 
 @livewire('add-review')
 
@@ -1068,5 +1307,65 @@
             console.error('Report Error:', err);
         });
     }
+    // Sticky Sidebar Navigation Active Link & Smooth Scroll
+    document.addEventListener('DOMContentLoaded', function() {
+        const stickyNavLinks = document.querySelectorAll('.sticky-nav-links .sticky-nav-item');
+        if (stickyNavLinks.length > 0) {
+            stickyNavLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        const headerOffset = 90;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+
+                        stickyNavLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // Update active link on scroll
+            const navSectionTargets = [
+                { id: 'section-about-faq', target: 'section-about-faq' },
+                { id: 'section-search-faq', target: 'section-search-faq' },
+                { id: 'section-faq-list', target: 'section-faq-list' },
+                { id: 'section-ask-community', target: 'section-ask-community' }
+            ];
+
+            window.addEventListener('scroll', function() {
+                const scrollPos = window.scrollY + 130;
+                let activeId = '';
+
+                for (const item of navSectionTargets) {
+                    const el = document.getElementById(item.id);
+                    if (el) {
+                        const top = el.offsetTop;
+                        const height = el.offsetHeight;
+                        if (scrollPos >= top && scrollPos < top + height) {
+                            activeId = item.target;
+                        }
+                    }
+                }
+
+                if (activeId) {
+                    stickyNavLinks.forEach(link => {
+                        if (link.getAttribute('data-target') === activeId || link.getAttribute('href') === '#' + activeId) {
+                            link.classList.add('active');
+                        } else {
+                            link.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        }
+    });
 </script>
 @endpush

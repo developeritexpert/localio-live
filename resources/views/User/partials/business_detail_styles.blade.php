@@ -1,0 +1,1 @@
+<link rel="stylesheet" href="{{ asset('front/css/business-detail-shared.css') }}?v={{ time() }}">
