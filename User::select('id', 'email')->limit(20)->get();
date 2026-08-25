@@ -1,0 +1,45 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#6705
+    [34mall[39m: [
+      [34;4mApp\Models\User[39;24m {#6703
+        [34mid[39m: [35m115[39m,
+        [34memail[39m: "[32m23_june@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6702
+        [34mid[39m: [35m102[39m,
+        [34memail[39m: "[32m5_june@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6701
+        [34mid[39m: [35m104[39m,
+        [34memail[39m: "[32m8_june_test@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6700
+        [34mid[39m: [35m131[39m,
+        [34memail[39m: "[32mad@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6744
+        [34mid[39m: [35m70[39m,
+        [34memail[39m: "[32madekicotemuz12@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6745
+        [34mid[39m: [35m139[39m,
+        [34memail[39m: "[32madinnn@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6746
+        [34mid[39m: [35m98[39m,
+        [34memail[39m: "[32madmin@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6747
+        [34mid[39m: [35m92[39m,
+        [34memail[39m: "[32magibilajud998@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6748
+        [34mid[39m: [35m105[39m,
+        [34memail[39m: "[32mAnmol@gmail.com[39m",
+      },
+      [34;4mApp\Models\User[39;24m {#6749
+        [34mid[39m: [35m40[39m,
+        [34memail[39m: "[32masdf@gmail.com[39m",
+      },
+    ],
+  }
+
