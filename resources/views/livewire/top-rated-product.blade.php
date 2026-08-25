@@ -1086,7 +1086,7 @@
 @if(($products->currentPage() ?? ($page ?? 1)) == 1)
     <!-- Explore Top-Rated Categories Section -->
     @if(isset($exploreCategories) && $exploreCategories->isNotEmpty())
-    <section class="explore-categories-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
+    <section class="explore-categories-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="text-start mb-4">
                 <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">Explore top-rated categories</h2>
@@ -1106,16 +1106,18 @@
                     }
                     $catItemName = $trans->name ?? $cat->name ?? '';
                     $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
-                    $catItemDesc = strip_tags($trans->description ?? $cat->description ?? '');
+                    $catItemDesc = !empty($trans->top_rated_description)
+                        ? strip_tags($trans->top_rated_description)
+                        : strip_tags($trans->description ?? $cat->description ?? '');
                     if (empty($catItemDesc) && !empty($catItemName)) {
                         $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions. Explore providers using features, starting prices, real user reviews, and community ratings to identify the right match.';
                     }
                 @endphp
                 @if(!empty($catItemName))
-                <div class="subcat-block p-4" style="background: #f7f9fb; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <div class="subcat-block p-4" style="background: #fdfdfd; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catItemName }}</h3>
-                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;">
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             See all {{ $catItemName }}
                         </a>
                     </div>
@@ -1128,7 +1130,7 @@
                             $bizName = $business->translations->first()->name ?? $business->name ?? '';
                         @endphp
                         @if(!empty($bizName))
-                        <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background:#fdfdfd !important;">
+                        <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 12px;">
                             <div class="d-flex align-items-center gap-2 mb-3">
                                 <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
                                     <x-business-logo :business="$business" :name="$bizName" />

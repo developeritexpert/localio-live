@@ -127,6 +127,19 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="top_rated_description">Top-Rated Page Description</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control top_rated_description rich-editor" id="top_rated_description" name="top_rated_description" rows="4" placeholder="Enter SEO-optimized short description displayed in the 'Explore top-rated categories' section on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_description'] ?? '') : old('top_rated_description') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Specific description for the Top-Rated page's "Explore top-rated categories" section. If left blank, it falls back to the default description.</small>
+                                @error('top_rated_description')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="meta_title">Meta Title</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="meta_title" name="meta_title"
