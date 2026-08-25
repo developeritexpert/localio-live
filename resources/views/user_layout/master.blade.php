@@ -1362,7 +1362,7 @@
     </script>
     @endif
     <header>
-        <section class="sec_head">
+        <section class="sec_head {{ Route::currentRouteName() ? 'page-' . str_replace('.', '-', Route::currentRouteName()) : '' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
