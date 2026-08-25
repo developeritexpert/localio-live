@@ -498,8 +498,8 @@ section.top-automotive-sec.top_rate_pg.light {
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; min-width: 180px;">Business</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Overall rating</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Features</th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Ease of use</th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Value for money</th>
@@ -585,8 +585,8 @@ section.top-automotive-sec.top_rate_pg.light {
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; min-width: 180px;">Business</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; min-width: 180px;">Overall rating</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                             <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned pro</th>
                                             <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned con</th>
                                         </tr>

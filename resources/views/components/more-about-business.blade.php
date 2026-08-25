@@ -96,7 +96,7 @@
                         <path d="M9 21V12h6v9"/>
                     </svg>
                 </span>
-                <span class="more-about-link-text">Overview</span>
+                <span class="more-about-link-text">{{ $bName }} profile</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>
