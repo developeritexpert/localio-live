@@ -1263,7 +1263,23 @@
     </style>
 </head>
 
-<body class="@yield('body_class')">
+@php
+    $routeName = Route::currentRouteName();
+    $pageClass = $routeName ? 'page-' . str_replace('.', '-', $routeName) : '';
+    if (empty($pageClass) || $pageClass == 'page-') {
+        $segments = request()->segments();
+        // Try to construct a meaningful class from URL segments
+        // typically: locale / slug / type
+        if (count($segments) >= 3) {
+            $pageClass = 'page-' . $segments[2]; // e.g. 'reviews', 'alternatives', 'faq'
+        } elseif (count($segments) == 2) {
+            $pageClass = 'page-' . $segments[1];
+        } else {
+            $pageClass = 'page-' . implode('-', $segments);
+        }
+    }
+@endphp
+<body class="@yield('body_class') {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
     <?php
     $lang = getCurrentLocale();
 
@@ -1362,7 +1378,7 @@
     </script>
     @endif
     <header>
-        <section class="sec_head {{ Route::currentRouteName() ? 'page-' . str_replace('.', '-', Route::currentRouteName()) : '' }}">
+        <section class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
