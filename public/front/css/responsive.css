@@ -23,7 +23,7 @@
     }
 
     .product_sec .inner_banner_sec {
-        padding-top: 120px;
+        padding-top: 125px;
         padding-bottom: 10px;
     }
 
@@ -2784,13 +2784,18 @@
         width: 100%;
     }
 
-    .revie_img_sec .thre_revi_rgt {
-        width: 100%;
+    .revie_img_sec .thre_revi_rgt,
+    .revie_img_sec .image_revie_inr .thre_revi_rgt {
+        width: 100% !important;
     }
 
     .revie_img_sec .thre_revi_rgt .main_feature_lg {
         max-width: 100%;
         width: 100%;
+    }
+
+    h3.sticky-nav-title {
+        font-size: 18px !important;
     }
 }
 
@@ -11451,7 +11456,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
         font-size: 11px !important;
     }
 
-    .best-value-inline-container{
+    .best-value-inline-container {
         padding-bottom: 1px !important;
     }
 
@@ -12201,6 +12206,7 @@ ul.list-unstyled.m-0 li:hover a .time span {
     }
     #reviewPromptBanner {
         justify-content: end !important;
+        padding: 15px 10px !important;
     }
 }
 
@@ -13531,7 +13537,7 @@ textarea#message {
         padding: 10px 20px;
     }
 
-     .home_bnr_sec .search-box i {
+    .home_bnr_sec .search-box i {
         padding: 9px 20px;
     }
 
@@ -13577,7 +13583,7 @@ textarea#message {
         padding: 10px;
         white-space: nowrap;
     }
-      #login-modal .modal-content .close-btn {
+    #login-modal .modal-content .close-btn {
         top: 10px;
         right: 10px;
     }
@@ -13628,7 +13634,7 @@ textarea#message {
         gap: 1px !important;
     }
     div#howRankingsWorkModal .circle_11 {
-        max-width: 352  px;
+        max-width: 352 px;
         padding: 15px;
     }
 
@@ -13668,7 +13674,32 @@ textarea#message {
     .inside_sec_text {
         display: flex;
         justify-content: end;
-        width: 100%;
+        width: fit-content;
+    }
+
+    .business-initial-logo,
+    .business-logo-initial {
+        font-size: 20px;
+    }
+
+    .community-rating {
+        font-size: 16px;
+    }
+
+    .rating_bar_span {
+        font-size: 12px;
+    }
+
+    .rating-criteria-section h2 {
+        font-size: 18px !important;
+    }
+
+    section#section-compare {
+        padding: 15px !important;
+    }
+
+    section#section-compare p {
+        font-size: 14px !important;
     }
 
     section#section-compare {
@@ -13722,6 +13753,118 @@ textarea#message {
     }
     .alert.alert-info p {
         font-size: 14px !important;
+    }
+
+    .crm_sec .crm_review_box {
+        padding: 0px 0;
+    }
+
+    .revie_img_sec .image_revie_inr {
+        gap: 0 !important;
+    }
+
+    .user_revew_sec,
+    .comparsn_bnr_sec {
+        padding: 0;
+    }
+
+    .faq-search-wrapper h3 {
+        font-size: 14px !important;
+    }
+
+    .faq-search-wrapper {
+        padding: 15px;
+    }
+
+    .faq-search-input-group input {
+        padding: 10px;
+        padding-left: 39px;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+
+    .main-faq-container h2 {
+        font-size: 18px !important;
+    }
+
+    button.accordion-button.collapsed,
+    button.accordion-button,
+    .accordion-body.rich-text-content {
+        padding: 10px !important;
+        font-size: 12px !important;
+    }
+
+    .ask-community-btn {
+        font-size: 12px;
+        padding: 12px 15px;
+    }
+
+    .ask-community-banner {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .ask-community-banner div h3 {
+        font-size: 18px !important;
+    }
+
+    .share_exp_wrp .card,
+    .write-review-lists.write_revw_sec .card {
+        padding: 15px !important;
+    }
+
+    .share_exp_wrp .card h5,
+    .card h5 {
+        font-size: 12px !important;
+    }
+
+    .write-review-lists.write_revw_sec h2 {
+        font-size: 18px !important;
+    }
+
+    .write-review-lists.write_revw_sec p {
+        font-size: 12px !important;
+    }
+
+    .search-input-wrap.position-relative i {
+        right: 7px;
+        background: white;
+        padding: 6px 18px;
+    }
+
+    section.write-review-hero .container p {
+        margin-bottom: 10px !important;
+        font-size: 13px !important;
+    }
+
+    section.write-review-hero .container h1 {
+        font-size: 20px !important;
+    }
+
+    .review-prompt-banner h4 {
+        font-size: 16px !important;
+        line-height: 1 !important;
+    }
+
+    .user-reviews-summary-card p-4 {
+        padding: 15px !important;
+    }
+
+    .rating-criteria-section .community-rating-box {
+        padding: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .rating-criteria-section .mb-3 {
+        margin-bottom: 5px !important;
+    }
+
+    .rating-criteria-section {
+        margin-bottom: 20px !important;
+    }
+
+    .rating-criteria-section p {
+        margin-bottom: 0;
     }
 }
 
