@@ -159,7 +159,7 @@
 
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 14px;">
+                    <h3 style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
                         Search {{ $catName }} FAQs
                     </h3>
                     <div class="faq-search-input-group">
