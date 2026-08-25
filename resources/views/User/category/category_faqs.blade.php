@@ -272,6 +272,15 @@
                                             @endif
                                             <div>
                                                 <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $displayName }}</h6>
+                                                @php
+                                                    $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
+                                                @endphp
+                                                @if($badge)
+                                                    <div class="user-contributor-badge" style="font-size: 13px; color: #64748b; margin-top: 2px;">
+                                                        {!! $badge->icon !!} {{ $badge->name }}
+                                                    </div>
+                                                @endif
+
                                                 @if($u && $u->job_title)
                                                     <div style="font-size: 11px; color: #777; margin-top: 1px;">{{ $u->job_title }}</div>
                                                 @elseif(!empty($bName))

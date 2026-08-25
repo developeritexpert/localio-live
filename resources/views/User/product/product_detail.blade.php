@@ -2042,6 +2042,15 @@
 
                                                                     <div>
                                                                         <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                @php
+                                                    $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
+                                                @endphp
+                                                @if($badge)
+                                                    <div class="user-contributor-badge" style="font-size: 13px; color: #64748b; margin-top: 2px;">
+                                                        {!! $badge->icon !!} {{ $badge->name }}
+                                                    </div>
+                                                @endif
+
                                                                         @if($review->user && $review->user->job_title)
                                                                             <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
                                                                         @endif

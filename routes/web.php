@@ -246,6 +246,15 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('admin-dashboard/filter/preview', [FilterController::class, 'preview'])->name('filter.preview');
     Route::post('admin-dashboard/filter/fetch-filters', [FilterController::class, 'fetchFilters'])->name('filter.fetch');
     Route::post('/admin-dashboard/update-filter-order', [FilterController::class, 'updateFilterOrder'])->name('update-filter-order');
+
+    // Contributor Badges
+    Route::get('/admin-dashboard/contributor-badges', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'index'])->name('admin.contributor.badges');
+    Route::get('/admin-dashboard/contributor-badges/create', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'create'])->name('admin.contributor.badges.create');
+    Route::post('/admin-dashboard/contributor-badges/store', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'store'])->name('admin.contributor.badges.store');
+    Route::get('/admin-dashboard/contributor-badges/edit/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'edit'])->name('admin.contributor.badges.edit');
+    Route::post('/admin-dashboard/contributor-badges/update/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'update'])->name('admin.contributor.badges.update');
+    Route::get('/admin-dashboard/contributor-badges/delete/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'destroy'])->name('admin.contributor.badges.delete');
+
     // Features Controller :
     Route::get('/admin-dashboard/features', [FeatureController::class, 'index'])->name('features');
     Route::get('/features/add', [FeatureController::class, 'create'])->name('features.create');
