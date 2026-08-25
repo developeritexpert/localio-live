@@ -77,7 +77,6 @@
 
 @include('User.partials.business_detail_styles')
 
-
 <!-- Upper Header Section -->
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
@@ -121,7 +120,7 @@
             <div class="col-md-8 col-12">
                 <div class="top_head d-flex align-items-center gap-2">
                     <!-- Business Icon: Square with rounded edges -->
-                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <div class="top-product-logo" >
                         <x-business-logo :business="$business" :name="$bName" />
                     </div>
                     <div>
@@ -137,7 +136,7 @@
                 </div>
             </div>
             @if(!empty($business->is_affiliate))
-            <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn" style="align-self: baseline;">
+            <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
@@ -333,7 +332,7 @@
 
                                     <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                         <div style="display: flex; align-items: center; gap: 16px;">
-                                            <div class="top-product-logo" style="width: 52px; height: 52px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                            <div class="top-product-logo" style="">
                                                 <x-business-logo :business="$business" />
                                             </div>
                                             <div>

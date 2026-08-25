@@ -2818,7 +2818,7 @@
         <div class="modal-content bg-white shadow-lg relative border-0 my-auto"
             style="max-width: 620px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
             <button type="button" id="close-profile-modal-btn" aria-label="Close modal"
-                style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
+                style="position: absolute; top: 14px; right: 14px; border: none; background: transparent;cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
                 ✕
             </button>
 

@@ -708,7 +708,7 @@
                                         {{ $ratingWord }}
                                     </span>
                                 @endif
-                                <div class="rating-stars" style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                <div class="" style="margin-bottom: 6px; display: flex;">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($averageRating))
                                             <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
