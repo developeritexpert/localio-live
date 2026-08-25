@@ -1,5 +1,0 @@
-	git rm --cached "Review::select('id', 'user_id', 'public_name')->whereNotNull('public_name')->limit(10)->get()->toArray();"
-	git rm --cached "Review::select('id','user_id','status')->orderBy('user_id')->get();"
-	git rm --cached "User::select('id', 'email')->limit(20)->get();"
-	git rm --cached "er = AppModelsUser::find(7);"
-
