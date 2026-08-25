@@ -1980,6 +1980,24 @@
                                                                             .clear-filters-btn:hover {
                                                                                 text-decoration: underline;
                                                                             }
+                                                                            .review-sort-option {
+                                                                                font-size: 13px !important;
+                                                                                color: #1e3050 !important;
+                                                                                cursor: pointer;
+                                                                                background-color: transparent !important;
+                                                                                font-weight: 400;
+                                                                                border: none;
+                                                                                outline: none;
+                                                                                transition: background-color 0.15s ease;
+                                                                            }
+                                                                            .review-sort-option.is-selected {
+                                                                                background-color: #f8fafc !important;
+                                                                                font-weight: 600 !important;
+                                                                            }
+                                                                            .review-sort-option:hover {
+                                                                                background-color: #f1f5f9 !important;
+                                                                                color: #1e3050 !important;
+                                                                            }
                                                                             .review-row-prod-inr {
                                                                                 display: flex !important;
                                                                                 align-items: stretch !important;
@@ -2234,8 +2252,7 @@
                                                                                                 <button type="button"
                                                                                                     data-sort-value="{{ $val }}"
                                                                                                     data-sort-label="{{ $label }}"
-                                                                                                    class="review-sort-option dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
-                                                                                                    style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; font-weight: {{ $currentSort === $val ? '600' : '400' }};">
+                                                                                                    class="review-sort-option dropdown-item d-flex align-items-center justify-content-between px-3 py-2 {{ $currentSort === $val ? 'is-selected' : '' }}">
                                                                                                     <span>{{ $label }}</span>
                                                                                                     <span class="sort-check-icon {{ $currentSort === $val ? '' : 'd-none' }}">
                                                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -2280,8 +2297,11 @@
                                                                                     }
                                                                                     sortOptions.forEach(o => {
                                                                                         const isMatch = (o.getAttribute('data-sort-value') === val);
-                                                                                        o.style.backgroundColor = isMatch ? '#f8fafc' : 'transparent';
-                                                                                        o.style.fontWeight = isMatch ? '600' : '400';
+                                                                                        if (isMatch) {
+                                                                                            o.classList.add('is-selected');
+                                                                                        } else {
+                                                                                            o.classList.remove('is-selected');
+                                                                                        }
                                                                                         const icon = o.querySelector('.sort-check-icon');
                                                                                         if (icon) {
                                                                                             if (isMatch) icon.classList.remove('d-none');
@@ -2892,7 +2912,7 @@
 
                                                 <div class="sticky-nav-links">
                                                     <a href="#section1" class="sticky-nav-item active" data-target="section1">
-                                                        <span>Overview</span>
+                                                        <span>Description</span>
                                                     </a>
                                                     @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
                                                         <a href="#section9" class="sticky-nav-item" data-target="section9">
