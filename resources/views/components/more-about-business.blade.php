@@ -49,11 +49,9 @@
         align-items: center;
         justify-content: center;
     }
-    .more-about-link-icon svg {
+    .more-about-link-icon img {
         width: 28px;
         height: 28px;
-        color: #007bff;
-        stroke: #007bff;
     }
     .more-about-link-text {
         font-size: 15px;
@@ -70,10 +68,7 @@
     .more-about-link-item:hover .more-about-link-text {
         color: #007bff;
     }
-    .more-about-link-item:hover .more-about-link-icon svg {
-        color: #0056d2;
-        stroke: #0056d2;
-    }
+    
     .more-about-link-item:hover .more-about-link-arrow {
         color: #007bff;
     }
@@ -91,10 +86,7 @@
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-                        <path d="M9 21V12h6v9"/>
-                    </svg>
+                    <img src="{{ asset('front/img/overview.svg') }}" alt="Overview">
                 </span>
                 <span class="more-about-link-text">{{ $bName }} profile</span>
             </span>
@@ -106,12 +98,7 @@
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="5" y="2" width="14" height="20" rx="2"/>
-                        <line x1="9" y1="7" x2="15" y2="7"/>
-                        <line x1="9" y1="11" x2="15" y2="11"/>
-                        <line x1="9" y1="15" x2="13" y2="15"/>
-                    </svg>
+                    <img src="{{ asset('front/img/alternatives.svg') }}" alt="Alternatives">
                 </span>
                 <span class="more-about-link-text">Alternatives</span>
             </span>
@@ -123,11 +110,7 @@
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/>
-                        <circle cx="12" cy="17" r="0.8" fill="#007bff" stroke="none"/>
-                    </svg>
+                    <img src="{{ asset('front/img/FAQs.svg') }}" alt="FAQs">
                 </span>
                 <span class="more-about-link-text">FAQs</span>
             </span>
@@ -139,10 +122,7 @@
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M12 3v3m0 12v3M5.6 6.4l2.1 2.1m8.6 8.6 2.1 2.1M3 12h3m12 0h3M5.6 17.6l2.1-2.1M16.3 6.4l2.1-2.1"/>
-                        <circle cx="12" cy="12" r="4"/>
-                    </svg>
+                    <img src="{{ asset('front/img/compare.svg') }}" alt="Compare">
                 </span>
                 <span class="more-about-link-text">Compare</span>
             </span>
@@ -154,9 +134,7 @@
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                    </svg>
+                    <img src="{{ asset('front/img/reviews.svg') }}" alt="Reviews">
                 </span>
                 <span class="more-about-link-text">Reviews</span>
             </span>
@@ -168,9 +146,7 @@
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
+                    <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions">
                 </span>
                 <span class="more-about-link-text">Discussions</span>
             </span>
