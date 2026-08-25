@@ -1357,7 +1357,7 @@
 
                                                                             <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                                                                         <x-business-logo :business="$business" />
                                                                                     </div>
                                                                                     <div>
@@ -1399,9 +1399,9 @@
                                                                                                     <!-- Left Column: Big Rating & Stars -->
                                                                                                     <div class="col-lg-4 col-md-5 col-12 mt-0">
                                                                                                         <div class="d-flex flex-column align-items-start">
-                                                                                                            <span style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
+                                                                                                            <span class="overall-rating-number" style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
                                                                                                             @if($ratingWord = get_rating_label($averageRating))
-                                                                                                                <span class="rating-word-label mb-1" style="font-size: 15px; font-weight: 700; color: #1e3050;">
+                                                                                                                <span class="rating-word-label " style="font-size: 15px; font-weight: 700; color: #1e3050;">
                                                                                                                     {{ $ratingWord }}
                                                                                                                 </span>
                                                                                                             @endif
@@ -1801,7 +1801,7 @@
                                                                 </span>
                                                             @endif
 
-                                                            <div class="" style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                                            <div class="" style="margin-bottom: 6px; display: flex; gap: 4px;">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <= floor($averageRating))
                                                                         <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -2167,7 +2167,7 @@
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
                                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
-                                                        <div class="business-initial-logo" style="width: 44px; height: 44px; margin-bottom:8px">
+                                                        <div class="top-product-medium-logo" style="width: 44px; height: 44px; margin-bottom:8px">
                                                             <x-business-logo :business="$business" />
                                                         </div>
 

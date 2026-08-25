@@ -406,7 +406,7 @@
                                 {{-- Header: logo + name + stars + visit --}}
                                 <div class="review-header-box top_review_bx" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                                     <div class="d-flex align-items-center gap-2">
-                                        <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                        <div class="top-product-medium-logo" style="width: 48px; height: 48px; ">
                                             <x-business-logo :business="$business" :name="$bName" />
                                         </div>
                                         <div>

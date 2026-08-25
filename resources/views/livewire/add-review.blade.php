@@ -7,9 +7,9 @@
         background: #033b74 !important;
     }
     .recommend-btn {
-        border: 1.5px solid #06498b !important;
-        background-color: #ffffff !important;
-        color: #002347 !important;
+        border: 1.5px solid #174889 !important;
+        background-color: #174889 !important;
+        color: #fff !important;
         border-radius: 30px !important;
         padding: 12px 25px !important;
         font-size: 14px !important;
@@ -25,11 +25,11 @@
     }
     .recommend-btn i {
         font-size: 15px !important;
-        color: #06498b !important;
+        color: #fff !important;
         /* transition: color 0.2s ease !important; */
     }
     .recommend-btn:hover {
-        background-color: #06498b !important;
+        background-color: #033b74 !important;
         border-color: #06498b !important;
         color: #ffffff !important;
     }
@@ -159,7 +159,7 @@
 
                     <div class="modal-body p-3 p-md-4 pt-2">
                         <div>
-                            <button type="button" class="btn-close" wire:click="closeModal" style="box-shadow: none; font-size: 12px;" aria-label="Close"></button>
+                            <button type="button" class="btn-close" wire:click="closeModal" style="box-shadow: none; font-size: 10px;" aria-label="Close"></button>
                         </div>
                         
                         <div class="row g-4">
