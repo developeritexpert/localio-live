@@ -189,713 +189,7 @@
                 })();
             </script>
         @endif
-        <style>
-            .rating-star i {
-                font-size: 9px !important;
-            }
-            /* Sticky Right Sidebar Navigation */
-            .revie_img_sec .image_revie_inr {
-                display: flex !important;
-                align-items: stretch !important;
-                gap: 40px !important;
-            }
-
-            .revie_img_sec .thre_revi_rgt {
-                position: relative !important;
-                display: flex !important;
-                flex-direction: column !important;
-                width: 38% !important;
-                height: auto !important;
-                min-height: 100% !important;
-                align-self: stretch !important;
-            }
-
-            .revie_img_sec .thre_revi_rgt .main_feture {
-                width: 100% !important;
-                height: 100% !important;
-                display: flex !important;
-                flex-direction: column !important;
-            }
-
-            .revie_img_sec .thre_revi_rgt .fetru_row {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 20px !important;
-                justify-content: flex-start !important;
-                align-items: stretch !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
-
-            .sticky-sidebar-nav-wrapper {
-                position: -webkit-sticky !important;
-                position: sticky !important;
-                top: 10px !important;
-                z-index: 30 !important;
-                width: 100% !important;
-                margin-top: 0 !important;
-                align-self: flex-start !important;
-            }
-
-            .sticky-sidebar-nav-card {
-                background: #ffffff;
-                border-radius: 14px;
-                box-shadow: 0 8px 24px rgba(0, 35, 71, 0.08);
-                padding: 24px 20px;
-                border: 1px solid #eef2f6;
-                width: 100%;
-                box-sizing: border-box;
-            }
-
-            .sticky-nav-links {
-                display: flex;
-                flex-direction: column;
-                gap: 4px;
-                margin: 12px 0;
-            }
-
-            .sticky-nav-item {
-                display: flex;
-                align-items: center;
-                padding: 9px 14px;
-                border-radius: 8px;
-                color: #4a5568;
-                font-size: 14px;
-                font-weight: 500;
-                text-decoration: none;
-                transition: all 0.2s ease-in-out;
-                position: relative;
-            }
-
-            .sticky-nav-item:hover {
-                background-color: #f4f7fb;
-                color: #003f7d;
-                font-weight: 600;
-                transform: translateX(4px);
-            }
-
-            .sticky-nav-item.active {
-                background-color: #eaf1f9;
-                color: #003f7d;
-                font-weight: 700;
-            }
-
-            .sticky-nav-item.active::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: 50%;
-                transform: translateY(-50%);
-                height: 60%;
-                width: 3.5px;
-                background-color: #003f7d;
-                border-radius: 0 3px 3px 0;
-            }
-
-          
-            a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:hover {
-                background-color: #e4e7ea !important;
-            }
-            .sidebar-review-card .review-header div small {
-                font-size: 12px !important;
-                }
-            .transparency-banner{
-                position:  !important;
-            }
-
-             #imageGalleryModal .modal-dialog {
-                 max-width: 95%;
-                 width: 1400px;
-                 transition: all 0.3s ease;
-             }
-             .gallery-header {
-                 padding: 24px 32px 16px 32px;
-                 display: flex;
-                 justify-content: space-between;
-                 align-items: center;
-                 border-bottom: 1px solid #f0f0f0;
-                 background: #ffffff;
-             }
-             .gallery-header-left {
-                 display: flex;
-                 align-items: center;
-                 gap: 16px;
-             }
-             .gallery-header-cta {
-                 margin-right: 40px;
-             }
-             .gallery-body {
-                 height: 60vh;
-                 display: flex;
-                 align-items: center;
-                 justify-content: center;
-                 background: #fafafa;
-                 position: relative;
-                 padding: 24px;
-             }
-             .gallery-thumbnails {
-                 padding: 16px 32px;
-                 border-top: 1px solid #f0f0f0;
-                 background: #ffffff;
-                 display: flex;
-                 justify-content: center;
-                 gap: 12px;
-                 overflow-x: auto;
-                 flex-wrap: wrap;
-             }
-
-             .gallery-image-wrap {
-                 width: 100%;
-                 height: 100%;
-                 display: flex;
-                 align-items: center;
-                 justify-content: center;
-                 border-radius: 8px;
-                 overflow: hidden;
-                 padding-inline: 48px;
-             }
-             .crm_sec.revie_left_rgt_sec .review_text p:last-child{
-                font-size:16px;
-                margin-bottom:0;
-             }
-
-             @media (max-width: 768px) {
-                 #imageGalleryModal .modal-dialog {
-                     max-width: 98% !important;
-                     width: auto !important;
-                     margin: 10px auto !important;
-                 }
-                 .gallery-header {
-                     padding: 16px !important;
-                     flex-direction: column !important;
-                     align-items: flex-start !important;
-                     gap: 12px !important;
-                 }
-                 .gallery-header-cta {
-                     margin-right: 0 !important;
-                     width: 100% !important;
-                 }
-                 .gallery-header-cta a {
-                     width: 100% !important;
-                     justify-content: center !important;
-                 }
-                 .gallery-body {
-                     height: 50vh !important;
-                     padding: 12px !important;
-                 }
-                 .gallery-image-wrap {
-                     padding-inline: 16px !important;
-                 }
-                 #imageGalleryModal .btn-close {
-                     right: 16px !important;
-                     top: 16px !important;
-                 }
-                 .gallery-thumbnails {
-                     padding: 12px !important;
-                     gap: 8px !important;
-                 }
-                 .modal-thumb-item {
-                     width: 60px !important;
-                     height: 40px !important;
-                 }
-                 #modalPrevBtn, #modalNextBtn {
-                     width: 36px !important;
-                     height: 36px !important;
-                     font-size: 14px !important;
-                 }
-                 #modalPrevBtn {
-                     left: 12px !important;
-                 }
-                 #modalNextBtn {
-                     right: 12px !important;
-                     margin-right: 0 !important;
-                 }
-             }
-
-             @media (max-width: 480px) {
-                 .gallery-header {
-                     padding: 12px !important;
-                     gap: 8px !important;
-                 }
-                 .gallery-header-left {
-                     gap: 12px !important;
-                 }
-                 .gallery-header-left img {
-                     width: 44px !important;
-                     height: 44px !important;
-                 }
-                 .gallery-header-left h3 {
-                     font-size: 18px !important;
-                 }
-                 .gallery-header-left div div {
-                     font-size: 12px !important;
-                 }
-                 .gallery-body {
-                     height: 40vh !important;
-                     padding: 8px !important;
-                 }
-                 .gallery-image-wrap {
-                     padding-inline: 8px !important;
-                 }
-                 #modalPrevBtn, #modalNextBtn {
-                     width: 30px !important;
-                     height: 30px !important;
-                     font-size: 11px !important;
-                 }
-                 #modalPrevBtn {
-                     left: 6px !important;
-                 }
-                 #modalNextBtn {
-                     right: 6px !important;
-                 }
-                 #imageGalleryModal .btn-close {
-                     font-size: 16px !important;
-                     right: 12px !important;
-                     top: 12px !important;
-                  }
-              }
-
-             .sidebar-review-card .review-header {
-                 display: flex;
-                 justify-content: space-between;
-                 align-items: center;
-                 gap: 12px;
-             }
-             .sidebar-review-card .review-user {
-                 display: flex;
-                 align-items: center;
-                 gap: 12px;
-             }
-             .sidebar-review-card .rating-stars {
-                 display: flex !important;
-                 gap: 2px;
-                 white-space: nowrap !important;
-             }
-             @media (max-width: 480px) {
-                 .sidebar-review-card .review-header {
-                     flex-direction: column !important;
-                     align-items: flex-start !important;
-                     gap: 6px !important;
-                 }
-                 .sidebar-review-card .review-header small {
-                     margin-left: 57px !important;
-                     margin-top: -4px !important;
-                     color: #888 !important;
-                 }
-              }
-
-             .review-sidebar-sticky {
-                 position: sticky;
-                 top: 20px;
-             }
-             @media (max-width: 991px) {
-                 .review-sidebar-sticky {
-                     background: #ffffff;
-                     border: 1px solid #f2f4f8;
-                     border-radius: 12px;
-                     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-                     position: relative;
-                     top: 0;
-                     margin-bottom: 30px;
-                     padding: 20px;
-                 }
-             }
-
-                #section1 .asn_dv {
-                padding-bottom: 13px;
-               }
-               .slider-for:not(.slick-initialized) .asan-slider-inr:not(:first-child) {
-                   display: none !important;
-               }
-               .slider-nav:not(.slick-initialized) > div:not(:first-child) {
-                   display: none !important;
-               }
-            .Tab-outerlnk.container-fluid {
-                padding: 0;
-            }
-
-            .asan-slider.asan-slider-btm.slider-nav {
-                padding: 0;
-            }
-
-            .transparency-banner{
-                position:relative !important;
-            }
-            .asan-slider.asan-slider-btm.slider-nav .slick-list {
-                width: 100%;
-            }
-
-            .asan-slider.asan-slider-btm.slider-nav .slick-track {
-                display: flex;
-            }
-
-            .asan-slider.asan-slider-btm.slider-nav .slick-track .slick-slide.slick-active {
-                margin: 0 5px  !important;
-            }
-            .new-visit-anc .cta.cta_orange {
-                font-size: 13px;
-                padding: 18px 22px;
-                width: 195px;
-                justify-content: center;
-            }
-            .new-review-side .rate_box {
-                font-size: 13px !important;
-            }
-          @media (max-width: 1599px) {
-                .asn_dv .Tab-outerlnk #table-of-content{
-                    padding-inline: 15px !important;
-                }
-            }
-            @media (max-width: 575px) {
-             .frst_rw {
-                    gap: 20px 0;
-                }
-                .new-visit-anc .cta.cta_orange {
-                font-size: 12px;
-                width: fit-content;
-            }
-            }
-
-               .review-breakdown-box{
-                padding:22px;
-            }
-
-            .review-breakdown-box h2{
-                margin-bottom:18px;
-            }
-
-            .compact-item {
-                display: flex;
-                gap: 12px;
-                padding: 4px 0;
-                align-items: center;
-            }
-            .feture_box  h2 {
-                font-size: 20px !important;
-            }
-            .pros-cons-box .compact-item p {
-                text-align: left;
-                font-size: 13px;
-            }
-            .compact-item:last-child{
-                border-bottom:none;
-            }
-
-            .compact-item p{
-                margin:0;
-                font-size:14px;
-                font-weight:500;
-                color:#222;
-                line-height:1.4;
-                flex:1;
-            }
-
-            .greenfonticon,
-            .redboxicon{
-
-                border-radius:50%;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                flex-shrink:0;
-            }
-
-            .greenfonticon{
-
-                color:#28a745;
-            }
-
-            .redboxicon{
-                background:#fdecec;
-                color:#dc3545 !important;
-            }
-            .innr_pr .redboxicon {
-                background: transparent !important;
-            }
-            i.fa-solid.fa-check {
-                color: #15c731 !important;
-            }
-
-            ::before {}
-
-            i.fa-solid.fa-minus {
-                color: #ff0000 !important;
-            }
-
-            .greenfonticon i,
-            .redboxicon i{
-                font-size:12px;
-            }
-
-            .review-breakdown-box{
-                padding:25px;
-            }
-
-            .sidebar-review-card{
-                padding:18px 0;
-                border-bottom:1px solid #ececec;
-            }
-
-            .sidebar-review-card:last-child{
-                border-bottom:none;
-                padding-bottom:0;
-            }
-
-            .review-header{
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                margin-bottom:12px;
-            }
-
-            .review-user{
-                display:flex;
-                gap:12px;
-            }
-
-            .review-user h6{
-                margin:0 0 5px;
-                font-size:15px;
-                font-weight:600;
-            }
-
-            .review-user img{
-                object-fit:cover;
-            }
-
-            .sidebar-review-card h5{
-                font-size:15px;
-                font-weight:600;
-                margin-bottom:8px;
-                color:#002655;
-            }
-
-            .sidebar-review-card p{
-                margin:0;
-                font-size:14px;
-                color:#666;
-                line-height:1.6;
-            }
-
-            .rating-stars i{
-                /* font: size 12px; */
-            }
-
-            .main_feture .feture_box {
-                box-shadow: 0 8px 24px rgb(141 143 144 / 28%);
-            }
-
-            .review-breakdown-card{
-                padding:24px;
-                border-radius:14px;
-            }
-
-            .review-header-box{
-                display:flex;
-                justify-content:space-between;
-                align-items:flex-start;
-                margin-bottom:18px;
-            }
-
-            .review-header-box h5{
-                margin:0;
-                font-size:18px;
-                font-weight:700;
-                color:#002655;
-            }
-
-            .review-header-box small{
-                display:block;
-                margin-top:3px;
-                color:#777;
-                font-size:13px;
-            }
-
-            .view-review-link{
-                color:#002655;
-                font-size:12px;
-                font-weight:600;
-                text-decoration:none;
-            }
-
-            .view-review-link:hover{
-                text-decoration:underline;
-            }
-
-            .overall-rating-box{
-                display:flex;
-                align-items:center;
-                gap:12px;
-
-            }
-
-            .overall-rating-number{
-                font-size:30px;
-                font-weight:600;
-                color:#222;
-                line-height:1;
-            }
-
-            .breakdown-title{
-                font-size:16px;
-                color:#002655;
-                font-weight:600;
-                margin-bottom:16px;
-            }
-
-            .review-progress-item{
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                margin-bottom:18px;
-                gap:15px;
-            }
-
-            .review-progress-item span{
-                width:150px;
-                font-size:13px;
-                font-weight:500;
-                color:#444;
-            }
-
-            .progress-wrap{
-                flex:1;
-                display:flex;
-                align-items:center;
-                gap:10px;
-            }
-
-            .progress{
-                flex:1;
-                height:8px;
-                background:#edf6ed;
-                border-radius:30px;
-                overflow:hidden;
-            }
-
-            .progress-bar{
-                background:#199429;
-                border-radius:30px;
-            }
-
-            .progress-wrap strong{
-                width:42px;
-                text-align:right;
-                font-size:12px;
-                color:#333;
-                font-weight:600;
-            }
-
-            .rating-stars i{
-                /* font-size:12px; */
-            }
-
-            .str_prc_box{
-                background:#fff;
-                border:1px solid #e9ecef;
-                border-radius:14px;
-                padding:28px 20px;
-                text-align:center;
-                display:flex;
-                flex-direction:column;
-                justify-content:center;
-                min-height:220px;
-            }
-
-            .starting-price-title{
-                font-size:20px;
-                font-weight:600;
-                color:#002347;
-                margin-bottom:25px;
-            }
-
-            .starting-price-value{
-                font-size:42px;
-                font-weight:700;
-                color:#002655;
-                line-height:1;
-                margin-bottom:12px;
-            }
-
-            .starting-price-text{
-                font-size:14px;
-                color:#8a8a8a;
-                margin-bottom:35px;
-            }
-
-            .starting-price-link{
-                color:#002655;
-                font-size:14px;
-                font-weight:600;
-                text-decoration:none;
-                transition:.3s;
-            }
-
-            .starting-price-link:hover{
-                color:#002655;
-                text-decoration:underline;
-            }
-            .feture_box.str_prc_box .starting-price-text {
-                text-align: center !important;
-                color:#444444;
-                font-size:12px;
-            }
-
-            .thre_revi_rgt .feture_box  h2 {
-                font-size: 14px !important;
-            }
-
-            .main-view-rating-hide {
-                display: none !important;
-            }
-            .fixed-div .main-view-rating-hide {
-                display: flex !important;
-                align-items: center;
-                gap: 3px;
-                margin-top: 4px;
-            }
-            .fixed-div .hide-on-sticky {
-                display: none !important;
-            }
-
-            h5.card-title.mb-3 {
-                font-size: 24px !important;
-                font-weight: 600 !important;
-                line-height: 1.3 !important;
-                color: #002347 !important;
-            }
-
-            .asan-slider.asan-slider-btm .slick-track .hover_main ,
-            .asan-slider.asan-slider-btm .slick-track .slick-slide:hover {
-                border: 1px solid rgb(0, 0, 0);
-                border-radius: 6px !important;
-            }
-            section#section-compare {
-                padding: 40px 20px !important;
-            }
-            a.view-more-link:hover {
-                text-decoration: underline !important;
-            }
-
-
-
-            .community-rating {
-                font-size: 18px;
-                font-weight: 600;
-                color:#002347;
-            }
-
-            .community-base-rating {
-                font-size: 12px;
-                font-weight: 500;
-            }
-
-            .rating_bar_span {
-                font-size: 16px;
-                font-weight: 500;
-                color: #002347;
-            }
-    </style>
+@include('User.partials.business_detail_styles')
     <div data-business-id="{{ $business->id }}">
         <section class="product_sec">
             <div class="inner_banner_sec">
@@ -1762,7 +1056,7 @@
                                                                 <section class="faq-section product_inr_faq py-5 light" id="section15">
                                                                     <div class="container">
                                                                         <div class="row">
-                                                                            <div class="col-lg-10 mx-auto">
+                                                                            <div class="">
                                                                                 <div class="text-start mb-4">
                                                                                     <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
                                                                                         {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
@@ -1980,6 +1274,24 @@
                                                                             .clear-filters-btn:hover {
                                                                                 text-decoration: underline;
                                                                             }
+                                                                            .review-sort-option {
+                                                                                font-size: 13px !important;
+                                                                                color: #1e3050 !important;
+                                                                                cursor: pointer;
+                                                                                background-color: transparent !important;
+                                                                                font-weight: 400;
+                                                                                border: none;
+                                                                                outline: none;
+                                                                                transition: background-color 0.15s ease;
+                                                                            }
+                                                                            .review-sort-option.is-selected {
+                                                                                background-color: #f8fafc !important;
+                                                                                font-weight: 600 !important;
+                                                                            }
+                                                                            .review-sort-option:hover {
+                                                                                background-color: #f1f5f9 !important;
+                                                                                color: #1e3050 !important;
+                                                                            }
                                                                             .review-row-prod-inr {
                                                                                 display: flex !important;
                                                                                 align-items: stretch !important;
@@ -2045,7 +1357,7 @@
 
                                                                             <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc;  padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
                                                                                 <div style="display: flex; align-items: center; gap: 16px;">
-                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0; overflow: hidden;">
+                                                                                    <div class="top-product-logo" style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                                                                         <x-business-logo :business="$business" />
                                                                                     </div>
                                                                                     <div>
@@ -2082,46 +1394,59 @@
                                                                                             {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
                                                                                         </h2>
                                                                                         <div class="review-filter-sec" style="display: block;">
-                                                                                            <div class="user-reviews-summary-card p-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
-
-                                                                                                <div class="d-flex flex-column align-items-start mb-3">
-                                                                                                    <span style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 6px;">{{ number_format($averageRating, 1) }}</span>
-                                                                                                    @if($ratingWord = get_rating_label($averageRating))
-                                                                                                        <span class="rating-word-label">
-                                                                                                            {{ $ratingWord }}
-                                                                                                        </span>
-                                                                                                    @endif
-                                                                                                    <div class="d-flex align-items-center gap-1 mb-1">
-                                                                                                        @for ($j = 1; $j <= 5; $j++)
-                                                                                                            @if ($j <= floor($averageRating))
-                                                                                                                <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                                                            @elseif ($j - 0.5 <= $averageRating)
-                                                                                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                                                                            @else
-                                                                                                                <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                            <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                                                                                                <div class="row align-items-start g-4">
+                                                                                                    <!-- Left Column: Big Rating & Stars -->
+                                                                                                    <div class="col-lg-4 col-md-5 col-12 mt-0">
+                                                                                                        <div class="d-flex flex-column align-items-start">
+                                                                                                            <span class="overall-rating-number" style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
+                                                                                                            @if($ratingWord = get_rating_label($averageRating))
+                                                                                                                <span class="rating-word-label " style="font-size: 15px; font-weight: 700; color: #1e3050;">
+                                                                                                                    {{ $ratingWord }}
+                                                                                                                </span>
                                                                                                             @endif
-                                                                                                        @endfor
-                                                                                                    </div>
-                                                                                                    <span style="font-size: 12px; color: #666;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
-                                                                                                </div>
-
-                                                                                                <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-top: 18px; margin-bottom: 14px;">Review breakdown</h5>
-
-                                                                                                <div class="mb-3">
-                                                                                                    @foreach ($criteria as $criterion)
-                                                                                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                                                        <span style="font-size: 13px; font-weight: 500; color: #334155; white-space: nowrap;">{{ $criterion->name }}</span>
-                                                                                                        <div class="d-flex align-items-center ms-2" style="flex: 1; max-width: 60%; justify-content: flex-end;">
-                                                                                                            <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px; border-radius: 4px;"></progress>
-                                                                                                            <span style="font-size: 12px; font-weight: 600; color: #334155; margin-left: 8px; min-width: 32px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                                                            <div class="d-flex align-items-center gap-1 mb-2">
+                                                                                                                @for ($j = 1; $j <= 5; $j++)
+                                                                                                                    @if ($j <= floor($averageRating))
+                                                                                                                        <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                                    @elseif ($j - 0.5 <= $averageRating)
+                                                                                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
+                                                                                                                    @else
+                                                                                                                        <i class="far fa-star text-warning" style="font-size: 18px;"></i>
+                                                                                                                    @endif
+                                                                                                                @endfor
+                                                                                                            </div>
+                                                                                                            <span style="font-size: 13px; color: #64748b;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    @endforeach
-                                                                                                </div>
 
-                                                                                                <div class="pt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                                                                    <strong style="color: #002347; font-size: 14px; font-weight:600">{{ $recommendPercent }}%</strong>
+                                                                                                    <!-- Right Column: Review Breakdown & Recommendation -->
+                                                                                                    <div class="col-lg-8 col-md-7 col-12 mt-0">
+                                                                                                        @if(isset($criteria) && count($criteria) > 0)
+                                                                                                            <h5 style="font-size: 15px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
+
+                                                                                                            <div class="mb-2">
+                                                                                                                @foreach ($criteria as $criterion)
+                                                                                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                                                                                    <span style="font-size: 13.5px; font-weight: 500; color: #475569; min-width: 130px;">{{ $criterion->name }}</span>
+                                                                                                                    <div class="d-flex align-items-center flex-grow-1 mx-3" style="max-width: 65%;">
+                                                                                                                        <div class="progress rounded-pill w-100" style="height: 7px; background-color: #e2e8f0;">
+                                                                                                                            <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #2CC464;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                    <span style="font-size: 13px; font-weight: 600; color: #334155; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                                                                </div>
+                                                                                                                @endforeach
+                                                                                                            </div>
+                                                                                                        @endif
+
+                                                                                                        @if(isset($recommendPercent) && $recommendPercent > 0)
+                                                                                                            <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
+                                                                                                                <span style="font-weight: 700; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                                                                                <strong style="color: #002347; font-size: 14px; font-weight: 700;">{{ $recommendPercent }}%</strong>
+                                                                                                            </div>
+                                                                                                        @endif
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -2135,23 +1460,25 @@
                                                                                         <!-- Filter Button with Dropdown & Clear filter on Left -->
                                                                                         <div class="d-flex align-items-center gap-2">
                                                                                             <div class="dropdown" id="reviewFilterDropdownWrap">
-                                                                                                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2" 
+                                                                                                <button class="btn btn-outline-secondary d-flex align-items-center" 
                                                                                                         type="button" 
                                                                                                         id="reviewFilterDropdownBtn" 
                                                                                                         data-bs-toggle="dropdown" 
                                                                                                         data-bs-auto-close="outside"
                                                                                                         aria-expanded="false" 
-                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff;">
-                                                                                                    <i class="fas fa-filter text-muted"></i>
+                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff; gap: 4px;">
+                                                                                                    <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
                                                                                                     <span>Filter by rating</span>
                                                                                                     <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 2px; flex-shrink: 0;">
+                                                                                                        <polyline points="6 9 12 15 18 9" />
+                                                                                                    </svg>
                                                                                                 </button>
                                                                                                 <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm" 
                                                                                                      aria-labelledby="reviewFilterDropdownBtn" 
                                                                                                      style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                                                                                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                                                                                    <div class="mb-2 pb-2 border-bottom">
                                                                                                         <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
-                                                                                                        <span class="clear-filters-btn text-primary" id="clear-filters-dropdown" style="display: none; font-size: 12px; font-weight: 600; cursor: pointer;">Clear all</span>
                                                                                                     </div>
 
                                                                                                     <div class="review-star-box">
@@ -2180,7 +1507,7 @@
                                                                                             </div>
 
                                                                                             <!-- Clear filter link next to button -->
-                                                                                            <span class="clear-filters-btn ms-2" id="clear-filters" style="display: none; color: #06498b; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline;">
+                                                                                            <span class="clear-filters-btn ms-2" id="clear-filters" style="display: none; font-size: 13px; font-weight: 600;">
                                                                                                 <i class="fas fa-times me-1"></i>Clear filter
                                                                                             </span>
                                                                                         </div>
@@ -2219,8 +1546,7 @@
                                                                                                 <button type="button"
                                                                                                     data-sort-value="{{ $val }}"
                                                                                                     data-sort-label="{{ $label }}"
-                                                                                                    class="review-sort-option dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
-                                                                                                    style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; font-weight: {{ $currentSort === $val ? '600' : '400' }};">
+                                                                                                    class="review-sort-option dropdown-item d-flex align-items-center justify-content-between px-3 py-2 {{ $currentSort === $val ? 'is-selected' : '' }}">
                                                                                                     <span>{{ $label }}</span>
                                                                                                     <span class="sort-check-icon {{ $currentSort === $val ? '' : 'd-none' }}">
                                                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -2265,8 +1591,11 @@
                                                                                     }
                                                                                     sortOptions.forEach(o => {
                                                                                         const isMatch = (o.getAttribute('data-sort-value') === val);
-                                                                                        o.style.backgroundColor = isMatch ? '#f8fafc' : 'transparent';
-                                                                                        o.style.fontWeight = isMatch ? '600' : '400';
+                                                                                        if (isMatch) {
+                                                                                            o.classList.add('is-selected');
+                                                                                        } else {
+                                                                                            o.classList.remove('is-selected');
+                                                                                        }
                                                                                         const icon = o.querySelector('.sort-check-icon');
                                                                                         if (icon) {
                                                                                             if (isMatch) icon.classList.remove('d-none');
@@ -2472,7 +1801,7 @@
                                                                 </span>
                                                             @endif
 
-                                                            <div class="" style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                                            <div class="" style="margin-bottom: 6px; display: flex; gap: 4px;">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <= floor($averageRating))
                                                                         <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -2712,7 +2041,24 @@
                                                                   @endif
 
                                                                     <div>
-                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">{{ $review->user ? $review->user->displayName() : 'Anonymous' }}</h6>
+                                                                        <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
+        @if($review->user)
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ $review->user->displayName() }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        </h6>
+                                                @php
+                                                    $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
+                                                @endphp
+                                                @if($badge)
+                                                    <div class="user-contributor-badge" style="font-size: 13px; color: #64748b; margin-top: 2px;">
+                                                        {!! $badge->icon !!} {{ $badge->name }}
+                                                    </div>
+                                                @endif
+
                                                                         @if($review->user && $review->user->job_title)
                                                                             <div style="font-size: 12px; color: #777; margin-top: 2px; line-height: 1.2;">{{ $review->user->job_title }}</div>
                                                                         @endif
@@ -2821,7 +2167,7 @@
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
                                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
-                                                        <div class="business-initial-logo" style="width: 44px; height: 44px; margin-bottom:8px">
+                                                        <div class="top-product-medium-logo" style="width: 44px; height: 44px; margin-bottom:8px">
                                                             <x-business-logo :business="$business" />
                                                         </div>
 
@@ -2877,7 +2223,7 @@
 
                                                 <div class="sticky-nav-links">
                                                     <a href="#section1" class="sticky-nav-item active" data-target="section1">
-                                                        <span>Overview</span>
+                                                        <span>Description</span>
                                                     </a>
                                                     @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
                                                         <a href="#section9" class="sticky-nav-item" data-target="section9">

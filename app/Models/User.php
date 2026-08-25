@@ -106,4 +106,27 @@ class User extends Authenticatable
          }
          return $firstName;
      }
+
+    public function getContributorBadge()
+    {
+        // Cache per request instance to avoid multiple DB calls for the same user in a loop
+        static $badgesCache = [];
+        
+        if (isset($badgesCache[$this->id])) {
+            return $badgesCache[$this->id];
+        }
+
+        $activeReviewCount = $this->reviews()->where('status', 'active')->count();
+
+        $badge = \App\Models\ContributorBadge::where('min_reviews', '<=', $activeReviewCount)
+            ->where(function ($query) use ($activeReviewCount) {
+                $query->where('max_reviews', '>=', $activeReviewCount)
+                      ->orWhereNull('max_reviews');
+            })
+            ->first();
+
+        $badgesCache[$this->id] = $badge;
+        return $badge;
+    }
 }
+

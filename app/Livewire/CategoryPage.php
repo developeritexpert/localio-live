@@ -86,8 +86,8 @@ class CategoryPage extends Component
         $this->availableCriteria = $this->category->getEffectiveRatingCriteria();
 
         // Clear comparison session if switching to a different category
-        $comparedProducts = session()->get('compared_products', []);
-        if (count($comparedProducts) > 0) {
+        $comparedProducts = array_values(session()->get('compared_products', []));
+        if (!empty($comparedProducts) && !empty($comparedProducts[0])) {
             $firstProduct = \App\Models\Business::find($comparedProducts[0]);
             if ($firstProduct && $firstProduct->category_id != $this->category->id) {
                 session()->forget('compared_products');

@@ -158,7 +158,8 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </li> --}}
+                                </li>
+ --}}
 
                                 <!-- Category Settings -->
 
@@ -344,6 +345,16 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <!-- Contributor Badges -->
+                                <li class="nk-menu-item">
+                                    <a href="{{ route('admin.contributor.badges') }}" class="nk-menu-link">
+                                        <span class="nk-menu-icon">
+                                            <em class="icon ni ni-award"></em>
+                                        </span>
+                                        <span class="nk-menu-text">Contributor Badges</span>
+                                    </a>
+                                </li>
+
                                 <li class="nk-menu-item has-sub">
                                     <a href="#" class="nk-menu-link nk-menu-toggle">
                                         <span class="nk-menu-icon">

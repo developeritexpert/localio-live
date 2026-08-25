@@ -20,6 +20,7 @@ class CategoryTranslation extends Model
         'title',
         'homepage_link_text',
         'description',
+        'top_rated_description',
         'meta_title',
         'meta_description',
         'slug',

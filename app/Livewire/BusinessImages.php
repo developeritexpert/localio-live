@@ -170,10 +170,10 @@ class BusinessImages extends Component
         }
 
         try {
-            // Dedicated Provider: Microlink Screenshot API
+            // 1st Attempt: Microlink Screenshot API (Robust but has rate limits)
             $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&waitForTimeout=1500";
-            
             $response = Http::withoutVerifying()->timeout(35)->get($apiUrl);
+            
             if ($response->successful()) {
                 $json = $response->json();
                 $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
@@ -186,15 +186,33 @@ class BusinessImages extends Component
                 }
             }
 
-            // Fallback: direct embed redirect on Microlink
+            // 2nd Attempt: direct embed redirect on Microlink
             $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
             $embedResponse = Http::withoutVerifying()->timeout(35)->get($embedUrl);
             if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
                 file_put_contents($savePath, $embedResponse->body());
                 return true;
             }
+
+            // 3rd Attempt: Thum.io free screenshot API (No rate limit, direct image return)
+            $thumUrl = "https://image.thum.io/get/width/1200/crop/800/noanimate/" . $cleanUrl;
+            $thumResponse = Http::withoutVerifying()->timeout(35)->get($thumUrl);
+            if ($thumResponse->successful() && strlen($thumResponse->body()) > 5000) {
+                file_put_contents($savePath, $thumResponse->body());
+                return true;
+            }
+
+            // 4th Attempt: WordPress mShots API (Often used as free fallback)
+            $wpUrl = "https://s0.wp.com/mshots/v1/" . urlencode($cleanUrl) . "?w=1200";
+            $wpResponse = Http::withoutVerifying()->timeout(35)->get($wpUrl);
+            // WordPress might return a redirect or a "generating" placeholder which is usually small, so size check > 5000 helps
+            if ($wpResponse->successful() && strlen($wpResponse->body()) > 5000) {
+                file_put_contents($savePath, $wpResponse->body());
+                return true;
+            }
+
         } catch (\Exception $e) {
-            Log::warning("Microlink screenshot failed for {$cleanUrl}: " . $e->getMessage());
+            \Log::warning("Screenshot generation failed for {$cleanUrl}: " . $e->getMessage());
         }
 
         return false;

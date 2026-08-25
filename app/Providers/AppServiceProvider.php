@@ -37,5 +37,8 @@ class AppServiceProvider extends ServiceProvider
         $languages = \App\Models\Language::where('status', 1)->get();
         View::share('languages', $languages);
         app()->instance('languages', $languages);
+        
+        $footer_countries = \App\Models\Country::where('status', 1)->with('language')->get();
+        View::share('footer_countries', $footer_countries);
     }
 }

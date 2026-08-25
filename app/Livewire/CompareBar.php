@@ -21,10 +21,10 @@ class CompareBar extends Component
 
     public function refreshComparedProducts()
     {
-        $productIds = app(CompareService::class)->getComparedProducts();
+        $productIds = array_values(app(CompareService::class)->getComparedProducts());
         
         // If we have products and a categoryId is provided, validate they belong to this category family
-        if (count($productIds) > 0 && $this->categoryId) {
+        if (!empty($productIds) && !empty($productIds[0]) && $this->categoryId) {
             $firstProduct = \App\Models\Business::find($productIds[0]);
             if ($firstProduct) {
                 $pCategory = \App\Models\Category::find($firstProduct->category_id);

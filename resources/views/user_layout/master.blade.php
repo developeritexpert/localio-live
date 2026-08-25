@@ -1263,7 +1263,23 @@
     </style>
 </head>
 
-<body class="@yield('body_class')">
+@php
+    $routeName = Route::currentRouteName();
+    $pageClass = $routeName ? 'page-' . str_replace('.', '-', $routeName) : '';
+    if (empty($pageClass) || $pageClass == 'page-') {
+        $segments = request()->segments();
+        // Try to construct a meaningful class from URL segments
+        // typically: locale / slug / type
+        if (count($segments) >= 3) {
+            $pageClass = 'page-' . $segments[2]; // e.g. 'reviews', 'alternatives', 'faq'
+        } elseif (count($segments) == 2) {
+            $pageClass = 'page-' . $segments[1];
+        } else {
+            $pageClass = 'page-' . implode('-', $segments);
+        }
+    }
+@endphp
+<body class="@yield('body_class') {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
     <?php
     $lang = getCurrentLocale();
 
@@ -1362,7 +1378,7 @@
     </script>
     @endif
     <header>
-        <section class="sec_head">
+        <section class="sec_head {{ $pageClass }} page-route-{{ $routeName ?? 'none' }}">
             <div class="bottom_header dark">
                 <div class="container-fluid">
                     <div class="header_row">
@@ -2584,12 +2600,14 @@
                             <div class="container">
                                 <h3 style="color: black;">Choose your Country/Region</h3>
                                 <div class="footer-langs-container">
-                                    @foreach ($languages->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $language)
+                                    @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
+                                    @if($country->language)
                                     <li>
-                                        <a href="{{ url('/' . strtolower($language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($language->lang_code) }};path=/;max-age=31536000';">
-                                            {{ $language->name }}
+                                        <a href="{{ url('/' . strtolower($country->language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';">
+                                            {{ $country->name }}
                                         </a>
                                     </li>
+                                    @endif
                                     @endforeach
                                 </div>
                             </div>
@@ -2618,58 +2636,28 @@
     <div class="modal-overlay" id="learnMoreModal">
         <div class="circle_11">
             <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
-            <div class="modal-content">
-
-
-                @if ($sectionsAvailable)
-                @php
-                $header = $sections->firstWhere('sort_order', 1);
-                @endphp
-
-                <div class="modal-header" style="display: block">
-                    <h2 class="modal-title" style="width: max-content">
-                        {{ $header->title ?? 'About Our Independent Reviews' }}
+            <div class="modal-content" style="position: relative !important; transform: none !important; top: auto !important; left: auto !important; display: block !important; opacity: 1 !important; visibility: visible !important; width: 100% !important; height: auto !important; overflow: visible !important;">
+                <div class="modal-header" style="display: block !important; margin-bottom: 15px;">
+                    <h2 class="modal-title" style="width: max-content; font-size: 20px; font-weight: 700; color: #1e3050; margin: 0;">
+                        How Localio helps you choose
                     </h2>
-                    <p class="modal-subtitle">
-                        {{ $header->content ?? 'Transparency in our review process' }}
+                </div>
+
+                <div class="modal-body" style="display: block !important; padding: 0;">
+                    <p style="font-size: 15px; color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+                        Localio brings together business information, user reviews, ratings, comparisons, and community discussions to help you explore your options and make informed decisions.
                     </p>
                 </div>
-                <div class="modal-body d-none">
-                    @foreach ($sections->where('sort_order', '>', 1) as $section)
-                    <h2 class="modal-title" style="width: max-content">
-                        {{ $section->title ?? 'About Our Independent Reviews' }}
-                    </h2>
-                    <p>{{ $section->content ?? 'Default content paragraph.' }}</p>
-                    @endforeach
-                </div>
-                <div class="modal-disclaimer mt-0">
-                    <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do
-                    not affect user reviews or user-generated ratings.
-                </div>
-                <div class="mt-3">
-                    <a class="btn-g-link" href="{{ url('/affiliate-disclosure') }}">Read our Affiliate disclosure</a>
-                </div>
-                @else
-                {{-- Extra fallback if there's no content at all in DB --}}
-                <div class="modal-header">
-                    <h2 class="modal-title">About Our Independent Reviews</h2>
-                    <p class="modal-subtitle">Transparency in our review process</p>
+
+                <div class="modal-disclaimer" style="display: block !important; background-color: #f1f5f9; padding: 15px 20px; border-radius: 8px; font-size: 14px; color: #4a5568; line-height: 1.5; margin-bottom: 20px;">
+                    <strong>Disclosure:</strong> We may earn a commission from some links. Commercial relationships do not affect user reviews or user-generated ratings.
                 </div>
 
-                <div class="modal-body">
-                    <p>Localio provides unbiased research and comprehensive reviews to help you make informed
-                        decisions. Our independent analysis ensures you get accurate, trustworthy information about
-                        products and services.</p>
-
-                    <p>Our team of experts thoroughly evaluates each product based on multiple criteria including
-                        functionality, user experience, value for money, and customer support. We maintain strict
-                        editorial independence to ensure our recommendations serve your best interests.</p>
-
-                    <p>When you make a purchase through our affiliate links, we may receive a small commission at no
-                        additional cost to you. This helps us continue providing free, high-quality reviews and
-                        maintain our platform.</p>
+                <div style="display: block !important;">
+                    <a class="btn-g-link" href="{{ url('/affiliate-disclosure') }}" style="color: #ff5722; font-weight: 600; text-decoration: none;">
+                        Read our Affiliate disclosure
+                    </a>
                 </div>
-                @endif
             </div>
         </div>
     </div>
@@ -2816,7 +2804,7 @@
         <div class="modal-content bg-white shadow-lg relative border-0 my-auto"
             style="max-width: 620px; width: 100%; padding: 40px 36px 36px 36px; border-radius: 16px !important; background: #ffffff; position: relative;">
             <button type="button" id="close-profile-modal-btn" aria-label="Close modal"
-                style="position: absolute; top: 14px; right: 14px; border: none; background: transparent; font-size: 20px; cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
+                style="position: absolute; top: 14px; right: 14px; border: none; background: transparent;cursor: pointer; color: #64748b; line-height: 1; z-index: 10;">
                 ✕
             </button>
 

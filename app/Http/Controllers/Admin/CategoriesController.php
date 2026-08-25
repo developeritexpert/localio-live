@@ -541,6 +541,7 @@ class CategoriesController extends Controller
                     'page_title'   => $validate['page_title'] ?? null,
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
+                    'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'faqs'         => !empty($cleanFaqs) ? json_encode($cleanFaqs) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,

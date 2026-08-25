@@ -284,7 +284,7 @@
 
                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
 
-                                <div class="top-product-small-logo" id="selectedBusinessLogo" >
+                                <div class="top-product-medium-logo" id="selectedBusinessLogo" >
                                 </div>
 
                                 <span id="selectedBusinessName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
@@ -314,7 +314,7 @@
                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                     <div class="review-header-box top_review_bx" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                         <div class="d-flex align-items-center gap-2">
-                            <div style="width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #e2e8f0;">
+                            <div class="top-product-small-logo">
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
                             <div>

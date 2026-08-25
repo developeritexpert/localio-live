@@ -41,7 +41,15 @@
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
-                                        {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
+                                        
+        @if($review->user)
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ $review->user->displayName() }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        
                                     @endif
                                 @if($review->user && $review->user->job_title)
                                     <p class="asn-rating-p" style="font-size: 13px; color: #777; margin: 0; line-height: 1.2;  font-weight:500;">{{ $review->user->job_title }}</p>
@@ -156,7 +164,15 @@
                                         @if ($review->user && $review->user->user_type === 'admin')
                                             {{ $review->public_name ?? 'Public' }}
                                         @else
-                                            {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
+                                            
+        @if($review->user)
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ $review->user->displayName() }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        
                                         @endif
                                     @if($review->user && $review->user->job_title)
                                         <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ $review->user->job_title }}</p>
@@ -256,7 +272,15 @@
                                     @if ($review->user && $review->user->user_type === 'admin')
                                         {{ $review->public_name ?? 'Public' }}
                                     @else
-                                        {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
+                                        
+        @if($review->user)
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+                {{ $review->user->displayName() }}
+            </a>
+        @else
+            Anonymous
+        @endif
+        
                                     @endif
                                 @if($review->user && $review->user->job_title)
                                     <p style="font-size: 13px; color: #777; margin: 2px 0 0 0;">{{ $review->user->job_title }}</p>
