@@ -373,9 +373,9 @@
                                                             <!-- Left Column: Big Rating & Stars -->
                                                             <div class="col-lg-4 col-md-5 col-12">
                                                                 <div class="d-flex flex-column align-items-start">
-                                                                    <span style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; margin-bottom: 4px;">{{ number_format($averageRating, 1) }}</span>
+                                                                    <span class="overall-rating-number" style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
                                                                     @if($ratingWord = get_rating_label($averageRating))
-                                                                        <span class="rating-word-label mb-1" style="font-size: 15px; font-weight: 700; color: #1e3050;">
+                                                                        <span class="rating-word-label" style="font-size: 15px; font-weight: 700; color: #1e3050;">
                                                                             {{ $ratingWord }}
                                                                         </span>
                                                                     @endif
@@ -569,7 +569,7 @@
                                             </span>
                                         @endif
 
-                                        <div style="margin-top: 8px; margin-bottom: 6px; display: flex; gap: 4px;">
+                                        <div style="margin-bottom: 6px; display: flex; gap: 4px;">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 @if ($i <= floor($averageRating))
                                                     <i class="fas fa-star text-warning" style="font-size: 18px;"></i>

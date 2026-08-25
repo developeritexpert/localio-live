@@ -9284,6 +9284,7 @@ header .menu li.menu-item a {
 .product_inr_faq .accordion-button,
 .product_inr_faq .accordion-collapse {
     background-color: #06498b08;
+    box-shadow: unset;
 }
 
 .top_rate_pg .auto-choice-rgt .auto-choice-card {
@@ -9450,7 +9451,7 @@ footer .foot-row-lft .foot-logo p {
 }
 
 .revie_img_sec .main_feture .overall-rating-box {
-    gap: 0;
+    gap: 0 !important;
 }
 
 /* .revie_img_sec .overall-rating-box .overall-rating-number {
@@ -10775,8 +10776,8 @@ a.cta.btn_blue:hover,
 
 /* ====style.css updated by-Kashish(13-aug-26)===== */
 .top-product-small-logo {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10786,8 +10787,8 @@ a.cta.btn_blue:hover,
 }
 
 .top-product-medium-logo {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11251,3 +11252,26 @@ section.write-review-hero .container h1 {
     font-size: 28px !important;
 }
 
+.page-write-review .search-box,
+.page-faqs .search-box,
+.page-reviews .search-box {
+    display: block !important;
+}
+
+.user_revew_sec {
+    margin-top: 115px;
+}
+
+.feture_box.lft_check_box ul li p {
+    font-weight: 600;
+    color: #333 !important;
+    font-size: 14px;
+}
+
+.overall-rating-number{
+    line-height: 0.8 !important;
+}
+
+#section-search-faq h3 {
+    font-weight: 600 !important;
+}

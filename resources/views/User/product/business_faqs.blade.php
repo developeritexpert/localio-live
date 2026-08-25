@@ -350,7 +350,7 @@
             <div class="col-md-8 col-12">
                 <div class="top_head d-flex align-items-center gap-2">
                     <!-- Business Icon -->
-                    <div class="asn-img" style="width: 55px; height: 55px; border-radius: 12px; background: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); flex-shrink: 0; overflow: hidden; border: 1px solid #e2e8f0;">
+                    <div class="top-product-logo" >
                         <x-business-logo :business="$business" :name="$bName" />
                     </div>
                     <div>
@@ -683,7 +683,7 @@
                                 @foreach($business->usps as $usp)
                                     @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
                                     @if(!empty($uText))
-                                        <li class="d-flex flex-row align-items-center size15 mb-2">
+                                        <li class="d-flex flex-row align-items-center size15 mb-3">
                                             <div class="grn_chk me-2">
                                                 <img src="{{ asset('front/img/green-tick.svg') }}" width="18">
                                             </div>
