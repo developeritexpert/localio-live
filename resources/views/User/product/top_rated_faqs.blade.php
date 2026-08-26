@@ -256,7 +256,7 @@
                     @if(isset($faqCategories) && count($faqCategories) > 1)
                     <div class="faq-category-nav" id="faqCategoryNav">
                         <button type="button" class="faq-cat-tab active" data-category-id="all">
-                            All Questions
+                            All
                         </button>
                         @foreach($faqCategories as $catName)
                             <button type="button" class="faq-cat-tab" data-category-id="{{ \Illuminate\Support\Str::slug($catName) }}">
@@ -278,9 +278,9 @@
                                 @php $catSlug = \Illuminate\Support\Str::slug($catName); @endphp
                                 <div class="faq-category-group mb-4" data-category-group="{{ $catSlug }}">
                                     @if(count($faqCategories) > 1)
-                                    <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
+                                    <h3 class="category-group-headline mb-3" style=" color: #1e3050;">
                                         {{ $catName }}
-                                    </h4>
+                                    </h3>
                                     @endif
 
                                     <div class="accordion" id="topRatedFaqAccordion_{{ $catSlug }}">

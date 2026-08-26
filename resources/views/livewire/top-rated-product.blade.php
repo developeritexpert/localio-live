@@ -1102,6 +1102,7 @@
                         }
                     }
                     $catItemName = $trans->name ?? $cat->name ?? '';
+                    $catItemSeeAllText = $trans->see_all_text ?? '';
                     $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
                     $catItemDesc = !empty($trans->top_rated_description)
                         ? strip_tags($trans->top_rated_description)
@@ -1115,7 +1116,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catItemName }}</h3>
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                            See all {{ $catItemName }}
+                            {{ !empty($catItemSeeAllText) ? $catItemSeeAllText : 'See all ' . $catItemName }}
                         </a>
                     </div>
 

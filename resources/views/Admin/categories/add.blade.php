@@ -67,6 +67,21 @@
                                 @enderror
                             </div>
                         </div>
+                        
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="see_all_text">"See All" Link Text</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="see_all_text" name="see_all_text"
+                                        value="{{ isset($category_data) ? ($category_data['see_all_text'] ?? '') : old('see_all_text') }}" 
+                                        placeholder="e.g. See all {{ $category_data['name'] ?? 'Categories' }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Used on the Top Rated Products block (e.g. <i>See all CRM software</i>). Defaults to "See all [Category Name]" if left blank.</small>
+                                @error('see_all_text')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="page_title">Page Title (H1 Heading)</label>

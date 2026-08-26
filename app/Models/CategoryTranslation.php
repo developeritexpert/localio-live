@@ -16,6 +16,7 @@ class CategoryTranslation extends Model
         'is_important',
         'name',
         'comparison_name',
+        'see_all_text',
         'page_title',
         'title',
         'homepage_link_text',
