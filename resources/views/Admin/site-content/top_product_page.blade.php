@@ -246,7 +246,7 @@
                                     <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
-                                            <button type="button" class="btn btn-xs btn-primary add-sub-section-btn" data-section-index="${sIndex}"><em class="icon ni ni-plus"></em> Add Sub-headline (H3)</button>
+                                            <button type="button" class="btn btn-xs btn-primary add-sub-section-btn" data-section-index="{{ $sIndex }}"><em class="icon ni ni-plus"></em> Add Sub-headline (H3)</button>
                                         </div>
                                         <div class="sub-sections-container ps-3 border-start">
                                             @if(isset($sec['sub_sections']) && is_array($sec['sub_sections']))
@@ -390,8 +390,12 @@
                     </div>
                 </div>
 
+
                 {{-- Hidden inputs container for form submission --}}
                 <div id="topFaqHiddenInputs"></div>
+                <input type="hidden" name="text_sections_present" value="1">
+                <input type="hidden" name="top_faqs_present" value="1">
+
             </div>
 
             <div class="col-md-12 mt-4 text-end">
@@ -681,7 +685,7 @@
 
         // Add Text Section (H2)
         $('#addTextSectionBtn').on('click', function() {
-            let sIdx = sectionCounter++;
+            let sIdx = Date.now();
             let html = `
             <div class="section-card p-3 mb-3" data-section-index="${sIdx}">
                 <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
@@ -732,7 +736,7 @@
         $(document).on('click', '.add-sub-section-btn', function() {
             let sIdx = $(this).data('section-index');
             let container = $(this).closest('.col-12').find('.sub-sections-container');
-            let subIdx = container.children('.sub-section-item').length;
+            let subIdx = Date.now();
             let subHtml = `
             <div class="sub-section-item border rounded p-3 mb-2 bg-light" data-sub-index="${subIdx}">
                 <div class="d-flex justify-content-between align-items-center mb-2">

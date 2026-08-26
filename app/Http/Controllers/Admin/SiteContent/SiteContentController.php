@@ -810,7 +810,7 @@ if (!$headerLogo) {
         }
         $lang_id = $request->get('lang_id') ?: (session()->get('lang_id') ?: 1);
 
-        if ($request->has('text_sections')) {
+        if ($request->has('text_sections') || $request->has('text_sections_present')) {
             $sectionsData = $request->input('text_sections', []);
             $cleanedSections = [];
             foreach ($sectionsData as $sec) {
@@ -841,7 +841,7 @@ if (!$headerLogo) {
             );
         }
 
-        if ($request->has('top_faqs')) {
+        if ($request->has('top_faqs') || $request->has('top_faqs_present')) {
             $faqsData = $request->input('top_faqs', []);
             $cleanedFaqs = [];
             foreach ($faqsData as $faq) {
