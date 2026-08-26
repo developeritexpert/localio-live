@@ -476,7 +476,7 @@
                                 style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                 <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
                                     <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'From our community' }}</h6>
-                                    <img src="{{ asset('front/img/20250704132226_specialists_small_img_0.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
+                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
                                 </div>
                                 <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews are shared by real Localio users.' }}
@@ -1384,12 +1384,6 @@
                             </div>
                             @endif
 
-                                @if(!empty($section['h2_text']))
-                                <div class="rich-text-content mb-4" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                                    {!! $section['h2_text'] !!}
-                                </div>
-                                @endif
-
                                 @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                                     @foreach($section['sub_sections'] as $sub)
                                     <div class="sub-section-block mt-4 mb-3  border-start" >
@@ -1408,7 +1402,6 @@
                                 @endif
                             </div>
                             @endforeach
-                        @endif
                     </div>
                     
                     <!-- RIGHT COLUMN: Comparisons & Providers -->
