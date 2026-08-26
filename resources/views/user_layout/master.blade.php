@@ -2331,11 +2331,35 @@
                         });
                         </script>
                     </nav>
+                    
+                    @if (!in_array(Route::currentRouteName(), ['login', 'register']))
+                    <div id="mobile-search-container" class="mobile-search-container d-block d-lg-none {{ (request()->is('/') || request()->is(app()->getLocale()) || Route::currentRouteName() === 'home' || (isset($pageClass) && $pageClass === 'page-home')) ? 'home-mobile-search' : '' }}">
+                        <livewire:header-search-bar />
+                    </div>
+                    @endif
                 </div>
             </div>
 
         </section>
     </header>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileSearch = document.getElementById('mobile-search-container');
+        if (mobileSearch && mobileSearch.classList.contains('home-mobile-search')) {
+            window.addEventListener('scroll', function() {
+                const heroSection = document.querySelector('.banner_sec') || document.querySelector('.hero_area');
+                let threshold = heroSection ? (heroSection.offsetHeight / 1.5) : 250;
+                
+                if (window.scrollY > threshold) {
+                    mobileSearch.classList.add('show-search');
+                } else {
+                    mobileSearch.classList.remove('show-search');
+                }
+            });
+        }
+    });
+    </script>
     @yield('content')
     @livewireScripts
     @include('partials.prevent_page_expired')

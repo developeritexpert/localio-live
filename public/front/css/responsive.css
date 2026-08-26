@@ -12441,3 +12441,93 @@ textarea#message {
         margin-bottom: 0;
     }
 }
+
+
+/* Mobile Search Container Styles */
+@media (max-width: 991px) {
+
+    /* Fix for Mobile Search Background and Overflow */
+    .top_header.dark {
+        overflow: visible !important;
+        background-color: #174889 !important;
+    }
+    header nav#mobile_res {
+        background-color: transparent !important;
+    }
+    .mobile-search-container {
+        width: 100%;
+        padding: 0 15px 16px 15px;
+        display: block;
+        background-color: transparent;
+    }
+    
+    /* Initially hide on home page */
+    .mobile-search-container.home-mobile-search {
+        display: none !important;
+    }
+    
+    /* Show on home page when scrolled past threshold */
+    .mobile-search-container.home-mobile-search.show-search {
+        display: block !important;
+        animation: slideDownFade 0.3s ease forwards;
+    }
+    
+    @keyframes slideDownFade {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Search Box Input Styling for Mobile */
+    .mobile-search-container .search-box {
+        width: 100%;
+        position: relative;
+    }
+    
+    .mobile-search-container .search-box input {
+        width: 100%;
+        border-radius: 50px !important;
+        padding: 14px 60px 14px 24px !important;
+        border: none !important;
+        font-size: 15px !important;
+        background-color: #fff !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        color: #333 !important;
+    }
+    
+    .mobile-search-container .search-box input::placeholder {
+        color: #888;
+        font-weight: 400;
+    }
+    
+    .mobile-search-container .search-box input:focus {
+        outline: none;
+        box-shadow: 0 4px 15px rgba(249, 99, 59, 0.2) !important;
+    }
+    
+    /* Search Box Icon/Button Styling for Mobile */
+    .mobile-search-container .search-box > i.fa-magnifying-glass,
+    .mobile-search-container .search-box > i.fa-search {
+        position: absolute !important;
+        right: 6px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background-color: #F9633B !important;
+        color: #fff !important;
+        width: 40px !important;
+        height: 40px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 16px !important;
+        pointer-events: none;
+        z-index: 2;
+        box-shadow: 0 2px 6px rgba(249, 99, 59, 0.3) !important;
+    }
+}
