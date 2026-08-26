@@ -641,14 +641,20 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 </td>
                                                 <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                     @if($proStr !== '-')
-                                                        <span style="color: #166534; font-weight: 600;">{{ $proStr }}</span>
+                                                        <div class="d-flex align-items-start">
+                                                            <span class="me-2" style="font-size: 16px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                            <span style="color: #202124; font-size: 14px;">{{ $proStr }}</span>
+                                                        </div>
                                                     @else
                                                         <span class="text-muted">-</span>
                                                     @endif
                                                 </td>
                                                 <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
                                                     @if($conStr !== '-')
-                                                        <span style="color: #991b1b; font-weight: 600;">{{ $conStr }}</span>
+                                                        <div class="d-flex align-items-start">
+                                                            <span class="me-2" style="font-size: 16px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                            <span style="color: #202124; font-size: 14px;">{{ $conStr }}</span>
+                                                        </div>
                                                     @else
                                                         <span class="text-muted">-</span>
                                                     @endif

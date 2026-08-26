@@ -463,7 +463,7 @@
                                                 @endif
                                             </div>
 
-                                             <div class="row g-4">
+                                             <div class="row g-4 d-none d-md-flex">
                                                  <div class="col-md-6">
                                                      <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                          <div class="card-body">
@@ -499,6 +499,69 @@
                                                      </div>
                                                  </div>
                                              </div>
+                                             
+                                             <!-- Mobile Pros & Cons Tabs -->
+                                             <div class="mobile-pros-cons d-md-none mt-3">
+                                                 <ul class="nav nav-tabs nav-justified" id="prosConsTab" role="tablist" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; flex-wrap: nowrap;">
+                                                     <li class="nav-item" role="presentation">
+                                                         <button class="nav-link active" id="pros-tab" data-bs-toggle="tab" data-bs-target="#pros-content" type="button" role="tab" aria-controls="pros-content" aria-selected="true" style="font-weight: 600; color: #1e3050; border: none; background: transparent; padding-bottom: 12px; position: relative;">
+                                                             <span style="color: rgb(33, 172, 33);"><i class="fas fa-check"></i></span> Pros
+                                                         </button>
+                                                     </li>
+                                                     <li class="nav-item" role="presentation">
+                                                         <button class="nav-link" id="cons-tab" data-bs-toggle="tab" data-bs-target="#cons-content" type="button" role="tab" aria-controls="cons-content" aria-selected="false" style="font-weight: 600; color: #64748b; border: none; background: transparent; padding-bottom: 12px; position: relative;">
+                                                             <span style="color: rgb(247, 40, 60);"><i class="fas fa-times"></i></span> Cons
+                                                         </button>
+                                                     </li>
+                                                 </ul>
+
+                                                 <div class="tab-content" id="prosConsTabContent">
+                                                     <!-- Pros Tab Content -->
+                                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
+                                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                             <div class="card-body">
+                                                                <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                                 <ul class="list-unstyled mb-0">
+                                                                     @foreach($aggregatedPros as $pro)
+                                                                     <li class="d-flex align-items-start mb-2">
+                                                                         <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                         <span style="color: #202124;">{{ $pro->text }}
+                                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                        </span>
+                                                                     </li>
+                                                                     @endforeach
+                                                                 </ul>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+
+                                                     <!-- Cons Tab Content -->
+                                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
+                                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                             <div class="card-body">
+                                                                <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                                 <ul class="list-unstyled mb-0">
+                                                                     @foreach($aggregatedCons as $con)
+                                                                     <li class="d-flex align-items-start mb-2">
+                                                                         <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                         <span style="color: #202124;">{{ $con->text }}
+                                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                        </span>
+                                                                     </li>
+                                                                     @endforeach
+                                                                 </ul>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             <style>
+                                                 #prosConsTab .nav-link.active { color: #1e3050 !important; }
+                                                 #prosConsTab .nav-link.active::after {
+                                                     content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background-color: #00b0d8;
+                                                 }
+                                             </style>
+
                                              @if(!empty($business->pro_cons_summary))
                                              <div class="mt-4">
                                                  <div>{!! $business->pro_cons_summary !!}</div>
@@ -743,7 +806,7 @@
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
                                                             <div class="community-rating mb-2">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                                <span class="rating_bar_span">Reliability</span>
+                                                                <span class="rating_bar_span">{{ $crDisplayName }}</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                                     <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                 </div>
@@ -2163,7 +2226,7 @@
                                         
                                     
                                         <!-- here we start sticky part -->
-                                        <div class="main_feature_lg sticky-sidebar-nav-wrapper">
+                                        <div class="main_feature_lg sticky-sidebar-nav-wrapper d-none d-lg-block">
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
                                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
@@ -2222,7 +2285,7 @@
 
 
                                                 <div class="sticky-nav-links">
-                                                    <a href="#section1" class="sticky-nav-item active" data-target="section1">
+                                                    <a href="#top" class="sticky-nav-item active" data-target="top">
                                                         <span>Description</span>
                                                     </a>
                                                     @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
@@ -2266,6 +2329,73 @@
                                             </div>
                                         </div>
                                         <!-- here we end sticky part -->
+<!-- MOBILE STICKY BOTTOM NAV -->
+<div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
+    <!-- Left side: Dropdown for current section -->
+    <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
+        <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; border: 1px solid #e2e8f0; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
+            <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
+        </button>
+        <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
+            <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">Description</a></li>
+            @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
+                <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">Alternatives</a></li>
+            @endif
+            @if (isset($business->faqs) && $business->faqs->count() > 0)
+                <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">FAQs</a></li>
+            @endif
+            @if (isset($peerComparisons) && count($peerComparisons) > 0)
+                <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
+            @endif
+            <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
+        </ul>
+    </div>
+    
+    <!-- Right side: Visit CTA -->
+    <div class="msbn-right" style="flex: 1; min-width: 0;">
+        @if ($business->is_affiliate)
+            <a href="{{ $business->getTrackedUrl() }}"
+                data-track="{{ json_encode([
+                    'type' => 'click',
+                    'business_id' => $business->id,
+                    'action' => 'visit_website',
+                    'label' => 'Visit Website',
+                ]) }}"
+                target="_blank" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
+                Visit website <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
+            </a>
+        @endif
+    </div>
+</div>
+
+<style>
+    .mobile-sticky-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+        z-index: 9999;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* iOS safe area */
+        padding-top: 10px;
+    }
+    .msbn-dropdown-toggle::after {
+        margin-left: auto;
+    }
+    .msbn-item.active {
+        background-color: #f1f5f9;
+        color: #0f172a;
+        font-weight: 600;
+    }
+    /* Add padding to the body so the bottom content isn't covered by the sticky bar */
+    @media (max-width: 991px) {
+        body.product-page-body {
+            padding-bottom: 75px !important;
+        }
+    }
+</style>
+
                                     </div>
                                 </div>
 
@@ -3019,6 +3149,18 @@
                 stickyNavLinks.forEach(link => {
                     link.addEventListener('click', function(e) {
                         const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                        
+                        if (targetId === 'top' || targetId === 'section1') {
+                            e.preventDefault();
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                            stickyNavLinks.forEach(l => l.classList.remove('active'));
+                            this.classList.add('active');
+                            return;
+                        }
+                        
                         const targetElement = document.getElementById(targetId);
                         if (targetElement) {
                             e.preventDefault();
@@ -3036,6 +3178,37 @@
                         }
                     });
                 });
+
+                const msbnNavLinks = document.querySelectorAll('.msbn-item');
+                if (msbnNavLinks.length > 0) {
+                    msbnNavLinks.forEach(link => {
+                        link.addEventListener('click', function(e) {
+                            const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                            
+                            if (targetId === 'top' || targetId === 'section1') {
+                                e.preventDefault();
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth'
+                                });
+                                return;
+                            }
+                            
+                            const targetElement = document.getElementById(targetId);
+                            if (targetElement) {
+                                e.preventDefault();
+                                const headerOffset = 90;
+                                const elementPosition = targetElement.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        });
+                    });
+                }
 
                 // Update active link on scroll
                 const navSectionTargets = [
@@ -3069,6 +3242,26 @@
                                 link.classList.remove('active');
                             }
                         });
+                        
+                        // Update Mobile Dropdown
+                        const msbnItems = document.querySelectorAll('.msbn-item');
+                        if (msbnItems.length > 0) {
+                            msbnItems.forEach(item => {
+                                let checkTarget = item.getAttribute('data-target');
+                                if (checkTarget === 'top' && activeId === 'section1') {
+                                    checkTarget = 'section1';
+                                }
+                                if (checkTarget === activeId || item.getAttribute('href') === '#' + activeId) {
+                                    item.classList.add('active');
+                                    const activeTextSpan = document.getElementById('msbn-active-text');
+                                    if(activeTextSpan) {
+                                        activeTextSpan.textContent = item.innerText;
+                                    }
+                                } else {
+                                    item.classList.remove('active');
+                                }
+                            });
+                        }
                     }
                 }, { passive: true });
             }

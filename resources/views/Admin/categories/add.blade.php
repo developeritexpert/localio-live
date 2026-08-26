@@ -67,6 +67,21 @@
                                 @enderror
                             </div>
                         </div>
+                        
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="see_all_text">"See All" Link Text</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="see_all_text" name="see_all_text"
+                                        value="{{ isset($category_data) ? ($category_data['see_all_text'] ?? '') : old('see_all_text') }}" 
+                                        placeholder="e.g. See all {{ $category_data['name'] ?? 'Categories' }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Used on the Top Rated Products block (e.g. <i>See all CRM software</i>). Defaults to "See all [Category Name]" if left blank.</small>
+                                @error('see_all_text')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="page_title">Page Title (H1 Heading)</label>
@@ -415,45 +430,7 @@
                             </div>
                         </div>
 
-                        <!-- Category Specific FAQs Repeater -->
-                        <div class="col-md-12 mt-4" id="category_faqs_wrapper">
-                            <div class="card card-bordered">
-                                <div class="card-inner py-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <div>
-                                            <h5 class="title mb-0 text-primary"><i class="fa fa-question-circle me-1"></i> Category Specific FAQs</h5>
-                                            <p class="text-muted small mb-0">Add frequently asked questions specific to this category or subcategory.</p>
-                                        </div>
-                                        <button type="button" class="btn btn-sm btn-primary" id="addCategoryFaqBtn">
-                                            <i class="fa fa-plus me-1"></i> + Add FAQ
-                                        </button>
-                                    </div>
-                                    <hr class="my-3">
-                                    <div id="categoryFaqsContainer">
-                                        @if(isset($category_faqs) && is_array($category_faqs))
-                                            @foreach($category_faqs as $fIndex => $faq)
-                                            <div class="faq-item-card border rounded p-3 mb-3 bg-white" data-faq-index="{{ $fIndex }}">
-                                                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                                    <h6 class="fw-bold mb-0 text-dark">FAQ #{{ $fIndex + 1 }}</h6>
-                                                    <button type="button" class="btn btn-sm btn-danger remove-faq-btn">Delete</button>
-                                                </div>
-                                                <div class="row g-2">
-                                                    <div class="col-12">
-                                                        <label class="form-label fw-bold">Question</label>
-                                                        <input type="text" class="form-control" name="category_faqs[{{ $fIndex }}][question]" value="{{ $faq['question'] ?? '' }}" placeholder="Enter FAQ question...">
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <label class="form-label fw-bold">Answer (Rich Editor)</label>
-                                                        <textarea class="form-control rich-editor" rows="3" name="category_faqs[{{ $fIndex }}][answer]" placeholder="Enter FAQ answer...">{{ $faq['answer'] ?? '' }}</textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
 
                         <!-- Submit Button -->
                         <div class="col-md-12 mt-4">
@@ -620,45 +597,7 @@
         initAllCKEditors();
 
         let catSectionCounter = {{ isset($text_sections) && is_array($text_sections) ? count($text_sections) : 0 }};
-        let catFaqCounter = {{ isset($category_faqs) && is_array($category_faqs) ? count($category_faqs) : 0 }};
-
-        $('#addCategoryTextSectionBtn').on('click', function() {
-            let sIdx = catSectionCounter++;
-            let html = `
-            <div class="section-card border rounded p-3 mb-3 bg-white" data-section-index="${sIdx}">
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                    <h6 class="fw-bold mb-0 text-dark">Section ${sIdx + 1}</h6>
-                    <button type="button" class="btn btn-sm btn-danger remove-section-btn">Delete Section</button>
-                </div>
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Headline (H2)</label>
-                        <input type="text" class="form-control" name="text_sections[${sIdx}][h2_title]" placeholder="e.g. About web hosting">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
-                        <textarea class="form-control rich-editor" rows="4" name="text_sections[${sIdx}][h2_text]" placeholder="Enter main content for this H2 section..."></textarea>
-                    </div>
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
-                            <button type="button" class="btn btn-xs btn-outline-primary add-sub-section-btn" data-section-index="${sIdx}">+ Add Sub-headline (H3)</button>
-                        </div>
-                        <div class="sub-sections-container ps-3 border-start"></div>
-                    </div>
-                </div>
-            </div>`;
-            $('#categoryTextSectionsContainer').append(html);
-            initAllCKEditors();
-        });
-
-        $(document).on('click', '.remove-section-btn', function() {
-            let card = $(this).closest('.section-card');
-            card.find('textarea.rich-editor').each(function() {
-                if (this.ckeditorInstance) {
-                    this.ckeditorInstance.destroy();
-                }
-            });
+        
             card.remove();
         });
 

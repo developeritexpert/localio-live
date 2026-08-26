@@ -769,16 +769,40 @@ if (!$headerLogo) {
             'you_agree',
             'terms_of_use',
             'privacy_policy',
-            'and'
+            'and',
+            'top_rated_headline',
+            'top_rated_subheadline',
+            'explore_categories_headline',
+            'explore_categories_subheadline',
+            'faq_section_headline',
+            'faq_section_subheadline',
+            'faq_page_about_headline',
+            'faq_page_about_subheadline',
+            'faq_page_search_heading',
+            'faq_page_list_headline',
+            'faq_page_banner_headline',
+            'faq_page_banner_subheadline',
+            'faq_page_banner_btn_text',
+            'faq_page_main_headline',
+            'faq_page_main_subheadline'
         ];
         foreach ($textFields as $field) {
             if ($request->has($field)) {
                 $datas = $request->get($field);
                 foreach ($datas as $id => $val) {
-                    $categoryContent = TopProductContent::find($id);
-                    if ($categoryContent) {
-                        $categoryContent->update([
-                            'meta_value' => $val,
+                    if ($id !== 'new' && is_numeric($id)) {
+                        $categoryContent = TopProductContent::find($id);
+                        if ($categoryContent) {
+                            $categoryContent->update([
+                                'meta_value' => $val ?? '',
+                            ]);
+                        }
+                    } else {
+                        TopProductContent::create([
+                            'meta_key' => $field,
+                            'meta_value' => $val ?? '',
+                            'lang_id' => $request->lang_id ?? getCurrentLanguageID(),
+                            'type' => 'text'
                         ]);
                     }
                 }
@@ -786,7 +810,7 @@ if (!$headerLogo) {
         }
         $lang_id = $request->get('lang_id') ?: (session()->get('lang_id') ?: 1);
 
-        if ($request->has('text_sections')) {
+        if ($request->has('text_sections') || $request->has('text_sections_present')) {
             $sectionsData = $request->input('text_sections', []);
             $cleanedSections = [];
             foreach ($sectionsData as $sec) {
@@ -817,7 +841,7 @@ if (!$headerLogo) {
             );
         }
 
-        if ($request->has('top_faqs')) {
+        if ($request->has('top_faqs') || $request->has('top_faqs_present')) {
             $faqsData = $request->input('top_faqs', []);
             $cleanedFaqs = [];
             foreach ($faqsData as $faq) {

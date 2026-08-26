@@ -226,11 +226,11 @@
                                                          {{ $criterion['name'] }}
                                                      </label>
                                                      @if(!empty($criterion['description']))
-                                                         <small class="text-muted d-block" style="font-size: 11px; line-height: 1.3; color: #64748b; margin-bottom: 4px;">
+                                                         <small class="text-muted d-block" style="font-size: 11px; line-height: 1.3; color: #64748b; margin-bottom: 6px;margin-top: 6px;">
                                                              {{ $criterion['description'] }}
                                                          </small>
                                                      @endif
-                                                     <div class="d-flex align-items-center gap-1 star-rating mt-1" data-rating-name="criteria_{{ $cId }}">
+                                                     <div class="d-flex align-items-center gap-1 star-rating" data-rating-name="criteria_{{ $cId }}">
                                                          @for ($i = 1; $i <= 5; $i++)
                                                              <i class="star-item {{ $i <= $value ? 'fas fa-star filled' : 'far fa-star' }}"
                                                                 data-value="{{ $i }}"
@@ -321,7 +321,7 @@
                                                                         wire:click="togglePro({{ $pro['id'] }})"
                                                                         class="selected-chip-badge"
                                                                         title="Click to remove">
-                                                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                                                    <i class="fas fa-plus text-success" style="font-size: 10px;"></i>
                                                                     <span>{{ $pro['text'] }}</span>
                                                                     <i class="fas fa-times ms-1"></i>
                                                                 </button>
@@ -392,7 +392,7 @@
                                                                         wire:click="toggleCon({{ $con['id'] }})"
                                                                         class="selected-chip-badge"
                                                                         title="Click to remove">
-                                                                    <i class="fas fa-check" style="font-size: 10px;"></i>
+                                                                    <i class="fas fa-minus text-danger" style="font-size: 10px;"></i>
                                                                     <span>{{ $con['text'] }}</span>
                                                                     <i class="fas fa-times ms-1"></i>
                                                                 </button>

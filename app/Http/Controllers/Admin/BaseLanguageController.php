@@ -112,10 +112,13 @@ class BaseLanguageController extends Controller
     public function delete($id)
     {
         $baseLanguage = BaseLanguage::findOrFail($id);
+        
+        // The user explicitly wants to allow deletion and let the database 
+        // automatically set the connected Languages' base_language_id to NULL.
         $baseLanguage->delete();
 
         return redirect()->route('base-languages.index')
-            ->with('success', 'Base language deleted successfully.');
+            ->with('success', 'Base language deleted successfully. Any linked regions have had their base language set to empty.');
     }
 
     public function toggleStatus($id)

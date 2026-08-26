@@ -1365,9 +1365,8 @@
         </section>
         @endif
 
-        <!-- 1. Dynamic Text Sections (H2 & H3 Sub-headlines) -->
-        @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
-        <section class="category-text-sections-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
+        <!-- 1. Category Layout (Text Sections + Sidebar) -->
+        <section class="category-content-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="row ">
                     <div class="col-lg-10">
@@ -1385,182 +1384,181 @@
                             </div>
                             @endif
 
-                            @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
-                                @foreach($section['sub_sections'] as $sub)
-                                <div class="sub-section-block mt-4 mb-3  border-start" >
-                                    @if(!empty($sub['h3_title']))
-                                    <h3 >
-                                        {{ $sub['h3_title'] }}
-                                    </h3>
-                                    @endif
-                                    @if(!empty($sub['h3_text']))
-                                    <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
-                                        {!! $sub['h3_text'] !!}
-                                    </div>
-                                    @endif
+                                @if(!empty($section['h2_text']))
+                                <div class="rich-text-content mb-4" style="font-size: 15px; color: #475569; line-height: 1.7;">
+                                    {!! $section['h2_text'] !!}
                                 </div>
-                                @endforeach
-                            @endif
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </section>
-        @endif
+                                @endif
 
-        <!-- 2. Popular Category Comparisons Section -->
-        @if(isset($popularComparisons) && count($popularComparisons) > 0)
-        @php
-            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
-        @endphp
-        <section class="popular-comparisons-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
-            <div class="container">
-                <div class="text-start mb-4">
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
-                        Popular {{ strtolower($catCurrentName) }} comparisons
-                    </h2>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">
-                        Compare top-rated {{ strtolower($catCurrentName) }} providers side-by-side on features, reviews, and community scores.
-                    </p>
-                </div>
-
-                <div class="row g-3">
-                    @foreach($popularComparisons as $comp)
-                    <div class="col-lg-6 col-md-6 col-12">
-                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #fdfdfd !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <!-- Business 1 -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
-                                    <div class="top-product-medium-logo">
-                                        <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
-                                    </div>
-                                    <div style="min-width: 0;">
-                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
-                                            {{ $comp['business_1_name'] }}
+                                @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
+                                    @foreach($section['sub_sections'] as $sub)
+                                    <div class="sub-section-block mt-4 mb-3  border-start" >
+                                        @if(!empty($sub['h3_title']))
+                                        <h3 style="font-size: 18px; font-weight: 600; color: #002347; padding-left: 14px; margin-bottom: 10px;">
+                                            {{ $sub['h3_title'] }}
+                                        </h3>
+                                        @endif
+                                        @if(!empty($sub['h3_text']))
+                                        <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; padding-left: 14px;">
+                                            {!! $sub['h3_text'] !!}
                                         </div>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 11px; color: #64748b;">
-                                            <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                            <span>{{ number_format($comp['business_1_rating'], 1) }}</span>
-                                        </div>
+                                        @endif
                                     </div>
-                                </div>
-
-                                <!-- VS Circle -->
-                                <div class="px-3 text-muted flex-shrink-0 fw-bold" style="font-size: 14px; font-family: sans-serif; color: #94a3b8;">vs</div>
-
-                                <!-- Business 2 -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
-                                    <div class="top-product-medium-logo">
-                                        <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
-                                    </div>
-                                    <div style="min-width: 0;">
-                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
-                                            {{ $comp['business_2_name'] }}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 11px; color: #64748b;">
-                                            <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                            <span>{{ number_format($comp['business_2_rating'], 1) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="cmpre_btn w-100 mt-2">
-                                <a href="{{ $comp['url'] }}" class="cta btn_blue  text-decoration-none w-100" style="padding: 7px 18px !important; border-radius: 50px !important; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 100%; background: #174889; color: #fff;">
-                                    Compare
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <div class="text-center mt-5">
-                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link btn-comparisons" >
-                        View more comparisons
-                    </a>
-                </div>
-            </div>
-        </section>
-        @endif
-
-
-
-        <!-- 4. Popular Category Businesses Section -->
-        @if(isset($popularBusinesses) && count($popularBusinesses) > 0)
-        @php
-            $catTitleName = $category->translations->name ?? $category->name ?? 'Category';
-        @endphp
-        <section class="popular-businesses-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
-            <div class="container">
-                <div class="text-start mb-4">
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
-                        Popular {{ strtolower($catTitleName) }} providers
-                    </h2>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">
-                        Top-rated businesses recommended by verified user feedback and community ratings.
-                    </p>
-                </div>
-
-                <div class="row g-3">
-                    @foreach($popularBusinesses as $biz)
-                    @php
-                        $bName = $biz->translations->first()->name ?? $biz->name ?? '';
-                        $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? (string)$biz->id;
-                    @endphp
-                    @if(!empty($bName))
-                    <div class="col-lg-4 col-md-6 col-12">
-                        <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                                    <x-business-logo :business="$biz" :name="$bName" />
-                                </div>
-                                <div class="top-product-info min-w-0 flex-grow-1">
-                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;" title="{{ $bName }}">
-                                        {{ $bName }}
-                                    </h6>
-                                    <div class="rating-group" style="">
-                                        <span class="rate_box_num">{{ number_format($biz->average_rating ?? 0, 1) }}</span>
-                                        <div class="rating-stars " >
-                                            @php $rating = round($biz->average_rating ?? 0); @endphp
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= $rating)
-                                                    <i class="fas fa-star" ></i>
-                                                @else
-                                                    <i class="far fa-star"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <span class="">({{ $biz->active_reviews_count ?? 0 }})</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex gap-2 w-100 mt-auto">
-                                @php
-                                    $hasBizTrackedUrl = !empty($biz->getTrackedUrl());
-                                @endphp
-                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
-                                   class="btn-view-details-outline btn py-1 px-2 fw-medium {{ ($hasBizTrackedUrl) ? 'w-50' : 'w-100' }}">
-                                    View details
-                                </a>
-                                @if($hasBizTrackedUrl)
-                                <a href="{{ $biz->getTrackedUrl() }}"
-                                   target="_blank"
-                                   class="btn-orng-pill btn py-1 px-2 fw-medium w-50 text-white">
-                                    Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
-                                </a>
+                                    @endforeach
                                 @endif
                             </div>
-                        </div>
+                            @endforeach
+                        @endif
                     </div>
-                    @endif
-                    @endforeach
+                    
+                    <!-- RIGHT COLUMN: Comparisons & Providers -->
+                    <div class="col-lg-4 mt-4 mt-lg-0">
+                        
+                        <!-- Popular Category Comparisons Section -->
+                        @if(isset($popularComparisons) && count($popularComparisons) > 0)
+                        @php
+                            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
+                        @endphp
+                        <div class="sidebar-box mb-4 p-4 rounded-3 border" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                            <div class="text-start mb-4">
+                                <h2 style="font-size: 18px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                                    Popular {{ strtolower($catCurrentName) }} comparisons
+                                </h2>
+                            </div>
+
+                            <div class="row g-3">
+                                @foreach($popularComparisons as $comp)
+                                <div class="col-12">
+                                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #fdfdfd !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <!-- Business 1 -->
+                                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                                <div class="top-product-medium-logo">
+                                                    <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
+                                                </div>
+                                                <div style="min-width: 0;">
+                                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
+                                                        {{ $comp['business_1_name'] }}
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-1" style="font-size: 11px; color: #64748b;">
+                                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                                        <span>{{ number_format($comp['business_1_rating'], 1) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- VS Circle -->
+                                            <div class="px-2 text-muted flex-shrink-0 fw-bold" style="font-size: 12px; font-family: sans-serif; color: #94a3b8;">vs</div>
+
+                                            <!-- Business 2 -->
+                                            <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
+                                                <div class="top-product-medium-logo">
+                                                    <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
+                                                </div>
+                                                <div style="min-width: 0;">
+                                                    <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
+                                                        {{ $comp['business_2_name'] }}
+                                                    </div>
+                                                    <div class="d-flex align-items-center gap-1" style="font-size: 11px; color: #64748b;">
+                                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                                        <span>{{ number_format($comp['business_2_rating'], 1) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="cmpre_btn w-100 mt-2">
+                                            <a href="{{ $comp['url'] }}" class="cta btn_blue  text-decoration-none w-100" style="padding: 7px 18px !important; border-radius: 50px !important; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 100%; background: #174889; color: #fff;">
+                                                Compare
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="btn-g-link btn-comparisons" style="font-size: 13px;">
+                                    View more comparisons
+                                </a>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Popular Category Businesses Section -->
+                        @if(isset($popularBusinesses) && count($popularBusinesses) > 0)
+                        @php
+                            $catTitleName = $category->translations->name ?? $category->name ?? 'Category';
+                        @endphp
+                        <div class="sidebar-box mb-4 p-4 rounded-3 border" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
+                            <div class="text-start mb-4">
+                                <h2 style="font-size: 18px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                                    Popular {{ strtolower($catTitleName) }} providers
+                                </h2>
+                            </div>
+
+                            <div class="row g-3">
+                                @foreach($popularBusinesses as $biz)
+                                @php
+                                    $bName = $biz->translations->first()->name ?? $biz->name ?? '';
+                                    $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? (string)$biz->id;
+                                @endphp
+                                @if(!empty($bName))
+                                <div class="col-12">
+                                    <div class="top-product-card d-flex flex-column justify-content-between p-3 h-100" style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                                        <div class="d-flex align-items-center gap-2 mb-3">
+                                            <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                                <x-business-logo :business="$biz" :name="$bName" />
+                                            </div>
+                                            <div class="top-product-info min-w-0 flex-grow-1">
+                                                <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;" title="{{ $bName }}">
+                                                    {{ $bName }}
+                                                </h6>
+                                                <div class="rating-group" style="">
+                                                    <span class="rate_box_num">{{ number_format($biz->average_rating ?? 0, 1) }}</span>
+                                                    <div class="rating-stars " >
+                                                        @php $rating = round($biz->average_rating ?? 0); @endphp
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            @if($i <= $rating)
+                                                                <i class="fas fa-star" ></i>
+                                                            @else
+                                                                <i class="far fa-star"></i>
+                                                            @endif
+                                                        @endfor
+                                                    </div>
+                                                    <span class="">({{ $biz->active_reviews_count ?? 0 }})</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 w-100 mt-auto">
+                                            @php
+                                                $hasBizTrackedUrl = !empty($biz->getTrackedUrl());
+                                            @endphp
+                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
+                                               class="btn-view-details-outline btn py-1 px-2 fw-medium {{ ($hasBizTrackedUrl) ? 'w-50' : 'w-100' }}">
+                                                View details
+                                            </a>
+                                            @if($hasBizTrackedUrl)
+                                            <a href="{{ $biz->getTrackedUrl() }}"
+                                               target="_blank"
+                                               class="btn-orng-pill btn py-1 px-2 fw-medium w-50 text-white">
+                                                Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
+                                            </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                    </div>
                 </div>
             </div>
         </section>
-        @endif
-
+        
         <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
         @php

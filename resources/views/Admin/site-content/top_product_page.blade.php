@@ -123,30 +123,87 @@
             </div>
             @endif
 
-            {{-- 2. Basic Header Text Contents --}}
-            @if(isset($topProductContents) && $topProductContents->where('type', '!=', 'json')->isNotEmpty())
+                        {{-- 2. Basic Header Text Contents --}}
             <div class="card card-bordered mb-4">
                 <div class="card-header bg-light">
-                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-font me-1"></i> Header Texts & Labels</h6>
+                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-font me-1"></i> Top Rated Page Header Texts</h6>
+                    <small class="text-muted">These fields appear on the main Top Rated page (/top-rated).</small>
                 </div>
                 <div class="card-inner">
                     <div class="row g-3">
-                        @foreach($topProductContents as $val)
-                            @if(in_array($val->meta_key, ['header_title', 'header_sub_title', 'header_bottom_text', 'learn_more']))
+                        @php
+                            $topRatedKeys = [
+                                'header_title' => ['label' => 'Banner Main Title', 'placeholder' => 'Find the Best Software...'],
+                                'header_sub_title' => ['label' => 'Banner Sub-Title', 'placeholder' => 'Discover verified reviews...'],
+                                'header_bottom_text' => ['label' => 'Banner Bottom Text', 'placeholder' => 'Powered by Localio Community'],
+                                'learn_more' => ['label' => 'Learn More Link Text', 'placeholder' => 'Learn more'],
+                                'top_rated_headline' => ['label' => 'Top Rated Headline', 'placeholder' => 'Top rated on Localio'],
+                                'top_rated_subheadline' => ['label' => 'Top Rated Sub-headline', 'placeholder' => 'Learn more from our team...'],
+                                'explore_categories_headline' => ['label' => 'Explore Categories Headline', 'placeholder' => 'Explore top-rated categories'],
+                                'explore_categories_subheadline' => ['label' => 'Explore Categories Sub-headline', 'placeholder' => 'Discover top-rated software...'],
+                                'faq_section_headline' => ['label' => 'FAQ Section Headline', 'placeholder' => 'Frequently asked questions'],
+                                'faq_section_subheadline' => ['label' => 'FAQ Section Sub-headline', 'placeholder' => 'Everything you need to know...']
+                            ];
+                        @endphp
+                        @foreach($topRatedKeys as $key => $info)
+                            @php 
+                                $valObj = isset($topProductContents) ? $topProductContents->where('meta_key', $key)->where('type', '!=', 'json')->first() : null; 
+                                $id = $valObj ? $valObj->id : 'new';
+                                $val = $valObj ? $valObj->meta_value : '';
+                            @endphp
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="form-label fw-bold text-capitalize">{{ str_replace('_', ' ', $val->meta_key) }}</label>
+                                    <label class="form-label fw-bold">{{ $info['label'] }}</label>
                                     <div class="form-control-wrap">
-                                        <input type="text" class="form-control" name="{{ $val->meta_key }}[{{ $val->id }}]" value="{{ $val->meta_value ?? '' }}">
+                                        <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
                                     </div>
+                                    <small class="text-muted" style="font-size: 0.75rem;">Default text: {{ $info['placeholder'] }}</small>
                                 </div>
                             </div>
-                            @endif
                         @endforeach
                     </div>
                 </div>
             </div>
-            @endif
+
+            <div class="card card-bordered mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-font me-1"></i> Top Rated FAQs Page Texts</h6>
+                    <small class="text-muted">These fields appear on the Top Rated FAQs page (/top-rated/faqs).</small>
+                </div>
+                <div class="card-inner">
+                    <div class="row g-3">
+                        @php
+                            $faqKeys = [
+                                'faq_page_main_headline' => ['label' => 'Main Page Title', 'placeholder' => 'Top rated on Localio FAQs'],
+                                'faq_page_main_subheadline' => ['label' => 'Main Page Sub-title', 'placeholder' => 'Frequently asked questions and answers...'],
+                                'faq_page_about_headline' => ['label' => 'About Section Headline', 'placeholder' => 'About Top-Rated Rankings'],
+                                'faq_page_about_subheadline' => ['label' => 'About Section Description', 'placeholder' => 'Learn more about how Localio calculates...'],
+                                'faq_page_search_heading' => ['label' => 'Search Box Heading', 'placeholder' => 'Search Top-Rated FAQs'],
+                                'faq_page_list_headline' => ['label' => 'FAQs List Headline', 'placeholder' => 'Frequently asked questions'],
+                                'faq_page_banner_headline' => ['label' => 'Bottom Banner Headline', 'placeholder' => 'Still have a question...'],
+                                'faq_page_banner_subheadline' => ['label' => 'Bottom Banner Sub-headline', 'placeholder' => 'Ask the Localio community'],
+                                'faq_page_banner_btn_text' => ['label' => 'Bottom Banner Button Text', 'placeholder' => 'Ask a question']
+                            ];
+                        @endphp
+                        @foreach($faqKeys as $key => $info)
+                            @php 
+                                $valObj = isset($topProductContents) ? $topProductContents->where('meta_key', $key)->where('type', '!=', 'json')->first() : null; 
+                                $id = $valObj ? $valObj->id : 'new';
+                                $val = $valObj ? $valObj->meta_value : '';
+                            @endphp
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold">{{ $info['label'] }}</label>
+                                    <div class="form-control-wrap">
+                                        <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.75rem;">Default text: {{ $info['placeholder'] }}</small>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
             {{-- 3. Dynamic Rich Text Sections Repeater --}}
             <div class="card card-bordered mb-4">
@@ -189,7 +246,7 @@
                                     <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
-                                            <button type="button" class="btn btn-xs btn-primary add-sub-section-btn" data-section-index="${sIndex}"><em class="icon ni ni-plus"></em> Add Sub-headline (H3)</button>
+                                            <button type="button" class="btn btn-xs btn-primary add-sub-section-btn" data-section-index="{{ $sIndex }}"><em class="icon ni ni-plus"></em> Add Sub-headline (H3)</button>
                                         </div>
                                         <div class="sub-sections-container ps-3 border-start">
                                             @if(isset($sec['sub_sections']) && is_array($sec['sub_sections']))
@@ -333,8 +390,12 @@
                     </div>
                 </div>
 
+
                 {{-- Hidden inputs container for form submission --}}
                 <div id="topFaqHiddenInputs"></div>
+                <input type="hidden" name="text_sections_present" value="1">
+                <input type="hidden" name="top_faqs_present" value="1">
+
             </div>
 
             <div class="col-md-12 mt-4 text-end">
@@ -624,7 +685,7 @@
 
         // Add Text Section (H2)
         $('#addTextSectionBtn').on('click', function() {
-            let sIdx = sectionCounter++;
+            let sIdx = Date.now();
             let html = `
             <div class="section-card p-3 mb-3" data-section-index="${sIdx}">
                 <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
@@ -675,7 +736,7 @@
         $(document).on('click', '.add-sub-section-btn', function() {
             let sIdx = $(this).data('section-index');
             let container = $(this).closest('.col-12').find('.sub-sections-container');
-            let subIdx = container.children('.sub-section-item').length;
+            let subIdx = Date.now();
             let subHtml = `
             <div class="sub-section-item border rounded p-3 mb-2 bg-light" data-sub-index="${subIdx}">
                 <div class="d-flex justify-content-between align-items-center mb-2">
