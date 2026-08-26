@@ -260,7 +260,7 @@
                     <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
                         <!-- Business A (Fixed) -->
                         <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
-                            <div class="top-product-medium-logo" >
+                            <div class="top-product-small-logo" >
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
                             <span style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap;">{{ $bName }}</span>
@@ -284,7 +284,7 @@
 
                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
 
-                                <div class="top-product-medium-logo" id="selectedBusinessLogo" >
+                                <div class="top-product-small-logo" id="selectedBusinessLogo" >
                                 </div>
 
                                 <span id="selectedBusinessName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
@@ -312,13 +312,13 @@
                     $reviewsPageUrl = route('ReviewShow', ['locale' => app()->getLocale(), 'slug' => $bSlug, 'reviews_slug' => $rSlug]);
                 @endphp
                 <div class="p-4 bg-white rounded-3 border" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                    <div class="review-header-box top_review_bx" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+                    <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                         <div class="d-flex align-items-center gap-2">
                             <div class="top-product-small-logo">
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
                             <div>
-                                <h3 style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                <h3 style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</h3>
                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                                     <span>{{ number_format($averageRating, 1) }}</span>
                                     <div class="rating-stars" style="display: flex; gap: 2px;">
@@ -337,7 +337,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; border-radius: 30px; padding: 11px 25px;">
+                        <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; border-radius: 30px; padding: 8px 11px; white-space: nowrap;">
                             Visit website
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>

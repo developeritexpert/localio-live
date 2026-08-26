@@ -8032,7 +8032,7 @@ input:checked ~ .toggle-dot {
 
 .faq-section {
     /* background-color: #06498b08; */
-    padding: 40px 20px !important;
+    /* padding: 40px 20px !important; */
 }
 
 .como_secotr2 {
@@ -10928,13 +10928,13 @@ button.action-icon-btn.share-trigger-btn {
 /* ====style.css updated by-Kashish(19-aug-26)===== */
 
 .booking-share-popover {
-    max-width: 190px;
+    max-width: 140px;
 }
 
 .booking-share-inner .booking-share-title {
-    font-size: 15px !important;
+    font-size: 12px !important;
     padding: 0;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     padding-bottom: 3px;
     padding-left: 5px;
 }
@@ -10945,9 +10945,8 @@ button.action-icon-btn.share-trigger-btn {
 }
 
 .booking-share-inner .booking-share-icon {
-    width: 28px;
-    height: 28px;
-    padding: 6px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
 }
 
@@ -11066,7 +11065,8 @@ input#rating-4 {
     padding-bottom: 4px;
 }
 
-.accordion-button:focus {
+.accordion-button:focus,
+.accordion-button:not(.collapsed) {
     box-shadow: none;
 }
 
@@ -11093,13 +11093,13 @@ i.r-star.fas.fa-star-half-alt.text-warning {
     transform: translateX(0px);
 }
 
-.more-about-link-item:first-child {
+/* .more-about-link-item:first-child {
     padding-top: 10px !important;
-}
+} */
 
-.more-about-link-item:last-child {
+/* .more-about-link-item:last-child {
     padding-bottom: 10px !important;
-}
+} */
 
 .more-about-link-item {
     padding: 10px;
@@ -11185,30 +11185,41 @@ a.sticky-nav-item {
     font-size: 15px;
     font-weight: 600;
     color: #1e3050;
-    line-height: 1.2;
+    line-height: 1.66;
 }
 
-button.faq-cat-tab.active {
-    background: transparent !important;
-    color: #000 !important;
-    border-bottom: 1px solid #000 !important;
-    border-radius: unset !important;
+#faqCategoryNav {
+    overflow: visible;
 }
 
-.faq-cat-tab {
-    background: transparent !important;
-    color: grey !important;
-    font-weight: 500 !important;
-    border: none !important;
-    border-bottom: 1px solid transparent !important;
-    line-height: 1 !important;
-    font-size: 15px !important;
+#faqCategoryNav .faq-cat-tab.active {
+    background: transparent;
+    color: #000;
+    border-bottom: 2px solid #000;
+    border-radius: unset;
+    margin-bottom: -2px;
+    position: relative;
+    z-index: 1;
 }
 
-.faq-cat-tab:hover {
-    color: unset !important;
-    background: unset !important;
-    border-radius: unset !important;
+#faqCategoryNav .faq-cat-tab {
+    background: transparent;
+    color: grey;
+    font-weight: 500;
+    border: none;
+    border-bottom: 2px solid transparent;
+    line-height: 1;
+    font-size: 14px;
+    border-radius: unset;
+    margin-bottom: -2px;
+    position: relative;
+    z-index: 1;
+}
+
+#faqCategoryNav .faq-cat-tab:hover {
+    color: unset;
+    background: unset;
+    border-radius: unset;
 }
 
 .top-product-medium-logo .business-initial-logo,
@@ -11254,24 +11265,96 @@ section.write-review-hero .container h1 {
 
 .page-write-review .search-box,
 .page-faqs .search-box,
-.page-reviews .search-box {
+.page-reviews .search-box,
+.page-business-all_comparisons {
     display: block !important;
 }
 
 .user_revew_sec {
-    margin-top: 115px;
+    margin-top: 110px;
 }
 
 .feture_box.lft_check_box ul li p {
     font-weight: 600;
-    color: #333 !important;
+    color: #002347 !important;
     font-size: 14px;
 }
 
-.overall-rating-number{
+.overall-rating-number {
     line-height: 0.8 !important;
 }
 
 #section-search-faq h3 {
     font-weight: 600 !important;
+}
+
+/* ====style.css updated by-Kashish(26-aug-26)===== */
+
+.booking-share-label {
+    margin-top: 2px;
+    font-size: 12px;
+}
+
+.booking-share-inner .booking-share-list {
+    gap: 8px;
+}
+
+.booking-share-inner .booking-share-copied-badge {
+    padding: 1px 2px;
+}
+
+#reviewFilterDropdownBtn img {
+    filter: invert(15%) sepia(95%) saturate(2250%) hue-rotate(193deg)
+        brightness(91%) contrast(101%);
+    padding: 2px;
+}
+
+#reviewFilterDropdownBtn svg {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 1px;
+    left: -4px;
+}
+
+.rounded-pill {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    font-size: 9px !important;
+    justify-content: center;
+    top: 0 !important;
+}
+
+.more-about-link-item {
+    padding: 0px !important;
+}
+
+.more-about-link-item .more-about-link-icon img {
+    width: 18px;
+    height: 18px;
+}
+
+.more-about-link-item .more-about-link-left {
+    gap: 5px;
+}
+
+.more-about-link-icon img {
+    filter: brightness(0) saturate(100%) invert(15%) sepia(95%) saturate(2250%)
+        hue-rotate(193deg) brightness(91%) contrast(101%);
+}
+
+.more-about-link-item:hover .more-about-link-text,
+.more-about-link-item:hover .more-about-link-arrow {
+    color: #174889 !important;
+}
+
+.review_sec .review_detl .ans_lft .asn-rating h6:hover,
+.review-user h6:hover {
+    text-decoration: underline;
+}
+
+.asn_dv.d-flex.align-items-center.justify-content-between.flex-wrap.gap-2.mb-3 {
+    padding-top: 8px;
 }
