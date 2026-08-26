@@ -1529,7 +1529,7 @@
                                                                                                         data-bs-toggle="dropdown" 
                                                                                                         data-bs-auto-close="outside"
                                                                                                         aria-expanded="false" 
-                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff; gap: 4px;">
+                                                                                                        style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fdfdfd; gap: 4px;">
                                                                                                     <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
                                                                                                     <span>Filter by rating</span>
                                                                                                     <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
