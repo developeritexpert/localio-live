@@ -743,7 +743,7 @@
                                                         <div class="community-rating-box p-3 mb-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; ">
                                                             <div class="community-rating mb-2">Community rating</div>
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
-                                                                <span class="rating_bar_span">Reliability</span>
+                                                                <span class="rating_bar_span">{{ $crDisplayName }}</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                                                     <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                 </div>
@@ -2222,7 +2222,7 @@
 
 
                                                 <div class="sticky-nav-links">
-                                                    <a href="#section1" class="sticky-nav-item active" data-target="section1">
+                                                    <a href="#top" class="sticky-nav-item active" data-target="top">
                                                         <span>Description</span>
                                                     </a>
                                                     @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
