@@ -556,11 +556,11 @@
                                         <span class="nk-menu-text">Countries/Regions</span>
                                     </a>
                                     <ul class="nk-menu-sub">
-                                        <li class="nk-menu-item">
+                                        <!-- <li class="nk-menu-item">
                                             <a href="{{ route('site-languages') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Language</span>
                                             </a>
-                                        </li>
+                                        </li> -->
 
                                         <li class="nk-menu-item">
                                             <a href="{{ route('country.index') }}" class="nk-menu-link">

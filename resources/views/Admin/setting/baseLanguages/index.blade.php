@@ -35,6 +35,13 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card card-bordered card-preview">
         <div class="card-inner">
             <table class="datatable-init nowrap nk-tb-list nk-tb-ulist" data-auto-responsive="false">
@@ -80,7 +87,7 @@
                                         <div class="drodown">
                                             <a href="#" class="dropdown-toggle btn btn-icon btn-trigger"
                                                 data-bs-toggle="dropdown"><em class="icon ni ni-more-h"></em></a>
-                                            <div class="dropdown-menu dropdown-menu-end edit-btn" style="height: 94px !important;">
+                                            <div class="dropdown-menu dropdown-menu-end edit-btn" style="height: 135px !important;">
                                                 <ul class="link-list-opt no-bdr">
                                                     <li>
                                                         <a href="{{ route('base-languages.update', $lang->id) }}">
@@ -92,6 +99,12 @@
                                                         <a href="{{ route('base-languages.toggle-status', $lang->id) }}">
                                                             <em class="icon ni ni-{{ $lang->status ? 'cross' : 'check' }}-circle-fill"></em>
                                                             <span>{{ $lang->status ? 'Disable' : 'Enable' }}</span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{ route('base-languages.delete', $lang->id) }}" onclick="return confirm('Are you sure you want to delete this base language? This action cannot be undone.');" class="text-danger">
+                                                            <em class="icon ni ni-trash"></em>
+                                                            <span>Delete</span>
                                                         </a>
                                                     </li>
                                                 </ul>
