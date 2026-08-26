@@ -271,7 +271,7 @@
         transform: translateY(-2px);
         transition: all 0.2s ease;
     }
-    .top-product-medium-logo {
+    /* .top-product-medium-logo {
         width: 42px;
         height: 42px;
         border-radius: 50%;
@@ -282,12 +282,12 @@
         flex-shrink: 0;
         background: #f1f5f9;
         border: 1px solid #e2e8f0;
-    }
-    .top-product-medium-logo img {
+    } */
+    /* .top-product-medium-logo img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-    }
+    } */
     .explore-subcat-card {
         background: #fdfdfd;
         border: 1px solid #e2e8f0;
@@ -1369,7 +1369,7 @@
         @if(isset($textSections) && is_array($textSections) && count($textSections) > 0)
         <section class="category-text-sections-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
-                <div class="row justify-content-center">
+                <div class="row ">
                     <div class="col-lg-10">
                         @foreach($textSections as $section)
                         <div class="content-section-block mb-5">

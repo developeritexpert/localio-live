@@ -205,7 +205,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 <x-business-logo :business="$business" :name="$bName" />
                                             </div>
                                             <div>
-                                                <h3 style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0;">{{ $bName }}</h3>
+                                                <h3 style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</h3>
                                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                                                     <span style="">{{ number_format($bAvgRating, 1) }}</span>
                                                     <div class="rating-stars" style="display: flex; gap: 0px;">
@@ -224,7 +224,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                             </div>
                                         </div>
 
-                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px; padding:11px 25px;">
+                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px;     padding: 8px 11px; white-space: nowrap;">
                                             Visit website
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
@@ -368,11 +368,11 @@ section.top-automotive-sec.top_rate_pg.light {
                                                 $altPopDesc = "Based on other buyer's searches, these are the products that could be a good fit for you.";
                                             }
                                         @endphp
-                                        <div class="sftwre-asana-hd text-center" data-aos="fade-up" data-aos-duration="1000">
+                                        <div class="sftwre-asana-hd" data-aos="fade-up" data-aos-duration="1000">
                                             <h2>{{ $altPopHeadline }}</h2>
                                             <p>{{ $altPopDesc }}</p>
                                         </div>
-                                        <div class="sft_ware_test" style="display: flex; justify-content:center; align-items: center;">
+                                        <div class="sft_ware_test" style="">
                                             <div class="sftware-alternative d-flex flex-wrap justify-content-center gap-4" data-aos="fade-up" data-aos-duration="1000">
                                                 @foreach ($popularAltBusinesses->take(3) as $altbusiness)
                                                     @php

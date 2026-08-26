@@ -787,7 +787,7 @@
                     @if(!empty($business->is_affiliate) && ($hasStartingPrice || $hasFreeTrial))
                         <div class="innr_price_trail d-flex flex-column gap-3">
                             @if($hasStartingPrice)
-                            <div class="feture_box str_prc_box p-4 bg-white" style="border-radius: 16px; border: 1px solid #e2e8f0;">
+                            <div class="feture_box str_prc_box p-4 bg-white boxshadow_border" style="border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <h6 class="starting-price-title" style="font-size: 13px; color: #64748b; font-weight: 600;">Starting price</h6>
                                 <h2 class="starting-price-value" style="font-size: 32px; font-weight: 700; color: #002347;">{{ $currency }}{{ $startingPrice }}</h2>
                                 <p class="starting-price-text" style="font-size: 13px; color: #64748b;">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
@@ -815,7 +815,7 @@
                         <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                             <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                                 <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Highlighted reviews</h5>
-                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-size: 13px; font-weight: 600; text-decoration: none;">
+                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link">
                                     View all
                                 </a>
                             </div>
@@ -895,7 +895,7 @@
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent discussions</h5>
-                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="view-review-link" style="color: #06498b; font-size: 13px; font-weight: 600; text-decoration: none;">
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#sectionDiscussions" class="view-review-link">
                                 View all
                             </a>
                         </div>
