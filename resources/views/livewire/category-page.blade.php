@@ -1370,7 +1370,7 @@
         <section class="category-text-sections-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="row justify-content-center">
-                    <div class="col-lg-10">
+                    <div class="">
                         @foreach($textSections as $section)
                         <div class="content-section-block mb-5">
                             @if(!empty($section['h2_title']))
