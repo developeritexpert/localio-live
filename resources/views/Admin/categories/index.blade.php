@@ -205,6 +205,7 @@
                                                             @endif
 
                                                             <li><a href="{{ route('add-topic-category', $category->id) }}"><em class="icon ni ni-contact"></em><span>Business Topics</span></a></li>
+                                                            <li><a href="{{ route('admin-category-faqs', $category->id) }}"><em class="icon ni ni-help-fill"></em><span>FAQs</span></a></li>
 
                                                             <li class="removeConfermation" data-url="{{ route('admin-remove-categories', $category->id) }}">
                                                                 <a href="{{ route('admin-remove-categories', $category->id) }}"><em class="icon ni ni-trash-fill"></em><span>Delete</span></a>

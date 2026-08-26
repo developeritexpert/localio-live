@@ -34,10 +34,8 @@ class AddLocaleAutomatically
                     'lang_id'   => $langObj->id,
                     'lang_name' => ucfirst($langObj->name),
                 ]);
-                // Keep the cookie synced with their current active browsing locale
-                Cookie::queue('user_locale', $firstSegment, 60 * 24 * 30);
-                Cookie::queue('lang_code', $firstSegment, 60 * 24 * 30);
-                Cookie::queue('lang_id', $langObj->id, 60 * 24 * 30);
+                // Removed: We no longer overwrite the cookie here to prevent destroying a user's global 
+                // region preference just because they clicked a shared link for another locale.
             }
             return $next($request);
         }
@@ -92,11 +90,11 @@ class AddLocaleAutomatically
                     'lang_code' => $targetLocale,
                     'lang_id'   => $langObj->id,
                     'lang_name' => ucfirst($langObj->name),
-                    'show_country_modal' => true, // Triggers Country Selection Modal on landing
                 ]);
+                // Flash the modal flag so it only shows once
+                session()->flash('show_country_modal', true);
             }
-            Cookie::queue('user_locale', $targetLocale, 60 * 24 * 30);
-            Cookie::queue('lang_code', $targetLocale, 60 * 24 * 30);
+            // Removed: Do NOT set user_locale cookie yet so they get asked again if they just close the modal.
             return redirect()->to('/' . $targetLocale);
         }
 

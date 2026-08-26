@@ -13,6 +13,8 @@
     .review-business-link { font-size: 14px; color: #64748b; margin-bottom: 8px; display: block; }
     .review-business-link a { color: #007bff; text-decoration: none; font-weight: 500; }
     .review-business-link a:hover { text-decoration: underline; }
+    .business-hover-link { text-decoration: none; }
+    .business-hover-link:hover { text-decoration: underline !important; }
     
     .review-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
     .review-card-header { display: flex; align-items: center; margin-bottom: 16px; }
@@ -48,22 +50,15 @@
         
         <h1 class="profile-name">{{ $user->displayName() }}</h1>
         
+        @if($user->job_title || $user->industry)
+            <div class="profile-meta mb-2" style="font-size: 15px; font-weight: 500;">
+                {{ $user->job_title }} {{ $user->industry ? ' at ' . $user->industry : '' }}
+            </div>
+        @endif
+
         @if($badge)
             <div class="user-contributor-badge mb-2" style="font-size: 15px; color: #1e3050; font-weight: 600;">
                 {!! $badge->icon !!} {{ $badge->name }}
-            </div>
-        @endif
-        
-        <div class="profile-meta">
-            @if($user->country)
-                {{ $user->country->name ?? 'United States' }} &bull; 
-            @endif
-            {{ $reviews->total() }} reviews
-        </div>
-        
-        @if($user->job_title || $user->industry)
-            <div class="profile-meta mt-2">
-                {{ $user->job_title }} {{ $user->industry ? ' at ' . $user->industry : '' }}
             </div>
         @endif
     </div>
@@ -71,12 +66,12 @@
 
 <!-- Reviews Section -->
 <div class="reviews-section">
-    <h2 class="reviews-title">Reviews</h2>
+    <h2 class="reviews-title">Reviews ({{ $reviews->total() }})</h2>
     
     @forelse($reviews as $review)
         <div class="review-business-link" style="margin-bottom: 8px;">
-            <span style="color: #64748b; font-size: 14px;">Review of</span> 
-            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $review->business->translations->first()->slug ?? $review->business->slug]) }}" style="font-weight: 600; color: #002347; text-decoration: none;">
+            <span style="color: #64748b; font-size: 14px;">Review of </span> 
+            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $review->business->translations->first()->slug ?? $review->business->slug]) }}" class="business-hover-link" style="font-weight: 600; color: #002347;">
                 {{ $review->business->translations->first()->name ?? $review->business->name }}
             </a>
         </div>

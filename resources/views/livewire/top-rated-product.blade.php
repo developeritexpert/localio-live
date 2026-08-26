@@ -301,12 +301,11 @@
             <div class="top-rated-heading-block">
                 <div class="row align-items-start">
                     <div class="col-md-8 text-start">
-                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top rated on Localio </h1>
+                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
                         <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                             {{ now()->format('F j, Y') }}</p>
                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                            Learn more from our team about Website Builder Software pricing features and benefits in our
-                            Website Builder Buyers Guide
+                            {{ $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' }}
                         </p>
                     </div>
                     <div class="col-md-4 mt-4 mt-md-0 text-start">
@@ -314,7 +313,7 @@
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
                                 <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'From our community' }}</h6>
-                                <img src="{{ asset('front/img/20250704132226_specialists_small_img_0.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
+                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
                             </div>
                             <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews are shared by real Localio users.' }}
@@ -337,8 +336,8 @@
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                    Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
-                                </p>
+                            {{ $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' }}
+                        </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
                                 <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
@@ -1086,8 +1085,8 @@
     <section class="explore-categories-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="text-start mb-4">
-                <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">Explore top-rated categories</h2>
-                <p style="font-size: 15px; color: #555; margin-bottom: 0;">Discover top-rated software, services, and solutions across our most popular categories.</p>
+                <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
+                <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' }}</p>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
@@ -1102,6 +1101,7 @@
                         }
                     }
                     $catItemName = $trans->name ?? $cat->name ?? '';
+                    $catItemSeeAllText = $trans->see_all_text ?? '';
                     $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
                     $catItemDesc = !empty($trans->top_rated_description)
                         ? strip_tags($trans->top_rated_description)
@@ -1115,7 +1115,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catItemName }}</h3>
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                            See all {{ $catItemName }}
+                            {{ !empty($catItemSeeAllText) ? $catItemSeeAllText : 'See all ' . $catItemName }}
                         </a>
                     </div>
 
@@ -1186,7 +1186,7 @@
     <section class="top-rated-text-sections py-5" style="background: #ffffff; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="row">
-                <div class="col-lg-10 mx-auto">
+                <div class="col-lg-10">
                     @foreach($textSections as $section)
                     <div class="content-section-block mb-5">
                         @if(!empty($section['h2_title']))
@@ -1232,8 +1232,8 @@
             <div class="row">
                 <div class="col-lg-10 mx-auto">
                     <div class="text-start mb-4">
-                        <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">Frequently asked questions</h2>
-                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">Everything you need to know about Localio top-rated rankings and community reviews.</p>
+                        <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
+                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' }}</p>
                     </div>
 
                     <div class="accordion" id="topRatedFaqAccordion">

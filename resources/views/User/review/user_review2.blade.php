@@ -371,7 +371,7 @@
                                                     <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
                                                         <div class="row align-items-start g-4">
                                                             <!-- Left Column: Big Rating & Stars -->
-                                                            <div class="col-lg-4 col-md-5 col-12">
+                                                            <div class="col-lg-5 col-md-5 col-12">
                                                                 <div class="d-flex flex-column align-items-start">
                                                                     <span class="overall-rating-number" style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
                                                                     @if($ratingWord = get_rating_label($averageRating))
@@ -390,19 +390,19 @@
                                                                             @endif
                                                                         @endfor
                                                                     </div>
-                                                                    <span style="font-size: 13px; color: #64748b;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                    <span style="font-size: 14px; font-weight:700; color: #64748b;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                 </div>
                                                             </div>
 
                                                             <!-- Right Column: Review Breakdown & Recommendation -->
-                                                            <div class="col-lg-8 col-md-7 col-12">
+                                                            <div class="col-lg-7 col-md-7 col-12">
                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                    <h5 style="font-size: 15px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
+                                                                    <h5 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
 
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
                                                                         <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                            <span style="font-size: 13.5px; font-weight: 500; color: #475569; min-width: 130px;">{{ $criterion->name }}</span>
+                                                                            <span style="font-size: 13px; font-weight: 500; color: #475569; min-width: 130px;">{{ $criterion->name }}</span>
                                                                             <div class="d-flex align-items-center flex-grow-1 mx-3" style="max-width: 65%;">
                                                                                 <div class="progress rounded-pill w-100" style="height: 7px; background-color: #e2e8f0;">
                                                                                     <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #2CC464;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
@@ -451,7 +451,7 @@
                                                         <div class="dropdown-menu dropdown-menu-start p-3 shadow-sm" 
                                                              aria-labelledby="reviewFilterDropdownBtn" 
                                                              style="min-width: 280px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                                            <div class="mb-2 pb-2 border-bottom">
+                                                            <div class="mb-3 pb-2 border-bottom">
                                                                 <span style="font-size: 14px; font-weight: 600; color: #002655;">Filter by rating</span>
                                                             </div>
 
@@ -663,7 +663,8 @@
                                     <div class="sidebar-review-card {{ !$loop->last ? 'pb-4 mb-4' : '' }}" style="{{ !$loop->last ? 'border-bottom: 1px solid #f0f0f0;' : '' }}">
                                         <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                                             <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
-                                                @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
+@if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($review->user->profile_image) }}"
                                                         class="rounded-circle"
                                                         style="width: 42px; height: 42px; object-fit: cover;"
@@ -679,6 +680,7 @@
                                                         </span>
                                                     </div>
                                                 @endif
+</a>
 
                                                 <div>
                                                     <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
@@ -963,6 +965,18 @@ document.addEventListener('DOMContentLoaded', function () {
         stickyNavLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                
+                if (targetId === 'section1') {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    stickyNavLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    return;
+                }
+
                 const targetElement = document.getElementById(targetId);
                 if (targetElement) {
                     e.preventDefault();

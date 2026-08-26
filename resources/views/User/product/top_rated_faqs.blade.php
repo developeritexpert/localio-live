@@ -41,35 +41,37 @@
         .faq-category-nav {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 25px;
             flex-wrap: wrap;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0;
             margin-bottom: 30px;
         }
         .faq-cat-tab {
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 14.5px;
-            font-weight: 600;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: 500;
             color: #64748b;
             text-decoration: none;
             background: transparent;
-            border: 1px solid transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
             transition: all 0.2s ease;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            margin-bottom: -1px;
         }
         .faq-cat-tab:hover {
-            color: #002347;
-            background: #f1f5f9;
+            color: #1e3050;
+            background: transparent;
         }
         .faq-cat-tab.active {
-            background: #002347;
-            color: #ffffff;
-            border-color: #002347;
+            background: transparent;
+            color: #1e3050;
+            font-weight: 600;
+            border-bottom: 2px solid #1e3050;
         }
 
         /* FAQ Feedback Row (Was this helpful?) */
@@ -81,53 +83,43 @@
             gap: 12px;
             margin-top: 18px;
             padding-top: 14px;
-            border-top: 1px solid #f1f5f9;
             font-size: 13.5px;
             color: #64748b;
         }
         .faq-feedback-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         .btn-vote-faq {
             background: transparent;
             border: none;
-            color: #334155;
+            color: #64748b;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             padding: 0;
             font-size: 13px;
             font-weight: 600;
             outline: none;
-        }
-        .btn-vote-faq .vote-icon-circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.15s ease;
-        }
-        .btn-vote-faq:hover .vote-icon-circle {
-            background: #e2e8f0;
+            transition: all 0.15s ease;
         }
         .btn-vote-faq i {
             font-size: 15px;
-            color: #475569;
+            color: #64748b;
             font-weight: 400;
             transition: all 0.15s ease;
         }
-        .btn-vote-faq:hover i {
-            color: #002347;
-            font-weight: 900 !important;
+        .btn-vote-faq:hover, .btn-vote-faq:hover i {
+            color: #1e3050;
+        }
+        .btn-vote-faq.voted-yes, .btn-vote-faq.voted-yes i,
+        .btn-vote-faq.voted-no, .btn-vote-faq.voted-no i {
+            color: #1e3050 !important;
         }
         .btn-vote-faq.voted-yes i.fa-thumbs-up,
         .btn-vote-faq.voted-no i.fa-thumbs-down {
-            color: #002347 !important;
             font-weight: 900 !important;
         }
 
@@ -200,11 +192,11 @@
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
-                                Top rated on Localio FAQs
+                                {{ $topProductContents['faq_page_main_headline'] ?? 'Top rated on Localio FAQs' }}
                             </h1>
                         </div>
                         <p style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight:400;">
-                            Frequently asked questions and answers about top-rated rankings and products on Localio.
+                            {{ $topProductContents['faq_page_main_subheadline'] ?? 'Frequently asked questions and answers about top-rated rankings and products on Localio.' }}
                         </p>
                     </div>
                 </div>
@@ -224,11 +216,11 @@
                 <!-- Section 1: Intro Title & Description -->
                 <div class="faq-top-intro mb-4">
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        About Top-Rated Rankings
+                        {{ $topProductContents['faq_page_about_headline'] ?? 'About Top-Rated Rankings' }}
                     </h2>
                     <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
                         <p>
-                            Learn more about how Localio calculates community ratings, moderates verified reviews, and compiles top-rated leaderboards across software and local business categories.
+                            {{ $topProductContents['faq_page_about_subheadline'] ?? 'Learn more about how Localio calculates community ratings, moderates verified reviews, and compiles top-rated leaderboards across software and local business categories.' }}
                         </p>
                     </div>
                 </div>
@@ -236,7 +228,7 @@
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
                     <h3 style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
-                        Search Top-Rated FAQs
+                        {{ $topProductContents['faq_page_search_heading'] ?? 'Search Top-Rated FAQs' }}
                     </h3>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
@@ -248,7 +240,7 @@
                 <div class="main-faq-container">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin: 0;">
-                            Frequently asked questions
+                            {{ $topProductContents['faq_page_list_headline'] ?? 'Frequently asked questions' }}
                         </h2>
                     </div>
 
@@ -256,7 +248,7 @@
                     @if(isset($faqCategories) && count($faqCategories) > 1)
                     <div class="faq-category-nav" id="faqCategoryNav">
                         <button type="button" class="faq-cat-tab active" data-category-id="all">
-                            All Questions
+                            All
                         </button>
                         @foreach($faqCategories as $catName)
                             <button type="button" class="faq-cat-tab" data-category-id="{{ \Illuminate\Support\Str::slug($catName) }}">
@@ -278,9 +270,9 @@
                                 @php $catSlug = \Illuminate\Support\Str::slug($catName); @endphp
                                 <div class="faq-category-group mb-4" data-category-group="{{ $catSlug }}">
                                     @if(count($faqCategories) > 1)
-                                    <h4 class="category-group-headline mb-3" style="font-size: 18px; font-weight: 700; color: #1e3050; border-left: 3px solid #002347; padding-left: 10px;">
+                                    <h3 class="category-group-headline mb-3" style=" color: #1e3050;">
                                         {{ $catName }}
-                                    </h4>
+                                    </h3>
                                     @endif
 
                                     <div class="accordion" id="topRatedFaqAccordion_{{ $catSlug }}">
@@ -310,16 +302,14 @@
                                                                 <span>Was this answer helpful?</span>
                                                                 <div class="faq-feedback-actions">
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
-                                                                        <span class="vote-icon-circle">
+                                                                        
                                                                             <i class="far fa-thumbs-up"></i>
-                                                                        </span>
-                                                                        <span style="font-size: 12px; color: #64748b;">Yes</span>
+                                                                        Yes
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
-                                                                        <span class="vote-icon-circle">
+                                                                        
                                                                             <i class="far fa-thumbs-down"></i>
-                                                                        </span>
-                                                                        <span style="font-size: 12px; color: #64748b;">No</span>
+                                                                        No
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -348,15 +338,15 @@
                 <div class="ask-community-banner">
                     <div>
                         <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
-                            Still have a question about top-rated rankings?
+                            {{ $topProductContents['faq_page_banner_headline'] ?? 'Still have a question about top-rated rankings?' }}
                         </h3>
                         <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
-                            Ask the Localio community
+                            {{ $topProductContents['faq_page_banner_subheadline'] ?? 'Ask the Localio community' }}
                         </p>
                     </div>
                     <div>
                         <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="ask-community-btn blue-btn">
-                           Ask a question <i class="fa-solid fa-arrow-right"></i>
+                           {{ $topProductContents['faq_page_banner_btn_text'] ?? 'Ask a question' }} <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -372,7 +362,7 @@
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent reviews</h5>
-                            <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link" style="color: #06498b; font-size: 13px; font-weight: 600; text-decoration: none;">
+                            <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link">
                                 View all
                             </a>
                         </div>
@@ -482,7 +472,7 @@
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent discussions</h5>
-                            <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link" style="color: #06498b; font-size: 13px; font-weight: 600; text-decoration: none;">
+                            <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link">
                                 View all
                             </a>
                         </div>
