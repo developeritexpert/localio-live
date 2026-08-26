@@ -463,7 +463,7 @@
                                                 @endif
                                             </div>
 
-                                             <div class="row g-4">
+                                             <div class="row g-4 d-none d-md-flex">
                                                  <div class="col-md-6">
                                                      <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                          <div class="card-body">
@@ -499,6 +499,69 @@
                                                      </div>
                                                  </div>
                                              </div>
+                                             
+                                             <!-- Mobile Pros & Cons Tabs -->
+                                             <div class="mobile-pros-cons d-md-none mt-3">
+                                                 <ul class="nav nav-tabs nav-justified" id="prosConsTab" role="tablist" style="border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; flex-wrap: nowrap;">
+                                                     <li class="nav-item" role="presentation">
+                                                         <button class="nav-link active" id="pros-tab" data-bs-toggle="tab" data-bs-target="#pros-content" type="button" role="tab" aria-controls="pros-content" aria-selected="true" style="font-weight: 600; color: #1e3050; border: none; background: transparent; padding-bottom: 12px; position: relative;">
+                                                             <span style="color: rgb(33, 172, 33);"><i class="fas fa-check"></i></span> Pros
+                                                         </button>
+                                                     </li>
+                                                     <li class="nav-item" role="presentation">
+                                                         <button class="nav-link" id="cons-tab" data-bs-toggle="tab" data-bs-target="#cons-content" type="button" role="tab" aria-controls="cons-content" aria-selected="false" style="font-weight: 600; color: #64748b; border: none; background: transparent; padding-bottom: 12px; position: relative;">
+                                                             <span style="color: rgb(247, 40, 60);"><i class="fas fa-times"></i></span> Cons
+                                                         </button>
+                                                     </li>
+                                                 </ul>
+
+                                                 <div class="tab-content" id="prosConsTabContent">
+                                                     <!-- Pros Tab Content -->
+                                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
+                                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                             <div class="card-body">
+                                                                <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                                 <ul class="list-unstyled mb-0">
+                                                                     @foreach($aggregatedPros as $pro)
+                                                                     <li class="d-flex align-items-start mb-2">
+                                                                         <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                         <span style="color: #202124;">{{ $pro->text }}
+                                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                        </span>
+                                                                     </li>
+                                                                     @endforeach
+                                                                 </ul>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+
+                                                     <!-- Cons Tab Content -->
+                                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
+                                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                             <div class="card-body">
+                                                                <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                                 <ul class="list-unstyled mb-0">
+                                                                     @foreach($aggregatedCons as $con)
+                                                                     <li class="d-flex align-items-start mb-2">
+                                                                         <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                         <span style="color: #202124;">{{ $con->text }}
+                                                                            <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                        </span>
+                                                                     </li>
+                                                                     @endforeach
+                                                                 </ul>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             <style>
+                                                 #prosConsTab .nav-link.active { color: #1e3050 !important; }
+                                                 #prosConsTab .nav-link.active::after {
+                                                     content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background-color: #00b0d8;
+                                                 }
+                                             </style>
+
                                              @if(!empty($business->pro_cons_summary))
                                              <div class="mt-4">
                                                  <div>{!! $business->pro_cons_summary !!}</div>
