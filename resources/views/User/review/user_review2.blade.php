@@ -663,7 +663,8 @@
                                     <div class="sidebar-review-card {{ !$loop->last ? 'pb-4 mb-4' : '' }}" style="{{ !$loop->last ? 'border-bottom: 1px solid #f0f0f0;' : '' }}">
                                         <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                                             <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
-                                                @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
+@if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($review->user->profile_image) }}"
                                                         class="rounded-circle"
                                                         style="width: 42px; height: 42px; object-fit: cover;"
@@ -679,6 +680,7 @@
                                                         </span>
                                                     </div>
                                                 @endif
+</a>
 
                                                 <div>
                                                     <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
@@ -963,6 +965,18 @@ document.addEventListener('DOMContentLoaded', function () {
         stickyNavLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                
+                if (targetId === 'section1') {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    stickyNavLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    return;
+                }
+
                 const targetElement = document.getElementById(targetId);
                 if (targetElement) {
                     e.preventDefault();
