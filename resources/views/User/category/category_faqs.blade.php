@@ -37,6 +37,93 @@
             box-shadow: 0 0 0 3px rgba(6, 73, 139, 0.12);
         }
 
+        
+        /* In-Page Category Navigation */
+        .faq-category-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0;
+            margin-bottom: 30px;
+        }
+        .faq-cat-tab {
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #64748b;
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: -1px;
+        }
+        .faq-cat-tab:hover {
+            color: #1e3050;
+            background: transparent;
+        }
+        .faq-cat-tab.active {
+            background: transparent;
+            color: #1e3050;
+            font-weight: 600;
+            border-bottom: 2px solid #1e3050;
+        }
+
+        /* FAQ Feedback Row (Was this helpful?) */
+        .faq-feedback-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+            padding-top: 14px;
+            font-size: 13.5px;
+            color: #64748b;
+        }
+        .faq-feedback-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .btn-vote-faq {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+        .btn-vote-faq i {
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 400;
+            transition: all 0.15s ease;
+        }
+        .btn-vote-faq:hover, .btn-vote-faq:hover i {
+            color: #1e3050;
+        }
+        .btn-vote-faq.voted-yes, .btn-vote-faq.voted-yes i,
+        .btn-vote-faq.voted-no, .btn-vote-faq.voted-no i {
+            color: #1e3050 !important;
+        }
+        .btn-vote-faq.voted-yes i.fa-thumbs-up,
+        .btn-vote-faq.voted-no i.fa-thumbs-down {
+            font-weight: 900 !important;
+        }
+
         /* Ask Community Banner */
         .ask-community-banner {
             background: linear-gradient(135deg, #002347 0%, #174889 100%);
@@ -176,31 +263,120 @@
                         </h2>
                     </div>
 
+                    @php
+                        $uniqueCategories = [];
+                        if (!empty($categoryTranslation->faq_categories)) {
+                            $decodedCats = is_array($categoryTranslation->faq_categories) ? $categoryTranslation->faq_categories : json_decode($categoryTranslation->faq_categories, true);
+                            if (is_array($decodedCats)) {
+                                $uniqueCategories = $decodedCats;
+                            }
+                        }
+                        
+                        // If faq_categories is empty, infer from $faqs
+                        if (empty($uniqueCategories) && isset($faqs) && is_array($faqs)) {
+                            foreach ($faqs as $faq) {
+                                $cat = $faq['category'] ?? 'General';
+                                if (!in_array($cat, $uniqueCategories)) {
+                                    $uniqueCategories[] = $cat;
+                                }
+                            }
+                        }
+                        
+                        // Default to General if completely empty but we have FAQs
+                        if (empty($uniqueCategories) && isset($faqs) && count($faqs) > 0) {
+                            $uniqueCategories = ['General'];
+                        }
+                        
+                        // Group FAQs by category
+                        $groupedFaqs = [];
+                        foreach ($uniqueCategories as $cat) {
+                            $groupedFaqs[$cat] = [];
+                        }
+                        
+                        if (isset($faqs) && is_array($faqs)) {
+                            foreach ($faqs as $faq) {
+                                $cat = $faq['category'] ?? 'General';
+                                if (!isset($groupedFaqs[$cat])) {
+                                    $groupedFaqs[$cat] = [];
+                                    if (!in_array($cat, $uniqueCategories)) {
+                                        $uniqueCategories[] = $cat;
+                                    }
+                                }
+                                $groupedFaqs[$cat][] = $faq;
+                            }
+                        }
+                    @endphp
+
                     <!-- FAQs Accordion List - Exact Top-Rated Style -->
                     <div id="faqAccordionContainer">
                         @if(isset($faqs) && count($faqs) > 0)
-                            <div class="accordion" id="categoryFaqAccordion">
-                                @foreach($faqs as $fIndex => $faq)
-                                    @php
-                                        $question = $faq['question'] ?? '';
-                                        $answer = $faq['answer'] ?? '';
-                                    @endphp
-                                    @if(!empty($question))
-                                    <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                        <h2 class="accordion-header" id="faqHeading{{ $fIndex }}">
-                                            <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
-                                                {{ $question }}
-                                            </button>
-                                        </h2>
-                                        <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
-                                                {!! $answer !!}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endif
+                        
+                            @if(count($uniqueCategories) > 1)
+                            <div class="faq-category-nav">
+                                <button class="faq-cat-tab active" data-category-id="all">
+                                    All
+                                </button>
+                                @foreach($uniqueCategories as $cat)
+                                    <button class="faq-cat-tab" data-category-id="{{ Str::slug($cat) }}">
+                                        {{ $cat }}
+                                    </button>
                                 @endforeach
                             </div>
+                            @endif
+
+                            @foreach($uniqueCategories as $cat)
+                                @if(isset($groupedFaqs[$cat]) && count($groupedFaqs[$cat]) > 0)
+                                <div class="faq-category-group" data-category-group="{{ Str::slug($cat) }}">
+                                    @if(count($uniqueCategories) > 1)
+                                    <h3 style="">
+                                        {{ $cat }}
+                                    </h3>
+                                    @endif
+                                    
+                                    <div class="accordion" id="categoryFaqAccordion_{{ Str::slug($cat) }}">
+                                        @foreach($groupedFaqs[$cat] as $fIndex => $faq)
+                                            @php 
+                                                $uniqueId = Str::slug($cat) . '_' . $fIndex; 
+                                                $question = $faq['question'] ?? '';
+                                                $answer = $faq['answer'] ?? '';
+                                            @endphp
+                                            @if(!empty($question))
+                                            <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
+                                                <h2 class="accordion-header" id="headingFaq{{ $uniqueId }}">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="false" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
+                                                        {{ $question }}
+                                                    </button>
+                                                </h2>
+                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                                        <div class="faq-answer-text">
+                                                            {!! $answer !!}
+                                                        </div>
+
+                                                        <!-- FAQ Feedback Row -->
+                                                        <div class="faq-feedback-row">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <span>Was this answer helpful?</span>
+                                                                <div class="faq-feedback-actions">
+                                                                    <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, true)" title="Helpful">
+                                                                        <i class="far fa-thumbs-up"></i> Yes
+                                                                    </button>
+                                                                    <button type="button" class="btn-vote-faq" onclick="voteFaqItem(this, false)" title="Not helpful">
+                                                                        <i class="far fa-thumbs-down"></i> No
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
+                            @endforeach
+                            
                         @else
                             <div class="p-4 text-center text-muted bg-light rounded border">
                                 <p class="m-0">No FAQs available for {{ $catName }} at this time.</p>
@@ -241,7 +417,7 @@
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent reviews</h5>
-                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" style="color: #06498b; font-size: 13px; font-weight: 600; text-decoration: none;">
+                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" style="color: #06498b; font-size: 12px; font-weight: 600; text-decoration: none;">
                                 View all
                             </a>
                         </div>
@@ -351,7 +527,7 @@
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                             <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent discussions</h5>
-                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" style="color: #06498b; font-size: 13px; font-weight: 600; text-decoration: none;">
+                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" style="color: #06498b; font-size: 12px; font-weight: 600; text-decoration: none;">
                                 View all
                             </a>
                         </div>
@@ -411,15 +587,16 @@
 
 @push('scripts')
 <script>
-    // Real-Time Search Filter
+    // 1. Real-Time Search Filter
     document.getElementById('faqSearchInput')?.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const items = document.querySelectorAll('#categoryFaqAccordion .accordion-item');
+        const items = document.querySelectorAll('#faqAccordionContainer .accordion-item');
+        const groups = document.querySelectorAll('.faq-category-group');
         let totalVisible = 0;
 
         items.forEach(item => {
             const question = item.querySelector('.accordion-button')?.textContent.toLowerCase() || '';
-            const answer = item.querySelector('.accordion-body')?.textContent.toLowerCase() || '';
+            const answer = item.querySelector('.faq-answer-text')?.textContent.toLowerCase() || '';
             const isMatch = question.includes(query) || answer.includes(query);
 
             if (isMatch) {
@@ -430,10 +607,79 @@
             }
         });
 
+        // Hide empty category groups
+        groups.forEach(group => {
+            const visibleInGroup = group.querySelectorAll('.accordion-item[style="display: block;"]').length;
+            if (query !== '' && visibleInGroup === 0) {
+                group.style.display = 'none';
+            } else {
+                group.style.display = 'block';
+            }
+        });
+
         const noResults = document.getElementById('noFaqSearchResults');
         if (noResults) {
             noResults.style.display = (totalVisible === 0 && query !== '') ? 'block' : 'none';
         }
     });
+
+    // 2. In-Page Category Tab Filter
+    document.querySelectorAll('.faq-cat-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.faq-cat-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const categoryId = this.dataset.categoryId;
+            const groups = document.querySelectorAll('.faq-category-group');
+
+            // Reset search input
+            const searchInput = document.getElementById('faqSearchInput');
+            if (searchInput) searchInput.value = '';
+
+            groups.forEach(group => {
+                const groupCat = group.dataset.categoryGroup;
+                if (categoryId === 'all' || groupCat === categoryId) {
+                    group.style.display = 'block';
+                    group.querySelectorAll('.accordion-item').forEach(c => c.style.display = 'block');
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noFaqSearchResults');
+            if (noResults) noResults.style.display = 'none';
+        });
+    });
+
+    // 3. Helpful / Not Helpful Feedback Handler
+    function voteFaqItem(btn, isHelpful) {
+        const parentActions = btn.closest('.faq-feedback-actions');
+        if (!parentActions) return;
+
+        parentActions.querySelectorAll('.btn-vote-faq').forEach(b => {
+            b.classList.remove('voted-yes', 'voted-no');
+            const icon = b.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+        });
+
+        if (isHelpful) {
+            btn.classList.add('voted-yes');
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            }
+        } else {
+            btn.classList.add('voted-no');
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            }
+        }
+    }
 </script>
 @endpush

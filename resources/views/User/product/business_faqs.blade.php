@@ -43,35 +43,37 @@
         .faq-category-nav {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 25px;
             flex-wrap: wrap;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0;
             margin-bottom: 30px;
         }
         .faq-cat-tab {
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 14.5px;
-            font-weight: 600;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: 500;
             color: #64748b;
             text-decoration: none;
             background: transparent;
-            border: 1px solid transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
             transition: all 0.2s ease;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            margin-bottom: -1px;
         }
         .faq-cat-tab:hover {
-            color: #002347;
-            background: #f1f5f9;
+            color: #1e3050;
+            background: transparent;
         }
         .faq-cat-tab.active {
-            background: #002347;
-            color: #ffffff;
-            border-color: #002347;
+            background: transparent;
+            color: #1e3050;
+            font-weight: 600;
+            border-bottom: 2px solid #1e3050;
         }
 
         /* FAQ Feedback Row (Was this helpful?) */
@@ -83,78 +85,44 @@
             gap: 12px;
             margin-top: 18px;
             padding-top: 14px;
-            border-top: 1px solid #f1f5f9;
             font-size: 13.5px;
             color: #64748b;
         }
         .faq-feedback-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
-        /* YouTube-style vote buttons */
         .btn-vote-faq {
             background: transparent;
             border: none;
-            color: #334155;
+            color: #64748b;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 2px;
+            gap: 6px;
             padding: 0;
             font-size: 13px;
             font-weight: 600;
             outline: none;
-        }
-        .btn-vote-faq .vote-icon-circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.15s ease;
-        }
-        .btn-vote-faq:hover .vote-icon-circle {
-            background: #e2e8f0;
+            transition: all 0.15s ease;
         }
         .btn-vote-faq i {
             font-size: 15px;
-            color: #475569;
-            font-weight: 400; /* Outline by default */
+            color: #64748b;
+            font-weight: 400;
             transition: all 0.15s ease;
         }
-        /* Fill icon solid on hover */
-        .btn-vote-faq:hover i {
-            color: #002347;
-            font-weight: 900 !important;
+        .btn-vote-faq:hover, .btn-vote-faq:hover i {
+            color: #1e3050;
         }
-        /* Fill icon solid after voting */
+        .btn-vote-faq.voted-yes, .btn-vote-faq.voted-yes i,
+        .btn-vote-faq.voted-no, .btn-vote-faq.voted-no i {
+            color: #1e3050 !important;
+        }
         .btn-vote-faq.voted-yes i.fa-thumbs-up,
         .btn-vote-faq.voted-no i.fa-thumbs-down {
-            color: #002347 !important;
             font-weight: 900 !important;
-        }
-
-        /* Flag icon button (same as reviews) */
-        .faq-flag-btn {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            padding: 0;
-            transition: all 0.2s ease;
-        }
-        .faq-flag-btn:hover {
-            background: #a0aec03b;
-            color: #003f7d;
         }
 
         /* Ask Community Banner */
@@ -476,11 +444,11 @@
                                                                 <span>Was this helpful?</span>
                                                                 <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
                                                                     <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
-                                                                        <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
+                                                                        <i class="far fa-thumbs-up"></i>
                                                                         <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
                                                                     </button>
                                                                     <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
-                                                                        <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
+                                                                        <i class="far fa-thumbs-down"></i>
                                                                         <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
                                                                     </button>
                                                                 </div>
@@ -535,11 +503,11 @@
                                                             <span>Was this helpful?</span>
                                                             <div class="faq-feedback-actions d-flex align-items-center" style="gap: 6px;">
                                                                 <button type="button" class="btn-vote-faq {{ $userVoted === true ? 'voted-yes' : '' }}" onclick="voteFaq({{ $faq->id }}, true, this)" title="Helpful">
-                                                                    <span class="vote-icon-circle"><i class="far fa-thumbs-up"></i></span>
+                                                                    <i class="far fa-thumbs-up"></i>
                                                                     <span class="helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->helpful_count ?? 0 }}</span>
                                                                 </button>
                                                                 <button type="button" class="btn-vote-faq {{ $userVoted === false ? 'voted-no' : '' }}" onclick="voteFaq({{ $faq->id }}, false, this)" title="Not helpful">
-                                                                    <span class="vote-icon-circle"><i class="far fa-thumbs-down"></i></span>
+                                                                    <i class="far fa-thumbs-down"></i>
                                                                     <span class="not-helpful-count" style="font-size: 12px; font-weight: 600; color: #64748b;">{{ $faq->not_helpful_count ?? 0 }}</span>
                                                                 </button>
                                                             </div>

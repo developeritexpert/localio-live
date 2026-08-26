@@ -516,19 +516,6 @@ class CategoriesController extends Controller
             }
 
             // Process Category FAQs
-            $faqsInput = $request->input('category_faqs', []);
-            $cleanFaqs = [];
-            if (is_array($faqsInput)) {
-                foreach ($faqsInput as $faq) {
-                    if (!empty($faq['question']) || !empty($faq['answer'])) {
-                        $cleanFaqs[] = [
-                            'question' => $faq['question'] ?? '',
-                            'answer' => $faq['answer'] ?? ''
-                        ];
-                    }
-                }
-            }
-
            CategoryTranslation::updateOrCreate(
                 [
                     'lang_id' => (int) $language_id,
@@ -545,7 +532,6 @@ class CategoriesController extends Controller
                     'description'  => $validate['description'],
                     'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
-                    'faqs'         => !empty($cleanFaqs) ? json_encode($cleanFaqs) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,
                     'meta_description' => $validate['meta_description'] ?? null,
                     'slug'         => $slug,
@@ -754,6 +740,25 @@ class CategoriesController extends Controller
         // 2. Remove all pivot entries in business_sub_category for this category
         DB::table('business_sub_category')->where('category_id', $category->id)->delete();
     }
+
+    public function faqs($id)
+    {
+        $langId = Language::where('lang_code', getCurrentLocale())->value('id');
+        $category = Category::with([
+            'categoryTranslations' => function ($query) use ($langId) {
+                $query->where('lang_id', $langId);
+            }
+        ])->findOrFail($id);
+        
+        $translation = $category->categoryTranslations->first();
+        $category_faqs = [];
+        if ($translation && !empty($translation->faqs)) {
+            $category_faqs = json_decode($translation->faqs, true) ?? [];
+        }
+        
+        return view('Admin.categories.faqs', compact('category', 'category_faqs', 'translation'));
+    }
+
     public function addTopic($id = null)
     {
         $topic_data = null;
