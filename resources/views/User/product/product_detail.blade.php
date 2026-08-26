@@ -2163,7 +2163,7 @@
                                         
                                     
                                         <!-- here we start sticky part -->
-                                        <div class="main_feature_lg sticky-sidebar-nav-wrapper">
+                                        <div class="main_feature_lg sticky-sidebar-nav-wrapper d-none d-lg-block">
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
                                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
@@ -2266,6 +2266,73 @@
                                             </div>
                                         </div>
                                         <!-- here we end sticky part -->
+<!-- MOBILE STICKY BOTTOM NAV -->
+<div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
+    <!-- Left side: Dropdown for current section -->
+    <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
+        <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; border: 1px solid #e2e8f0; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
+            <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
+        </button>
+        <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
+            <li><a class="dropdown-item msbn-item active" href="#top" data-target="section1">Description</a></li>
+            @if (isset($alternativeBusiness) && $alternativeBusiness->count() > 0)
+                <li><a class="dropdown-item msbn-item" href="#section9" data-target="section9">Alternatives</a></li>
+            @endif
+            @if (isset($business->faqs) && $business->faqs->count() > 0)
+                <li><a class="dropdown-item msbn-item" href="#section15" data-target="section15">FAQs</a></li>
+            @endif
+            @if (isset($peerComparisons) && count($peerComparisons) > 0)
+                <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
+            @endif
+            <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
+        </ul>
+    </div>
+    
+    <!-- Right side: Visit CTA -->
+    <div class="msbn-right" style="flex: 1; min-width: 0;">
+        @if ($business->is_affiliate)
+            <a href="{{ $business->getTrackedUrl() }}"
+                data-track="{{ json_encode([
+                    'type' => 'click',
+                    'business_id' => $business->id,
+                    'action' => 'visit_website',
+                    'label' => 'Visit Website',
+                ]) }}"
+                target="_blank" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
+                Visit website <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
+            </a>
+        @endif
+    </div>
+</div>
+
+<style>
+    .mobile-sticky-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+        z-index: 9999;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* iOS safe area */
+        padding-top: 10px;
+    }
+    .msbn-dropdown-toggle::after {
+        margin-left: auto;
+    }
+    .msbn-item.active {
+        background-color: #f1f5f9;
+        color: #0f172a;
+        font-weight: 600;
+    }
+    /* Add padding to the body so the bottom content isn't covered by the sticky bar */
+    @media (max-width: 991px) {
+        body.product-page-body {
+            padding-bottom: 75px !important;
+        }
+    }
+</style>
+
                                     </div>
                                 </div>
 
@@ -3019,6 +3086,18 @@
                 stickyNavLinks.forEach(link => {
                     link.addEventListener('click', function(e) {
                         const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                        
+                        if (targetId === 'top' || targetId === 'section1') {
+                            e.preventDefault();
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                            stickyNavLinks.forEach(l => l.classList.remove('active'));
+                            this.classList.add('active');
+                            return;
+                        }
+                        
                         const targetElement = document.getElementById(targetId);
                         if (targetElement) {
                             e.preventDefault();
@@ -3036,6 +3115,37 @@
                         }
                     });
                 });
+
+                const msbnNavLinks = document.querySelectorAll('.msbn-item');
+                if (msbnNavLinks.length > 0) {
+                    msbnNavLinks.forEach(link => {
+                        link.addEventListener('click', function(e) {
+                            const targetId = this.getAttribute('data-target') || (this.getAttribute('href') ? this.getAttribute('href').replace('#', '') : '');
+                            
+                            if (targetId === 'top' || targetId === 'section1') {
+                                e.preventDefault();
+                                window.scrollTo({
+                                    top: 0,
+                                    behavior: 'smooth'
+                                });
+                                return;
+                            }
+                            
+                            const targetElement = document.getElementById(targetId);
+                            if (targetElement) {
+                                e.preventDefault();
+                                const headerOffset = 90;
+                                const elementPosition = targetElement.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        });
+                    });
+                }
 
                 // Update active link on scroll
                 const navSectionTargets = [
@@ -3069,6 +3179,26 @@
                                 link.classList.remove('active');
                             }
                         });
+                        
+                        // Update Mobile Dropdown
+                        const msbnItems = document.querySelectorAll('.msbn-item');
+                        if (msbnItems.length > 0) {
+                            msbnItems.forEach(item => {
+                                let checkTarget = item.getAttribute('data-target');
+                                if (checkTarget === 'top' && activeId === 'section1') {
+                                    checkTarget = 'section1';
+                                }
+                                if (checkTarget === activeId || item.getAttribute('href') === '#' + activeId) {
+                                    item.classList.add('active');
+                                    const activeTextSpan = document.getElementById('msbn-active-text');
+                                    if(activeTextSpan) {
+                                        activeTextSpan.textContent = item.innerText;
+                                    }
+                                } else {
+                                    item.classList.remove('active');
+                                }
+                            });
+                        }
                     }
                 }, { passive: true });
             }
