@@ -478,7 +478,11 @@ class ProductController extends Controller
             ->take(2)
             ->get();
 
-        return view('User.product.top_rated_faqs', compact('faqs', 'faqCategories', 'groupedFaqs', 'recentReviews', 'lang_id'));
+                $topProductContents = \App\Models\TopProductContent::where('lang_id', $lang_id)
+            ->pluck('meta_value', 'meta_key')
+            ->toArray();
+
+return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs', 'faqCategories', 'groupedFaqs', 'recentReviews', 'lang_id'));
     }
 
     public function topRatedProduct($lang, $category = null, $page = null)

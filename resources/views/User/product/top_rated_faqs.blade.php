@@ -192,11 +192,11 @@
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
-                                Top rated on Localio FAQs
+                                {{ $topProductContents['faq_page_main_headline'] ?? 'Top rated on Localio FAQs' }}
                             </h1>
                         </div>
                         <p style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight:400;">
-                            Frequently asked questions and answers about top-rated rankings and products on Localio.
+                            {{ $topProductContents['faq_page_main_subheadline'] ?? 'Frequently asked questions and answers about top-rated rankings and products on Localio.' }}
                         </p>
                     </div>
                 </div>
@@ -216,11 +216,11 @@
                 <!-- Section 1: Intro Title & Description -->
                 <div class="faq-top-intro mb-4">
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        About Top-Rated Rankings
+                        {{ $topProductContents['faq_page_about_headline'] ?? 'About Top-Rated Rankings' }}
                     </h2>
                     <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
                         <p>
-                            Learn more about how Localio calculates community ratings, moderates verified reviews, and compiles top-rated leaderboards across software and local business categories.
+                            {{ $topProductContents['faq_page_about_subheadline'] ?? 'Learn more about how Localio calculates community ratings, moderates verified reviews, and compiles top-rated leaderboards across software and local business categories.' }}
                         </p>
                     </div>
                 </div>
@@ -228,7 +228,7 @@
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
                     <h3 style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
-                        Search Top-Rated FAQs
+                        {{ $topProductContents['faq_page_search_heading'] ?? 'Search Top-Rated FAQs' }}
                     </h3>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
@@ -240,7 +240,7 @@
                 <div class="main-faq-container">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                         <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin: 0;">
-                            Frequently asked questions
+                            {{ $topProductContents['faq_page_list_headline'] ?? 'Frequently asked questions' }}
                         </h2>
                     </div>
 
@@ -338,15 +338,15 @@
                 <div class="ask-community-banner">
                     <div>
                         <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
-                            Still have a question about top-rated rankings?
+                            {{ $topProductContents['faq_page_banner_headline'] ?? 'Still have a question about top-rated rankings?' }}
                         </h3>
                         <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
-                            Ask the Localio community
+                            {{ $topProductContents['faq_page_banner_subheadline'] ?? 'Ask the Localio community' }}
                         </p>
                     </div>
                     <div>
                         <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="ask-community-btn blue-btn">
-                           Ask a question <i class="fa-solid fa-arrow-right"></i>
+                           {{ $topProductContents['faq_page_banner_btn_text'] ?? 'Ask a question' }} <i class="fa-solid fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>

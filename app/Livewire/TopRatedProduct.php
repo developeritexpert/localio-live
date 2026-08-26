@@ -1105,6 +1105,14 @@ class TopRatedProduct extends Component
         ];
     }
 
+    public function getTopProductContentsProperty()
+    {
+        $lang_id = $this->lang_id ?: getCurrentLanguageID();
+        return \App\Models\TopProductContent::where('lang_id', $lang_id)
+            ->pluck('meta_value', 'meta_key')
+            ->toArray();
+    }
+
     public function render()
     {
         return view('livewire.top-rated-product', [
@@ -1116,6 +1124,7 @@ class TopRatedProduct extends Component
             'exploreCategories' => $this->exploreCategories,
             'textSections' => $this->textSections,
             'faqs' => $this->faqs,
+            'topProductContents' => $this->topProductContents,
         ]);
     }
 }
