@@ -15,13 +15,35 @@
                     
                     <div class="d-flex align-items-center" style="gap: 10px;">
                         @foreach ($comparedProducts as $product)
-                            <div class="position-relative d-flex align-items-center justify-content-center bg-white" style="width: 44px; height: 44px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                                <x-business-logo :business="$product" />
-                                <button type="button" wire:click="removeProduct({{ $product->id }})" onclick="const input = document.getElementById('compare{{ $product->id }}'); if (input) { input.checked = false; input.dispatchEvent(new Event('change', { bubbles: true })); }" style="position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%; background: #334155; color: #ffffff; border: none; font-size: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.2);" title="Remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        @endforeach
+
+                     <div
+                       wire:key="compare-product-{{ $product->id }}"
+                        class="position-relative d-flex align-items-center justify-content-center bg-white"
+                           style="width: 44px; height: 44px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"
+                           >
+
+        <x-business-logo :business="$product" />
+
+        <button
+            type="button"
+            wire:click="removeProduct({{ $product->id }})"
+            onclick="
+                const input = document.getElementById('compare{{ $product->id }}');
+
+                if (input) {
+                    input.checked = false;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                               }
+                         "
+                          style="position: absolute; top: -7px; right: -7px; width: 18px; height: 18px; border-radius: 50%; background: #334155; color: #ffffff; border: none; font-size: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"
+                              title="Remove"
+                                        >
+                         <i class="fas fa-times"></i>
+                        </button>
+
+     </div>
+
+                            @endforeach
 
                         @php
                             $emptySlots = max(0, 2 - count($comparedProducts));
