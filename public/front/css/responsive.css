@@ -748,7 +748,7 @@ div#howRankingsWorkModal button.modal-close {
     color: #000;
 }
 /* ===================ERROR=================== */
-.auto-choice-rgt .btn-pages button.active {
+/* .auto-choice-rgt .btn-pages button.active {
     background-color: #06498b;
     color: #fff;
 
@@ -3296,7 +3296,7 @@ div#howRankingsWorkModal button.modal-close {
     .ft-btm-rgt .select-menu .options {
         padding: 30px;
     }
-}
+} */
 
 .inner_banner_sec {
     padding-top: 180px;
@@ -3334,9 +3334,7 @@ div#navbarSupportedContent .close_btn_mobile {
     height: 100%;
 }
 
-.inner_banner_sec {
-    padding-top: 180px;
-}
+
 
 .fixed-div {
     top: 0%;
