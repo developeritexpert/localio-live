@@ -25,6 +25,14 @@ class BusinessImages extends Component
     public $newUploads = []; // Temporary uploaded files
     public $isTakingScreenshots = false;
 
+    private $logCollector = [];
+
+    private function addConsoleLog($msg)
+    {
+        $this->logCollector[] = $msg;
+        Log::info($msg);
+    }
+
     // Modal state for Screenshot URLs
     public $showUrlModal = false;
     public $screenshotUrls = ['', '', '', '', ''];
@@ -86,12 +94,18 @@ class BusinessImages extends Component
     public function takeScreenshots()
     {
         $this->isTakingScreenshots = true;
+        $this->logCollector = [];
+
+        $this->addConsoleLog("Starting Automated Screenshot capture process...");
 
         // Increase script time limit on slower hosts
         try {
-            set_time_limit(120);
+            if (function_exists('set_time_limit')) {
+                set_time_limit(120);
+                $this->addConsoleLog("Extended script execution time limit to 120s.");
+            }
         } catch (\Exception $e) {
-            // Ignore if disabled by php.ini / hosting provider
+            $this->addConsoleLog("Failed to extend script time limit: " . $e->getMessage());
         }
         
         $business = Business::with('websites')->findOrFail($this->selectedBusinessId);
@@ -123,16 +137,27 @@ class BusinessImages extends Component
             $urls[] = trim($business->permanent_url);
         }
 
+        $this->addConsoleLog("Detected target URL list: " . implode(', ', $urls));
+
         if (empty($urls)) {
             session()->flash('modal_error', 'No website or screenshot URL found for this business. Please configure Screenshot URLs first.');
+            $this->addConsoleLog("FAILED: No target URLs found.");
+            $this->dispatch('print-console-logs', logs: $this->logCollector);
             $this->isTakingScreenshots = false;
             return;
         }
 
         $generatedImages = [];
         $destinationDir = public_path('business_images');
+        $this->addConsoleLog("Target public folder path: " . $destinationDir);
+
         if (!File::exists($destinationDir)) {
-            File::makeDirectory($destinationDir, 0755, true);
+            try {
+                File::makeDirectory($destinationDir, 0755, true);
+                $this->addConsoleLog("Created public folder: business_images");
+            } catch (\Exception $e) {
+                $this->addConsoleLog("Failed to create folder: " . $e->getMessage());
+            }
         }
 
         // Capture up to 5 URLs
@@ -149,9 +174,13 @@ class BusinessImages extends Component
             $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.png';
             $fullPath = $destinationDir . '/' . $filename;
 
+            $this->addConsoleLog("Attempting capture for target URL: " . $targetUrl);
             $captured = $this->captureRealScreenshot($fullPath, $targetUrl);
             if ($captured) {
                 $generatedImages[] = 'business_images/' . $filename;
+                $this->addConsoleLog("SUCCESS: Screenshot saved as business_images/" . $filename);
+            } else {
+                $this->addConsoleLog("FAILED: Could not capture screenshot for: " . $targetUrl);
             }
         }
 
@@ -161,11 +190,13 @@ class BusinessImages extends Component
             $this->newUploads = [];
             session()->flash('modal_success', count($generatedImages) . ' website screenshot(s) generated successfully!');
         } else {
-            // Run self-diagnostics silently in background (logs to laravel.log)
+            $this->addConsoleLog("All screenshot capture attempts failed. Running self-diagnostics...");
             $this->runScreenshotDiagnostics($urlsToCapture[0] ?? 'None');
             session()->flash('modal_error', 'Could not capture screenshots. Please verify the URL or try uploading images manually.');
         }
 
+        $this->addConsoleLog("Automated Screenshot capture process completed.");
+        $this->dispatch('print-console-logs', logs: $this->logCollector);
         $this->isTakingScreenshots = false;
     }
 
@@ -191,6 +222,7 @@ class BusinessImages extends Component
 
         try {
             // 1st Attempt: Microlink Screenshot API
+            $this->addConsoleLog("[Attempt 1] Calling Microlink API...");
             $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&waitForTimeout=1500";
             $response = Http::withoutVerifying()
                 ->withHeaders($headers)
@@ -201,25 +233,27 @@ class BusinessImages extends Component
                 $json = $response->json();
                 $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
                 if ($screenshotUrl) {
+                    $this->addConsoleLog("[Attempt 1] Microlink returned screenshot URL: " . $screenshotUrl . ". Fetching image...");
                     $imgResponse = Http::withoutVerifying()
                         ->withHeaders($headers)
                         ->timeout($apiTimeout)
                         ->get($screenshotUrl);
                     if ($imgResponse->successful() && strlen($imgResponse->body()) > 5000) {
                         file_put_contents($savePath, $imgResponse->body());
-                        Log::info("Screenshot generated successfully via Microlink API for {$cleanUrl}");
+                        $this->addConsoleLog("[Attempt 1] SUCCESS: Image fetched and saved.");
                         return true;
                     } else {
-                        Log::warning("Microlink Image response failed or body too small for {$cleanUrl}. Status: " . $imgResponse->status() . ", Length: " . strlen($imgResponse->body()));
+                        $this->addConsoleLog("[Attempt 1] FAILED: Image fetch failed. Status: " . $imgResponse->status() . ", Length: " . strlen($imgResponse->body()));
                     }
                 } else {
-                    Log::warning("Microlink JSON response did not contain screenshot URL for {$cleanUrl}. JSON: " . json_encode($json));
+                    $this->addConsoleLog("[Attempt 1] FAILED: JSON response did not contain screenshot URL. Response: " . json_encode($json));
                 }
             } else {
-                Log::warning("Microlink API attempt 1 failed for {$cleanUrl}. Status: " . $response->status() . ", Body: " . substr($response->body(), 0, 300));
+                $this->addConsoleLog("[Attempt 1] FAILED: Microlink API status: " . $response->status() . ", Response: " . substr($response->body(), 0, 300));
             }
 
             // 2nd Attempt: Direct Embed redirect on Microlink
+            $this->addConsoleLog("[Attempt 2] Calling Microlink Embed...");
             $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
             $embedResponse = Http::withoutVerifying()
                 ->withHeaders($headers)
@@ -227,13 +261,14 @@ class BusinessImages extends Component
                 ->get($embedUrl);
             if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
                 file_put_contents($savePath, $embedResponse->body());
-                Log::info("Screenshot generated successfully via Microlink Embed for {$cleanUrl}");
+                $this->addConsoleLog("[Attempt 2] SUCCESS: Image fetched and saved.");
                 return true;
             } else {
-                Log::warning("Microlink Embed attempt failed for {$cleanUrl}. Status: " . $embedResponse->status() . ", Length: " . strlen($embedResponse->body()) . ", Body: " . substr($embedResponse->body(), 0, 300));
+                $this->addConsoleLog("[Attempt 2] FAILED: Microlink Embed status: " . $embedResponse->status() . ", Length: " . strlen($embedResponse->body()) . ", Response: " . substr($embedResponse->body(), 0, 300));
             }
 
             // 3rd Attempt: Thum.io free screenshot API
+            $this->addConsoleLog("[Attempt 3] Calling Thum.io API...");
             $thumUrl = "https://image.thum.io/get/width/1200/crop/800/noanimate/" . $cleanUrl;
             $thumResponse = Http::withoutVerifying()
                 ->withHeaders($headers)
@@ -241,13 +276,14 @@ class BusinessImages extends Component
                 ->get($thumUrl);
             if ($thumResponse->successful() && strlen($thumResponse->body()) > 5000) {
                 file_put_contents($savePath, $thumResponse->body());
-                Log::info("Screenshot generated successfully via Thum.io for {$cleanUrl}");
+                $this->addConsoleLog("[Attempt 3] SUCCESS: Image fetched and saved.");
                 return true;
             } else {
-                Log::warning("Thum.io attempt failed for {$cleanUrl}. Status: " . $thumResponse->status() . ", Length: " . strlen($thumResponse->body()) . ", Body: " . substr($thumResponse->body(), 0, 300));
+                $this->addConsoleLog("[Attempt 3] FAILED: Thum.io status: " . $thumResponse->status() . ", Length: " . strlen($thumResponse->body()) . ", Response: " . substr($thumResponse->body(), 0, 300));
             }
 
             // 4th Attempt: WordPress mShots API
+            $this->addConsoleLog("[Attempt 4] Calling WordPress mShots API...");
             $wpUrl = "https://s0.wp.com/mshots/v1/" . urlencode($cleanUrl) . "?w=1200";
             $wpResponse = Http::withoutVerifying()
                 ->withHeaders($headers)
@@ -255,14 +291,14 @@ class BusinessImages extends Component
                 ->get($wpUrl);
             if ($wpResponse->successful() && strlen($wpResponse->body()) > 5000) {
                 file_put_contents($savePath, $wpResponse->body());
-                Log::info("Screenshot generated successfully via WordPress mShots for {$cleanUrl}");
+                $this->addConsoleLog("[Attempt 4] SUCCESS: Image fetched and saved.");
                 return true;
             } else {
-                Log::warning("WordPress mShots attempt failed for {$cleanUrl}. Status: " . $wpResponse->status() . ", Length: " . strlen($wpResponse->body()) . ", Body: " . substr($wpResponse->body(), 0, 300));
+                $this->addConsoleLog("[Attempt 4] FAILED: WordPress mShots status: " . $wpResponse->status() . ", Length: " . strlen($wpResponse->body()) . ", Response: " . substr($wpResponse->body(), 0, 300));
             }
 
         } catch (\Exception $e) {
-            Log::warning("Screenshot generation failed for {$cleanUrl}: " . $e->getMessage());
+            $this->addConsoleLog("[Exception] Screenshot generation failed: " . $e->getMessage());
         }
 
         return false;
@@ -273,48 +309,48 @@ class BusinessImages extends Component
      */
     private function runScreenshotDiagnostics($targetUrl)
     {
-        Log::error("--- START SCREENSHOT DIAGNOSTICS ---");
-        Log::error("Target URL: " . $targetUrl);
+        $this->addConsoleLog("--- SCREENSHOT DIAGNOSTICS ---");
+        $this->addConsoleLog("Target URL: " . $targetUrl);
 
         // 1. Storage write test
         $destinationDir = public_path('business_images');
-        Log::error("Storage directory path: " . $destinationDir);
-        Log::error("Directory exists: " . (File::exists($destinationDir) ? "Yes" : "No"));
+        $this->addConsoleLog("Storage path: " . $destinationDir);
+        $this->addConsoleLog("Directory exists: " . (File::exists($destinationDir) ? "Yes" : "No"));
         if (!File::exists($destinationDir)) {
             try {
                 File::makeDirectory($destinationDir, 0755, true);
-                Log::error("Directory created successfully.");
+                $this->addConsoleLog("Directory created successfully.");
             } catch (\Exception $e) {
-                Log::error("Failed to create directory: " . $e->getMessage());
+                $this->addConsoleLog("Failed to create directory: " . $e->getMessage());
             }
         }
         $isWritable = is_writable($destinationDir);
-        Log::error("Directory writable: " . ($isWritable ? "Yes" : "No"));
+        $this->addConsoleLog("Directory writable: " . ($isWritable ? "Yes" : "No"));
 
         // Test writing dummy file
         if ($isWritable) {
             $testFile = $destinationDir . '/test_write.txt';
             try {
                 file_put_contents($testFile, "test write");
-                Log::error("Test file write: SUCCESS");
+                $this->addConsoleLog("Test file write: SUCCESS");
                 unlink($testFile);
             } catch (\Exception $e) {
-                Log::error("Test file write: FAILED - " . $e->getMessage());
+                $this->addConsoleLog("Test file write: FAILED - " . $e->getMessage());
             }
         }
 
         // 2. PHP settings & Extensions
-        Log::error("PHP Version: " . PHP_VERSION);
-        Log::error("allow_url_fopen: " . (ini_get('allow_url_fopen') ? "Enabled" : "Disabled"));
-        Log::error("curl extension loaded: " . (extension_loaded('curl') ? "Yes" : "No"));
-        Log::error("openssl extension loaded: " . (extension_loaded('openssl') ? "Yes" : "No"));
-        Log::error("gd extension loaded: " . (extension_loaded('gd') ? "Yes" : "No"));
+        $this->addConsoleLog("PHP Version: " . PHP_VERSION);
+        $this->addConsoleLog("allow_url_fopen: " . (ini_get('allow_url_fopen') ? "Enabled" : "Disabled"));
+        $this->addConsoleLog("curl extension: " . (extension_loaded('curl') ? "Loaded" : "Not Loaded"));
+        $this->addConsoleLog("openssl extension: " . (extension_loaded('openssl') ? "Loaded" : "Not Loaded"));
+        $this->addConsoleLog("gd extension: " . (extension_loaded('gd') ? "Loaded" : "Not Loaded"));
 
         // 3. DNS resolution test
         $domains = ['api.microlink.io', 'image.thum.io', 's0.wp.com', 'httpbin.org'];
         foreach ($domains as $domain) {
             $ip = gethostbyname($domain);
-            Log::error("DNS check for {$domain}: " . ($ip !== $domain ? "Resolved to {$ip}" : "FAILED to resolve"));
+            $this->addConsoleLog("DNS Resolution check for {$domain}: " . ($ip !== $domain ? "Resolved to {$ip}" : "FAILED to resolve"));
         }
 
         // 4. Outbound HTTPS test via HTTP client (diagnosing blocked outbound traffic)
@@ -324,15 +360,15 @@ class BusinessImages extends Component
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             ];
             $res = Http::withoutVerifying()->withHeaders($headers)->timeout(8)->get($testUrl);
-            Log::error("Outbound HTTPS connection to httpbin.org status: " . $res->status());
+            $this->addConsoleLog("Outbound HTTPS connection to httpbin.org status: " . $res->status());
             if ($res->successful()) {
-                Log::error("Outbound HTTPS connection Response Body: " . $res->body());
+                $this->addConsoleLog("Outbound HTTPS response body: " . $res->body());
             }
         } catch (\Exception $e) {
-            Log::error("Outbound HTTPS connection test FAILED: " . $e->getMessage());
+            $this->addConsoleLog("Outbound HTTPS test FAILED: " . $e->getMessage());
         }
 
-        Log::error("--- END SCREENSHOT DIAGNOSTICS ---");
+        $this->addConsoleLog("--- END DIAGNOSTICS ---");
     }
 
     private function createDummyScreenshot($path, $url, $number)
