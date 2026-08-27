@@ -153,10 +153,17 @@ class BusinessImages extends Component
 
         if (!File::exists($destinationDir)) {
             try {
-                File::makeDirectory($destinationDir, 0755, true);
+                File::makeDirectory($destinationDir, 0775, true);
                 $this->addConsoleLog("Created public folder: business_images");
             } catch (\Exception $e) {
                 $this->addConsoleLog("Failed to create folder: " . $e->getMessage());
+            }
+        } else {
+            // Attempt to automatically make it writable if it isn't
+            if (!is_writable($destinationDir)) {
+                try {
+                    @chmod($destinationDir, 0775);
+                } catch (\Exception $e) {}
             }
         }
 
@@ -318,14 +325,41 @@ class BusinessImages extends Component
         $this->addConsoleLog("Directory exists: " . (File::exists($destinationDir) ? "Yes" : "No"));
         if (!File::exists($destinationDir)) {
             try {
-                File::makeDirectory($destinationDir, 0755, true);
+                File::makeDirectory($destinationDir, 0775, true);
                 $this->addConsoleLog("Directory created successfully.");
             } catch (\Exception $e) {
                 $this->addConsoleLog("Failed to create directory: " . $e->getMessage());
             }
         }
+        
         $isWritable = is_writable($destinationDir);
         $this->addConsoleLog("Directory writable: " . ($isWritable ? "Yes" : "No"));
+
+        if (!$isWritable) {
+            // Try to make it writable via chmod 775
+            try {
+                @chmod($destinationDir, 0775);
+                $isWritable = is_writable($destinationDir);
+                $this->addConsoleLog("Retried checking directory writable after chmod 775: " . ($isWritable ? "Yes" : "No"));
+            } catch (\Exception $e) {}
+        }
+
+        if (!$isWritable) {
+            // Try to make it writable via chmod 777
+            try {
+                @chmod($destinationDir, 0777);
+                $isWritable = is_writable($destinationDir);
+                $this->addConsoleLog("Retried checking directory writable after chmod 777: " . ($isWritable ? "Yes" : "No"));
+            } catch (\Exception $e) {}
+        }
+
+        if (!$isWritable) {
+            $this->addConsoleLog("ERROR: The directory public/business_images is not writable by the web server user.");
+            $this->addConsoleLog("To fix this, please run one of these commands on your production server terminal:");
+            $this->addConsoleLog("Command Option 1: chmod -R 775 " . $destinationDir);
+            $this->addConsoleLog("Command Option 2: chmod -R 777 " . $destinationDir);
+            $this->addConsoleLog("Command Option 3: sudo chown -R www-data:www-data " . $destinationDir);
+        }
 
         // Test writing dummy file
         if ($isWritable) {
