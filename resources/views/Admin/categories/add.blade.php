@@ -597,9 +597,6 @@
         initAllCKEditors();
 
         let catSectionCounter = {{ isset($text_sections) && is_array($text_sections) ? count($text_sections) : 0 }};
-        
-            card.remove();
-        });
 
         $(document).on('click', '.add-sub-section-btn', function() {
             let sIdx = $(this).data('section-index');
