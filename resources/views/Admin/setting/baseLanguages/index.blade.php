@@ -101,12 +101,12 @@
                                                             <span>{{ $lang->status ? 'Disable' : 'Enable' }}</span>
                                                         </a>
                                                     </li>
-                                                    <li>
+                                                    <!-- <li>
                                                         <a href="{{ route('base-languages.delete', $lang->id) }}" onclick="return confirm('Are you sure you want to delete this base language? This action cannot be undone.');" class="text-danger">
                                                             <em class="icon ni ni-trash"></em>
                                                             <span>Delete</span>
                                                         </a>
-                                                    </li>
+                                                    </li> -->
                                                 </ul>
                                             </div>
                                         </div>
