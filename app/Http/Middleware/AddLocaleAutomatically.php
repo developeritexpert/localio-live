@@ -34,8 +34,6 @@ class AddLocaleAutomatically
                     'lang_id'   => $langObj->id,
                     'lang_name' => ucfirst($langObj->name),
                 ]);
-                // Removed: We no longer overwrite the cookie here to prevent destroying a user's global 
-                // region preference just because they clicked a shared link for another locale.
             }
             return $next($request);
         }
@@ -62,40 +60,71 @@ class AddLocaleAutomatically
 
             // No cookie: Detect browser locale from Accept-Language header
             $acceptLanguageHeader = $request->header('Accept-Language');
-            $detectedMatch = $this->detectMatchingLocaleWithCountry($acceptLanguageHeader, $validLocales);
 
-            if ($detectedMatch) {
-                // Detected a specific Country + Language match (e.g. en-US -> en-us, de-DE -> de-de, es-MX -> es-mx)
-                $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $detectedMatch);
-                if ($langObj) {
-                    App::setLocale($detectedMatch);
-                    session([
-                        'lang_code' => $detectedMatch,
-                        'lang_id'   => $langObj->id,
-                        'lang_name' => ucfirst($langObj->name),
-                    ]);
+            if (!empty($acceptLanguageHeader)) {
+                $tags = $this->parseAcceptLanguage($acceptLanguageHeader);
+                foreach ($tags as $item) {
+                    $tag = $item['tag'];
+                    $hasCountry = (strpos($tag, '-') !== false || strpos($tag, '_') !== false);
+                    $normalized = strtolower(str_replace('_', '-', $tag));
+
+                    if ($hasCountry) {
+                        // Exact match (language + country)
+                        if (in_array($normalized, $validLocales)) {
+                            $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $normalized);
+                            if ($langObj) {
+                                App::setLocale($normalized);
+                                session([
+                                    'lang_code' => $normalized,
+                                    'lang_id'   => $langObj->id,
+                                    'lang_name' => ucfirst($langObj->name),
+                                ]);
+                            }
+                            Cookie::queue('user_locale', $normalized, 60 * 24 * 30);
+                            Cookie::queue('lang_code', $normalized, 60 * 24 * 30);
+                            return redirect()->to('/' . $normalized);
+                        }
+                    } else {
+                        // Language-only tag (e.g. "en", "de", "es")
+                        // Find first supported locale starting with this language code (e.g. "en-us", "de-de")
+                        $primaryLang = $normalized;
+                        $fallbackLocale = null;
+                        foreach ($validLocales as $loc) {
+                            if (str_starts_with($loc, $primaryLang . '-')) {
+                                $fallbackLocale = $loc;
+                                break;
+                            }
+                        }
+
+                        if ($fallbackLocale) {
+                            $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $fallbackLocale);
+                            if ($langObj) {
+                                App::setLocale($fallbackLocale);
+                                session([
+                                    'lang_code' => $fallbackLocale,
+                                    'lang_id'   => $langObj->id,
+                                    'lang_name' => ucfirst($langObj->name),
+                                ]);
+                                // Flash show_country_modal flag to show the modal on the redirected page
+                                session()->flash('show_country_modal', true);
+                            }
+                            return redirect()->to('/' . $fallbackLocale);
+                        }
+                    }
                 }
-                Cookie::queue('user_locale', $detectedMatch, 60 * 24 * 30);
-                Cookie::queue('lang_code', $detectedMatch, 60 * 24 * 30);
-                return redirect()->to('/' . $detectedMatch);
             }
 
-            // Only a generic language tag is available (e.g. 'en', 'es', 'de', 'fr') or no exact country match
-            // Show Country Selection Modal so user can choose their exact region
-            $targetLocale = $this->findBestLanguageFallback($acceptLanguageHeader, $validLocales, $defaultLocale);
-            $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $targetLocale);
+            // Fallback to default locale if no detection worked
+            $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $defaultLocale);
             if ($langObj) {
-                App::setLocale($targetLocale);
+                App::setLocale($defaultLocale);
                 session([
-                    'lang_code' => $targetLocale,
+                    'lang_code' => $defaultLocale,
                     'lang_id'   => $langObj->id,
                     'lang_name' => ucfirst($langObj->name),
                 ]);
-                // Flash the modal flag so it only shows once
-                session()->flash('show_country_modal', true);
             }
-            // Removed: Do NOT set user_locale cookie yet so they get asked again if they just close the modal.
-            return redirect()->to('/' . $targetLocale);
+            return redirect()->to('/' . $defaultLocale);
         }
 
         // -------------------------------------------------------------
@@ -108,54 +137,6 @@ class AddLocaleAutomatically
 
         $pathWithoutLang = ltrim($request->getRequestUri(), '/');
         return redirect()->to('/' . $targetLocale . ($pathWithoutLang ? '/' . $pathWithoutLang : ''));
-    }
-
-    /**
-     * Detect exact Country + Language match from Accept-Language header.
-     * Only returns a match if the tag includes a region/country subtag (e.g. en-US, es-MX, de-DE).
-     */
-    protected function detectMatchingLocaleWithCountry(?string $header, array $validLocales): ?string
-    {
-        if (empty($header)) {
-            return null;
-        }
-
-        $tags = $this->parseAcceptLanguage($header);
-        foreach ($tags as $item) {
-            $tag = $item['tag'];
-            // Check if tag has a country component (e.g. en-US, pt-BR, de_DE)
-            if (strpos($tag, '-') !== false || strpos($tag, '_') !== false) {
-                $normalized = strtolower(str_replace('_', '-', $tag));
-                if (in_array($normalized, $validLocales)) {
-                    return $normalized;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Finds the best language fallback if only language is supplied (e.g. 'de' -> 'de-de', 'es' -> 'es-es', 'en' -> 'en-us').
-     */
-    protected function findBestLanguageFallback(?string $header, array $validLocales, string $defaultLocale): string
-    {
-        if (empty($header)) {
-            return $defaultLocale;
-        }
-
-        $tags = $this->parseAcceptLanguage($header);
-        foreach ($tags as $item) {
-            $primaryLang = strtolower(explode('-', str_replace('_', '-', $item['tag']))[0]);
-            // Find first supported locale starting with this language code
-            foreach ($validLocales as $loc) {
-                if (str_starts_with($loc, $primaryLang . '-')) {
-                    return $loc;
-                }
-            }
-        }
-
-        return $defaultLocale;
     }
 
     /**

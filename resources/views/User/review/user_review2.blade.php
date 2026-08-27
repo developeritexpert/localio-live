@@ -390,7 +390,8 @@
                                                                             @endif
                                                                         @endfor
                                                                     </div>
-                                                                    <span style="font-size: 14px; font-weight:700; color: #64748b;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                    <span style="font-size: 14px; font-weight:700; color: #64748b;">Community rating</span>
+                                                                    <span style="font-size: 14px; font-weight:700; color: #64748b;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                 </div>
                                                             </div>
 
@@ -819,14 +820,14 @@
                                             onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                             class="btn-write-review-link"
                                             style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-                                            <i class="fas fa-pencil-alt"></i> Write a review
+                                            <span style="text-decoration:none"><i class="fas fa-pencil-alt"></i></span> Write a review
                                         </button>
                                     @else
                                         <a href="javascript:void(0)"
                                             onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                             class="btn-write-review-link"
                                             style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-                                            <i class="fas fa-pencil-alt"></i> Write a review
+                                            <span style="text-decoration:none"><i class="fas fa-pencil-alt"></i></span> Write a review
                                         </a>
                                     @endauth
                                 </div>

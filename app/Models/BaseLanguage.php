@@ -12,6 +12,7 @@ class BaseLanguage extends Model
     protected $table = 'base_languages';
 
     protected $fillable = [
+        'country_id',
         'name',
         'bcp47_language_id',
         'language_tag',
@@ -27,6 +28,14 @@ class BaseLanguage extends Model
     /**
      * The BCP 47 Language assigned to this base language entry.
      */
+    /**
+     * The country/region linked to this base language.
+     */
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
     public function bcp47Language()
     {
         return $this->belongsTo(Bcp47Language::class, 'bcp47_language_id');

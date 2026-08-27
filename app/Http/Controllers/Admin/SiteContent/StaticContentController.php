@@ -190,6 +190,16 @@ class StaticContentController extends Controller
                     'learn_more',
                 ],
             ],
+            'filters' => [
+                'title' => 'Filters Section Text (Category, Top-Rated, Alternatives)',
+                'keys' => [
+                    'filters',
+                    'user_rating',
+                    'price_range',
+                    'reset_filter',
+                    'no_prod_mach_fil',
+                ],
+            ],
             'auth' => [
                 'title' => 'Authentication Text',
                 'keys' => [
@@ -213,11 +223,6 @@ class StaticContentController extends Controller
                     'exclusive_deals_title',
                     'exclusive_deals_des',
                     'product_search_placeholder',
-                    'filters',
-                    'user_rating',
-                    'price_range',
-                    'no_prod_mach_fil',
-                    'reset_filter',
                     'localio_commissions_message',
                     'vs_keyword',
                     'business_reviews_subheadline',

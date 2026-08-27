@@ -86,6 +86,13 @@ class BusinessImages extends Component
     public function takeScreenshots()
     {
         $this->isTakingScreenshots = true;
+
+        // Increase script time limit on slower hosts
+        try {
+            set_time_limit(120);
+        } catch (\Exception $e) {
+            // Ignore if disabled by php.ini / hosting provider
+        }
         
         $business = Business::with('websites')->findOrFail($this->selectedBusinessId);
         $urls = [];
@@ -152,8 +159,10 @@ class BusinessImages extends Component
             $this->currentImages = array_merge($this->currentImages, $generatedImages);
             $this->currentImages = array_slice($this->currentImages, 0, 5);
             $this->newUploads = [];
-            session()->flash('modal_success', count($generatedImages) . ' website screenshot(s) generated successfully via Microlink!');
+            session()->flash('modal_success', count($generatedImages) . ' website screenshot(s) generated successfully!');
         } else {
+            // Run self-diagnostics silently in background (logs to laravel.log)
+            $this->runScreenshotDiagnostics($urlsToCapture[0] ?? 'None');
             session()->flash('modal_error', 'Could not capture screenshots. Please verify the URL or try uploading images manually.');
         }
 
@@ -169,53 +178,161 @@ class BusinessImages extends Component
             $cleanUrl = "https://" . $cleanUrl;
         }
 
+        // Standard browser headers to bypass datacenter blocking and bot detectors
+        $headers = [
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language' => 'en-US,en;q=0.5',
+            'Referer' => 'https://www.google.com/',
+        ];
+
+        // HTTP timeout limit per API attempt
+        $apiTimeout = 10;
+
         try {
-            // 1st Attempt: Microlink Screenshot API (Robust but has rate limits)
+            // 1st Attempt: Microlink Screenshot API
             $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&waitForTimeout=1500";
-            $response = Http::withoutVerifying()->timeout(35)->get($apiUrl);
+            $response = Http::withoutVerifying()
+                ->withHeaders($headers)
+                ->timeout($apiTimeout)
+                ->get($apiUrl);
             
             if ($response->successful()) {
                 $json = $response->json();
                 $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
                 if ($screenshotUrl) {
-                    $imgResponse = Http::withoutVerifying()->timeout(35)->get($screenshotUrl);
+                    $imgResponse = Http::withoutVerifying()
+                        ->withHeaders($headers)
+                        ->timeout($apiTimeout)
+                        ->get($screenshotUrl);
                     if ($imgResponse->successful() && strlen($imgResponse->body()) > 5000) {
                         file_put_contents($savePath, $imgResponse->body());
+                        Log::info("Screenshot generated successfully via Microlink API for {$cleanUrl}");
                         return true;
+                    } else {
+                        Log::warning("Microlink Image response failed or body too small for {$cleanUrl}. Status: " . $imgResponse->status() . ", Length: " . strlen($imgResponse->body()));
                     }
+                } else {
+                    Log::warning("Microlink JSON response did not contain screenshot URL for {$cleanUrl}. JSON: " . json_encode($json));
                 }
+            } else {
+                Log::warning("Microlink API attempt 1 failed for {$cleanUrl}. Status: " . $response->status() . ", Body: " . substr($response->body(), 0, 300));
             }
 
-            // 2nd Attempt: direct embed redirect on Microlink
+            // 2nd Attempt: Direct Embed redirect on Microlink
             $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
-            $embedResponse = Http::withoutVerifying()->timeout(35)->get($embedUrl);
+            $embedResponse = Http::withoutVerifying()
+                ->withHeaders($headers)
+                ->timeout($apiTimeout)
+                ->get($embedUrl);
             if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
                 file_put_contents($savePath, $embedResponse->body());
+                Log::info("Screenshot generated successfully via Microlink Embed for {$cleanUrl}");
                 return true;
+            } else {
+                Log::warning("Microlink Embed attempt failed for {$cleanUrl}. Status: " . $embedResponse->status() . ", Length: " . strlen($embedResponse->body()) . ", Body: " . substr($embedResponse->body(), 0, 300));
             }
 
-            // 3rd Attempt: Thum.io free screenshot API (No rate limit, direct image return)
+            // 3rd Attempt: Thum.io free screenshot API
             $thumUrl = "https://image.thum.io/get/width/1200/crop/800/noanimate/" . $cleanUrl;
-            $thumResponse = Http::withoutVerifying()->timeout(35)->get($thumUrl);
+            $thumResponse = Http::withoutVerifying()
+                ->withHeaders($headers)
+                ->timeout($apiTimeout)
+                ->get($thumUrl);
             if ($thumResponse->successful() && strlen($thumResponse->body()) > 5000) {
                 file_put_contents($savePath, $thumResponse->body());
+                Log::info("Screenshot generated successfully via Thum.io for {$cleanUrl}");
                 return true;
+            } else {
+                Log::warning("Thum.io attempt failed for {$cleanUrl}. Status: " . $thumResponse->status() . ", Length: " . strlen($thumResponse->body()) . ", Body: " . substr($thumResponse->body(), 0, 300));
             }
 
-            // 4th Attempt: WordPress mShots API (Often used as free fallback)
+            // 4th Attempt: WordPress mShots API
             $wpUrl = "https://s0.wp.com/mshots/v1/" . urlencode($cleanUrl) . "?w=1200";
-            $wpResponse = Http::withoutVerifying()->timeout(35)->get($wpUrl);
-            // WordPress might return a redirect or a "generating" placeholder which is usually small, so size check > 5000 helps
+            $wpResponse = Http::withoutVerifying()
+                ->withHeaders($headers)
+                ->timeout($apiTimeout)
+                ->get($wpUrl);
             if ($wpResponse->successful() && strlen($wpResponse->body()) > 5000) {
                 file_put_contents($savePath, $wpResponse->body());
+                Log::info("Screenshot generated successfully via WordPress mShots for {$cleanUrl}");
                 return true;
+            } else {
+                Log::warning("WordPress mShots attempt failed for {$cleanUrl}. Status: " . $wpResponse->status() . ", Length: " . strlen($wpResponse->body()) . ", Body: " . substr($wpResponse->body(), 0, 300));
             }
 
         } catch (\Exception $e) {
-            \Log::warning("Screenshot generation failed for {$cleanUrl}: " . $e->getMessage());
+            Log::warning("Screenshot generation failed for {$cleanUrl}: " . $e->getMessage());
         }
 
         return false;
+    }
+
+    /**
+     * Run server diagnostics on permission, PHP settings, DNS and outbound HTTPS connectivity.
+     */
+    private function runScreenshotDiagnostics($targetUrl)
+    {
+        Log::error("--- START SCREENSHOT DIAGNOSTICS ---");
+        Log::error("Target URL: " . $targetUrl);
+
+        // 1. Storage write test
+        $destinationDir = public_path('business_images');
+        Log::error("Storage directory path: " . $destinationDir);
+        Log::error("Directory exists: " . (File::exists($destinationDir) ? "Yes" : "No"));
+        if (!File::exists($destinationDir)) {
+            try {
+                File::makeDirectory($destinationDir, 0755, true);
+                Log::error("Directory created successfully.");
+            } catch (\Exception $e) {
+                Log::error("Failed to create directory: " . $e->getMessage());
+            }
+        }
+        $isWritable = is_writable($destinationDir);
+        Log::error("Directory writable: " . ($isWritable ? "Yes" : "No"));
+
+        // Test writing dummy file
+        if ($isWritable) {
+            $testFile = $destinationDir . '/test_write.txt';
+            try {
+                file_put_contents($testFile, "test write");
+                Log::error("Test file write: SUCCESS");
+                unlink($testFile);
+            } catch (\Exception $e) {
+                Log::error("Test file write: FAILED - " . $e->getMessage());
+            }
+        }
+
+        // 2. PHP settings & Extensions
+        Log::error("PHP Version: " . PHP_VERSION);
+        Log::error("allow_url_fopen: " . (ini_get('allow_url_fopen') ? "Enabled" : "Disabled"));
+        Log::error("curl extension loaded: " . (extension_loaded('curl') ? "Yes" : "No"));
+        Log::error("openssl extension loaded: " . (extension_loaded('openssl') ? "Yes" : "No"));
+        Log::error("gd extension loaded: " . (extension_loaded('gd') ? "Yes" : "No"));
+
+        // 3. DNS resolution test
+        $domains = ['api.microlink.io', 'image.thum.io', 's0.wp.com', 'httpbin.org'];
+        foreach ($domains as $domain) {
+            $ip = gethostbyname($domain);
+            Log::error("DNS check for {$domain}: " . ($ip !== $domain ? "Resolved to {$ip}" : "FAILED to resolve"));
+        }
+
+        // 4. Outbound HTTPS test via HTTP client (diagnosing blocked outbound traffic)
+        try {
+            $testUrl = "https://httpbin.org/ip";
+            $headers = [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            ];
+            $res = Http::withoutVerifying()->withHeaders($headers)->timeout(8)->get($testUrl);
+            Log::error("Outbound HTTPS connection to httpbin.org status: " . $res->status());
+            if ($res->successful()) {
+                Log::error("Outbound HTTPS connection Response Body: " . $res->body());
+            }
+        } catch (\Exception $e) {
+            Log::error("Outbound HTTPS connection test FAILED: " . $e->getMessage());
+        }
+
+        Log::error("--- END SCREENSHOT DIAGNOSTICS ---");
     }
 
     private function createDummyScreenshot($path, $url, $number)

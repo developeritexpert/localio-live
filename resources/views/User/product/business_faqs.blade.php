@@ -390,7 +390,7 @@
                     @if(isset($faqCategories) && $faqCategories->count() > 0)
                     <div class="faq-category-nav" id="faqCategoryNav">
                         <button type="button" class="faq-cat-tab active" data-category-id="all">
-                            All Questions
+                            All
                         </button>
                         @foreach($faqCategories as $cat)
                             <button type="button" class="faq-cat-tab" data-category-id="{{ $cat->id }}">

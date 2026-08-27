@@ -83,106 +83,142 @@
             @csrf
             <input type="hidden" name="lang_id" value="{{ $lang_id ?? 1 }}">
 
-            {{-- 1. Header Images & Files (if any) --}}
-            @if(isset($productFiles) && $productFiles->isNotEmpty())
+                        {{-- 1. Main Top Rated Page Texts (/top-rated) --}}
             <div class="card card-bordered mb-4">
                 <div class="card-header bg-light">
-                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-image me-1"></i> Header Banner Images</h6>
+                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-font me-1"></i> Main Top Rated Page Texts (/top-rated)</h6>
+                    <small class="text-muted">These fields control the main titles, sub-headlines, and section texts on the primary Top-Rated page.</small>
                 </div>
                 <div class="card-inner">
-                    <div class="row g-3">
-                        @foreach ($productFiles as $content)
-                            @if ($content->meta_key == 'banner_image')
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label fw-bold" for="image">Header Image</label>
-                                        <div class="form-control-wrap">
-                                            <input type="file" class="form-control" name="top_pro_banner_image[{{ $content->id }}]">
-                                        </div>
-                                        @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                            <img src="{{ asset($content->meta_value) }}" class="mt-2 rounded border" style="width: 100px; height: auto;">
-                                        @endif
-                                    </div>
-                                </div>
-                            @elseif($content->meta_key == 'banner_bg_image')
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="form-label fw-bold" for="image">Background Image</label>
-                                        <div class="form-control-wrap">
-                                            <input type="file" class="form-control" name="top_pro_banner_bg_image[{{ $content->id }}]">
-                                        </div>
-                                        @if (!empty($content->meta_value) && file_exists(public_path($content->meta_value)))
-                                            <img src="{{ asset($content->meta_value) }}" class="mt-2 rounded border" style="width: 100px; height: auto;">
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            @endif
-
-                        {{-- 2. Basic Header Text Contents --}}
-            <div class="card card-bordered mb-4">
-                <div class="card-header bg-light">
-                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-font me-1"></i> Top Rated Page Header Texts</h6>
-                    <small class="text-muted">These fields appear on the main Top Rated page (/top-rated).</small>
-                </div>
-                <div class="card-inner">
-                    <div class="row g-3">
-                        @php
-                            $topRatedKeys = [
-                                'header_title' => ['label' => 'Banner Main Title', 'placeholder' => 'Find the Best Software...'],
-                                'header_sub_title' => ['label' => 'Banner Sub-Title', 'placeholder' => 'Discover verified reviews...'],
-                                'header_bottom_text' => ['label' => 'Banner Bottom Text', 'placeholder' => 'Powered by Localio Community'],
-                                'learn_more' => ['label' => 'Learn More Link Text', 'placeholder' => 'Learn more'],
-                                'top_rated_headline' => ['label' => 'Top Rated Headline', 'placeholder' => 'Top rated on Localio'],
-                                'top_rated_subheadline' => ['label' => 'Top Rated Sub-headline', 'placeholder' => 'Learn more from our team...'],
-                                'explore_categories_headline' => ['label' => 'Explore Categories Headline', 'placeholder' => 'Explore top-rated categories'],
-                                'explore_categories_subheadline' => ['label' => 'Explore Categories Sub-headline', 'placeholder' => 'Discover top-rated software...'],
-                                'faq_section_headline' => ['label' => 'FAQ Section Headline', 'placeholder' => 'Frequently asked questions'],
-                                'faq_section_subheadline' => ['label' => 'FAQ Section Sub-headline', 'placeholder' => 'Everything you need to know...']
-                            ];
+                    <div class="row g-4">
+                        {{-- Top Rated Main Headline (H1) --}}
+                        @php 
+                            $hlObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'top_rated_headline')->where('type', '!=', 'json')->first() : null; 
+                            $hlId = $hlObj ? $hlObj->id : 'new';
+                            $hlVal = $hlObj ? $hlObj->meta_value : '';
                         @endphp
-                        @foreach($topRatedKeys as $key => $info)
-                            @php 
-                                $valObj = isset($topProductContents) ? $topProductContents->where('meta_key', $key)->where('type', '!=', 'json')->first() : null; 
-                                $id = $valObj ? $valObj->id : 'new';
-                                $val = $valObj ? $valObj->meta_value : '';
-                            @endphp
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="form-label fw-bold">{{ $info['label'] }}</label>
-                                    <div class="form-control-wrap">
-                                        <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
-                                    </div>
-                                    <small class="text-muted" style="font-size: 0.75rem;">Default text: {{ $info['placeholder'] }}</small>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">Top Rated Main Headline (H1)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="top_rated_headline[{{ $hlId }}]" value="{{ $hlVal }}" placeholder="Top rated on Localio">
                                 </div>
+                                <small class="text-muted">Appears as the primary H1 page title at the top of <code>/top-rated</code> (Default: <em>Top rated on Localio</em>).</small>
                             </div>
-                        @endforeach
+                        </div>
+
+                        {{-- Top Rated Sub-headline (Rich Text Editor) --}}
+                        @php 
+                            $subObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'top_rated_subheadline')->where('type', '!=', 'json')->first() : null; 
+                            $subId = $subObj ? $subObj->id : 'new';
+                            $subVal = $subObj ? $subObj->meta_value : '';
+                        @endphp
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">Top Rated Sub-headline (Rich Text Editor)</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" rows="3" name="top_rated_subheadline[{{ $subId }}]" placeholder="Learn more from our team about software pricing, features and benefits in our Buyers Guide">{{ $subVal }}</textarea>
+                                </div>
+                                <small class="text-muted">Appears directly below the "Last updated" date in the header block. Supports formatting, buyer guide links, and bold text.</small>
+                            </div>
+                        </div>
+
+                        {{-- Top Rated Listing Section Headline (H2) --}}
+                        @php 
+                            $listHlObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'top_rated_listing_headline')->where('type', '!=', 'json')->first() : null; 
+                            $listHlId = $listHlObj ? $listHlObj->id : 'new';
+                            $listHlVal = $listHlObj ? $listHlObj->meta_value : '';
+                        @endphp
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">Listings Section Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="top_rated_listing_headline[{{ $listHlId }}]" value="{{ $listHlVal }}" placeholder="Top-rated listings">
+                                </div>
+                                <small class="text-muted">Appears as the H2 headline on top of the product listings grid on <code>/top-rated</code> (Default: <em>Top-rated listings</em>).</small>
+                            </div>
+                        </div>
+
+                        {{-- Explore Categories Section --}}
+                        @php 
+                            $catHlObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'explore_categories_headline')->where('type', '!=', 'json')->first() : null; 
+                            $catHlId = $catHlObj ? $catHlObj->id : 'new';
+                            $catHlVal = $catHlObj ? $catHlObj->meta_value : '';
+
+                            $catSubObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'explore_categories_subheadline')->where('type', '!=', 'json')->first() : null; 
+                            $catSubId = $catSubObj ? $catSubObj->id : 'new';
+                            $catSubVal = $catSubObj ? $catSubObj->meta_value : '';
+                        @endphp
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">Explore Categories Headline</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="explore_categories_headline[{{ $catHlId }}]" value="{{ $catHlVal }}" placeholder="Explore top-rated categories">
+                                </div>
+                                <small class="text-muted">Section title for category grid on <code>/top-rated</code> (Default: <em>Explore top-rated categories</em>).</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">Explore Categories Sub-headline</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="explore_categories_subheadline[{{ $catSubId }}]" value="{{ $catSubVal }}" placeholder="Discover top-rated software, services, and solutions across our most popular categories.">
+                                </div>
+                                <small class="text-muted">Subtitle for category grid on <code>/top-rated</code>.</small>
+                            </div>
+                        </div>
+
+                        {{-- Main Page FAQ Section --}}
+                        @php 
+                            $faqHlObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'faq_section_headline')->where('type', '!=', 'json')->first() : null; 
+                            $faqHlId = $faqHlObj ? $faqHlObj->id : 'new';
+                            $faqHlVal = $faqHlObj ? $faqHlObj->meta_value : '';
+
+                            $faqSubObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'faq_section_subheadline')->where('type', '!=', 'json')->first() : null; 
+                            $faqSubId = $faqSubObj ? $faqSubObj->id : 'new';
+                            $faqSubVal = $faqSubObj ? $faqSubObj->meta_value : '';
+                        @endphp
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">FAQ Section Headline</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="faq_section_headline[{{ $faqHlId }}]" value="{{ $faqHlVal }}" placeholder="Frequently asked questions">
+                                </div>
+                                <small class="text-muted">Section title for FAQs block on <code>/top-rated</code> (Default: <em>Frequently asked questions</em>).</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">FAQ Section Sub-headline</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" name="faqsection_subheadline[{{ $faqSubId }}]" value="{{ $faqSubVal }}" placeholder="Everything you need to know about Localio top-rated rankings and community reviews.">
+                                </div>
+                                <small class="text-muted">Subtitle for FAQs block on <code>/top-rated</code>.</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            {{-- 2. Top Rated Dedicated FAQs Page Texts (/top-rated/faqs) --}}
             <div class="card card-bordered mb-4">
                 <div class="card-header bg-light">
-                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-font me-1"></i> Top Rated FAQs Page Texts</h6>
-                    <small class="text-muted">These fields appear on the Top Rated FAQs page (/top-rated/faqs).</small>
+                    <h6 class="m-0 fw-bold text-primary"><i class="fa fa-question-circle me-1"></i> Top Rated FAQs Page Texts (/top-rated/faqs)</h6>
+                    <small class="text-muted">These fields appear on the dedicated Top-Rated FAQs & Knowledge page at <code>/top-rated/faqs</code>.</small>
                 </div>
                 <div class="card-inner">
                     <div class="row g-3">
                         @php
                             $faqKeys = [
-                                'faq_page_main_headline' => ['label' => 'Main Page Title', 'placeholder' => 'Top rated on Localio FAQs'],
-                                'faq_page_main_subheadline' => ['label' => 'Main Page Sub-title', 'placeholder' => 'Frequently asked questions and answers...'],
-                                'faq_page_about_headline' => ['label' => 'About Section Headline', 'placeholder' => 'About Top-Rated Rankings'],
-                                'faq_page_about_subheadline' => ['label' => 'About Section Description', 'placeholder' => 'Learn more about how Localio calculates...'],
-                                'faq_page_search_heading' => ['label' => 'Search Box Heading', 'placeholder' => 'Search Top-Rated FAQs'],
-                                'faq_page_list_headline' => ['label' => 'FAQs List Headline', 'placeholder' => 'Frequently asked questions'],
-                                'faq_page_banner_headline' => ['label' => 'Bottom Banner Headline', 'placeholder' => 'Still have a question...'],
-                                'faq_page_banner_subheadline' => ['label' => 'Bottom Banner Sub-headline', 'placeholder' => 'Ask the Localio community'],
-                                'faq_page_banner_btn_text' => ['label' => 'Bottom Banner Button Text', 'placeholder' => 'Ask a question']
+                                'faq_page_main_headline' => ['label' => 'Main Page Title (H1)', 'placeholder' => 'Top rated on Localio FAQs', 'desc' => 'Hero title at top of /top-rated/faqs'],
+                                'faq_page_main_subheadline' => ['label' => 'Main Page Sub-title', 'placeholder' => 'Frequently asked questions and answers...', 'desc' => 'Hero subtitle on /top-rated/faqs'],
+                                'faq_page_about_headline' => ['label' => 'About Section Headline', 'placeholder' => 'About Top-Rated Rankings', 'desc' => 'About card headline on /top-rated/faqs'],
+                                'faq_page_about_subheadline' => ['label' => 'About Section Description', 'placeholder' => 'Learn more about how Localio calculates...', 'desc' => 'About card description on /top-rated/faqs'],
+                                'faq_page_search_heading' => ['label' => 'Search Box Heading', 'placeholder' => 'Search Top-Rated FAQs', 'desc' => 'Search bar heading on /top-rated/faqs'],
+                                'faq_page_list_headline' => ['label' => 'FAQs List Headline', 'placeholder' => 'Frequently asked questions', 'desc' => 'Headline above the accordion list on /top-rated/faqs'],
+                                'faq_page_banner_headline' => ['label' => 'Bottom Banner Headline', 'placeholder' => 'Still have a question...', 'desc' => 'Call-to-action banner heading at the bottom of /top-rated/faqs'],
+                                'faq_page_banner_subheadline' => ['label' => 'Bottom Banner Sub-headline', 'placeholder' => 'Ask the Localio community', 'desc' => 'Call-to-action banner subtitle on /top-rated/faqs'],
+                                'faq_page_banner_btn_text' => ['label' => 'Bottom Banner Button Text', 'placeholder' => 'Ask a question', 'desc' => 'Button label on bottom banner of /top-rated/faqs']
                             ];
                         @endphp
                         @foreach($faqKeys as $key => $info)
@@ -197,7 +233,7 @@
                                     <div class="form-control-wrap">
                                         <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
                                     </div>
-                                    <small class="text-muted" style="font-size: 0.75rem;">Default text: {{ $info['placeholder'] }}</small>
+                                    <small class="text-muted" style="font-size: 0.75rem;">{{ $info['desc'] }}</small>
                                 </div>
                             </div>
                         @endforeach

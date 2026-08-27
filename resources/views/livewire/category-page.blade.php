@@ -383,7 +383,9 @@
         opacity: 0.9 !important;
         color: #fff !important;
     }
-
+    strong {
+        font-weight: 600;
+    }
     </style>
 
     @php
@@ -475,11 +477,11 @@
                             <div class="verified-insights-card"
                                 style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                                 <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'From our community' }}</h6>
+                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
                                 </div>
                                 <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                    {{ static_text('community_insights_desc') ?: 'Ratings and reviews are shared by real Localio users.' }}
+                                    {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
                                 <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                             </div>
@@ -525,8 +527,7 @@
                                         <!-- Rating Filter Section - Styled like the image -->
                                         <div class="filter-section">
                                             <h3 class="fw-semibold text-dark mb-2">
-                                                <!-- {{ static_text('user_rating') }} -->
-                                                Community rating
+                                                {{ static_text('user_rating') ?: 'User rating' }}
                                             </h3>
 
                                             <div class="form-check mb-2">
@@ -1366,10 +1367,10 @@
         @endif
 
         <!-- 1. Category Layout (Text Sections + Sidebar) -->
-        <section class="category-content-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec category-content-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
-                <div class="row ">
-                    <div class="col-lg-10">
+                <div class="image_revie_inr mt-3 ">
+                    <div class="is-asana-wrp imges_left_sde " data-aos="fade-up" data-aos-duration="1000">
                         @foreach($textSections as $section)
                         <div class="content-section-block mb-5">
                             @if(!empty($section['h2_title']))
@@ -1405,7 +1406,7 @@
                     </div>
                     
                     <!-- RIGHT COLUMN: Comparisons & Providers -->
-                    <div class="col-lg-4 mt-4 mt-lg-0">
+                    <div class="thre_revi_rgt">
                         
                         <!-- Popular Category Comparisons Section -->
                         @if(isset($popularComparisons) && count($popularComparisons) > 0)

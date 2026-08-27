@@ -12,13 +12,38 @@ class BaseLanguageController extends Controller
 {
     public function index()
     {
-        // Auto-sync all countries from Countries page into Base Languages
+        // 1. Delete base languages whose linked country no longer exists
+        // (This is a fallback in case cascade delete is not triggered, or for untracked country_id rows)
+        $existingCountryIds = Country::pluck('id')->toArray();
+        BaseLanguage::whereNotNull('country_id')
+            ->whereNotIn('country_id', $existingCountryIds)
+            ->delete();
+
+        // Also clean up any orphaned records by name that aren't mapped
+        $existingNames = Country::pluck('name')->toArray();
+        BaseLanguage::whereNull('country_id')
+            ->whereNotIn('name', $existingNames)
+            ->delete();
+
+        // 2. Delete the obsolete entry "English (US) — Master"
+        BaseLanguage::where('name', 'English (US) — Master')->delete();
+
+        // 3. Sync existing countries to base languages
         $countries = Country::all();
-        $existingNames = BaseLanguage::pluck('name')->toArray();
         $bcp47List = Bcp47Language::all();
 
         foreach ($countries as $c) {
-            if (!in_array($c->name, $existingNames)) {
+            // Find base language by country_id first, then fallback to name
+            $bl = BaseLanguage::where('country_id', $c->id)->first();
+            if (!$bl) {
+                $bl = BaseLanguage::where('name', $c->name)->first();
+                if ($bl) {
+                    $bl->update(['country_id' => $c->id]);
+                }
+            }
+
+            if (!$bl) {
+                // Determine BCP 47 code
                 $bcp = $bcp47List->first(function($item) use ($c) {
                     return strtolower($item->code) === strtolower($c->country_code) ||
                            str_ends_with(strtolower($item->code), '-' . strtolower($c->country_code));
@@ -26,11 +51,19 @@ class BaseLanguageController extends Controller
                 $defaultBcp = $bcp ?: $bcp47List->firstWhere('code', 'en-US');
 
                 BaseLanguage::create([
+                    'country_id'        => $c->id,
                     'name'              => $c->name,
                     'bcp47_language_id' => $defaultBcp ? $defaultBcp->id : 1,
                     'language_tag'      => $defaultBcp ? ($defaultBcp->name ?? $defaultBcp->code) : 'English',
                     'status'            => $c->status ?? 1,
                     'is_master'         => ($c->name === 'United States - English'),
+                ]);
+            } else {
+                // If it already exists, update name and status to keep them in sync with Country
+                $bl->update([
+                    'name'      => $c->name,
+                    'status'    => $c->status ?? 1,
+                    'is_master' => ($c->name === 'United States - English'),
                 ]);
             }
         }
@@ -59,7 +92,10 @@ class BaseLanguageController extends Controller
             'status'            => 'nullable|in:0,1',
         ]);
 
+        $country = Country::where('name', $request->name)->first();
+
         BaseLanguage::create([
+            'country_id'        => $country ? $country->id : null,
             'name'              => $request->name,
             'bcp47_language_id' => $request->bcp47_language_id,
             'language_tag'      => null,
@@ -99,6 +135,8 @@ class BaseLanguageController extends Controller
         ];
 
         if ($request->filled('name')) {
+            $country = Country::where('name', $request->name)->first();
+            $dataToUpdate['country_id'] = $country ? $country->id : null;
             $dataToUpdate['name'] = $request->name;
             $dataToUpdate['is_master'] = ($request->name === 'United States - English');
         }
