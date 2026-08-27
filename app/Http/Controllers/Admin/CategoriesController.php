@@ -191,7 +191,7 @@ class CategoriesController extends Controller
     // public function add_process(Request $request)
     // {
 
-    //     $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
+    //     $language_id = Language::where('lang_code', getCurrentLocale())->value('id') ?? 1;
     //     $isNewCategory = !$request->category_id;
         
     //     $rules = [
@@ -315,7 +315,7 @@ class CategoriesController extends Controller
     //         $slug = Str::slug($validate['name']);
     //         $originalSlug = $slug;
     //         $count = 1;
-    //         while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->where('category_id', '!=', $category->id)->exists()) {
+    //         while (CategoryTranslation::where('slug', $slug)->where('category_id', '!=', $category->id)->exists()) {
     //             $slug = $originalSlug . '-' . $count++;
     //         }
     //        CategoryTranslation::updateOrCreate(
@@ -370,7 +370,7 @@ class CategoriesController extends Controller
      public function add_process(Request $request)
     {
 
-        $language_id = Language::where('lang_code', getCurrentLocale())->value('id');
+        $language_id = Language::where('lang_code', getCurrentLocale())->value('id') ?? 1;
         // dd($request->all());
         $isNewCategory = !$request->category_id;
         
@@ -381,7 +381,6 @@ class CategoriesController extends Controller
                 'max:255'
             ],
             'comparison_name' => 'nullable|string|max:255',
-            'see_all_text' => 'nullable|string|max:255',
             'page_title' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'meta_title' => 'nullable|string|max:255',
@@ -407,8 +406,8 @@ class CategoriesController extends Controller
                 $categoryTranslation = CategoryTranslation::find($request->category_id);
                 if ($categoryTranslation) {
                     $category_id = $categoryTranslation->category_id;
+                    $language_id = $categoryTranslation->lang_id;
                 }
-
             }
 
             if (!$is_parent) {               
@@ -449,6 +448,7 @@ class CategoriesController extends Controller
             $categoryTranslation = CategoryTranslation::find($request->category_id);
             if ($categoryTranslation) {
                 $category_id = $categoryTranslation->category_id;
+                $language_id = $categoryTranslation->lang_id;
             }
         }
             // dd($Category_ID);
@@ -479,7 +479,12 @@ class CategoriesController extends Controller
             $slug = Str::slug($validate['name']);
             $originalSlug = $slug;
             $count = 1;
-            while (CategoryTranslation::where('slug', $slug)->where('lang_id', $language_id)->where('category_id', '!=', $category->id)->exists()) {
+            while (CategoryTranslation::where('slug', $slug)
+                ->where(function($query) use ($category, $language_id) {
+                    $query->where('category_id', '!=', $category->id)
+                          ->orWhere('lang_id', '!=', $language_id);
+                })
+                ->exists()) {
                 $slug = $originalSlug . '-' . $count++;
             }
             // dump($category->id);
@@ -526,7 +531,6 @@ class CategoriesController extends Controller
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
                     'comparison_name' => $validate['comparison_name'] ?? null,
-                    'see_all_text' => $validate['see_all_text'] ?? null,
                     'page_title'   => $validate['page_title'] ?? null,
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],

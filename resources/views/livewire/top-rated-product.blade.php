@@ -1238,7 +1238,7 @@
     <section class="top-rated-faq-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="row">
-                <div class="col-lg-10 mx-auto">
+                <div class="">
                     <div class="text-start mb-4">
                         <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
                         <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' }}</p>

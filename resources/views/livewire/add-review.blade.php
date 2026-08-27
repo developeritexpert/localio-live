@@ -91,7 +91,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
-        max-height: 115px;
+        max-height: 280px;
         overflow-y: auto;
         padding: 2px 2px 2px 0;
     }
@@ -183,7 +183,9 @@
                                             @elseif($step === 3)
                                                 Write your review
                                             @elseif($step === 4)
-                                                Pros & cons (optional)
+                                                Pros (optional)
+                                            @elseif($step === 5)
+                                                Cons (optional)
                                             @endif
                                         </h2>
                                     </div>
@@ -283,7 +285,7 @@
                                      </div>
 
                                 @elseif($step === 4)
-                                    <!-- Step 4: Pros & Cons (Compact Search & Tag Cloud) -->
+                                    <!-- Step 4: Pros (Compact Search & Tag Cloud) -->
                                     <div class="step-content" wire:key="step-4">
                                         
                                         <!-- Pros Section -->
@@ -357,6 +359,20 @@
                                             </div>
                                         </div>
 
+                                         <hr class="my-3">
+                                         <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(3)" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
+                                                 <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
+                                             </button>
+                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="setStep(5)" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
+                                                 Continue <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
+                                             </button>
+                                         </div>
+                                     </div>
+
+                                @elseif($step === 5)
+                                    <!-- Step 5: Cons (Compact Search & Tag Cloud) -->
+                                    <div class="step-content" wire:key="step-5">
                                         <!-- Cons Section -->
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -430,7 +446,7 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(3)" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(4)" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
@@ -461,7 +477,12 @@
                                             <div class="mb-1" style="font-weight: 600; color: #002347;">
                                                 <i class="fas fa-lightbulb text-warning me-1"></i> What stood out?
                                             </div>
-                                            <p class="m-0 text-muted" style="font-size: 12px;">List the biggest strengths and weaknesses you experienced.</p>
+                                            <p class="m-0 text-muted" style="font-size: 12px;">List the biggest strengths you experienced.</p>
+                                        @elseif($step === 5)
+                                            <div class="mb-1" style="font-weight: 600; color: #002347;">
+                                                <i class="fas fa-lightbulb text-warning me-1"></i> Any drawbacks?
+                                            </div>
+                                            <p class="m-0 text-muted" style="font-size: 12px;">List the biggest weaknesses you experienced.</p>
                                         @endif
                                     </div>
                                 </div>

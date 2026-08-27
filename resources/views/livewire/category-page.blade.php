@@ -1389,12 +1389,12 @@
                                     @foreach($section['sub_sections'] as $sub)
                                     <div class="sub-section-block mt-4 mb-3  border-start" >
                                         @if(!empty($sub['h3_title']))
-                                        <h3 style="font-size: 18px; font-weight: 600; color: #002347; padding-left: 14px; margin-bottom: 10px;">
+                                        <h3 style="font-size: 18px; font-weight: 600; color: #002347; margin-bottom: 10px;">
                                             {{ $sub['h3_title'] }}
                                         </h3>
                                         @endif
                                         @if(!empty($sub['h3_text']))
-                                        <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; padding-left: 14px;">
+                                        <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
                                             {!! $sub['h3_text'] !!}
                                         </div>
                                         @endif
@@ -1427,7 +1427,7 @@
                                         <div class="d-flex align-items-center justify-content-between mb-3">
                                             <!-- Business 1 -->
                                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
-                                                <div class="top-product-medium-logo">
+                                                <div class="top-product-small-logo">
                                                     <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
                                                 </div>
                                                 <div style="min-width: 0;">
@@ -1446,7 +1446,7 @@
 
                                             <!-- Business 2 -->
                                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
-                                                <div class="top-product-medium-logo">
+                                                <div class="top-product-small-logo">
                                                     <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
                                                 </div>
                                                 <div style="min-width: 0;">

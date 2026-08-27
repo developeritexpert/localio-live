@@ -4,15 +4,17 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+/* body {
   overflow-x: hidden;
   font-family: "Montserrat", sans-serif !important;
-  /* font-family: "Basis Grotesque Pro"; */
   font-size: 18px;
   font-weight: 300;
   line-height: 26px;
   text-align: left;
   color: #000;
+} */
+.nav-link.active {
+  border: none !important;
 }
 
 img {
@@ -135,9 +137,9 @@ h6 {
   margin-bottom: 0;
 }
 
-.drop_menu {
+/* .drop_menu {
   cursor: pointer;
-}
+} */
 
 .main_dhdr {
   padding: 15px 30px 0;
@@ -249,9 +251,9 @@ h6 {
   max-width: 20px;
 }
 
-.usr_profile {
+/* .usr_profile {
   max-width: 60px;
-}
+} */
 
 .notf .notfictn_lnk .badge {
   position: absolute;
@@ -2502,9 +2504,9 @@ ul.list-unstyled.m-0 li:hover {
   border-radius: 50%;
 }
 
-.usr_profile img {
+/* .usr_profile img {
   height: 100%;
-}
+} */
 
 .main_dhdr .hdr_lft .navbar-brand {
   max-width: 207px;
@@ -2514,12 +2516,12 @@ ul.list-unstyled.m-0 li:hover {
   overflow: hidden;
 }
 
-.user_img.drop_menu .usr_profile img.img-fluid.profile-circle {
+/* .user_img.drop_menu .usr_profile img.img-fluid.profile-circle {
   max-width: 40px !important;
   width: 100% !important;
   height: 40px;
   min-width: 40px !important;
-}
+} */
 
 .stars ul.list-unstyled.m-0 li:hover {
   background-color: unset;
@@ -2672,9 +2674,9 @@ header.main_dhdr {
 /* 7oct2025 end  */
 
 /* 11-jun-26  */
-.usr_profile img {
+/* .usr_profile img {
   max-width: 50px
-}
+} */
 
 .notf .notfictn_lnk span {
   font-size: 12px;
@@ -2727,9 +2729,9 @@ header.main_dhdr {
 
 
 /* header 30-july-26 */
-header .menu li.menu-item a {
+/* header .menu li.menu-item a {
   padding: 8px 16px;
-}
+} */
 
 .left_menu>.menu>.menu-item a:hover {
   background-color: #ffffff45;
@@ -2738,14 +2740,14 @@ header .menu li.menu-item a {
   ;
 }
 
-#navbarSupportedContent .menu .menu-item a {
+/* #navbarSupportedContent .menu .menu-item a {
   font-size: 12px !important;
   font-weight: 600 !important;
 }
 
 #navbarSupportedContent .menu {
   gap: 0 !important;
-}
+} */
 
 .main_dhdr nav.navbar {
   row-gap: 15px !important;
@@ -2756,7 +2758,7 @@ header .menu li.menu-item a {
   top: 90px;
 }
 
-.Header_buttons {
+/* .Header_buttons {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -2783,57 +2785,74 @@ header .menu li.menu-item a {
 .Header_buttons .cta:hover {
   background-color: #fff;
   color: #06498b;
-}
+} */
 /* Business Initial Avatar (when business has no logo) */
 .business-initial-logo,
 .business-logo-initial {
-    background-color: #003f7d;
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    text-transform: uppercase;
-    border-radius: 8px;
-    user-select: none;
-    line-height: 1;
-    width: 100%;
-    height: 100%;
-    font-size: 1.15rem;
-    box-sizing: border-box;
+  background-color: #003f7d;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 8px;
+  user-select: none;
+  line-height: 1;
+  width: 100%;
+  height: 100%;
+  font-size: 1.15rem;
+  box-sizing: border-box;
 }
 
 .business-initial-logo.size-xs {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
-    border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  border-radius: 4px;
 }
 
 .business-initial-logo.size-sm {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-    border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+  border-radius: 6px;
 }
 
 .business-initial-logo.size-md {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-    border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  border-radius: 8px;
 }
 
 .business-initial-logo.size-lg {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-    border-radius: 10px;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  border-radius: 10px;
 }
 
 .business-initial-logo.size-xl {
-    width: 75px;
-    height: 75px;
-    font-size: 30px;
-    border-radius: 12px;
+  width: 75px;
+  height: 75px;
+  font-size: 30px;
+  border-radius: 12px;
+}
+
+/* Fix for dashboard footer country dropdown */
+.ds_ftr .ft-btm-rgt .select-menu .options {
+  height: auto !important;
+  max-height: 400px;
+  bottom: 100% !important;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.foot-btm.d-flex.justify-content-between .ft-btm-lft {
+  color: #fdfdfd;
+}
+
+.foot-btm.d-flex.justify-content-between .ft-btm-rgt {
+  color: #fdfdfd;
 }

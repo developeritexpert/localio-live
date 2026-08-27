@@ -756,10 +756,10 @@
                         <div class="innr_price_trail d-flex flex-column gap-3">
                             @if($hasStartingPrice)
                             <div class="feture_box str_prc_box p-4 bg-white boxshadow_border" style="border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="starting-price-title" style="font-size: 13px; color: #64748b; font-weight: 600;">Starting price</h6>
-                                <h2 class="starting-price-value" style="font-size: 32px; font-weight: 700; color: #002347;">{{ $currency }}{{ $startingPrice }}</h2>
-                                <p class="starting-price-text" style="font-size: 13px; color: #64748b;">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
-                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link" style="color: #06498b; font-weight: 600; font-size: 13px;">
+                                <h6 class="starting-price-title">Starting price</h6>
+                                <h2 class="starting-price-value">{{ $currency }}{{ $startingPrice }}</h2>
+                                <p class="starting-price-text">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
+                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link" >
                                     View pricing
                                 </a>
                             </div>

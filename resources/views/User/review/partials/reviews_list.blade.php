@@ -47,10 +47,10 @@
                                 @endif
                             </h6>
                             @if($review->user && $review->user->job_title)
-                                <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ $review->user->job_title }}</p>
+                                <p style="font-size: 12px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ $review->user->job_title }}</p>
                             @endif
                             @if($review->user && $review->user->company_size)
-                                <p style="font-size: 13px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ function_exists('static_text') ? (static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size) : $review->user->company_size }}</p>
+                                <p style="font-size: 12px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ function_exists('static_text') ? (static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size) : $review->user->company_size }}</p>
                             @endif
                         </div>
                     </div>
