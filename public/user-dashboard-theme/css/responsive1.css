@@ -1860,6 +1860,7 @@ footer.ds_ftr {
 
   section.user_dashbord {
     overflow: hidden;
+    margin-top: 40px;
   }
 
 }

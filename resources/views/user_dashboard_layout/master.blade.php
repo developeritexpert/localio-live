@@ -31,13 +31,12 @@
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.27/dist/sweetalert2.min.css" rel="stylesheet">
 
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
+        <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/custom1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/responsive1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/Basis Grotesque Pro/stylesheet.css') }}?{{ time() }}">
         <link rel="shortcut icon" href="{{ url('front/img/icon.svg') }}">
-        <!-- CSS -->
-        {{-- <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}"> --}}
-        {{-- <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}"> --}}
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -571,150 +570,7 @@
                                     ->get();
 
                         ?>
-    <header class="main_dhdr">
-        <div class="container-fluid">
-            <nav class="navbar navbar-expand-lg navbar-light">
-                <div class="hdr_lft">
-                    <button class="menu-toggler">
-                        <span class="bar bar1"></span>
-                        <span class="bar bar2"></span>
-                        <span class="bar bar3"></span>
-                    </button>
-                    <a class="navbar-brand" href="{{ route('home') }}">
-                        <img src="{{ asset('front/img/logo.svg') }}" class="img-fluid">
-                    </a>
-                </div>
-                {{-- <div class="form">
-                    <input type="search" class="search-box"
-                        placeholder="Search for a company or category...">
-                    <button class="btn cta_dark active"><i class="fa-solid fa-magnifying-glass"></i></button>
-                </div> --}}
-                <livewire:user.search-bar placeholder="Search..." />
-
-
-                 <div class="header_button_col">
-                    <div class="Header_buttons">
-                        <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
-                            class="cta cta_trans">Write review</a>
-                        <x-user-profile/>
-                     </div>
-                </div>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <div class="left_menu">
-                        <ul class="menu">
-                            <li class="menu-item cat_menu_item">
-                                <a href="javascript:void(0);" id="open-categories-sidebar"><i class="fa-solid fa-bars me-2"></i>{{ $headerContent['Categories'] ?? 'All' }}</a>
-                            </li>
-                            <li class=" menu-item cat_menu_item">
-                                <a href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</a>
-                            </li>
-                            @foreach($categories as $category)
-                                <li class="menu-item">
-                                    <a href="{{ route('category.detail', [
-                                        'locale' => app()->getLocale(),
-                                        'slug' => $category->translation->slug
-                                    ]) }}">
-                                        {{ $category->translation->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <div class="close_btn_mobile">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2.9819 0.490874L9.99988 7.50855L16.9815 0.527235C17.1357 0.363097 17.3215 0.231792 17.5277 0.141194C17.7339 0.0505961 17.9562 0.00257135 18.1815 0C18.6637 0 19.1261 0.191544 19.4671 0.532495C19.808 0.873445 19.9996 1.33587 19.9996 1.81805C20.0038 2.04095 19.9625 2.26236 19.8781 2.4687C19.7936 2.67504 19.6679 2.86195 19.5087 3.01796L12.4362 9.99928L19.5087 17.0715C19.8083 17.3646 19.9841 17.7616 19.9996 18.1805C19.9996 18.6627 19.808 19.1251 19.4671 19.4661C19.1261 19.807 18.6637 19.9986 18.1815 19.9986C17.9497 20.0082 17.7186 19.9695 17.5026 19.885C17.2866 19.8005 17.0906 19.672 16.9269 19.5077L9.99988 12.49L3.00009 19.4895C2.84646 19.6482 2.66294 19.7748 2.4601 19.8622C2.25727 19.9496 2.03914 19.9959 1.8183 19.9986C1.3361 19.9986 0.873656 19.807 0.532691 19.4661C0.191726 19.1251 0.000173751 18.6627 0.000173751 18.1805C-0.00406521 17.9576 0.0372916 17.7362 0.121706 17.5299C0.206121 17.3235 0.331813 17.1366 0.491068 16.9806L7.56359 9.99928L0.491068 2.92706C0.191413 2.63392 0.0156999 2.23695 0.000173751 1.81805C0.000173751 1.33587 0.191726 0.873445 0.532691 0.532495C0.873656 0.191544 1.3361 0 1.8183 0C2.25465 0.00545415 2.67282 0.181805 2.9819 0.490874Z" fill="white"/>
-                        </svg>
-                    </div>
-                </div>
-
-            </nav>
-            <!-- Category Sidebar Drawer (Amazon Style) -->
-<div class="category-sidebar-overlay" id="categories-sidebar-overlay"></div>
-<div class="category-sidebar" id="categories-sidebar">
-    <div class="category-sidebar-header">
-@if(Auth::check())
-    <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}" class="user-greeting">
-        @if (Auth::user()->profile_image && Auth::user()->profile_image !== 'front/img/default.png')
-            <img src="{{ asset(Auth::user()->profile_image) }}"
-                 alt="Profile"
-                 class="profile-circle"
-                 style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;">
-        @else
-            <div class="profile-circle"
-                 style="width:40px; height:40px; border-radius:50%; background:#f76b1c; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                <span style="color:#fff; font-weight:bold; font-size:18px;">
-                    {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
-                </span>
-            </div>
-        @endif
-
-        <span class="ms-2">Hello {{ Auth::user()->first_name }}</span>
-    </a>
-@else
-    <a href="{{ route('login', ['locale' => session('lang_code', 'en-us')]) }}" class="user-greeting">
-        <i class="fa-solid fa-circle-user avatar-icon"></i>
-        <span>Hello, sign in</span>
-    </a>
-@endif
-
-    <button class="category-sidebar-close" id="categories-sidebar-close">
-        <i class="fa-solid fa-xmark"></i>
-    </button>
-</div>        
-    
-    <div class="category-sidebar-viewport">
-        <div class="category-sidebar-panels-container" id="sidebar-panels-container">
-            <!-- Main Panel -->
-            <div class="category-sidebar-panel active" id="main-panel">
-                <div class="sidebar-menu-section">
-                    <h3 class="sidebar-section-title">Categories</h3>
-                    <ul class="sidebar-menu-list">
-                        @foreach($sidebarCategories as $cat)
-                            @if($cat->translation)
-                                <li>
-                                    <a href="javascript:void(0);" class="parent-category-item" data-category-id="{{ $cat->id }}">
-                                        {{ $cat->translation->name }}
-                                        <i class="fa-solid fa-chevron-right float-end mt-1"></i>
-                                    </a>
-                                </li>
-                            @endif
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Dynamic Category Sub-panels -->
-            @foreach($sidebarCategories as $cat)
-                @if($cat->translation)
-                    <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
-                        <div class="sub-panel-back">
-                            <a href="javascript:void(0);" class="back-to-main-btn">
-                                <i class="fa-solid fa-arrow-left me-2"></i> All categories
-                            </a>
-                        </div>
-                        <div class="sidebar-menu-divider"></div>
-                        <div class="sidebar-menu-section">
-                            <h3 class="sidebar-section-title">{{ $cat->translation->name }}</h3>
-                            <ul class="sidebar-menu-list">
-                                @foreach($cat->subCategories as $subCat)
-                                    @if($subCat->translation)
-                                        <li>
-                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subCat->translation->slug]) }}">
-                                                {{ $subCat->translation->name }}
-                                            </a>
-                                        </li>
-                                    @endif
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
-    </div>
-</div>
-        </div>
-    </header>
+    @include('partials.header')
     <section class="user_dashbord">
         <div class="row">
             <div class="col-lg-3 p-0">
@@ -838,6 +694,7 @@
         integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{{ asset('front/js/script.js') }}?{{ time() }}"></script>
     <script src="{{ asset('user-dashboard-theme/js/script.js') }}?{{ time() }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.27/dist/sweetalert2.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
