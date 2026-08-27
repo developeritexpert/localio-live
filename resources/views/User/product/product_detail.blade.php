@@ -1454,7 +1454,7 @@
                                                                                     <div class="review-sidebar-sticky">
 
                                                                                         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
-                                                                                            {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
+                                                                                            {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews ({{ number_format($ratingCount) }})
                                                                                         </h2>
                                                                                         <div class="review-filter-sec" style="display: block;">
                                                                                             <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
@@ -1479,7 +1479,8 @@
                                                                                                                     @endif
                                                                                                                 @endfor
                                                                                                             </div>
-                                                                                                            <span style="font-size: 14px; font-weight:700; color: #64748b;">Community rating · {{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                                                            <span style="font-size: 14px; font-weight:600; color: #64748b;">Community rating</span>
+                                                                                                            <span style="font-size: 14px; font-weight:600; color: #64748b;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                                                         </div>
                                                                                                     </div>
 
@@ -2315,14 +2316,14 @@
                                                             onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                             class="btn-write-review-link"
                                                             style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-                                                            <i class="fas fa-pencil-alt "></i> Write a review
+                                                            <span style="text-decoration: none;"><i class="fas fa-pencil-alt "></i> </span>Write a review
                                                         </button>
                                                     @else
                                                         <a href="javascript:void(0)"
                                                             onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                                             class="btn-write-review-link"
                                                             style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
-                                                            <i class="fas fa-pencil-alt "></i> Write a review
+                                                            <span style="text-decoration: none;"><i class="fas fa-pencil-alt "></i> </span>Write a review
                                                         </a>
                                                     @endauth
                                                 </div>

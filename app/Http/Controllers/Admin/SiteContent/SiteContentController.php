@@ -772,6 +772,7 @@ if (!$headerLogo) {
             'and',
             'top_rated_headline',
             'top_rated_subheadline',
+            'top_rated_listing_headline',
             'explore_categories_headline',
             'explore_categories_subheadline',
             'faq_section_headline',

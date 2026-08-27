@@ -266,6 +266,9 @@
     .explore-categories-sec .subcat-link:hover {
         text-decoration: underline !important;
     }
+    strong {
+        font-weight: 600;
+    }
 
     </style>
     <section class="top-rated-heading-sec">
@@ -305,18 +308,18 @@
                         <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                             {{ now()->format('F j, Y') }}</p>
                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                            {{ $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' }}
+                            {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
                     </div>
                     <div class="col-md-4 mt-4 mt-md-0 text-start">
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'From our community' }}</h6>
+                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
                             </div>
                             <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                {{ static_text('community_insights_desc') ?: 'Ratings and reviews are shared by real Localio users.' }}
+                                {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                             </p>
                             <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
                                 style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
@@ -336,7 +339,7 @@
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                            {{ $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' }}
+                            {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
                             </div>
                             <div class="col-md-4 mt-4 mt-md-0 text-start">
@@ -362,8 +365,7 @@
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
                                         <h3 class="fw-semibold text-dark mb-2">
-                                            <!-- {{ static_text('user_rating') }} -->
-                                            Community rating
+                                            {{ static_text('user_rating') ?: 'User rating' }}
                                         </h3>
 
                                         <div class="form-check mb-2">
@@ -648,6 +650,9 @@
                         </div>
                         @if ($products->count())
                         <div class="auto-choice-rgt ">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0;">
+                                {{ $topProductContents['top_rated_listing_headline'] ?? 'Top-rated listings' }}
+                            </h2>
                             <!-- Product Count and Sort -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
@@ -1045,6 +1050,9 @@
                         @else
 
                         <div class="auto-choice-rgt">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0;">
+                                {{ $topProductContents['top_rated_listing_headline'] ?? 'Top-rated listings' }}
+                            </h2>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <p class="m-0">Showing {{ $products->count() }} results </p>
