@@ -305,6 +305,28 @@
 
         Livewire.on('show-url-modal', () => showModal('screenshotUrlsModal'));
         Livewire.on('hide-url-modal', () => hideModal('screenshotUrlsModal'));
+
+        Livewire.on('print-console-logs', (data) => {
+            let logs = [];
+            if (data && data.logs) {
+                logs = data.logs;
+            } else if (data && data[0] && data[0].logs) {
+                logs = data[0].logs;
+            } else if (Array.isArray(data)) {
+                logs = data;
+            } else if (data && Array.isArray(data[0])) {
+                logs = data[0];
+            }
+            console.warn("--- SCREENSHOT PROCESS LOGS ---");
+            logs.forEach(log => {
+                if (log.includes('FAILED') || log.includes('failed') || log.includes('error') || log.includes('ERROR') || log.includes('Warning') || log.includes('Exception') || log.includes('Failed')) {
+                    console.error("[Screenshot Error] " + log);
+                } else {
+                    console.log("[Screenshot Info] " + log);
+                }
+            });
+            console.warn("--- END SCREENSHOT PROCESS LOGS ---");
+        });
     });
 </script>
 @endpush
