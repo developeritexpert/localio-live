@@ -733,9 +733,9 @@
                 border-radius: 6px !important;
             }
 
-            section#section-compare {
+            /* section#section-compare {
                 padding: 40px 20px !important;
-            }
+            } */
 
             a.view-more-link:hover {
                 text-decoration: underline !important;
