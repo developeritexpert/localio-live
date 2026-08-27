@@ -1194,7 +1194,7 @@
     <section class="top-rated-text-sections py-5" style="background: #ffffff; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="row">
-                <div class="col-lg-10">
+                <div class="">
                     @foreach($textSections as $section)
                     <div class="content-section-block mb-5">
                         @if(!empty($section['h2_title']))

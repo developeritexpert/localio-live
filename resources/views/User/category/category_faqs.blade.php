@@ -155,6 +155,13 @@
             opacity: 0.92;
             transform: translateY(-1px);
         }
+        .top-rated-heading-sec {
+            margin-top: 115px;
+            padding-top: 30px;
+            background-color: #f7f9fb;
+            border-bottom: 1px solid #e2e8f0;
+            /* margin-bottom: 25px; */
+        }
     </style>
 @endpush
 
@@ -173,14 +180,14 @@
 @section('content')
 
 <!-- Upper Header Section -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style=" background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
+<section class="top-rated-heading-sec help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style=" background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
-                        <a href="{{ url('/' . app()->getLocale()) }}" style="color: #64748b; text-decoration: none;">Home</a>
+                        <a href="{{ url('/' . app()->getLocale()) }}" style="color: #64748b; text-decoration: none;">All</a>
                     </li>
                     @if($parentCatName && $parentCatSlug)
                         <li class="breadcrumb-item">

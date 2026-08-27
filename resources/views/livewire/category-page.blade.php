@@ -1367,10 +1367,10 @@
         @endif
 
         <!-- 1. Category Layout (Text Sections + Sidebar) -->
-        <section class="category-content-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec category-content-sec py-5" style="background: #fdfdfd; border-top: 1px solid #e2e8f0;">
             <div class="container">
-                <div class="row ">
-                    <div class="col-lg-10">
+                <div class="image_revie_inr mt-3 ">
+                    <div class="is-asana-wrp imges_left_sde " data-aos="fade-up" data-aos-duration="1000">
                         @foreach($textSections as $section)
                         <div class="content-section-block mb-5">
                             @if(!empty($section['h2_title']))
@@ -1406,7 +1406,7 @@
                     </div>
                     
                     <!-- RIGHT COLUMN: Comparisons & Providers -->
-                    <div class="col-lg-4 mt-4 mt-lg-0">
+                    <div class="thre_revi_rgt">
                         
                         <!-- Popular Category Comparisons Section -->
                         @if(isset($popularComparisons) && count($popularComparisons) > 0)
