@@ -2839,3 +2839,20 @@ header.main_dhdr {
   font-size: 30px;
   border-radius: 12px;
 }
+
+/* Fix for dashboard footer country dropdown */
+.ds_ftr .ft-btm-rgt .select-menu .options {
+  height: auto !important;
+  max-height: 400px;
+  bottom: 100% !important;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.foot-btm.d-flex.justify-content-between .ft-btm-lft {
+  color: #fdfdfd;
+}
+
+.foot-btm.d-flex.justify-content-between .ft-btm-rgt {
+  color: #fdfdfd;
+}

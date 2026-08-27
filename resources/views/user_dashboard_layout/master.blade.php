@@ -652,34 +652,36 @@
     ?>
     <footer class="ds_ftr">
         <div class="container-fluid">
-            <div class="foot_end_box">
-                <div class="reserve_box">
-                    ©
-                    <?php echo date('Y'); ?> Localio. All rights reserved.
+            <div class="foot-btm d-flex justify-content-between">
+                <div class="ft-btm-lft">
+                    <p>©<?php echo date('Y'); ?> Localio. All rights reserved.</p>
                 </div>
-                <div class="reserve_box">
-                    <div class="custom-select" onclick="toggleSelect()">
-                        <div class="lang-selector">
-                        <span id="selected-option">{{ 'United States- English' }}</span>
-                        <span class="arrow"><i class="fa-solid fa-chevron-up"></i></span> <!-- Downward arrow -->
+                <div class="ft-btm-rgt">
+                    <div class="select-menu ">
+                        <div class="select-btn">
+                            <span class="sBtn-text">
+                                {{ session('lang_code') && session('lang_name') ? ucfirst(session('lang_name')) : 'United States - English' }}
+                            </span>
+                            <i class="fa-solid fa-chevron-down" style="color: #ffffff;"></i>
                         </div>
-                    </div>
-                    <div class="dropdown-options">
-                        <ul class="options">
-                            <div class="container footer-langs-container">
-                                @foreach ($siteLanguages as $siteLanguage)
-                                <li>
-                                    <a href="">
-                                        {{ $siteLanguage->name }}
-                                    </a>
-                                </li>
-                                @endforeach
+                        <ul class="options" style="height: auto !important; bottom: 100% !important; max-height: 400px; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);">
+                            <div class="container">
+                                <h3 style="color: black;">Choose your Country/Region</h3>
+                                <div class="footer-langs-container">
+                                    @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
+                                    @if($country->language)
+                                    <li>
+                                        <a href="{{ url('/' . strtolower($country->language->lang_code)) }}" onclick="document.cookie='user_locale={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';document.cookie='lang_code={{ strtolower($country->language->lang_code) }};path=/;max-age=31536000';">
+                                            {{ $country->name }}
+                                        </a>
+                                    </li>
+                                    @endif
+                                    @endforeach
+                                </div>
                             </div>
                         </ul>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </footer>
