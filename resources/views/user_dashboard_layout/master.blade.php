@@ -45,21 +45,20 @@
         @endif
         @livewireStyles
         <style>
-            .profile-circle {
+            /* .profile-circle {
                 max-width: 45px;
                 height: 44px;
                 border-radius: 50%;
                 object-fit: cover;
                 border: 1px solid #ddd;
                 vertical-align: middle;
-            }
+            } */
 
-            .profile-img {
+            /* .profile-img {
                 max-width: 100%;
                 height: 89px;
                 border-radius: 50%;
                 overflow: hidden;
-                /* border: 1px solid #ddd; */
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -71,7 +70,7 @@
                 height: 93%;
                 object-fit: cover;
                 border-radius: 50%;
-            }
+            } */
 
             .menu-toggler {
                 display: none !important;
@@ -297,7 +296,7 @@
     row-gap: 8px;
 }
 
-#navbarSupportedContent {
+/* #navbarSupportedContent {
     order: 5;
     flex: 0 0 100%;
     width: 100%;
@@ -305,9 +304,9 @@
 
 #navbarSupportedContent .left_menu {
     width: 100%;
-}
+} */
 
-#navbarSupportedContent .menu {
+/* #navbarSupportedContent .menu {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -331,7 +330,7 @@
 
 #navbarSupportedContent .close_btn_mobile {
     display: none;
-}
+} */
 
 /* amazon sidebar */
 
