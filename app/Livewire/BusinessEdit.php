@@ -67,6 +67,7 @@ class BusinessEdit extends Component
     public $is_affiliate_partner = false;
     public $description_title = '';
     public $business_description = '';
+    public $long_preview_description = '';
     public $alternatives_title = '';
     public $alternatives_description = '';
     public $alternatives_title_2 = '';
@@ -1146,6 +1147,7 @@ class BusinessEdit extends Component
         $this->support_options = $translation->support_options ?? '';
         $this->description_title = $translation->description_title ?? '';
         $this->business_description = $translation->description ?? '';
+        $this->long_preview_description = $translation->long_preview_description ?? '';
         $this->alternatives_title = $translation->alternatives_title ?? '';
         $this->alternatives_description = $translation->alternatives_description ?? '';
         $this->alternatives_title_2 = $translation->alternatives_title_2 ?? '';
@@ -1545,6 +1547,7 @@ class BusinessEdit extends Component
     $this->support_options           = $translation->support_options ?? '';
     $this->description_title         = $translation->description_title ?? '';
     $this->business_description      = $translation->description ?? '';
+        $this->long_preview_description = $translation->long_preview_description ?? '';
     $this->alternatives_title        = $translation->alternatives_title ?? '';
     $this->alternatives_description  = $translation->alternatives_description ?? '';
     $this->alternatives_title_2      = $translation->alternatives_title_2 ?? '';
@@ -1610,6 +1613,7 @@ class BusinessEdit extends Component
             'admin_rating' => 'nullable|numeric|min:1|max:5',
             'description_title' => 'nullable|string|max:255',
             'business_description' => 'nullable|string',
+            'long_preview_description' => 'nullable|string',
             'alternatives_title' => 'nullable|string|max:255',
             'alternatives_description' => 'nullable|string',
             'alternatives_title_2' => 'nullable|string|max:255',
@@ -1724,6 +1728,7 @@ class BusinessEdit extends Component
             'support_options' => $this->support_options,
             'description_title' => $this->description_title,
             'description' => $this->business_description,
+            'long_preview_description' => $this->long_preview_description,
             'alternatives_title' => $this->alternatives_title,
             'alternatives_description' => $this->alternatives_description,
             'alternatives_title_2' => $this->alternatives_title_2,
@@ -1815,6 +1820,7 @@ class BusinessEdit extends Component
                 'support_options' => $this->support_options,
                 'description_title' => $this->description_title,
                 'description' => $this->business_description,
+            'long_preview_description' => $this->long_preview_description,
                 'alternatives_title' => $this->alternatives_title,
                 'alternatives_description' => $this->alternatives_description,
                 'alternatives_title_2' => $this->alternatives_title_2,
