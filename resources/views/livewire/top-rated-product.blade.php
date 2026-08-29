@@ -329,9 +329,14 @@
             </div>
         </div>
     </section>
+    
     <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px !important;">
+        
         <div class="top-auto-btm">
             <div class="container">
+                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; border-bottom: 1px solid #e8eef6 !important;padding-bottom: 20px;">
+                    {{ $topProductContents['top_rated_listing_headline'] ?? '“Top-rated brands, products and services' }}
+                </h2>
                 <div class="top-auto-choice">
                     <!-- <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
@@ -648,11 +653,10 @@
                             </div>
 
                         </div>
+                       
                         @if ($products->count())
                         <div class="auto-choice-rgt ">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0;">
-                                {{ $topProductContents['top_rated_listing_headline'] ?? 'Top-rated listings' }}
-                            </h2>
+                            
                             <!-- Product Count and Sort -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
@@ -1050,11 +1054,9 @@
                         @else
 
                         <div class="auto-choice-rgt">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0;">
-                                {{ $topProductContents['top_rated_listing_headline'] ?? 'Top-rated listings' }}
-                            </h2>
+                           
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
+                                <div class="showing_tabs">
                                     <p class="m-0">Showing {{ $products->count() }} results </p>
                                 </div>
                                 <div class="d-none">
@@ -1094,7 +1096,7 @@
         <div class="container">
             <div class="text-start mb-4">
                 <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
-                <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' }}</p>
+                <p style="font-size: 15px; color: #555; margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
@@ -1241,7 +1243,7 @@
                 <div class="">
                     <div class="text-start mb-4">
                         <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
-                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' }}</p>
+                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
                     </div>
 
                     <div class="accordion" id="topRatedFaqAccordion">

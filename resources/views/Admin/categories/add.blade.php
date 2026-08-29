@@ -132,7 +132,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="description">Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{{ isset($category_data) ? $category_data['description'] : old('description') }}</textarea>
+                                    <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{!! isset($category_data) ? $category_data['description'] : old('description') !!}</textarea>
                                 </div>
                                 @error('description')
                                     <div class="error text-danger">{{ $message }}</div>
@@ -144,7 +144,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="top_rated_description">Top-Rated Page Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="top_rated_description" name="top_rated_description" rows="4" placeholder="Enter SEO-optimized short description displayed in the 'Explore top-rated categories' section on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_description'] ?? '') : old('top_rated_description') }}</textarea>
+                                    <textarea class="form-control rich-editor" id="top_rated_description" name="top_rated_description" rows="4" placeholder="Enter SEO-optimized short description displayed in the 'Explore top-rated categories' section on the Top Rated page">{!! isset($category_data) ? ($category_data['top_rated_description'] ?? '') : old('top_rated_description') !!}</textarea>
                                 </div>
                                 <small class="text-muted d-block mt-1">Specific description for the Top-Rated page's "Explore top-rated categories" section. If left blank, it falls back to the default description.</small>
                                 @error('top_rated_description')
@@ -399,7 +399,7 @@
                                                     </div>
                                                     <div class="col-12">
                                                         <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
-                                                        <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{{ $sec['h2_text'] ?? '' }}</textarea>
+                                                        <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{!! $sec['h2_text'] ?? '' !!}</textarea>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -415,7 +415,7 @@
                                                                         <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
                                                                     </div>
                                                                     <input type="text" class="form-control form-control-sm mb-2" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. What is web hosting?">
-                                                                    <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{{ $sub['h3_text'] ?? '' }}</textarea>
+                                                                    <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{!! $sub['h3_text'] ?? '' !!}</textarea>
                                                                 </div>
                                                                 @endforeach
                                                             @endif

@@ -117,7 +117,7 @@
                             <div class="form-group">
                                 <label class="form-label fw-bold">Top Rated Sub-headline (Rich Text Editor)</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" rows="3" name="top_rated_subheadline[{{ $subId }}]" placeholder="Learn more from our team about software pricing, features and benefits in our Buyers Guide">{{ $subVal }}</textarea>
+                                    <textarea class="form-control rich-editor" rows="3" name="top_rated_subheadline[{{ $subId }}]" placeholder="Learn more from our team about software pricing, features and benefits in our Buyers Guide">{!! $subVal !!}</textarea>
                                 </div>
                                 <small class="text-muted">Appears directly below the "Last updated" date in the header block. Supports formatting, buyer guide links, and bold text.</small>
                             </div>
@@ -191,7 +191,7 @@
                             <div class="form-group">
                                 <label class="form-label fw-bold">FAQ Section Sub-headline</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" name="faqsection_subheadline[{{ $faqSubId }}]" value="{{ $faqSubVal }}" placeholder="Everything you need to know about Localio top-rated rankings and community reviews.">
+                                    <textarea class="form-control rich-editor" name="faq_section_subheadline[{{ $faqSubId }}]" placeholder="Everything you need to know about Localio top-rated rankings and community reviews.">{!! $faqSubVal !!}</textarea>
                                 </div>
                                 <small class="text-muted">Subtitle for FAQs block on <code>/top-rated</code>.</small>
                             </div>
@@ -232,7 +232,7 @@
                                     <label class="form-label fw-bold">{{ $info['label'] }}</label>
                                     <div class="form-control-wrap">
                                         @if(in_array($key, ['faq_page_main_subheadline', 'faq_page_about_subheadline']))
-                                            <textarea class="form-control rich-editor" name="{{ $key }}[{{ $id }}]" placeholder="{{ $info['placeholder'] }}">{{ $val }}</textarea>
+                                            <textarea class="form-control rich-editor" name="{{ $key }}[{{ $id }}]" placeholder="{{ $info['placeholder'] }}">{!! $val !!}</textarea>
                                         @else
                                             <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
                                         @endif
@@ -280,7 +280,7 @@
                                     <div class="col-12">
                                         <label class="form-label fw-bold mb-1">Headline Content (Rich Editor)</label>
                                         <div class="form-control-wrap">
-                                            <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{{ $sec['h2_text'] ?? '' }}</textarea>
+                                            <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{!! $sec['h2_text'] ?? '' !!}</textarea>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -300,7 +300,7 @@
                                                         <input type="text" class="form-control form-control-sm" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. Why are these listings considered top rated?">
                                                     </div>
                                                     <div class="form-group mb-0">
-                                                        <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{{ $sub['h3_text'] ?? '' }}</textarea>
+                                                        <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{!! $sub['h3_text'] ?? '' !!}</textarea>
                                                     </div>
                                                 </div>
                                                 @endforeach
