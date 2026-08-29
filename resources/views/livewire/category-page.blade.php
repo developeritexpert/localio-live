@@ -436,7 +436,7 @@
                 </div>
                 <div class="top-rated-heading-block">
                     <div class="row align-items-start">
-                        <div class="col-md-8 text-start">
+                        <div class="col-md-6 text-start">
                             @if(!empty($feature_slug))
                                 @php
                                     $catCompName = !empty($category->translations->comparison_name) 
@@ -473,18 +473,10 @@
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
-                        <div class="col-md-4 mt-4 mt-md-0 text-start">
-                            <div class="verified-insights-card"
-                                style="background-color: #fcfcfc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
-                                <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
-                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
-                                </div>
-                                <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
-                                    {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
-                                </p>
-                                <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
-                            </div>
+                        <div class="col-md-6 mt-4 mt-md-0 text-end">
+                            @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
+                                <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -494,13 +486,34 @@
             style="padding-top:25px !important; background-color: #fdfdfd !important;">
             <div class="top-auto-btm">
                 <div class="container">
-                    <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; border-bottom: 1px solid #e8eef6 !important;padding-bottom: 20px;">
-                       {{ $category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services') }}
-                    </h2>
+                    <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
+                        <div class="flex-grow-1" style="max-width: 65%;">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px; margin-top: 0;">
+                               {{ $category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services') }}
+                            </h2>
+                            @if(!empty($category->translation->top_rated_listing_subtext))
+                                <p style="font-size: 14px; color: #555; margin-bottom: 0;">
+                                    {{ $category->translation->top_rated_listing_subtext }}
+                                </p>
+                            @endif
+                        </div>
+                        
+                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 300px;">
+                            <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 12px 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
+                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 14px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
+                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 20px; width: auto; object-fit: contain;">
+                                </div>
+                                <p style="font-size: 12px; color: #555; margin-bottom: 0; line-height: 1.4;">
+                                    {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="top-auto-choice">
                         <!-- <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
                                 <div class="row align-items-start">
-                                    <div class="col-md-8 text-start">
+                                    <div class="col-md-6 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
                                         <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">

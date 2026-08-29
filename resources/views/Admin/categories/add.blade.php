@@ -142,6 +142,28 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="top_rated_image">Top-Rated SVG Graphic (300x100)</label>
+                                <div class="form-control-wrap">
+                                    <div class="form-file">
+                                        <input type="file" class="form-file-input" id="top_rated_image" name="top_rated_image" accept="image/svg+xml">
+                                        <label class="form-file-label" for="top_rated_image">Choose SVG file</label>
+                                    </div>
+                                    @if(isset($category) && $category->top_rated_image)
+                                        <div class="mt-2">
+                                            <span class="badge bg-outline-info">Current graphic uploaded</span>
+                                            <!-- <img src="{{ isset($category->topRatedImageMedia) ? asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) : '' }}" alt="Graphic" class="mt-1" style="max-height: 50px; display: block;"> -->
+                                        </div>
+                                    @endif
+                                </div>
+                                <small class="text-muted d-block mt-1">SVG illustration displayed on the right side of the hero section for this category.</small>
+                                @error('top_rated_image')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="top_rated_listing_headline">Top-Rated Listing Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="top_rated_listing_headline" name="top_rated_listing_headline"
@@ -150,6 +172,19 @@
                                 </div>
                                 <small class="text-muted d-block mt-1">Headline displayed above the top-rated listings on this category's page. Defaults to "Best [Category Name] services".</small>
                                 @error('top_rated_listing_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="top_rated_listing_subtext">Top-Rated Listing Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Top-Rated Listing Headline.</small>
+                                @error('top_rated_listing_subtext')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>

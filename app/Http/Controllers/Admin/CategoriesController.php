@@ -476,6 +476,10 @@ class CategoriesController extends Controller
             $mediaIcon = $this->mediaservice->uploadMedia($request->file('category_icon'), 'category/icon');
             $category->category_icon = $mediaIcon->id;  
         }       
+        if ($request->hasFile('top_rated_image')) {
+            $mediaTopRated = $this->mediaservice->uploadMedia($request->file('top_rated_image'), 'category/top-rated');
+            $category->top_rated_image = $mediaTopRated->id;
+        }
         $category->save();
         if ($category) {
             $slug = Str::slug($validate['name']);
@@ -538,6 +542,7 @@ class CategoriesController extends Controller
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
                     'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
+                    'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
                     'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,
