@@ -539,7 +539,7 @@
                                 <div class="container">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                     </div>
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 sticky-top" style="top: 100px; z-index: 10; padding-bottom: 20px; max-height: calc(100vh - 120px); overflow-y: auto;">
                                         <!-- Rating Filter Section - Styled like the image -->
                                         <div class="filter-section">
                                             <h3 class="fw-semibold text-dark mb-2">
@@ -573,46 +573,257 @@
                                             </div>
                                         </div>
 
-                                        <!-- Features Filter Section -->
-                                        @if(isset($availableFeatures) && count($availableFeatures) > 0)
-                                        <div class="filter-section mt-3 mb-3">
-                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
-                                                Features
-                                            </h3>
-                                            <div class="d-flex flex-column gap-2" style="max-height: 240px; overflow-y: auto;">
-                                                @foreach($availableFeatures as $feat)
+                                        <!-- Categories / Filters Section -->
+                                        @if($isParentCategory)
+                                            @if(isset($subCategories) && count($subCategories) > 0)
+                                            <div class="filter-section mt-3 mb-3 pb-3 border-bottom">
+                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Categories</h3>
+                                                <div class="d-flex flex-column gap-2 custom-scrollbar" style="max-height: 180px; overflow-y: auto;">
+                                                    @foreach ($subCategories as $subcat)
                                                     @php
-                                                        $currentLangId = $lang_id ?? getCurrentLanguageID();
-                                                        $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
-                                                        $featName = $featTrans->name ?? $feat->name ?? 'Feature';
-                                                        $featId = (string)$feat->id;
-                                                        $isChecked = in_array($featId, array_map('strval', $selectedFeatures ?? []));
+                                                    $subcatName = $subcat->translations->name ?? $subcat->name;
                                                     @endphp
-                                                    <div class="form-check" style="margin-bottom: 6px;" wire:key="feat-wrap-{{ $featId }}">
+                                                    <div class="form-check" style="margin-bottom: 4px;">
                                                         <input type="checkbox" class="form-check-input"
-                                                               wire:model.live="selectedFeatures"
-                                                               wire:key="feat-input-{{ $featId }}-{{ $isChecked ? '1' : '0' }}"
-                                                               value="{{ $featId }}"
-                                                               id="feature-check-{{ $featId }}"
-                                                               style="margin-right: 8px; cursor: pointer;">
-                                                        <label class="form-check-label" for="feature-check-{{ $featId }}"
-                                                               style="font-size: 13px; color: #555; cursor: pointer; {{ $isChecked ? 'font-weight: 600; color: #002347;' : '' }}">
-                                                            {{ $featName }}
+                                                            wire:model.live="selectedSubCategories" value="{{ $subcat->id }}"
+                                                            id="subcat-{{ $subcat->id }}"
+                                                            style="margin-right: 8px; cursor: pointer;">
+                                                        <label class="form-check-label" for="subcat-{{ $subcat->id }}"
+                                                            style="font-size: 13px; color: #555; cursor: pointer;">
+                                                            {{ $subcatName }}
                                                         </label>
                                                     </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            @endif
+                                        @else
+                                            <div class="accordion" id="filterAccordion" style="border: none; width: 100%;">
+                                                @foreach ($filters as $filter)
+                                                @php
+                                                $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                $filterName =
+                                                $filter->translations->where('language_id', $currentLangId)->first()
+                                                ->name ?? $filter->name;
+                                                $filterType = $filter->filterType
+                                                ? $filter->filterType->slug
+                                                : 'checkbox';
+                                                @endphp
+
+                                                <div class="filter-section mt-3 mb-3 pb-3 border-bottom">
+                                                    <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                                        {{ $filterName }}
+                                                    </h3>
+
+                                                    <div class="accordion-body custom-scrollbar" style="padding: 0; max-height: 180px; overflow-y: auto;">
+                                                        @if ($filterType === 'checkbox')
+                                                        @foreach ($filter->options as $option)
+                                                        @php
+                                                        $optionName =
+                                                        $option->translations
+                                                        ->where('language_id', $lang_id)
+                                                        ->first()->name ?? $option->name;
+                                                        @endphp
+                                                        <div class="form-check" style="margin-bottom: 5px;">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                wire:model.live="selectedOptions" value="{{ $option->id }}"
+                                                                id="option-{{ $option->id }}"
+                                                                style="margin-right: 8px; cursor: pointer;">
+                                                            <label class="form-check-label" for="option-{{ $option->id }}"
+                                                                style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                {{ $optionName }}
+                                                            </label>
+                                                        </div>
+                                                        @endforeach
+                                                        @elseif($filterType === 'radio')
+                                                        @foreach ($filter->options as $option)
+                                                        @php
+                                                        $optionName =
+                                                        $option->translations
+                                                        ->where('language_id', $lang_id)
+                                                        ->first()->name ?? $option->name;
+                                                        @endphp
+                                                        <div class="form-check" style="margin-bottom: 5px;">
+                                                            <input type="radio" class="form-check-input"
+                                                                name="filter_{{ $filter->id }}"
+                                                                wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
+                                                                wire:click="toggleFilterOption({{ $option->id }})"
+                                                                {{ in_array($option->id, $selectedOptions) ? 'checked' : '' }}
+                                                                value="{{ $option->id }}" id="option-{{ $option->id }}"
+                                                                style="margin-right: 8px; cursor: pointer;">
+                                                            <label class="form-check-label" for="option-{{ $option->id }}"
+                                                                style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                {{ $optionName }}
+                                                            </label>
+                                                        </div>
+                                                        @endforeach
+                                                        @elseif($filterType === 'dropdown')
+                                                        @php
+                                                        $selected = $filter->options->firstWhere(
+                                                        'id',
+                                                        $selectedOptions[0] ?? null,
+                                                        );
+                                                        $selectedOptionName = $selected
+                                                        ? $selected->translations
+                                                        ->where('language_id', $lang_id)
+                                                        ->first()->name ?? $selected->name
+                                                        : __('Select');
+                                                        @endphp
+                                                        <div class="">
+                                                            <select
+                                                                class="form-select w-full p-2 border border-gray-300 rounded-md text-sm"
+                                                                wire:model.live="selectedOptions.{{ $filter->id }}">
+                                                                <option value="">{{ __('Select') }}</option>
+                                                                @foreach ($filter->options as $option)
+                                                                @php
+                                                                $optionName =
+                                                                $option->translations
+                                                                ->where('language_id', $lang_id)
+                                                                ->first()->name ?? $option->name;
+                                                                @endphp
+                                                                <option value="{{ $option->id }}">
+                                                                    {{ $optionName }}</option>
+                                                                @endforeach
+                                                            </select>
+
+                                                        </div>
+                                                        @elseif($filterType === 'toggle')
+                                                        @foreach ($filter->options as $option)
+                                                        @php
+                                                        $optionTranslation = $option->translations
+                                                        ->where('language_id', $lang_id)
+                                                        ->first();
+                                                        $optionName = $optionTranslation->name ?? $option->name;
+                                                        $onLabel =
+                                                        $optionTranslation->on_label ??
+                                                        ($option->on_label ?? 'On');
+                                                        $offLabel =
+                                                        $optionTranslation->off_label ??
+                                                        ($option->off_label ?? 'Off');
+                                                        $isChecked = in_array($option->id, $selectedOptions);
+                                                        @endphp
+                                                        <div class="toggle-switch mb-2">
+                                                            <label class="toggle-label flex items-center cursor-pointer">
+                                                                <div class="relative">
+                                                                    <input type="checkbox" wire:model.live="selectedOptions"
+                                                                        value="{{ $option->id }}" class="sr-only peer"
+                                                                        {{ $isChecked ? 'checked' : '' }}>
+
+                                                                    <div
+                                                                        class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors">
+                                                                    </div>
+                                                                    <div
+                                                                        class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="ml-3">
+                                                                    <span class="font-medium">{{ $optionName }}</span><br>
+                                                                    <span class="text-xs text-gray-500">
+                                                                        {{ $isChecked ? $onLabel : $offLabel }}
+                                                                    </span>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                        @endforeach
+                                                        @elseif($filterType === 'slider')
+                                                        <div x-data="{
+                                                                    min: {{ $filter->options->min('min_value') ?? 0 }},
+                                                                    max: {{ $filter->options->max('max_value') ?? 100 }},
+                                                                    currentMin: {{ $minPrice }},
+                                                                    currentMax: {{ $maxPrice }},
+                                                                    unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
+
+                                                                    init() {
+                                                                        this.$nextTick(() => {
+                                                                            this.setupSlider();
+                                                                        });
+                                                                    },
+
+                                                                    setupSlider() {
+                                                                        const slider = this.$refs.slider;
+                                                                        if (typeof noUiSlider !== 'undefined' && slider) {
+                                                                            if (slider.noUiSlider) {
+                                                                                slider.noUiSlider.destroy();
+                                                                            }
+
+                                                                            noUiSlider.create(slider, {
+                                                                                start: [this.currentMin, this.currentMax],
+                                                                                connect: true,
+                                                                                range: {
+                                                                                    'min': this.min,
+                                                                                    'max': this.max
+                                                                                }
+                                                                            });
+
+                                                                            slider.noUiSlider.on('update', (values) => {
+                                                                                this.currentMin = Math.round(values[0]);
+                                                                                this.currentMax = Math.round(values[1]);
+                                                                            });
+
+                                                                            slider.noUiSlider.on('end', () => {
+                                                                                $wire.setPriceRange(this.currentMin, this.currentMax);
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                }" class="range-slider py-4">
+                                                            <div class="values-display flex justify-between mb-2">
+                                                                <span x-text="currentMin + ' ' + unit"></span>
+                                                                <span x-text="currentMax + ' ' + unit"></span>
+                                                            </div>
+
+                                                            <div x-ref="slider" class="slider-element"></div>
+                                                        </div>
+                                                        @elseif($filterType === 'color')
+                                                        <div class="color-options flex flex-wrap gap-2">
+                                                            @foreach ($filter->options as $option)
+                                                            @php
+                                                            $isSelected = in_array(
+                                                            $option->id,
+                                                            $selectedOptions,
+                                                            );
+                                                            $optionTranslation = $option->translations
+                                                            ->where('language_id', $lang_id)
+                                                            ->first();
+                                                            $colorName =
+                                                            $optionTranslation->name ?? $option->name;
+                                                            // Get color value from option or fallback to a default
+                                                            $colorValue =
+                                                            $optionTranslation->color_value ?? '#cccccc';
+                                                            @endphp
+
+                                                            <button wire:click="toggleFilterOption({{ $option->id }})"
+                                                                class="color-option w-6 h-6 rounded-full border {{ $isSelected ? 'border-black' : 'border-gray-300' }}"
+                                                                style="background-color: {{ $colorValue }}; position: relative;"
+                                                                title="{{ $colorName }}">
+                                                                @if ($isSelected)
+                                                                <span
+                                                                    class="absolute inset-0 flex items-center justify-center text-white">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12"
+                                                                        height="12" viewBox="0 0 24 24" fill="none"
+                                                                        stroke="currentColor" stroke-width="2"
+                                                                        stroke-linecap="round" stroke-linejoin="round">
+                                                                        <polyline points="20 6 9 17 4 12">
+                                                                        </polyline>
+                                                                    </svg>
+                                                                </span>
+                                                                @endif
+                                                            </button>
+                                                            @endforeach
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                                 @endforeach
                                             </div>
-                                        </div>
                                         @endif
 
+                                        <!-- Price Range Section -->
                                         <link rel="stylesheet"
                                             href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                         <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                            <h3 class="fw-semibold text-dark mb-3">
-                                                <!-- {{ static_text('price_range') }} -->
+                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
                                                 {{ static_text('price_range') ?: 'Price range' }}
-
                                             </h3>
 
                                             <div class="price-slider-container">
@@ -637,247 +848,46 @@
                                                     style="margin-top: 20px;" wire:ignore></div>
                                             </div>
                                         </div>
-                                        @if($isParentCategory)
-                                        @if(isset($subCategories) && count($subCategories) > 0)
+
+                                        <!-- Features Filter Section -->
+                                        @if(isset($availableFeatures) && count($availableFeatures) > 0)
                                         <div class="filter-section mt-3 mb-3">
-                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Categories
+                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                                Features
                                             </h3>
-                                            @foreach ($subCategories as $subcat)
                                             @php
-                                            $subcatName = $subcat->translations->name ?? $subcat->name;
+                                                $sortedFeatures = collect($availableFeatures)->sortBy(function($feat) use ($lang_id) {
+                                                    $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                    $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
+                                                    return strtolower($featTrans->name ?? $feat->name ?? 'Feature');
+                                                })->values();
                                             @endphp
-                                            <div class="form-check" style="margin-bottom: 8px;">
-                                                <input type="checkbox" class="form-check-input"
-                                                    wire:model.live="selectedSubCategories" value="{{ $subcat->id }}"
-                                                    id="subcat-{{ $subcat->id }}"
-                                                    style="margin-right: 8px; cursor: pointer;">
-                                                <label class="form-check-label" for="subcat-{{ $subcat->id }}"
-                                                    style="font-size: 13px; color: #555; cursor: pointer;">
-                                                    {{ $subcatName }}
-                                                </label>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                        @endif
-                                        @else
-                                        <div class="accordion" id="filterAccordion" style="border: none; width: 100%;">
-                                            @foreach ($filters as $filter)
-                                            @php
-                                            $currentLangId = $lang_id ?? getCurrentLanguageID();
-                                            $filterName =
-                                            $filter->translations->where('language_id', $currentLangId)->first()
-                                            ->name ?? $filter->name;
-                                            $filterType = $filter->filterType
-                                            ? $filter->filterType->slug
-                                            : 'checkbox';
-                                            @endphp
-
-                                            <div class="filter-section">
-                                                <h3>
-                                                    {{ $filterName }}
-                                                </h3>
-
-                                                <div class="accordion-body" style="padding: 0;">
-                                                    @if ($filterType === 'checkbox')
-                                                    @foreach ($filter->options as $option)
+                                            <div class="d-flex flex-column gap-2 custom-scrollbar" style="max-height: 180px; overflow-y: auto;">
+                                                @foreach($sortedFeatures as $feat)
                                                     @php
-                                                    $optionName =
-                                                    $option->translations
-                                                    ->where('language_id', $lang_id)
-                                                    ->first()->name ?? $option->name;
+                                                        $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                                        $featTrans = $feat->translations->where('language_id', $currentLangId)->first() ?? $feat->translations->first();
+                                                        $featName = $featTrans->name ?? $feat->name ?? 'Feature';
+                                                        $featId = (string)$feat->id;
+                                                        $isChecked = in_array($featId, array_map('strval', $selectedFeatures ?? []));
                                                     @endphp
-                                                    <div class="form-check" style="margin-bottom: 5px;">
+                                                    <div class="form-check" style="margin-bottom: 6px;" wire:key="feat-wrap-{{ $featId }}">
                                                         <input type="checkbox" class="form-check-input"
-                                                            wire:model.live="selectedOptions" value="{{ $option->id }}"
-                                                            id="option-{{ $option->id }}"
-                                                            style="margin-right: 8px; cursor: pointer;">
-                                                        <label class="form-check-label" for="option-{{ $option->id }}"
-                                                            style="font-size: 13px; color: #555; cursor: pointer;">
-                                                            {{ $optionName }}
+                                                               wire:model.live="selectedFeatures"
+                                                               wire:key="feat-input-{{ $featId }}-{{ $isChecked ? '1' : '0' }}"
+                                                               value="{{ $featId }}"
+                                                               id="feature-check-{{ $featId }}"
+                                                               style="margin-right: 8px; cursor: pointer;">
+                                                        <label class="form-check-label" for="feature-check-{{ $featId }}"
+                                                               style="font-size: 13px; color: #555; cursor: pointer; {{ $isChecked ? 'font-weight: 600; color: #002347;' : '' }}">
+                                                            {{ $featName }}
                                                         </label>
                                                     </div>
-                                                    @endforeach
-                                                    @elseif($filterType === 'radio')
-                                                    @foreach ($filter->options as $option)
-                                                    @php
-                                                    $optionName =
-                                                    $option->translations
-                                                    ->where('language_id', $lang_id)
-                                                    ->first()->name ?? $option->name;
-                                                    @endphp
-                                                    <div class="form-check" style="margin-bottom: 5px;">
-                                                        <input type="radio" class="form-check-input"
-                                                            name="filter_{{ $filter->id }}"
-                                                            wire:key="radio-{{ $filter->id }}-{{ $option->id }}"
-                                                            wire:click="toggleFilterOption({{ $option->id }})"
-                                                            {{ in_array($option->id, $selectedOptions) ? 'checked' : '' }}
-                                                            value="{{ $option->id }}" id="option-{{ $option->id }}"
-                                                            style="margin-right: 8px; cursor: pointer;">
-                                                        <label class="form-check-label" for="option-{{ $option->id }}"
-                                                            style="font-size: 13px; color: #555; cursor: pointer;">
-                                                            {{ $optionName }}
-                                                        </label>
-                                                    </div>
-                                                    @endforeach
-                                                    @elseif($filterType === 'dropdown')
-                                                    @php
-                                                    $selected = $filter->options->firstWhere(
-                                                    'id',
-                                                    $selectedOptions[0] ?? null,
-                                                    );
-                                                    $selectedOptionName = $selected
-                                                    ? $selected->translations
-                                                    ->where('language_id', $lang_id)
-                                                    ->first()->name ?? $selected->name
-                                                    : __('Select');
-                                                    @endphp
-                                                    <div class="">
-                                                        <select
-                                                            class="form-select w-full p-2 border border-gray-300 rounded-md text-sm"
-                                                            wire:model.live="selectedOptions.{{ $filter->id }}">
-                                                            <option value="">{{ __('Select') }}</option>
-                                                            @foreach ($filter->options as $option)
-                                                            @php
-                                                            $optionName =
-                                                            $option->translations
-                                                            ->where('language_id', $lang_id)
-                                                            ->first()->name ?? $option->name;
-                                                            @endphp
-                                                            <option value="{{ $option->id }}">
-                                                                {{ $optionName }}</option>
-                                                            @endforeach
-                                                        </select>
-
-                                                    </div>
-                                                    @elseif($filterType === 'toggle')
-                                                    @foreach ($filter->options as $option)
-                                                    @php
-                                                    $optionTranslation = $option->translations
-                                                    ->where('language_id', $lang_id)
-                                                    ->first();
-                                                    $optionName = $optionTranslation->name ?? $option->name;
-                                                    $onLabel =
-                                                    $optionTranslation->on_label ??
-                                                    ($option->on_label ?? 'On');
-                                                    $offLabel =
-                                                    $optionTranslation->off_label ??
-                                                    ($option->off_label ?? 'Off');
-                                                    $isChecked = in_array($option->id, $selectedOptions);
-                                                    @endphp
-                                                    <div class="toggle-switch mb-2">
-                                                        <label class="toggle-label flex items-center cursor-pointer">
-                                                            <div class="relative">
-                                                                <input type="checkbox" wire:model.live="selectedOptions"
-                                                                    value="{{ $option->id }}" class="sr-only peer"
-                                                                    {{ $isChecked ? 'checked' : '' }}>
-
-                                                                <div
-                                                                    class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors">
-                                                                </div>
-                                                                <div
-                                                                    class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-6">
-                                                                </div>
-                                                            </div>
-                                                            <div class="ml-3">
-                                                                <span class="font-medium">{{ $optionName }}</span><br>
-                                                                <span class="text-xs text-gray-500">
-                                                                    {{ $isChecked ? $onLabel : $offLabel }}
-                                                                </span>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                    @endforeach
-                                                    @elseif($filterType === 'slider')
-                                                    <div x-data="{
-                                                                min: {{ $filter->options->min('min_value') ?? 0 }},
-                                                                max: {{ $filter->options->max('max_value') ?? 100 }},
-                                                                currentMin: {{ $minPrice }},
-                                                                currentMax: {{ $maxPrice }},
-                                                                unit: '{{ $filter->options->first() ? $filter->options->first()->translations->where('language_id', $lang_id)->first()->unit ?? ($filter->options->first()->unit ?? '') : '' }}',
-
-                                                                init() {
-                                                                    this.$nextTick(() => {
-                                                                        this.setupSlider();
-                                                                    });
-                                                                },
-
-                                                                setupSlider() {
-                                                                    const slider = this.$refs.slider;
-                                                                    if (typeof noUiSlider !== 'undefined' && slider) {
-                                                                        if (slider.noUiSlider) {
-                                                                            slider.noUiSlider.destroy();
-                                                                        }
-
-                                                                        noUiSlider.create(slider, {
-                                                                            start: [this.currentMin, this.currentMax],
-                                                                            connect: true,
-                                                                            range: {
-                                                                                'min': this.min,
-                                                                                'max': this.max
-                                                                            }
-                                                                        });
-
-                                                                        slider.noUiSlider.on('update', (values) => {
-                                                                            this.currentMin = Math.round(values[0]);
-                                                                            this.currentMax = Math.round(values[1]);
-                                                                        });
-
-                                                                        slider.noUiSlider.on('end', () => {
-                                                                            $wire.setPriceRange(this.currentMin, this.currentMax);
-                                                                        });
-                                                                    }
-                                                                }
-                                                            }" class="range-slider py-4">
-                                                        <div class="values-display flex justify-between mb-2">
-                                                            <span x-text="currentMin + ' ' + unit"></span>
-                                                            <span x-text="currentMax + ' ' + unit"></span>
-                                                        </div>
-
-                                                        <div x-ref="slider" class="slider-element"></div>
-                                                    </div>
-                                                    @elseif($filterType === 'color')
-                                                    <div class="color-options flex flex-wrap gap-2">
-                                                        @foreach ($filter->options as $option)
-                                                        @php
-                                                        $isSelected = in_array(
-                                                        $option->id,
-                                                        $selectedOptions,
-                                                        );
-                                                        $optionTranslation = $option->translations
-                                                        ->where('language_id', $lang_id)
-                                                        ->first();
-                                                        $colorName =
-                                                        $optionTranslation->name ?? $option->name;
-                                                        // Get color value from option or fallback to a default
-                                                        $colorValue =
-                                                        $optionTranslation->color_value ?? '#cccccc';
-                                                        @endphp
-
-                                                        <button wire:click="toggleFilterOption({{ $option->id }})"
-                                                            class="color-option w-6 h-6 rounded-full border {{ $isSelected ? 'border-black' : 'border-gray-300' }}"
-                                                            style="background-color: {{ $colorValue }}; position: relative;"
-                                                            title="{{ $colorName }}">
-                                                            @if ($isSelected)
-                                                            <span
-                                                                class="absolute inset-0 flex items-center justify-center text-white">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="12"
-                                                                    height="12" viewBox="0 0 24 24" fill="none"
-                                                                    stroke="currentColor" stroke-width="2"
-                                                                    stroke-linecap="round" stroke-linejoin="round">
-                                                                    <polyline points="20 6 9 17 4 12">
-                                                                    </polyline>
-                                                                </svg>
-                                                            </span>
-                                                            @endif
-                                                        </button>
-                                                        @endforeach
-                                                    </div>
-                                                    @endif
-                                                </div>
+                                                @endforeach
                                             </div>
-                                            @endforeach
                                         </div>
                                         @endif
+                                        
                                     </div>
 
                                 </div>
