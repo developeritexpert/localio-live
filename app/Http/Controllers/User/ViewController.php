@@ -32,13 +32,11 @@ class ViewController extends Controller
         $lang_id = getCurrentLanguageID();
         session(['lang_id' => $lang_id]); // Required for translationForCurrentLang to work
 
-        $language_id = Language::where('lang_code', $langCode)->value('id');
-
-
-        $homeContents = HomeContent::where('lang_id', $lang_id)->pluck('meta_value', 'meta_key');
-        if ($homeContents->isEmpty()) {
-            $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
-        }
+        try {
+            $homeContents = HomeContent::where('lang_id', $lang_id)->pluck('meta_value', 'meta_key');
+            if ($homeContents->isEmpty()) {
+                $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
+            }
 
         $homepageCategories = Category::where('show_on_homepage', 1)
             ->with([
@@ -241,8 +239,11 @@ class ViewController extends Controller
                 }
                 return $product;
             });
-            $default_image=WebSetting::where('key','user_default_image')->value('value');
-        return view('User.home.index', compact('default_image','exclusive_products','homeContents', 'latestReviews', 'categories', 'homeContantImages', 'reviews', 'expertGuide', 'pageTileTranslationEducation', 'pageTileTranslationRightTools', 'articles'));
+                $default_image=WebSetting::where('key','user_default_image')->value('value');
+                return view('User.home.index', compact('default_image','exclusive_products','homeContents', 'latestReviews', 'categories', 'homeContantImages', 'reviews', 'expertGuide', 'pageTileTranslationEducation', 'pageTileTranslationRightTools', 'articles'));
+            } catch (\Throwable $e) {
+                return view('welcome');
+            }
     }
 
 
