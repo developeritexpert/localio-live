@@ -299,8 +299,47 @@
                                                     <div class="form-group mb-2">
                                                         <input type="text" class="form-control form-control-sm" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. Why are these listings considered top rated?">
                                                     </div>
-                                                    <div class="form-group mb-0">
+                                                    <div class="form-group mb-2">
                                                         <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{!! $sub['h3_text'] ?? '' !!}</textarea>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-2">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label class="form-label fw-bold">Image</label>
+                                                                <div class="form-control-wrap">
+                                                                    <div class="form-file">
+                                                                        <input type="file" class="form-file-input" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image]" accept="image/*">
+                                                                        <label class="form-file-label" for="customFile">Choose file</label>
+                                                                    </div>
+                                                                    @if(isset($sub['h3_image']) && !empty($sub['h3_image']))
+                                                                        <div class="mt-2">
+                                                                            <img src="{{ asset($sub['h3_image']) }}" alt="Sub-section Image" style="max-height: 50px;">
+                                                                            <input type="hidden" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image_existing]" value="{{ $sub['h3_image'] }}">
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label class="form-label fw-bold">Image Position</label>
+                                                                <div class="form-control-wrap">
+                                                                    <select class="form-select" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image_position]">
+                                                                        <option value="Left" {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Left') ? 'selected' : '' }}>Left</option>
+                                                                        <option value="Right" {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Right') ? 'selected' : '' }}>Right</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label class="form-label fw-bold">Image Width (px or %)</label>
+                                                                <div class="form-control-wrap">
+                                                                    <input type="text" class="form-control form-control-sm" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image_size]" value="{{ $sub['h3_image_size'] ?? '50px' }}" placeholder="e.g. 50px">
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 @endforeach
@@ -786,8 +825,41 @@
                 <div class="form-group mb-2">
                     <input type="text" class="form-control form-control-sm" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_title]" placeholder="e.g. Why are these listings considered top rated?">
                 </div>
-                <div class="form-group mb-0">
+                <div class="form-group mb-2">
                     <textarea class="form-control rich-editor" rows="3" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_text]" placeholder="Enter sub-headline content..."></textarea>
+                </div>
+                
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Image</label>
+                            <div class="form-control-wrap">
+                                <div class="form-file">
+                                    <input type="file" class="form-file-input" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_image]" accept="image/*">
+                                    <label class="form-file-label" for="customFile">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Image Position</label>
+                            <div class="form-control-wrap">
+                                <select class="form-select" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_image_position]">
+                                    <option value="Left" selected>Left</option>
+                                    <option value="Right">Right</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Image Width (px or %)</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control form-control-sm" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_image_size]" value="50px" placeholder="e.g. 50px">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>`;
             container.append(subHtml);

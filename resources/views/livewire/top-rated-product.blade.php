@@ -1214,16 +1214,25 @@
                         @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                             @foreach($section['sub_sections'] as $sub)
                             <div class="sub-section-block mt-4 mb-3">
-                                @if(!empty($sub['h3_title']))
-                                <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 10px;">
-                                    {{ $sub['h3_title'] }}
-                                </h3>
-                                @endif
-                                @if(!empty($sub['h3_text']))
-                                <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
-                                    {!! $sub['h3_text'] !!}
+                                <div class="d-flex {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Right') ? 'flex-row-reverse' : 'flex-row' }} gap-3 align-items-start">
+                                    @if(!empty($sub['h3_image']))
+                                        <div class="sub-section-image flex-shrink-0">
+                                            <img src="{{ asset($sub['h3_image']) }}" alt="Sub-section Image" style="width: {{ $sub['h3_image_size'] ?? '50px' }};">
+                                        </div>
+                                    @endif
+                                    <div class="sub-section-content flex-grow-1">
+                                        @if(!empty($sub['h3_title']))
+                                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 10px;">
+                                            {{ $sub['h3_title'] }}
+                                        </h3>
+                                        @endif
+                                        @if(!empty($sub['h3_text']))
+                                        <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
+                                            {!! $sub['h3_text'] !!}
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @endif
                             </div>
                             @endforeach
                         @endif

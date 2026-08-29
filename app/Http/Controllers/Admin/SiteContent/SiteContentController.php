@@ -842,19 +842,37 @@ if (!$headerLogo) {
 
         if ($request->has('text_sections') || $request->has('text_sections_present')) {
             $sectionsData = $request->input('text_sections', []);
+            $filesData = $request->file('text_sections'); // Get files
+            
             $cleanedSections = [];
-            foreach ($sectionsData as $sec) {
+            foreach ($sectionsData as $sIndex => $sec) {
                 if (empty($sec['h2_title']) && empty($sec['h2_text']) && empty($sec['sub_sections'])) {
                     continue;
                 }
                 $cleanedSub = [];
                 if (isset($sec['sub_sections']) && is_array($sec['sub_sections'])) {
-                    foreach ($sec['sub_sections'] as $sub) {
+                    foreach ($sec['sub_sections'] as $subIndex => $sub) {
                         if (!empty($sub['h3_title']) || !empty($sub['h3_text'])) {
-                            $cleanedSub[] = [
+                            $subItem = [
                                 'h3_title' => $sub['h3_title'] ?? '',
                                 'h3_text' => $sub['h3_text'] ?? '',
+                                'h3_image_position' => $sub['h3_image_position'] ?? 'Left',
+                                'h3_image_size' => $sub['h3_image_size'] ?? '50px',
                             ];
+                            
+                            // Check for file upload
+                            if (isset($filesData[$sIndex]['sub_sections'][$subIndex]['h3_image'])) {
+                                $file = $filesData[$sIndex]['sub_sections'][$subIndex]['h3_image'];
+                                $fileName = time() . '_' . $file->getClientOriginalName();
+                                $file->move(public_path('top_rated_images'), $fileName);
+                                $subItem['h3_image'] = 'top_rated_images/' . $fileName;
+                            } elseif (!empty($sub['h3_image_existing'])) {
+                                $subItem['h3_image'] = $sub['h3_image_existing'];
+                            } else {
+                                $subItem['h3_image'] = '';
+                            }
+                            
+                            $cleanedSub[] = $subItem;
                         }
                     }
                 }
