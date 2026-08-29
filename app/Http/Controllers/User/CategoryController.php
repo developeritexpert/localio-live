@@ -70,17 +70,30 @@ class CategoryController extends Controller
     }
      public function categoryDetail($lang_code, $slug, $page = null){
        $lang_id = getCurrentLanguageID();
-       $categoryExists = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+       $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
            $query->where('slug', $slug)->where('lang_id', $lang_id);
        })->orWhereHas('translations', function ($query) use ($slug) {
            $query->where('slug', $slug);
-       })->exists();
+       })->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->first();
 
-       if (!$categoryExists) {
+       if (!$category) {
            abort(404);
        }
 
-       return view('User.category.category_detail', compact('slug', 'page'));
+       $catTrans = $category->translations->first();
+       $metaTitle = !empty($catTrans->meta_title)
+           ? $catTrans->meta_title
+           : ($catTrans->name ?? 'Category Page');
+       $metaDescription = !empty($catTrans->meta_description)
+           ? $catTrans->meta_description
+           : strip_tags($catTrans->description ?? '');
+
+       if (function_exists('format_meta_text')) {
+           $metaTitle = format_meta_text($metaTitle, 'Category Page');
+           $metaDescription = format_meta_text($metaDescription);
+       }
+
+       return view('User.category.category_detail', compact('slug', 'page', 'metaTitle', 'metaDescription'));
      }
 
      public function subCategoryFeatureDetail($lang_code, $category_slug, $subcategory_slug, $feature_slug){

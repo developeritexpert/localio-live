@@ -117,7 +117,7 @@
                             <div class="form-group">
                                 <label class="form-label fw-bold">Top Rated Sub-headline (Rich Text Editor)</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" rows="3" name="top_rated_subheadline[{{ $subId }}]" placeholder="Learn more from our team about software pricing, features and benefits in our Buyers Guide">{{ $subVal }}</textarea>
+                                    <textarea class="form-control rich-editor" rows="3" name="top_rated_subheadline[{{ $subId }}]" placeholder="Learn more from our team about software pricing, features and benefits in our Buyers Guide">{!! $subVal !!}</textarea>
                                 </div>
                                 <small class="text-muted">Appears directly below the "Last updated" date in the header block. Supports formatting, buyer guide links, and bold text.</small>
                             </div>
@@ -191,7 +191,7 @@
                             <div class="form-group">
                                 <label class="form-label fw-bold">FAQ Section Sub-headline</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" name="faqsection_subheadline[{{ $faqSubId }}]" value="{{ $faqSubVal }}" placeholder="Everything you need to know about Localio top-rated rankings and community reviews.">
+                                    <textarea class="form-control rich-editor" name="faq_section_subheadline[{{ $faqSubId }}]" placeholder="Everything you need to know about Localio top-rated rankings and community reviews.">{!! $faqSubVal !!}</textarea>
                                 </div>
                                 <small class="text-muted">Subtitle for FAQs block on <code>/top-rated</code>.</small>
                             </div>
@@ -231,7 +231,11 @@
                                 <div class="form-group">
                                     <label class="form-label fw-bold">{{ $info['label'] }}</label>
                                     <div class="form-control-wrap">
-                                        <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
+                                        @if(in_array($key, ['faq_page_main_subheadline', 'faq_page_about_subheadline']))
+                                            <textarea class="form-control rich-editor" name="{{ $key }}[{{ $id }}]" placeholder="{{ $info['placeholder'] }}">{!! $val !!}</textarea>
+                                        @else
+                                            <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
+                                        @endif
                                     </div>
                                     <small class="text-muted" style="font-size: 0.75rem;">{{ $info['desc'] }}</small>
                                 </div>
@@ -276,7 +280,7 @@
                                     <div class="col-12">
                                         <label class="form-label fw-bold mb-1">Headline Content (Rich Editor)</label>
                                         <div class="form-control-wrap">
-                                            <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{{ $sec['h2_text'] ?? '' }}</textarea>
+                                            <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{!! $sec['h2_text'] ?? '' !!}</textarea>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -295,8 +299,47 @@
                                                     <div class="form-group mb-2">
                                                         <input type="text" class="form-control form-control-sm" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. Why are these listings considered top rated?">
                                                     </div>
-                                                    <div class="form-group mb-0">
-                                                        <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{{ $sub['h3_text'] ?? '' }}</textarea>
+                                                    <div class="form-group mb-2">
+                                                        <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{!! $sub['h3_text'] ?? '' !!}</textarea>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-2">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label class="form-label fw-bold">Image</label>
+                                                                <div class="form-control-wrap">
+                                                                    <div class="form-file">
+                                                                        <input type="file" class="form-file-input" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image]" accept="image/*">
+                                                                        <label class="form-file-label" for="customFile">Choose file</label>
+                                                                    </div>
+                                                                    @if(isset($sub['h3_image']) && !empty($sub['h3_image']))
+                                                                        <div class="mt-2">
+                                                                            <img src="{{ asset($sub['h3_image']) }}" alt="Sub-section Image" style="max-height: 50px;">
+                                                                            <input type="hidden" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image_existing]" value="{{ $sub['h3_image'] }}">
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label class="form-label fw-bold">Image Position</label>
+                                                                <div class="form-control-wrap">
+                                                                    <select class="form-select" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image_position]">
+                                                                        <option value="Left" {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Left') ? 'selected' : '' }}>Left</option>
+                                                                        <option value="Right" {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Right') ? 'selected' : '' }}>Right</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label class="form-label fw-bold">Image Width (px or %)</label>
+                                                                <div class="form-control-wrap">
+                                                                    <input type="text" class="form-control form-control-sm" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_image_size]" value="{{ $sub['h3_image_size'] ?? '50px' }}" placeholder="e.g. 50px">
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 @endforeach
@@ -782,8 +825,41 @@
                 <div class="form-group mb-2">
                     <input type="text" class="form-control form-control-sm" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_title]" placeholder="e.g. Why are these listings considered top rated?">
                 </div>
-                <div class="form-group mb-0">
+                <div class="form-group mb-2">
                     <textarea class="form-control rich-editor" rows="3" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_text]" placeholder="Enter sub-headline content..."></textarea>
+                </div>
+                
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Image</label>
+                            <div class="form-control-wrap">
+                                <div class="form-file">
+                                    <input type="file" class="form-file-input" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_image]" accept="image/*">
+                                    <label class="form-file-label" for="customFile">Choose file</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Image Position</label>
+                            <div class="form-control-wrap">
+                                <select class="form-select" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_image_position]">
+                                    <option value="Left" selected>Left</option>
+                                    <option value="Right">Right</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-label fw-bold">Image Width (px or %)</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control form-control-sm" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_image_size]" value="50px" placeholder="e.g. 50px">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>`;
             container.append(subHtml);
@@ -945,27 +1021,46 @@
             }
 
             let normalizedFaqs = [];
+            
+            // Helper to get case-insensitive keys
+            const getVal = (obj, keys) => {
+                for (let k of keys) {
+                    if (obj[k] !== undefined) return obj[k];
+                    if (obj[k.toLowerCase()] !== undefined) return obj[k.toLowerCase()];
+                    if (obj[k.charAt(0).toUpperCase() + k.slice(1)] !== undefined) return obj[k.charAt(0).toUpperCase() + k.slice(1)];
+                }
+                return undefined;
+            };
+
             if (Array.isArray(parsed)) {
                 parsed.forEach(item => {
-                    if (item.category && Array.isArray(item.faqs)) {
-                        item.faqs.forEach(sub => {
-                            if (sub.question || sub.answer) {
-                                const cat = (item.category || 'General').trim();
+                    const itemCat = getVal(item, ['category', 'Category', 'faq_category', 'faqCategory']);
+                    const itemFaqs = getVal(item, ['faqs', 'Faqs', 'FAQs', 'faq']);
+                    const itemQ = getVal(item, ['question', 'Question', 'q', 'Q']);
+                    const itemA = getVal(item, ['answer', 'Answer', 'a', 'A']);
+                    
+                    if (itemCat && Array.isArray(itemFaqs)) {
+                        itemFaqs.forEach(sub => {
+                            const subQ = getVal(sub, ['question', 'Question', 'q', 'Q']);
+                            const subA = getVal(sub, ['answer', 'Answer', 'a', 'A']);
+                            
+                            if (subQ || subA) {
+                                const cat = String(itemCat || 'General').trim();
                                 if (!faqCategoriesList.includes(cat)) faqCategoriesList.push(cat);
                                 normalizedFaqs.push({
                                     category: cat,
-                                    question: sub.question || '',
-                                    answer: sub.answer || ''
+                                    question: String(subQ || ''),
+                                    answer: String(subA || '')
                                 });
                             }
                         });
-                    } else if (item.question || item.answer) {
-                        const cat = (item.category || 'General').trim();
+                    } else if (itemQ || itemA) {
+                        const cat = String(itemCat || 'General').trim();
                         if (!faqCategoriesList.includes(cat)) faqCategoriesList.push(cat);
                         normalizedFaqs.push({
                             category: cat,
-                            question: item.question || '',
-                            answer: item.answer || ''
+                            question: String(itemQ || ''),
+                            answer: String(itemA || '')
                         });
                     }
                 });
@@ -973,14 +1068,16 @@
                 Object.keys(parsed).forEach(catKey => {
                     const val = parsed[catKey];
                     if (Array.isArray(val)) {
-                        const cat = (catKey || 'General').trim();
+                        const cat = String(catKey || 'General').trim();
                         if (!faqCategoriesList.includes(cat)) faqCategoriesList.push(cat);
                         val.forEach(sub => {
-                            if (sub.question || sub.answer) {
+                            const subQ = getVal(sub, ['question', 'Question', 'q', 'Q']);
+                            const subA = getVal(sub, ['answer', 'Answer', 'a', 'A']);
+                            if (subQ || subA) {
                                 normalizedFaqs.push({
                                     category: cat,
-                                    question: sub.question || '',
-                                    answer: sub.answer || ''
+                                    question: String(subQ || ''),
+                                    answer: String(subA || '')
                                 });
                             }
                         });
@@ -1005,9 +1102,18 @@
             resetFaqForm();
             renderFaqTable();
 
-            const modalEl = document.getElementById('importFaqJsonModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            modalInstance.hide();
+            try {
+                $('#importFaqJsonModal').modal('hide');
+            } catch(e) {
+                console.log(e);
+            }
+            try {
+                const modalEl = document.getElementById('importFaqJsonModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modalInstance.hide();
+            } catch(e) {
+                console.log(e);
+            }
 
             alert(`Successfully imported ${normalizedFaqs.length} FAQs into the list! Click "Update Content" below to save.`);
         });

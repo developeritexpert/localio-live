@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'parent_id', 'image','category_icon', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit'];
+    protected $fillable = [ 'parent_id', 'image','category_icon', 'top_rated_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit'];
 
     protected $lang_code, $lang_id;
 
@@ -74,13 +74,38 @@ class Category extends Model
                     ? $parentCriterion->description
                     : $def->default_description;
 
-                $criterion = new CategoryRatingCriteria([
-                    'category_id' => $this->id,
-                    'default_key' => $def->key,
-                    'name' => $def->name,
-                    'description' => $description,
-                    'is_default' => true,
-                ]);
+                $criterion = CategoryRatingCriteria::where('category_id', $this->id)
+                    ->where(function ($q) use ($def) {
+                        $q->where('default_key', $def->key)
+                          ->orWhereRaw('LOWER(name) = ?', [strtolower($def->name)]);
+                    })
+                    ->first();
+
+                if ($criterion && !$criterion->default_key) {
+                    $criterion->update([
+                        'is_default' => true,
+                        'default_key' => $def->key,
+                        'name' => $def->name,
+                    ]);
+                }
+
+                if (!$criterion) {
+                    $criterion = CategoryRatingCriteria::firstOrCreate(
+                        [
+                            'category_id' => $this->id,
+                            'default_key' => $def->key,
+                        ],
+                        [
+                            'name' => $def->name,
+                            'description' => $description,
+                            'is_default' => true,
+                        ]
+                    );
+                }
+
+                if (empty($criterion->description)) {
+                    $criterion->description = $description;
+                }
             } else {
                 // Main Category: Fetch or initialize local default criterion
                 $criterion = CategoryRatingCriteria::where('category_id', $this->id)
@@ -148,6 +173,12 @@ class Category extends Model
 {
     return $this->hasOne(Media::class, 'id', 'category_icon');
 }
+
+    public function topRatedImageMedia()
+    {
+        return $this->hasOne(Media::class, 'id', 'top_rated_image');
+    }
+
 public function iconMedia()
 {
     return $this->hasOne(Media::class, 'id', 'category_icon');

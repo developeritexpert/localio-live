@@ -178,6 +178,13 @@ class StaticContentController extends Controller
                     'how_rankings_work',
                 ],
             ],
+            'action_buttons' => [
+                'title' => 'Card & Listing Action Buttons',
+                'keys' => [
+                    'profile_and_reviews',
+                    'visit_website',
+                ],
+            ],
             'common' => [
                 'title' => 'Common Page Text',
                 'keys' => [

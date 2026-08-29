@@ -354,6 +354,56 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <label class="form-label mt-3">Long Preview Description (Top Affiliated Businesses Section)</label>
+                            <div wire:ignore x-data="{
+                                editor: null,
+                                init() {
+                                    this.$nextTick(() => {
+                                        if (this.editor) return;
+                                        if (!this.$refs.lpeditor) return;
+                                        if (typeof ClassicEditor !== 'undefined') {
+                                            ClassicEditor
+                                                .create(this.$refs.lpeditor)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    if (this.$wire.long_preview_description && !editor.getData()) {
+                                                        editor.setData(this.$wire.long_preview_description);
+                                                    }
+                                                    editor.model.document.on('change:data', () => {
+                                                        const data = editor.getData();
+                                                        this.$wire.long_preview_description = data;
+                                                        this.$wire.set('long_preview_description', data);
+                                                    });
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.long_preview_description !== undefined) {
+                                                            editor.setData(e.detail.fields.long_preview_description);
+                                                        }
+                                                    });
+                                                    window.addEventListener('languageSwitched', () => {
+                                                        editor.setData(this.$wire.long_preview_description || '');
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error('CKEditor error on long_preview_description:', error);
+                                                });
+                                        }
+                                    });
+                                }
+                            }">
+                                <div class="form-group">
+                                    <textarea
+                                        x-ref="lpeditor"
+                                        class="form-control @error('long_preview_description') is-invalid @enderror"
+                                        wire:model.live="long_preview_description"
+                                        rows="5">{!! $long_preview_description !!}</textarea>
+                                    @error('long_preview_description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Rating Criteria Introduction & End Texts Section -->

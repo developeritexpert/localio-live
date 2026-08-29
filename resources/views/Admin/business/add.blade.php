@@ -42,6 +42,15 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="long_preview_description">Long preview description</label>
+                                <textarea class="form-control" id="long_preview_description" name="long_preview_description">{{ isset($business_data['long_preview_description']) ? $business_data['long_preview_description'] : old('long_preview_description') }}</textarea>
+                                @error('long_preview_description')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="activate_all_countries">Activate All Countries</label>
                                 <select class="form-control" name="activate_all_countries" id="activate_all_countries">
                                     <option value="1" {{ isset($business_data['activate_all_countries']) && $business_data['activate_all_countries'] == 1 ? 'selected' : '' }}>Yes</option>
@@ -85,4 +94,15 @@
             </div>
         </div>
     </div>
+
+@section('js')
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#long_preview_description'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>
 @endsection
+

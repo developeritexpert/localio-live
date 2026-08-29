@@ -64,7 +64,11 @@ function getCurrentLanguageID()
         $langcode = "en-us";
     }
 
-    $siteLanguage = Language::where('lang_code', $langcode)->first();
+    try {
+        $siteLanguage = Language::where('lang_code', $langcode)->first();
+    } catch (\Throwable $e) {
+        return 1;
+    }
 
     if ($siteLanguage) {
         // Check if base_language_id is set and not null
@@ -80,7 +84,11 @@ function getCurrentLanguageID()
 function getCurrentSiteLanguage()
 {
     $locale = Cookie::get('lang_code', config('app.locale'));
-    return Language::where('lang_code', $locale)->first();
+    try {
+        return Language::where('lang_code', $locale)->first();
+    } catch (\Throwable $e) {
+        return null;
+    }
 }
 
 function formatInr($amount)
@@ -171,7 +179,11 @@ function saveLog($fileName = null, $message = null, $name = null, $payload = [],
 
 function getLanguages($codes = false)
 {
-    return Language::where('status', 1)->get();
+    try {
+        return Language::where('status', 1)->get();
+    } catch (\Throwable $e) {
+        return collect();
+    }
 }
 
 

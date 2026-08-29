@@ -350,7 +350,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}"
                                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                         style="border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;">
-                                                                        View details
+                                                                        {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                     </a>
                                                                 </div>
                                                             </div>
@@ -370,7 +370,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                 $bAvgRating = $bReviewCount > 0 ? round($activeReviews->avg('rating'), 1) : 0;
 
                                 // Dynamic Rating Criteria Breakdown (Identical to ProductDetails & Reviews Page)
-                                $bCriteria = $business->category ? $business->category->ratingCriteria : collect();
+                                $bCriteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
                                 foreach ($bCriteria as $criterion) {
                                     $totalScore = 0;
                                     $count = 0;
@@ -444,7 +444,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         </div>
 
                                         <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; border-radius: 30px;     padding: 8px 11px; white-space: nowrap;">
-                                            Visit website
+                                            {{ static_text('visit_website') ?: 'Visit website' }}
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
                                     </div>
@@ -1111,12 +1111,12 @@ section.top-automotive-sec.top_rate_pg.light {
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                                     class="cta cta_orange justify-content-center"
                                                                     target="_blank" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
-                                                                    Visit website
+                                                                    {{ static_text('visit_website') ?: 'Visit website' }}
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
                                                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                                     class="cta cta_outline justify-content-center" style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
-                                                                    View details
+                                                                    {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                 </a>
                                                             </div>
                                                             
@@ -1272,7 +1272,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         </button>
                                         @else
                                         <p class="mb-0">
-                                            Sorry ,No Products available at the moment.
+                                            {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
                                         </p>
                                         @endif
                                     </div>

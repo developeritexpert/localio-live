@@ -381,12 +381,14 @@ class CategoriesController extends Controller
                 'max:255'
             ],
             'comparison_name' => 'nullable|string|max:255',
+            'see_all_text' => 'nullable|string|max:255',
             'page_title' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'comparison_slug' => 'nullable|string|max:255',
             'description' => 'required|string|min:10',
+            'top_rated_description' => 'nullable|string',
             'image' => 'nullable',
             'category_icon' => 'nullable',
             'is_parent' => 'nullable',
@@ -474,6 +476,10 @@ class CategoriesController extends Controller
             $mediaIcon = $this->mediaservice->uploadMedia($request->file('category_icon'), 'category/icon');
             $category->category_icon = $mediaIcon->id;  
         }       
+        if ($request->hasFile('top_rated_image')) {
+            $mediaTopRated = $this->mediaservice->uploadMedia($request->file('top_rated_image'), 'category/top-rated');
+            $category->top_rated_image = $mediaTopRated->id;
+        }
         $category->save();
         if ($category) {
             $slug = Str::slug($validate['name']);
@@ -531,9 +537,12 @@ class CategoriesController extends Controller
                     'lang_id'      => $language_id,
                     'name'         => $validate['name'],
                     'comparison_name' => $validate['comparison_name'] ?? null,
+                    'see_all_text'    => $validate['see_all_text'] ?? null,
                     'page_title'   => $validate['page_title'] ?? null,
                     'title'        => $validate['title'] ?? null,
                     'description'  => $validate['description'],
+                    'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
+                    'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
                     'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,

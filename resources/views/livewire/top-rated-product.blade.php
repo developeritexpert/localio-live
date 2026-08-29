@@ -316,7 +316,7 @@
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
                                 <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
-                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
+                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                             </div>
                             <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
@@ -329,9 +329,14 @@
             </div>
         </div>
     </section>
+    
     <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px !important;">
+        
         <div class="top-auto-btm">
             <div class="container">
+                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; border-bottom: 1px solid #e8eef6 !important;padding-bottom: 20px;">
+                    {{ $topProductContents['top_rated_listing_headline'] ?? '“Top-rated brands, products and services' }}
+                </h2>
                 <div class="top-auto-choice">
                     <!-- <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
@@ -401,7 +406,7 @@
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
                                         <h3 class="fw-semibold text-dark mb-3">
                                             <!-- {{ static_text('price_range') }} -->
-                                            Price range
+                                            {{ static_text('price_range') ?: 'Price range' }}
 
                                         </h3>
 
@@ -648,11 +653,10 @@
                             </div>
 
                         </div>
+                       
                         @if ($products->count())
                         <div class="auto-choice-rgt ">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0;">
-                                {{ $topProductContents['top_rated_listing_headline'] ?? 'Top-rated listings' }}
-                            </h2>
+                            
                             <!-- Product Count and Sort -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
@@ -904,7 +908,7 @@
                                                         class="btn-orng cta cta_orange justify-content-center"
                                                         target="_blank"
                                                         style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
-                                                        Visit website
+                                                        {{ static_text('visit_website') ?: 'Visit website' }}
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                             stroke-width="2" stroke-linecap="round"
@@ -921,7 +925,7 @@
                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                         class="cta cta_outline justify-content-center"
                                                         style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
-                                                        View details
+                                                        {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                     </a>
                                                 </div>
 
@@ -1050,11 +1054,9 @@
                         @else
 
                         <div class="auto-choice-rgt">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0;">
-                                {{ $topProductContents['top_rated_listing_headline'] ?? 'Top-rated listings' }}
-                            </h2>
+                           
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
+                                <div class="showing_tabs">
                                     <p class="m-0">Showing {{ $products->count() }} results </p>
                                 </div>
                                 <div class="d-none">
@@ -1077,7 +1079,7 @@
                         </button>
                         @else
                         <p class="mb-0">
-                            Sorry ,No Products available at the moment.
+                            {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
                         </p>
                         @endif
                     </div>
@@ -1094,7 +1096,7 @@
         <div class="container">
             <div class="text-start mb-4">
                 <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
-                <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' }}</p>
+                <p style="font-size: 15px; color: #555; margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
@@ -1112,8 +1114,8 @@
                     $catItemSeeAllText = $trans->see_all_text ?? '';
                     $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
                     $catItemDesc = !empty($trans->top_rated_description)
-                        ? strip_tags($trans->top_rated_description)
-                        : strip_tags($trans->description ?? $cat->description ?? '');
+                        ? $trans->top_rated_description
+                        : ($trans->description ?? $cat->description ?? '');
                     if (empty($catItemDesc) && !empty($catItemName)) {
                         $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions. Explore providers using features, starting prices, real user reviews, and community ratings to identify the right match.';
                     }
@@ -1127,7 +1129,7 @@
                         </a>
                     </div>
 
-                    <p style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">{{ $catItemDesc }}</p>
+                    <div class="category-description-text" style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">{!! $catItemDesc !!}</div>
 
                     <div class="top-products-grid">
                         @foreach($cat->top_businesses ?? [] as $business)
@@ -1166,14 +1168,14 @@
                                 @endphp
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
                                    class="btn-view-details btn py-1 px-2 fw-medium {{ ($hasTrackedUrl) ? 'w-50' : 'w-100' }}">
-                                    View details
+                                    {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                 </a>
                                 @if($hasTrackedUrl)
                                 <a href="{{ $business->getTrackedUrl() }}"
                                    target="_blank"
                                    class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
                                    style="border-radius: 30px; font-size: 11px; text-align: center; transition:unset !important;">
-                                    Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
+                                    {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
                                 </a>
                                 @endif
                             </div>
@@ -1212,16 +1214,25 @@
                         @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
                             @foreach($section['sub_sections'] as $sub)
                             <div class="sub-section-block mt-4 mb-3">
-                                @if(!empty($sub['h3_title']))
-                                <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 10px;">
-                                    {{ $sub['h3_title'] }}
-                                </h3>
-                                @endif
-                                @if(!empty($sub['h3_text']))
-                                <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
-                                    {!! $sub['h3_text'] !!}
+                                <div class="d-flex {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Right') ? 'flex-row-reverse' : 'flex-row' }} gap-3 align-items-start">
+                                    @if(!empty($sub['h3_image']))
+                                        <div class="sub-section-image flex-shrink-0">
+                                            <img src="{{ asset($sub['h3_image']) }}" alt="Sub-section Image" style="width: {{ $sub['h3_image_size'] ?? '50px' }};">
+                                        </div>
+                                    @endif
+                                    <div class="sub-section-content flex-grow-1">
+                                        @if(!empty($sub['h3_title']))
+                                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 10px;">
+                                            {{ $sub['h3_title'] }}
+                                        </h3>
+                                        @endif
+                                        @if(!empty($sub['h3_text']))
+                                        <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
+                                            {!! $sub['h3_text'] !!}
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @endif
                             </div>
                             @endforeach
                         @endif
@@ -1241,7 +1252,7 @@
                 <div class="">
                     <div class="text-start mb-4">
                         <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
-                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">{{ $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' }}</p>
+                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
                     </div>
 
                     <div class="accordion" id="topRatedFaqAccordion">
@@ -1262,7 +1273,7 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link">
+                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link" style="font-size:14px;">
                             View more FAQs
                         </a>
                     </div>

@@ -75,7 +75,7 @@
                         </div>
                             <div class="visit-btn">
                                 <a class="unq_btn d-flex g-5" href="{{ $item->business->affiliate_link }}">
-                                    Visit Website
+                                    {{ static_text('visit_website') ?: 'Visit website' }}
                                     <div class="srrw-svg">
                                         <svg width="16" height="12" viewBox="0 0 16 12" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">

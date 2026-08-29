@@ -292,7 +292,8 @@
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
-                                                    <i class="fas fa-plus-circle text-success me-1"></i> Pros <span class="fw-normal text-muted" style="font-size: 12px;">(What you liked)</span>
+                                                    <!-- <i class="fas fa-plus-circle text-success me-1"></i> Pros <span class="fw-normal text-muted" style="font-size: 12px;">(What you liked)</span> -->
+                                                    What you liked
                                                 </label>
                                                 <span class="badge bg-light text-secondary border" style="font-size: 11px;">
                                                     {{ count($selectedPros) }}/5 selected
@@ -377,11 +378,12 @@
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <label class="fw-bold mb-0" style="color: #002347; font-size: 14px;">
-                                                    <i class="fas fa-minus-circle text-danger me-1"></i> Cons <span class="fw-normal text-muted" style="font-size: 12px;">(What you disliked)</span>
+                                                    <!-- <i class="fas fa-minus-circle text-danger me-1"></i> Cons <span class="fw-normal text-muted" style="font-size: 12px;">(What you disliked)</span> -->
+                                                     What you disliked 
                                                 </label>
                                                 <span class="badge bg-light text-secondary border" style="font-size: 11px;">
                                                     {{ count($selectedCons) }}/5 selected
-                                                </span>
+                                                </span>`
                                             </div>
                                             
                                             <div class="pro-con-box">

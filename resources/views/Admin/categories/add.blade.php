@@ -132,7 +132,7 @@
                             <div class="form-group">
                                 <label class="form-label" for="description">Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{{ isset($category_data) ? $category_data['description'] : old('description') }}</textarea>
+                                    <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{!! isset($category_data) ? $category_data['description'] : old('description') !!}</textarea>
                                 </div>
                                 @error('description')
                                     <div class="error text-danger">{{ $message }}</div>
@@ -142,9 +142,59 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="top_rated_image">Top-Rated SVG Graphic (300x100)</label>
+                                <div class="form-control-wrap">
+                                    <div class="form-file">
+                                        <input type="file" class="form-file-input" id="top_rated_image" name="top_rated_image" accept="image/svg+xml">
+                                        <label class="form-file-label" for="top_rated_image">Choose SVG file</label>
+                                    </div>
+                                    @if(isset($category) && $category->top_rated_image)
+                                        <div class="mt-2">
+                                            <span class="badge bg-outline-info">Current graphic uploaded</span>
+                                            <!-- <img src="{{ isset($category->topRatedImageMedia) ? asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) : '' }}" alt="Graphic" class="mt-1" style="max-height: 50px; display: block;"> -->
+                                        </div>
+                                    @endif
+                                </div>
+                                <small class="text-muted d-block mt-1">SVG illustration displayed on the right side of the hero section for this category.</small>
+                                @error('top_rated_image')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="top_rated_listing_headline">Top-Rated Listing Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="top_rated_listing_headline" name="top_rated_listing_headline"
+                                        value="{{ isset($category_data) ? ($category_data['top_rated_listing_headline'] ?? '') : old('top_rated_listing_headline') }}"
+                                        placeholder="e.g. Best web hosting services">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline displayed above the top-rated listings on this category's page. Defaults to "Best [Category Name] services".</small>
+                                @error('top_rated_listing_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="top_rated_listing_subtext">Top-Rated Listing Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Top-Rated Listing Headline.</small>
+                                @error('top_rated_listing_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="top_rated_description">Top-Rated Page Description</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="top_rated_description" name="top_rated_description" rows="4" placeholder="Enter SEO-optimized short description displayed in the 'Explore top-rated categories' section on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_description'] ?? '') : old('top_rated_description') }}</textarea>
+                                    <textarea class="form-control rich-editor" id="top_rated_description" name="top_rated_description" rows="4" placeholder="Enter SEO-optimized short description displayed in the 'Explore top-rated categories' section on the Top Rated page">{!! isset($category_data) ? ($category_data['top_rated_description'] ?? '') : old('top_rated_description') !!}</textarea>
                                 </div>
                                 <small class="text-muted d-block mt-1">Specific description for the Top-Rated page's "Explore top-rated categories" section. If left blank, it falls back to the default description.</small>
                                 @error('top_rated_description')
@@ -399,7 +449,7 @@
                                                     </div>
                                                     <div class="col-12">
                                                         <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
-                                                        <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{{ $sec['h2_text'] ?? '' }}</textarea>
+                                                        <textarea class="form-control rich-editor" rows="4" name="text_sections[{{ $sIndex }}][h2_text]" placeholder="Enter main content for this H2 section...">{!! $sec['h2_text'] ?? '' !!}</textarea>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -415,7 +465,7 @@
                                                                         <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
                                                                     </div>
                                                                     <input type="text" class="form-control form-control-sm mb-2" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_title]" value="{{ $sub['h3_title'] ?? '' }}" placeholder="e.g. What is web hosting?">
-                                                                    <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{{ $sub['h3_text'] ?? '' }}</textarea>
+                                                                    <textarea class="form-control rich-editor" rows="3" name="text_sections[{{ $sIndex }}][sub_sections][{{ $subIndex }}][h3_text]" placeholder="Enter sub-headline content...">{!! $sub['h3_text'] ?? '' !!}</textarea>
                                                                 </div>
                                                                 @endforeach
                                                             @endif

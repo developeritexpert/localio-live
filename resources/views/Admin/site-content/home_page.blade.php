@@ -82,6 +82,37 @@
                         </div>
                     </div>
 
+                    {{-- Listing Card Action Buttons --}}
+                    <div class="col-md-12">
+                        <div class="card border">
+                            <div class="card-header mt-3">
+                                Card Action Buttons
+                            </div>
+                            <div class="card-body">
+                                @php
+                                    $profileContent = $allHomeContents->firstWhere('meta_key', 'profile_and_reviews');
+                                    $visitContent = $allHomeContents->firstWhere('meta_key', 'visit_website');
+                                @endphp
+                                <div class="form-group col-lg-12 mb-3">
+                                    <label class="form-label" for="profile_and_reviews">Profile & Reviews Button (formerly "View details")</label>
+                                    <div class="form-control-wrap">
+                                        <input type="text" class="form-control" id="profile_and_reviews"
+                                            name="profile_and_reviews[{{ $profileContent ? $profileContent->id : 'new' }}]"
+                                            value="{{ $profileContent ? $profileContent->meta_value : (static_text('profile_and_reviews') ?: 'Profile & reviews') }}" />
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-12 mb-3">
+                                    <label class="form-label" for="visit_website">Visit Website Button</label>
+                                    <div class="form-control-wrap">
+                                        <input type="text" class="form-control" id="visit_website"
+                                            name="visit_website[{{ $visitContent ? $visitContent->id : 'new' }}]"
+                                            value="{{ $visitContent ? $visitContent->meta_value : (static_text('visit_website') ?: 'Visit website') }}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- 2. Homepage Categories Management Card --}}
                     <div class="col-md-12">
                         <div class="card border">

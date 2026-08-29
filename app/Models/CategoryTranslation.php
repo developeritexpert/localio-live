@@ -31,7 +31,9 @@ class CategoryTranslation extends Model
         'security_compliance_content',
         'comparison_slug',
         'text_sections',
-        'faqs'
+        'faqs',
+        'top_rated_listing_headline',
+        'top_rated_listing_subtext'
     ];
 
     public function category()

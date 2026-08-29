@@ -126,6 +126,7 @@ class SiteContentController extends Controller
         'most_popular',
         'campare_business',
         'visit_website',
+        'profile_and_reviews',
         'exclusive_deals',
         'all_exclusive',
         'get_this_deal',
@@ -160,6 +161,34 @@ class SiteContentController extends Controller
             }
         }
     }
+
+    // Sync action buttons with StaticContent system
+    $formLangId = $request->get('language') ?? getCurrentLanguageID();
+    $defaultLangId = 1;
+    foreach (['profile_and_reviews', 'visit_website'] as $btnKey) {
+        if ($request->has($btnKey) && is_array($request->get($btnKey))) {
+            $btnVal = reset($request->get($btnKey));
+            if (!empty($btnVal)) {
+                // Ensure HomeContent has it
+                HomeContent::updateOrCreate(
+                    ['meta_key' => $btnKey, 'lang_id' => $formLangId],
+                    ['meta_value' => $btnVal, 'type' => 'text']
+                );
+                // Also sync to StaticContentKey/Translation
+                $keyModel = \App\Models\StaticContentKey::firstOrCreate(['key' => $btnKey]);
+                if ($formLangId == $defaultLangId) {
+                    $keyModel->default_value = $btnVal;
+                    $keyModel->save();
+                } else {
+                    \App\Models\StaticContentTranslation::updateOrCreate(
+                        ['static_content_key_id' => $keyModel->id, 'lang_id' => $formLangId],
+                        ['value' => $btnVal]
+                    );
+                }
+            }
+        }
+    }
+    cache()->forget('static_texts_all');
 
     // Handle the permanent_url field
     if ($request->has('permanent_url') && !empty($request->get('permanent_url'))) {
@@ -676,8 +705,8 @@ if (!$headerLogo) {
         $productFiles = TopProductContent::where('type', 'file')->Where('lang_id', 1)->get();
 
         $textSectionsContent = TopProductContent::where('meta_key', 'top_rated_text_sections')->where('lang_id', $lang_id)->first();
-        $textSections = $textSectionsContent && !empty($textSectionsContent->meta_value) ? json_decode($textSectionsContent->meta_value, true) : null;
-        if (!$textSections) {
+        $textSections = $textSectionsContent && $textSectionsContent->meta_value !== null && $textSectionsContent->meta_value !== '' ? json_decode($textSectionsContent->meta_value, true) : null;
+        if ($textSections === null) {
             $textSections = [
                 [
                     'h2_title' => 'How Localio ratings work',
@@ -702,8 +731,8 @@ if (!$headerLogo) {
         }
 
         $faqsContent = TopProductContent::where('meta_key', 'top_rated_faqs')->where('lang_id', $lang_id)->first();
-        $faqs = $faqsContent && !empty($faqsContent->meta_value) ? json_decode($faqsContent->meta_value, true) : null;
-        if (!$faqs) {
+        $faqs = $faqsContent && $faqsContent->meta_value !== null && $faqsContent->meta_value !== '' ? json_decode($faqsContent->meta_value, true) : null;
+        if ($faqs === null) {
             $faqs = [
                 [
                     'category' => 'Rankings & Calculation',
@@ -813,19 +842,37 @@ if (!$headerLogo) {
 
         if ($request->has('text_sections') || $request->has('text_sections_present')) {
             $sectionsData = $request->input('text_sections', []);
+            $filesData = $request->file('text_sections'); // Get files
+            
             $cleanedSections = [];
-            foreach ($sectionsData as $sec) {
+            foreach ($sectionsData as $sIndex => $sec) {
                 if (empty($sec['h2_title']) && empty($sec['h2_text']) && empty($sec['sub_sections'])) {
                     continue;
                 }
                 $cleanedSub = [];
                 if (isset($sec['sub_sections']) && is_array($sec['sub_sections'])) {
-                    foreach ($sec['sub_sections'] as $sub) {
+                    foreach ($sec['sub_sections'] as $subIndex => $sub) {
                         if (!empty($sub['h3_title']) || !empty($sub['h3_text'])) {
-                            $cleanedSub[] = [
+                            $subItem = [
                                 'h3_title' => $sub['h3_title'] ?? '',
                                 'h3_text' => $sub['h3_text'] ?? '',
+                                'h3_image_position' => $sub['h3_image_position'] ?? 'Left',
+                                'h3_image_size' => $sub['h3_image_size'] ?? '50px',
                             ];
+                            
+                            // Check for file upload
+                            if (isset($filesData[$sIndex]['sub_sections'][$subIndex]['h3_image'])) {
+                                $file = $filesData[$sIndex]['sub_sections'][$subIndex]['h3_image'];
+                                $fileName = time() . '_' . $file->getClientOriginalName();
+                                $file->move(public_path('top_rated_images'), $fileName);
+                                $subItem['h3_image'] = 'top_rated_images/' . $fileName;
+                            } elseif (!empty($sub['h3_image_existing'])) {
+                                $subItem['h3_image'] = $sub['h3_image_existing'];
+                            } else {
+                                $subItem['h3_image'] = '';
+                            }
+                            
+                            $cleanedSub[] = $subItem;
                         }
                     }
                 }

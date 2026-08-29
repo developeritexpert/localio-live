@@ -180,7 +180,49 @@
                         </div>
                     </div>
 
-                    <!-- Description (After Image) Section -->
+                    
+                            <!-- Long Preview Description Section -->
+                            <div class="col-12 mt-4">
+                                <label class="form-label">Long preview description</label>
+                                <div class="position-relative"
+                                     wire:ignore
+                                     x-data="{ 
+                                        init() {
+                                            if (typeof ClassicEditor !== 'undefined') {
+                                                ClassicEditor
+                                                    .create(this.$refs.long_preview_description_editor, {
+                                                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo']
+                                                    })
+                                                    .then(editor => {
+                                                        editor.model.document.on('change:data', () => {
+                                                            this.$wire.long_preview_description = editor.getData();
+                                                        });
+                                                        
+                                                        this.$watch('showModal', () => {
+                                                            const data = this.$wire.translations;
+                                                            const val = (data && data[0] && data[0].long_preview_description !== undefined) ? data[0].long_preview_description : (data.long_preview_description || '');
+                                                            if (val !== editor.getData()) {
+                                                                editor.setData(val);
+                                                            }
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            }
+                                        }
+                                     }">
+                                    <textarea x-ref="long_preview_description_editor"
+                                              class="form-control description @error('long_preview_description') is-invalid @enderror"
+                                              wire:model.live="long_preview_description"
+                                              rows="5"></textarea>
+                                </div>
+                                @error('long_preview_description')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Description (After Image) Section -->
                     <div class="card card-bordered mb-3">
                         <div class="card-inner">
                             <div class="form-group d-flex justify-content-between align-items-center">

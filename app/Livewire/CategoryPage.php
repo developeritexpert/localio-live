@@ -1212,6 +1212,17 @@ class CategoryPage extends Component
 
     public function render()
     {
+        $topAffiliatedBusinesses = \App\Models\Business::with(['reviews', 'category.ratingCriteria'])
+        ->withAvg(['reviews as average_rating' => function ($q) {
+            $q->where('status', 'active');
+        }], 'rating')
+        ->where('category_id', $this->category->id)
+        ->where('status', 1)
+        ->where('is_affiliate', 1)
+        ->orderByDesc('average_rating')
+        ->take(10)
+        ->get();
+
         return view('livewire.category-page', [
             'products' => $this->products,
             'sortBy' => $this->sortBy,
@@ -1223,6 +1234,7 @@ class CategoryPage extends Component
             'exploreSubcategories' => $this->exploreSubcategories,
             'popularBusinesses' => $this->popularBusinesses,
             'faqs' => $this->faqs,
+            'topAffiliatedBusinesses' => $topAffiliatedBusinesses,
         ]);
     }
 }
