@@ -1273,7 +1273,7 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link">
+                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link" style="font-size:14px;">
                             View more FAQs
                         </a>
                     </div>

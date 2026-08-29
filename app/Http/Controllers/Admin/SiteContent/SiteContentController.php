@@ -705,8 +705,8 @@ if (!$headerLogo) {
         $productFiles = TopProductContent::where('type', 'file')->Where('lang_id', 1)->get();
 
         $textSectionsContent = TopProductContent::where('meta_key', 'top_rated_text_sections')->where('lang_id', $lang_id)->first();
-        $textSections = $textSectionsContent && !empty($textSectionsContent->meta_value) ? json_decode($textSectionsContent->meta_value, true) : null;
-        if (!$textSections) {
+        $textSections = $textSectionsContent && $textSectionsContent->meta_value !== null && $textSectionsContent->meta_value !== '' ? json_decode($textSectionsContent->meta_value, true) : null;
+        if ($textSections === null) {
             $textSections = [
                 [
                     'h2_title' => 'How Localio ratings work',
@@ -731,8 +731,8 @@ if (!$headerLogo) {
         }
 
         $faqsContent = TopProductContent::where('meta_key', 'top_rated_faqs')->where('lang_id', $lang_id)->first();
-        $faqs = $faqsContent && !empty($faqsContent->meta_value) ? json_decode($faqsContent->meta_value, true) : null;
-        if (!$faqs) {
+        $faqs = $faqsContent && $faqsContent->meta_value !== null && $faqsContent->meta_value !== '' ? json_decode($faqsContent->meta_value, true) : null;
+        if ($faqs === null) {
             $faqs = [
                 [
                     'category' => 'Rankings & Calculation',

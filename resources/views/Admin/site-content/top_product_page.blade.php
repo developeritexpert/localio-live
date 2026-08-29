@@ -1021,27 +1021,46 @@
             }
 
             let normalizedFaqs = [];
+            
+            // Helper to get case-insensitive keys
+            const getVal = (obj, keys) => {
+                for (let k of keys) {
+                    if (obj[k] !== undefined) return obj[k];
+                    if (obj[k.toLowerCase()] !== undefined) return obj[k.toLowerCase()];
+                    if (obj[k.charAt(0).toUpperCase() + k.slice(1)] !== undefined) return obj[k.charAt(0).toUpperCase() + k.slice(1)];
+                }
+                return undefined;
+            };
+
             if (Array.isArray(parsed)) {
                 parsed.forEach(item => {
-                    if (item.category && Array.isArray(item.faqs)) {
-                        item.faqs.forEach(sub => {
-                            if (sub.question || sub.answer) {
-                                const cat = (item.category || 'General').trim();
+                    const itemCat = getVal(item, ['category', 'Category', 'faq_category', 'faqCategory']);
+                    const itemFaqs = getVal(item, ['faqs', 'Faqs', 'FAQs', 'faq']);
+                    const itemQ = getVal(item, ['question', 'Question', 'q', 'Q']);
+                    const itemA = getVal(item, ['answer', 'Answer', 'a', 'A']);
+                    
+                    if (itemCat && Array.isArray(itemFaqs)) {
+                        itemFaqs.forEach(sub => {
+                            const subQ = getVal(sub, ['question', 'Question', 'q', 'Q']);
+                            const subA = getVal(sub, ['answer', 'Answer', 'a', 'A']);
+                            
+                            if (subQ || subA) {
+                                const cat = String(itemCat || 'General').trim();
                                 if (!faqCategoriesList.includes(cat)) faqCategoriesList.push(cat);
                                 normalizedFaqs.push({
                                     category: cat,
-                                    question: sub.question || '',
-                                    answer: sub.answer || ''
+                                    question: String(subQ || ''),
+                                    answer: String(subA || '')
                                 });
                             }
                         });
-                    } else if (item.question || item.answer) {
-                        const cat = (item.category || 'General').trim();
+                    } else if (itemQ || itemA) {
+                        const cat = String(itemCat || 'General').trim();
                         if (!faqCategoriesList.includes(cat)) faqCategoriesList.push(cat);
                         normalizedFaqs.push({
                             category: cat,
-                            question: item.question || '',
-                            answer: item.answer || ''
+                            question: String(itemQ || ''),
+                            answer: String(itemA || '')
                         });
                     }
                 });
@@ -1049,14 +1068,16 @@
                 Object.keys(parsed).forEach(catKey => {
                     const val = parsed[catKey];
                     if (Array.isArray(val)) {
-                        const cat = (catKey || 'General').trim();
+                        const cat = String(catKey || 'General').trim();
                         if (!faqCategoriesList.includes(cat)) faqCategoriesList.push(cat);
                         val.forEach(sub => {
-                            if (sub.question || sub.answer) {
+                            const subQ = getVal(sub, ['question', 'Question', 'q', 'Q']);
+                            const subA = getVal(sub, ['answer', 'Answer', 'a', 'A']);
+                            if (subQ || subA) {
                                 normalizedFaqs.push({
                                     category: cat,
-                                    question: sub.question || '',
-                                    answer: sub.answer || ''
+                                    question: String(subQ || ''),
+                                    answer: String(subA || '')
                                 });
                             }
                         });
@@ -1081,9 +1102,18 @@
             resetFaqForm();
             renderFaqTable();
 
-            const modalEl = document.getElementById('importFaqJsonModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            modalInstance.hide();
+            try {
+                $('#importFaqJsonModal').modal('hide');
+            } catch(e) {
+                console.log(e);
+            }
+            try {
+                const modalEl = document.getElementById('importFaqJsonModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                modalInstance.hide();
+            } catch(e) {
+                console.log(e);
+            }
 
             alert(`Successfully imported ${normalizedFaqs.length} FAQs into the list! Click "Update Content" below to save.`);
         });
