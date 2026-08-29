@@ -231,7 +231,11 @@
                                 <div class="form-group">
                                     <label class="form-label fw-bold">{{ $info['label'] }}</label>
                                     <div class="form-control-wrap">
-                                        <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
+                                        @if(in_array($key, ['faq_page_main_subheadline', 'faq_page_about_subheadline']))
+                                            <textarea class="form-control rich-editor" name="{{ $key }}[{{ $id }}]" placeholder="{{ $info['placeholder'] }}">{{ $val }}</textarea>
+                                        @else
+                                            <input type="text" class="form-control" name="{{ $key }}[{{ $id }}]" value="{{ $val }}" placeholder="{{ $info['placeholder'] }}">
+                                        @endif
                                     </div>
                                     <small class="text-muted" style="font-size: 0.75rem;">{{ $info['desc'] }}</small>
                                 </div>

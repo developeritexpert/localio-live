@@ -1272,7 +1272,7 @@ section.top-automotive-sec.top_rate_pg.light {
                                         </button>
                                         @else
                                         <p class="mb-0">
-                                            Sorry ,No Products available at the moment.
+                                            {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
                                         </p>
                                         @endif
                                     </div>

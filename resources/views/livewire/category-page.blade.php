@@ -595,7 +595,7 @@
                                         <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
                                             <h3 class="fw-semibold text-dark mb-3">
                                                 <!-- {{ static_text('price_range') }} -->
-                                                Price range
+                                                {{ static_text('price_range') ?: 'Price range' }}
 
                                             </h3>
 
@@ -1309,7 +1309,7 @@
                             </button>
                             @else
                             <p class="mb-0">
-                                Sorry ,No Products available at the moment.
+                                {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
                             </p>
                             @endif
                         </div>

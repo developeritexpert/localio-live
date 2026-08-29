@@ -203,7 +203,7 @@
                             </h1>
                         </div>
                         <p style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight:400;">
-                            {{ $topProductContents['faq_page_main_subheadline'] ?? 'Frequently asked questions and answers about top-rated rankings and products on Localio.' }}
+                            {!! $topProductContents['faq_page_main_subheadline'] ?? 'Frequently asked questions and answers about top-rated rankings and products on Localio.' !!}
                         </p>
                     </div>
                 </div>
@@ -227,7 +227,7 @@
                     </h2>
                     <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
                         <p>
-                            {{ $topProductContents['faq_page_about_subheadline'] ?? 'Learn more about how Localio calculates community ratings, moderates verified reviews, and compiles top-rated leaderboards across software and local business categories.' }}
+                            {!! $topProductContents['faq_page_about_subheadline'] ?? 'Learn more about how Localio calculates community ratings, moderates verified reviews, and compiles top-rated leaderboards across software and local business categories.' !!}
                         </p>
                     </div>
                 </div>

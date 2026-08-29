@@ -383,7 +383,7 @@
                                                 </label>
                                                 <span class="badge bg-light text-secondary border" style="font-size: 11px;">
                                                     {{ count($selectedCons) }}/5 selected
-                                                </span>
+                                                </span>`
                                             </div>
                                             
                                             <div class="pro-con-box">

@@ -316,7 +316,7 @@
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
                                 <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
-                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 24px; width: auto; object-fit: contain;">
+                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                             </div>
                             <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
@@ -401,7 +401,7 @@
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
                                         <h3 class="fw-semibold text-dark mb-3">
                                             <!-- {{ static_text('price_range') }} -->
-                                            Price range
+                                            {{ static_text('price_range') ?: 'Price range' }}
 
                                         </h3>
 
@@ -1077,7 +1077,7 @@
                         </button>
                         @else
                         <p class="mb-0">
-                            Sorry ,No Products available at the moment.
+                            {{ static_text('no_prod_mach_fil') ?: 'No products found matching your selected filters.' }}
                         </p>
                         @endif
                     </div>
@@ -1112,8 +1112,8 @@
                     $catItemSeeAllText = $trans->see_all_text ?? '';
                     $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
                     $catItemDesc = !empty($trans->top_rated_description)
-                        ? strip_tags($trans->top_rated_description)
-                        : strip_tags($trans->description ?? $cat->description ?? '');
+                        ? $trans->top_rated_description
+                        : ($trans->description ?? $cat->description ?? '');
                     if (empty($catItemDesc) && !empty($catItemName)) {
                         $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions. Explore providers using features, starting prices, real user reviews, and community ratings to identify the right match.';
                     }
@@ -1127,7 +1127,7 @@
                         </a>
                     </div>
 
-                    <p style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">{{ $catItemDesc }}</p>
+                    <div class="category-description-text" style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">{!! $catItemDesc !!}</div>
 
                     <div class="top-products-grid">
                         @foreach($cat->top_businesses ?? [] as $business)
