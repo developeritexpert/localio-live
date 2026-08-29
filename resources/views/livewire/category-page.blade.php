@@ -494,6 +494,9 @@
             style="padding-top:25px !important; background-color: #fdfdfd !important;">
             <div class="top-auto-btm">
                 <div class="container">
+                    <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; border-bottom: 1px solid #e8eef6 !important;padding-bottom: 20px;">
+                       {{ $category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services') }}
+                    </h2>
                     <div class="top-auto-choice">
                         <!-- <div class="top-rated-heading-block" style="padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid #e8eef6 !important;">
                                 <div class="row align-items-start">

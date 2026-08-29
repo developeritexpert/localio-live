@@ -142,6 +142,21 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="top_rated_listing_headline">Top-Rated Listing Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="top_rated_listing_headline" name="top_rated_listing_headline"
+                                        value="{{ isset($category_data) ? ($category_data['top_rated_listing_headline'] ?? '') : old('top_rated_listing_headline') }}"
+                                        placeholder="e.g. Best web hosting services">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline displayed above the top-rated listings on this category's page. Defaults to "Best [Category Name] services".</small>
+                                @error('top_rated_listing_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="top_rated_description">Top-Rated Page Description</label>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="top_rated_description" name="top_rated_description" rows="4" placeholder="Enter SEO-optimized short description displayed in the 'Explore top-rated categories' section on the Top Rated page">{!! isset($category_data) ? ($category_data['top_rated_description'] ?? '') : old('top_rated_description') !!}</textarea>
