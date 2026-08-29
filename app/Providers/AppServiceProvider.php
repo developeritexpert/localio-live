@@ -31,14 +31,31 @@ class AppServiceProvider extends ServiceProvider
             'category' => \App\Models\Category::class,
         ]);
 
-        ini_set('max_execution_time', 120);
+        if (! $this->app->runningInConsole()) {
+            ini_set('max_execution_time', 120);
+        }
         Blade::component('faq-section', FaqSection::class);
         Schema::defaultStringLength(191);
-        $languages = \App\Models\Language::where('status', 1)->get();
+
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
+        try {
+            $languages = \App\Models\Language::where('status', 1)->get();
+        } catch (\Throwable $e) {
+            $languages = collect();
+        }
+
         View::share('languages', $languages);
         app()->instance('languages', $languages);
         
-        $footer_countries = \App\Models\Country::where('status', 1)->with('language')->get();
+        try {
+            $footer_countries = \App\Models\Country::where('status', 1)->with('language')->get();
+        } catch (\Throwable $e) {
+            $footer_countries = collect();
+        }
+
         View::share('footer_countries', $footer_countries);
     }
 }

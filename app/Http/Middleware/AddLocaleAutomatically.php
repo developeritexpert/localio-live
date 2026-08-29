@@ -12,9 +12,23 @@ class AddLocaleAutomatically
 {
     public function handle(Request $request, Closure $next)
     {
-        // 1. Fetch all active valid language codes from database
-        $validLanguages = Language::where('status', 1)->get();
-        $validLocales = $validLanguages->pluck('lang_code')->map(fn($c) => strtolower(trim($c)))->toArray();
+        // 1. Fetch all active valid language codes from database, with a config fallback
+        try {
+            $validLanguages = Language::where('status', 1)->get();
+            $validLocales = $validLanguages->pluck('lang_code')->map(fn($c) => strtolower(trim($c)))->toArray();
+        } catch (\Throwable $e) {
+            $validLanguages = collect();
+            $validLocales = collect(config('app.available_locales', [config('app.locale', 'en-us')]))
+                ->map(fn($locale) => strtolower(trim((string) $locale)))
+                ->filter()
+                ->values()
+                ->toArray();
+        }
+
+        if (empty($validLocales)) {
+            $validLocales = [strtolower((string) config('app.locale', 'en-us'))];
+        }
+
         $defaultLocale = in_array('en-us', $validLocales) ? 'en-us' : ($validLocales[0] ?? 'en-us');
 
         $firstSegment = strtolower(trim((string)$request->segment(1)));
@@ -27,10 +41,11 @@ class AddLocaleAutomatically
         // -------------------------------------------------------------
         if (!empty($firstSegment) && in_array($firstSegment, $validLocales)) {
             $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $firstSegment);
+            App::setLocale($firstSegment);
+            session(['lang_code' => $firstSegment]);
+
             if ($langObj) {
-                App::setLocale($firstSegment);
                 session([
-                    'lang_code' => $firstSegment,
                     'lang_id'   => $langObj->id,
                     'lang_name' => ucfirst($langObj->name),
                 ]);
@@ -47,10 +62,11 @@ class AddLocaleAutomatically
             $cookieLocale = strtolower(trim((string)($request->cookie('user_locale') ?? $request->cookie('lang_code'))));
             if (!empty($cookieLocale) && in_array($cookieLocale, $validLocales)) {
                 $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $cookieLocale);
+                App::setLocale($cookieLocale);
+                session(['lang_code' => $cookieLocale]);
+
                 if ($langObj) {
-                    App::setLocale($cookieLocale);
                     session([
-                        'lang_code' => $cookieLocale,
                         'lang_id'   => $langObj->id,
                         'lang_name' => ucfirst($langObj->name),
                     ]);
@@ -72,10 +88,11 @@ class AddLocaleAutomatically
                         // Exact match (language + country)
                         if (in_array($normalized, $validLocales)) {
                             $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $normalized);
+                            App::setLocale($normalized);
+                            session(['lang_code' => $normalized]);
+
                             if ($langObj) {
-                                App::setLocale($normalized);
                                 session([
-                                    'lang_code' => $normalized,
                                     'lang_id'   => $langObj->id,
                                     'lang_name' => ucfirst($langObj->name),
                                 ]);
@@ -98,16 +115,17 @@ class AddLocaleAutomatically
 
                         if ($fallbackLocale) {
                             $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $fallbackLocale);
+                            App::setLocale($fallbackLocale);
+                            session(['lang_code' => $fallbackLocale]);
+
                             if ($langObj) {
-                                App::setLocale($fallbackLocale);
                                 session([
-                                    'lang_code' => $fallbackLocale,
                                     'lang_id'   => $langObj->id,
                                     'lang_name' => ucfirst($langObj->name),
                                 ]);
-                                // Flash show_country_modal flag to show the modal on the redirected page
-                                session()->flash('show_country_modal', true);
                             }
+                            // Flash show_country_modal flag to show the modal on the redirected page
+                            session()->flash('show_country_modal', true);
                             return redirect()->to('/' . $fallbackLocale);
                         }
                     }
@@ -116,10 +134,11 @@ class AddLocaleAutomatically
 
             // Fallback to default locale if no detection worked
             $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $defaultLocale);
+            App::setLocale($defaultLocale);
+            session(['lang_code' => $defaultLocale]);
+
             if ($langObj) {
-                App::setLocale($defaultLocale);
                 session([
-                    'lang_code' => $defaultLocale,
                     'lang_id'   => $langObj->id,
                     'lang_name' => ucfirst($langObj->name),
                 ]);
