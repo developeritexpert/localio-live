@@ -1146,7 +1146,7 @@
                                                             class="btn-orng cta cta_orange justify-content-center"
                                                             target="_blank"
                                                             style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
-                                                            Visit website
+                                                            {{ static_text('visit_website') ?: 'Visit website' }}
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                 height="24" viewBox="0 0 24 24" fill="none"
                                                                 stroke="currentColor" stroke-width="2"
@@ -1163,7 +1163,7 @@
                                                         <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                             class="cta cta_outline justify-content-center"
                                                             style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
-                                                            View details
+                                                            {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                         </a>
                                                     </div>
 
@@ -1530,13 +1530,13 @@
                                             @endphp
                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
                                                class="btn-view-details-outline btn py-1 px-2 fw-medium {{ ($hasBizTrackedUrl) ? 'w-50' : 'w-100' }}">
-                                                View details
+                                                {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                             </a>
                                             @if($hasBizTrackedUrl)
                                             <a href="{{ $biz->getTrackedUrl() }}"
                                                target="_blank"
                                                class="btn-orng-pill btn py-1 px-2 fw-medium w-50 text-white">
-                                                Visit website <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
+                                                {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
                                             </a>
                                             @endif
                                         </div>

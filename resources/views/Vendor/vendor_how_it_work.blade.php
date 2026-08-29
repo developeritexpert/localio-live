@@ -148,7 +148,7 @@
                                     <div class="top-pro-btn">
                                         <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}"
                                             class="cta cta_orange d-flex align-items-center">
-                                            {{ $homeContents['visit_website'] ?? 'Visit Website' }}
+                                            {{ static_text('visit_website') ?: ($homeContents['visit_website'] ?? 'Visit website') }}
                                             <div class="right-arw">
                                                 <i class="fa-solid fa-arrow-right"></i>
                                             </div>

@@ -181,9 +181,16 @@
                                                     }
                                                 }
                                             @endphp
+                                            @php
+                                                $keyLabels = [
+                                                    'profile_and_reviews' => 'Profile & Reviews Button (formerly "View details")',
+                                                    'visit_website' => 'Visit Website Button',
+                                                ];
+                                                $displayLabel = $keyLabels[$key] ?? ucwords(str_replace('_', ' ', $key));
+                                            @endphp
                                             <div class="form-group col-lg-12">
                                                 <label class="form-label" for="{{ $key }}">
-                                                    {{ ucwords(str_replace('_', ' ', $key)) }}
+                                                    {{ $displayLabel }}
                                                 </label>
                                                 <div class="form-control-wrap">
                                                     @if (str_contains($key, '_des') || str_contains($key, 'mail_below_text') || str_contains($key, '_desc') || str_contains($key, '_message'))

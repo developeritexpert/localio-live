@@ -74,10 +74,7 @@ class AddReview extends Component
             ]));
 
             if ($business->category) {
-                $this->criteria = $business->category->ratingCriteria->toArray();
-                if (empty($this->criteria) && $business->category->parent) {
-                    $this->criteria = $business->category->parent->ratingCriteria->toArray();
-                }
+                $this->criteria = $business->category->getEffectiveRatingCriteria()->toArray();
                 foreach ($this->criteria as $criterion) {
                     $this->criteriaRatings[$criterion['id']] = 0;
                 }

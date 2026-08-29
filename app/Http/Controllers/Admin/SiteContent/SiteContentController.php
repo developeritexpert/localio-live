@@ -126,6 +126,7 @@ class SiteContentController extends Controller
         'most_popular',
         'campare_business',
         'visit_website',
+        'profile_and_reviews',
         'exclusive_deals',
         'all_exclusive',
         'get_this_deal',
@@ -160,6 +161,34 @@ class SiteContentController extends Controller
             }
         }
     }
+
+    // Sync action buttons with StaticContent system
+    $formLangId = $request->get('language') ?? getCurrentLanguageID();
+    $defaultLangId = 1;
+    foreach (['profile_and_reviews', 'visit_website'] as $btnKey) {
+        if ($request->has($btnKey) && is_array($request->get($btnKey))) {
+            $btnVal = reset($request->get($btnKey));
+            if (!empty($btnVal)) {
+                // Ensure HomeContent has it
+                HomeContent::updateOrCreate(
+                    ['meta_key' => $btnKey, 'lang_id' => $formLangId],
+                    ['meta_value' => $btnVal, 'type' => 'text']
+                );
+                // Also sync to StaticContentKey/Translation
+                $keyModel = \App\Models\StaticContentKey::firstOrCreate(['key' => $btnKey]);
+                if ($formLangId == $defaultLangId) {
+                    $keyModel->default_value = $btnVal;
+                    $keyModel->save();
+                } else {
+                    \App\Models\StaticContentTranslation::updateOrCreate(
+                        ['static_content_key_id' => $keyModel->id, 'lang_id' => $formLangId],
+                        ['value' => $btnVal]
+                    );
+                }
+            }
+        }
+    }
+    cache()->forget('static_texts_all');
 
     // Handle the permanent_url field
     if ($request->has('permanent_url') && !empty($request->get('permanent_url'))) {

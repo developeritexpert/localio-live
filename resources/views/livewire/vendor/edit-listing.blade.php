@@ -368,7 +368,7 @@
                                             <small class="text-muted">Pricing, Features, Alternatives & User Reviews</small>
                                         </div>
                                         <div>
-                                            <a href="#" class="btn btn-danger rounded-pill">Visit Website →</a>
+                                            <a href="#" class="btn btn-danger rounded-pill">{{ static_text('visit_website') ?: 'Visit website' }} →</a>
                                             <!-- Pencil icon triggers toggle -->
                                             <i class="fa fa-pencil ms-3 text-dark" role="button" data-bs-toggle="collapse" data-bs-target="#editBusinessForm"></i>
                                         </div>
@@ -772,7 +772,7 @@
                                         <div class="poplr-visit-btn">
                                             <a href="{{ $link }} "
                                                 class="cta cta_orange d-flex align-items-center">
-                                                Visit Website
+                                                {{ static_text('visit_website') ?: 'Visit website' }}
                                                 <svg width="17" height="12" viewBox="0 0 17 12" fill="none"
                                                     xmlns="http://www.w3.org/2000/svg">
                                                     <path
@@ -1318,7 +1318,7 @@
                                             <div class="sftwre-alt-btn">
                                                 <a href="{{ $altbusiness->websites->first()->website_url ?? ($altbusiness->affiliate_link ?? ($altbusiness->permanent_url ?? '#')) }}"
                                                     class="cta cta_orange d-flex align-items-center justify-content-center">
-                                                    Visit Website
+                                                    {{ static_text('visit_website') ?: 'Visit website' }}
                                                     <svg width="17" height="12" viewBox="0 0 17 12" fill="none"
                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path

@@ -313,7 +313,7 @@
                                                     ]) }}"
                                                     class="btn-orng cta cta_orange d-flex align-items-center" target="_blank"
                                                     tabindex="0">
-                                                    Visit website
+                                                    {{ static_text('visit_website') ?: 'Visit website' }}
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </a>
                                             </div>
@@ -1084,7 +1084,7 @@
                                                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
                                                                                                 class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
                                                                                                 style="  border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
-                                                                                                View details
+                                                                                                {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                                             </a>
                                                                                         </div>
                                                                                     </div>
@@ -2278,7 +2278,7 @@
                                                             ]) }}"
                                                             target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
                                                             style="border-radius: 30px; font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-                                                            Visit website <i class="fas fa-external-link-alt ms-2"
+                                                            {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2"
                                                                 style="font-size: 11px;"></i>
                                                         </a>
                                                     @endif
@@ -2363,7 +2363,7 @@
                     'label' => 'Visit Website',
                 ]) }}"
                 target="_blank" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
-                Visit website <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
+                {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
             </a>
         @endif
     </div>
@@ -3074,7 +3074,7 @@
                            class="cta cta_orange"
                            style="padding: 12px 24px; font-weight: 600; border-radius: 30px; text-decoration: none; display: flex; align-items: center; gap: 8px;"
                         >
-                            Visit Website
+                            {{ static_text('visit_website') ?: 'Visit website' }}
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>
                     </div>

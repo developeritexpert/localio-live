@@ -74,13 +74,38 @@ class Category extends Model
                     ? $parentCriterion->description
                     : $def->default_description;
 
-                $criterion = new CategoryRatingCriteria([
-                    'category_id' => $this->id,
-                    'default_key' => $def->key,
-                    'name' => $def->name,
-                    'description' => $description,
-                    'is_default' => true,
-                ]);
+                $criterion = CategoryRatingCriteria::where('category_id', $this->id)
+                    ->where(function ($q) use ($def) {
+                        $q->where('default_key', $def->key)
+                          ->orWhereRaw('LOWER(name) = ?', [strtolower($def->name)]);
+                    })
+                    ->first();
+
+                if ($criterion && !$criterion->default_key) {
+                    $criterion->update([
+                        'is_default' => true,
+                        'default_key' => $def->key,
+                        'name' => $def->name,
+                    ]);
+                }
+
+                if (!$criterion) {
+                    $criterion = CategoryRatingCriteria::firstOrCreate(
+                        [
+                            'category_id' => $this->id,
+                            'default_key' => $def->key,
+                        ],
+                        [
+                            'name' => $def->name,
+                            'description' => $description,
+                            'is_default' => true,
+                        ]
+                    );
+                }
+
+                if (empty($criterion->description)) {
+                    $criterion->description = $description;
+                }
             } else {
                 // Main Category: Fetch or initialize local default criterion
                 $criterion = CategoryRatingCriteria::where('category_id', $this->id)

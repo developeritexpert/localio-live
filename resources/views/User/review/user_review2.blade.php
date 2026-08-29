@@ -138,7 +138,7 @@
             @if(!empty($business->is_affiliate))
             <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn">
                 <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
-                    Visit website <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
+                    {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
             @endif
@@ -790,7 +790,7 @@
                                             ]) }}"
                                             target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
                                             style="border-radius: 30px; font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-                                            Visit website <i class="fas fa-external-link-alt ms-2" style="font-size: 11px;"></i>
+                                            {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 11px;"></i>
                                         </a>
                                     @endif
                                 </div>
