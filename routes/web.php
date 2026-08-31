@@ -708,6 +708,7 @@ Route::get('/set-admin-active-language/{lang_id}', [SiteLanguagesController::cla
 // Business FAQ Vote and Report routes
 Route::post('/business-faq/vote', [\App\Http\Controllers\User\ViewController::class, 'voteBusinessFaq'])->name('business.faq.vote');
 Route::post('/business-faq/report', [\App\Http\Controllers\User\ViewController::class, 'reportBusinessFaq'])->name('business.faq.report');
+Route::post('/review/report', [\App\Http\Controllers\User\ViewController::class, 'reportReview'])->name('review.report');
 
 Route::get('/refresh-csrf', function () {
     return response()->json(['token' => csrf_token()]);
