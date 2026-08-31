@@ -81,8 +81,7 @@
                             <!-- Middle Page Sub Heading -->
                             <div class="col-md-12">
                                 <label class="form-label" for="mp_sub_heading">Middle Page Sub Heading</label>
-                                <input type="text" class="form-control" id="mp_sub_heading" name="mp_sub_heading"
-                                    value="{{ $whoWeAre->mp_sub_heading ?? '' }}" />
+                                <textarea class="form-control description" id="mp_sub_heading" name="mp_sub_heading">{{ $whoWeAre->mp_sub_heading ?? '' }}</textarea>
                             </div>
 
                             <!-- Top Card Title -->
@@ -105,7 +104,7 @@
                             <!-- Top Card Description -->
                             <div class="col-md-12">
                                 <label class="form-label" for="top_card_desc">Top Card Description</label>
-                                <textarea class="form-control" id="top_card_desc" name="top_card_desc">{{ $whoWeAre->top_card_desc ?? '' }}</textarea>
+                                <textarea class="form-control description" id="top_card_desc" name="top_card_desc">{{ $whoWeAre->top_card_desc ?? '' }}</textarea>
                             </div>
 
                             <div class="col-md-12">
@@ -268,11 +267,7 @@
                                             name="specialists_img[]">
                                     </div>
 
-                                    <div class="form-group col-lg-12">
-                                        <label class="form-label" for="specialists_small_img">small Image</label>
-                                        <input type="file" class="form-control" id="specialists_small_img"
-                                            name="specialists_small_img[]">
-                                    </div>
+
                                 </div>
                             </div>
 
@@ -292,7 +287,6 @@
                                                     <tr>
                                                         <th>#</th>
                                                         <th>Image</th>
-                                                        <th>Small Image</th>
                                                         <th>Title</th>
                                                         <th>Description</th>
                                                         <th>Action</th>
@@ -311,15 +305,7 @@
                                                                     N/A
                                                                 @endif
                                                             </td>
-                                                            <td>
-                                                                @if ($item->translations->first()->small_img)
-                                                                    <img src="{{ asset($item->translations->first()->small_img) }}"
-                                                                        alt="Item Image"
-                                                                        style="width: 100px; height: auto;">
-                                                                @else
-                                                                    N/A
-                                                                @endif
-                                                            </td>
+
                                                             <td>{{ $item->translations->first()->title ?? 'No title' }}
                                                             </td>
                                                             <td>{{ $item->translations->first()->description ?? 'No Description' }}
@@ -375,11 +361,6 @@
                                         <input type="file" id="update-special-image-input" name="SS[img]" class="form-control" />
                                     </div>
 
-                                    <div class="form-group mt-3">
-                                        <label class="form-label"><strong>Small Image:</strong></label><br>
-                                        <img id="updated-small-image" style="width: 100px; height: auto;" class="mb-2" />
-                                        <input type="file" id="update-small-image-input" name="SS[small_img]" class="form-control" />
-                                    </div>
 
                                     <div class="mt-4">
                                         <button type="button" id="save-ss-button" class="btn btn-primary">Save Changes</button>
@@ -401,7 +382,7 @@
                             <!-- Service Software Description -->
                             <div class="col-md-12">
                                 <label class="form-label" for="ss_sub_desc">Service Software Description</label>
-                                <textarea class="form-control" id="ss_sub_desc" name="ss_sub_desc">{{ $whoWeAre->ss_sub_desc ?? '' }}</textarea>
+                                <textarea class="form-control description" id="ss_sub_desc" name="ss_sub_desc">{{ $whoWeAre->ss_sub_desc ?? '' }}</textarea>
                             </div>
 
                             <!-- Portfolio Button Text -->
@@ -888,7 +869,6 @@
                 const title = $('#specialists_title').val();
                 const description = $('#specialists_description').val();
                 const imgFile = $('#specialists_img')[0].files[0];
-                const smallImgFile = $('#specialists_small_img')[0].files[0];
 
                 // Validate fields
                 let isValid = true;
@@ -920,24 +900,6 @@
                         isValid = false;
                     } else if (imgFile.size > 2048 * 1024) { // 2MB in bytes
                         showValidationError('#specialists_img', 'Image size should not exceed 2MB');
-                        isValid = false;
-                    }
-                }
-
-                if (!smallImgFile) {
-                    showValidationError('#specialists_small_img', 'Please select a small image');
-                    isValid = false;
-                } else {
-                    // Validate small image file
-                    const validExtensions = ['jpeg', 'jpg', 'png', 'gif', 'svg'];
-                    const extension = smallImgFile.name.split('.').pop().toLowerCase();
-
-                    if (!validExtensions.includes(extension)) {
-                        showValidationError('#specialists_small_img',
-                            'Only image files (jpeg, jpg, png, gif, svg) are allowed');
-                        isValid = false;
-                    } else if (smallImgFile.size > 2048 * 1024) { // 2MB in bytes
-                        showValidationError('#specialists_small_img', 'Image size should not exceed 2MB');
                         isValid = false;
                     }
                 }
@@ -1169,7 +1131,7 @@
             });
 
             function clearSpecialistsForm() {
-                $('#specialists_title, #specialists_description, #specialists_img, #specialists_small_img').val('');
+                $('#specialists_title, #specialists_description, #specialists_img').val('');
             }
 
             // Language dropdown change handler

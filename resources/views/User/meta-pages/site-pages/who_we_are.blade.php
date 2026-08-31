@@ -53,7 +53,7 @@
         <div class="most-popular-wrp">
             <div class="hd_text">
                 <h1 data-aos="zoom-in" data-aos-duration="1000" class="text-center mb-4">{{ $whoWeAre->mp_heading ?? '' }}</h1>
-                <p>{{ $whoWeAre->mp_sub_heading ?? '' }}</p>
+                <div class="ck-content">{!! $whoWeAre->mp_sub_heading ?? '' !!}</div>
             </div>
             <div class="popular-accordion-wrp mst_wrp" data-aos="fade-up" data-aos-duration="1000">
                 <div class="row align-items-center ">
@@ -67,8 +67,7 @@
                     <div class="col-md-6">
                         <div class="accor-txt-contnt">
                             <h6>{{ $whoWeAre->top_card_title ?? '' }}</h6>
-                            <p>{{ $whoWeAre->top_card_desc ?? '' }}
-                            </p>
+                            <div class="ck-content">{!! $whoWeAre->top_card_desc ?? '' !!}</div>
                         </div>
                     </div>
                 </div>
@@ -129,9 +128,7 @@
                                 <p>{{ $item->translations->first()->description ?? '' }}
                                 </p>
                             </div>
-                            <div class="succs_grp">
-                                <img src="{{ asset($item->translations->first()->small_img) }}">
-                            </div>
+
 
                         </div>
 
@@ -147,8 +144,7 @@
     <div class="container">
         <div class="succes_content" data-aos="fade-up" data-aos-duration="1000">
             <h2>{{ $whoWeAre->ss_heading ?? '' }}</h2>
-            <p>{{ $whoWeAre->ss_sub_desc ?? '' }}
-            </p>
+            <div class="ck-content">{!! $whoWeAre->ss_sub_desc ?? '' !!}</div>
             <div class="top-pro-btn  snd_bttn">
                 <a href="{{ route('category', ['locale' => app()->getLocale()]) }}" class="btn-orng cta cta_orange">{{ $whoWeAre->protfolio_btn ?? '' }}</a>
             </div>
