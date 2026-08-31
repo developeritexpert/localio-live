@@ -527,30 +527,38 @@ class CategoriesController extends Controller
             }
 
             // Process Category FAQs
+           $categoryTransData = [
+                'category_id'  => $category->id,
+                'lang_id'      => $language_id,
+                'name'         => $validate['name'],
+                'comparison_name' => $validate['comparison_name'] ?? null,
+                'see_all_text'    => $validate['see_all_text'] ?? null,
+                'page_title'   => $validate['page_title'] ?? null,
+                'title'        => $validate['title'] ?? null,
+                'description'  => $validate['description'],
+                'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
+                'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
+                'top_rated_description' => $request->input('top_rated_description'),
+                'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
+                'meta_title'   => $validate['meta_title'] ?? null,
+                'meta_description' => $validate['meta_description'] ?? null,
+                'slug'         => $slug,
+                'comparison_slug' => $comparisonSlug,
+                'is_important' => $request->has('is_important') ? 1 : 0,
+            ];
+
+            // Safely filter out columns that do not exist in the database table schema
+            if (\Illuminate\Support\Facades\Schema::hasTable('category_translations')) {
+                $existingColumns = \Illuminate\Support\Facades\Schema::getColumnListing('category_translations');
+                $categoryTransData = array_intersect_key($categoryTransData, array_flip($existingColumns));
+            }
+
            CategoryTranslation::updateOrCreate(
                 [
                     'lang_id' => (int) $language_id,
                     'category_id' => $category->id
                 ],
-                [
-                    'category_id'  => $category->id,
-                    'lang_id'      => $language_id,
-                    'name'         => $validate['name'],
-                    'comparison_name' => $validate['comparison_name'] ?? null,
-                    'see_all_text'    => $validate['see_all_text'] ?? null,
-                    'page_title'   => $validate['page_title'] ?? null,
-                    'title'        => $validate['title'] ?? null,
-                    'description'  => $validate['description'],
-                    'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
-                    'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
-                    'top_rated_description' => $request->input('top_rated_description'),
-                    'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
-                    'meta_title'   => $validate['meta_title'] ?? null,
-                    'meta_description' => $validate['meta_description'] ?? null,
-                    'slug'         => $slug,
-                    'comparison_slug' => $comparisonSlug,
-                    'is_important' => $request->has('is_important') ? 1 : 0,
-                ]
+                $categoryTransData
             );
 
             // Handle rating criteria
