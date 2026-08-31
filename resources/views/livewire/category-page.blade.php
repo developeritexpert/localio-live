@@ -1,4 +1,5 @@
 <div>
+    @include('User.partials.business_detail_styles')
     <style>
     [x-cloak] { display: none !important; }
     .auto-choice-hd {
@@ -1499,7 +1500,7 @@
         
         <!-- Top Affiliated Businesses Section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
-        <section class="top-affiliated-sec py-5" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="mb-4">
                     @foreach($topAffiliatedBusinesses as $index => $biz)
@@ -1523,92 +1524,94 @@
                         $recommendPercent = $biz->reviews()->count() > 0 ? round(($biz->reviews()->where('recommend', 1)->count() / $biz->reviews()->count()) * 100) : 0;
                     @endphp
                     
-                    <div class="affiliated-business-card mb-5 pb-5 {{ !$loop->last ? 'border-bottom border-gray-200' : '' }}">
-                        <div class="row gx-5">
+                    <div class="image_revie_inr mt-3 {{ !$loop->last ? 'border-bottom border-gray-200' : '' }}">
+                        <!-- <div class="row gx-5"> -->
                             <!-- Left Column: Description, Image, Pros/Cons -->
-                            <div class="col-lg-8">
-                                <h2 style="font-size: 28px; font-weight: 800; color: #111827; margin-bottom: 24px;">
-                                    #{{ $index + 1 }} {{ $bName }}
-                                </h2>
-                                
-                                @if(!empty($longDescription))
-                                <div class="rich-text-content mb-4" style="font-size: 16px; color: #374151; line-height: 1.8;">
-                                    {!! $longDescription !!}
-                                </div>
-                                @endif
-                                
-                                @php
-                                    $sliderImages = is_array($biz->business_images) ? $biz->business_images : json_decode($biz->business_images ?? '[]', true);
-                                    if (empty($sliderImages)) {
-                                        $sliderImages = is_array($biz->screenshot_urls) ? $biz->screenshot_urls : json_decode($biz->screenshot_urls ?? '[]', true);
-                                    }
-                                @endphp
-                                @if(!empty($sliderImages) && count($sliderImages) > 0)
-                                <div class="business-preview-images mb-5">
-                                    <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                                        <img src="{{ asset($sliderImages[0]) }}" alt="{{ $bName }}" class="img-fluid w-100" style="object-fit: cover; max-height: 450px;">
-                                    </a>
-                                </div>
-                                @endif
-                                
-                                <!-- Pros and Cons Section -->
-                                @php
-                                    $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
-                                        ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
-                                        ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
-                                        ->where('reviews.business_id', $biz->id)
-                                        ->where('reviews.status', 'active')
-                                        ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
-                                        ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
-                                        ->orderByDesc('reviews_count')
-                                        ->get();
-                                        
-                                    $topPros = $aggregatedProCons->where('type', 'pro')->values()->take(5);
-                                    $topCons = $aggregatedProCons->where('type', 'con')->values()->take(5);
-                                @endphp
-                                <div class="pros-cons-wrapper mt-4">
-                                    <div class="pros-cons-header mb-3">
-                                        <h2 style="font-weight: 600; color: #1e3050; font-size: 22px; margin-bottom: 8px;">
-                                            {{ $bName }} pros and cons
+                            <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
+                                    <div class="row sld_rw">
+                                        <h2 style="font-size: 28px; font-weight: 800; color: #111827; margin-bottom: 24px;">
+                                            #{{ $index + 1 }} {{ $bName }}
                                         </h2>
-                                    </div>
                                     
-                                    <div class="row g-4 d-flex">
-                                        <div class="col-md-6">
-                                            <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
-                                                <div class="card-body">
-                                                    <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
-                                                    <ul class="list-unstyled mb-0">
-                                                        @forelse($topPros as $pro)
-                                                        <li class="d-flex align-items-start mb-2">
-                                                            <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
-                                                            <span style="color: #202124;">{{ $pro->text }}
-                                                                <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->reviews_count }} {{ $pro->reviews_count == 1 ? 'review' : 'reviews' }}</small>
-                                                            </span>
-                                                        </li>
-                                                        @empty
-                                                        <li class="text-muted" style="font-size: 14px;">No pros available</li>
-                                                        @endforelse
-                                                    </ul>
+                                    @if(!empty($longDescription))
+                                    <div class="rich-text-content mb-4" style="font-size: 16px; color: #374151; line-height: 1.8;">
+                                        {!! $longDescription !!}
+                                    </div>
+                                    @endif
+                                    
+                                    @php
+                                        $sliderImages = is_array($biz->business_images) ? $biz->business_images : json_decode($biz->business_images ?? '[]', true);
+                                        if (empty($sliderImages)) {
+                                            $sliderImages = is_array($biz->screenshot_urls) ? $biz->screenshot_urls : json_decode($biz->screenshot_urls ?? '[]', true);
+                                        }
+                                    @endphp
+                                    @if(!empty($sliderImages) && count($sliderImages) > 0)
+                                    <div class="business-preview-images mb-5">
+                                        <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                            <img src="{{ asset($sliderImages[0]) }}" alt="{{ $bName }}" class="img-fluid w-100" style="object-fit: cover; max-height: 450px;">
+                                        </a>
+                                    </div>
+                                    @endif
+                                    
+                                    <!-- Pros and Cons Section -->
+                                    @php
+                                        $aggregatedProCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                            ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                            ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                            ->where('reviews.business_id', $biz->id)
+                                            ->where('reviews.status', 'active')
+                                            ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as reviews_count'))
+                                            ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                            ->orderByDesc('reviews_count')
+                                            ->get();
+                                            
+                                        $topPros = $aggregatedProCons->where('type', 'pro')->values()->take(5);
+                                        $topCons = $aggregatedProCons->where('type', 'con')->values()->take(5);
+                                    @endphp
+                                    <div class="col-lg-12 mt-2 mb-4 pros-cons-wrapper mt-4">
+                                        <div class="pros-cons-header mb-3">
+                                            <h2 style="font-weight: 600; color: #1e3050; font-size: 22px; margin-bottom: 8px;">
+                                                {{ $bName }} pros and cons
+                                            </h2>
+                                        </div>
+                                        
+                                        <div class="row g-4 d-flex">
+                                            <div class="col-md-6">
+                                                <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                        <ul class="list-unstyled mb-0">
+                                                            @forelse($topPros as $pro)
+                                                            <li class="d-flex align-items-start mb-2">
+                                                                <span class="me-2" style="font-size: 18px; color: rgb(33, 172, 33) !important;"><i class="fas fa-plus-circle"></i></span>
+                                                                <span style="color: #202124;">{{ $pro->text }}
+                                                                    <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $pro->reviews_count }} {{ $pro->reviews_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                </span>
+                                                            </li>
+                                                            @empty
+                                                            <li class="text-muted" style="font-size: 14px;">No pros available</li>
+                                                            @endforelse
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
-                                                <div class="card-body">
-                                                    <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
-                                                    <ul class="list-unstyled mb-0">
-                                                        @forelse($topCons as $con)
-                                                        <li class="d-flex align-items-start mb-2">
-                                                            <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
-                                                            <span style="color: #202124;">{{ $con->text }}
-                                                                <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->reviews_count }} {{ $con->reviews_count == 1 ? 'review' : 'reviews' }}</small>
-                                                            </span>
-                                                        </li>
-                                                        @empty
-                                                        <li class="text-muted" style="font-size: 14px;">No cons available</li>
-                                                        @endforelse
-                                                    </ul>
+                                            <div class="col-md-6">
+                                                <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                        <ul class="list-unstyled mb-0">
+                                                            @forelse($topCons as $con)
+                                                            <li class="d-flex align-items-start mb-2">
+                                                                <span class="me-2" style="font-size: 18px; color: rgb(247, 40, 60) !important;"><i class="fas fa-minus-circle"></i></span>
+                                                                <span style="color: #202124;">{{ $con->text }}
+                                                                    <small class="badge font-weight-normal" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 12px;">from {{ $con->reviews_count }} {{ $con->reviews_count == 1 ? 'review' : 'reviews' }}</small>
+                                                                </span>
+                                                            </li>
+                                                            @empty
+                                                            <li class="text-muted" style="font-size: 14px;">No cons available</li>
+                                                            @endforelse
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1617,153 +1620,54 @@
                             </div>
                             
                             <!-- Right Column: Stats and Sidebar (Matching Product Detail Design) -->
-                            <div class="col-lg-4 mt-5 mt-lg-0">
-                                <div class="review-sidebar-sticky">
-                                    <!-- Features / USPs Checklist -->
-                                    @if($biz->usps->count() > 0)
-                                    <div class="main_feature_lg mb-4">
-                                        <div class="feture_box lft_check_box">
-                                            <ul class="list-unstyled p-0 m-0">
-                                                @foreach ($biz->usps->take(5) as $usp)
-                                                    <li class="d-flex flex-row size15 mb-2">
-                                                        <div class="grn_chk" style="width: 18px; margin-right: 8px; flex-shrink: 0;">
-                                                            <img src="{{ asset('front/img/tick-img.png') }}" style="width: 100%; height: auto;">
-                                                        </div>
-                                                        <p class="m-0" style="font-size: 14px; color: #333; font-weight: 500;">{{ $usp->text }}</p>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    @endif
+                            <div class="thre_revi_rgt">
+                                <div class="main_feture">
+                                    <div class="fetru_row d-flex justify-content-between">
 
-                                    <!-- Review Breakdown Card -->
-                                    <div class="main_feature_lg mb-4">
-                                        <div class="feture_box review-breakdown-card">
-                                            @php
-                                                $bizTotalReviews = $biz->reviews()->where('status', 'active')->count();
-                                                $bizAvgRating = $biz->average_rating ?? null;
-                                            @endphp
-                                            @if ($bizAvgRating !== null)
-                                                <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px; border-bottom: 1px solid #f0f0f0;">
-                                                    <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
-                                                        <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                                            {{ number_format($bizAvgRating, 1) }}
-                                                        </span>
-                                                        @if(function_exists('get_rating_label') && $ratingWord = get_rating_label($bizAvgRating))
-                                                            <span class="rating-word-label mt-1" style="font-weight: 600; color: #1e3050; font-size: 14px;">
-                                                                {{ $ratingWord }}
-                                                            </span>
-                                                        @endif
+                                        <!-- Review Breakdown Card -->
+                                        <x-review-breakdown-card :business="$biz" />
 
-                                                        <div class="mt-1" style="margin-bottom: 6px; display: flex; gap: 4px;">
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                @if ($i <= floor($bizAvgRating))
-                                                                    <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
-                                                                @elseif ($i - 0.5 <= $bizAvgRating)
-                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 18px;"></i>
-                                                                @else
-                                                                    <i class="far fa-star text-warning" style="font-size: 18px;"></i>
-                                                                @endif
-                                                            @endfor
-                                                        </div>
-
-                                                        @if ($bizTotalReviews > 0)
-                                                            <span class="f-12" style="color: #666; font-size: 12px;">Community rating · {{ number_format($bizTotalReviews) }} {{ $bizTotalReviews == 1 ? 'review' : 'reviews' }}</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @endif
-
-                                            @if ($bizTotalReviews > 0 && count($criteriaRatings) > 0)
-                                                <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 700; color: #002347;">
-                                                    Review breakdown
-                                                </h2>
-
-                                                <div class="review-progress-list mb-3">
-                                                    @foreach ($criteriaRatings as $cName => $cRating)
-                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                        <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $cName }}</p>
-                                                        <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end; gap: 6px;">
-                                                            <div class="progress w-100" style="height: 8px; background-color: #e2e8f0; border-radius: 4px;">
-                                                                <div class="progress-bar" style="width: {{ $cRating * 20 }}%; background-color: #2CC464; border-radius: 4px;"></div>
+                                        <!-- Features / USPs Checklist -->
+                                        @if($biz->usps->count() > 0)
+                                        <div class="main_feature_lg">
+                                            <div class="feture_box lft_check_box size15">
+                                                <ul class="list-unstyled">
+                                                    @foreach ($biz->usps->take(5) as $usp)
+                                                        <li class="d-flex flex-row align-items-center size15">
+                                                            <div class="grn_chk" >
+                                                                <img src="{{ asset('front/img/green-tick.svg') }}" >
                                                             </div>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 30px; text-align: right;">{{ number_format($cRating, 1) }}</span>
-                                                        </div>
-                                                    </div>
+                                                            <p class="m-0">{{ $usp->text }}</p>
+                                                        </li>
                                                     @endforeach
-                                                </div>
-                                            @endif
-
-                                            @if ($recommendPercent > 0)
-                                                <div class="recommended-percentage" style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #f0f0f0;">
-                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                    <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
-                                                </div>
-                                            @endif
-
-                                            <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                <span style="font-weight: 600; color: #1e3050; font-size: 13px;">Do you recommend {{ $bName }}?</span>
-                                                <div style="display: flex; gap: 8px;">
-                                                    @auth
-                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $biz->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                                            <i class="fas fa-thumbs-up" style="font-size: 13px;"></i>
-                                                        </a>
-                                                        <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $biz->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
-                                                            <i class="fas fa-thumbs-down" style="font-size: 13px;"></i>
-                                                        </a>
-                                                    @else
-                                                        <a href="javascript:void(0)" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-                                                            <i class="fas fa-thumbs-up" style="font-size: 13px;"></i>
-                                                        </a>
-                                                        <a href="javascript:void(0)" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-                                                            <i class="fas fa-thumbs-down" style="font-size: 13px;"></i>
-                                                        </a>
-                                                    @endauth
-                                                </div>
+                                                </ul>
                                             </div>
                                         </div>
-                                    </div>
+                                        @endif
 
-                                    @if($hasBizTrackedUrl)
-                                    <div class="mb-4">
-                                        <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="btn btn-warning w-100 py-3 fw-bold fs-16 text-white text-uppercase rounded-3" style="background-color: #ff5722; border: none; letter-spacing: 0.5px; box-shadow: 0 4px 6px -1px rgba(255, 87, 34, 0.3); display: block; text-align: center; text-decoration: none;">
-                                            Visit Website <i class="fas fa-external-link-alt ms-1"></i>
-                                        </a>
-                                    </div>
-                                    @endif
+                                        
 
-                                    <!-- More about box -->
-                                    <div class="main_feature_lg mb-4">
-                                        <div class="feture_box" style="padding: 15px 20px;">
-                                            <h4 style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">More about {{ $bName }}</h4>
-                                            <ul class="list-unstyled mb-0 d-flex flex-column gap-2" style="font-size: 14px;">
-                                                <li>
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}" class="text-decoration-none fw-medium" style="color: #174889;">
-                                                        <i class="fas fa-chevron-right me-2 text-muted" style="font-size: 11px;"></i>{{ $bName }} profile
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}#reviews" class="text-decoration-none fw-medium" style="color: #174889;">
-                                                        <i class="fas fa-chevron-right me-2 text-muted" style="font-size: 11px;"></i>{{ $bName }} reviews
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}#alternatives" class="text-decoration-none fw-medium" style="color: #174889;">
-                                                        <i class="fas fa-chevron-right me-2 text-muted" style="font-size: 11px;"></i>{{ $bName }} alternatives
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
+
+
+                                        <!-- More about box -->
+                                        <x-more-about-business :business="$biz" />
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        <!-- </div> -->
                     </div>
                     @endforeach
                     
-                    
-                    <!-- Comparison Tables -->
+
+                </div>
+            </div>
+        </section>
+        @endif
+        <!-- Top Affiliated Businesses compare section -->
+        @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
+            <section>
+                <!-- Comparison Tables -->
+                <div class="container">
                     <div class="comparison-tables-section mt-5 pt-4">
                         <h3 class="fw-bold mb-4" style="color: #002347; font-size: 22px;">Compare {{ $category->translations->name ?? $category->name }} alternatives</h3>
                         <div class="table-responsive bg-white rounded-3 border mb-5" style="box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
@@ -1898,10 +1802,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
         @endif
-
 <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
         @php
