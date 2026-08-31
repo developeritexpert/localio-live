@@ -43,7 +43,7 @@
                                     @else
                                         
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else
@@ -166,7 +166,7 @@
                                         @else
                                             
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else
@@ -274,7 +274,7 @@
                                     @else
                                         
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else

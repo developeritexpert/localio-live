@@ -227,7 +227,7 @@
                                                                 <div class="sftwre-alt-btn pt-2">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}"
                                                                         class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                                        style="border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;">
+                                                                        style="padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;">
                                                                         {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                     </a>
                                                                 </div>

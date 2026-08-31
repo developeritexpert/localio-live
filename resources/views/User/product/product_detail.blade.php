@@ -723,7 +723,7 @@
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">Features</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
-                                                            <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                            <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
                                                         <span class="rating_bar_span">{{ number_format($featRatingVal, 1) }}</span>
                                                     </div>
@@ -772,7 +772,7 @@
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">Ease of use</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
-                                                            <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                            <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
                                                         <span class="rating_bar_span">{{ number_format($easeRatingVal, 1) }}</span>
 
@@ -808,7 +808,7 @@
                                                             <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                                 <span class="rating_bar_span">{{ $crDisplayName }}</span>
                                                                 <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
-                                                                    <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                                    <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                 </div>
                                                                 <span class="rating_bar_span">{{ number_format($crRatingVal, 1) }}</span>
 
@@ -842,7 +842,7 @@
                                                     <div class="d-flex align-items-center mb-2" style="gap: 12px;">
                                                         <span class="rating_bar_span">Value for money</span>
                                                         <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
-                                                            <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; background-color: #22c55e; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                            <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                         </div>
                                                         <span class="rating_bar_span">{{ number_format($vfmRatingVal, 1) }}</span>
 
@@ -1083,7 +1083,7 @@
                                                                                         <div class="sftwre-alt-btn pt-2">
                                                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
                                                                                                 class="cta btn_blue w-100 d-flex align-items-center justify-content-center"
-                                                                                                style="  border-radius: 25px; padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
+                                                                                                style=" padding: 10px 20px; font-weight: 500; text-decoration: none; font-size: 14px;  ">
                                                                                                 {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                                                             </a>
                                                                                         </div>
@@ -1243,7 +1243,7 @@
                                                                                         </div>
 
                                                                                         <div class="cmpre_btn w-100 mt-auto">
-                                                                                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                                                                            <a href="{{ $seoUrl }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
                                                                                                 Compare
                                                                                             </a>
                                                                                         </div>
@@ -1462,7 +1462,7 @@
                                                                                                     <!-- Left Column: Big Rating & Stars -->
                                                                                                     <div class="col-lg-5 col-md-5 col-12 mt-0">
                                                                                                         <div class="d-flex flex-column align-items-start">
-                                                                                                            <span class="overall-rating-number" style="font-size: 44px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
+                                                                                                            <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
                                                                                                             @if($ratingWord = get_rating_label($averageRating))
                                                                                                                 <span class="rating-word-label " style="">
                                                                                                                     {{ $ratingWord }}
@@ -1479,23 +1479,23 @@
                                                                                                                     @endif
                                                                                                                 @endfor
                                                                                                             </div>
-                                                                                                            <span style="font-size: 14px; font-weight:600; color: #64748b;">Community rating</span>
-                                                                                                            <span style="font-size: 14px; font-weight:600; color: #64748b;">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                                                            <span class="com-rating">Community rating</span>
+                                                                                                            <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                                                         </div>
                                                                                                     </div>
 
                                                                                                     <!-- Right Column: Review Breakdown & Recommendation -->
                                                                                                     <div class="col-lg-7 col-md-7 col-12 mt-0">
                                                                                                         @if(isset($criteria) && count($criteria) > 0)
-                                                                                                            <h5 style="font-size: 14px; font-weight: 700; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
+                                                                                                            <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
 
                                                                                                             <div class="mb-2">
                                                                                                                 @foreach ($criteria as $criterion)
                                                                                                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                                                                    <span style="font-size: 13px; font-weight: 500; color: #475569; min-width: 130px;">{{ $criterion->name }}</span>
+                                                                                                                    <span style="font-size: 13px; font-weight: 500; color: #5b6b7a; min-width: 130px;">{{ $criterion->name }}</span>
                                                                                                                     <div class="d-flex align-items-center flex-grow-1 mx-3" style="max-width: 65%;">
                                                                                                                         <div class="progress rounded-pill w-100" style="height: 7px; background-color: #e2e8f0;">
-                                                                                                                            <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%; background-color: #2CC464;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
+                                                                                                                            <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                     <span style="font-size: 13px; font-weight: 600; color: #334155; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
@@ -1506,7 +1506,7 @@
 
                                                                                                         @if(isset($recommendPercent) && $recommendPercent > 0)
                                                                                                             <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
-                                                                                                                <span style="font-weight: 700; color: #002347; font-size: 14px;">Recommended by users</span>
+                                                                                                                <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
                                                                                                                 <strong style="color: #002347; font-size: 14px; font-weight: 700;">{{ $recommendPercent }}%</strong>
                                                                                                             </div>
                                                                                                         @endif
@@ -1878,7 +1878,7 @@
                                                             </div>
 
                                                             @if ($hasUserReviews)
-                                                                <span class="f-12" style="color: #666;">Community rating · {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                                <span class="com-rating">Community rating · {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                             @endif
                                                         </div>
 
@@ -1898,7 +1898,7 @@
                                                     <div class="review-progress-list ">
                                                         @foreach ($criteria as $criterion)
                                                         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                            <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                                            <p class="m-0" style="font-size: 12px; font-weight: 500;">{{ $criterion->name }}</p>
                                                             <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                                 <progress class="progress-bar w-100"
                                                                     value="{{ $criterion->average_rating * 20 }}"
@@ -1916,20 +1916,20 @@
                                                 @endif
 
                                                 <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                                                    <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
+                                                    <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @else
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #174889; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor='#174889';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @endauth
@@ -2107,7 +2107,7 @@
                                                                     <div>
                                                                         <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else
@@ -2231,7 +2231,7 @@
                                             <div class="feture_box review-breakdown-box sticky-sidebar-nav-card" id="stickySidebarNav">
                                                 <div class="sticky-nav-header text-center">
                                                     <div class="sticky-nav-logo mb-2 d-flex justify-content-center align-items-center" style="gap: 10px;">
-                                                        <div class="top-product-medium-logo" style="width: 44px; height: 44px; margin-bottom:8px">
+                                                        <div class="top-product-logo">
                                                             <x-business-logo :business="$business" />
                                                         </div>
 
@@ -2242,7 +2242,7 @@
                                                         </h3>
                                                         @if ($averageRating !== null)
                                                             <div
-                                                                class="rating-group sticky-nav-rating mb-3">
+                                                                class="rating-group sticky-nav-rating">
                                                                 <span
                                                                     style="">{{ number_format($averageRating, 1) }}</span>
                                                                 <div class="rating-star" style="">
@@ -2277,7 +2277,7 @@
                                                                 'label' => 'Visit Website',
                                                             ]) }}"
                                                             target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
-                                                            style="border-radius: 30px; font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                                                            style="font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
                                                             {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2"
                                                                 style="font-size: 11px;"></i>
                                                         </a>

@@ -230,7 +230,6 @@
     }
     .explore-categories-sec .btn-view-details {
         border: 1.5px solid #174889 !important;
-        border-radius: 30px !important;
         background: transparent !important;
         color: #06498b !important;
         font-size: 11px !important;
@@ -249,7 +248,7 @@
     .explore-categories-sec .btn-orng {
         background: #ff5722 !important;
         border: 1px solid #ff5722 !important;
-        border-radius: 30px !important;
+
         color: #fff !important;
         font-size: 11px !important;
         font-weight: 500 !important;
@@ -912,7 +911,7 @@
                                                     <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                         class="btn-orng cta cta_orange justify-content-center"
                                                         target="_blank"
-                                                        style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
+                                                        style="display: flex !important; width: 100%; align-items: center;">
                                                         {{ static_text('visit_website') ?: 'Visit website' }}
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -929,7 +928,7 @@
                                                     @endif
                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                         class="cta cta_outline justify-content-center"
-                                                        style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
+                                                        style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b;">
                                                         {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                     </a>
                                                 </div>
@@ -1179,7 +1178,7 @@
                                 <a href="{{ $business->getTrackedUrl() }}"
                                    target="_blank"
                                    class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
-                                   style="border-radius: 30px; font-size: 11px; text-align: center; transition:unset !important;">
+                                   style="font-size: 11px; text-align: center; transition:unset !important;">
                                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
                                 </a>
                                 @endif
