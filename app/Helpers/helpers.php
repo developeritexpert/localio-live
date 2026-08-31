@@ -37,9 +37,14 @@ function getCurrentLocale($type="lang_code")
 }
 
 function getCurrentCountry(){
-    $lang_id= getCurrentLanguageID();
+    $lang_id = getCurrentLanguageID();
     $country_language = CountryLanguage::where('language_id', $lang_id)->first();
-    $country_id= Country::where('id',$country_language->country_id)->value('id');
+    
+    if (!$country_language) {
+        return null;
+    }
+    
+    $country_id = Country::where('id', $country_language->country_id)->value('id');
     return $country_id;
 }
 
