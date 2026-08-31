@@ -1215,7 +1215,11 @@
     // 4. Report Issue Modal Handler
     function openReportModal(faqId) {
         @if(!auth()->check())
-            alert('Please sign in to report an issue.');
+            if(typeof openLoginModal === 'function') {
+                openLoginModal();
+            } else {
+                window.location.href = "{{ route('login') }}";
+            }
             return;
         @endif
 

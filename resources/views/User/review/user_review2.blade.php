@@ -1200,7 +1200,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function openReviewReportModal(reviewId) {
     @if(!auth()->check())
-        alert('Please sign in to report a review.');
+        if(typeof openLoginModal === 'function') {
+            openLoginModal();
+        } else {
+            window.location.href = "{{ route('login') }}";
+        }
         return;
     @endif
 
