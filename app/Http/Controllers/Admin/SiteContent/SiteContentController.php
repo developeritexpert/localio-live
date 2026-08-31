@@ -802,6 +802,7 @@ if (!$headerLogo) {
             'top_rated_headline',
             'top_rated_subheadline',
             'top_rated_listing_headline',
+            'top_rated_listing_subheadline',
             'explore_categories_headline',
             'explore_categories_subheadline',
             'faq_section_headline',
