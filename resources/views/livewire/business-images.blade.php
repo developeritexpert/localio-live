@@ -280,10 +280,10 @@
         </div>
     </div>
     <!-- Custom Lightbox Overlay -->
-<div id="custom-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1060; cursor: pointer; align-items: center; justify-content: center;" onclick="this.style.display='none';">
-    <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold;">&times;</span>
-    <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 5px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);">
-</div>
+    <div id="custom-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1060; cursor: pointer; align-items: center; justify-content: center;" onclick="this.style.display='none';">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold;">&times;</span>
+        <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 5px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);">
+    </div>
 
 </div>
 
