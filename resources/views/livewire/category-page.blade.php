@@ -555,7 +555,7 @@
                                 <div class="container">
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                     </div>
-                                    <div class="col-md-12 sticky-top" style="top: 100px; z-index: 10; padding-bottom: 20px; max-height: calc(100vh - 120px); overflow-y: auto;">
+                                    <div class="col-md-12 sticky-top" style="top: 100px; z-index: 10; padding-bottom: 20px;">
                                         <!-- Rating Filter Section - Styled like the image -->
                                         <div class="filter-section">
                                             <h3 class="fw-semibold text-dark mb-2">
@@ -1187,7 +1187,7 @@
                                                         <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                             class="btn-orng cta cta_orange justify-content-center"
                                                             target="_blank"
-                                                            style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
+                                                            style="display: flex !important; width: 100%; align-items: center;">
                                                             {{ static_text('visit_website') ?: 'Visit website' }}
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="24"
                                                                 height="24" viewBox="0 0 24 24" fill="none"
@@ -1426,7 +1426,7 @@
                             </div>
 
                             <div class="cmpre_btn w-100 mt-auto">
-                                <a href="{{ $comp['url'] }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                <a href="{{ $comp['url'] }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
                                     Compare
                                 </a>
                             </div>

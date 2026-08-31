@@ -401,7 +401,7 @@
                     width: 100% !important;
                     height: 100% !important;
                 }
-                .inn_sl_hed {
+                /* .inn_sl_hed {
                     display: flex !important;
                     align-items: flex-start !important;
                     justify-content: space-between !important;
@@ -409,7 +409,7 @@
                     position: relative !important;
                     width: 100% !important;
                     margin: 0 !important;
-                }
+                } */
                 /* Best Value offset adjust */
                 .inn_sl_hed.mst_hdn.mt-4 {
                     margin-top: 28px !important;
@@ -580,8 +580,7 @@
                 /* Unified CSS Grid Card Header Layout Refactor on Mobile */
                 /* High-reliability Flexbox Card Header Column Layout on Mobile */
                 .top-rate-innr .inn_sl_hed,
-                .reviews_block .inn_sl_hed,
-                .automotive-card .inn_sl_hed {
+                .reviews_block .inn_sl_hed {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: flex-start !important;
@@ -668,8 +667,8 @@
                 .reviews_block .sl_main h6.head,
                 .automotive-card .sl_main h6.head {
                     flex: 1 1 auto !important;
-                    font-size: 16px !important;
-                    line-height: 1.25 !important;
+                    font-size: 20px !important;
+                    line-height: 1!important;
                     font-weight: 700 !important;
                     color: #002347 !important;
                     margin: 0 !important;
@@ -778,8 +777,7 @@
                     position: static !important;
                 }
 
-                /* Automotive/Product Cards layout refactor on mobile */
-                .automotive-card .inn_sl_hed {
+                /* .automotive-card .inn_sl_hed {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: flex-start !important;
@@ -789,7 +787,7 @@
                     margin: 0 0 16px 0 !important;
                     padding: 0 !important;
                     position: relative !important;
-                }
+                } */
                 .automotive-card .inn_sl_hed > a {
                     flex: 0 0 48px !important;
                     width: 48px !important;
@@ -842,8 +840,8 @@
                 }
                 .automotive-card .sl_main h6.head {
                     flex: 1 1 auto !important;
-                    font-size: 16px !important;
-                    line-height: 1.25 !important;
+                    font-size: 20px !important;
+                    line-height: 1 !important;
                     font-weight: 700 !important;
                     color: #002347 !important;
                     margin: 0 !important;
@@ -1898,7 +1896,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <div class="modal-overlay" id="learnMoreModal">
         <div class="circle_11">
-            <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+            <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
             <div class="modal-content">
 
 

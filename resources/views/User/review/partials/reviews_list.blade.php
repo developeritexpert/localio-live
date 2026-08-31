@@ -37,7 +37,7 @@
                                 @else
                                     
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ method_exists($review->user, 'displayName') ? $review->user->displayName() : ($review->user->first_name ?? 'Anonymous') }}
             </a>
         @else

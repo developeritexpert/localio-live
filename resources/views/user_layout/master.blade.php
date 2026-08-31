@@ -199,7 +199,7 @@
             height: 100% !important;
         }
 
-        .inn_sl_hed {
+        /* .inn_sl_hed {
             display: flex !important;
             align-items: flex-start !important;
             justify-content: space-between !important;
@@ -207,7 +207,7 @@
             position: relative !important;
             width: 100% !important;
             margin: 0 !important;
-        }
+        } */
 
         /* Best Value offset adjust */
         .inn_sl_hed.mst_hdn.mt-4 {
@@ -396,8 +396,7 @@
         /* Unified CSS Grid Card Header Layout Refactor on Mobile */
         /* High-reliability Flexbox Card Header Column Layout on Mobile */
         .top-rate-innr .inn_sl_hed,
-        .reviews_block .inn_sl_hed,
-        .automotive-card .inn_sl_hed {
+        .reviews_block .inn_sl_hed {
             display: flex !important;
             flex-direction: row !important;
             align-items: flex-start !important;
@@ -415,8 +414,7 @@
         }
 
         .top-rate-innr .sli_img,
-        .reviews_block .inn_sl_hed .sli_img,
-        .automotive-card .inn_sl_hed>a {
+        .reviews_block .inn_sl_hed .sli_img{
             flex: 0 0 48px !important;
             width: 48px !important;
             height: 48px !important;
@@ -494,8 +492,8 @@
         .reviews_block .sl_main h6.head,
         .automotive-card .sl_main h6.head {
             flex: 1 1 auto !important;
-            font-size: 16px !important;
-            line-height: 1.25 !important;
+            font-size: 20px !important;
+            line-height: 1 !important;
             font-weight: 700 !important;
             color: #002347 !important;
             margin: 0 !important;
@@ -610,8 +608,7 @@
             position: static !important;
         }
 
-        /* Automotive/Product Cards layout refactor on mobile */
-        .automotive-card .inn_sl_hed {
+        /* .automotive-card .inn_sl_hed {
             display: flex !important;
             flex-direction: row !important;
             align-items: flex-start !important;
@@ -621,9 +618,9 @@
             margin: 0 0 16px 0 !important;
             padding: 0 !important;
             position: relative !important;
-        }
+        } */
 
-        .automotive-card .inn_sl_hed>a {
+        /* .automotive-card .inn_sl_hed>a {
             flex: 0 0 48px !important;
             width: 48px !important;
             height: 48px !important;
@@ -633,7 +630,7 @@
             max-height: 48px !important;
             margin: 0 !important;
             display: block !important;
-        }
+        } */
 
         .automotive-card .sli_img.choice_img {
             width: 100% !important;
@@ -681,8 +678,8 @@
 
         .automotive-card .sl_main h6.head {
             flex: 1 1 auto !important;
-            font-size: 16px !important;
-            line-height: 1.25 !important;
+            font-size: 20px !important;
+            line-height: 1 !important;
             font-weight: 700 !important;
             color: #002347 !important;
             margin: 0 !important;
@@ -942,7 +939,7 @@
 
     .btn-g-link {
         color: #002655 !important;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         text-decoration: none;
     }
@@ -1447,7 +1444,7 @@
     
     <div class="modal-overlay" id="learnMoreModal">
         <div class="circle_11">
-            <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+            <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
             <div class="modal-content" style="position: relative !important; transform: none !important; top: auto !important; left: auto !important; display: block !important; opacity: 1 !important; visibility: visible !important; width: 100% !important; height: auto !important; overflow: visible !important;">
                 <div class="modal-header" style="display: block !important; margin-bottom: 15px;">
                     <h2 class="modal-title" style="width: max-content; font-size: 20px; font-weight: 700; color: #1e3050; margin: 0;">
@@ -1477,7 +1474,7 @@
     <!-- How Rankings Work Modal -->
     <div class="modal-overlay" id="howRankingsWorkModal">
         <div class="circle_11">
-            <button class="modal-close" onclick="closeRankingsModal()" aria-label="Close">&times;</button>
+            <button class="modal-close" onclick="closeRankingsModal()" aria-label="Close">✕</button>
             <div class="modal-content">
                 <div class="modal-header" style="display: block">
                     <h2 class="modal-title" style="width: max-content">

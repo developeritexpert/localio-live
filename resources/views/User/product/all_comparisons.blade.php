@@ -259,7 +259,7 @@
 
                     <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
                         <!-- Business A (Fixed) -->
-                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
+                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill-10 border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
                             <div class="top-product-small-logo" >
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
@@ -273,7 +273,7 @@
                         <div id="compareSearchInputWrapper" class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
                             <div style="position: relative; display: flex; align-items: center;">
                                 <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none;"></i>
-                                <input type="text" id="compareSearchInput" class="form-control rounded-pill" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
+                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-10" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
                             </div>
                             <!-- Custom Auto-complete Container -->
                             <div id="compareSearchDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; width: 100%; max-height: 260px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 99999; margin-top: 6px;"></div>
@@ -296,7 +296,7 @@
                         </div>
 
                         <!-- Compare Action Button -->
-                        <button type="button" id="btnRunCompare" class="blue-btn btn rounded-pill px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 48px; opacity: 0.6; flex-shrink: 0;" disabled>
+                        <button type="button" id="btnRunCompare" class="blue-btn btn px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 48px; opacity: 0.6; flex-shrink: 0;" disabled>
                             Compare
                         </button>
                     </div>
@@ -337,7 +337,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; border-radius: 30px; padding: 8px 11px; white-space: nowrap;">
+                        <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; padding: 8px 11px; white-space: nowrap;">
                             {{ static_text('visit_website') ?: 'Visit website' }}
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                         </a>
@@ -348,7 +348,7 @@
                         <div class="mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $criterion->name }}</p>
+                                    <p class="m-0" style="font-size: 12px; font-weight: 500; color: #5b6b7a ;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
                                         <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
@@ -467,7 +467,7 @@
                             </div>
                         </div>
                         <div class="cmpre_btn w-100 mt-auto">
-                            <a href="{{ $seoUrlPop }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            <a href="{{ $seoUrlPop }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important;  font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
                                 Compare
                             </a>
                         </div>
@@ -533,7 +533,7 @@
                             </div>
                         </div>
                         <div class="cmpre_btn w-100 mt-auto">
-                            <a href="{{ $seoUrlRec }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; border-radius: 50px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            <a href="{{ $seoUrlRec }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
                                 Compare
                             </a>
                         </div>
