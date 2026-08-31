@@ -646,16 +646,27 @@ if (!$headerLogo) {
             'description',
             'search_placeholder_text',
             'main_heading',
+            'country1',
+            'country2'
         ];
 
         foreach ($textFields as $field) {
             if ($request->has($field)) {
                 $datas = $request->get($field);
                 foreach ($datas as $id => $val) {
-                    $categoryContent = CategoryPageContent::find($id);
-                    if ($categoryContent) {
-                        $categoryContent->update([
-                            'meta_value' => $val,
+                    if ($id !== 'new' && is_numeric($id)) {
+                        $categoryContent = CategoryPageContent::find($id);
+                        if ($categoryContent) {
+                            $categoryContent->update([
+                                'meta_value' => $val ?? '',
+                            ]);
+                        }
+                    } else {
+                        CategoryPageContent::create([
+                            'meta_key' => $field,
+                            'meta_value' => $val ?? '',
+                            'lang_id' => $request->lang_id ?? getCurrentLanguageID(),
+                            'type' => 'text'
                         ]);
                     }
                 }
@@ -799,9 +810,12 @@ if (!$headerLogo) {
             'terms_of_use',
             'privacy_policy',
             'and',
+            'country1',
+            'country2',
             'top_rated_headline',
             'top_rated_subheadline',
             'top_rated_listing_headline',
+            'top_rated_listing_subheadline',
             'explore_categories_headline',
             'explore_categories_subheadline',
             'faq_section_headline',

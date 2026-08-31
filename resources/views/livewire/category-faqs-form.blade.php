@@ -23,7 +23,7 @@
             <div class="card-inner bg-light">
                 <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center">
                     <em class="icon ni ni-info me-2 text-info"></em>
-                    <small>How to use: Paste a JSON array containing FAQ objects below. In the <code>category</code> field, use only existing categories created below (e.g., None created yet). Unmatched categories will default to General.</small>
+                    <small>How to use: Paste a JSON array containing FAQ objects below. New categories will be automatically added if they don't already exist.</small>
                 </div>
                 
                 <button type="button" class="btn btn-sm btn-outline-primary bg-white mb-2" onclick="copyFAQJsonTemplate()">
@@ -150,14 +150,14 @@
                         <tbody>
                             @foreach($faqs as $index => $faq)
                                 <tr>
-                                    <td><span class="badge bg-outline-primary">{{ $faq['category'] ?? 'General' }}</span></td>
+                                    <td><span class="badge bg-primary">{{ $faq['category'] ?? 'General' }}</span></td>
                                     <td class="fw-bold">{{ \Illuminate\Support\Str::limit($faq['question'], 50) }}</td>
                                     <td>{{ \Illuminate\Support\Str::limit(strip_tags($faq['answer']), 50) }}</td>
                                     <td class="text-end">
-                                        <button class="btn btn-sm btn-icon btn-outline-primary" wire:click="editFAQ({{ $index }})" title="Edit FAQ">
+                                        <button class="btn btn-sm btn-icon btn-primary" wire:click="editFAQ({{ $index }})" title="Edit FAQ">
                                             <em class="icon ni ni-edit"></em>
                                         </button>
-                                        <button class="btn btn-sm btn-icon btn-outline-danger ms-1" wire:click="deleteFAQ({{ $index }})" onclick="confirm('Are you sure you want to delete this FAQ?') || event.stopImmediatePropagation()" title="Delete FAQ">
+                                        <button class="btn btn-sm btn-icon btn-danger ms-1" wire:click="deleteFAQ({{ $index }})" onclick="confirm('Are you sure you want to delete this FAQ?') || event.stopImmediatePropagation()" title="Delete FAQ">
                                             <em class="icon ni ni-trash"></em>
                                         </button>
                                     </td>

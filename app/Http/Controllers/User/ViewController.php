@@ -944,6 +944,36 @@ class ViewController extends Controller
         ]);
     }
 
+    public function reportReview(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'require_login' => true,
+                'message' => 'Please sign in to report a review.'
+            ], 401);
+        }
+
+        $request->validate([
+            'review_id' => 'required|exists:reviews,id',
+            'report_reason' => 'required|string',
+            'report_details' => 'nullable|string|max:1000'
+        ]);
+
+        \App\Models\ReviewReport::create([
+            'review_id' => $request->input('review_id'),
+            'user_id' => auth()->id(),
+            'report_reason' => $request->input('report_reason'),
+            'report_details' => $request->input('report_details'),
+            'status' => 'pending'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Review reported successfully. Thank you for your feedback!'
+        ]);
+    }
+
 
     public function goBusiness($locale, $slug)
     {

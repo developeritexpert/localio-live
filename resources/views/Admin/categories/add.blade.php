@@ -62,6 +62,7 @@
                                         placeholder="e.g. Shared hosting providers" />
                                 </div>
                                 <small class="text-muted d-block mt-1">Used to generate feature page headlines (e.g. <i>Shared hosting providers with noise cancellation</i>). Defaults to Category Name if left blank.</small>
+                                <small class="text-primary d-block mt-1"><strong>Dynamic Variables Supported:</strong> You can use <code>[year]</code>, <code>[country1]</code>, and <code>[country2]</code>. Example: <em>Web hosting comparison [year] [country2]</em></small>
                                 @error('comparison_name')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -91,6 +92,7 @@
                                         placeholder="e.g. Shared hosting comparison (defaults to Category Name if left blank)" />
                                 </div>
                                 <small class="text-muted d-block mt-1">Defines the main title/H1 displayed on the category or subcategory page. Defaults to Name if empty.</small>
+                                <small class="text-primary d-block mt-1"><strong>Dynamic Variables Supported:</strong> You can use <code>[year]</code>, <code>[country1]</code>, and <code>[country2]</code>. Example: <em>Web hosting comparison [year] [country2]</em></small>
                                 @error('page_title')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -171,6 +173,7 @@
                                         placeholder="e.g. Best web hosting services">
                                 </div>
                                 <small class="text-muted d-block mt-1">Headline displayed above the top-rated listings on this category's page. Defaults to "Best [Category Name] services".</small>
+                                <small class="text-primary d-block mt-1"><strong>Dynamic Variables Supported:</strong> You can use <code>[year]</code>, <code>[country1]</code>, and <code>[country2]</code>. Example: <em>Best Web hosting [year] [country2]</em></small>
                                 @error('top_rated_listing_headline')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror

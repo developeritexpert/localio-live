@@ -49,9 +49,11 @@
                                         @if (!empty($business->business_images) && count($business->business_images) > 0)
                                             @foreach ($business->business_images as $img)
                                                 <div class="border rounded p-1 shadow-sm bg-white" style="width: 90px; height: 60px;">
+                                                <a href="javascript:void(0)" onclick="document.getElementById('lightbox-img').src='{{ asset($img) }}'; document.getElementById('custom-lightbox').style.display='flex';">
                                                     <img src="{{ asset($img) }}" 
                                                          alt="Business Image" 
                                                          style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+                                                </a>
                                                 </div>
                                             @endforeach
                                         @elseif (!empty($business->screenshot_urls) && count(array_filter($business->screenshot_urls)) > 0)
@@ -163,7 +165,9 @@
                                 @foreach ($currentImages as $key => $image)
                                     <div class="col-6 col-md-4">
                                         <div class="position-relative border rounded p-1 bg-white shadow-sm h-100">
-                                            <img src="{{ asset($image) }}" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                            <a href="javascript:void(0)" onclick="document.getElementById('lightbox-img').src='{{ asset($image) }}'; document.getElementById('custom-lightbox').style.display='flex';">
+                                                <img src="{{ asset($image) }}" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                            </a>
                                             <button type="button" 
                                                     wire:click="removeCurrentImage({{ $key }})" 
                                                     class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle p-0" 
@@ -196,7 +200,9 @@
                                 @foreach ($newUploads as $key => $file)
                                     <div class="col-4 col-md-3">
                                         <div class="position-relative border rounded p-1 bg-white">
-                                            <img src="{{ $file->temporaryUrl() }}" class="img-fluid rounded" style="height: 80px; width:100%; object-fit: cover;">
+                                            <a href="javascript:void(0)" onclick="document.getElementById('lightbox-img').src='{{ $file->temporaryUrl() }}'; document.getElementById('custom-lightbox').style.display='flex';">
+                                                <img src="{{ $file->temporaryUrl() }}" class="img-fluid rounded" style="height: 80px; width:100%; object-fit: cover;">
+                                            </a>
                                             <button type="button" 
                                                     wire:click="removeNewUpload({{ $key }})" 
                                                     class="btn btn-sm btn-warning position-absolute top-0 end-0 m-1 rounded-circle p-0" 
@@ -273,6 +279,12 @@
             </div>
         </div>
     </div>
+    <!-- Custom Lightbox Overlay -->
+    <div id="custom-lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1060; cursor: pointer; align-items: center; justify-content: center;" onclick="this.style.display='none';">
+        <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold;">&times;</span>
+        <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 5px; box-shadow: 0 5px 25px rgba(0,0,0,0.5);">
+    </div>
+
 </div>
 
 @push('scripts')
@@ -330,3 +342,4 @@
     });
 </script>
 @endpush
+

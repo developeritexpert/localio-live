@@ -334,10 +334,15 @@
         
         <div class="top-auto-btm">
             <div class="container">
-                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; border-bottom: 1px solid #e8eef6 !important;padding-bottom: 20px;">
+                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; ">
                     {{ $topProductContents['top_rated_listing_headline'] ?? '“Top-rated brands, products and services' }}
                 </h2>
-                <div class="top-auto-choice">
+                @if(!empty($topProductContents['top_rated_listing_subheadline']))
+                    <div style="font-size: 16px; color: #475569; margin-bottom: 24px; margin-top: -10px;">
+                        {!! $topProductContents['top_rated_listing_subheadline'] !!}
+                    </div>
+                @endif
+                <div class="top-auto-choice" style="border-top: 1px solid #e8eef6 !important;padding-top: 20px;">
                     <!-- <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
@@ -1257,6 +1262,7 @@
 
                     <div class="accordion" id="topRatedFaqAccordion">
                         @foreach($faqs as $fIndex => $faq)
+                        @if($loop->iteration > 10) @break @endif
                         <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
                             <h2 class="accordion-header" id="faqHeading{{ $fIndex }}">
                                 <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">

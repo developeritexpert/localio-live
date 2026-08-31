@@ -139,6 +139,22 @@
                             </div>
                         </div>
 
+                        {{-- Top Rated Listing Section Sub-headline --}}
+                        @php 
+                            $listSubHlObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'top_rated_listing_subheadline')->where('type', '!=', 'json')->first() : null; 
+                            $listSubHlId = $listSubHlObj ? $listSubHlObj->id : 'new';
+                            $listSubHlVal = $listSubHlObj ? $listSubHlObj->meta_value : '';
+                        @endphp
+                        <div class="col-12 mt-3">
+                            <div class="form-group">
+                                <label class="form-label fw-bold">Listings Section Sub-headline</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" name="top_rated_listing_subheadline[{{ $listSubHlId }}]" placeholder="Enter sub-headline text...">{!! $listSubHlVal !!}</textarea>
+                                </div>
+                                <small class="text-muted">Appears below the Listings Section Headline on <code>/top-rated</code>.</small>
+                            </div>
+                        </div>
+
                         {{-- Explore Categories Section --}}
                         @php 
                             $catHlObj = isset($topProductContents) ? $topProductContents->where('meta_key', 'explore_categories_headline')->where('type', '!=', 'json')->first() : null; 
@@ -162,7 +178,7 @@
                             <div class="form-group">
                                 <label class="form-label fw-bold">Explore Categories Sub-headline</label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" name="explore_categories_subheadline[{{ $catSubId }}]" value="{{ $catSubVal }}" placeholder="Discover top-rated software, services, and solutions across our most popular categories.">
+                                    <textarea class="form-control rich-editor" name="explore_categories_subheadline[{{ $catSubId }}]" placeholder="Discover top-rated software, services, and solutions across our most popular categories.">{{ $catSubVal }}</textarea>
                                 </div>
                                 <small class="text-muted">Subtitle for category grid on <code>/top-rated</code>.</small>
                             </div>

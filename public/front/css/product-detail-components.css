@@ -6,14 +6,12 @@
    <link rel="stylesheet" href="{{ asset('front/css/product-detail-components.css') }}">
    ============================================================= */
 
-
 /* ----------------------------------------------------------
    Transparency Banner
    ---------------------------------------------------------- */
 .transparency-banner {
     position: relative !important;
 }
-
 
 /* ----------------------------------------------------------
    Sidebar Review Card
@@ -59,7 +57,6 @@
     }
 }
 
-
 /* ----------------------------------------------------------
    Review Header / User
    ---------------------------------------------------------- */
@@ -85,7 +82,6 @@
     object-fit: cover;
 }
 
-
 /* ----------------------------------------------------------
    Rating Stars
    ---------------------------------------------------------- */
@@ -99,7 +95,6 @@
     font-size: 12px;
 }
 
-
 /* ----------------------------------------------------------
    Review Breakdown Box
    ---------------------------------------------------------- */
@@ -110,7 +105,6 @@
 .review-breakdown-box h2 {
     margin-bottom: 18px;
 }
-
 
 /* ----------------------------------------------------------
    Review Breakdown Card
@@ -203,7 +197,7 @@
 }
 
 .progress-bar {
-    background: #199429;
+    background: #007bff;
     border-radius: 30px;
 }
 
@@ -214,7 +208,6 @@
     color: #333;
     font-weight: 600;
 }
-
 
 /* ----------------------------------------------------------
    Main Feature Sidebar
@@ -230,7 +223,6 @@
 .feture_box h2 {
     font-size: 20px !important;
 }
-
 
 /* ----------------------------------------------------------
    Starting Price Box
@@ -279,14 +271,13 @@
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    transition: .3s;
+    transition: 0.3s;
 }
 
 .starting-price-link:hover {
     color: #002655;
     text-decoration: underline;
 }
-
 
 /* ----------------------------------------------------------
    Pros & Cons
@@ -358,7 +349,6 @@ h5.card-title.mb-3 {
     color: #002347 !important;
 }
 
-
 /* ----------------------------------------------------------
    Sticky Review Filter Sidebar
    ---------------------------------------------------------- */
@@ -380,7 +370,6 @@ h5.card-title.mb-3 {
     }
 }
 
-
 /* ----------------------------------------------------------
    Sticky Nav Rating Helpers
    ---------------------------------------------------------- */
@@ -398,7 +387,6 @@ h5.card-title.mb-3 {
 .fixed-div .hide-on-sticky {
     display: none !important;
 }
-
 
 /* ----------------------------------------------------------
    Image Slider
@@ -464,7 +452,6 @@ section#section-compare {
 a.view-more-link:hover {
     text-decoration: underline !important;
 }
-
 
 /* ----------------------------------------------------------
    Gallery Modal
@@ -571,8 +558,13 @@ a.view-more-link:hover {
         height: 36px !important;
         font-size: 14px !important;
     }
-    #modalPrevBtn { left: 12px !important; }
-    #modalNextBtn { right: 12px !important; margin-right: 0 !important; }
+    #modalPrevBtn {
+        left: 12px !important;
+    }
+    #modalNextBtn {
+        right: 12px !important;
+        margin-right: 0 !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -580,27 +572,44 @@ a.view-more-link:hover {
         padding: 12px !important;
         gap: 8px !important;
     }
-    .gallery-header-left { gap: 12px !important; }
-    .gallery-header-left img { width: 44px !important; height: 44px !important; }
-    .gallery-header-left h3 { font-size: 18px !important; }
-    .gallery-header-left div div { font-size: 12px !important; }
-    .gallery-body { height: 40vh !important; padding: 8px !important; }
-    .gallery-image-wrap { padding-inline: 8px !important; }
+    .gallery-header-left {
+        gap: 12px !important;
+    }
+    .gallery-header-left img {
+        width: 44px !important;
+        height: 44px !important;
+    }
+    .gallery-header-left h3 {
+        font-size: 18px !important;
+    }
+    .gallery-header-left div div {
+        font-size: 12px !important;
+    }
+    .gallery-body {
+        height: 40vh !important;
+        padding: 8px !important;
+    }
+    .gallery-image-wrap {
+        padding-inline: 8px !important;
+    }
     #modalPrevBtn,
     #modalNextBtn {
         width: 30px !important;
         height: 30px !important;
         font-size: 11px !important;
     }
-    #modalPrevBtn { left: 6px !important; }
-    #modalNextBtn { right: 6px !important; }
+    #modalPrevBtn {
+        left: 6px !important;
+    }
+    #modalNextBtn {
+        right: 6px !important;
+    }
     #imageGalleryModal .btn-close {
         font-size: 16px !important;
         right: 12px !important;
         top: 12px !important;
     }
 }
-
 
 /* ----------------------------------------------------------
    Responsive Misc
@@ -612,7 +621,9 @@ a.view-more-link:hover {
 }
 
 @media (max-width: 575px) {
-    .frst_rw { gap: 20px 0; }
+    .frst_rw {
+        gap: 20px 0;
+    }
     .new-visit-anc .cta.cta_orange {
         font-size: 12px;
         width: fit-content;

@@ -155,7 +155,18 @@
     @if($show)
         <div class="modal show d-block mod_detail_pg" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050; overflow-y: auto;">
             <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff;">
+                <div class="modal-content border-0 shadow-sm" style="border-radius: 12px; overflow: hidden; background: #ffffff; position: relative;">
+
+                    <!-- Loading Progress Bar -->
+                    <div wire:loading style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #e2e8f0; z-index: 9999; overflow: hidden;">
+                        <div style="height: 100%; background: #06498b; width: 30%; border-radius: 2px; animation: loadingBar 1.5s infinite ease-in-out;"></div>
+                    </div>
+                    <style>
+                        @keyframes loadingBar {
+                            0% { transform: translateX(-100%); }
+                            100% { transform: translateX(333%); }
+                        }
+                    </style>
 
                     <div class="modal-body p-3 p-md-4 pt-2">
                         <div>
@@ -250,10 +261,10 @@
                                          <hr class="my-3">
 
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(1)" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(1)" wire:loading.attr="disabled" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="goToStep3" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="goToStep3" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -275,10 +286,10 @@
                                         </div>
 
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(2)" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(2)" wire:loading.attr="disabled" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="submitStep3" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="submitStep3" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -304,7 +315,7 @@
                                                 <div class="mb-2 position-relative" style="display: flex; align-items: center;">
                                                     <i class="fas fa-search position-absolute text-muted" style="left: 12px; font-size: 12px; pointer-events: none; z-index: 5;"></i>
                                                     <input type="text" 
-                                                           wire:model.live.debounce.100ms="proSearch" 
+                                                           wire:model.live.debounce.300ms="proSearch" 
                                                            class="form-control" 
                                                            placeholder="Search or filter pros..." 
                                                            style="border-radius: 20px; font-size: 12px; padding: 6px 32px 6px 32px; border: 1px solid #e2e8f0; background: #fff; width: 100%;">
@@ -362,10 +373,10 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(3)" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(3)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="setStep(5)" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="setStep(5)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -390,7 +401,7 @@
                                                 <div class="mb-2 position-relative" style="display: flex; align-items: center;">
                                                     <i class="fas fa-search position-absolute text-muted" style="left: 12px; font-size: 12px; pointer-events: none; z-index: 5;"></i>
                                                     <input type="text" 
-                                                           wire:model.live.debounce.100ms="conSearch" 
+                                                           wire:model.live.debounce.300ms="conSearch" 
                                                            class="form-control" 
                                                            placeholder="Search or filter cons..." 
                                                            style="border-radius: 20px; font-size: 12px; padding: 6px 32px 6px 32px; border: 1px solid #e2e8f0; background: #fff; width: 100%;">
@@ -448,7 +459,7 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(4)" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(4)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
