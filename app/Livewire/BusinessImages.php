@@ -225,12 +225,27 @@ class BusinessImages extends Component
         ];
 
         // HTTP timeout limit per API attempt
-        $apiTimeout = 10;
+        $apiTimeout = 30; // Increased to 30s because rendering screenshots can take time
 
         try {
-            // 1st Attempt: Microlink Screenshot API
-            $this->addConsoleLog("[Attempt 1] Calling Microlink API...");
-            $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&waitForTimeout=1500";
+            // 1st Attempt: Direct Embed redirect on Microlink (Most efficient, returns image directly)
+            $this->addConsoleLog("[Attempt 1] Calling Microlink Embed...");
+            $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
+            $embedResponse = Http::withoutVerifying()
+                ->withHeaders($headers)
+                ->timeout($apiTimeout)
+                ->get($embedUrl);
+            if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
+                file_put_contents($savePath, $embedResponse->body());
+                $this->addConsoleLog("[Attempt 1] SUCCESS: Image fetched and saved via Microlink.");
+                return true;
+            } else {
+                $this->addConsoleLog("[Attempt 1] FAILED: Microlink Embed status: " . $embedResponse->status() . ", Length: " . strlen($embedResponse->body()) . ", Response: " . substr($embedResponse->body(), 0, 300));
+            }
+
+            // 2nd Attempt: Microlink Screenshot API (JSON)
+            $this->addConsoleLog("[Attempt 2] Calling Microlink API (JSON)...");
+            $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false";
             $response = Http::withoutVerifying()
                 ->withHeaders($headers)
                 ->timeout($apiTimeout)
@@ -240,68 +255,23 @@ class BusinessImages extends Component
                 $json = $response->json();
                 $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
                 if ($screenshotUrl) {
-                    $this->addConsoleLog("[Attempt 1] Microlink returned screenshot URL: " . $screenshotUrl . ". Fetching image...");
+                    $this->addConsoleLog("[Attempt 2] Microlink returned screenshot URL: " . $screenshotUrl . ". Fetching image...");
                     $imgResponse = Http::withoutVerifying()
                         ->withHeaders($headers)
                         ->timeout($apiTimeout)
                         ->get($screenshotUrl);
                     if ($imgResponse->successful() && strlen($imgResponse->body()) > 5000) {
                         file_put_contents($savePath, $imgResponse->body());
-                        $this->addConsoleLog("[Attempt 1] SUCCESS: Image fetched and saved.");
+                        $this->addConsoleLog("[Attempt 2] SUCCESS: Image fetched and saved via Microlink.");
                         return true;
                     } else {
-                        $this->addConsoleLog("[Attempt 1] FAILED: Image fetch failed. Status: " . $imgResponse->status() . ", Length: " . strlen($imgResponse->body()));
+                        $this->addConsoleLog("[Attempt 2] FAILED: Image fetch failed. Status: " . $imgResponse->status());
                     }
                 } else {
-                    $this->addConsoleLog("[Attempt 1] FAILED: JSON response did not contain screenshot URL. Response: " . json_encode($json));
+                    $this->addConsoleLog("[Attempt 2] FAILED: JSON response did not contain screenshot URL.");
                 }
             } else {
-                $this->addConsoleLog("[Attempt 1] FAILED: Microlink API status: " . $response->status() . ", Response: " . substr($response->body(), 0, 300));
-            }
-
-            // 2nd Attempt: Direct Embed redirect on Microlink
-            $this->addConsoleLog("[Attempt 2] Calling Microlink Embed...");
-            $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
-            $embedResponse = Http::withoutVerifying()
-                ->withHeaders($headers)
-                ->timeout($apiTimeout)
-                ->get($embedUrl);
-            if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
-                file_put_contents($savePath, $embedResponse->body());
-                $this->addConsoleLog("[Attempt 2] SUCCESS: Image fetched and saved.");
-                return true;
-            } else {
-                $this->addConsoleLog("[Attempt 2] FAILED: Microlink Embed status: " . $embedResponse->status() . ", Length: " . strlen($embedResponse->body()) . ", Response: " . substr($embedResponse->body(), 0, 300));
-            }
-
-            // 3rd Attempt: Thum.io free screenshot API
-            $this->addConsoleLog("[Attempt 3] Calling Thum.io API...");
-            $thumUrl = "https://image.thum.io/get/width/1200/crop/800/noanimate/" . $cleanUrl;
-            $thumResponse = Http::withoutVerifying()
-                ->withHeaders($headers)
-                ->timeout($apiTimeout)
-                ->get($thumUrl);
-            if ($thumResponse->successful() && strlen($thumResponse->body()) > 5000) {
-                file_put_contents($savePath, $thumResponse->body());
-                $this->addConsoleLog("[Attempt 3] SUCCESS: Image fetched and saved.");
-                return true;
-            } else {
-                $this->addConsoleLog("[Attempt 3] FAILED: Thum.io status: " . $thumResponse->status() . ", Length: " . strlen($thumResponse->body()) . ", Response: " . substr($thumResponse->body(), 0, 300));
-            }
-
-            // 4th Attempt: WordPress mShots API
-            $this->addConsoleLog("[Attempt 4] Calling WordPress mShots API...");
-            $wpUrl = "https://s0.wp.com/mshots/v1/" . urlencode($cleanUrl) . "?w=1200";
-            $wpResponse = Http::withoutVerifying()
-                ->withHeaders($headers)
-                ->timeout($apiTimeout)
-                ->get($wpUrl);
-            if ($wpResponse->successful() && strlen($wpResponse->body()) > 5000) {
-                file_put_contents($savePath, $wpResponse->body());
-                $this->addConsoleLog("[Attempt 4] SUCCESS: Image fetched and saved.");
-                return true;
-            } else {
-                $this->addConsoleLog("[Attempt 4] FAILED: WordPress mShots status: " . $wpResponse->status() . ", Length: " . strlen($wpResponse->body()) . ", Response: " . substr($wpResponse->body(), 0, 300));
+                $this->addConsoleLog("[Attempt 2] FAILED: Microlink API status: " . $response->status());
             }
 
         } catch (\Exception $e) {
