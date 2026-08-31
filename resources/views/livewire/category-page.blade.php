@@ -431,6 +431,24 @@
                 <div class="top-rated-heading-block">
                     <div class="row align-items-start">
                         <div class="col-md-6 text-start">
+                            @php
+                                $currentLangId = $lang_id ?? getCurrentLanguageID();
+                                $c1Obj = \App\Models\StaticContentKey::where('key', 'country1')->first();
+                                $c2Obj = \App\Models\StaticContentKey::where('key', 'country2')->first();
+                                $c1 = $c1Obj ? $c1Obj->getTranslation($currentLangId) : '';
+                                $c2 = $c2Obj ? $c2Obj->getTranslation($currentLangId) : '';
+                                $currentYear = date('Y');
+
+                                $applyDynamicVars = function($text) use ($c1, $c2, $currentYear) {
+                                    if(!$text) return $text;
+                                    $text = str_replace('[year]', $currentYear, $text);
+                                    $text = str_replace('[country1]', $c1, $text);
+                                    $text = str_replace('[country2]', $c2, $text);
+                                    // Remove trailing or double spaces that might occur if a variable is empty
+                                    return trim(preg_replace('/\s+/', ' ', $text));
+                                };
+                            @endphp
+
                             @if(!empty($feature_slug))
                                 @php
                                     $catCompName = !empty($category->translations->comparison_name) 
@@ -454,11 +472,14 @@
                                     $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
                                 @endphp
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                    {{ $catCompName }} with {{ $formattedFeatName }}
+                                    {{ $applyDynamicVars($catCompName . ' with ' . $formattedFeatName) }}
                                 </h1>
                             @else
+                                @php
+                                    $baseTitle = !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products');
+                                @endphp
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                    {{ !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products') }}
+                                    {{ $applyDynamicVars($baseTitle) }}
                                 </h1>
                             @endif
                             <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on

@@ -120,6 +120,40 @@
                                         @endforeach
                                     </div>
                                 </div>
+
+                                @php
+                                    $country1 = $categoryPageContents->where('meta_key', 'country1')->first();
+                                    $country2 = $categoryPageContents->where('meta_key', 'country2')->first();
+                                @endphp
+
+                                <div class="card border mt-4">
+                                    <div class="card-header mt-3">
+                                        Global Dynamic Variables (Used in Category Page Titles)
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="country1">Country 1 (e.g., Canada)</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control" name="country1[{{ $country1->id ?? 'new' }}]" id="country1"
+                                                            value="{{ $country1->meta_value ?? '' }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="country2">Country 2 (e.g., for Canada, for the US)</label>
+                                                    <div class="form-control-wrap">
+                                                        <input type="text" class="form-control" name="country2[{{ $country2->id ?? 'new' }}]" id="country2"
+                                                            value="{{ $country2->meta_value ?? '' }}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-12 mt-4">
                                     <div class="form-group">
                                         <button class="addCategory btn btn-primary  text-center btn-localio"><em

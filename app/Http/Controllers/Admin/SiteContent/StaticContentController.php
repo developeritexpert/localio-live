@@ -207,6 +207,20 @@ class StaticContentController extends Controller
                     'no_prod_mach_fil',
                 ],
             ],
+            'faqs' => [
+                'title' => 'FAQs Section',
+                'keys' => [
+                    'faqs_sub_heading',
+                    'faqs_heading',
+                ],
+            ],
+            'dynamic_variables' => [
+                'title' => 'Global Dynamic Variables (For Categories)',
+                'keys' => [
+                    'country1',
+                    'country2',
+                ],
+            ],
             'auth' => [
                 'title' => 'Authentication Text',
                 'keys' => [
