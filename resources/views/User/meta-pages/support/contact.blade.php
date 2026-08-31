@@ -3,7 +3,7 @@
 @section('meta_description', format_meta_text(isset($contact) && isset($contact->meta_description) ? $contact->meta_description : ''))
 @section('content')
 
-<section class="banner_sec help-cntr-bnr inr-bnr dark" style="background-color: #003F7D;">
+<section class="banner_sec help-cntr-bnr inr-bnr dark d-none" style="background-color: #003F7D;">
     <div class="bubble-wrp">
         <img src="{{ asset('front/img/small-bnnr-bg.png') }}" alt="">
     </div>
@@ -38,9 +38,20 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 @endif
 
-<section class="contact_sec login_form light">
+<section class="most-populr-sec ms_dv light p_120 contact_sec login_form light py-5">
     <div class="container">
-        <div class="contact_content aos-init aos-animate my-2 mx-auto" data-aos="fade-up" data-aos-duration="1000">
+        <div class="row align-items-center">
+            <!-- Left Side Text -->
+            <div class="col-lg-6 mb-5 mb-lg-0 light " data-aos="fade-right" data-aos-duration="1000">
+                <div class="light pr-lg-5 text-left text-justify hd_text" style="text-align: left;">
+                    <h1 class="font-weight-bold mb-4">{{ $contact->contact_heading ?? '' }}</h1>
+                    <p>{{ $contact->contact_description ?? '' }}</p>
+                </div>
+            </div>
+
+            <!-- Right Side Form -->
+            <div class="col-lg-6" data-aos="fade-left" data-aos-duration="1000">
+                <div class="contact_content aos-init aos-animate my-2 ms-auto" style="max-width: 100%; background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
             <div class="hd_text">
                 <h2 class="text-center">{{ static_text('contact_us') }}</h2>
             </div>
@@ -136,6 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     </button>
                 </div>
             </form>
+        </div>
+            </div>
         </div>
     </div>
 </section>
