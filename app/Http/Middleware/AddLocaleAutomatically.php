@@ -59,7 +59,7 @@ class AddLocaleAutomatically
         // -------------------------------------------------------------
         if ($isIndexPage) {
             // Check for existing saved cookie preference
-            $cookieLocale = strtolower(trim((string)($request->cookie('user_locale') ?? $request->cookie('lang_code'))));
+            $cookieLocale = strtolower(trim((string)($request->cookie('user_locale_v2') ?? $request->cookie('lang_code_v2'))));
             if (!empty($cookieLocale) && in_array($cookieLocale, $validLocales)) {
                 $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $cookieLocale);
                 App::setLocale($cookieLocale);
@@ -155,7 +155,7 @@ class AddLocaleAutomatically
         // -------------------------------------------------------------
         // CASE 3: Non-index page without locale prefix (e.g. /some-legacy-path)
         // -------------------------------------------------------------
-        $targetLocale = session('lang_code') ?? ($request->cookie('user_locale') ?? $defaultLocale);
+        $targetLocale = session('lang_code') ?? ($request->cookie('user_locale_v2') ?? $defaultLocale);
         if (!in_array($targetLocale, $validLocales)) {
             $targetLocale = $defaultLocale;
         }
