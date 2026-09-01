@@ -633,9 +633,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         }
         $businesses = $orderedBusinesses;
 
-        // Populate session with compared product IDs so single removal works correctly
-        session()->put('compared_products', $businesses->pluck('id')->toArray());
-        session()->save();
+        // We deliberately do not store compare session on SEO comparison pages so compare-bar doesn't leak to category/top-rated pages
 
         $firstBiz = $businesses->first();
         $catId = $firstBiz ? $firstBiz->category_id : ($categoryTranslation ? $categoryTranslation->category_id : null);
@@ -659,12 +657,69 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
 
         return view('User.product.product_comparison', compact('businesses', 'availableCategoryBusinesses', 'comparison_slug', 'categoryTranslation'));
     }
-    public function addToComparison($locale, $productId)
+    protected function getComparisonRedirectUrl(array $productIds)
     {
-        $productId = (int) $productId;
-        $comparedProducts = session()->get('compared_products', []);
-        if (!is_array($comparedProducts)) {
-            $comparedProducts = [];
+        $locale = app()->getLocale();
+        $count = count($productIds);
+
+        if ($count >= 2 && $count <= 4) {
+            $lang_id = getCurrentLanguageID();
+            $businesses = Business::with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id)
+            ])
+            ->whereIn('id', $productIds)
+            ->get()
+            ->sortBy(fn($m) => array_search($m->id, $productIds))
+            ->values();
+
+            if ($businesses->count() >= 2) {
+                $categoryId = $businesses->first()->category_id;
+                $catTrans = \App\Models\CategoryTranslation::where('category_id', $categoryId)
+                    ->where('lang_id', $lang_id)
+                    ->first();
+                $compSlug = $catTrans ? $catTrans->comparison_slug : null;
+
+                $allHaveSlugs = $businesses->every(function($b) use ($lang_id) {
+                    return !empty($b->translations->firstWhere('lang_id', $lang_id)?->slug ?? $b->translations->first()?->slug);
+                });
+
+                if (!empty($compSlug) && $allHaveSlugs) {
+                    $vs_keyword = static_text('vs_keyword');
+                    if (empty($vs_keyword) || $vs_keyword === 'vs_keyword') {
+                        $vs_keyword = 'vs';
+                    }
+                    $vs_keyword = \Illuminate\Support\Str::slug($vs_keyword);
+
+                    $slugs = $businesses->map(function($b) use ($lang_id) {
+                        return $b->translations->firstWhere('lang_id', $lang_id)?->slug ?? $b->translations->first()?->slug;
+                    })->toArray();
+
+                    $compBusinesses = implode("-{$vs_keyword}-", $slugs);
+
+                    return route('product-comparison.seo', [
+                        'locale' => $locale,
+                        'comparison_slug' => $compSlug,
+                        'comparison_businesses' => $compBusinesses
+                    ]);
+                }
+            }
+        }
+
+        return route('product-comparison', $locale);
+    }
+
+    public function addToComparison(Request $request, $locale, $productId = null)
+    {
+        $productId = (int) ($productId ?: $request->input('productId'));
+        $currentIds = $request->input('currentIds');
+
+        if (is_array($currentIds) && !empty($currentIds)) {
+            $comparedProducts = array_values(array_unique(array_map('intval', $currentIds)));
+        } else {
+            $comparedProducts = session()->get('compared_products', []);
+            if (!is_array($comparedProducts)) {
+                $comparedProducts = [];
+            }
         }
 
         if (!in_array($productId, $comparedProducts)) {
@@ -676,33 +731,48 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             }
             $comparedProducts[] = $productId;
             $comparedProducts = array_values($comparedProducts);
-            session()->put('compared_products', $comparedProducts);
-            session()->save();
         }
+
+        // Do not persist compared_products in session here so category/top-rated pages do not show comparison bar unexpectedly
+        session()->forget('compared_products');
+
+        $redirectUrl = $this->getComparisonRedirectUrl($comparedProducts);
 
         return response()->json([
             'success' => true,
-            'redirect' => route('product-comparison', app()->getLocale())
+            'redirect' => $redirectUrl,
+            'redirect_url' => $redirectUrl
         ]);
     }
 
-    public function removeFromComparison($locale, $productId)
+    public function removeFromComparison(Request $request, $locale, $productId = null)
     {
-        $productId = (int) $productId;
-        $comparedProducts = session()->get('compared_products', []);
+        $productId = (int) ($productId ?: $request->input('productId'));
+        $currentIds = $request->input('currentIds');
+
+        if (is_array($currentIds) && !empty($currentIds)) {
+            $comparedProducts = array_values(array_unique(array_map('intval', $currentIds)));
+        } else {
+            $comparedProducts = session()->get('compared_products', []);
+            if (!is_array($comparedProducts)) {
+                $comparedProducts = [];
+            }
+        }
 
         // Remove only the requested product ID from the array
         $comparedProducts = array_values(array_filter($comparedProducts, function ($id) use ($productId) {
             return (int)$id !== $productId;
         }));
 
-        // Update session
-        session()->put('compared_products', $comparedProducts);
-        session()->save();
+        // Do not persist compared_products in session here so category/top-rated pages do not show comparison bar unexpectedly
+        session()->forget('compared_products');
+
+        $redirectUrl = $this->getComparisonRedirectUrl($comparedProducts);
 
         return response()->json([
             'success' => true,
-            'redirect' => route('product-comparison', app()->getLocale())
+            'redirect' => $redirectUrl,
+            'redirect_url' => $redirectUrl
         ]);
     }
 

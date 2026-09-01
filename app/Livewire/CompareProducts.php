@@ -24,7 +24,7 @@ class CompareProducts extends Component
     {
         $this->comparedProducts = array_map('intval', app(CompareService::class)->getComparedProducts());
         $this->isInCompare = in_array((int)$this->item->id, $this->comparedProducts, true);
-        $this->isDisabled = count($this->comparedProducts) >= 2 && !$this->isInCompare;
+        $this->isDisabled = count($this->comparedProducts) >= 4 && !$this->isInCompare;
     }
     public function toggleCompare($productId)
     {
@@ -44,7 +44,7 @@ class CompareProducts extends Component
             // Dispatch event to notify all components
             $this->dispatch('toggleCompareProduct');
         }
-        $this->isDisabled = count($this->comparedProducts) >= 2 && !$this->isInCompare;
+        $this->isDisabled = count($this->comparedProducts) >= 4 && !$this->isInCompare;
     }
 
     public function render()

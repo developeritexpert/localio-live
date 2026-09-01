@@ -1092,7 +1092,10 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
-                        }
+                        },
+                        body: JSON.stringify({
+                            currentIds: @json($businesses->pluck('id')->toArray())
+                        })
                     })
                     .then(response => {
                         if (!response.ok) throw response;
@@ -1176,7 +1179,10 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
-                        }
+                        },
+                        body: JSON.stringify({
+                            currentIds: @json($businesses->pluck('id')->toArray())
+                        })
                     })
                     .then(response => {
                         if (!response.ok) throw response;
@@ -1217,6 +1223,9 @@
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json'
                             },
+                            body: JSON.stringify({
+                                currentIds: @json($businesses->pluck('id')->toArray())
+                            })
                         })
                         .then(response => {
                             if (!response.ok) throw response;
