@@ -528,7 +528,27 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         ->whereIn('id', $comparedProductIds)
         ->get();
             // dd($businesses);
-        return view('User.product.product_comparison', compact('businesses'));
+        $firstBiz = $businesses->first();
+        $catId = $firstBiz ? $firstBiz->category_id : null;
+        $availableCategoryBusinesses = collect();
+        if ($catId) {
+            $availableCategoryBusinesses = Business::where('category_id', $catId)
+                ->where('status', 1)
+                ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])
+                ->get()
+                ->map(function($b) use ($lang_id) {
+                    $t = $b->translations->firstWhere('lang_id', $lang_id) ?? $b->translations->first();
+                    return [
+                        'id' => $b->id,
+                        'name' => $t->name ?? $b->name ?? $b->slug,
+                        'slug' => $t->slug ?? $b->slug,
+                        'icon' => $b->getRawOriginal('icon_id') ?? $b->icon_id ?? null,
+                    ];
+                })
+                ->values();
+        }
+
+        return view('User.product.product_comparison', compact('businesses', 'availableCategoryBusinesses'));
     }
 
     public function productComparisonSeo($locale = null, $comparison_slug = null, $comparison_businesses = null)
@@ -563,15 +583,14 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         if (strpos($comparison_businesses, $separator) !== false) {
             $slugs = explode($separator, $comparison_businesses);
         } else {
-            // Regex fallback to split by -vs- or -<any-vs-word>-
-            if (preg_match('/^(.*?)-([a-zA-Z0-9]+)-(.*?)$/', $comparison_businesses, $matches)) {
-                $slugs = [$matches[1], $matches[3]];
-            } else {
+            $slugs = preg_split('/-vs-|-versus-/i', $comparison_businesses);
+            if (count($slugs) < 2) {
                 $slugs = explode('-vs-', $comparison_businesses);
             }
         }
         
-        if (count($slugs) != 2) {
+        // Support comparing from 2 up to 4 businesses
+        if (count($slugs) < 2 || count($slugs) > 4) {
             abort(404); // Invalid format
         }
         
@@ -618,8 +637,55 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         session()->put('compared_products', $businesses->pluck('id')->toArray());
         session()->save();
 
-        return view('User.product.product_comparison', compact('businesses'));
+        $firstBiz = $businesses->first();
+        $catId = $firstBiz ? $firstBiz->category_id : ($categoryTranslation ? $categoryTranslation->category_id : null);
+        $availableCategoryBusinesses = collect();
+        if ($catId) {
+            $availableCategoryBusinesses = Business::where('category_id', $catId)
+                ->where('status', 1)
+                ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])
+                ->get()
+                ->map(function($b) use ($lang_id) {
+                    $t = $b->translations->firstWhere('lang_id', $lang_id) ?? $b->translations->first();
+                    return [
+                        'id' => $b->id,
+                        'name' => $t->name ?? $b->name ?? $b->slug,
+                        'slug' => $t->slug ?? $b->slug,
+                        'icon' => $b->getRawOriginal('icon_id') ?? $b->icon_id ?? null,
+                    ];
+                })
+                ->values();
+        }
+
+        return view('User.product.product_comparison', compact('businesses', 'availableCategoryBusinesses', 'comparison_slug', 'categoryTranslation'));
     }
+    public function addToComparison($locale, $productId)
+    {
+        $productId = (int) $productId;
+        $comparedProducts = session()->get('compared_products', []);
+        if (!is_array($comparedProducts)) {
+            $comparedProducts = [];
+        }
+
+        if (!in_array($productId, $comparedProducts)) {
+            if (count($comparedProducts) >= 4) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You can compare a maximum of 4 products.'
+                ], 422);
+            }
+            $comparedProducts[] = $productId;
+            $comparedProducts = array_values($comparedProducts);
+            session()->put('compared_products', $comparedProducts);
+            session()->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'redirect' => route('product-comparison', app()->getLocale())
+        ]);
+    }
+
     public function removeFromComparison($locale, $productId)
     {
         $productId = (int) $productId;

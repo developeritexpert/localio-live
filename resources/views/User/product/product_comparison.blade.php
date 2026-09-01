@@ -68,26 +68,35 @@
         </div>
 
         <!-- Business Header Row -->
-        <div class="row align-items-center justify-content-between">
-            <div class="col-md-12 col-12">
-                <div class="top_head d-flex align-items-center gap-3">
-                    <div>
-                        <div class="an_lkd   align-items-center gap-2 " style="display:unset;">
-                            <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
-                                @if (count($businesses) >= 2)
-                                    {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}: Comparison
-                                @elseif (count($businesses) == 1)
-                                    {{ $businesses[0]->translations->first()?->name ?? '' }}: Comparison
-                                @else
-                                    Businesses Comparison
-                                @endif
-                            </h1>
-                            <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                            <p style="font-size: 15px; color: #444; margin-bottom: 0;">
-                                Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide
-                            </p>
+        <div class="row align-items-center justify-content-between py-2">
+            <div class="comparison-header-left">
+                <div class="top_head">
+                    <h1 style="font-size: 28px !important; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                        @if (count($businesses) >= 2)
+                            {{ $businesses->map(fn($b) => $b->translations->first()?->name ?? $b->name ?? '')->filter()->implode(' vs ') }}: Comparison
+                        @elseif (count($businesses) == 1)
+                            {{ $businesses[0]->translations->first()?->name ?? '' }}: Comparison
+                        @else
+                            Businesses Comparison
+                        @endif
+                    </h1>
+                    <p class="text-muted" style="font-size: 13px; margin-top: 4px; margin-bottom: 14px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                    <p style="font-size: 15px; color: #444; margin-bottom: 0; line-height: 1.5;">
+                        @if(!empty($catName))
+                            Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.
+                        @else
+                            Learn more from our team about top software and services pricing, features, and user ratings in our side-by-side comparison guide.
+                        @endif
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-5 col-12 mt-4 mt-lg-0">
+                <div class="comparison-header-icons">
+                    @foreach($businesses as $b)
+                        <div class="comp-header-icon-box" title="{{ $b->translations->first()?->name ?? '' }}">
+                            <x-business-logo :business="$b" />
                         </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -97,11 +106,82 @@
 <!-- section product comparison -->
 <section class="lts-wht-bg product_comp_sec p_120 light new-white-bg" style="padding-top: 30px;">
     <div class="container">
+        <!-- Your comparison top bar (Capterra style in Localio design) -->
+        <div class="your-comparison-wrapper position-relative">
+            <div class="your-comp-pills-wrap">
+                <span class="your-comp-title">Your comparison:</span>
+                @foreach($businesses as $biz)
+                    @php
+                        $bTitle = $biz->translations->first()?->name ?? $biz->name ?? 'Business';
+                    @endphp
+                    <div class="your-comp-pill">
+                        <div class="your-comp-pill-logo">
+                            <x-business-logo :business="$biz" />
+                        </div>
+                        <span>{{ $bTitle }}</span>
+                        @if(count($businesses) > 1)
+                        <button type="button" class="your-comp-pill-remove remove-from-comparison" 
+                            data-url="{{ route('remove-from-comparison', ['locale' => app()->getLocale(), 'productId' => $biz->id]) }}"
+                            title="Remove {{ $bTitle }}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        @endif
+                    </div>
+                @endforeach
+                <span class="your-comp-count">{{ count($businesses) }}/4 selected</span>
+            </div>
+
+            @if(count($businesses) < 4)
+            <div class="position-relative">
+                <button type="button" class="add-products-btn" id="toggleAddProductBtn">
+                    Add more <i class="fas fa-plus ms-1"></i>
+                </button>
+                <div class="add-comp-dropdown" id="addCompDropdown">
+                    <div class="add-comp-search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="add-comp-search-input" id="addCompSearchInput" placeholder="Search product to add..." autocomplete="off">
+                    </div>
+                    <div class="add-comp-items-list" id="addCompItemsList">
+                        @if(isset($availableCategoryBusinesses) && count($availableCategoryBusinesses) > 0)
+                            @php $unselectedCount = 0; @endphp
+                            @foreach($availableCategoryBusinesses as $avail)
+                                @if(!$businesses->pluck('id')->contains($avail['id']))
+                                    @php $unselectedCount++; @endphp
+                                    <div class="add-comp-item-row" data-id="{{ $avail['id'] }}" data-name="{{ strtolower($avail['name']) }}">
+                                        <div class="item-left">
+                                            @if(!empty($avail['icon']))
+                                                <img src="{{ asset($avail['icon']) }}" class="item-logo" alt="{{ $avail['name'] }}">
+                                            @else
+                                                <div class="item-logo" style="background:#002347;color:#fff;font-size:13px;font-weight:bold;">
+                                                    {{ strtoupper(substr($avail['name'], 0, 1)) }}
+                                                </div>
+                                            @endif
+                                            <span class="item-name" title="{{ $avail['name'] }}">{{ $avail['name'] }}</span>
+                                        </div>
+                                        <span class="item-add-icon">
+                                            <i class="fas fa-plus"></i>
+                                        </span>
+                                    </div>
+                                @endif
+                            @endforeach
+                            @if($unselectedCount === 0)
+                                <div class="p-3 text-muted small text-center">All products in this category are already added</div>
+                            @endif
+                        @else
+                            <div class="p-3 text-muted small text-center">No other products found in this category</div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+        
+        
 
             <div class="row justify-content-center pro-row-gp versus-row" data-aos="fade-up" data-aos-duration="1000">
                 <div class="col-12">
                     <div class="asn_tprw">
-                        <div class="pdc_box bg-white rounded-4 border shadow-sm p-4 p-md-5" style="border-radius: 20px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;">
+                        <div class="pdc_box pdc_box_count_{{ count($businesses) }} bg-white rounded-4 border shadow-sm p-4 p-md-5" style="border-radius: 20px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;">
                             @foreach ($businesses as $index => $business)
                                 @if ($index > 0)
                                     <div class="versus-box">
@@ -214,10 +294,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="remove-from-comparison"
+                                    <!-- <a href="javascript:void(0);" class="remove-from-comparison"
                                         data-url="{{ route('remove-from-comparison', ['locale' => app()->getLocale(), 'productId' => $business->id]) }}">
                                         <span class="ct_icn"><i class="fa-solid fa-xmark"></i></span>
-                                    </a>
+                                    </a> -->
                                 </div>
                             @endforeach
                             @if (count($businesses) < 2)
@@ -225,10 +305,10 @@
                                     <p class="d-flex m-0">vs</p>
                                 </div>
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 100%;">
-                                    <a href="{{route('top-rated-product')}}" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px;">
+                                    <a href="javascript:void(0);" onclick="document.getElementById('toggleAddProductBtn')?.click(); window.scrollTo({top: 150, behavior: 'smooth'});" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px; border: 2px dashed #cbd5e1; border-radius: 16px; background: #f8fafc; transition: all 0.2s ease;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
-                                            <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 48px; height: 48px;">
-                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare </span>
+                                            <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 44px; height: 44px;">
+                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare ({{ count($businesses) }}/4) </span>
                                         </div>
                                     </a>
                                 </div>
@@ -247,7 +327,7 @@
                     @if($hasAnyAffiliatedUsps)
                     <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
-                            <div class="col-lg-6 col-md-6 mb-3">
+                            <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 mb-3">
                                 @if(!empty($business->is_affiliate))
                                 <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%;">
                                     <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
@@ -291,7 +371,7 @@
                     <!-- what is product -->
                     <div class="row xrro_dv light pro-row-gp" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $index => $business)
-                            <div class="col-lg-6 {{ $index == 0 ? 'xrro_bordr' : '' }}">
+                            <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 {{ $index < count($businesses) - 1 ? 'xrro_bordr' : '' }} mb-4">
                                 <div class="xro_box {{ $index == 1 ? 'p_left' : '' }}">
                                     <h6>What is {{ $business->translations->first()?->name ?? 'Product' }}?</h6>
                                     <div class="xro_text">
@@ -315,7 +395,7 @@
                                     $amountStr = isset($startingPrice['amount']) ? number_format($startingPrice['amount'], 2) : null;
                                     $timeUnit = ucfirst($startingPrice['time_unit'] ?? 'One_time');
                                 @endphp
-                                <div class="col-lg-6 col-12">
+                                <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
                                     @if(!empty($business->is_affiliate))
                                     <div class="d-flex align-items-center gap-2 mb-3">
                                         <div class="top-product-medium-logo">
@@ -390,7 +470,7 @@
                             $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? $business->slug;
                         @endphp
 
-                        <div class="col-md-6 mb-4 ">
+                        <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 mb-4">
                             @php
                                 $activeReviews = $business->reviews;
                                 $bAvgRating = $activeReviews->count() > 0
@@ -513,13 +593,87 @@
     <section class="subs_sec light pt_120 ">
         <x-news-letter-subscription/>
     </section>
-    <script>
+        <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Dropdown toggle for "Add products"
+            const toggleBtn = document.getElementById('toggleAddProductBtn');
+            const dropdown = document.getElementById('addCompDropdown');
+            const searchInput = document.getElementById('addCompSearchInput');
+            const itemsList = document.getElementById('addCompItemsList');
+
+            if (toggleBtn && dropdown) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isVisible = dropdown.style.display === 'block';
+                    dropdown.style.display = isVisible ? 'none' : 'block';
+                    if (!isVisible && searchInput) {
+                        setTimeout(() => searchInput.focus(), 100);
+                    }
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.contains(e.target) && e.target !== toggleBtn) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+
+            // Real-time filter inside add products dropdown
+            if (searchInput && itemsList) {
+                searchInput.addEventListener('input', function() {
+                    const q = this.value.toLowerCase().trim();
+                    const rows = itemsList.querySelectorAll('.add-comp-item-row');
+                    rows.forEach(row => {
+                        const name = row.getAttribute('data-name') || '';
+                        row.style.display = name.includes(q) ? 'flex' : 'none';
+                    });
+                });
+            }
+
+            // Click to add product to comparison
+            document.querySelectorAll('.add-comp-item-row').forEach(row => {
+                row.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-id');
+                    if (!productId) return;
+
+                    fetch("{{ route('add-to-comparison', app()->getLocale()) }}/" + productId, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw response;
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        } else {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(async error => {
+                        let message = 'Could not add product to comparison.';
+                        try {
+                            const errJson = await error.json();
+                            message = errJson.message || message;
+                        } catch (_) {}
+                        alert(message);
+                    });
+                });
+            });
+
+            // Remove from comparison
             document.querySelectorAll('.remove-from-comparison').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
 
                     const url = this.getAttribute('data-url');
+                    if (!url) return;
 
                     fetch(url, {
                             method: 'POST',
@@ -538,7 +692,6 @@
                             if (data.redirect) {
                                 window.location.href = data.redirect;
                             } else {
-                                // Reload current page
                                 window.location.href =
                                     "{{ route('product-comparison', app()->getLocale()) }}";
                             }
