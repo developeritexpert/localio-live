@@ -16,8 +16,8 @@ use App\Services\AssetManager;
 function getCurrentLocale($type="lang_code")
 {
     if($type == "lang_code"){
-        if (Cookie::get('lang_code')) {
-            $langcode = Cookie::get('lang_code');
+        if (Cookie::get('lang_code_v2')) {
+            $langcode = Cookie::get('lang_code_v2');
         } elseif (Session::get('lang_code')) {
             $langcode = Session::get('lang_code');
         } else {
@@ -25,8 +25,8 @@ function getCurrentLocale($type="lang_code")
         }
         return $langcode;
     }else if($type == "lang_id"){
-        if (Cookie::get('lang_id')) {
-            $lang_id = Cookie::get('lang_id');
+        if (Cookie::get('lang_id_v2')) {
+            $lang_id = Cookie::get('lang_id_v2');
         } elseif (Session::get('lang_id')) {
             $lang_id = Session::get('lang_id');
         } else {
@@ -61,8 +61,8 @@ function getLanguageRole()
 }
 function getCurrentLanguageID()
 {
-    if (Cookie::get('lang_code')) {
-        $langcode = Cookie::get('lang_code');
+    if (Cookie::get('lang_code_v2')) {
+        $langcode = Cookie::get('lang_code_v2');
     } elseif (Session::get('lang_code')) {
         $langcode = Session::get('lang_code');
     } else {
