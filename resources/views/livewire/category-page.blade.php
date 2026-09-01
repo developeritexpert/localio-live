@@ -1377,88 +1377,10 @@
 
 
 
-        <!-- Popular Category Comparisons Section -->
-        @if(isset($popularComparisons) && count($popularComparisons) > 0)
-        @php
-            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
-        @endphp
-        <section class="compare-section p_50 light" id="section-compare" style="background-color: #f7f9fb !important;">
-            <div class="container">
-                <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
-                        Popular comparisons
-                    </h2>
-                    <p style="font-size: 15px; color: #64748b; margin: 0;">
-                        See how top {{ strtolower($catCurrentName) }} providers compare against each other.
-                    </p>
-                </div>
-
-                <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
-                    @foreach($popularComparisons as $comp)
-                    <div class="col-lg-4 col-md-4 col-12">
-                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
-                            <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
-
-                                <!-- Business 1 -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                    <div class="top-product-medium-logo">
-                                        <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
-                                    </div>
-
-                                    <div style="min-width: 0;">
-                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
-                                            {{ $comp['business_1_name'] }}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ number_format($comp['business_1_rating'], 1) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- VS Circle -->
-                                <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
-
-                                <!-- Business 2 -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                    <div class="top-product-medium-logo">
-                                        <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
-                                    </div>
-                                    <div style="min-width: 0;">
-                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
-                                            {{ $comp['business_2_name'] }}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ number_format($comp['business_2_rating'], 1) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="cmpre_btn w-100 mt-auto">
-                                <a href="{{ $comp['url'] }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
-                                    Compare
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
-                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                        View more comparisons
-                    </a>
-                </div>
-            </div>
-        </section>
-        @endif
-        
         
         <!-- Top Affiliated Businesses Section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
-        <section class="revie_img_sec" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="mb-4">
                     @foreach($topAffiliatedBusinesses as $index => $biz)
@@ -1837,6 +1759,86 @@
         </section>
         @endif
 
+
+        
+        <!-- Popular Category Comparisons Section -->
+        @if(isset($popularComparisons) && count($popularComparisons) > 0)
+        @php
+            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
+        @endphp
+        <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
+            <div class="container">
+                <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
+                    <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+                        Popular comparisons
+                    </h2>
+                    <p style="font-size: 15px; color: #64748b; margin: 0;">
+                        See how top {{ strtolower($catCurrentName) }} providers compare against each other.
+                    </p>
+                </div>
+
+                <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
+                    @foreach($popularComparisons as $comp)
+                    <div class="col-lg-4 col-md-4 col-12">
+                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                            <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
+
+                                <!-- Business 1 -->
+                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                    <div class="top-product-medium-logo">
+                                        <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
+                                    </div>
+
+                                    <div style="min-width: 0;">
+                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
+                                            {{ $comp['business_1_name'] }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                            <span>{{ number_format($comp['business_1_rating'], 1) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- VS Circle -->
+                                <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+
+                                <!-- Business 2 -->
+                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                    <div class="top-product-medium-logo">
+                                        <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
+                                            {{ $comp['business_2_name'] }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                            <span>{{ number_format($comp['business_2_rating'], 1) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cmpre_btn w-100 mt-auto">
+                                <a href="{{ $comp['url'] }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
+                                    Compare
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
+                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                        View more comparisons
+                    </a>
+                </div>
+            </div>
+        </section>
+        @endif
+        
 
         <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
