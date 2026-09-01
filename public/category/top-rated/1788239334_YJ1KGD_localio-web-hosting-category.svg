@@ -1,0 +1,50 @@
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#174889" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Hosted cloud environment -->
+    <path d="M169.5 48.8H226.8C235.3 48.8 242 42.8 242 35.1C242 28 236.2 22.4 228.9 21.7C226.5 13.9 219.1 8.5 210.5 8.5C200.4 8.5 192.2 15.9 191.3 25.3C188.3 22.9 184.5 21.5 180.3 21.5C170.8 21.5 163.1 28.6 163.1 37.4C163.1 41.7 165 45.7 168.1 48.4" fill="#EAF1F8" stroke-width="1.25"/>
+
+    <!-- Shared infrastructure spine -->
+    <path d="M58 73.5H80.8M219.2 73.5H243" stroke-width="1.15"/>
+    <path d="M65.5 73.5V62.5M236 73.5V63.7" stroke-width="0.95"/>
+    <circle cx="65.5" cy="59" r="3.4" fill="#F7FAFD" stroke-width="1.1"/>
+    <circle cx="236" cy="60.2" r="3.4" fill="#F7FAFD" stroke-width="1.1"/>
+
+    <!-- Main server housing -->
+    <rect x="78.5" y="27" width="142" height="57" rx="5" fill="#F7FAFD" stroke-width="1.35"/>
+
+    <!-- Server modules -->
+    <rect x="85" y="33" width="129" height="13" rx="2.7" fill="#DDEAF7" stroke-width="1.05"/>
+    <rect x="85" y="49" width="129" height="13" rx="2.7" fill="#EDF4FA" stroke-width="1.05"/>
+    <rect x="85" y="65" width="129" height="13" rx="2.7" fill="#DDEAF7" stroke-width="1.05"/>
+
+    <!-- Repeated vents / storage details -->
+    <path d="M95 38.7H121M95 42H114" stroke-width="0.92"/>
+    <path d="M95 54.7H121M95 58H114" stroke-width="0.92"/>
+    <path d="M95 70.7H121M95 74H114" stroke-width="0.92"/>
+
+    <!-- Port clusters -->
+    <rect x="137" y="37" width="17" height="5" rx="1.6" fill="#FFFFFF" stroke-width="0.9"/>
+    <rect x="137" y="53" width="17" height="5" rx="1.6" fill="#FFFFFF" stroke-width="0.9"/>
+    <rect x="137" y="69" width="17" height="5" rx="1.6" fill="#FFFFFF" stroke-width="0.9"/>
+
+    <!-- Network linkage inside server -->
+    <path d="M164 39.5H181.5M164 55.5H181.5M164 71.5H181.5" stroke-width="0.9"/>
+    <path d="M181.5 39.5V71.5" stroke-width="0.9"/>
+
+    <!-- Status indicators -->
+    <circle cx="199" cy="39.5" r="2.2" fill="#174889" stroke="none"/>
+    <circle cx="206" cy="39.5" r="2.2" fill="#FF5722" stroke="none"/>
+    <circle cx="199" cy="55.5" r="2.2" fill="#174889" stroke="none"/>
+    <circle cx="206" cy="55.5" r="2.2" fill="#174889" stroke="none"/>
+    <circle cx="199" cy="71.5" r="2.2" fill="#174889" stroke="none"/>
+    <circle cx="206" cy="71.5" r="2.2" fill="#174889" stroke="none"/>
+
+    <!-- Hosted connection rising into cloud -->
+    <path d="M181.5 39.5V31.5C181.5 29.3 183.2 27.5 185.4 27.5H194" stroke-width="1.05"/>
+    <circle cx="197.6" cy="27.5" r="3.2" fill="#FFFFFF" stroke-width="1.05"/>
+
+    <!-- Subtle base anchor -->
+    <path d="M109 89H190" stroke-width="1.2"/>
+    <path d="M133 84V89M167 84V89" stroke-width="1.0"/>
+  </g>
+</svg>
