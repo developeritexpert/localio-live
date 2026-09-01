@@ -18,7 +18,7 @@ class AddLocaleAutomatically
             $validLocales = $validLanguages->pluck('lang_code')->map(fn($c) => strtolower(trim($c)))->toArray();
         } catch (\Throwable $e) {
             $validLanguages = collect();
-            $validLocales = collect(config('app.available_locales', [config('app.locale', 'en-us')]))
+            $validLocales = collect(config('app.available_locales', [config('app.locale', 'en-au')]))
                 ->map(fn($locale) => strtolower(trim((string) $locale)))
                 ->filter()
                 ->values()
@@ -26,10 +26,10 @@ class AddLocaleAutomatically
         }
 
         if (empty($validLocales)) {
-            $validLocales = [strtolower((string) config('app.locale', 'en-us'))];
+            $validLocales = [strtolower((string) config('app.locale', 'en-au'))];
         }
 
-        $defaultLocale = in_array('en-us', $validLocales) ? 'en-us' : ($validLocales[0] ?? 'en-us');
+        $defaultLocale = in_array('en-au', $validLocales) ? 'en-au' : ($validLocales[0] ?? 'en-au');
 
         $firstSegment = strtolower(trim((string)$request->segment(1)));
         $isIndexPage = empty($firstSegment) || $request->path() === '/' || $request->getRequestUri() === '/';
@@ -106,7 +106,7 @@ class AddLocaleAutomatically
                         $primaryLang = $normalized;
                         $fallbackLocale = null;
                         
-                        // FIX: First check if the default locale matches this language (e.g. if 'en' -> check if default is 'en-us')
+                        // FIX: First check if the default locale matches this language (e.g. if 'en' -> check if default is 'en-au')
                         if (str_starts_with($defaultLocale, $primaryLang . '-')) {
                             $fallbackLocale = $defaultLocale;
                         } else {
