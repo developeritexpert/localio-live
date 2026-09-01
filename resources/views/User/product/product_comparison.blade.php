@@ -225,7 +225,7 @@
                                             <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
                                                 target="_blank"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; border:none;"
+                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px;text-decoration: none; width: 100%; border:none;"
                                                 onmouseover="this.style.backgroundColor='#e64a19';"
                                                 onmouseout="this.style.backgroundColor='#ff5722';">
                                                 {{ static_text('visit_website') ?: 'Visit website' }}

@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="top-pro-btn snd_bttn">
                     <button
                         type="button"
-                        class="btn cta cta_orange"
+                        class="blue-btn btn cta cta_orange"
                         id="contact-submit-btn"
                     
                     >

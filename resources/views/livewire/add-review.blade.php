@@ -10,7 +10,7 @@
         border: 1.5px solid #174889 !important;
         background-color: #174889 !important;
         color: #fff !important;
-        border-radius: 30px !important;
+        border-radius: 8px !important;
         padding: 12px 25px !important;
         font-size: 14px !important;
         font-weight: 500 !important;
@@ -261,7 +261,7 @@
                                          <hr class="my-3">
 
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(1)" wire:loading.attr="disabled" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(1)" wire:loading.attr="disabled" style="font-weight:500; padding:12px 25px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
                                              <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="goToStep3" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #174889; border-radius: 30px; font-size: 14px;">
@@ -286,10 +286,10 @@
                                         </div>
 
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(2)" wire:loading.attr="disabled" style="font-weight:500; padding:12px 25px; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(2)" wire:loading.attr="disabled" style="font-weight:500; padding:12px 25px; font-size: 14px; color: #002347; border: 1px solid #06498b !important; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1 me-sm-2" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="submitStep3" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="submitStep3" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1 ms-sm-2" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -373,10 +373,10 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(3)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(3)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="setStep(5)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="setStep(5)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; font-size: 14px;">
                                                  Continue <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
@@ -459,10 +459,10 @@
 
                                          <hr class="my-3">
                                          <div class="d-flex justify-content-between align-items-center gap-2 mt-3">
-                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(4)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; border-radius: 30px; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
+                                             <button type="button" class="btn out_ln_btn btn-outline-secondary w-50 w-sm-auto" wire:click="setStep(4)" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; font-size: 14px; color: #002347; border: 1px solid #06498b; background-color: #ffffff;">
                                                  <i class="fas fa-arrow-left me-1" style="font-size: 11px;"></i> Back
                                              </button>
-                                             <button type="button" class="btn text-white w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; background-color: #06498b; border-radius: 30px; font-size: 14px;">
+                                             <button type="button" class="blue-btn btn text-white w-50 w-sm-auto" wire:click="submit" wire:loading.attr="disabled" style="padding:12px 25px; font-weight:500; font-size: 14px;">
                                                  Submit review <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
                                              </button>
                                          </div>
