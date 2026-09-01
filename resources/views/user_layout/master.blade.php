@@ -237,13 +237,13 @@
             border-radius: 50% !important;
         }
 
-        .sl_h {
+        /* .sl_h {
             flex: 1 1 auto !important;
             display: flex !important;
             flex-direction: column !important;
             gap: 4px !important;
             padding-right: 8px !important;
-        }
+        } */
 
         .sl_h h6 {
             font-size: 16px !important;

@@ -525,13 +525,13 @@
                             @endif
                         </div>
                         
-                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 300px;">
+                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 466px;">
                             <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 12px 16px; border: 1px solid #e2e8f0; text-align: left;">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
-                                    <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 14px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
-                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 20px; width: auto; object-fit: contain;">
+                                    <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
+                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                                 </div>
-                                <p style="font-size: 12px; color: #555; margin-bottom: 0; line-height: 1.4;">
+                                <p style="font-size: 13px; color: #5b6b7a; margin-bottom: 0; line-height: 1.4;">
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
                             </div>
@@ -1215,7 +1215,7 @@
                                                         @endif
                                                         <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $item->translations()->first()->slug]) }}"
                                                             class="cta cta_outline justify-content-center"
-                                                            style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b; border-radius: 30px;">
+                                                            style="display: flex !important; width: 100%; align-items: center; border: 1px solid #06498b; color: #06498b;">
                                                             {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
                                                         </a>
                                                     </div>

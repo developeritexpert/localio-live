@@ -190,15 +190,15 @@
                                 @endif
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center">
                                     <div class="auto-choice-hd w-100 d-flex flex-column align-items-center" style="border: none; padding: 0; margin-bottom: 0;">
-                                        <div class="inn_sl_hed flex-column align-items-center text-center w-100" style="gap: 8px;">
-                                            <div class=" top-product-logo mx-auto" style="margin-bottom: 8px;">
+                                        <div class="inn_sl_hed w-100">
+                                            <div class=" top-product-logo">
                                                 <x-business-logo :business="$business" />
                                             </div>
-                                            <div class="sl_h text-center w-100">
-                                                <div class="inn_h d-flex align-items-center justify-content-center">
-                                                    <h6 class="head" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 0;">{{ $business->translations->first()?->name ?? '' }}</h6>
+                                            <div class="sl_h">
+                                                <div class="inn_h" style="margin-bottom:0;">
+                                                    <h6 class="head">{{ $business->translations->first()?->name ?? '' }}</h6>
                                                 </div>
-                                                <div class="tp-btm d-flex align-items-center justify-content-center mt-1 rating-group" style="gap: 6px;">
+                                                <div class="rating-group">
                                                     @php
                                                         $rating = round($business->reviews->avg('rating'), 1);
                                                         $ratingCount = $business->reviews->count();
@@ -218,21 +218,24 @@
                                                     </div>
                                                     <span style="">({{ $ratingCount }})</span>
                                                 </div>
+                                                
+
                                             </div>
+                                            @if(!empty($business->is_affiliate))
+                                                <div class="auto-choice-btn fit-btn" style="max-width: 220px; margin-top: 0;">
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                                        target="_blank"
+                                                        class="cta cta_orange d-flex align-items-center justify-content-center"
+                                                        style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px;text-decoration: none; width: 100%; border:none;"
+                                                        onmouseover="this.style.backgroundColor='#e64a19';"
+                                                        onmouseout="this.style.backgroundColor='#ff5722';">
+                                                        {{ static_text('visit_website') ?: 'Visit website' }}
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                    </a>
+                                                </div>
+                                                @endif
                                         </div>
-                                        @if(!empty($business->is_affiliate))
-                                        <div class="auto-choice-btn fit-btn w-100 mt-3" style="max-width: 220px;">
-                                            <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
-                                                target="_blank"
-                                                class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px;text-decoration: none; width: 100%; border:none;"
-                                                onmouseover="this.style.backgroundColor='#e64a19';"
-                                                onmouseout="this.style.backgroundColor='#ff5722';">
-                                                {{ static_text('visit_website') ?: 'Visit website' }}
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                            </a>
-                                        </div>
-                                        @endif
+
 
                                         <!-- Thin horizontal line -->
                                         <hr class="w-100 my-3" style="border-top: 1px solid #e2e8f0; opacity: 1; margin-left: 0; margin-right: 0;">
@@ -301,7 +304,7 @@
                                                         <span style="font-size: 12px; font-weight: 500; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" title="{{ $criterion->name }}">{{ $criterion->name }}</span>
                                                         <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px; justify-content: flex-end;">
                                                             <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
-                                                                <div class="progress-bar" style="height: 8px; width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                                <div class="progress-bar" style="height: 8px; width: {{ $crPercent }}%; background-color: #007bff; border-radius: 10px;"></div>
                                                             </div>
                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 28px; text-align: right;">{{ number_format($crAvg, 1) }}</span>
                                                         </div>
