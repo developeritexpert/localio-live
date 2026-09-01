@@ -545,6 +545,8 @@ class CategoriesController extends Controller
                     'description'  => $validate['description'],
                     'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
                     'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
+                    'compare_alternatives_subtext' => $request->input('compare_alternatives_subtext'),
+                    'community_says_subtext' => $request->input('community_says_subtext'),
                     'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,

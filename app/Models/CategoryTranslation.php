@@ -33,7 +33,9 @@ class CategoryTranslation extends Model
         'text_sections',
         'faqs',
         'top_rated_listing_headline',
-        'top_rated_listing_subtext'
+        'top_rated_listing_subtext',
+        'compare_alternatives_subtext',
+        'community_says_subtext'
     ];
 
     public function category()

@@ -1549,9 +1549,20 @@
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
-                        <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                        <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
                             Compare {{ $category->translations->name ?? $category->name }} alternatives
                         </h2>
+                        @if(!empty($category->translations->compare_alternatives_subtext))
+                            <style>
+                                .compare-alternatives-subtext p { margin-bottom: 0 !important; }
+                                .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                            </style>
+                            <div style="font-size: 14px; color: #64748b; margin-bottom: 16px;" class="compare-alternatives-subtext ck-content">
+                                {!! $category->translations->compare_alternatives_subtext !!}
+                            </div>
+                        @else
+                            <div style="margin-bottom: 16px;"></div>
+                        @endif
 
                         <div class="table-responsive rounded-3 border bg-white mb-5" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                             <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
@@ -1616,7 +1627,17 @@
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
                                 <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">What the Localio community says</h2>
-                                <p style="font-size: 14px; color: #64748b; margin: 0;">Most mentioned pros and cons shared by real users.</p>
+                                @if(!empty($category->translations->community_says_subtext))
+                                    <style>
+                                        .community-says-subtext p { margin-bottom: 0 !important; }
+                                        .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                                    </style>
+                                    <div style="font-size: 14px; color: #64748b; margin: 0;" class="community-says-subtext ck-content">
+                                        {!! $category->translations->community_says_subtext !!}
+                                    </div>
+                                @else
+                                    <p style="font-size: 14px; color: #64748b; margin: 0;">Most mentioned pros and cons shared by real users.</p>
+                                @endif
                             </div>
                             
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
