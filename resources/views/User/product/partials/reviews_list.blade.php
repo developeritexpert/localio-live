@@ -93,9 +93,9 @@
 
                     <!-- Bottom right actions (Report flag & Share) -->
                     <div class="review-actions-bottom-right" style="display:flex; justify-content: end; align-items: center; gap: 6px;">
-                        <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" class="action-icon-btn" title="Report this review">
-                            <i class="fas fa-flag" style="font-size: 13px;"></i>
-                        </a>
+                        <button type="button" class="action-icon-btn" onclick="openReviewReportModal({{ $review->id }})" title="Report this review" style="background: transparent; border: none; padding: 0;">
+                            <i class="fas fa-flag" style="font-size: 13px; color: #94a3b8;"></i>
+                        </button>
                         <button type="button" class="action-icon-btn" style="background: transparent; border: none; padding: 0; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: #94a3b8; cursor: pointer; outline: none; box-shadow: none; appearance: none; -webkit-appearance: none;" onclick="window.openShareModal('{{ url()->current() }}#review-{{ $review->id }}', 'Review on {{ config('app.name') }}', event)" title="Share this review" aria-label="Share this review">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="18" cy="5" r="3"></circle>
@@ -216,9 +216,9 @@
 
                         <!-- Bottom right actions (Report flag & Share) -->
                         <div class="review-actions-bottom-right" style="position: absolute; bottom: 20px; right: 20px; display: flex; align-items: center; gap: 6px;">
-                            <a href="mailto:support@example.com?subject=Report Review ID: {{ $review->id }}" class="action-icon-btn" title="Report this review">
-                                <i class="fas fa-flag" style="font-size: 13px;"></i>
-                            </a>
+                            <button type="button" class="action-icon-btn" onclick="openReviewReportModal({{ $review->id }})" title="Report this review" style="background: transparent; border: none; padding: 0;">
+                                <i class="fas fa-flag" style="font-size: 13px; color: #94a3b8;"></i>
+                            </button>
                             <button type="button" class="action-icon-btn" style="background: transparent; border: none; padding: 0; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; color: #94a3b8; cursor: pointer; outline: none; box-shadow: none; appearance: none; -webkit-appearance: none;" onclick="window.openShareModal('{{ url()->current() }}#review-{{ $review->id }}', 'Review on {{ config('app.name') }}', event)" title="Share this review" aria-label="Share this review">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="18" cy="5" r="3"></circle>
