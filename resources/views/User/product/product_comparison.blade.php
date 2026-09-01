@@ -394,6 +394,140 @@
                         @endforeach
                     </div>
 
+                    <!-- Pros and Cons Section with Tabs for Each Business in Comparison Grid -->
+                    @php
+                        $businessesWithProCons = collect();
+                        foreach ($businesses as $b) {
+                            $proCons = \Illuminate\Support\Facades\DB::table('review_pro_cons')
+                                ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
+                                ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
+                                ->where('reviews.business_id', $b->id)
+                                ->where('reviews.status', 'active')
+                                ->select('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text', \Illuminate\Support\Facades\DB::raw('COUNT(review_pro_cons.review_id) as review_count'))
+                                ->groupBy('category_pro_cons.id', 'category_pro_cons.type', 'category_pro_cons.text')
+                                ->orderByDesc('review_count')
+                                ->get();
+
+                            $pros = $proCons->where('type', 'pro')->values();
+                            $cons = $proCons->where('type', 'con')->values();
+
+                            if ($pros->count() > 0 || $cons->count() > 0) {
+                                $businessesWithProCons->put($b->id, [
+                                    'business' => $b,
+                                    'pros' => $pros,
+                                    'cons' => $cons,
+                                ]);
+                            }
+                        }
+                    @endphp
+
+                    @if($businessesWithProCons->isNotEmpty())
+                    <div class="pros_cons_comp_sec my-4" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="row g-4">
+                            @foreach ($businesses as $index => $business)
+                                @php
+                                    $bProCons = $businessesWithProCons->get($business->id);
+                                    $bName = $business->translations->first()?->name ?? 'Business';
+                                    $bPros = $bProCons ? $bProCons['pros'] : collect();
+                                    $bCons = $bProCons ? $bProCons['cons'] : collect();
+                                    $tabId = "prosConsTab_" . $business->id;
+                                    $prosTarget = "pros_content_" . $business->id;
+                                    $consTarget = "cons_content_" . $business->id;
+                                @endphp
+                                <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
+                                    <div class="bg-white p-4 h-100" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column;">
+                                        
+                                        {{-- Header: Logo + Business Name --}}
+                                        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom">
+                                            <div class="top-product-medium-logo" style="width: 32px; height: 32px;">
+                                                <x-business-logo :business="$business" :name="$bName" />
+                                            </div>
+                                            <h5 style="font-size: 15.5px; font-weight: 700; color: #1e3050; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }} pros and cons">
+                                                {{ $bName }}
+                                            </h5>
+                                        </div>
+
+                                        @if($bPros->isNotEmpty() || $bCons->isNotEmpty())
+                                            {{-- Pros & Cons Nav Tabs --}}
+                                            <ul class="nav nav-tabs nav-justified mb-3 comp-pros-cons-tabs" id="{{ $tabId }}" role="tablist" style="border-bottom: 1.5px solid #e2e8f0;">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="pros-tab-{{ $business->id }}" data-bs-toggle="tab" data-bs-target="#{{ $prosTarget }}" type="button" role="tab" aria-controls="{{ $prosTarget }}" aria-selected="true" style="font-weight: 600; font-size: 13.5px; border: none; background: transparent; padding-bottom: 8px;">
+                                                        <span style="color: rgb(33, 172, 33);">
+                                                            <i class="fas fa-plus-circle me-1"></i>
+                                                        </span> Pros
+                                                         <!-- ({{ $bPros->count() }}) -->
+                                                    </button>
+                                                </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="cons-tab-{{ $business->id }}" data-bs-toggle="tab" data-bs-target="#{{ $consTarget }}" type="button" role="tab" aria-controls="{{ $consTarget }}" aria-selected="false" style="font-weight: 600; font-size: 13.5px; border: none; background: transparent; padding-bottom: 8px;">
+                                                        <span style="color: rgb(247, 40, 60);">
+                                                            <i class="fas fa-minus-circle me-1"></i>
+                                                        </span> Cons 
+                                                        <!-- ({{ $bCons->count() }}) -->
+                                                    </button>
+                                                </li>
+                                            </ul>
+
+                                            {{-- Tab Panes --}}
+                                            <div class="tab-content flex-grow-1" id="{{ $tabId }}Content">
+                                                <!-- Pros Content -->
+                                                <div class="tab-pane fade show active" id="{{ $prosTarget }}" role="tabpanel" aria-labelledby="pros-tab-{{ $business->id }}">
+                                                    @if($bPros->isNotEmpty())
+                                                        <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
+                                                            @foreach($bPros->take(6) as $pro)
+                                                                <li class="d-flex align-items-start" style="gap: 8px;">
+                                                                    <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px;">
+                                                                        <i class="fas fa-plus-circle"></i>
+                                                                    </span>
+                                                                    <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
+                                                                        {{ $pro->text }}
+                                                                        <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
+                                                                            from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}
+                                                                        </small>
+                                                                    </span>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @else
+                                                        <p class="text-muted small mb-0 py-3 text-center">No pros added yet.</p>
+                                                    @endif
+                                                </div>
+
+                                                <!-- Cons Content -->
+                                                <div class="tab-pane fade" id="{{ $consTarget }}" role="tabpanel" aria-labelledby="cons-tab-{{ $business->id }}">
+                                                    @if($bCons->isNotEmpty())
+                                                        <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
+                                                            @foreach($bCons->take(6) as $con)
+                                                                <li class="d-flex align-items-start" style="gap: 8px;">
+                                                                    <span style="color: rgb(247, 40, 60); flex-shrink: 0; font-size: 15px; margin-top: 2px;">
+                                                                        <i class="fas fa-minus-circle"></i>
+                                                                    </span>
+                                                                    <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
+                                                                        {{ $con->text }}
+                                                                        <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
+                                                                            from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}
+                                                                        </small>
+                                                                    </span>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @else
+                                                        <p class="text-muted small mb-0 py-3 text-center">No cons added yet.</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="d-flex align-items-center justify-content-center text-muted small flex-grow-1" style="min-height: 120px;">
+                                                No user-submitted pros or cons yet.
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- price start from / offers (only for affiliated businesses) -->
                     @if($hasAffiliated)
                     <div class="prc_dv_new my-4" data-aos="fade-up" data-aos-duration="1000">
