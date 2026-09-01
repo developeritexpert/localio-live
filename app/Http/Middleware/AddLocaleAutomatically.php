@@ -103,13 +103,19 @@ class AddLocaleAutomatically
                         }
                     } else {
                         // Language-only tag (e.g. "en", "de", "es")
-                        // Find first supported locale starting with this language code (e.g. "en-us", "de-de")
                         $primaryLang = $normalized;
                         $fallbackLocale = null;
-                        foreach ($validLocales as $loc) {
-                            if (str_starts_with($loc, $primaryLang . '-')) {
-                                $fallbackLocale = $loc;
-                                break;
+                        
+                        // FIX: First check if the default locale matches this language (e.g. if 'en' -> check if default is 'en-us')
+                        if (str_starts_with($defaultLocale, $primaryLang . '-')) {
+                            $fallbackLocale = $defaultLocale;
+                        } else {
+                            // Otherwise fallback to the first one available in the database
+                            foreach ($validLocales as $loc) {
+                                if (str_starts_with($loc, $primaryLang . '-')) {
+                                    $fallbackLocale = $loc;
+                                    break;
+                                }
                             }
                         }
 

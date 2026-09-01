@@ -249,7 +249,7 @@ class ViewController extends Controller
 
     public function changeLanguage(Request $request, $lang_code)
     {
-        dd($lang_code);
+        
         $cacheKey = "userDetails";
         $languages = getLanguages();
         $languageRecord = $languages->firstWhere('lang_code', $lang_code);
