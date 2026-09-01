@@ -277,6 +277,13 @@ class StaticContentController extends Controller
                     'mail_below_text',
                 ],
             ],
+            'review_success_modal' => [
+                'title' => 'Review Success Modal',
+                'keys' => [
+                    'review_success_headline',
+                    'review_success_text',
+                ],
+            ],
         ];
         $currentLanguage = Language::find($langId);
         return view('Admin.site-content.site_content', compact('keys', 'sections', 'langId', 'langCode', 'languages', 'currentLanguage'));

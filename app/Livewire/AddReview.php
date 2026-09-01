@@ -233,8 +233,7 @@ class AddReview extends Component
         }
 
         $this->dispatch('alert', ['type' => 'success', 'message' => 'Review updated successfully.']);
-        $this->show = false;
-        $this->dispatch('review-submitted');
+        $this->step = 6;
     }
 
     public function closeModal()
