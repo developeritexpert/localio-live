@@ -1297,7 +1297,7 @@ function submitReviewReport() {
                     <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">x</button>
             </div>
             <div class="modal-body" style="padding: 20px 24px;">
                 <input type="hidden" id="reportReviewModalId">
@@ -1338,8 +1338,8 @@ function submitReviewReport() {
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
-                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
-                <button type="button" class="btn rounded-pill px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
+                <button type="button" class="btn btn-light rounded-pill-10 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="blue-btn btn rounded-pill-10 px-4" id="submitReviewReportBtn" disabled style=" color: white; font-size: 14px; " onclick="submitReviewReport()">Submit report</button>
             </div>
         </div>
     </div>

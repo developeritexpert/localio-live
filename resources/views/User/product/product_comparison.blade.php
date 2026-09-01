@@ -145,7 +145,7 @@
                                             <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
                                                 target="_blank"
                                                 class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px; border-radius: 30px; text-decoration: none; width: 100%; border:none;"
+                                                style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px;text-decoration: none; width: 100%; border:none;"
                                                 onmouseover="this.style.backgroundColor='#e64a19';"
                                                 onmouseout="this.style.backgroundColor='#ff5722';">
                                                 {{ static_text('visit_website') ?: 'Visit website' }}
@@ -429,7 +429,7 @@
                                         </div>
                                     </div>
 
-                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center; border-radius: 30px; padding: 9px 20px; white-space: nowrap;">
+                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important; width: fit-content; height: fit-content; align-items: center;  padding: 9px 20px; white-space: nowrap;">
                                         {{ static_text('visit_website') ?: 'Visit website' }}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                     </a>
@@ -460,13 +460,13 @@
                                                                 </div>
                                                             @endif
                                                             <div>
-                                                                <div style="font-size: 13px; font-weight: 600; color: #1e3050;">{{ $revUser ? $revUser->displayName() : 'Anonymous' }}</div>
+                                                                <div style="font-size: 15px; font-weight: 600; color: #002347;">{{ $revUser ? $revUser->displayName() : 'Anonymous' }}</div>
                                                                 @if($revUser && $revUser->job_title)
-                                                                    <div style="font-size: 11px; color: #777;">{{ $revUser->job_title }}</div>
+                                                                    <div style="font-size: 12px; color: #5b6b7a ;">{{ $revUser->job_title }}</div>
                                                                 @endif
                                                             </div>
                                                         </div>
-                                                        <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $rev->created_at->diffForHumans() }}</small>
+                                                        <small class="text-muted" style="font-size: 12px; white-space: nowrap;">{{ $rev->created_at->diffForHumans() }}</small>
                                                     </div>
 
                                                     {{-- Stars + Title --}}

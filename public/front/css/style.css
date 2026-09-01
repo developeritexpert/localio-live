@@ -48,7 +48,7 @@ body {
 .dark h4,
 .dark h5,
 .dark h6 {
-    color: #ffffff;
+    color: #fff;
 }
 
 h1,
@@ -102,6 +102,7 @@ h6 {
 
 p {
     line-height: 1.5;
+    color: #5b6b7a;
 }
 
 img {
@@ -253,7 +254,7 @@ header .menu li.menu-item.cat_menu_item {
 }
 
 header .menu > li.menu-item > a {
-    color: #ffffff;
+    color: #fff;
     font-size: 12px;
     font-weight: 600;
 }
@@ -266,7 +267,7 @@ header .menu > li.menu-item > a img {
 }
 
 header .menu-item span.dropdown_toggle {
-    color: #ffffff;
+    color: #fff;
     font-size: 12px;
 }
 
@@ -360,7 +361,7 @@ div#navbarSupportedContent {
 .cta.cta_outline:hover {
     background-color: #033b74 !important;
     border-color: #033b74 !important;
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
 .blog-sec.terms-sec .cta.cta_orange:hover {
@@ -369,8 +370,8 @@ div#navbarSupportedContent {
 }
 
 .dark .cta:hover {
-    background-color: #ffffff;
-    border-color: #ffffff;
+    background-color: #fff;
+    border-color: #fff;
     color: #033b74;
 }
 
@@ -394,26 +395,26 @@ header .search-box input {
 }
 
 .cta.cta_white {
-    border-color: #ffffff;
+    border-color: #fff;
     text-transform: capitalize;
     background-color: #f9633b;
     color: #fff;
 }
 
 .light .cta.cta_white {
-    color: white;
+    color: #fff;
     background-color: #214787;
 }
 
 .cta.cta_white:hover {
     background-color: #002347;
-    border-color: #ffffff;
-    color: white;
+    border-color: #fff;
+    color: #fff;
     text-transform: capitalize;
 }
 
 .dark .cta.cta_trans {
-    border-color: #ffffff;
+    border-color: #fff;
 }
 
 .section_hed h2 {
@@ -593,7 +594,7 @@ header .search-box input {
     font-size: 20px;
     line-height: 1;
     opacity: 1;
-    color: white;
+    color: #fff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: "FontAwesome";
@@ -1052,7 +1053,7 @@ textarea:focus-visible {
 }
 
 .top-pro-btn .cta:hover i {
-    color: #ffffff;
+    color: #fff;
     transition: all 0.3s ease-in-out;
 }
 
@@ -1848,7 +1849,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
 }
 
 .about_asn .fre_trail.feture_box.size22 {
-    background: #ffffff;
+    background: #fff;
     border-color: #fff;
 }
 
@@ -2086,6 +2087,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
 
 .main_feture .feture_box .accor-btn .cta {
     padding: 10px 13px;
+    font-size: 14px;
 }
 
 .is-asana-lft .is_text {
@@ -2248,6 +2250,8 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
 
 .top-pro-btn.snd_bttn .cta {
     font-weight: 600;
+    font-size: 15px;
+    padding: 16px 30px;
 }
 
 .login_form .form-group {
@@ -2462,7 +2466,7 @@ select:focus {
 
 .hd-innr-txt a {
     font-weight: 400;
-    color: #ffffff;
+    color: #fff;
 }
 
 .cmmnt-img {
@@ -2651,7 +2655,7 @@ select:focus {
 }
 
 .range-wrapper input[type="range"]:active::-webkit-slider-thumb {
-    background-color: #ffffff;
+    background-color: #fff;
     border: 1px solid #007bff;
 }
 
@@ -2741,7 +2745,7 @@ select:focus {
 
 .auto-choice-btn .cta_orange:hover {
     background-color: #033b74;
-    color: #ffffff;
+    color: #fff;
     border-color: #033b74;
 }
 
@@ -2873,7 +2877,7 @@ select:focus {
 
 .auto-choice-lft {
     position: sticky;
-    top: 0;
+    top: 120px;
     width: 40%;
     height: 100%;
     border-right: 1px solid #06498b1a;
@@ -3137,6 +3141,7 @@ input:-webkit-autofill:active {
     border-radius: 8px;
     line-height: 20px;
     min-width: 88px;
+    transition: none;
 }
 
 .btn:hover {
@@ -3195,7 +3200,7 @@ input:-webkit-autofill:active {
     display: block;
     width: 100%;
     text-align: center;
-    border-radius: 130px;
+    border-radius: 8px;
 }
 
 .scl_login .login_link {
@@ -3334,6 +3339,7 @@ header.drk_header {
 
 .accor-btn .cta {
     gap: 5px;
+    font-size: 14px;
 }
 
 .accor-btn .cta_orange:hover,
@@ -4234,7 +4240,7 @@ header .container-fluid.top_hd_spacing {
     line-height: 1.5;
     text-align: left;
     margin-top: 20px;
-    color: #ffffff;
+    color: #fff;
 }
 
 .prc_dv .prc_bx .prc_contnt .inn_h i {
@@ -4400,7 +4406,7 @@ section.product_comp_sec {
 }
 
 .versus-box {
-    flex: 0 0 20%;
+    flex: 0 0 19%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4606,7 +4612,7 @@ section.product_comp_sec {
 }
 
 .xclusve-deal.light .xclusve-wrp button.slick-arrow.slick-disabled {
-    background: #ffffff;
+    background: #fff;
     border: 1px solid #06498b1a !important;
 }
 
@@ -4623,7 +4629,7 @@ section.product_comp_sec {
 
 .xclusve-deal.light .slick-prev.slick-disabled:before,
 .xclusve-deal.light .slick-next.slick-disabled:before {
-    background: #ffffff;
+    background: #fff;
     color: #000000;
     border-color: #fff !important;
 }
@@ -4848,7 +4854,7 @@ footer .footer-wrp .foot-col {
 }
 
 .sft_btm a.cta {
-    border-color: #ffffff;
+    border-color: #fff;
 }
 
 .sft_btm {
@@ -4948,7 +4954,7 @@ footer .footer-wrp .foot-col {
 
 .poplr-progress progress::-webkit-progress-bar,
 .feture_box progress::-webkit-progress-bar {
-    background-color: white;
+    background-color: #fff;
 }
 
 .main_feature_lg {
@@ -4972,7 +4978,7 @@ footer .footer-wrp .foot-col {
 }
 
 .vid_sec .csd_box:hover .vid_ftr {
-    background-color: white;
+    background-color: #fff;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
 }
@@ -5377,7 +5383,7 @@ ul.dropdown_menu.dropdown_menu--animated.dropdown_menu-6.mob-drp-contnt.show
 
 .left_menu > .menu > .menu-item.menu-active a {
     border-radius: 8px;
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 .left_menu > .menu > .menu-item.menu-active > a,
@@ -5458,7 +5464,7 @@ footer::after {
 
 button.reset {
     background-color: #214787;
-    color: white;
+    color: #fff;
 }
 
 .alert {
@@ -5605,7 +5611,7 @@ input[type="range"]::-ms-thumb {
 }
 
 .alert-info {
-    background-color: #ffffff;
+    background-color: #fff;
     color: #000000;
     padding-left: 0;
 }
@@ -6050,7 +6056,7 @@ section.blog-sec.terms-sec {
 
 .view-all {
     background-color: #f9633b;
-    color: white;
+    color: #fff;
     border-color: #f9633b;
     width: auto;
     border-radius: 130px;
@@ -6061,7 +6067,7 @@ section.blog-sec.terms-sec {
 
 .view-all:hover {
     background-color: #214787;
-    color: white;
+    color: #fff;
     border-color: #214787;
 }
 
@@ -6411,8 +6417,8 @@ ul#pills-tab {
 
 .cta.cta_white {
     background-color: #f9633b;
-    border-color: #ffffff;
-    color: white;
+    border-color: #fff;
+    color: #fff;
     text-transform: capitalize;
 }
 
@@ -6475,7 +6481,7 @@ ul#pills-tab {
 
 .discount_badge {
     background-color: #fb5c28;
-    color: white;
+    color: #fff;
     font-size: 12px;
     padding: 2px 8px;
     border-radius: 4px;
@@ -6809,7 +6815,7 @@ input:checked ~ .toggle-dot {
 .quick-price-filters .btn-outline-secondary.active {
     background-color: #ff9800;
     border-color: #ff9800;
-    color: white;
+    color: #fff;
 }
 
 .custom-pagination-wrapper {
@@ -6844,7 +6850,7 @@ input:checked ~ .toggle-dot {
 
 .pagination-btn.active {
     background-color: #174899;
-    color: white;
+    color: #fff;
 }
 
 .pagination-btn.disabled {
@@ -6860,12 +6866,12 @@ input:checked ~ .toggle-dot {
 
 .pagination-arrow:hover:not(.disabled) {
     background-color: #e64a19;
-    color: white;
+    color: #fff;
 }
 
 .pagination-arrow.next {
     background-color: #ff6b35;
-    color: white;
+    color: #fff;
 }
 
 .pagination-arrow.next:hover {
@@ -8146,6 +8152,7 @@ footer .foot-row-lft .foot-logo p {
 .asn_main_sec .frst_rw .asn-rating p {
     font-weight: 400;
     color: #5b6b7a !important;
+    line-height: 1;
 }
 
 .help-cntr-bnr {
@@ -8636,6 +8643,9 @@ a.underline:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    top: -30px;
+    right: -30px;
 }
 
 .product_comp_sec a.remove-from-comparison:hover .ct_icn {
@@ -8964,11 +8974,10 @@ a.cta.btn_blue:hover,
     border-color: #033b74 !important;
 }
 
-.blue-btn,
-.crm_sec.revie_left_rgt_sec .review-prompt-banner button {
+.blue-btn {
     background-color: #214787 !important;
     color: #fff !important;
-    border: none !important;
+    border: 1px solid #214787 !important;
     border-radius: 8px !important;
     transition: unset !important;
 }
@@ -9038,7 +9047,7 @@ a.cta.btn_blue:hover,
     font-size: 13px;
     font-weight: 500;
     position: relative;
-    z-index: 9999;
+    border-radius: 8px !important;
 }
 
 .social_wishlist_btn .wishlist a i {
@@ -9295,7 +9304,7 @@ input#rating-4 {
     justify-content: center;
     font-weight: 700;
     text-transform: uppercase;
-    border-radius: 10px;
+    border-radius: 8px;
     user-select: none;
     line-height: 1;
     width: 100%;
@@ -9537,7 +9546,8 @@ section.write-review-hero .container h1 {
 .page-user-profile .search-box,
 .page-route-contact .search-box,
 .page-alternatives .search-box,
-.page-who-we-are .search-box {
+.page-who-we-are .search-box,
+.page-product-comparison-seo .search-box {
     display: block !important;
 }
 
@@ -9597,7 +9607,7 @@ section.write-review-hero .container h1 {
     align-items: center;
     font-size: 9px !important;
     justify-content: center;
-    top: 1 !important;
+    top: 1px !important;
 }
 
 .more-about-link-item .more-about-link-icon img {
@@ -9742,7 +9752,7 @@ button.btn-vote-faq i.far:hover {
 }
 
 .rounded-pill-10 {
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 /* ====style.css updated by-Kashish(31-aug-26)===== */
@@ -9755,4 +9765,31 @@ button.btn-vote-faq i.far:hover {
 
 .right-tool-wrp.text-center.aos-init.aos-animate {
     margin-bottom: 20px;
+}
+
+/* ====style.css updated by-Kashish(01-sep-26)===== */
+
+.card-body ul li span:nth-child(2) {
+    line-height: 1;
+}
+
+.crm_sec.revie_left_rgt_sec .review-prompt-banner button {
+    background-color: #007bff !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 30px;
+    transition: unset !important;
+}
+
+#reviewFilterDropdownWrap #reviewFilterDropdownBtn span:nth-child(2) {
+    line-height: 1;
+}
+
+.review-user div:first-child:hover,
+.user-name:hover {
+    text-decoration: underline;
+}
+
+.banner_content_inner p {
+    color: #fff;
 }
