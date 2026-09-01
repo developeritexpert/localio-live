@@ -467,6 +467,8 @@ class CategoriesController extends Controller
         }
 
         $category->parent_id = $request->parent_id ?? null;
+        $category->page_title_addition = $request->page_title_addition;
+        $category->top_rated_listing_headline_addition = $request->top_rated_listing_headline_addition;
 
         if ($request->hasFile('image')) {
             $media = $this->mediaservice->uploadMedia($request->file('image'), 'category/images');

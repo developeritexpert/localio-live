@@ -471,13 +471,20 @@
                                     $keepCap = $featureObj ? (bool)$featureObj->keep_capitalized : false;
 
                                     $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
+                                    $finalTitle = $catCompName . ' with ' . $formattedFeatName;
+                                    if (!empty($category->page_title_addition)) {
+                                        $finalTitle .= ' ' . $category->page_title_addition;
+                                    }
                                 @endphp
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
-                                    {{ $applyDynamicVars($catCompName . ' with ' . $formattedFeatName) }}
+                                    {{ $applyDynamicVars($finalTitle) }}
                                 </h1>
                             @else
                                 @php
                                     $baseTitle = !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products');
+                                    if (!empty($category->page_title_addition)) {
+                                        $baseTitle .= ' ' . $category->page_title_addition;
+                                    }
                                 @endphp
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
                                     {{ $applyDynamicVars($baseTitle) }}
@@ -505,12 +512,16 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
                         <div class="flex-grow-1" style="max-width: 65%;">
                             <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px; margin-top: 0;">
-                               {{ $category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services') }}
+                               {{ $applyDynamicVars(($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '')) }}
                             </h2>
                             @if(!empty($category->translation->top_rated_listing_subtext))
-                                <p style="font-size: 14px; color: #555; margin-bottom: 0;">
-                                    {{ $category->translation->top_rated_listing_subtext }}
-                                </p>
+                                <style>
+                                    .top-rated-subtext-container p { margin-bottom: 0 !important; }
+                                    .top-rated-subtext-container p:not(:last-child) { margin-bottom: 10px !important; }
+                                </style>
+                                <div style="font-size: 14px; color: #555; margin-bottom: 0;" class="top-rated-subtext-container ck-content">
+                                    {!! $category->translation->top_rated_listing_subtext !!}
+                                </div>
                             @endif
                         </div>
                         

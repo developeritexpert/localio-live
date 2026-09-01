@@ -98,6 +98,21 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="page_title_addition">Page Title (H1 Heading) addition (no translate)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="page_title_addition" name="page_title_addition"
+                                        value="{{ isset($category_data) ? ($category_data['category']['page_title_addition'] ?? '') : old('page_title_addition') }}" 
+                                        placeholder="e.g. [country2] ([year])" />
+                                </div>
+                                <small class="text-muted d-block mt-1">This text is appended to the H1 title and is never translated. Perfect for dynamic variables like <code>[country2] ([year])</code>.</small>
+                                @error('page_title_addition')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="title">Title (Most Popular Section)</label>
@@ -182,9 +197,24 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="top_rated_listing_headline_addition">Top-Rated Listing Headline (H2) addition (no translate)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="top_rated_listing_headline_addition" name="top_rated_listing_headline_addition"
+                                        value="{{ isset($category_data) ? ($category_data['category']['top_rated_listing_headline_addition'] ?? '') : old('top_rated_listing_headline_addition') }}"
+                                        placeholder="e.g. [country2] ([year])">
+                                </div>
+                                <small class="text-muted d-block mt-1">This text is appended to the Top-Rated Headline and is never translated.</small>
+                                @error('top_rated_listing_headline_addition')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="top_rated_listing_subtext">Top-Rated Listing Subtext</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
+                                    <textarea class="form-control rich-editor" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
                                 </div>
                                 <small class="text-muted d-block mt-1">Short text placed immediately below the Top-Rated Listing Headline.</small>
                                 @error('top_rated_listing_subtext')
