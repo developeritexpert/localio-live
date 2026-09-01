@@ -1,4 +1,8 @@
 /* Developer specific CSS file (dev.css) */
+.grey_dark_bg {
+    background: #f8fafc;
+}
+
 .view-review-link:hover {
     text-decoration: underline !important;
 }
@@ -13,7 +17,7 @@
 }
 
 .top-rated-heading-block {
-    border-bottom: 2px solid #e8eef6;
+    /* border-bottom: 2px solid #e8eef6; */
     margin-bottom: 15px;
 }
 
@@ -143,4 +147,499 @@
 .m-30 {
     margin-top: 30px !important;
     padding-bottom: 30px;
+}
+
+/* ==========================================================================
+   Product Comparison Page Styles (Header, Top Bar, Dynamic 2-4 Products Grid)
+   ========================================================================== */
+
+/* 1. Header Layout */
+.comparison-header-left {
+    max-width: 50%;
+    flex: 0 0 50%;
+}
+
+@media (max-width: 991px) {
+    .comparison-header-left {
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+}
+
+.comparison-header-icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.comp-header-icon-box {
+    width: 68px;
+    height: 68px;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 35, 71, 0.06);
+    padding: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comp-header-icon-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 35, 71, 0.1);
+}
+
+.comp-header-icon-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.comp-header-icon-box .business-initial-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e3050;
+}
+
+/* 2. "Your Comparison" Top Bar */
+.your-comparison-wrapper {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.your-comp-pills-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.your-comp-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e3050;
+    margin-right: 4px;
+}
+
+.your-comp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 30px;
+    padding: 5px 12px 5px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e3050;
+    transition: all 0.2s ease;
+}
+
+.your-comp-pill:hover {
+    background: #e2e8f0;
+}
+
+.your-comp-pill-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    object-fit: contain;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #002347;
+}
+
+.your-comp-pill-remove {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-left: 4px;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.your-comp-pill-remove:hover {
+    color: #ef4444;
+}
+
+.your-comp-count {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.add-products-btn {
+    background-color: #ffffff;
+    color: #06498b;
+    font-weight: 600;
+    font-size: 13.5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 1.5px solid #06498b;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+}
+
+.add-products-btn:hover {
+    background-color: #06498b;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(6, 73, 139, 0.2);
+}
+
+.add-products-btn:hover i {
+    color: #ffffff;
+}
+
+/* Add More Dropdown */
+.add-comp-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 340px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 35, 71, 0.15);
+    z-index: 1080;
+    display: none;
+    padding: 14px;
+    overflow: hidden;
+}
+
+.add-comp-search-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.add-comp-search-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.add-comp-search-input {
+    width: 100%;
+    padding: 9px 12px 9px 34px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: #1e293b;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-comp-search-input:focus {
+    border-color: #06498b;
+    box-shadow: 0 0 0 3px rgba(6, 73, 139, 0.1);
+}
+
+.add-comp-items-list {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 2px;
+}
+
+.add-comp-items-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.add-comp-items-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.add-comp-item-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.add-comp-item-row:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.add-comp-item-row .item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.add-comp-item-row .item-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    flex-shrink: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-comp-item-row .item-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #1e3050;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.add-comp-item-row .item-add-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #06498b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-left: 8px;
+    transition: all 0.2s ease;
+}
+
+.add-comp-item-row:hover .item-add-icon {
+    background: #06498b;
+    color: #ffffff;
+}
+
+/* 3. Main Product Comparison Matrix Layout: Adaptive for 2, 3, and 4 products */
+.pdc_box {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    justify-content: space-between !important;
+    padding: 35px 25px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+}
+
+/* When 2 businesses */
+.pdc_box_count_2 .pdc_choice,
+.pdc_box:not(.pdc_box_count_3):not(.pdc_box_count_4) .pdc_choice {
+    flex: 0 0 42% !important;
+    max-width: 42% !important;
+    min-width: 0 !important;
+}
+
+.pdc_box_count_2 .versus-box,
+.pdc_box:not(.pdc_box_count_3):not(.pdc_box_count_4) .versus-box {
+    flex: 0 0 16% !important;
+    max-width: 16% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* When 3 businesses */
+.pdc_box_count_3 .pdc_choice {
+    flex: 0 0 29% !important;
+    max-width: 29% !important;
+    min-width: 0 !important;
+}
+
+.pdc_box_count_3 .versus-box {
+    flex: 0 0 6.5% !important;
+    max-width: 6.5% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.pdc_box_count_3 .versus-box p {
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 16px !important;
+}
+
+/* When 4 businesses */
+.pdc_box_count_4 .pdc_choice {
+    flex: 0 0 22.5% !important;
+    max-width: 22.5% !important;
+    min-width: 0 !important;
+}
+
+.pdc_box_count_4 .versus-box {
+    flex: 0 0 3.3% !important;
+    max-width: 3.3% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.pdc_box_count_4 .versus-box p {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 14px !important;
+}
+
+/* Rating progress bars & labels inside pdc_choice for 3 or 4 products */
+.pdc_box_count_3 .pdc_choice .progress,
+.pdc_box_count_4 .pdc_choice .progress {
+    max-width: 85px !important;
+}
+
+.pdc_box_count_4 .pdc_choice .auto-choice-hd .sl_h h6.head {
+    font-size: 15px !important;
+}
+
+.pdc_box_count_4 .pdc_choice .auto-choice-btn.fit-btn a.cta {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+}
+
+/* Mobile & Tablet responsiveness for pdc_box */
+@media (max-width: 991px) {
+    .pdc_box {
+        flex-direction: column !important;
+        padding: 20px 15px !important;
+    }
+
+    .pdc_box .pdc_choice {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin-bottom: 25px !important;
+    }
+
+    .pdc_box .versus-box {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 15px 0 !important;
+    }
+
+    .pdc_box .versus-box p::before,
+    .pdc_box .versus-box p::after {
+        display: none !important;
+    }
+}
+
+
+/* Alignment for Review Breakdown and "Recommended by users" row */
+.pdc_choice {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+.pdc_choice .auto-choice-hd {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+}
+
+.review-breakdown-card {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+}
+
+.review-criteria-list {
+    flex: 1 1 auto !important;
+    min-height: 120px;
+    /* Provides consistent spacing even if one has fewer criteria */
+}
+
+.recommended-users-row {
+    margin-top: auto !important;
+    width: 100% !important;
+    border-top: 1px solid #f1f5f9 !important;
+    padding-top: 14px !important;
+}
+
+
+/* Tab styling for comparison Pros & Cons cards */
+.comp-pros-cons-tabs .nav-link {
+    position: relative;
+    color: #64748b !important;
+    transition: color 0.2s ease;
+}
+
+.comp-pros-cons-tabs .nav-link.active {
+    color: #1e3050 !important;
+}
+
+.comp-pros-cons-tabs .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1.5px;
+    left: 0;
+    width: 100%;
+    height: 2.5px;
+    background-color: #06498b;
+    border-radius: 2px;
+}
+
+/* Alternatives section in Product Comparison */
+.comp-alt-box {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comp-alt-item:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+
+.alt-add-to-comp-btn:hover {
+    background-color: #06498b !important;
+    color: #ffffff !important;
+    border-color: #06498b !important;
 }

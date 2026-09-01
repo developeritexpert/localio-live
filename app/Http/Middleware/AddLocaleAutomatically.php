@@ -59,7 +59,7 @@ class AddLocaleAutomatically
         // -------------------------------------------------------------
         if ($isIndexPage) {
             // Check for existing saved cookie preference
-            $cookieLocale = strtolower(trim((string)($request->cookie('user_locale') ?? $request->cookie('lang_code'))));
+            $cookieLocale = strtolower(trim((string)($request->cookie('user_locale_v2') ?? $request->cookie('lang_code_v2'))));
             if (!empty($cookieLocale) && in_array($cookieLocale, $validLocales)) {
                 $langObj = $validLanguages->first(fn($l) => strtolower(trim($l->lang_code)) === $cookieLocale);
                 App::setLocale($cookieLocale);
@@ -75,7 +75,7 @@ class AddLocaleAutomatically
             }
 
             // No cookie: Detect browser locale from Accept-Language header
-            $acceptLanguageHeader = $request->header('Accept-Language');
+            $acceptLanguageHeader = null; // $request->header('Accept-Language');
 
             if (!empty($acceptLanguageHeader)) {
                 $tags = $this->parseAcceptLanguage($acceptLanguageHeader);
@@ -103,13 +103,19 @@ class AddLocaleAutomatically
                         }
                     } else {
                         // Language-only tag (e.g. "en", "de", "es")
-                        // Find first supported locale starting with this language code (e.g. "en-us", "de-de")
                         $primaryLang = $normalized;
                         $fallbackLocale = null;
-                        foreach ($validLocales as $loc) {
-                            if (str_starts_with($loc, $primaryLang . '-')) {
-                                $fallbackLocale = $loc;
-                                break;
+                        
+                        // FIX: First check if the default locale matches this language (e.g. if 'en' -> check if default is 'en-us')
+                        if (str_starts_with($defaultLocale, $primaryLang . '-')) {
+                            $fallbackLocale = $defaultLocale;
+                        } else {
+                            // Otherwise fallback to the first one available in the database
+                            foreach ($validLocales as $loc) {
+                                if (str_starts_with($loc, $primaryLang . '-')) {
+                                    $fallbackLocale = $loc;
+                                    break;
+                                }
                             }
                         }
 
@@ -149,7 +155,7 @@ class AddLocaleAutomatically
         // -------------------------------------------------------------
         // CASE 3: Non-index page without locale prefix (e.g. /some-legacy-path)
         // -------------------------------------------------------------
-        $targetLocale = session('lang_code') ?? ($request->cookie('user_locale') ?? $defaultLocale);
+        $targetLocale = session('lang_code') ?? ($request->cookie('user_locale_v2') ?? $defaultLocale);
         if (!in_array($targetLocale, $validLocales)) {
             $targetLocale = $defaultLocale;
         }

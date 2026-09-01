@@ -3,7 +3,7 @@ namespace App\Services;
 
 class CompareService
 {
-    protected $maxCompareProducts = 2;
+    protected $maxCompareProducts = 4;
 
     public function getComparedProducts()
     {

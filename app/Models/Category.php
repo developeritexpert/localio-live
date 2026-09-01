@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'parent_id', 'image','category_icon', 'top_rated_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit'];
+    protected $fillable = [ 'parent_id', 'image','category_icon', 'top_rated_image', 'faq_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit'];
 
     protected $lang_code, $lang_id;
 
@@ -177,6 +177,11 @@ class Category extends Model
     public function topRatedImageMedia()
     {
         return $this->hasOne(Media::class, 'id', 'top_rated_image');
+    }
+
+    public function faqImageMedia()
+    {
+        return $this->hasOne(Media::class, 'id', 'faq_image');
     }
 
 public function iconMedia()

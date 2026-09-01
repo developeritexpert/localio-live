@@ -176,7 +176,7 @@
                         <div class="row g-4">
                             
                             <!-- Left Column: Review Form Wizard -->
-                            <div class="col-12 {{ $step === 1 ? 'col-lg-12' : 'col-lg-9 pe-lg-4 review-left-col' }}">
+                            <div class="col-12 {{ in_array($step, [1, 6]) ? 'col-lg-12' : 'col-lg-9 pe-lg-4 review-left-col' }}">
                                 <div class="modal-header border-0 p-0 d-flex justify-content-between align-items-center flex-wrap gap-2" style="margin-bottom:20px;">
                                     <div class="d-flex flex-column gap-4 w-100">
                                         <div class="d-flex align-items-center gap-2">
@@ -467,10 +467,27 @@
                                              </button>
                                          </div>
                                      </div>
+                                @elseif($step === 6)
+                                    <!-- Step 6: Success Confirmation -->
+                                    <div class="step-content text-center py-5" wire:key="step-6">
+                                        <div class="mb-4">
+                                            <div style="width: 80px; height: 80px; background: #e8f5e9; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                                <i class="fas fa-check" style="font-size: 40px; color: #4caf50;"></i>
+                                            </div>
+                                        </div>
+                                        <h3 class="fw-bold mb-3" style="color: #002347; font-size: 24px;">{{ static_text('review_success_headline') ?: 'Thank you for your review!' }}</h3>
+                                        <p class="text-muted" style="font-size: 15px; max-width: 400px; margin: 0 auto;">{{ static_text('review_success_text') ?: 'Your review has been successfully submitted and will help others make better decisions.' }}</p>
+                                        
+                                        <div class="mt-4 pt-3">
+                                            <button type="button" class="btn text-white px-5 py-2" wire:click="closeModal" style="background-color: #06498b; border-radius: 30px; font-weight: 500;">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
 
-                            @if($step > 1)
+                            @if($step > 1 && $step < 6)
                             <!-- Right Column: Sidebar Progress Panel (Steps 2, 3, 4) -->
                             <div class="col-lg-3 d-lg-block" style="display:flex !important; align-items:center;">
                                 <div class="p-3 p-md-4 rounded-3 mt-0 w-100" style="background-color: #f8fafc; border: 1px solid #e2e8f0; position: sticky; top: 0;">

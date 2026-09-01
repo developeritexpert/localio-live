@@ -75,8 +75,8 @@ class CompareBar extends Component
 
     public function goToComparison()
     {
-        // Try to construct the SEO URL if exactly 2 products are selected
-        if (count($this->comparedProductIds) === 2) {
+        // Try to construct the SEO URL if 2 to 4 products are selected
+        if (count($this->comparedProductIds) >= 2 && count($this->comparedProductIds) <= 4) {
             $lang_id = function_exists('getCurrentLanguageID') ? getCurrentLanguageID() : \App\Models\Language::where('lang_code', app()->getLocale())->value('id');
             
             $businesses = \App\Models\Business::with([
@@ -85,10 +85,13 @@ class CompareBar extends Component
                 }
             ])
             ->whereIn('id', $this->comparedProductIds)
-            ->get();
+            ->get()
+            ->sortBy(function($model) {
+                return array_search($model->id, $this->comparedProductIds);
+            })
+            ->values();
             
-            if ($businesses->count() === 2) {
-                // Get the category of the first business
+            if ($businesses->count() >= 2) {
                 $categoryId = $businesses->first()->category_id;
                 
                 $categoryTranslation = \App\Models\CategoryTranslation::where('category_id', $categoryId)
@@ -97,19 +100,23 @@ class CompareBar extends Component
                 
                 $comparisonSlug = $categoryTranslation ? $categoryTranslation->comparison_slug : null;
                 
-                // Only use the new SEO route if a comparison slug is defined and business slugs exist
-                if (!empty($comparisonSlug) && $businesses[0]->translations->first() && $businesses[1]->translations->first()) {
-                    $slug1 = $businesses[0]->translations->first()->slug;
-                    $slug2 = $businesses[1]->translations->first()->slug;
-                    
+                $allHaveSlugs = $businesses->every(function($b) use ($lang_id) {
+                    return !empty($b->translations->firstWhere('lang_id', $lang_id)?->slug ?? $b->translations->first()?->slug);
+                });
+
+                if (!empty($comparisonSlug) && $allHaveSlugs) {
                     $vs_keyword = static_text('vs_keyword');
                     if (empty($vs_keyword) || $vs_keyword === 'vs_keyword') {
                         $vs_keyword = 'vs';
                     }
                     $vs_keyword = \Illuminate\Support\Str::slug($vs_keyword);
-                    $comparisonBusinesses = "{$slug1}-{$vs_keyword}-{$slug2}";
                     
-                    // Clear the session so the comparison bar doesn't stick around after successful navigation
+                    $slugs = $businesses->map(function($b) use ($lang_id) {
+                        return $b->translations->firstWhere('lang_id', $lang_id)?->slug ?? $b->translations->first()?->slug;
+                    })->toArray();
+                    
+                    $comparisonBusinesses = implode("-{$vs_keyword}-", $slugs);
+                    
                     session()->forget('compared_products');
                     
                     return redirect()->route('product-comparison.seo', [
