@@ -272,7 +272,7 @@
                                         </li>
                                         <li class="nk-menu-item">
                                             <a href="{{ route('who_we_are_content') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Who We Are</span>
+                                                <span class="nk-menu-text">About Localio</span>
                                             </a>
                                         </li>
                                         <li class="nk-menu-item">

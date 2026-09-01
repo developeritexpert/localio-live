@@ -98,6 +98,21 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="page_title_addition">Page Title (H1 Heading) addition (no translate)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="page_title_addition" name="page_title_addition"
+                                        value="{{ isset($category_data) ? ($category_data['category']['page_title_addition'] ?? '') : old('page_title_addition') }}" 
+                                        placeholder="e.g. [country2] ([year])" />
+                                </div>
+                                <small class="text-muted d-block mt-1">This text is appended to the H1 title and is never translated. Perfect for dynamic variables like <code>[country2] ([year])</code>.</small>
+                                @error('page_title_addition')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="title">Title (Most Popular Section)</label>
@@ -182,9 +197,24 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label" for="top_rated_listing_headline_addition">Top-Rated Listing Headline (H2) addition (no translate)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="top_rated_listing_headline_addition" name="top_rated_listing_headline_addition"
+                                        value="{{ isset($category_data) ? ($category_data['category']['top_rated_listing_headline_addition'] ?? '') : old('top_rated_listing_headline_addition') }}"
+                                        placeholder="e.g. [country2] ([year])">
+                                </div>
+                                <small class="text-muted d-block mt-1">This text is appended to the Top-Rated Headline and is never translated.</small>
+                                @error('top_rated_listing_headline_addition')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label" for="top_rated_listing_subtext">Top-Rated Listing Subtext</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
+                                    <textarea class="form-control rich-editor" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
                                 </div>
                                 <small class="text-muted d-block mt-1">Short text placed immediately below the Top-Rated Listing Headline.</small>
                                 @error('top_rated_listing_subtext')
@@ -192,6 +222,34 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="compare_alternatives_subtext">Compare Alternatives Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="compare_alternatives_subtext" name="compare_alternatives_subtext" rows="3" placeholder="Enter subtext displayed below the Compare Alternatives headline">{{ isset($category_data) ? ($category_data['compare_alternatives_subtext'] ?? '') : old('compare_alternatives_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the "Compare {Category} alternatives" Headline.</small>
+                                @error('compare_alternatives_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="community_says_subtext">Community Says Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="community_says_subtext" name="community_says_subtext" rows="3" placeholder="Enter subtext displayed below the What the community says headline">{{ isset($category_data) ? ($category_data['community_says_subtext'] ?? '') : old('community_says_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the "What the Localio community says" Headline.</small>
+                                @error('community_says_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+
                         
                         <div class="col-md-12">
                             <div class="form-group">
@@ -205,6 +263,8 @@
                                 @enderror
                             </div>
                         </div>
+
+
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -283,6 +343,91 @@
                                 @error('parent_id')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+
+                        
+
+                        <!-- FAQ Page Content & Settings Section -->
+                        <div class="col-md-12 mt-4">
+                            <div class="card card-bordered bg-light">
+                                <div class="card-inner py-3">
+                                    <h5 class="title mb-1 text-primary"><i class="fa fa-question-circle me-1"></i> FAQ Page Settings & Content</h5>
+                                    <p class="text-muted small mb-3">Custom settings and texts displayed exclusively on this category's public FAQs page.</p>
+
+                                    <div class="row g-3">
+                                        <!-- FAQ Page H1 Title -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_h1_title">FAQ Page Title (H1 Heading)</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="faq_h1_title" name="faq_h1_title"
+                                                        value="{{ isset($category_data) ? ($category_data['faq_h1_title'] ?? '') : old('faq_h1_title') }}"
+                                                        placeholder="e.g. Web Hosting FAQs">
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Main H1 headline shown at the top of the FAQ page. Defaults to "[Category Name] FAQs" if left empty.</small>
+                                                @error('faq_h1_title')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- FAQ Page Subtext below H1 with CKEditor -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_subtext">FAQ Page Subtext (Below H1)</label>
+                                                <div class="form-control-wrap">
+                                                    <textarea class="form-control rich-editor" id="faq_subtext" name="faq_subtext" rows="3" placeholder="Frequently asked questions and answers about this category on Localio.">{!! isset($category_data) ? ($category_data['faq_subtext'] ?? '') : old('faq_subtext') !!}</textarea>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Rich-text description placed directly underneath the FAQ Page H1 title. Defaults to standard intro text if left empty.</small>
+                                                @error('faq_subtext')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- FAQ Page SVG Graphic Upload -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_image">FAQ Page SVG Graphic (Top Right)</label>
+                                                <div class="form-control-wrap">
+                                                    <div class="form-file">
+                                                        <input type="file" class="form-file-input" id="faq_image" name="faq_image" accept="image/svg+xml">
+                                                        <label class="form-file-label" for="faq_image">Choose SVG file</label>
+                                                    </div>
+                                                    @if(isset($category) && $category->faq_image)
+                                                        <div class="mt-2">
+                                                            <span class="badge bg-outline-info">Current FAQ graphic uploaded</span>
+                                                            @if($category->faqImageMedia)
+                                                                <img src="{{ asset($category->faqImageMedia->dir_path . '/' . $category->faqImageMedia->file_name) }}" alt="FAQ Graphic" class="mt-2 p-1 bg-white border rounded" style="max-height: 60px; display: block;">
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <small class="text-muted d-block mt-1">SVG illustration displayed on the right top header of the FAQ page for this category.</small>
+                                                @error('faq_image')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- FAQ Page About Headline (H2) -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_about_headline">FAQ Page "About" Headline (H2)</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="faq_about_headline" name="faq_about_headline"
+                                                        value="{{ isset($category_data) ? ($category_data['faq_about_headline'] ?? '') : old('faq_about_headline') }}"
+                                                        placeholder="e.g. About Web hosting">
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Headline displayed above the introductory text in the FAQ content section. Defaults to "About [Category Name]".</small>
+                                                @error('faq_about_headline')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

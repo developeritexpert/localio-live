@@ -28,7 +28,7 @@
             width: 100%;
             padding: 13px 20px 13px 48px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 30px;
+            border-radius: 8px;
             font-size: 15px;
             color: #1e293b;
             outline: none;
@@ -153,7 +153,7 @@
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
         .ask-community-btn:hover {
-            opacity: 0.92;
+            /* opacity: 0.92; */
             transform: translateY(-1px);
         }
             /* Sticky Sidebar & Table of contents */
@@ -336,7 +336,7 @@
             </div>
             @if(!empty($business->is_affiliate))
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
@@ -771,7 +771,7 @@
                                 </div>
                                 <h6 class="blue-text big-bld" style="font-size: 16px; font-weight: 700; color: #002347;">Free trial available</h6>
                                 <div class="accor-btn mt-2">
-                                    <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="cta cta_white blue_t_org_btn" style="text-transform:none !important; padding: 6px 20px; font-size: 13px; border-radius: 20px;">Claim now</a>
+                                    <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="blue-btn cta" style="text-transform:none !important; padding: 6px 20px;">Claim now</a>
                                 </div>
                             </div>
                             @endif

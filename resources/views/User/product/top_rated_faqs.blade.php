@@ -26,7 +26,7 @@
             width: 100%;
             padding: 13px 20px 13px 48px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 30px;
+            border-radius: 8px;
             font-size: 15px;
             color: #1e293b;
             outline: none;
@@ -151,7 +151,7 @@
             transition: opacity 0.2s ease, transform 0.2s ease;
         }
         .ask-community-btn:hover {
-            opacity: 0.92;
+            /* opacity: 0.92; */
             transform: translateY(-1px);
         }
         .top-rated-heading-sec {

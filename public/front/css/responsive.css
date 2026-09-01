@@ -25,7 +25,7 @@
 
 .pricing_plans_row .pricing_card .pricing_action a:hover {
     background-color: #214787;
-    color: #ffffff;
+    color: #fff;
 }
 
 div#navbarSupportedContent .close_btn_mobile {
@@ -942,15 +942,15 @@ ul.options {
 
 .cta.cta_white {
     background-color: #f9633b;
-    border-color: #ffffff;
+    border-color: #fff;
     color: #fff;
     text-transform: capitalize;
 }
 
 .cta.cta_white:hover {
     background-color: #002347;
-    border-color: #ffffff;
-    color: white;
+    border-color: #fff;
+    color: #fff;
     text-transform: capitalize;
 }
 
@@ -1111,7 +1111,7 @@ ul.options {
 .quick-price-filters .btn-outline-secondary.active {
     background-color: #ff9800;
     border-color: #ff9800;
-    color: white;
+    color: #fff;
 }
 
 .automotive-card {
@@ -1153,9 +1153,9 @@ ul.options {
 }
 
 .pagination-btn.active {
-    background-color: #214787  !important;
-    color: white;
-    border-color: #214787 ;
+    background-color: #214787 !important;
+    color: #fff;
+    border-color: #214787;
 }
 
 .pagination-btn.disabled {
@@ -1171,12 +1171,12 @@ ul.options {
 
 .pagination-arrow:hover:not(.disabled) {
     background-color: #e64a19;
-    color: white;
+    color: #fff;
 }
 
 .pagination-arrow.next {
     background-color: #ff6b35;
-    color: white;
+    color: #fff;
 }
 
 .pagination-arrow.next:hover {
@@ -1524,7 +1524,7 @@ body:has(.fixed_sigup) .fixed_sigup {
 
 .discount_badge {
     background-color: #ff5722;
-    color: white;
+    color: #fff;
     font-size: 12px;
     padding: 2px 8px;
     border-radius: 4px;
@@ -1579,7 +1579,7 @@ body:has(.fixed_sigup) .fixed_sigup {
 
 .login-btn {
     background: #1a1a1a;
-    color: white;
+    color: #fff;
     border-radius: 25px;
     padding: 12px 24px;
     font-weight: 500;
@@ -1593,12 +1593,12 @@ body:has(.fixed_sigup) .fixed_sigup {
 
 .login-btn:hover {
     background: #5b6b7a;
-    color: white;
+    color: #fff;
 }
 
 .signup-btn {
     background: #f9633b;
-    color: white;
+    color: #fff;
     border-radius: 25px;
     padding: 12px 24px;
     font-weight: 500;
@@ -1612,7 +1612,7 @@ body:has(.fixed_sigup) .fixed_sigup {
 
 .signup-btn:hover {
     background: #214787;
-    color: white;
+    color: #fff;
 }
 
 .close-btn {
@@ -2063,6 +2063,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 
 #section1 .asn_dv .asn_dv_contnt .div_prent_ever {
     flex: 1;
+    margin-top: 2px;
 }
 
 .frst_re_2 {
@@ -2427,7 +2428,7 @@ ul.list-unstyled.m-0 li:hover a .time span {
 }
 
 .inner_part_boxx:hover .part_2_boxs h6 {
-    color: #ffffff;
+    color: #fff;
 }
 
 .textarea-upload-wrapper {
@@ -6161,7 +6162,6 @@ textarea#message {
 
     .mobile-search-container .search-box input {
         width: 100%;
-        border-radius: 50px !important;
         padding: 14px 60px 14px 24px !important;
         border: none !important;
         font-size: 15px !important;
@@ -6190,7 +6190,6 @@ textarea#message {
         color: #fff !important;
         width: 40px !important;
         height: 40px !important;
-        border-radius: 50% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -8431,7 +8430,7 @@ textarea#message {
     }
 
     header nav#mobile_res {
-        background-color: #214787 ;
+        background-color: #214787;
     }
 
     #pvc_section h5 {
@@ -8936,7 +8935,7 @@ textarea#message {
     .faq-search-input-group input {
         padding: 10px;
         padding-left: 39px;
-        border-radius: 20px;
+        border-radius: 8px;
         font-size: 11px;
     }
 
@@ -8985,7 +8984,7 @@ textarea#message {
 
     .search-input-wrap.position-relative i {
         right: 7px;
-        background: white;
+        background: #fff;
         padding: 6px 18px;
     }
 
@@ -9112,6 +9111,14 @@ textarea#message {
     .latest_review_part_footer .inner_box_silder .inn_sl_hed {
         gap: 5px;
         align-items: flex-start;
+    }
+
+    .row.sld_rw {
+        padding: 0 13px;
+    }
+
+    .row.is-asan-slider {
+        padding: 0 13px;
     }
 }
 
@@ -9260,5 +9267,3 @@ textarea#message {
     }
 }
 /* ====================================END RESPONSIVE CODE======================================= */
-
-

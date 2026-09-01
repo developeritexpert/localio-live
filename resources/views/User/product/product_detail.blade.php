@@ -1479,7 +1479,7 @@
                                                                                                                     @endif
                                                                                                                 @endfor
                                                                                                             </div>
-                                                                                                            <span class="com-rating">Community rating</span>
+                                                                                                            <!-- <span class="com-rating">Community rating</span> -->
                                                                                                             <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                                                         </div>
                                                                                                     </div>
@@ -1878,7 +1878,7 @@
                                                             </div>
 
                                                             @if ($hasUserReviews)
-                                                                <span class="com-rating">Community rating · {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                                <span class="com-rating">{{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                             @endif
                                                         </div>
 
@@ -1919,17 +1919,17 @@
                                                     <span style="font-weight: 600; color: #002347; font-size: 14px;">Do you recommend {{ $business->translations->first()->name ?? 'this business' }}?</span>
                                                     <div style="display: flex; gap: 8px;">
                                                         @auth
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @else
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-up"></i>
                                                             </a>
-                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#ff5722';" onmouseout="this.style.backgroundColor=' #007bff ';">
+                                                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 30px; height: 30px; border-radius: 50%; background-color:  #007bff ; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; " onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor=' #007bff ';">
                                                                 <i class="fas fa-thumbs-down"></i>
                                                             </a>
                                                         @endauth
@@ -3269,5 +3269,159 @@
         });
 
     </script>
+
+<!-- Report Issue Modal -->
+<div class="modal fade" id="reportReviewModal" tabindex="-1" aria-labelledby="reportReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 16px 40px rgba(0,0,0,0.14);">
+            <div class="modal-header" style="border-bottom: 1px solid #f1f5f9; padding: 20px 24px 16px;">
+                <div>
+                    <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
+                    <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 20px 24px;">
+                <input type="hidden" id="reportReviewModalId">
+                <input type="hidden" id="reportReviewReason">
+
+                <!-- Radio option cards -->
+                <div class="d-flex flex-column gap-2" id="reportReviewReasonOptions">
+                    @foreach([
+                        ['value' => 'Fake or fraudulent',   'icon' => 'fa-ban',              'desc' => 'The review appears to be fake or paid for'],
+                        ['value' => 'Inappropriate content', 'icon' => 'fa-exclamation-triangle', 'desc' => 'Contains offensive language or hate speech'],
+                        ['value' => 'Spam or advertising',  'icon' => 'fa-bullhorn',         'desc' => 'Promotional or irrelevant content'],
+                        ['value' => 'Conflict of interest', 'icon' => 'fa-user-tie',         'desc' => 'Written by someone affiliated with the business'],
+                        ['value' => 'Other issue',          'icon' => 'fa-comment-dots',     'desc' => 'Another problem not listed above']
+                    ] as $opt)
+                        <div class="report-review-option-card d-flex align-items-start gap-3 p-3" 
+                             onclick="selectReviewReportReason('{{ $opt['value'] }}', this)"
+                             style="border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+                            
+                            <div class="report-check flex-shrink-0 mt-1" style="width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                                <i class="fas fa-check" style="font-size: 10px; color: transparent;"></i>
+                            </div>
+                            
+                            <div>
+                                <h6 class="m-0" style="font-size: 14.5px; font-weight: 600; color: #1e293b; margin-bottom: 2px !important;">
+                                    <i class="fas {{ $opt['icon'] }} me-1 text-muted" style="font-size: 13px;"></i> 
+                                    {{ $opt['value'] }}
+                                </h6>
+                                <p class="text-muted m-0" style="font-size: 13px; line-height: 1.4;">{{ $opt['desc'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Textarea (hidden initially) -->
+                <div id="reportReviewDetailsWrapper" class="mt-4" style="display: none;">
+                    <label class="form-label fw-bold" style="font-size: 13.5px; color: #334155;">Additional details (optional)</label>
+                    <textarea id="reportReviewDetails" class="form-control" rows="3" placeholder="Please provide any additional context..." style="font-size: 14px; border-radius: 12px; padding: 12px; resize: none;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="btn rounded-pill px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .report-review-option-card:hover {
+        border-color: #94a3b8 !important;
+        background: #f8fafc;
+    }
+    .report-review-option-card.selected {
+        border-color: #002347 !important;
+        background: #f0f4ff;
+    }
+    .report-review-option-card.selected .report-check {
+        background: #002347;
+        border-color: #002347;
+    }
+    .report-review-option-card.selected .report-check i {
+        color: #ffffff !important;
+    }
+</style>
+<script>
+function openReviewReportModal(reviewId) {
+    @if(!auth()->check())
+        if(typeof openLoginModal === 'function') {
+            openLoginModal();
+        } else {
+            window.location.href = "{{ route('login') }}";
+        }
+        return;
+    @endif
+
+    document.getElementById('reportReviewModalId').value = reviewId;
+    document.getElementById('reportReviewReason').value = '';
+    document.getElementById('reportReviewDetails').value = '';
+    document.getElementById('reportReviewDetailsWrapper').style.display = 'none';
+    document.getElementById('submitReviewReportBtn').disabled = true;
+    document.getElementById('submitReviewReportBtn').style.opacity = '0.5';
+
+    document.querySelectorAll('.report-review-option-card').forEach(c => c.classList.remove('selected'));
+
+    const modalEl = document.getElementById('reportReviewModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+function selectReviewReportReason(reason, card) {
+    document.getElementById('reportReviewReason').value = reason;
+    document.querySelectorAll('.report-review-option-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.getElementById('reportReviewDetailsWrapper').style.display = 'block';
+    const btn = document.getElementById('submitReviewReportBtn');
+    btn.disabled = false;
+    btn.style.opacity = '1';
+}
+
+function submitReviewReport() {
+    const reviewId = document.getElementById('reportReviewModalId').value;
+    const reason = document.getElementById('reportReviewReason').value;
+    const details = document.getElementById('reportReviewDetails').value;
+    const submitBtn = document.getElementById('submitReviewReportBtn');
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    fetch('/review/report', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            review_id: reviewId,
+            report_reason: reason,
+            report_details: details
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit report';
+
+        if (data.success) {
+            const modalEl = document.getElementById('reportReviewModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            modal.hide();
+            alert(data.message || 'Report submitted successfully!');
+        } else if (data.require_login) {
+            alert(data.message || 'Please sign in.');
+        } else {
+            alert(data.message || 'An error occurred. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit report';
+    });
+}
+</script>
 
 @endsection

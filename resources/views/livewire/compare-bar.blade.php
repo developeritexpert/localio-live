@@ -46,7 +46,7 @@
                             @endforeach
 
                         @php
-                            $emptySlots = max(0, 2 - count($comparedProducts));
+                            $emptySlots = max(0, 4 - count($comparedProducts));
                         @endphp
                         @for ($i = 0; $i < $emptySlots; $i++)
                             <div style="width: 44px; height: 44px; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc;"></div>

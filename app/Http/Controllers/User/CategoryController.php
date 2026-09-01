@@ -346,12 +346,12 @@ class CategoryController extends Controller
     {
         $lang_id = getCurrentLanguageID();
 
-        $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+        $category = Category::whereHas('categoryTranslations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);
         })->first();
 
         if (!$category) {
-            $category = Category::whereHas('translations', function ($query) use ($slug) {
+            $category = Category::whereHas('categoryTranslations', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })->first();
         }
@@ -360,9 +360,14 @@ class CategoryController extends Controller
             abort(404, 'Category not found');
         }
 
-        $categoryTranslation = $category->translations->firstWhere('lang_id', $lang_id) ?? $category->translations->first();
+        $categoryTranslation = CategoryTranslation::where('category_id', $category->id)
+            ->where('lang_id', $lang_id)
+            ->first() ?? CategoryTranslation::where('category_id', $category->id)->first();
+
         $parentCategory = $category->parent;
-        $parentTrans = $parentCategory ? ($parentCategory->translations->firstWhere('lang_id', $lang_id) ?? $parentCategory->translations->first()) : null;
+        $parentTrans = $parentCategory 
+            ? (CategoryTranslation::where('category_id', $parentCategory->id)->where('lang_id', $lang_id)->first() ?? CategoryTranslation::where('category_id', $parentCategory->id)->first()) 
+            : null;
         $catName = $categoryTranslation->name ?? $category->name ?? 'Category';
 
         $faqs = [];
