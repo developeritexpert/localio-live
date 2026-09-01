@@ -238,57 +238,82 @@
                                         <hr class="w-100 my-3" style="border-top: 1px solid #e2e8f0; opacity: 1; margin-left: 0; margin-right: 0;">
 
                                         <!-- Review Breakdown inside card -->
-                                        <div class="review-breakdown-card w-100 text-start">
+                                        @php
+                                            $activeReviews = $business->reviews->where('status', 'active');
+                                            $activeReviewIds = $activeReviews->pluck('id')->toArray();
+                                            $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+
+                                            $activeReviewsCount = $activeReviews->count();
+                                            if ($activeReviewsCount > 0) {
+                                                $recommendCount = $activeReviews->where('recommend', 1)->count();
+                                                $recPercent = round(($recommendCount / $activeReviewsCount) * 100);
+                                            } else {
+                                                $recPercent = $ratingCount > 0 && $rating > 0 ? round(($rating / 5) * 100) : 100;
+                                            }
+                                        @endphp
+                                        <div class="review-breakdown-card w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
                                             <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h6>
-                                            <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
-                                                <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Value for money</span>
-                                                    <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
-                                                        @php
-                                                            $valueForMoney = $business->reviews->avg('value_for_money_rating') ?? 0;
-                                                            $valueForMoneyPercent = $valueForMoney * 20;
-                                                        @endphp
-                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 8px; width: {{ $valueForMoneyPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                            <ul class="list-unstyled mb-0 d-flex flex-column review-criteria-list" style="gap: 10px; flex: 1 1 auto;">
+                                                @forelse($criteria as $criterion)
+                                                    @php
+                                                        $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where('id', $criterion->id)
+                                                            ->orWhere(function ($q) use ($criterion) {
+                                                                if ($criterion->default_key) {
+                                                                    $q->where('default_key', $criterion->default_key);
+                                                                }
+                                                                $q->orWhereRaw('LOWER(name) = ?', [strtolower($criterion->name)]);
+                                                            })
+                                                            ->pluck('id')
+                                                            ->toArray();
+
+                                                        $ratingRecords = \App\Models\ReviewRating::whereIn('review_id', $activeReviewIds)
+                                                            ->whereIn('criteria_id', $matchingCriteriaIds)
+                                                            ->get();
+
+                                                        $totalScore = 0;
+                                                        $count = 0;
+                                                        if ($ratingRecords->isNotEmpty()) {
+                                                            $totalScore = $ratingRecords->sum('rating');
+                                                            $count = $ratingRecords->count();
+                                                        } else {
+                                                            foreach ($activeReviews as $review) {
+                                                                $legacyVal = null;
+                                                                $cName = strtolower($criterion->name);
+                                                                if ($cName === 'ease of use') {
+                                                                    $legacyVal = $review->ease_of_use_rating;
+                                                                } elseif ($cName === 'customer service') {
+                                                                    $legacyVal = $review->customer_service_rating;
+                                                                } elseif ($cName === 'features') {
+                                                                    $legacyVal = $review->exclusive_service_rating;
+                                                                } elseif ($cName === 'value for money') {
+                                                                    $legacyVal = $review->value_for_money_rating;
+                                                                }
+                                                                if (!is_null($legacyVal) && $legacyVal > 0) {
+                                                                    $totalScore += $legacyVal;
+                                                                    $count++;
+                                                                }
+                                                            }
+                                                        }
+                                                        $crAvg = $count > 0 ? round($totalScore / $count, 1) : 0;
+                                                        $crPercent = min(100, max(0, $crAvg * 20));
+                                                    @endphp
+                                                    <li class="d-flex justify-content-between align-items-center">
+                                                        <span style="font-size: 12px; font-weight: 500; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" title="{{ $criterion->name }}">{{ $criterion->name }}</span>
+                                                        <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px; justify-content: flex-end;">
+                                                            <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
+                                                                <div class="progress-bar" style="height: 8px; width: {{ $crPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
+                                                            </div>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 28px; text-align: right;">{{ number_format($crAvg, 1) }}</span>
                                                         </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($valueForMoney, 1) }}</span>
-                                                    </div>
-                                                </li>
-                                                <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Ease of use</span>
-                                                    <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
-                                                        @php
-                                                            $easeOfUse = $business->reviews->avg('ease_of_use_rating') ?? 0;
-                                                            $easeOfUsePercent = $easeOfUse * 20;
-                                                        @endphp
-                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 8px; width: {{ $easeOfUsePercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
-                                                        </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($easeOfUse, 1) }}</span>
-                                                    </div>
-                                                </li>
-                                                <li class="d-flex justify-content-between align-items-center">
-                                                    <span style="font-size: 12px; font-weight: 500; color: #444;">Features</span>
-                                                    <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px;">
-                                                        @php
-                                                            $featuresRating = $business->reviews->avg('exclusive_service_rating') ?? 0;
-                                                            $featuresPercent = $featuresRating * 20;
-                                                        @endphp
-                                                        <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
-                                                            <div class="progress-bar" style="height: 8px; width: {{ $featuresPercent }}%; background-color: #22c55e; border-radius: 10px;"></div>
-                                                        </div>
-                                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ number_format($featuresRating, 1) }}</span>
-                                                    </div>
-                                                </li>
+                                                    </li>
+                                                @empty
+                                                    <li class="d-flex justify-content-between align-items-center text-muted small">
+                                                        <span>No criteria available</span>
+                                                    </li>
+                                                @endforelse
                                             </ul>
 
-                                            @php
-                                                $recPercent = 100;
-                                                if ($ratingCount > 0 && $rating > 0) {
-                                                    $recPercent = round(($rating / 5) * 100);
-                                                }
-                                            @endphp
-                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 recommended-users-row" style="border-top: 1px solid #f1f5f9; margin-top: auto !important;">
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
                                             </div>
@@ -317,66 +342,53 @@
                     </div>
                 </div>
             </div>
-
-                    <!-- USPs / Features div (only for affiliated businesses) -->
-                    @php
-                        $hasAnyAffiliatedUsps = $businesses->contains(function($b) {
-                            return !empty($b->is_affiliate) && (($b->usps && $b->usps->count() > 0) || ($b->features && $b->features->count() > 0));
-                        });
-                    @endphp
-                    @if($hasAnyAffiliatedUsps)
+                    <!-- USPs or Company Description Card for each business -->
                     <div class="row pro-row-gp mt-4" data-aos="fade-up" data-aos-duration="1000">
                         @foreach ($businesses as $business)
+                            @php
+                                $bName = $business->translations->first()?->name ?? 'Product';
+                                $bDesc = $business->translations->first()?->description ?? null;
+                                $hasUsps = !empty($business->is_affiliate) && (($business->usps && $business->usps->count() > 0) || ($business->features && $business->features->count() > 0));
+                            @endphp
                             <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 mb-3">
-                                @if(!empty($business->is_affiliate))
-                                <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%;">
-                                    <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
-                                        @if($business->usps && $business->usps->count() > 0)
-                                            @foreach($business->usps as $usp)
-                                                @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
-                                                @if(!empty($uText))
-                                                <li class="d-flex align-items-center" style="gap: 12px;">
-                                                    <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                        <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                    </span>
-                                                    <span style="font-size: 16px; font-weight: 500; color: #000; line-height: 1.3;">{{ $uText }}</span>
-                                                </li>
+                                <div class="bg-white p-4" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); height: 100%; display: flex; flex-direction: column;">
+                                    @if($hasUsps)
+                                        <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 14px;">
+                                            @if($business->usps && $business->usps->count() > 0)
+                                                @foreach($business->usps as $usp)
+                                                    @php $uText = $usp->text ?? $usp->usp_text ?? ''; @endphp
+                                                    @if(!empty($uText))
+                                                    <li class="d-flex align-items-center" style="gap: 12px;">
+                                                        <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                            <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                        </span>
+                                                        <span style="font-size: 15px; font-weight: 500; color: #000; line-height: 1.3;">{{ $uText }}</span>
+                                                    </li>
+                                                    @endif
+                                                @endforeach
+                                            @elseif($business->features && $business->features->count() > 0)
+                                                @foreach($business->features as $feature)
+                                                    <li class="d-flex align-items-center" style="gap: 12px;">
+                                                        <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
+                                                            <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
+                                                        </span>
+                                                        <span style="font-size: 15px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
+                                                    </li>
+                                                @endforeach
+                                            @endif
+                                        </ul>
+                                    @else
+                                        <div>
+                                            <h6 style="font-size: 16px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">About {{ $bName }}</h6>
+                                            <div style="font-size: 14px; color: #475569; line-height: 1.6;">
+                                                @if(!empty($bDesc))
+                                                    {!! $bDesc !!}
+                                                @else
+                                                    <p class="text-muted mb-0">No description available.</p>
                                                 @endif
-                                            @endforeach
-                                        @elseif($business->features && $business->features->count() > 0)
-                                             @foreach($business->features as $feature)
-                                                <li class="d-flex align-items-center" style="gap: 12px;">
-                                                    <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                        <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                    </span>
-                                                    <span style="font-size: 16px; font-weight: 500; color: #000; line-height: 1.3;">{{ $feature->translations->first()?->name ?? 'Feature Name' }}</span>
-                                                </li>
-                                            @endforeach
-                                        @else
-                                            <li class="d-flex align-items-center" style="gap: 12px;">
-                                                <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
-                                                    <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
-                                                </span>
-                                                <span style="font-size: 16px; font-weight:500; color: #000;">No features available</span>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                    @endif
-
-                    <!-- what is product -->
-                    <div class="row xrro_dv light pro-row-gp" data-aos="fade-up" data-aos-duration="1000">
-                        @foreach ($businesses as $index => $business)
-                            <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 {{ $index < count($businesses) - 1 ? 'xrro_bordr' : '' }} mb-4">
-                                <div class="xro_box {{ $index == 1 ? 'p_left' : '' }}">
-                                    <h6>What is {{ $business->translations->first()?->name ?? 'Product' }}?</h6>
-                                    <div class="xro_text">
-                                        <p>{!! $business->translations->first()?->description ?? 'No description available.' !!}</p>
-                                    </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach

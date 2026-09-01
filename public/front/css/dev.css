@@ -524,3 +524,37 @@
         display: none !important;
     }
 }
+
+
+/* Alignment for Review Breakdown and "Recommended by users" row */
+.pdc_choice {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+.pdc_choice .auto-choice-hd {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    height: 100% !important;
+}
+
+.review-breakdown-card {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+}
+
+.review-criteria-list {
+    flex: 1 1 auto !important;
+    min-height: 120px; /* Provides consistent spacing even if one has fewer criteria */
+}
+
+.recommended-users-row {
+    margin-top: auto !important;
+    width: 100% !important;
+    border-top: 1px solid #f1f5f9 !important;
+    padding-top: 14px !important;
+}
