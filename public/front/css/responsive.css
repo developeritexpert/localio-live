@@ -4954,10 +4954,6 @@ textarea#message {
         margin-top: 70px;
     }
 
-    /* .top-rated-heading-sec {
-        margin-top: 70px !important;
-    } */
-
     .popular-categories-sidebar {
         overflow-x: auto;
         -ms-overflow-style: none;
@@ -8871,9 +8867,7 @@ textarea#message {
         padding: 7px 7px;
     }
 
-    /* .top-rated-heading-sec {
-        margin-top: 50px !important;
-    } */
+ 
 
     .modal-header {
         padding-right: 0;

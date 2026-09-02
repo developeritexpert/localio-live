@@ -40,20 +40,10 @@
         padding-top: 30px;
         background-color: #f7f9fb;
         border-bottom: 1px solid #e2e8f0;
-        /* margin-bottom: 25px; */
     }
 
     .top-rated-heading-block {
         padding-bottom: 20px;
-    }
-
-    .top-rated-heading-sec .bread_row {
-        /* margin-top:20px; */
-    }
-
-    .top-rated-heading-sec .row {
-        /* padding-bottom:20px; */
-
     }
 
     /* View details button – match height of Visit website */
