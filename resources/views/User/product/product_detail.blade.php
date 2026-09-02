@@ -1468,7 +1468,7 @@
                                                                                                                     {{ $ratingWord }}
                                                                                                                 </span>
                                                                                                             @endif
-                                                                                                            <div class="d-flex align-items-center gap-1 mb-2">
+                                                                                                            <div class="d-flex align-items-center gap-1 mb-1">
                                                                                                                 @for ($j = 1; $j <= 5; $j++)
                                                                                                                     @if ($j <= floor($averageRating))
                                                                                                                         <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -1507,7 +1507,7 @@
                                                                                                         @if(isset($recommendPercent) && $recommendPercent > 0)
                                                                                                             <div class="pt-3 mt-3 border-top d-flex justify-content-between align-items-center" style="border-top-color: #f1f5f9 !important;">
                                                                                                                 <span style="font-weight: 600; color: #002347; font-size: 14px;">Recommended by users</span>
-                                                                                                                <strong style="color: #002347; font-size: 14px; font-weight: 700;">{{ $recommendPercent }}%</strong>
+                                                                                                                <strong style="color: #002347; font-size: 14px; font-weight: 600;">{{ $recommendPercent }}%</strong>
                                                                                                             </div>
                                                                                                         @endif
                                                                                                     </div>
@@ -1865,7 +1865,7 @@
                                                                 </span>
                                                             @endif
 
-                                                            <div class="" style="margin-bottom: 6px; display: flex; gap: 4px;">
+                                                            <div class="" style="margin-bottom: 4px; display: flex; gap: 4px;">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <= floor($averageRating))
                                                                         <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -3279,7 +3279,7 @@
                     <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
             </div>
             <div class="modal-body" style="padding: 20px 24px;">
                 <input type="hidden" id="reportReviewModalId">
@@ -3296,7 +3296,7 @@
                     ] as $opt)
                         <div class="report-review-option-card d-flex align-items-start gap-3 p-3" 
                              onclick="selectReviewReportReason('{{ $opt['value'] }}', this)"
-                             style="border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+                             style="border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer;">
                             
                             <div class="report-check flex-shrink-0 mt-1" style="width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
                                 <i class="fas fa-check" style="font-size: 10px; color: transparent;"></i>
@@ -3320,8 +3320,8 @@
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
-                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
-                <button type="button" class="btn rounded-pill px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
+                <button type="button" class="btn btn-light rounded-pill-10 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="blue-btn btn rounded-pill-10 px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
             </div>
         </div>
     </div>
