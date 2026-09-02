@@ -31,18 +31,18 @@ class AiPromptController extends Controller
     
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string',
-            'original_prompt' => 'required|string',
-            'description' => 'required|string',
         ]);
- 
+
         $prompt = AiPrompt::create([
-            'name' => $request->name,
-            'type' => $request->type,
-            'original_prompt' => $request->original_prompt,
-            'updated_prompt' => $request->original_prompt,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active'),
+            'name'               => $request->name,
+            'type'               => $request->type,
+            'original_prompt'    => $request->original_prompt,
+            'updated_prompt'     => $request->original_prompt,
+            'description'        => $request->description,
+            'is_active'          => $request->has('is_active'),
+            'openai_prompt_id'   => $request->openai_prompt_id,
+            'anthropic_prompt_id' => $request->anthropic_prompt_id,
+            'content_field'      => $request->content_field ?: null,
         ]);
 
         return redirect()->route('ai-prompts.index')
@@ -58,18 +58,18 @@ class AiPromptController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string',
-            'original_prompt' => 'required|string',
-            'description' => 'required|string',
         ]);
-        // dd($request->all());
+
         $aiPrompt->update([
-            'name' => $request->name,
-            'type' => $request->type,
-            'original_prompt' => $request->original_prompt,
-            'updated_prompt' => $request->original_prompt,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active'),
+            'name'               => $request->name,
+            'type'               => $request->type,
+            'original_prompt'    => $request->original_prompt,
+            'updated_prompt'     => $request->original_prompt,
+            'description'        => $request->description,
+            'is_active'          => $request->has('is_active'),
+            'openai_prompt_id'   => $request->openai_prompt_id,
+            'anthropic_prompt_id' => $request->anthropic_prompt_id,
+            'content_field'      => $request->content_field ?: null,
         ]);
     
         return redirect()->route('ai-prompts.index')
