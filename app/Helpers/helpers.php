@@ -76,11 +76,21 @@ function getCurrentLanguageID()
     }
 
     if ($siteLanguage) {
-        // Check if base_language_id is set and not null
-        if ($siteLanguage->base_language_id) {
-            return $siteLanguage->base_language_id;
+        // If US-English (ID 1) or has active translation, return its ID
+        if ($siteLanguage->id == 1 || $siteLanguage->is_active_translation == 1) {
+            return $siteLanguage->id;
         }
-        return $siteLanguage->id;
+
+        // Check if base_language_id is set and points to an active language
+        if ($siteLanguage->base_language_id) {
+            $baseLang = Language::find($siteLanguage->base_language_id);
+            if ($baseLang && ($baseLang->id == 1 || $baseLang->is_active_translation == 1)) {
+                return $baseLang->id;
+            }
+        }
+
+        // UNTRANSLATED LANGUAGE FALLBACK: return 1 (US-English ID)
+        return 1;
     }
 
     // Default fallback ID
