@@ -13,7 +13,6 @@
     padding: 0 !important;
     margin-bottom: 4px !important;
     color: #002347 !important;
-
 }
 
 .top-rated-heading-block {
@@ -37,7 +36,7 @@
     bottom: 0 !important;
     transition: all 0.3s ease;
     right: unset;
-    left: -30px
+    left: -30px;
 }
 
 .usp-grid-container {
@@ -49,7 +48,6 @@
 }
 
 @media (max-width: 768px) {
-
     /* .automotive-card {
                 padding-bottom: 20px !important;
             } */
@@ -126,7 +124,6 @@
 }
 
 @media (max-width: 768px) {
-
     /* .top-automotive-sec.top_rate_pg {
                 padding-top: 110px !important;
             } */
@@ -143,7 +140,6 @@
     }
 }
 
-
 .m-30 {
     margin-top: 30px !important;
     padding-bottom: 30px;
@@ -155,8 +151,8 @@
 
 /* 1. Header Layout */
 .comparison-header-left {
-    max-width: 50%;
-    flex: 0 0 50%;
+    max-width: 74%;
+    flex: 0 0 74%;
 }
 
 @media (max-width: 991px) {
@@ -177,20 +173,7 @@
 .comp-header-icon-box {
     width: 68px;
     height: 68px;
-    background: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 35, 71, 0.06);
-    padding: 8px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.comp-header-icon-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 35, 71, 0.1);
+    overflow: hidden;
 }
 
 .comp-header-icon-box img {
@@ -198,12 +181,6 @@
     max-height: 100%;
     object-fit: contain;
     border-radius: 8px;
-}
-
-.comp-header-icon-box .business-initial-logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1e3050;
 }
 
 /* 2. "Your Comparison" Top Bar */
@@ -241,12 +218,11 @@
     gap: 8px;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
-    border-radius: 30px;
+    border-radius: 8px;
     padding: 5px 12px 5px 8px;
     font-size: 13px;
     font-weight: 600;
-    color: #1e3050;
-    transition: all 0.2s ease;
+    color: #002347;
 }
 
 .your-comp-pill:hover {
@@ -272,18 +248,17 @@
     border: none;
     padding: 0;
     margin-left: 4px;
-    color: #64748b;
+    color: #5b6b7a;
     cursor: pointer;
     font-size: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    transition: color 0.2s ease;
 }
 
 .your-comp-pill-remove:hover {
-    color: #ef4444;
+    color: #002347;
 }
 
 .your-comp-count {
@@ -293,12 +268,12 @@
     padding: 4px 8px;
     font-size: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: #5b6b7a;
 }
 
 .add-products-btn {
     background-color: #ffffff;
-    color: #06498b;
+    color: #002347;
     font-weight: 600;
     font-size: 13.5px;
     text-decoration: none;
@@ -307,16 +282,14 @@
     gap: 6px;
     cursor: pointer;
     padding: 7px 16px;
-    border-radius: 20px;
-    border: 1.5px solid #06498b;
-    transition: all 0.2s ease;
+    border-radius: 8px;
+    border: 1.5px solid #002347;
     line-height: 1.4;
 }
 
 .add-products-btn:hover {
-    background-color: #06498b;
+    background-color: #002347;
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(6, 73, 139, 0.2);
 }
 
 .add-products-btn:hover i {
@@ -331,8 +304,7 @@
     width: 340px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(0, 35, 71, 0.15);
+    border-radius: 8px;
     z-index: 1080;
     display: none;
     padding: 14px;
@@ -360,9 +332,8 @@
     border: 1.5px solid #cbd5e1;
     border-radius: 8px;
     font-size: 13.5px;
-    color: #1e293b;
+    color: #002347;
     outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .add-comp-search-input:focus {
@@ -397,7 +368,6 @@
     padding: 8px 10px;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.15s ease;
     border: 1px solid transparent;
     text-decoration: none;
 }
@@ -442,18 +412,17 @@
     height: 26px;
     border-radius: 50%;
     background: #eff6ff;
-    color: #06498b;
+    color: #002347;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 11px;
     flex-shrink: 0;
     margin-left: 8px;
-    transition: all 0.2s ease;
 }
 
 .add-comp-item-row:hover .item-add-icon {
-    background: #06498b;
+    background: #002347;
     color: #ffffff;
 }
 
@@ -571,7 +540,6 @@
     }
 }
 
-
 /* Alignment for Review Breakdown and "Recommended by users" row */
 .pdc_choice {
     display: flex !important;
@@ -595,19 +563,16 @@
 
 .review-criteria-list {
     flex: 1 1 auto !important;
-    min-height: 120px;
-    /* Provides consistent spacing even if one has fewer criteria */
+    max-height: 150px;
 }
 
 .recommended-users-row {
-    margin-top: auto !important;
+    margin-top: 14px;
     width: 100% !important;
     border-top: 1px solid #f1f5f9 !important;
     padding-top: 14px !important;
 }
 
-
-/* Tab styling for comparison Pros & Cons cards */
 .comp-pros-cons-tabs .nav-link {
     position: relative;
     color: #64748b !important;
@@ -619,7 +584,7 @@
 }
 
 .comp-pros-cons-tabs .nav-link.active::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -1.5px;
     left: 0;
@@ -629,18 +594,7 @@
     border-radius: 2px;
 }
 
-/* Alternatives section in Product Comparison */
-.comp-alt-box {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
 .comp-alt-item:hover {
     background-color: #f1f5f9 !important;
     border-color: #cbd5e1 !important;
-}
-
-.alt-add-to-comp-btn:hover {
-    background-color: #06498b !important;
-    color: #ffffff !important;
-    border-color: #06498b !important;
 }

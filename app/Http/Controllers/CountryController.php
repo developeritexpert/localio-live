@@ -45,8 +45,10 @@ class CountryController extends Controller
                      ?? Language::where('name', $oldName)->first();
 
             if ($language) {
-                $language->name      = $request->name;
-                $language->lang_code = strtolower($request->lang_code);
+                $language->name                  = $request->name;
+                $language->lang_code             = strtolower($request->lang_code);
+                $language->html_lang             = $request->html_lang ? trim($request->html_lang) : null;
+                $language->is_active_translation = $request->has('is_active_translation') ? 1 : 0;
                 $language->save();
             } else {
                 // Create language record if missing
@@ -59,6 +61,7 @@ class CountryController extends Controller
                     'alternatives_slug'  => 'alternatives',
                     'reviews_slug'       => 'reviews',
                     'comparisons_slug'   => 'comparisons',
+                    'html_lang'          => $request->html_lang ? trim($request->html_lang) : null,
                 ]);
             }
 
@@ -78,6 +81,7 @@ class CountryController extends Controller
         $request->validate([
             'name'      => 'required|unique:countries,name',
             'lang_code' => 'required|string|max:20|regex:/^[a-z0-9-]+$/|unique:languages,lang_code',
+            'html_lang' => 'nullable|string|max:20',
         ]);
 
         $country = new Country;
@@ -95,6 +99,8 @@ class CountryController extends Controller
             'alternatives_slug'  => 'alternatives',
             'reviews_slug'       => 'reviews',
             'comparisons_slug'   => 'comparisons',
+            'html_lang'          => $request->html_lang ? trim($request->html_lang) : null,
+            'is_active_translation' => $request->has('is_active_translation') ? 1 : 0,
         ]);
 
         return redirect()->route('country.index')->with('success', 'Country/region added successfully.');

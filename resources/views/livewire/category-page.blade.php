@@ -41,12 +41,9 @@
         text-decoration: underline !important;
     }
         .top-rated-heading-sec {
-            /* margin-top: 115px; */
             padding-top: 30px !important;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e8eef6;
-            /* margin-bottom: 25px; */
-            /* padding-bottom: 20px; */
         }
 
     .top-rated-heading-sec {
@@ -54,13 +51,11 @@
         padding-top: 25px;
         background-color: #f7f9fb;
         border-bottom: 1px solid #e8eef6;
-        /* margin-bottom: 25px; */
         padding-bottom: 20px;
     }
 
     /* Toggle switch styling */
     .cat-heading-block h1 {
-        /* font-size: 24px; */
         font-size: 28px !important;
         font-weight: 700;
         padding: 0 !important;
@@ -496,7 +491,7 @@
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
-                        <div class="col-md-6 mt-4 mt-md-0 text-end">
+                        <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                                 <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" style="max-width: 300px; max-height: 100px; object-fit: contain;">
                             @endif
@@ -1380,7 +1375,7 @@
         
         <!-- Top Affiliated Businesses Section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
-        <section class="revie_img_sec" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec" style="background: #f8fafc !important; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="mb-4">
                     @foreach($topAffiliatedBusinesses as $index => $biz)
@@ -1727,7 +1722,7 @@
         <!-- listing section -->
         <!-- 3. Explore Subcategories Section -->
         @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
-        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
+        <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">

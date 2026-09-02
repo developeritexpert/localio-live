@@ -64,10 +64,10 @@ class BusinessImages extends Component
     {
         $business = Business::with('translations')->findOrFail($businessId);
         $this->selectedBusinessId = $businessId;
-        $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name 
-            ?? $business->translations->first()?->name 
+        $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name
+            ?? $business->translations->first()?->name
             ?? 'Business #' . $businessId;
-        
+
         $this->currentImages = $business->business_images ?? [];
         $this->newUploads = [];
         $this->showImageModal = true;
@@ -107,29 +107,29 @@ class BusinessImages extends Component
         } catch (\Exception $e) {
             $this->addConsoleLog("Failed to extend script time limit: " . $e->getMessage());
         }
-        
+
         $business = Business::with('websites')->findOrFail($this->selectedBusinessId);
         $urls = [];
 
-        // 1. First priority: affiliate_link
-        if (!empty(trim($business->affiliate_link ?? ''))) {
+        // 1. First priority: Configured screenshot URLs
+        if (!empty($business->screenshot_urls) && is_array($business->screenshot_urls)) {
+            $urls = array_values(array_filter($business->screenshot_urls, function ($u) {
+                return !empty(trim($u));
+            }));
+        }
+
+        // 2. Second priority: affiliate_link
+        if (empty($urls) && !empty(trim($business->affiliate_link ?? ''))) {
             $urls[] = trim($business->affiliate_link);
         }
 
-        // 2. Second priority: Country / regional website URLs (websites)
+        // 3. Third priority: Country / regional website URLs
         if (empty($urls) && $business->websites && $business->websites->isNotEmpty()) {
             foreach ($business->websites as $web) {
                 if (!empty(trim($web->website_url ?? '')) && !in_array(trim($web->website_url), $urls)) {
                     $urls[] = trim($web->website_url);
                 }
             }
-        }
-
-        // 3. Third priority: Configured screenshot URLs (from Screenshot URLs modal)
-        if (empty($urls) && !empty($business->screenshot_urls) && is_array($business->screenshot_urls)) {
-            $urls = array_values(array_filter($business->screenshot_urls, function ($u) {
-                return !empty(trim($u));
-            }));
         }
 
         // 4. Fourth priority: Business permanent_url
@@ -163,7 +163,8 @@ class BusinessImages extends Component
             if (!is_writable($destinationDir)) {
                 try {
                     @chmod($destinationDir, 0775);
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
             }
         }
 
@@ -192,10 +193,18 @@ class BusinessImages extends Component
         }
 
         if (!empty($generatedImages)) {
-            $this->currentImages = array_merge($this->currentImages, $generatedImages);
-            $this->currentImages = array_slice($this->currentImages, 0, 5);
+            $maxImages = 5;
+            $spaceForNewImages = $maxImages - count($generatedImages);
+
+            $oldImages = array_slice($this->currentImages, 0, max(0, $spaceForNewImages));
+            $this->currentImages = array_merge($oldImages, $generatedImages);
+            $this->currentImages = array_slice($this->currentImages, 0, $maxImages);
             $this->newUploads = [];
-            session()->flash('modal_success', count($generatedImages) . ' website screenshot(s) generated successfully!');
+
+            session()->flash(
+                'modal_success',
+                count($generatedImages) . ' website screenshot(s) generated successfully!'
+            );
         } else {
             $this->addConsoleLog("All screenshot capture attempts failed. Running self-diagnostics...");
             $this->runScreenshotDiagnostics($urlsToCapture[0] ?? 'None');
@@ -250,7 +259,7 @@ class BusinessImages extends Component
                 ->withHeaders($headers)
                 ->timeout($apiTimeout)
                 ->get($apiUrl);
-            
+
             if ($response->successful()) {
                 $json = $response->json();
                 $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
@@ -273,7 +282,6 @@ class BusinessImages extends Component
             } else {
                 $this->addConsoleLog("[Attempt 2] FAILED: Microlink API status: " . $response->status());
             }
-
         } catch (\Exception $e) {
             $this->addConsoleLog("[Exception] Screenshot generation failed: " . $e->getMessage());
         }
@@ -301,7 +309,7 @@ class BusinessImages extends Component
                 $this->addConsoleLog("Failed to create directory: " . $e->getMessage());
             }
         }
-        
+
         $isWritable = is_writable($destinationDir);
         $this->addConsoleLog("Directory writable: " . ($isWritable ? "Yes" : "No"));
 
@@ -311,7 +319,8 @@ class BusinessImages extends Component
                 @chmod($destinationDir, 0775);
                 $isWritable = is_writable($destinationDir);
                 $this->addConsoleLog("Retried checking directory writable after chmod 775: " . ($isWritable ? "Yes" : "No"));
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         if (!$isWritable) {
@@ -320,7 +329,8 @@ class BusinessImages extends Component
                 @chmod($destinationDir, 0777);
                 $isWritable = is_writable($destinationDir);
                 $this->addConsoleLog("Retried checking directory writable after chmod 777: " . ($isWritable ? "Yes" : "No"));
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         if (!$isWritable) {
@@ -387,7 +397,7 @@ class BusinessImages extends Component
         $accentColor = imagecolorallocate($img, 249, 99, 59); // Theme primary (#F9633B)
 
         imagefill($img, 0, 0, $bgColor);
-        
+
         // Draw top browser bar style
         $barColor = imagecolorallocate($img, 15, 23, 42);
         imagefilledrectangle($img, 0, 0, $width, 40, $barColor);
@@ -474,8 +484,8 @@ class BusinessImages extends Component
     {
         $business = Business::with('translations')->findOrFail($businessId);
         $this->selectedBusinessId = $businessId;
-        $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name 
-            ?? $business->translations->first()?->name 
+        $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name
+            ?? $business->translations->first()?->name
             ?? 'Business #' . $businessId;
 
         $urls = [];
@@ -506,7 +516,7 @@ class BusinessImages extends Component
     public function saveScreenshotUrls()
     {
         $business = Business::findOrFail($this->selectedBusinessId);
-        
+
         $cleanUrls = array_values(array_filter($this->screenshotUrls, function ($url) {
             return !empty(trim($url));
         }));

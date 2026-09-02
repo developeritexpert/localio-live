@@ -44,6 +44,22 @@
                             </div>
                         </div>
 
+                        <!-- HTML lang attribute -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="html_lang">HTML lang attribute</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="html_lang" name="html_lang"
+                                        value="{{ old('html_lang', $countryid->language?->html_lang ?? '') }}"
+                                        placeholder="e.g. en-US, de-DE, es-AR" />
+                                </div>
+                                <div class="form-text text-muted">Used in HTML header tag: &lt;html lang="<strong>{{ $countryid->language?->html_lang ?? 'en-US' }}</strong>"&gt;.</div>
+                                @error('html_lang')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Affiliate Disclaimer Banner -->
                         <div class="col-md-6">
                             <div class="form-group">
@@ -65,6 +81,28 @@
                             </div>
                         </div>
 
+                                                <!-- Translation Status (Active vs Untranslated Fallback) -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="is_active_translation">Translation Status</label>
+                                <div class="form-control-wrap d-flex align-items-center gap-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="is_active_translation" name="is_active_translation"
+                                            value="1"
+                                            {{ old('is_active_translation', $countryid->language?->is_active_translation ?? 0) == 1 ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="is_active_translation"></label>
+                                    </div>
+                                    <span id="activeTransText" style="font-weight: 600;">
+                                        {{ old('is_active_translation', $countryid->language?->is_active_translation ?? 0) == 1 ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)' }}
+                                    </span>
+                                </div>
+                                <div class="form-text text-muted">If disabled (Untranslated), the website automatically falls back to United States – English (en-US) content.</div>
+                                @error('is_active_translation')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Submit -->
                         <div class="col-md-12">
                             <div class="form-group">
@@ -79,6 +117,10 @@
 
     <script>
         $(document).ready(function() {
+            $('#is_active_translation').on('change', function() {
+                $('#activeTransText').text($(this).is(':checked') ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)');
+            });
+
             $('#show_disclaimer').on('change', function() {
                 $('#disclaimerText').text($(this).is(':checked') ? 'Enabled' : 'Disabled');
             });

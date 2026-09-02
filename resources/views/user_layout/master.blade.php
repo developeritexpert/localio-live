@@ -1,7 +1,14 @@
+<?php
+    $currentLangCode = getCurrentLocale();
+    $currentLangObj = \App\Models\Language::where('lang_code', $currentLangCode)->first();
+    $htmlLangAttr = $currentLangObj?->html_lang ?? ('en-US');
+    $canonicalUrl = request()->url();
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $htmlLangAttr }}">
 
 <head>
+    <link rel="canonical" href="{{ $canonicalUrl }}">
     <?php
 
     use App\Models\HomeContent; // Import your model
@@ -771,12 +778,8 @@
                     border: 1px solid rgba(0, 0, 0, 0.05);
                 } */
     .popular-categories-title {
-        font-size: 24px !important;
-        font-weight: 600 !important;
-        color: #0d1b2a !important;
         margin-top: 0 !important;
         margin-bottom: 24px !important;
-        line-height: 1.3 !important;
     }
 
     .see-all-category-container {
@@ -928,8 +931,8 @@
 
     /* global css by r. */
     .btn-orng {
-        background-color: #ff5722 !important;
-        border-color: #ff5722 !important;
+        background-color: var(--color-primary-orange) !important;
+        border-color: var(--color-primary-orange) !important;
     }
 
     .btn-orng:hover {

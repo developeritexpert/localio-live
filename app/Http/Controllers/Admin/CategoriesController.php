@@ -482,10 +482,7 @@ class CategoriesController extends Controller
             $mediaTopRated = $this->mediaservice->uploadMedia($request->file('top_rated_image'), 'category/top-rated');
             $category->top_rated_image = $mediaTopRated->id;
         }
-        if ($request->hasFile('faq_image')) {
-            $mediaFaq = $this->mediaservice->uploadMedia($request->file('faq_image'), 'category/faq');
-            $category->faq_image = $mediaFaq->id;
-        }
+
         $category->save();
         if ($category) {
             $slug = Str::slug($validate['name']);

@@ -33,6 +33,7 @@
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Country/region</span></th>
                         <th class="nk-tb-col"><span class="sub-text">URL Locale Code</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Translation Status</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Disclaimer Banner</span></th>
                         <th class="nk-tb-col tb-tnx-action"><span>Action</span></th>
                     </tr>
@@ -48,6 +49,13 @@
                             <span class="badge bg-outline-info">{{ $country->language?->lang_code ?? '—' }}</span>
                         </td>
 
+                        <td class="nk-tb-col">
+                            @if(($country->language?->id == 1) || ($country->language?->is_active_translation == 1))
+                                <span class="badge badge-dim bg-success text-success">Translated (Active)</span>
+                            @else
+                                <span class="badge badge-dim bg-warning text-warning">Untranslated (US-English Fallback)</span>
+                            @endif
+                        </td>
                         <td class="nk-tb-col">
                             <span class="badge {{ $country->show_disclaimer ? 'badge-dim bg-success text-success' : 'badge-dim bg-danger text-danger' }}">
                                 {{ $country->show_disclaimer ? 'Enabled' : 'Disabled' }}
