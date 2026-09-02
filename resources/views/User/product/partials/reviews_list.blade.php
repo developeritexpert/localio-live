@@ -52,7 +52,7 @@
         
                                     @endif
                                 @if($review->user && $review->user->job_title)
-                                    <p class="asn-rating-p" style="color: #5b6b7a ; margin: 0; line-height: 1.2;  font-weight:500;">{{ $review->user->job_title }}</p>
+                                    <p class="asn-rating-p" style="color: #5b6b7a ; margin: 0; line-height: 1.2;  font-weight:500;  text-decoration: none;">{{ $review->user->job_title }}</p>
                                 @endif
                                 @if($review->user && $review->user->company_size)
                                     <p class="asn-rating-p" style="color: #5b6b7a ; margin: 0; line-height: 1.2; font-weight:500;">{{ static_text('company_size_' . $review->user->company_size) ?: $review->user->company_size }}</p>

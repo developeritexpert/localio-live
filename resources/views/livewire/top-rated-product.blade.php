@@ -223,7 +223,7 @@
         margin-top: 4px;
     }
     .explore-categories-sec .top-product-stars {
-        color: #ff5722 !important;
+        color: var(--color-primary-orange) !important;
         font-size: 11px;
         display: flex;
         align-items: center;
@@ -246,8 +246,8 @@
         text-decoration: none !important;
     }
     .explore-categories-sec .btn-orng {
-        background: #ff5722 !important;
-        border: 1px solid #ff5722 !important;
+        background: var(--color-primary-orange) !important;
+        border: 1px solid var(--color-primary-orange) !important;
 
         color: #fff !important;
         font-size: 11px !important;

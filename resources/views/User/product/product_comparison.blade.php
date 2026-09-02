@@ -68,7 +68,7 @@
         </div>
 
         <!-- Business Header Row -->
-        <div class="row align-items-center justify-content-between py-2">
+        <div class="row align-items-center justify-content-between">
             <div class="comparison-header-left">
                 <div class="top_head">
                     <h1 style="font-size: 28px !important; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
@@ -81,7 +81,7 @@
                         @endif
                     </h1>
                     <p class="text-muted" style="font-size: 13px; margin-top: 4px; margin-bottom: 14px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                    <p style="font-size: 15px; color: #444; margin-bottom: 0; line-height: 1.5;">
+                    <p style="font-size: 15px; margin-bottom: 0; ">
                         @if(!empty($catName))
                             Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.
                         @else
@@ -90,7 +90,7 @@
                     </p>
                 </div>
             </div>
-            <div class="col-lg-5 col-12 mt-4 mt-lg-0">
+            <div class="col-lg-3 col-6 mt-4 mt-lg-0">
                 <div class="comparison-header-icons">
                     @foreach($businesses as $b)
                         <div class="comp-header-icon-box" title="{{ $b->translations->first()?->name ?? '' }}">
@@ -109,7 +109,7 @@
         <!-- Your comparison top bar (Capterra style in Localio design) -->
         <div class="your-comparison-wrapper position-relative">
             <div class="your-comp-pills-wrap">
-                <span class="your-comp-title">Your comparison:</span>
+                <span class="your-comp-title">Your comparison</span>
                 @foreach($businesses as $biz)
                     @php
                         $bTitle = $biz->translations->first()?->name ?? $biz->name ?? 'Business';
@@ -128,7 +128,7 @@
                         @endif
                     </div>
                 @endforeach
-                <span class="your-comp-count">{{ count($businesses) }}/4 selected</span>
+                <span class="your-comp-count">{{ count($businesses) }}/4 added</span>
             </div>
 
             @if(count($businesses) < 4)
@@ -316,7 +316,7 @@
                                                 @endforelse
                                             </ul>
 
-                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 recommended-users-row" style="border-top: 1px solid #f1f5f9; margin-top: auto !important;">
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 recommended-users-row">
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
                                             </div>
@@ -446,7 +446,7 @@
                                                 <x-business-logo :business="$business" :name="$bName" />
                                             </div>
                                             <h5 style="font-size: 15.5px; font-weight: 700; color: #1e3050; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }} pros and cons">
-                                                {{ $bName }}
+                                                {{ $bName }} pros and cons
                                             </h5>
                                         </div>
 
@@ -479,7 +479,7 @@
                                                         <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
                                                             @foreach($bPros->take(6) as $pro)
                                                                 <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                    <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px;">
+                                                                    <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height:1">
                                                                         <i class="fas fa-plus-circle"></i>
                                                                     </span>
                                                                     <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
@@ -625,35 +625,35 @@
                         @endphp
                         <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
                             <div class="p-3 bg-white d-flex align-items-center justify-content-between" style="border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-height: 80px;">
-                                <div class="d-flex align-items-center gap-3" style="min-width: 0;">
+                                <div class="d-flex align-items-center gap-1" style="min-width: 0;">
                                     <div class="top-product-medium-logo" style="width: 44px; height: 44px; flex-shrink: 0;">
                                         <x-business-logo :business="$business" :name="$bName" />
                                     </div>
                                     <div style="min-width: 0;">
-                                        <h4 style="font-size: 15.5px; font-weight: 700; margin: 0 0 2px 0; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }}">
+                                        <h5 style="font-size: 15.5px; font-weight: 700; margin: 0 0 2px 0; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }}">
                                             {{ $bName }}
-                                        </h4>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 13px;">
-                                            <span style="font-weight: 700; color: #1e3050;">{{ number_format($bAvgRating, 1) }}</span>
-                                            <div class="d-inline-flex align-items-center" style="gap: 2px;">
+                                        </h5>
+                                        <div class="rating-group">
+                                            <span >{{ number_format($bAvgRating, 1) }}</span>
+                                            <div class="d-inline-flex align-items-center">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     @if ($i <= floor($bAvgRating))
-                                                        <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                                        <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
                                                     @elseif ($i - 0.5 <= $bAvgRating)
-                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 11px;"></i>
+                                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 10px;"></i>
                                                     @else
-                                                        <i class="far fa-star text-warning" style="font-size: 11px;"></i>
+                                                        <i class="far fa-star text-warning" style="font-size: 10px;"></i>
                                                     @endif
                                                 @endfor
                                             </div>
-                                            <span style="color: #64748b; font-size: 12px;">({{ number_format($bTotalReviews) }})</span>
+                                            <span >({{ number_format($bTotalReviews) }})</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {{-- Show Visit website button ONLY if affiliated --}}
                                 @if(!empty($business->is_affiliate))
-                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center ms-2 flex-shrink-0" target="_blank" style="display: inline-flex !important; align-items: center; border-radius: 30px; padding: 8px 18px; font-size: 13.5px; font-weight: 600; white-space: nowrap; text-decoration: none;">
+                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center ms-2 flex-shrink-0" target="_blank" style="display: inline-flex !important; align-items: center;  padding: 8px 18px; font-size: 12px;  white-space: nowrap; text-decoration: none;">
                                         {{ static_text('visit_website') ?: 'Visit website' }}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 5px; flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                     </a>
@@ -787,7 +787,7 @@
                                                 <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px; padding-right: 75px;">
                                                     <h6 style="font-size: 14.5px; font-weight: 600; margin: 0; color: #1e3050;">
                                                         @if ($revUser)
-                                                            <a href="{{ route('user.profile', ['id' => $revUser->id]) }}" style="color: inherit; text-decoration: none;">
+                                                            <a href="{{ route('user.profile', ['id' => $revUser->id]) }}" style="color: inherit; ">
                                                                 {{ $revUser->displayName() }}
                                                             </a>
                                                         @else
@@ -836,10 +836,10 @@
 
                                         <!-- Bottom actions (Report flag & Share button) identical to detail page -->
                                         <div class="review-actions-bottom-right mt-auto pt-2" style="display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
-                                            <button type="button" class="action-icon-btn" onclick="openReviewReportModal({{ $rev->id }})" title="Report this review" style="background: transparent; border: none; padding: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; outline: none;">
-                                                <i class="fas fa-flag" style="font-size: 13px; color: #94a3b8;"></i>
+                                            <button type="button" class="action-icon-btn" onclick="openReviewReportModal({{ $rev->id }})" title="Report this review" >
+                                                <i class="fas fa-flag"></i>
                                             </button>
-                                            <button type="button" class="action-icon-btn" style="background: transparent; border: none; padding: 0; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; color: #94a3b8; cursor: pointer; outline: none; box-shadow: none; appearance: none; -webkit-appearance: none;" onclick="window.openShareModal('{{ url()->current() }}#review-{{ $rev->id }}', 'Review on {{ config('app.name') }}', event)" title="Share this review" aria-label="Share this review">
+                                            <button type="button" class="action-icon-btn" onclick="window.openShareModal('{{ url()->current() }}#review-{{ $rev->id }}', 'Review on {{ config('app.name') }}', event)" title="Share this review" aria-label="Share this review">
                                                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <circle cx="18" cy="5" r="3"></circle>
                                                     <circle cx="6" cy="12" r="3"></circle>
@@ -858,8 +858,8 @@
 
                                 {{-- Link to see all reviews for this business --}}
                                 <div class="text-center pt-2">
-                                    <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="btn-g-link" style="font-size: 13.5px; font-weight: 600; text-decoration: none;">
-                                        View all {{ number_format($activeReviews->count()) }} reviews &rarr;
+                                    <a href="{{ route('ReviewShow', ['locale' => $curLang, 'slug' => $bizSlug, 'reviews_slug' => $revSlug]) }}" class="btn-g-link">
+                                        View all reviews 
                                     </a>
                                 </div>
                             </div>
@@ -1018,7 +1018,7 @@
                                     <div class="top-product-medium-logo" style="width: 28px; height: 28px; flex-shrink: 0;">
                                         <x-business-logo :business="$business" :name="$bName" />
                                     </div>
-                                    <h5 style="font-size: 15px; font-weight: 700; color: #1e3050; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }} alternatives">
+                                    <h5 style="font-size: 15px; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $bName }} alternatives">
                                         {{ $bName }} alternatives
                                     </h5>
                                 </div>
@@ -1051,10 +1051,10 @@
                                             </div>
 
                                             <button type="button" 
-                                                    class="btn alt-add-to-comp-btn flex-shrink-0 ms-2" 
+                                                    class="blue-btn btn alt-add-to-comp-btn flex-shrink-0 ms-2" 
                                                     data-id="{{ $altProdId }}" 
                                                     title="Add {{ $altName }} to comparison"
-                                                    style="width: 30px; height: 30px; background-color: #06498b; border: 1px solid #cbd5e1; color: #fdfdfd; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;padding: 0;">
+                                                    style="width: 30px; height: 30px;  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;padding: 0;">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -1066,9 +1066,8 @@
                                 {{-- "See all alternatives" link --}}
                                 <div class="text-center pt-3 mt-3 border-top">
                                     <a href="{{ route('business.alternatives', ['locale' => $currentLocale, 'business_slug' => $bizSlug, 'alternatives_slug' => $expectedAlternativesSlug]) }}" 
-                                       class="btn-g-link" 
-                                       style="font-size: 13.5px; font-weight: 600; text-decoration: none;">
-                                        See all alternatives &rarr;
+                                       class="btn-g-link" >
+                                        See all alternatives 
                                     </a>
                                 </div>
 
