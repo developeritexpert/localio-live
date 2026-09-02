@@ -1,7 +1,14 @@
+<?php
+    $currentLangCode = getCurrentLocale();
+    $currentLangObj = \App\Models\Language::where('lang_code', $currentLangCode)->first();
+    $htmlLangAttr = $currentLangObj?->html_lang ?? ('en-US');
+    $canonicalUrl = request()->url();
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ $htmlLangAttr }}">
 
 <head>
+    <link rel="canonical" href="{{ $canonicalUrl }}">
     <?php
 
     use App\Models\HomeContent; // Import your model

@@ -214,13 +214,6 @@ class StaticContentController extends Controller
                     'faqs_heading',
                 ],
             ],
-            'dynamic_variables' => [
-                'title' => 'Global Dynamic Variables (For Categories)',
-                'keys' => [
-                    'country1',
-                    'country2',
-                ],
-            ],
             'auth' => [
                 'title' => 'Authentication Text',
                 'keys' => [
@@ -288,6 +281,32 @@ class StaticContentController extends Controller
         ];
         $currentLanguage = Language::find($langId);
         return view('Admin.site-content.site_content', compact('keys', 'sections', 'langId', 'langCode', 'languages', 'currentLanguage'));
+    }
+
+    public function untranslatedIndex(Request $request)
+    {
+        $langId = $request->input('lang_id') ? (int)$request->input('lang_id') : getCurrentLanguageID();
+        $langCode = $request->input('lang_code') ?? getCurrentLocale();
+        $languages = Language::all();
+
+        $allKeys = StaticContentKey::with(['translations' => function ($q) use ($langId) {
+            $q->where('lang_id', $langId);
+        }])->get();
+
+        $keys = $allKeys->keyBy('key');
+
+        $sections = [
+            'dynamic_variables' => [
+                'title' => 'Global Dynamic Variables (For Categories)',
+                'keys' => [
+                    'country1',
+                    'country2',
+                ],
+            ],
+        ];
+
+        $currentLanguage = Language::find($langId);
+        return view('Admin.site-content.untranslated_content', compact('keys', 'sections', 'langId', 'langCode', 'languages', 'currentLanguage'));
     }
 
     public function update(Request $request)

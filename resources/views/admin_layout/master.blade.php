@@ -249,6 +249,11 @@
                                             </a>
                                         </li>
                                         <li class="nk-menu-item">
+                                            <a href="{{ route('untranslated-site-page') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Untranslated Content</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item">
                                             <a href="{{ route('learn-modal') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Learn More Modal Content</span>
                                             </a>

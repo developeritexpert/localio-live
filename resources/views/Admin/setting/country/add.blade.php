@@ -44,6 +44,22 @@
                             </div>
                         </div>
 
+                        <!-- HTML lang attribute -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="html_lang">HTML lang attribute</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="html_lang" name="html_lang"
+                                        placeholder="e.g. en-US, de-DE, es-AR"
+                                        value="{{ old('html_lang') }}" />
+                                </div>
+                                <div class="form-text text-muted">Used in HTML header tag: &lt;html lang="<strong>en-US</strong>"&gt;.</div>
+                                @error('html_lang')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Affiliate Disclaimer Banner -->
                         <div class="col-md-6">
                             <div class="form-group">

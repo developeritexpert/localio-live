@@ -401,6 +401,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // site page Route
     Route::get('/admin-dashboard/site-content-page', [StaticContentController::class, 'index'])->name('site-page');
+    Route::get('/admin-dashboard/untranslated-content-page', [StaticContentController::class, 'untranslatedIndex'])->name('untranslated-site-page');
     Route::post('/text-content-update', [StaticContentController::class, 'update'])->name('admin.text-content.update');
 
     // learn more modal Route
