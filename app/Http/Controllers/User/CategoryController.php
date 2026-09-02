@@ -346,7 +346,7 @@ class CategoryController extends Controller
     {
         $lang_id = getCurrentLanguageID();
 
-        $category = Category::whereHas('categoryTranslations', function ($query) use ($slug, $lang_id) {
+        $category = Category::with('imageMedia')->whereHas('categoryTranslations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);
         })->first();
 

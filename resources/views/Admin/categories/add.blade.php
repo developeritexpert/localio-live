@@ -386,31 +386,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- FAQ Page SVG Graphic Upload -->
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label class="form-label fw-bold" for="faq_image">FAQ Page SVG Graphic (Top Right)</label>
-                                                <div class="form-control-wrap">
-                                                    <div class="form-file">
-                                                        <input type="file" class="form-file-input" id="faq_image" name="faq_image" accept="image/svg+xml">
-                                                        <label class="form-file-label" for="faq_image">Choose SVG file</label>
-                                                    </div>
-                                                    @if(isset($category) && $category->faq_image)
-                                                        <div class="mt-2">
-                                                            <span class="badge bg-outline-info">Current FAQ graphic uploaded</span>
-                                                            @if($category->faqImageMedia)
-                                                                <img src="{{ asset($category->faqImageMedia->dir_path . '/' . $category->faqImageMedia->file_name) }}" alt="FAQ Graphic" class="mt-2 p-1 bg-white border rounded" style="max-height: 60px; display: block;">
-                                                            @endif
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <small class="text-muted d-block mt-1">SVG illustration displayed on the right top header of the FAQ page for this category.</small>
-                                                @error('faq_image')
-                                                    <div class="error text-danger">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-
                                         <!-- FAQ Page About Headline (H2) -->
                                         <div class="col-md-12">
                                             <div class="form-group">

@@ -231,9 +231,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0">
-                @if(isset($category) && $category->faq_image && $category->faqImageMedia)
-                    <img src="{{ asset($category->faqImageMedia->dir_path . '/' . $category->faqImageMedia->file_name) }}" alt="{{ $catName ?? '' }} FAQs" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+            <div class="ccol-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
+                @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
+                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" style="max-width: 300px; max-height: 100px; object-fit: contain;">
                 @endif
             </div>
         </div>
