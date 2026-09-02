@@ -12,12 +12,17 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\CacheLanguages::class,
         \App\Console\Commands\FeatureTranslations::class,
     ];
+
     /**
      * Define the application's command schedule.
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Poll AI batch results every 30 minutes
+        $schedule->call(function () {
+            $controller = app(\App\Http\Controllers\Admin\ContentGenerationController::class);
+            $controller->pollBatches();
+        })->everyThirtyMinutes()->name('poll-ai-batches')->withoutOverlapping();
     }
 
     /**

@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\BaseLanguageController;
 use App\Http\Controllers\Admin\Bcp47LanguageController;
-use App\Http\Controllers\Admin\{AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
+use App\Http\Controllers\Admin\{ContentGenerationController,AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
 use App\Http\Controllers\Admin\CategoryFeatureContentController;
 
@@ -222,6 +222,19 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/ai-configurations/create', [AiConfigurationController::class, 'create'])->name('ai-configurations.create');
     Route::post('/admin-dashboard/ai-configurations', [AiConfigurationController::class, 'store'])->name('ai-configurations.store');
     Route::delete('/admin-dashboard/ai-configurations/{aiConfiguration}', [AiConfigurationController::class, 'destroy'])->name('ai-configurations.destroy');
+
+    // ===== AI Configuration - Provider-specific save =====
+    Route::post('/admin-dashboard/ai-configurations/openai', [AiConfigurationController::class, 'saveOpenAI'])->name('ai-config.save-openai');
+    Route::post('/admin-dashboard/ai-configurations/anthropic', [AiConfigurationController::class, 'saveAnthropic'])->name('ai-config.save-anthropic');
+
+    // ===== Content Generation =====
+    Route::get('/admin-dashboard/content-generation/businesses', [ContentGenerationController::class, 'businesses'])->name('content-gen.businesses');
+    Route::post('/admin-dashboard/content-generation/submit-batch', [ContentGenerationController::class, 'submitBatch'])->name('content-gen.submit-batch');
+    Route::post('/admin-dashboard/content-generation/retry-failed', [ContentGenerationController::class, 'retryFailed'])->name('content-gen.retry-failed');
+    Route::get('/admin-dashboard/content-generation/batch-jobs', [ContentGenerationController::class, 'batchJobs'])->name('content-gen.batch-jobs');
+    Route::get('/admin-dashboard/content-generation/poll-batches', [ContentGenerationController::class, 'pollBatches'])->name('content-gen.poll-batches');
+    Route::get('/admin-dashboard/content-generation/result/{item}', [ContentGenerationController::class, 'viewResult'])->name('content-gen.view-result');
+
 
 
     // Additional custom routes
