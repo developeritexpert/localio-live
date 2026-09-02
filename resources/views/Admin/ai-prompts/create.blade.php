@@ -8,7 +8,7 @@
             <div class="nk-block-between">
                 <div class="nk-block-head-content">
                     <h3 class="nk-block-title page-title">Create AI Prompt</h3>
-                    <p class="nk-block-des text-soft">Create a new AI prompt template for automated content generation.</p>
+                    <p class="nk-block-des text-soft">Add a new AI prompt template for automated content generation.</p>
                 </div>
             </div>
         </div>
@@ -25,24 +25,16 @@
                                     <label class="form-label" for="name">Prompt Name <span class="text-danger">*</span></label>
                                     <div class="form-control-wrap">
                                         <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
-                                        @error('name')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <label class="form-label" for="type">Prompt Type <span class="text-danger">*</span></label>
+                                    <label class="form-label" for="type">Prompt Type</label>
                                     <div class="form-control-wrap">
-                                        <select class="form-control form-select @error('type') is-invalid @enderror" id="type" name="type" required>
-                                            <option value="">Select Type</option>
-                                            <option value="business" {{ old('type') == 'business' ? 'selected' : '' }}>Business</option>
-                                        </select>
-                                        @error('type')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <input type="text" class="form-control" id="type" name="type" value="{{ old('type') }}" placeholder="e.g. business_description, seo, features">
                                     </div>
                                 </div>
                             </div>
@@ -51,25 +43,17 @@
                                 <div class="form-group">
                                     <label class="form-label" for="description">Description</label>
                                     <div class="form-control-wrap">
-                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3" placeholder="Brief description of what this prompt does">{{ old('description') }}</textarea>
-                                        @error('description')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <textarea class="form-control" id="description" name="description" rows="2" placeholder="Brief description of what this prompt does">{{ old('description') }}</textarea>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="original_prompt">Prompt Template <span class="text-danger">*</span></label>
+                                    <label class="form-label" for="original_prompt">Prompt Template (local reference only)</label>
                                     <div class="form-control-wrap">
-                                        <textarea class="form-control @error('original_prompt') is-invalid @enderror" id="original_prompt" name="original_prompt" rows="8" placeholder="Enter your prompt template here. Use variables like {business_name}, {category}, etc." required>{{ old('original_prompt') }}</textarea>
-                                        @error('original_prompt')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <div class="form-note">
-                                            <small class="text-muted">Use curly braces for variables, e.g., {business_name}, {category}, {description}</small>
-                                        </div>
+                                        <textarea class="form-control" id="original_prompt" name="original_prompt" rows="6" placeholder="Optional: store a local copy of the prompt for reference. The actual prompt lives in ChatGPT/Claude.">{{ old('original_prompt') }}</textarea>
+                                        <div class="form-note"><small class="text-muted">This is for reference only. The real prompt is saved in ChatGPT/Claude and referenced by ID below.</small></div>
                                     </div>
                                 </div>
                             </div>
@@ -77,20 +61,76 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" {{ old('is_active') ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_active">Active Status</label>
+                                        <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" checked>
+                                        <label class="custom-control-label" for="is_active">Active</label>
                                     </div>
-                                    <small class="text-muted">Enable this prompt for use in the system</small>
                                 </div>
                             </div>
+
+                            {{-- =====================================================
+                                 CONTENT GENERATION SECTION
+                                 Only needed if this prompt is used for batch generation
+                            ====================================================== --}}
+                            <div class="col-12 mt-2">
+                                <div class="p-3" style="background:#f5f6fa;border-radius:8px;border:1px solid #e5e9f2">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <em class="icon ni ni-cpu text-primary fs-5"></em>
+                                        <div>
+                                            <h6 class="mb-0">Content Generation (Batch API)</h6>
+                                            <small class="text-soft">Configure this prompt for AI batch content generation. Leave empty if not used for batch generation.</small>
+                                        </div>
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="form-label" for="content_field">
+                                                    Content Field
+                                                    <span class="badge badge-dim bg-light text-dark ms-1">Optional</span>
+                                                </label>
+                                                <select class="form-control form-select" id="content_field" name="content_field">
+                                                    <option value="">-- Not a content gen prompt --</option>
+                                                    @foreach(\App\Models\AiPrompt::FIELD_LABELS as $val => $label)
+                                                        <option value="{{ $val }}" {{ old('content_field', $aiPrompt->content_field ?? '') == $val ? 'selected' : '' }}>{{ $label }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="form-note"><small>Which content field this prompt generates for a business</small></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="form-label" for="openai_prompt_id">
+                                                    OpenAI Prompt ID
+                                                    <span class="badge badge-dim bg-success text-success ms-1">Saved in ChatGPT</span>
+                                                </label>
+                                                <input type="text" class="form-control font-monospace" id="openai_prompt_id" name="openai_prompt_id"
+                                                    value="{{ old('openai_prompt_id', $aiPrompt->openai_prompt_id ?? '') }}"
+                                                    placeholder="pmpt_xxxxxxxxxxxxx">
+                                                <div class="form-note"><small>The prompt ID from OpenAI Prompt Management dashboard</small></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="form-label" for="anthropic_prompt_id">
+                                                    Anthropic Prompt ID
+                                                    <span class="badge badge-dim bg-warning text-warning ms-1">Saved in Claude</span>
+                                                </label>
+                                                <input type="text" class="form-control font-monospace" id="anthropic_prompt_id" name="anthropic_prompt_id"
+                                                    value="{{ old('anthropic_prompt_id', $aiPrompt->anthropic_prompt_id ?? '') }}"
+                                                    placeholder="prmpt_xxxxxxxxxxxxx">
+                                                <div class="form-note"><small>The prompt ID from Anthropic console (if applicable)</small></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div class="form-group mt-4">
                             <button type="submit" class="btn btn-lg btn-primary">
-                                <em class="icon ni ni-save"></em>
-                                <span>Create Prompt</span>
+                                <em class="icon ni ni-plus"></em> <span>Create Prompt</span>
                             </button>
-                            <a href="{{ route('ai-prompts.index') }}" class="btn btn-lg btn-outline-light">Cancel</a>
+                            <a href="{{ route('ai-prompts.index') }}" class="btn btn-lg btn-outline-light ms-2">Cancel</a>
                         </div>
                     </form>
                 </div>
@@ -98,8 +138,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-
-@endpush
 @endsection

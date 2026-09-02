@@ -145,6 +145,120 @@
                 </div>
             </div>
             @endif
+
+            {{-- ===== JSON Format Documentation ===== --}}
+            <div class="col-12">
+                <div class="card card-bordered" style="border-left: 4px solid #6576ff;">
+                    <div class="card-header d-flex align-items-center ">
+                        <em class="icon ni ni-info-fill text-primary fs-4"></em>
+                        <div style="margin-left: 25px;">
+                            <h5 class="mb-0">Prompt Format Documentation</h5>
+                            <small class="text-soft">How we communicate with your saved prompts — copy this when setting up prompts in ChatGPT/Claude</small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+                                <h6 class="mb-2"><em class="icon ni ni-arrow-right text-primary"></em> Input Variables We Send</h6>
+                                <p class="text-soft small mb-2">These variables are passed to your saved prompt. Reference them in your prompt template:</p>
+                                <pre class="p-3 rounded" style="background:#1e2134;color:#a9b7c6;font-size:0.8rem;border-radius:8px">@{{
+  "business_name":    "Bluehost",
+  "category_name":    "Web Hosting",
+  "subcategory_name": "Shared Hosting"
+}}</pre>
+                                <p class="text-muted small mt-2">In your ChatGPT/Claude prompt, reference these as <code>@{{business_name}}</code>, <code>@{{category_name}}</code>, etc.</p>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h6 class="mb-2"><em class="icon ni ni-arrow-left text-success"></em> Expected JSON Output Per Field</h6>
+                                <p class="text-soft small mb-2">Your prompt must return <strong>valid JSON only</strong> — no markdown, no explanation text:</p>
+
+                                <div class="accordion" id="formatAccordion">
+                                    @php
+                                        $formats = [
+                                            'content'   => ['Content / Overview', '{ "content": "Full overview text of the business..." }'],
+                                            'faqs'      => ['FAQs', '{ "faqs": [{"question": "What is it?", "answer": "It is..."}] }'],
+                                            'features'  => ['Features', '{ "features": [{"title": "Feature Name", "description": "Short desc..."}] }'],
+                                            'pros_cons' => ['Pros & Cons', '{ "pros": ["Fast", "Easy to use"], "cons": ["Expensive"] }'],
+                                            'metatags'  => ['Meta Tags (SEO)', '{ "meta_title": "Bluehost Review (max 60 chars)", "meta_description": "Full description (max 155 chars)" }'],
+                                        ];
+                                    @endphp
+                                    @foreach($formats as $key => [$label, $example])
+                                    <div class="mb-1">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="badge bg-light text-dark border">{{ $key }}</span>
+                                            <small class="text-soft">{{ $label }}</small>
+                                        </div>
+                                        <pre class="p-2 rounded mb-2" style="background:#f5f6fa;font-size:0.75rem;color:#364a63;border:1px solid #e5e9f2">{{ $example }}</pre>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="alert alert-info mb-0">
+                                    <em class="icon ni ni-bulb-fill me-1"></em>
+                                    <strong>How to link a prompt:</strong>
+                                    Go to <a href="{{ route('ai-prompts.index') }}" class="alert-link">AI Prompts</a>,
+                                    create or edit a prompt, set the <strong>Content Field</strong> (e.g. "FAQs"),
+                                    and paste the <strong>OpenAI Prompt ID</strong> (e.g. <code>pmpt_xxxx</code>) from your ChatGPT dashboard.
+                                    The system will then send only that ID + the input variables — no prompt text.
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <h6 class="mb-2"><em class="icon ni ni-link text-warning"></em> Configured Prompts per Field</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Content Field</th>
+                                                <th>Prompt Name</th>
+                                                <th>OpenAI Prompt ID</th>
+                                                <th>Anthropic Prompt ID</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach(\App\Models\AiPrompt::FIELD_LABELS as $field => $label)
+                                                @php $p = \App\Models\AiPrompt::forContentField($field); @endphp
+                                                <tr>
+                                                    <td><code>{{ $field }}</code><br><small class="text-soft">{{ $label }}</small></td>
+                                                    <td>{{ $p?->name ?? '<span class="text-muted">Not configured</span>' }}</td>
+                                                    <td>
+                                                        @if($p?->openai_prompt_id)
+                                                            <code class="text-success">{{ $p->openai_prompt_id }}</code>
+                                                        @else
+                                                            <span class="badge badge-dim bg-danger text-danger">Not set</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($p?->anthropic_prompt_id)
+                                                            <code class="text-success">{{ $p->anthropic_prompt_id }}</code>
+                                                        @else
+                                                            <span class="badge badge-dim bg-light text-muted">Not set</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($p)
+                                                            <a href="{{ route('ai-prompts.edit', $p) }}" class="btn btn-xs btn-outline-primary">Edit</a>
+                                                        @else
+                                                            <a href="{{ route('ai-prompts.create') }}" class="btn btn-xs btn-outline-secondary">Create</a>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
