@@ -72,9 +72,9 @@
                                                 @endif
                                             </div>
                                             <div class="user-info" style="display: flex; flex-direction: column; gap: 2px;">
-                                                <div class="user-name" style="font-size: 14px; font-weight: 600; color: #1a202c; line-height: 1.2;">{{ $userName }}</div>
+                                                <div class="user-name" >{{ $userName }}</div>
                                                 @if ($user && $user->job_title)
-                                                    <div class="user-job-title" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ $user->job_title }}</div>
+                                                    <div class="user-job-title">{{ $user->job_title }}</div>
                                                 @endif
                                                 @if ($user && $user->company_size)
                                                     <div class="user-company-size d-none" style="font-size: 12px; color: #718096; line-height: 1.2;">{{ static_text('company_size_' . $user->company_size) ?: $user->company_size }}</div>
@@ -84,7 +84,7 @@
 
                                         <!-- Middle part: Title & Description -->
                                         <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
-                                            <h5 style="color: #0d1b2a; font-size: 14px; font-weight: 600; margin: 0 0 6px 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">{{ $reviewTitle }}</h5>
+                                            <h5 >{{ $reviewTitle }}</h5>
                                             <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     @if ($i <= floor($review->rating))
@@ -94,7 +94,7 @@
                                                     @endif
                                                 @endfor
                                             </div>
-                                            <p style="font-size: 13.5px; color: #4a5568; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                            <p >
                                                 {{ $reviewDescription ? strip_tags($reviewDescription) : 'No review content available.' }}
                                             </p>
                                         </div>

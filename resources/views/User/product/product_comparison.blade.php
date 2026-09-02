@@ -1264,7 +1264,7 @@
                     <h5 class="modal-title fw-bold m-0" id="reportReviewModalLabel" style="color: #002347; font-size: 18px;">Report a review</h5>
                     <p class="text-muted mb-0 mt-1" style="font-size: 13px;">Select the reason that best describes the issue</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="model-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
             </div>
             <div class="modal-body" style="padding: 20px 24px;">
                 <input type="hidden" id="reportReviewModalId">
@@ -1281,9 +1281,9 @@
                     ] as $opt)
                         <div class="report-review-option-card d-flex align-items-start gap-3 p-3" 
                              onclick="selectReviewReportReason('{{ $opt['value'] }}', this)"
-                             style="border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+                             style="border: 1px solid #e2e8f0; border-radius: 12px; cursor: pointer; ">
                             
-                            <div class="report-check flex-shrink-0 mt-1" style="width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                            <div class="report-check flex-shrink-0 mt-1" style="width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; ">
                                 <i class="fas fa-check" style="font-size: 10px; color: transparent;"></i>
                             </div>
                             

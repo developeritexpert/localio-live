@@ -162,7 +162,6 @@
             padding-top: 30px;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e2e8f0;
-            /* margin-bottom: 25px; */
         }
     </style>
 @endpush
