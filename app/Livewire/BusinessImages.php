@@ -193,10 +193,18 @@ class BusinessImages extends Component
         }
 
         if (!empty($generatedImages)) {
-            $this->currentImages = array_merge($this->currentImages, $generatedImages);
-            $this->currentImages = array_slice($this->currentImages, 0, 5);
+            $maxImages = 5;
+            $spaceForNewImages = $maxImages - count($generatedImages);
+
+            $oldImages = array_slice($this->currentImages, 0, max(0, $spaceForNewImages));
+            $this->currentImages = array_merge($oldImages, $generatedImages);
+            $this->currentImages = array_slice($this->currentImages, 0, $maxImages);
             $this->newUploads = [];
-            session()->flash('modal_success', count($generatedImages) . ' website screenshot(s) generated successfully!');
+
+            session()->flash(
+                'modal_success',
+                count($generatedImages) . ' website screenshot(s) generated successfully!'
+            );
         } else {
             $this->addConsoleLog("All screenshot capture attempts failed. Running self-diagnostics...");
             $this->runScreenshotDiagnostics($urlsToCapture[0] ?? 'None');
