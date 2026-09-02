@@ -479,8 +479,8 @@
                                         <p class="text-muted" style="font-size: 15px; max-width: 400px; margin: 0 auto;">{{ static_text('review_success_text') ?: 'Your review has been successfully submitted and will help others make better decisions.' }}</p>
                                         
                                         <div class="mt-4 pt-3">
-                                            <button type="button" class="btn text-white px-5 py-2" wire:click="closeModal" style="background-color: #06498b; border-radius: 30px; font-weight: 500;">
-                                                Close
+                                            <button type="button" class="btn text-white px-5 py-2" wire:click="closeModal" style="background-color: #06498b; font-weight: 500;">
+                                                {{ static_text('review_success_close_btn') ?: 'Close' }}
                                             </button>
                                         </div>
                                     </div>

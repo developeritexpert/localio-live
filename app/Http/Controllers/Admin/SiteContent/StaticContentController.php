@@ -282,6 +282,7 @@ class StaticContentController extends Controller
                 'keys' => [
                     'review_success_headline',
                     'review_success_text',
+                    'review_success_close_btn',
                 ],
             ],
         ];
