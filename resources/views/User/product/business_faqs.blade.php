@@ -177,7 +177,7 @@
             align-items: center;
             padding: 9px 14px;
             border-radius: 8px;
-            color: #4a5568;
+            color:#5b6b7a;
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
@@ -192,7 +192,7 @@
         }
         .sticky-nav-item.active {
             background-color: #eaf1f9;
-            color: #003f7d;
+            color: #002347;
             font-weight: 700;
         }
         .sticky-nav-item.active::before {
@@ -303,7 +303,7 @@
                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
                         </li>
                     @endif
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         FAQs
                     </li>
                 </ol>
@@ -433,7 +433,7 @@
                                                     </button>
                                                 </h2>
                                                 <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
                                                         <div class="faq-answer-text mb-3">
                                                             {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                         </div>
@@ -492,7 +492,7 @@
                                                 </button>
                                             </h2>
                                             <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fdfdfd;">
                                                     <div class="faq-answer-text mb-3">
                                                         {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                     </div>
@@ -629,7 +629,7 @@
                                     <button type="button"
                                         onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                         class="btn-write-review-link"
-                                        style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                                        style="background: transparent; border: none; color: #002347; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
                                         <i class="fas fa-pencil-alt"></i> Write a review
                                     </button>
                                 @else
@@ -1013,7 +1013,7 @@
             align-items: center;
             padding: 9px 14px;
             border-radius: 8px;
-            color: #4a5568;
+            color: #5b6b7a;
             font-size: 14px;
             font-weight: 500;
             text-decoration: none;
@@ -1028,7 +1028,7 @@
         }
         .sticky-nav-item.active {
             background-color: #eaf1f9;
-            color: #003f7d;
+            color: #002347;
             font-weight: 700;
         }
         .sticky-nav-item.active::before {

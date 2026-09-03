@@ -209,7 +209,7 @@
 
                                                              <!-- Short Description -->
                                                              @if(!empty($business->translations->first()->short_description))
-                                                                 <div class="mt-4 text-start" style="font-size: 13px; color: #444; line-height: 1.5; width: 100%;">
+                                                                 <div class="mt-4 text-start" style="font-size: 13px; color: #5b6b7a; width: 100%;">
                                                                      {{ $business->translations->first()->short_description }}
                                                                  </div>
                                                              @endif

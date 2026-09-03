@@ -161,7 +161,7 @@
                                                                         <x-business-logo :business="$altbusiness" :name="$altBizName" />
                                                                     </div>
                                                                     <div class="asn-rating">
-                                                                        <h6 class="m-0 fw_700">
+                                                                        <h6 class="m-0 fw_700" style="color: #002347">
                                                                             {{ $altBizName }}
                                                                         </h6>
                                                                         <div class="rating-group">
@@ -354,7 +354,7 @@
                                                 <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
                                             </a>
                                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
-                                                <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                                <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -951,7 +951,7 @@
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
@@ -959,19 +959,19 @@
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>
@@ -1036,7 +1036,7 @@
                                                                     <h3 style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
                                                                         {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
                                                                     </h3>
-                                                                    <p style="font-size: 11px; color: #444444; margin-bottom: 0;">Flat Rate, Per One_time</p>
+                                                                    <p style="font-size: 11px; margin-bottom: 0;">Flat Rate, Per One_time</p>
                                                                 </div>
                                                             @endif
                                                         </div>

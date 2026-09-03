@@ -105,7 +105,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? '']) }}" style="color: #64748b; text-decoration: none;">{{ $bName }}</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         Reviews
                     </li>
                 </ol>
@@ -272,7 +272,7 @@
                                             <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
                                                 {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
                                             </h2>
-                                            <p style="font-size: 15px; color: #555; margin-bottom: 0;">
+                                            <p style="font-size: 15px; margin-bottom: 0;">
                                                 {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
                                             </p>
                                         </div>
@@ -296,7 +296,7 @@
                                                             class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                             aria-labelledby="faqHeading{{ $index }}"
                                                             data-bs-parent="#businessFaqAccordion">
-                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
                                                                 {!! $translation->answer !!}
                                                             </div>
                                                         </div>
@@ -441,7 +441,7 @@
                                                                 data-bs-toggle="dropdown" 
                                                                 data-bs-auto-close="outside"
                                                                 aria-expanded="false" 
-                                                                style="border-color: #ced4da; color: #1e3050; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff; gap: 4px;">
+                                                                style="border-color: #ced4da; color: #002347; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 6px; background: #fff; gap: 4px;">
                                                             <img src="{{ asset('front/img/filter-icon.svg') }}" alt="Filter" style="width: 15px !important; height: 15px !important;">
                                                             <span>Filter by rating</span>
                                                             <span class="badge bg-primary rounded-pill d-none" id="filter-count-badge" style="font-size: 11px;">0</span>
@@ -466,13 +466,13 @@
                                                                         <li class="progress-list-item" style="display: flex; align-items: center; margin-bottom: 10px; gap: 8px;">
                                                                             <input type="checkbox" class="rating-filter-checkbox" value="{{ $i }}" id="star-check-{{ $i }}" style="cursor: pointer; width: 16px; height: 16px; margin: 0;">
                                                                             <label for="star-check-{{ $i }}" style="display: flex; align-items: center; width: 100%; cursor: pointer; margin: 0;">
-                                                                                <span style="display: inline-flex; align-items: center; width: 45px; font-size: 13px; color: #555; flex-shrink: 0;">
+                                                                                <span style="display: inline-flex; align-items: center; width: 45px; font-size: 13px; color: #5b6b7a; flex-shrink: 0;">
                                                                                     <i class="far fa-star text-warning" style="margin-right: 4px;"></i> {{ $i }}
                                                                                 </span>
                                                                                 <div class="progress-box" style="flex-grow: 1; height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; margin-left: 4px; margin-right: 10px;">
-                                                                                    <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; background: #4a4a4a;"></div>
+                                                                                    <div class="progress-fill" style="width: {{ $percent }}%; height: 100%; "></div>
                                                                                 </div>
-                                                                                <span style="font-size: 13px; color: #888; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
+                                                                                <span style="font-size: 13px; color: #5b6b7a; min-width: 35px; text-align: right; flex-shrink: 0; white-space: nowrap;">({{ $count }})</span>
                                                                             </label>
                                                                         </li>
                                                                     @endfor
@@ -507,7 +507,7 @@
                                                         id="reviewSortDropdownBtn"
                                                         data-bs-toggle="dropdown" 
                                                         aria-expanded="false"
-                                                        style="background-color: #fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
+                                                        style="background-color: #fdfdfd; color: #0f172a;  padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer; font-size: 13px; font-weight: 400;">
                                                         <span>Sort: <span id="current-sort-label" style="font-weight: 600;">{{ $currentSortLabel }}</span></span>
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sort-chevron-icon">
                                                             <polyline points="6 9 12 15 18 9" />
@@ -684,7 +684,7 @@
 </a>
 
                                                 <div>
-                                                    <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                                    <h6 style="margin: 0; font-weight: 600;">
                                                         @if ($review->user && $review->user->user_type === 'admin')
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
@@ -700,7 +700,7 @@
                                                         @endif
                                                     </h6>
                                                     @if($review->user && $review->user->job_title)
-                                                        <div style="font-size: 12px; color: #777; margin-top: 2px;">{{ $review->user->job_title }}</div>
+                                                        <div style="font-size: 12px; color: #5b6b7a; line-height:1;">{{ $review->user->job_title }}</div>
                                                     @endif
                                                 </div>
                                             </div>
@@ -731,7 +731,7 @@
                                         </div>
 
                                         @if($review->translations && $review->translations->first() && $review->translations->first()->description)
-                                            <p style="font-size: 13.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
+                                            <p>
                                                 {{ \Illuminate\Support\Str::limit(strip_tags($review->translations->first()->description), 110) }}
                                             </p>
                                         @endif
@@ -819,7 +819,7 @@
                                         <button type="button"
                                             onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }} })"
                                             class="btn-write-review-link"
-                                            style="background: transparent; border: none; color: #003f7d; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                            style="background: transparent; border: none; color: #002347; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
                                             <span style="text-decoration:none"><i class="fas fa-pencil-alt"></i></span> Write a review
                                         </button>
                                     @else

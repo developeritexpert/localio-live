@@ -142,7 +142,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ url('/' . app()->getLocale()) }}" style="color: #64748b; text-decoration: none;">Home</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         FAQs
                     </li>
                 </ol>
@@ -256,7 +256,7 @@
                                                     </button>
                                                 </h2>
                                                 <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
                                                         </div>

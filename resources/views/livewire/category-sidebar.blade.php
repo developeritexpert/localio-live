@@ -108,7 +108,7 @@
                                             <x-business-logo :business="$business" :name="$bizName" />
                                         </div>
                                         <div class="top-product-info min-w-0">
-                                            <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
+                                            <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px;">
                                                 {{ $bizName }}
                                                 <!-- <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span> -->
                                             </h6>

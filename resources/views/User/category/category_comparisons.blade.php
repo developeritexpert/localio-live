@@ -99,7 +99,7 @@
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
                         </li>
                     @endif
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         Comparisons
                     </li>
                 </ol>
