@@ -187,28 +187,28 @@
                                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                                     <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Ease of Use</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Customer Service</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Features</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Value for Money</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}</span>

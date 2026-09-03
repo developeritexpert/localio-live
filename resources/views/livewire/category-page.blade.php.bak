@@ -1651,7 +1651,7 @@
                                                         </div>
 
                                                         @if ($bizTotalReviews > 0)
-                                                            <span class="com-rating">Community rating · {{ number_format($bizTotalReviews) }} {{ $bizTotalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                                            <span class="com-rating"> {{ number_format($bizTotalReviews) }} {{ $bizTotalReviews == 1 ? 'review' : 'reviews' }}</span>
                                                         @endif
                                                     </div>
                                                 </div>

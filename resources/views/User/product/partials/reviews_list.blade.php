@@ -115,9 +115,9 @@
             $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
             $bSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
         @endphp
-        <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+        <div class="btm-bttn light" >
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
-                style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">View more reviews</a>
+                >View more reviews</a>
         </div>
     </div>
     

@@ -290,7 +290,7 @@
                                 <span id="selectedBusinessName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
                             </div>
 
-                            <button type="button" id="btnRemoveSelectedBusiness" class="btn p-0 border-0 d-flex align-items-center justify-content-center" style="width: 0px; height: 0px; border-radius: 50%; background: #f1f5f9; color: #64748b; font-size: 12px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" title="Remove selection" onmouseover="this.style.background='#e2e8f0'; this.style.color='#002347';" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';">
+                            <button type="button" id="btnRemoveSelectedBusiness" class="btn p-0 border-0 d-flex align-items-center justify-content-center" style="width: 0px; height: 0px; border-radius: 5px; background: #f1f5f9; color: #64748b; font-size: 12px; cursor: pointer; flex-shrink: 0;" title="Remove selection" onmouseover="this.style.background='#e2e8f0'; this.style.color='#002347';" onmouseout="this.style.background='#f1f5f9'; this.style.color='#64748b';">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -628,7 +628,7 @@
 
             let html = '';
             matches.slice(0, 10).forEach(b => {
-                const iconHtml = b.icon ? `<img src="${b.icon}" width="24" height="24" style="border-radius:50%; object-fit:cover; flex-shrink:0;">` : `<div style="width:24px;height:24px;border-radius:50%;background:#002347;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${b.name.charAt(0).toUpperCase()}</div>`;
+                const iconHtml = b.icon ? `<img src="${b.icon}" width="24" height="24" style="border-radius:5px; object-fit:cover; flex-shrink:0;">` : `<div style="width:24px;height:24px;border-radius:5px;background:#002347;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${b.name.charAt(0).toUpperCase()}</div>`;
                 html += `
                     <div class="search-preview-item" data-slug="${b.slug}" data-name="${b.name}" data-icon="${b.icon || ''}">
                         ${iconHtml}

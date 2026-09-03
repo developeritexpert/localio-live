@@ -403,13 +403,13 @@
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
                                                                         <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                            <span style="font-size: 13px; font-weight: 500; color: #5b6b7a; min-width: 130px;">{{ $criterion->name }}</span>
+                                                                            <span style="font-size: 13px; font-weight: 500; color: #002347; min-width: 130px;">{{ $criterion->name }}</span>
                                                                             <div class="d-flex align-items-center flex-grow-1 mx-3" style="max-width: 65%;">
                                                                                 <div class="progress rounded-pill w-100" style="height: 7px; background-color: #e2e8f0;">
                                                                                     <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                                 </div>
                                                                             </div>
-                                                                            <span style="font-size: 13px; font-weight: 600; color: #334155; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                            <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
                                                                         </div>
                                                                         @endforeach
                                                                     </div>
@@ -570,7 +570,7 @@
                                             </span>
                                         @endif
 
-                                        <div style="margin-bottom: 4px; display: flex; gap: 4px;">
+                                        <div style="margin-bottom: 3px; display: flex; gap: 4px;">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 @if ($i <= floor($averageRating))
                                                     <i class="fas fa-star text-warning" style="font-size: 18px;"></i>

@@ -128,7 +128,7 @@
                         @endif
                     </div>
                 @endforeach
-                <span class="your-comp-count">{{ count($businesses) }}/4 added</span>
+                <span class="your-comp-count">{{ count($businesses) }} of 4 added </span>
             </div>
 
             @if(count($businesses) < 4)
@@ -301,12 +301,12 @@
                                                         $crPercent = min(100, max(0, $crAvg * 20));
                                                     @endphp
                                                     <li class="d-flex justify-content-between align-items-center">
-                                                        <span style="font-size: 12px; font-weight: 500; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" title="{{ $criterion->name }}">{{ $criterion->name }}</span>
+                                                        <span style="font-size: 12px; font-weight: 500; color: #002347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;" title="{{ $criterion->name }}">{{ $criterion->name }}</span>
                                                         <div class="d-flex align-items-center gap-2" style="flex: 1; max-width: 140px; margin-left: 10px; justify-content: flex-end;">
                                                             <div class="progress w-100" style="height: 8px; background-color: #f1f5f9; border-radius: 10px;">
                                                                 <div class="progress-bar" style="height: 8px; width: {{ $crPercent }}%; background-color: #007bff; border-radius: 10px;"></div>
                                                             </div>
-                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 28px; text-align: right;">{{ number_format($crAvg, 1) }}</span>
+                                                            <span style="font-size: 12px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($crAvg, 1) }}</span>
                                                         </div>
                                                     </li>
                                                 @empty
@@ -316,7 +316,7 @@
                                                 @endforelse
                                             </ul>
 
-                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 recommended-users-row">
+                                            <div class="d-flex justify-content-between align-items-center  recommended-users-row">
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">Recommended by users</span>
                                                 <span style="font-size: 14px; font-weight: 600; color: #002347;">{{ $recPercent }}%</span>
                                             </div>
@@ -365,7 +365,7 @@
                                                         <span class="d-inline-flex align-items-center justify-content-center" style="flex-shrink: 0; width: 22px;">
                                                             <img src="{{ asset('front/img/pros-tick.svg') }}" alt="Tick" style="width: 20px; height: 15px; object-fit: contain;">
                                                         </span>
-                                                        <span style="font-size: 15px; font-weight: 500; color: #000; line-height: 1.3;">{{ $uText }}</span>
+                                                        <span style="font-size: 15px; font-weight: 500; color: #002347; line-height: 1.3;">{{ $uText }}</span>
                                                     </li>
                                                     @endif
                                                 @endforeach
@@ -382,8 +382,8 @@
                                         </ul>
                                     @else
                                         <div>
-                                            <h6 style="font-size: 16px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">About {{ $bName }}</h6>
-                                            <div style="font-size: 14px; color: #475569; line-height: 1.6;">
+                                            <h6 style="font-size: 16px; font-weight: 700;  margin-bottom: 12px;">About {{ $bName }}</h6>
+                                            <div style="font-size: 14px;">
                                                 @if(!empty($bDesc))
                                                     {!! $bDesc !!}
                                                 @else
