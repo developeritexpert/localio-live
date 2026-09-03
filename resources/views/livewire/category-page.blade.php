@@ -493,7 +493,7 @@
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
-                                <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+                                <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" >
                             @endif
                         </div>
                     </div>
@@ -1751,9 +1751,9 @@
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
                             <div class="p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between" style="box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s;">
                                 
-                                <div class="mb-3 w-100 d-flex align-items-center justify-content-center" style="height: 110px;">
+                                <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
                                     @if(isset($subcatItem->topRatedImageMedia))
-                                        <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style="max-height: 110px; max-width: 100%; object-fit: contain;">
+                                        <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
                                     @else
                                         <!-- Placeholder if no SVG is uploaded -->
                                         <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
