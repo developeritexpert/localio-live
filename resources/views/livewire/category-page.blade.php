@@ -1372,7 +1372,7 @@
         
         <!-- Top Affiliated Businesses Section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
-        <section class="revie_img_sec" style="background: #f8fafc !important; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec border_bt bg_new_grey">
             <div class="container">
                 <div class="mb-4">
                     @foreach($topAffiliatedBusinesses as $index => $biz)
@@ -1416,12 +1416,32 @@
                                         if (empty($sliderImages)) {
                                             $sliderImages = is_array($biz->screenshot_urls) ? $biz->screenshot_urls : json_decode($biz->screenshot_urls ?? '[]', true);
                                         }
+                                        $sliderImages = array_values(array_filter((array) $sliderImages));
                                     @endphp
                                     @if(!empty($sliderImages) && count($sliderImages) > 0)
                                     <div class="business-preview-images mb-5">
-                                        <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                                            <img src="{{ asset($sliderImages[0]) }}" alt="{{ $bName }}" class="img-fluid w-100" style="object-fit: cover; max-height: 450px;">
-                                        </a>
+                                        @php
+                                            $firstImg = Str::startsWith($sliderImages[0], ['http://', 'https://']) ? $sliderImages[0] : asset($sliderImages[0]);
+                                        @endphp
+                                        <div class="business-main-preview mb-3">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                                <img src="{{ $firstImg }}" alt="{{ $bName }}" id="main-preview-img-{{ $biz->id }}" class="img-fluid w-100 preview-main-display" >
+                                            </a>
+                                        </div>
+                                        @if(count($sliderImages) > 1)
+                                        <div class="business-preview-thumbnails d-flex flex-wrap align-items-center justify-content-start">
+                                            @foreach($sliderImages as $thumbIndex => $thumbImg)
+                                                @php
+                                                    $tSrc = Str::startsWith($thumbImg, ['http://', 'https://']) ? $thumbImg : asset($thumbImg);
+                                                @endphp
+                                                <div class="preview-thumb-item {{ $thumbIndex === 0 ? 'active' : '' }}"
+                                                     onmouseenter="switchCategoryPreview('{{ $biz->id }}', '{{ $tSrc }}', this)"
+                                                     onclick="switchCategoryPreview('{{ $biz->id }}', '{{ $tSrc }}', this)">
+                                                    <img src="{{ $tSrc }}" alt="{{ $bName }} preview {{ $thumbIndex + 1 }}" class="preview-thumb-img">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
                                     </div>
                                     @endif
                                     
@@ -2053,5 +2073,21 @@ window.addEventListener('scroll-to-top', function() {
 </script>
 
 
+
+<script>
+function switchCategoryPreview(bizId, imgSrc, thumbElement) {
+    var mainImg = document.getElementById('main-preview-img-' + bizId);
+    if (mainImg && mainImg.src !== imgSrc) {
+        mainImg.src = imgSrc;
+    }
+    if (thumbElement && thumbElement.parentElement) {
+        var siblings = thumbElement.parentElement.querySelectorAll('.preview-thumb-item');
+        siblings.forEach(function(el) {
+            el.classList.remove('active');
+        });
+        thumbElement.classList.add('active');
+    }
+}
+</script>
 
 </div>

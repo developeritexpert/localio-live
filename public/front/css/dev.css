@@ -48,6 +48,7 @@
 }
 
 @media (max-width: 768px) {
+
     /* .automotive-card {
                 padding-bottom: 20px !important;
             } */
@@ -124,6 +125,7 @@
 }
 
 @media (max-width: 768px) {
+
     /* .top-automotive-sec.top_rate_pg {
                 padding-top: 110px !important;
             } */
@@ -598,4 +600,151 @@
 .comp-alt-item:hover {
     background-color: #f1f5f9 !important;
     border-color: #cbd5e1 !important;
+}
+
+/* ==========================================================
+   Preview Images & Thumbnails (Amazon Style: Fixed Size, Never Stretched, Left Aligned)
+   ========================================================== */
+
+.business-preview-images {
+    width: 100%;
+}
+
+.business-main-preview a {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background-color: #f8fafc;
+    transition: box-shadow 0.2s ease;
+}
+
+.business-main-preview a:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12);
+}
+
+.preview-main-display {
+    width: 100%;
+    max-height: 650px;
+    min-height: 250px;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+}
+
+/* Thumbnails row: fixed size like Amazon, aligned to left side */
+.business-preview-thumbnails {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-top: 14px;
+    padding-left: 0;
+}
+
+.preview-thumb-item {
+    width: 110px !important;
+    height: 72px !important;
+    flex: 0 0 110px !important;
+    max-width: 110px !important;
+    min-width: 110px !important;
+    border-radius: 6px;
+    border: 2px solid #e2e8f0;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-thumb-item:hover {
+    border-color: #94a3b8;
+    transform: translateY(-1px);
+}
+
+.preview-thumb-item.active {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 1px #007bff;
+}
+
+.preview-thumb-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block;
+}
+
+@media (max-width: 576px) {
+    .preview-thumb-item {
+        width: 85px !important;
+        height: 56px !important;
+        flex: 0 0 85px !important;
+        max-width: 85px !important;
+        min-width: 85px !important;
+    }
+}
+
+/* Business page (product_detail) thumbnail slider: fixed size, left-aligned, never stretched */
+.asan-slider.asan-slider-btm .slick-list.draggable .slick-track,
+.asan-slider.asan-slider-btm.slider-nav .slick-track {
+    display: flex !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    width: auto !important;
+}
+
+.asan-slider.asan-slider-btm .slick-track .slick-slide {
+    flex: 0 0 120px !important;
+    width: 120px !important;
+    max-width: 120px !important;
+    min-width: 120px !important;
+    height: 78px !important;
+    max-height: 78px !important;
+    min-height: 78px !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    border: 2px solid #e2e8f0 !important;
+    background-color: #f8fafc !important;
+}
+
+.asan-slider.asan-slider-btm .slick-track .slick-slide:hover {
+    border-color: #94a3b8 !important;
+}
+
+.asan-slider.asan-slider-btm .slick-track .slick-slide.slick-current img,
+.asan-slider.asan-slider-btm .slick-track .slick-slide.hover_main {
+    border-color: #007bff !important;
+}
+
+.asan-slider.asan-slider-btm .slick-track .slick-slide img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 78px !important;
+    min-height: 78px !important;
+    object-fit: cover !important;
+    border-radius: 4px !important;
+    border: none !important;
+}
+
+
+.border_b {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.border_t {
+    border-top: 1px solid #e2e8f0;
+}
+
+.border_bt {
+    border-bottom: 1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
+
+}
+
+.bg_new_grey {
+    background-color: #f8fafc !important;
 }
