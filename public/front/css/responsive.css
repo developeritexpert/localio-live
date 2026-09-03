@@ -2484,9 +2484,9 @@ textarea#message {
     border: 2px solid var(--color-primary-blue) !important;
 }
 
-.is-asan-slider .slider-for .slick-list.draggable {
+/* .is-asan-slider .slider-for .slick-list.draggable {
     height: auto !important;
-}
+} */
 
 .is-asan-slider .slider-for .slick-list.draggable .slick-track {
     display: flex !important;
@@ -2513,7 +2513,7 @@ textarea#message {
 .asan-slider.slider-for {
     padding-right: 0 !important;
     padding-left: 0 !important;
-    max-height: 410px !important;
+    /* max-height: 410px !important; */
     height: 100% !important;
 }
 

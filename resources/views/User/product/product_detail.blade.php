@@ -633,7 +633,7 @@
                                                         </div>
 
                                                         <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
-                                                            style="margin-top: 15px !important;">
+                                                            style="margin-top: auto !important;">
                                                             @foreach ($images as $index => $image)
                                                                 @php
                                                                     $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
