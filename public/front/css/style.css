@@ -9861,10 +9861,13 @@ button.btn-vote-faq i.far:hover {
     margin-bottom: 42px;
 }
 
-/* .asn-rating h6 :hover,
-.asn-rating p:nth-of-type(2):hover {
+.asn-rating h6 :hover {
     text-decoration: underline;
-} */
+}
+
+.asn-rating p:nth-of-type(2):hover {
+    text-decoration: none;
+}
 
 .offering-section div {
     color: var(--color-primary-grey-text);
