@@ -1,0 +1,49 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="31" cy="35" r="23" fill="#f7f9fb"/>
+  <circle cx="262" cy="111" r="28" fill="#DDEAF7"/>
+  <circle cx="273" cy="34" r="13" fill="#f7f9fb"/>
+  <circle cx="95" cy="126" r="18" fill="#f7f9fb"/>
+
+  <rect x="12" y="55" width="55" height="53" rx="7" fill="#fdfdfd" stroke="#7999C0" stroke-width="2.4"/>
+  <rect x="22" y="66" width="35" height="8" rx="3" fill="#DDEAF7"/>
+  <rect x="22" y="82" width="15" height="15" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="2"/>
+  <line x1="44" y1="84.5" x2="58" y2="84.5" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="44" y1="91.5" x2="55" y2="91.5" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="67" y1="76" x2="76" y2="76" stroke="#7999C0" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="77.5" cy="76" r="3.2" fill="#7999C0"/>
+
+  <rect x="263" y="53" width="28" height="48" rx="7" fill="#fdfdfd" stroke="#7999C0" stroke-width="2.4"/>
+  <rect x="270" y="62" width="14" height="8" rx="2.5" fill="#DDEAF7"/>
+  <line x1="270" y1="79" x2="284" y2="79" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+  <line x1="270" y1="86" x2="281" y2="86" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="75" y="25" width="146" height="103" rx="11" fill="#fdfdfd" stroke="#214787" stroke-width="2.8"/>
+
+  <rect x="91" y="40" width="111" height="22" rx="7" fill="#DDEAF7" stroke="#7999C0" stroke-width="2.2"/>
+  <circle cx="104" cy="51" r="5.2" fill="#7999C0"/>
+  <line x1="116" y1="51" x2="164" y2="51" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="188" cy="51" r="4.2" fill="#214787"/>
+
+  <rect x="91" y="69" width="111" height="22" rx="7" fill="#DDEAF7" stroke="#7999C0" stroke-width="2.2"/>
+  <circle cx="104" cy="80" r="5.2" fill="#7999C0"/>
+  <line x1="116" y1="80" x2="164" y2="80" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="188" cy="80" r="4.2" fill="#214787"/>
+
+  <rect x="91" y="98" width="111" height="22" rx="7" fill="#DDEAF7" stroke="#7999C0" stroke-width="2.2"/>
+  <circle cx="104" cy="109" r="5.2" fill="#7999C0"/>
+  <line x1="116" y1="109" x2="164" y2="109" stroke="#7999C0" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="188" cy="109" r="4.2" fill="#214787"/>
+
+  <rect x="126" y="121" width="48" height="13" rx="6.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="2"/>
+  <circle cx="139" cy="127.5" r="2.7" fill="#7999C0"/>
+  <circle cx="150" cy="127.5" r="2.7" fill="#214787"/>
+  <circle cx="161" cy="127.5" r="2.7" fill="#7999C0"/>
+
+  <circle cx="222" cy="76" r="43" fill="#fdfdfd" stroke="#7999C0" stroke-width="2.8"/>
+  <circle cx="222" cy="76" r="35" fill="#f7f9fb" stroke="#214787" stroke-width="2.6"/>
+
+  <rect x="203" y="57" width="17.5" height="17.5" fill="#7999C0"/>
+  <rect x="223.5" y="57" width="17.5" height="17.5" fill="#7999C0"/>
+  <rect x="203" y="77.5" width="17.5" height="17.5" fill="#7999C0"/>
+  <rect x="223.5" y="77.5" width="17.5" height="17.5" fill="#7999C0"/>
+</svg>

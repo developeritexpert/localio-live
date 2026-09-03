@@ -1,0 +1,61 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- pale support geometry -->
+  <ellipse cx="145" cy="76" rx="118" ry="57" fill="#f7f9fb"/>
+  <circle cx="236" cy="48" r="28" fill="#DDEAF7"/>
+  <circle cx="56" cy="103" r="20" fill="#DDEAF7"/>
+
+  <!-- dedicated physical server chassis -->
+  <rect x="35" y="35" width="174" height="82" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+
+  <!-- left drive bay zone -->
+  <rect x="49" y="50" width="49" height="52" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <rect x="56" y="58" width="35" height="8" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="56" y="72" width="35" height="8" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="56" y="86" width="35" height="8" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- central compute panel -->
+  <rect x="110" y="50" width="48" height="52" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <rect x="121" y="60" width="26" height="26" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <line x1="127" y1="55" x2="127" y2="60" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="134" y1="55" x2="134" y2="60" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="141" y1="55" x2="141" y2="60" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="127" y1="86" x2="127" y2="91" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="134" y1="86" x2="134" y2="91" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="141" y1="86" x2="141" y2="91" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="116" y1="66" x2="121" y2="66" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="116" y1="73" x2="121" y2="73" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="116" y1="80" x2="121" y2="80" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="147" y1="66" x2="152" y2="66" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="147" y1="73" x2="152" y2="73" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="147" y1="80" x2="152" y2="80" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <!-- right ventilation and status -->
+  <rect x="170" y="50" width="25" height="52" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="177" cy="58" r="1.7" fill="#7999C0"/>
+  <circle cx="184" cy="58" r="1.7" fill="#7999C0"/>
+  <circle cx="177" cy="66" r="1.7" fill="#7999C0"/>
+  <circle cx="184" cy="66" r="1.7" fill="#7999C0"/>
+  <circle cx="177" cy="74" r="1.7" fill="#7999C0"/>
+  <circle cx="184" cy="74" r="1.7" fill="#7999C0"/>
+  <circle cx="177" cy="82" r="1.7" fill="#7999C0"/>
+  <circle cx="184" cy="82" r="1.7" fill="#7999C0"/>
+  <circle cx="177" cy="92" r="2" fill="#fb5c28"/>
+  <circle cx="187" cy="92" r="2" fill="#214787"/>
+
+  <!-- direct exclusive connection -->
+  <path d="M209 76 H224 C229 76 232 73 232 68 V64" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="209" cy="76" r="2.2" fill="#214787"/>
+  <circle cx="232" cy="64" r="2.2" fill="#214787"/>
+
+  <!-- single customer endpoint -->
+  <rect x="221" y="37" width="50" height="54" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+  <circle cx="246" cy="53" r="8" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="246" cy="51" r="3" fill="#7999C0"/>
+  <path d="M240.5 58.5 C242.5 55.7 249.5 55.7 251.5 58.5" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="232" y="70" width="28" height="6" rx="2" fill="#DDEAF7"/>
+  <rect x="236" y="80" width="20" height="4" rx="1.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.7"/>
+
+  <!-- chassis handles / physical hardware cues -->
+  <rect x="39.5" y="60" width="4" height="31" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="200.5" y="60" width="4" height="31" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+</svg>

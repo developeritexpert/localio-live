@@ -1,0 +1,76 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g shape-rendering="geometricPrecision" stroke-linecap="round" stroke-linejoin="round">
+    <!-- quiet support geometry -->
+    <circle cx="49" cy="48" r="27" fill="#f7f9fb"/>
+    <ellipse cx="253" cy="44" rx="18" ry="25" fill="#f7f9fb"/>
+    <circle cx="249" cy="111" r="23" fill="#DDEAF7"/>
+    <circle cx="111" cy="128" r="13" fill="#f7f9fb"/>
+
+    <!-- secondary component palette, behind main editor -->
+    <rect x="27" y="46" width="55" height="67" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+    <rect x="34" y="54" width="39" height="8" rx="2" fill="#DDEAF7"/>
+    <rect x="34" y="69" width="13" height="13" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+    <rect x="52" y="69" width="21" height="4" rx="1.5" fill="#DDEAF7"/>
+    <rect x="52" y="78" width="16" height="3.5" rx="1.4" fill="#7999C0"/>
+    <rect x="34" y="90" width="39" height="15" rx="2" fill="#DDEAF7"/>
+    <circle cx="39" cy="110" r="1.6" fill="#7999C0"/>
+    <circle cx="45" cy="110" r="1.6" fill="#7999C0"/>
+    <circle cx="51" cy="110" r="1.6" fill="#7999C0"/>
+
+    <!-- primary website-builder editor -->
+    <rect x="69" y="19" width="164" height="112" rx="5" fill="#fdfdfd" stroke="#214787" stroke-width="1.6"/>
+    <line x1="69" y1="36" x2="233" y2="36" stroke="#214787" stroke-width="1.1"/>
+    <circle cx="78" cy="27.5" r="2.1" fill="#7999C0"/>
+    <circle cx="86" cy="27.5" r="2.1" fill="#DDEAF7"/>
+    <circle cx="94" cy="27.5" r="2.1" fill="#7999C0"/>
+    <rect x="105" y="24" width="91" height="7" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+
+    <!-- editor left tool rail -->
+    <rect x="77" y="44" width="31" height="78" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+    <rect x="83" y="50" width="19" height="6" rx="2" fill="#fdfdfd"/>
+    <rect x="83" y="63" width="8" height="8" rx="1.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+    <rect x="94" y="63" width="8" height="8" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+    <rect x="83" y="77" width="19" height="7" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+    <rect x="83" y="90" width="19" height="7" rx="1.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+    <circle cx="87" cy="109" r="1.5" fill="#7999C0"/>
+    <circle cx="93" cy="109" r="1.5" fill="#7999C0"/>
+    <circle cx="99" cy="109" r="1.5" fill="#7999C0"/>
+
+    <!-- website canvas: modular page being built -->
+    <rect x="116" y="44" width="109" height="78" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+    <rect x="123" y="51" width="95" height="10" rx="2" fill="#DDEAF7"/>
+    <circle cx="129" cy="56" r="2" fill="#7999C0"/>
+    <rect x="136" y="54" width="28" height="4" rx="1.5" fill="#fdfdfd"/>
+    <rect x="185" y="54" width="11" height="4" rx="1.5" fill="#fdfdfd"/>
+    <rect x="200" y="54" width="11" height="4" rx="1.5" fill="#fdfdfd"/>
+
+    <rect x="123" y="67" width="58" height="25" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+    <rect x="188" y="67" width="30" height="11" rx="2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+    <rect x="188" y="82" width="30" height="10" rx="2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+
+    <rect x="123" y="99" width="27" height="16" rx="2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+    <rect x="156" y="99" width="27" height="16" rx="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+    <rect x="189" y="99" width="29" height="16" rx="2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+
+    <!-- builder-specific movable block and cursor -->
+    <rect x="144" y="73" width="36" height="14" rx="2.5" fill="#fdfdfd" stroke="#214787" stroke-width="1.2"/>
+    <circle cx="150" cy="78" r="1.2" fill="#7999C0"/>
+    <circle cx="150" cy="82" r="1.2" fill="#7999C0"/>
+    <circle cx="154" cy="78" r="1.2" fill="#7999C0"/>
+    <circle cx="154" cy="82" r="1.2" fill="#7999C0"/>
+    <rect x="160" y="78" width="13" height="4" rx="1.5" fill="#DDEAF7"/>
+    <path d="M181 82 L187 96 L191 91 L196 96 L199 93 L194 88 L199 85 Z" fill="#DDEAF7" stroke="#214787" stroke-width="1.1"/>
+
+    <!-- secondary responsive page preview -->
+    <rect x="226" y="49" width="46" height="65" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+    <rect x="233" y="57" width="32" height="7" rx="2" fill="#DDEAF7"/>
+    <rect x="233" y="70" width="13" height="15" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+    <rect x="251" y="70" width="14" height="4" rx="1.5" fill="#7999C0"/>
+    <rect x="251" y="78" width="10" height="3.5" rx="1.4" fill="#DDEAF7"/>
+    <rect x="233" y="92" width="32" height="14" rx="2" fill="#DDEAF7"/>
+
+    <!-- subtle structural connectors, genuine to editing relationship -->
+    <line x1="82" y1="80" x2="69" y2="80" stroke="#7999C0" stroke-width="1"/>
+    <line x1="233" y1="82" x2="226" y2="82" stroke="#7999C0" stroke-width="1"/>
+  </g>
+</svg>

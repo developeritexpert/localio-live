@@ -1,0 +1,60 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pale support geometry -->
+  <circle cx="128" cy="76" r="61" fill="#f7f9fb"/>
+  <circle cx="246" cy="44" r="21" fill="#DDEAF7"/>
+  <circle cx="259" cy="104" r="23" fill="#DDEAF7"/>
+  <circle cx="39" cy="99" r="20" fill="#DDEAF7"/>
+
+  <!-- Hosting connectivity, kept behind all primary objects -->
+  <path d="M177 43 H205 C211 43 214 40 214 34 V27" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="214" cy="25" r="3.3" fill="#214787"/>
+  <path d="M175 108 H200 C206 108 210 112 210 118 V127 H270 C276 127 280 123 280 117" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="280" cy="114" r="3.3" fill="#214787"/>
+
+  <!-- Main hosting server -->
+  <rect x="31" y="26" width="157" height="99" rx="8" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+
+  <rect x="49" y="41" width="123" height="20" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="63" cy="51" r="4.2" fill="#7999C0"/>
+  <line x1="76" y1="51" x2="139" y2="51" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="160" cy="51" r="3.1" fill="#214787"/>
+
+  <rect x="49" y="69" width="123" height="20" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="63" cy="79" r="4.2" fill="#7999C0"/>
+  <line x1="76" y1="79" x2="139" y2="79" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="160" cy="79" r="3.1" fill="#214787"/>
+
+  <rect x="49" y="97" width="123" height="20" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="63" cy="107" r="4.2" fill="#7999C0"/>
+  <line x1="76" y1="107" x2="139" y2="107" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="160" cy="107" r="3.1" fill="#214787"/>
+
+  <!-- Small status controller -->
+  <rect x="88" y="116" width="43" height="15" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="99" cy="123.5" r="2.6" fill="#214787"/>
+  <circle cx="109.5" cy="123.5" r="2.6" fill="#7999C0"/>
+  <circle cx="120" cy="123.5" r="2.6" fill="#7999C0"/>
+
+  <!-- Secondary compact hosting panel -->
+  <rect x="13" y="63" width="49" height="42" rx="5" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="21" y="71" width="33" height="7" rx="2" fill="#DDEAF7"/>
+  <rect x="21" y="85" width="12" height="12" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <line x1="39" y1="87" x2="53" y2="87" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="39" y1="92" x2="50" y2="92" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="39" y1="97" x2="47" y2="97" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+
+  <!-- Large circular WordPress focal area -->
+  <circle cx="219" cy="76" r="44" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <circle cx="219" cy="76" r="38" fill="#f7f9fb"/>
+
+  <!-- WordPress W mark: original geometry preserved; only uniform scale/translation and Localio color applied -->
+  <g transform="translate(184 41) scale(0.13671875)" fill="#214787">
+    <path d="M61.7 169.4l101.5 278C92.2 413 43.3 340.2 43.3 256c0-30.9 6.6-60.1 18.4-86.6zm337.9 75.9c0-26.3-9.4-44.5-17.5-58.7-10.8-17.5-20.9-32.4-20.9-49.9 0-19.6 14.8-37.8 35.7-37.8.9 0 1.8.1 2.8.2-37.9-34.7-88.3-55.9-143.7-55.9-74.3 0-139.7 38.1-177.8 95.9 5 .2 9.7.3 13.7.3 22.2 0 56.7-2.7 56.7-2.7 11.5-.7 12.8 16.2 1.4 17.5 0 0-11.5 1.3-24.3 2l77.5 230.4L249.8 247l-33.1-90.8c-11.5-.7-22.3-2-22.3-2-11.5-.7-10.1-18.2 1.3-17.5 0 0 35.1 2.7 56 2.7 22.2 0 56.7-2.7 56.7-2.7 11.5-.7 12.8 16.2 1.4 17.5 0 0-11.5 1.3-24.3 2l76.9 228.7 21.2-70.9c9-29.4 16-50.5 16-68.7zm-139.9 29.3l-63.8 185.5c19.1 5.6 39.2 8.7 60.1 8.7 24.8 0 48.5-4.3 70.6-12.1-.6-.9-1.1-1.9-1.5-2.9l-65.4-179.2zm183-120.7c.9 6.8 1.4 14 1.4 21.9 0 21.6-4 45.8-16.2 76.2l-65 187.9C426.2 403 468.7 334.5 468.7 256c0-37-9.4-71.8-26-102.1zM504 256c0 136.8-111.3 248-248 248C119.2 504 8 392.7 8 256 8 119.2 119.2 8 256 8c136.7 0 248 111.2 248 248zm-11.4 0c0-130.5-106.2-236.6-236.6-236.6C125.5 19.4 19.4 125.5 19.4 256S125.6 492.6 256 492.6c130.5 0 236.6-106.1 236.6-236.6z"/>
+  </g>
+
+  <!-- Small hosting detail panel on the far right -->
+  <rect x="256" y="57" width="31" height="40" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+  <rect x="263" y="65" width="17" height="11" rx="2" fill="#DDEAF7"/>
+  <line x1="263" y1="82" x2="279" y2="82" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="263" y1="88" x2="276" y2="88" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+</svg>

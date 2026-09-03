@@ -1,0 +1,66 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pale support geometry -->
+  <circle cx="48" cy="39" r="27" fill="#f7f9fb"/>
+  <ellipse cx="256" cy="103" rx="29" ry="32" fill="#DDEAF7"/>
+  <circle cx="244" cy="24" r="15" fill="#f7f9fb"/>
+
+  <!-- Left component library -->
+  <rect x="16" y="39" width="66" height="78" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+  <rect x="27" y="50" width="44" height="11" rx="3" fill="#DDEAF7"/>
+  <rect x="27" y="68" width="44" height="16" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="34" cy="76" r="3" fill="#7999C0"/>
+  <line x1="41" y1="74" x2="64" y2="74" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="41" y1="79" x2="57" y2="79" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="27" y="91" width="19" height="16" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="52" y="91" width="19" height="16" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+
+  <!-- Main landing-page canvas -->
+  <rect x="75" y="13" width="150" height="124" rx="10" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+  <rect x="87" y="24" width="126" height="10" rx="5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="94" cy="29" r="2.4" fill="#7999C0"/>
+  <circle cx="102" cy="29" r="2.4" fill="#DDEAF7"/>
+  <rect x="111" y="27" width="67" height="4" rx="2" fill="#DDEAF7"/>
+
+  <!-- Conversion-focused hero -->
+  <rect x="87" y="40" width="126" height="43" rx="5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.05"/>
+  <rect x="97" y="49" width="40" height="4" rx="2" fill="#7999C0"/>
+  <rect x="97" y="57" width="32" height="3" rx="1.5" fill="#7999C0"/>
+  <rect x="97" y="65" width="26" height="7" rx="3.5" fill="#7999C0"/>
+
+  <!-- Lead-capture form block -->
+  <rect x="149" y="46" width="54" height="31" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="156" y="52" width="40" height="5" rx="2.5" fill="#f7f9fb"/>
+  <rect x="156" y="60" width="40" height="5" rx="2.5" fill="#f7f9fb"/>
+  <rect x="156" y="68" width="23" height="5" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+
+  <!-- Modular content sections -->
+  <rect x="87" y="90" width="38" height="18" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="95" cy="99" r="3.2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <line x1="102" y1="97" x2="117" y2="97" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="102" y1="102" x2="113" y2="102" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <rect x="131" y="90" width="38" height="18" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="139" cy="99" r="3.2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <line x1="146" y1="97" x2="161" y2="97" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="146" y1="102" x2="157" y2="102" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <rect x="175" y="90" width="38" height="18" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="183" cy="99" r="3.2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <line x1="190" y1="97" x2="205" y2="97" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="190" y1="102" x2="201" y2="102" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <rect x="87" y="115" width="126" height="11" rx="4" fill="#DDEAF7"/>
+  <rect x="96" y="119" width="31" height="3" rx="1.5" fill="#7999C0"/>
+  <rect x="134" y="119" width="22" height="3" rx="1.5" fill="#fdfdfd"/>
+  <rect x="163" y="119" width="40" height="3" rx="1.5" fill="#fdfdfd"/>
+
+  <!-- Right settings panel -->
+  <rect x="220" y="36" width="64" height="82" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+  <rect x="230" y="48" width="44" height="10" rx="3" fill="#DDEAF7"/>
+  <line x1="231" y1="68" x2="267" y2="68" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="241" cy="68" r="3" fill="#214787"/>
+  <line x1="231" y1="80" x2="267" y2="80" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="258" cy="80" r="3" fill="#7999C0"/>
+  <rect x="230" y="91" width="18" height="16" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="255" y="91" width="18" height="16" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+</svg>

@@ -1,0 +1,71 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="creeperHeadClip">
+      <path d="M77 22 H183 Q189 22 189 28 V122 Q189 128 183 128 H77 Q71 128 71 122 V28 Q71 22 77 22 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- quiet background support geometry -->
+  <circle cx="48" cy="43" r="23" fill="#f7f9fb"/>
+  <path d="M202 23 H253 Q260 23 260 30 V55 Q260 62 253 62 H202 Q195 62 195 55 V30 Q195 23 202 23 Z" fill="#f7f9fb"/>
+  <circle cx="270" cy="105" r="18" fill="#f7f9fb"/>
+
+  <!-- secondary hosting server stack -->
+  <g>
+    <rect x="184" y="42" width="78" height="74" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+    <rect x="193" y="51" width="60" height="17" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+    <circle cx="201" cy="59.5" r="2.4" fill="#214787"/>
+    <circle cx="209" cy="59.5" r="2.4" fill="#7999C0"/>
+    <rect x="218" y="57" width="27" height="5" rx="2.5" fill="#fdfdfd"/>
+
+    <rect x="193" y="74" width="60" height="17" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+    <circle cx="201" cy="82.5" r="2.4" fill="#214787"/>
+    <circle cx="209" cy="82.5" r="2.4" fill="#7999C0"/>
+    <rect x="218" y="80" width="27" height="5" rx="2.5" fill="#fdfdfd"/>
+
+    <rect x="193" y="97" width="60" height="10" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+    <rect x="199" y="100.5" width="17" height="3" rx="1.5" fill="#7999C0"/>
+    <rect x="221" y="100.5" width="24" height="3" rx="1.5" fill="#DDEAF7"/>
+  </g>
+
+  <!-- network connection support -->
+  <path d="M184 78 H172 V91 H158" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="184" cy="78" r="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="158" cy="91" r="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+
+  <!-- dominant Minecraft / Creeper anchor: same flat silhouette with mandatory two-tone surface planes -->
+  <g>
+    <path d="M77 22 H183 Q189 22 189 28 V122 Q189 128 183 128 H77 Q71 128 71 122 V28 Q71 22 77 22 Z" fill="#DDEAF7"/>
+
+    <!-- second large plane, clipped to the exact same front-facing silhouette -->
+    <path d="M132 22 H189 V128 H113 V110 H125 V88 H118 V66 H132 Z" fill="#f7f9fb" clip-path="url(#creeperHeadClip)"/>
+
+    <!-- restrained block-pattern details -->
+    <rect x="80" y="31" width="17" height="12" rx="2" fill="#fdfdfd"/>
+    <rect x="103" y="31" width="14" height="12" rx="2" fill="#fdfdfd"/>
+    <rect x="144" y="31" width="17" height="12" rx="2" fill="#fdfdfd"/>
+    <rect x="167" y="31" width="13" height="12" rx="2" fill="#fdfdfd"/>
+    <rect x="80" y="107" width="21" height="11" rx="2" fill="#fdfdfd"/>
+    <rect x="159" y="108" width="20" height="10" rx="2" fill="#DDEAF7"/>
+
+    <!-- oversized Creeper face mark -->
+    <rect x="88" y="50" width="24" height="24" rx="1.5" fill="#7999C0"/>
+    <rect x="148" y="50" width="24" height="24" rx="1.5" fill="#7999C0"/>
+
+    <rect x="118" y="72" width="24" height="17" rx="1.5" fill="#7999C0"/>
+    <rect x="105" y="84" width="50" height="19" rx="1.5" fill="#7999C0"/>
+    <rect x="105" y="97" width="17" height="18" rx="1.5" fill="#7999C0"/>
+    <rect x="138" y="97" width="17" height="18" rx="1.5" fill="#7999C0"/>
+
+    <!-- continuous protected outer contour -->
+    <path d="M77 22 H183 Q189 22 189 28 V122 Q189 128 183 128 H77 Q71 128 71 122 V28 Q71 22 77 22 Z" fill="none" stroke="#214787" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- tiny server-status detail, kept visually subordinate -->
+  <g>
+    <circle cx="38" cy="101" r="14" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+    <path d="M31 101 H45" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M38 94 V108" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round"/>
+    <circle cx="38" cy="101" r="3" fill="#DDEAF7" stroke="#214787" stroke-width="0.8"/>
+  </g>
+</svg>

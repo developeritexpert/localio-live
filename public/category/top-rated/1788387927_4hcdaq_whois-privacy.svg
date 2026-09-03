@@ -1,0 +1,44 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="shieldClip">
+      <path d="M160 14 C140 14 121 20 104 31 L104 69 C104 101 123 126 160 140 C197 126 216 101 216 69 L216 31 C199 20 180 14 160 14 Z"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="44" cy="35" r="25" fill="#f7f9fb"/>
+  <circle cx="252" cy="112" r="27" fill="#f7f9fb"/>
+  <circle cx="242" cy="54" r="31" fill="#DDEAF7"/>
+
+  <rect x="15" y="44" width="132" height="79" rx="9" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <circle cx="42" cy="68" r="11" fill="#DDEAF7"/>
+  <path d="M29 101 C30 88 35 82 42 82 C49 82 54 88 55 101 Z" fill="#DDEAF7"/>
+  <rect x="67" y="57" width="57" height="7" rx="3.5" fill="#DDEAF7"/>
+  <rect x="67" y="71" width="44" height="5" rx="2.5" fill="#7999C0"/>
+  <rect x="67" y="82" width="54" height="5" rx="2.5" fill="#DDEAF7"/>
+  <rect x="67" y="93" width="39" height="5" rx="2.5" fill="#DDEAF7"/>
+  <rect x="28" y="108" width="77" height="5" rx="2.5" fill="#f7f9fb"/>
+  <circle cx="118" cy="110.5" r="3.5" fill="#7999C0"/>
+  <circle cx="130" cy="110.5" r="3.5" fill="#DDEAF7"/>
+
+  <circle cx="251" cy="72" r="31" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <ellipse cx="251" cy="72" rx="13" ry="31" fill="none" stroke="#7999C0" stroke-width="1"/>
+  <line x1="220" y1="72" x2="282" y2="72" stroke="#7999C0" stroke-width="1"/>
+  <path d="M225 59 C240 65 262 65 277 59" fill="none" stroke="#DDEAF7" stroke-width="1.2"/>
+  <path d="M225 85 C240 79 262 79 277 85" fill="none" stroke="#DDEAF7" stroke-width="1.2"/>
+  <circle cx="280" cy="48" r="4" fill="#214787"/>
+  <circle cx="221" cy="96" r="4" fill="#7999C0"/>
+
+  <g clip-path="url(#shieldClip)">
+    <rect x="103" y="13" width="59" height="128" fill="#DDEAF7"/>
+    <rect x="162" y="13" width="55" height="128" fill="#f7f9fb"/>
+    <path d="M162 14 L216 31 L216 69 C216 101 197 126 160 140 L160 14 Z" fill="#fdfdfd"/>
+    <path d="M104 88 C121 91 144 91 162 83 L162 140 C135 131 116 116 108 99 Z" fill="#DDEAF7"/>
+  </g>
+  <path d="M160 14 C140 14 121 20 104 31 L104 69 C104 101 123 126 160 140 C197 126 216 101 216 69 L216 31 C199 20 180 14 160 14 Z" fill="none" stroke="#214787" stroke-width="1.6" stroke-linejoin="round"/>
+
+  <path d="M139 69 L139 58 C139 46 148 38 160 38 C172 38 181 46 181 58 L181 69" fill="none" stroke="#214787" stroke-width="1.6" stroke-linecap="round"/>
+  <rect x="130" y="66" width="60" height="48" rx="8" fill="#fdfdfd" stroke="#214787" stroke-width="1.6"/>
+  <circle cx="160" cy="86" r="5" fill="#7999C0"/>
+  <rect x="158" y="90" width="4" height="10" rx="2" fill="#7999C0"/>
+  <rect x="140" y="105" width="40" height="4" rx="2" fill="#DDEAF7"/>
+</svg>

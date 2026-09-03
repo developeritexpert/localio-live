@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- Pale supporting geometry -->
+  <circle cx="48" cy="48" r="24" fill="#DDEAF7"/>
+  <circle cx="252" cy="50" r="23" fill="#f7f9fb"/>
+  <circle cx="242" cy="111" r="21" fill="#DDEAF7"/>
+  <circle cx="72" cy="112" r="17" fill="#f7f9fb"/>
+
+  <!-- Left distributed compute node -->
+  <rect x="18" y="56" width="62" height="48" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <rect x="28" y="66" width="42" height="10" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="35" cy="71" r="2.4" fill="#7999C0"/>
+  <line x1="42" y1="71" x2="61" y2="71" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <rect x="28" y="82" width="42" height="10" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="35" cy="87" r="2.4" fill="#7999C0"/>
+  <line x1="42" y1="87" x2="59" y2="87" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Right distributed compute node -->
+  <rect x="220" y="52" width="62" height="52" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <rect x="230" y="63" width="42" height="11" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="237" cy="68.5" r="2.4" fill="#7999C0"/>
+  <line x1="244" y1="68.5" x2="264" y2="68.5" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <rect x="230" y="81" width="17" height="13" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <line x1="254" y1="84.5" x2="270" y2="84.5" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="254" y1="90.5" x2="266" y2="90.5" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Network links behind primary cloud -->
+  <path d="M80 72 H95" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M205 69 H220" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="88" cy="72" r="2.6" fill="#7999C0"/>
+  <circle cx="212" cy="69" r="2.6" fill="#7999C0"/>
+
+  <!-- Primary category-defining cloud: pale fill, dark-blue recognition contour -->
+  <path d="M91 105
+           C76 105 65 95 65 82
+           C65 70 74 60 87 58
+           C90 43 103 33 119 33
+           C132 33 143 39 149 49
+           C157 41 167 37 179 37
+           C198 37 214 51 216 69
+           C228 71 236 80 236 91
+           C236 99 229 105 219 105
+           Z"
+        fill="#fdfdfd" stroke="#214787" stroke-width="1.6" stroke-linejoin="round"/>
+
+  <!-- Cloud server cluster -->
+  <rect x="108" y="53" width="84" height="43" rx="7" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="117" y="59" width="66" height="9" rx="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="124" cy="63.5" r="2.2" fill="#7999C0"/>
+  <line x1="132" y1="63.5" x2="164" y2="63.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="176" cy="63.5" r="2.3" fill="#214787"/>
+
+  <rect x="117" y="72" width="66" height="9" rx="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="124" cy="76.5" r="2.2" fill="#7999C0"/>
+  <line x1="132" y1="76.5" x2="164" y2="76.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="176" cy="76.5" r="2.3" fill="#214787"/>
+
+  <rect x="117" y="85" width="66" height="9" rx="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="124" cy="89.5" r="2.2" fill="#7999C0"/>
+  <line x1="132" y1="89.5" x2="164" y2="89.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="176" cy="89.5" r="2.3" fill="#214787"/>
+
+  <!-- Scalable cloud-node links inside the anchor -->
+  <circle cx="100" cy="77" r="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="201" cy="77" r="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <path d="M103 77 H108" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <path d="M192 77 H198" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Compact orchestration strip -->
+  <rect x="132" y="99" width="36" height="9" rx="4.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="141" cy="103.5" r="2" fill="#7999C0"/>
+  <circle cx="150" cy="103.5" r="2" fill="#214787"/>
+  <circle cx="159" cy="103.5" r="2" fill="#7999C0"/>
+
+  <!-- Small cloud-distribution accents -->
+  <circle cx="59" cy="115" r="2.5" fill="#7999C0"/>
+  <circle cx="51" cy="115" r="1.6" fill="#DDEAF7"/>
+  <circle cx="244" cy="37" r="2.4" fill="#7999C0"/>
+  <circle cx="252" cy="37" r="1.5" fill="#DDEAF7"/>
+</svg>

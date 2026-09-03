@@ -1,0 +1,81 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pale support geometry -->
+  <circle cx="147" cy="76" r="56" fill="#f7f9fb"/>
+  <circle cx="226" cy="48" r="27" fill="#DDEAF7"/>
+  <circle cx="68" cy="111" r="22" fill="#f7f9fb"/>
+
+  <!-- Infrastructure connectors -->
+  <path d="M86 75 H111" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M188 61 H205" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M188 76 H202" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M188 91 H205" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M205 61 V91" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M205 61 H216 M205 76 H216 M205 91 H216" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+
+  <!-- Server stack -->
+  <rect x="29" y="48" width="57" height="22" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.3"/>
+  <rect x="29" y="73" width="57" height="22" rx="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+  <rect x="29" y="98" width="57" height="22" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.3"/>
+
+  <circle cx="39" cy="59" r="2.2" fill="#214787"/>
+  <circle cx="46" cy="59" r="2.2" fill="#7999C0"/>
+  <rect x="56" y="56.5" width="20" height="5" rx="1.5" fill="#fdfdfd"/>
+  <circle cx="39" cy="84" r="2.2" fill="#214787"/>
+  <circle cx="46" cy="84" r="2.2" fill="#7999C0"/>
+  <rect x="56" y="81.5" width="20" height="5" rx="1.5" fill="#DDEAF7"/>
+  <circle cx="39" cy="109" r="2.2" fill="#214787"/>
+  <circle cx="46" cy="109" r="2.2" fill="#7999C0"/>
+  <rect x="56" y="106.5" width="20" height="5" rx="1.5" fill="#fdfdfd"/>
+
+  <!-- Reseller master account panel -->
+  <rect x="111" y="35" width="77" height="80" rx="4" fill="#fdfdfd" stroke="#214787" stroke-width="1.4"/>
+  <rect x="120" y="44" width="59" height="13" rx="2.5" fill="#DDEAF7"/>
+  <circle cx="127" cy="50.5" r="2" fill="#7999C0"/>
+  <rect x="133" y="48" width="34" height="5" rx="1.5" fill="#f7f9fb"/>
+
+  <!-- Three separately managed client spaces inside the reseller panel -->
+  <rect x="120" y="64" width="59" height="13" rx="2.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="120" y="81" width="59" height="13" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="120" y="98" width="59" height="8" rx="2.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+
+  <circle cx="128" cy="70.5" r="2.4" fill="#214787"/>
+  <rect x="135" y="68.5" width="18" height="4" rx="1.2" fill="#DDEAF7"/>
+  <rect x="157" y="68.5" width="14" height="4" rx="1.2" fill="#fdfdfd"/>
+
+  <circle cx="128" cy="87.5" r="2.4" fill="#214787"/>
+  <rect x="135" y="85.5" width="18" height="4" rx="1.2" fill="#fdfdfd"/>
+  <rect x="157" y="85.5" width="14" height="4" rx="1.2" fill="#f7f9fb"/>
+
+  <circle cx="128" cy="102" r="2.1" fill="#214787"/>
+  <rect x="135" y="100" width="22" height="3.8" rx="1.2" fill="#DDEAF7"/>
+  <rect x="161" y="100" width="10" height="3.8" rx="1.2" fill="#fdfdfd"/>
+
+  <!-- Client site cards -->
+  <rect x="216" y="42" width="54" height="29" rx="3.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="216" y="76" width="54" height="29" rx="3.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="220" y="110" width="50" height="24" rx="3.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.2"/>
+
+  <!-- Abstract browser/site structures, no readable text -->
+  <circle cx="224" cy="49" r="1.6" fill="#214787"/>
+  <circle cx="229" cy="49" r="1.6" fill="#7999C0"/>
+  <rect x="221" y="54" width="19" height="11" rx="2" fill="#DDEAF7"/>
+  <rect x="244" y="54" width="19" height="4" rx="1.4" fill="#f7f9fb"/>
+  <rect x="244" y="61" width="14" height="4" rx="1.4" fill="#DDEAF7"/>
+
+  <circle cx="224" cy="83" r="1.6" fill="#214787"/>
+  <circle cx="229" cy="83" r="1.6" fill="#7999C0"/>
+  <rect x="221" y="88" width="42" height="5" rx="1.4" fill="#DDEAF7"/>
+  <rect x="221" y="96" width="17" height="4" rx="1.4" fill="#f7f9fb"/>
+  <rect x="242" y="96" width="21" height="4" rx="1.4" fill="#DDEAF7"/>
+
+  <circle cx="228" cy="117" r="1.6" fill="#214787"/>
+  <circle cx="233" cy="117" r="1.6" fill="#7999C0"/>
+  <rect x="226" y="122" width="16" height="7" rx="1.6" fill="#fdfdfd"/>
+  <rect x="246" y="122" width="17" height="3" rx="1.3" fill="#f7f9fb"/>
+  <rect x="246" y="127" width="12" height="3" rx="1.3" fill="#fdfdfd"/>
+
+  <!-- Small distribution nodes -->
+  <circle cx="205" cy="61" r="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="205" cy="76" r="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="205" cy="91" r="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+</svg>

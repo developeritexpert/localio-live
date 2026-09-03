@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- pale support geometry -->
+  <circle cx="43" cy="31" r="24" fill="#f7f9fb"/>
+  <circle cx="166" cy="21" r="21" fill="#DDEAF7"/>
+  <circle cx="266" cy="34" r="24" fill="#DDEAF7"/>
+  <circle cx="265" cy="112" r="26" fill="#f7f9fb"/>
+
+  <!-- left client site card -->
+  <rect x="17" y="51" width="58" height="49" rx="9" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="27" y="61" width="38" height="7" rx="3.5" fill="#DDEAF7"/>
+  <rect x="27" y="75" width="15" height="15" rx="3.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <line x1="49" y1="78" x2="64" y2="78" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <line x1="49" y1="83" x2="60" y2="83" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <line x1="49" y1="88" x2="56" y2="88" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+
+  <!-- right client cards -->
+  <rect x="229" y="30" width="54" height="42" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="238" y="39" width="35" height="6" rx="3" fill="#DDEAF7"/>
+  <rect x="238" y="51" width="13" height="12" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <line x1="258" y1="53" x2="273" y2="53" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="258" y1="58" x2="269" y2="58" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <rect x="229" y="82" width="54" height="42" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="238" y="91" width="35" height="6" rx="3" fill="#DDEAF7"/>
+  <rect x="238" y="103" width="13" height="12" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <line x1="258" y1="105" x2="273" y2="105" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="258" y1="110" x2="269" y2="110" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- distribution connectors behind main panel -->
+  <path d="M75 75 H88" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round"/>
+  <circle cx="82" cy="75" r="2.7" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <path d="M204 55 H216 Q221 55 221 50 V50 H229" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M204 98 H216 Q221 98 221 103 V103 H229" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="216" cy="55" r="2.7" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="216" cy="98" r="2.7" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+
+  <!-- primary reseller hosting hub -->
+  <rect x="86" y="22" width="118" height="106" rx="12" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+
+  <!-- infrastructure column -->
+  <rect x="98" y="35" width="38" height="80" rx="8" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <rect x="105" y="44" width="24" height="15" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="111" cy="51.5" r="2.4" fill="#7999C0"/>
+  <line x1="117" y1="51.5" x2="125" y2="51.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="105" y="67" width="24" height="15" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="111" cy="74.5" r="2.4" fill="#7999C0"/>
+  <line x1="117" y1="74.5" x2="125" y2="74.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="105" y="90" width="24" height="15" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="111" cy="97.5" r="2.4" fill="#7999C0"/>
+  <line x1="117" y1="97.5" x2="125" y2="97.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+
+  <!-- one-to-many account distribution: category-defining internal geometry -->
+  <path d="M136 75 H145 M145 48 V102 M145 48 H151 M145 75 H151 M145 102 H151" fill="none" stroke="#214787" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="145" cy="48" r="2.4" fill="#fdfdfd" stroke="#214787" stroke-width="1.1"/>
+  <circle cx="145" cy="75" r="2.4" fill="#fdfdfd" stroke="#214787" stroke-width="1.1"/>
+  <circle cx="145" cy="102" r="2.4" fill="#fdfdfd" stroke="#214787" stroke-width="1.1"/>
+
+  <!-- separate hosting accounts -->
+  <rect x="151" y="38" width="41" height="20" rx="6" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="159" cy="48" r="3.2" fill="#7999C0"/>
+  <line x1="166" y1="48" x2="181" y2="48" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="186" cy="48" r="2.4" fill="#214787"/>
+
+  <rect x="151" y="65" width="41" height="20" rx="6" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="159" cy="75" r="3.2" fill="#7999C0"/>
+  <line x1="166" y1="75" x2="181" y2="75" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="186" cy="75" r="2.4" fill="#214787"/>
+
+  <rect x="151" y="92" width="41" height="20" rx="6" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="159" cy="102" r="3.2" fill="#7999C0"/>
+  <line x1="166" y1="102" x2="181" y2="102" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="186" cy="102" r="2.4" fill="#214787"/>
+
+  <!-- three outward reseller endpoints aligned to account rows -->
+  <path d="M192 48 H204" fill="none" stroke="#214787" stroke-width="1.15" stroke-linecap="round"/>
+  <path d="M192 75 H204" fill="none" stroke="#214787" stroke-width="1.15" stroke-linecap="round"/>
+  <path d="M192 102 H204" fill="none" stroke="#214787" stroke-width="1.15" stroke-linecap="round"/>
+</svg>

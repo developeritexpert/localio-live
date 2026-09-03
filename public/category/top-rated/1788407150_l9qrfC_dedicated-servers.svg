@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- quiet support geometry -->
+  <circle cx="62" cy="39" r="27" fill="#f7f9fb"/>
+  <circle cx="253" cy="111" r="30" fill="#DDEAF7"/>
+  <circle cx="273" cy="42" r="17" fill="#f7f9fb"/>
+  <circle cx="31" cy="112" r="18" fill="#DDEAF7"/>
+
+  <!-- rack ears behind the primary chassis -->
+  <rect x="24" y="49" width="20" height="55" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.2"/>
+  <circle cx="34" cy="62" r="2.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="34" cy="91" r="2.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="256" y="49" width="20" height="55" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.2"/>
+  <circle cx="266" cy="62" r="2.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="266" cy="91" r="2.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- dominant dedicated physical server -->
+  <rect x="39" y="31" width="222" height="87" rx="5" fill="#fdfdfd" stroke="#214787" stroke-width="1.6"/>
+
+  <!-- left hardware bay -->
+  <rect x="53" y="44" width="78" height="61" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.15"/>
+  <rect x="76" y="59" width="32" height="31" rx="3" fill="#fdfdfd" stroke="#214787" stroke-width="1.2"/>
+  <line x1="82" y1="54" x2="82" y2="59" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="92" y1="54" x2="92" y2="59" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="102" y1="54" x2="102" y2="59" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="82" y1="90" x2="82" y2="95" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="92" y1="90" x2="92" y2="95" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="102" y1="90" x2="102" y2="95" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="71" y1="65" x2="76" y2="65" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="71" y1="75" x2="76" y2="75" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="71" y1="85" x2="76" y2="85" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="108" y1="65" x2="113" y2="65" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="108" y1="75" x2="113" y2="75" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="108" y1="85" x2="113" y2="85" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <circle cx="87" cy="70" r="3" fill="#7999C0"/>
+  <circle cx="99" cy="81" r="3" fill="#7999C0"/>
+
+  <!-- dedicated storage / compute modules -->
+  <rect x="143" y="44" width="102" height="17" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.05"/>
+  <circle cx="154" cy="52.5" r="3.8" fill="#7999C0"/>
+  <line x1="167" y1="52.5" x2="220" y2="52.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="234" cy="52.5" r="3.4" fill="#214787"/>
+
+  <rect x="143" y="66" width="102" height="17" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.05"/>
+  <circle cx="154" cy="74.5" r="3.8" fill="#7999C0"/>
+  <line x1="167" y1="74.5" x2="220" y2="74.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="234" cy="74.5" r="3.4" fill="#214787"/>
+
+  <rect x="143" y="88" width="102" height="17" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.05"/>
+  <circle cx="154" cy="96.5" r="3.8" fill="#7999C0"/>
+  <line x1="167" y1="96.5" x2="220" y2="96.5" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="234" cy="96.5" r="3.4" fill="#214787"/>
+
+  <!-- restrained hardware control strip -->
+  <rect x="98" y="111" width="104" height="13" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="111" cy="117.5" r="2.6" fill="#DDEAF7"/>
+  <circle cx="123" cy="117.5" r="2.6" fill="#7999C0"/>
+  <circle cx="135" cy="117.5" r="2.6" fill="#214787"/>
+  <rect x="151" y="115" width="37" height="5" rx="2" fill="#DDEAF7"/>
+</svg>

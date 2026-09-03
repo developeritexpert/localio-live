@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- Pale support geometry -->
+  <circle cx="39" cy="39" r="27" fill="#f7f9fb"/>
+  <circle cx="254" cy="31" r="18" fill="#DDEAF7"/>
+  <circle cx="264" cy="112" r="27" fill="#f7f9fb"/>
+  <circle cx="145" cy="132" r="14" fill="#DDEAF7"/>
+
+  <!-- Connector behind foreground objects -->
+  <line x1="67" y1="78" x2="79" y2="78" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="73" cy="78" r="2.2" fill="#7999C0"/>
+
+  <!-- Secondary builder component palette -->
+  <rect x="15" y="51" width="52" height="53" rx="6" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+  <rect x="22" y="58" width="38" height="8" rx="3" fill="#DDEAF7"/>
+  <rect x="22" y="73" width="13" height="13" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <line x1="40" y1="76" x2="58" y2="76" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="40" y1="82" x2="54" y2="82" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <rect x="22" y="91" width="8" height="5" rx="1.5" fill="#7999C0"/>
+  <rect x="34" y="91" width="11" height="5" rx="1.5" fill="#DDEAF7"/>
+  <rect x="49" y="91" width="9" height="5" rx="1.5" fill="#DDEAF7"/>
+
+  <!-- Main ecommerce website-builder canvas -->
+  <rect x="78" y="17" width="157" height="114" rx="7" fill="#fdfdfd" stroke="#214787" stroke-width="1.6"/>
+
+  <!-- Builder toolbar -->
+  <rect x="87" y="27" width="139" height="16" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="96" cy="35" r="2.4" fill="#7999C0"/>
+  <circle cx="104" cy="35" r="2.4" fill="#7999C0"/>
+  <circle cx="112" cy="35" r="2.4" fill="#7999C0"/>
+  <line x1="123" y1="35" x2="165" y2="35" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="193" y="31" width="24" height="8" rx="3" fill="#fdfdfd"/>
+
+  <!-- Builder sidebar -->
+  <rect x="87" y="49" width="29" height="70" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <rect x="93" y="56" width="8" height="8" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="103" y="56" width="8" height="8" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="93" y="67" width="8" height="8" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="103" y="67" width="8" height="8" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <line x1="94" y1="84" x2="109" y2="84" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="94" y1="90" x2="106" y2="90" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <rect x="93" y="99" width="18" height="12" rx="2.5" fill="#DDEAF7"/>
+
+  <!-- Storefront preview -->
+  <rect x="122" y="49" width="96" height="70" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+  <rect x="130" y="57" width="80" height="10" rx="3" fill="#DDEAF7"/>
+  <circle cx="136" cy="62" r="2.5" fill="#7999C0"/>
+  <line x1="143" y1="62" x2="173" y2="62" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <rect x="196" y="59" width="8" height="6" rx="2" fill="#7999C0"/>
+
+  <!-- Product card 1 -->
+  <rect x="130" y="74" width="34" height="36" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <rect x="136" y="80" width="22" height="14" rx="2" fill="#DDEAF7"/>
+  <line x1="136" y1="100" x2="155" y2="100" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="136" y1="105" x2="149" y2="105" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Product card 2, partially behind ecommerce bag -->
+  <rect x="170" y="74" width="34" height="36" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <rect x="176" y="80" width="22" height="14" rx="2" fill="#DDEAF7"/>
+  <line x1="176" y1="100" x2="195" y2="100" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="176" y1="105" x2="188" y2="105" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Prominent ecommerce shopping bag -->
+  <path d="M214 66 C214 55.5 221.5 49 232 49 C242.5 49 250 55.5 250 66" fill="none" stroke="#214787" stroke-width="1.6" stroke-linecap="round"/>
+  <rect x="198" y="64" width="68" height="64" rx="5" fill="#DDEAF7" stroke="#214787" stroke-width="1.6"/>
+  <circle cx="214" cy="74" r="2.2" fill="#7999C0"/>
+  <circle cx="250" cy="74" r="2.2" fill="#7999C0"/>
+
+  <!-- Product/store blocks on the bag face -->
+  <rect x="208" y="83" width="20" height="15" rx="2.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <rect x="236" y="83" width="20" height="15" rx="2.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <rect x="208" y="103" width="48" height="14" rx="3" fill="#f7f9fb"/>
+  <circle cx="216" cy="110" r="2.4" fill="#7999C0"/>
+  <line x1="222" y1="110" x2="247" y2="110" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+</svg>

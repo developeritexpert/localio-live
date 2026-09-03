@@ -1,0 +1,44 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pale support geometry -->
+  <ellipse cx="150" cy="76" rx="116" ry="54" fill="#f7f9fb"/>
+  <circle cx="55" cy="54" r="22" fill="#DDEAF7"/>
+  <circle cx="248" cy="90" r="24" fill="#DDEAF7"/>
+  <circle cx="267" cy="52" r="10" fill="#f7f9fb"/>
+
+  <!-- Source registrar / domain record -->
+  <rect x="24" y="42" width="92" height="70" rx="6" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <rect x="32" y="50" width="76" height="14" rx="3" fill="#DDEAF7"/>
+  <circle cx="48" cy="81" r="12" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <ellipse cx="48" cy="81" rx="5" ry="12" fill="none" stroke="#7999C0" stroke-width="0.8"/>
+  <path d="M36 81H60M39 75.5H57M39 86.5H57" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <path d="M67 76H98M67 83H94M67 90H88" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <!-- small unlocked transfer-lock cue -->
+  <path d="M92 99v-4.5a5 5 0 0 1 8.6-3.5" fill="none" stroke="#214787" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="88" y="97" width="14" height="10" rx="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="95" cy="102" r="1.3" fill="#214787"/>
+
+  <!-- Destination registrar / domain record -->
+  <rect x="184" y="42" width="92" height="70" rx="6" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+  <rect x="192" y="50" width="76" height="14" rx="3" fill="#DDEAF7"/>
+  <circle cx="252" cy="81" r="12" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <ellipse cx="252" cy="81" rx="5" ry="12" fill="none" stroke="#7999C0" stroke-width="0.8"/>
+  <path d="M240 81H264M243 75.5H261M243 86.5H261" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <path d="M202 76H233M202 83H229M202 90H223" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <!-- small authorization-key cue -->
+  <circle cx="207" cy="102" r="4.1" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <path d="M211 102h11l3-3m-3 3 3 3" fill="none" stroke="#214787" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Main domain-transfer arrow -->
+  <path d="M103 67H168V58L197 75L168 92V83H103Z" fill="#DDEAF7" stroke="#214787" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Domain token carried by the transfer -->
+  <circle cx="149" cy="75" r="18" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+  <ellipse cx="149" cy="75" rx="7" ry="18" fill="none" stroke="#7999C0" stroke-width="1"/>
+  <path d="M131 75H167M135 66H163M135 84H163" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Small transfer-status dots, integrated into the path -->
+  <circle cx="121" cy="104" r="2.2" fill="#7999C0"/>
+  <circle cx="130" cy="104" r="2.2" fill="#DDEAF7"/>
+  <circle cx="139" cy="104" r="2.2" fill="#7999C0"/>
+  <path d="M147 104H174" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,80 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pale support geometry -->
+  <ellipse cx="151" cy="76" rx="78" ry="61" fill="#f7f9fb"/>
+  <circle cx="55" cy="58" r="24" fill="#DDEAF7"/>
+  <circle cx="246" cy="94" r="27" fill="#DDEAF7"/>
+  <circle cx="258" cy="44" r="16" fill="#f7f9fb"/>
+
+  <!-- Seller-side domain listing card -->
+  <rect x="17" y="53" width="69" height="50" rx="7" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.35"/>
+  <rect x="25" y="61" width="53" height="8" rx="2.5" fill="#DDEAF7"/>
+  <circle cx="34" cy="84" r="9" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.1"/>
+  <path d="M25 84h18M34 75c2.9 2.7 4.4 5.7 4.4 9s-1.5 6.3-4.4 9M34 75c-2.9 2.7-4.4 5.7-4.4 9s1.5 6.3 4.4 9" fill="none" stroke="#7999C0" stroke-width="0.85" stroke-linecap="round"/>
+  <rect x="49" y="78" width="24" height="3.8" rx="1.9" fill="#7999C0"/>
+  <rect x="49" y="85" width="18" height="3.4" rx="1.7" fill="#DDEAF7"/>
+  <rect x="49" y="92" width="21" height="3.4" rx="1.7" fill="#DDEAF7"/>
+
+  <!-- Main marketplace browser frame -->
+  <rect x="73" y="31" width="157" height="93" rx="10" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+  <path d="M73 47h157" fill="none" stroke="#7999C0" stroke-width="1.15"/>
+  <circle cx="84" cy="39" r="2.7" fill="#7999C0"/>
+  <circle cx="93" cy="39" r="2.7" fill="#7999C0"/>
+  <circle cx="102" cy="39" r="2.7" fill="#7999C0"/>
+  <rect x="181" y="36" width="37" height="6" rx="3" fill="#DDEAF7"/>
+
+  <!-- Listing row 1 -->
+  <rect x="84" y="55" width="135" height="18" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="96" cy="64" r="5.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.85"/>
+  <path d="M90.5 64h11M96 58.5c1.8 1.7 2.8 3.5 2.8 5.5S97.8 67.8 96 69.5M96 58.5c-1.8 1.7-2.8 3.5-2.8 5.5s1 3.8 2.8 5.5" fill="none" stroke="#7999C0" stroke-width="0.65" stroke-linecap="round"/>
+  <rect x="108" y="60" width="61" height="3.5" rx="1.75" fill="#7999C0"/>
+  <rect x="108" y="66" width="43" height="2.7" rx="1.35" fill="#fdfdfd"/>
+  <circle cx="195" cy="64" r="4.2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="205" cy="64" r="4.2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- Listing row 2 -->
+  <rect x="84" y="79" width="135" height="18" rx="4" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="96" cy="88" r="5.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.85"/>
+  <path d="M90.5 88h11M96 82.5c1.8 1.7 2.8 3.5 2.8 5.5S97.8 91.8 96 93.5M96 82.5c-1.8 1.7-2.8 3.5-2.8 5.5s1 3.8 2.8 5.5" fill="none" stroke="#7999C0" stroke-width="0.65" stroke-linecap="round"/>
+  <rect x="108" y="84" width="52" height="3.5" rx="1.75" fill="#7999C0"/>
+  <rect x="108" y="90" width="35" height="2.7" rx="1.35" fill="#DDEAF7"/>
+  <circle cx="195" cy="88" r="4.2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="205" cy="88" r="4.2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- Listing row 3 -->
+  <rect x="84" y="103" width="135" height="13" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="96" cy="109.5" r="3.8" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.75"/>
+  <rect x="106" y="107.5" width="69" height="3.3" rx="1.65" fill="#7999C0"/>
+  <circle cx="198" cy="109.5" r="3.4" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.75"/>
+  <circle cx="207" cy="109.5" r="3.4" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.75"/>
+
+  <!-- Incoming listing connection -->
+  <path d="M86 77h-7c-6 0-9-3-9-8v-5" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M66.7 66.2 70 62.9l3.3 3.3" fill="none" stroke="#7999C0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Buyer-side offer card -->
+  <rect x="221" y="56" width="62" height="47" rx="7" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.35"/>
+  <rect x="229" y="64" width="46" height="7" rx="2.5" fill="#DDEAF7"/>
+  <circle cx="237" cy="84" r="8.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.05"/>
+  <circle cx="237" cy="84" r="4.4" fill="#DDEAF7"/>
+  <rect x="251" y="78" width="21" height="3.5" rx="1.75" fill="#7999C0"/>
+  <rect x="251" y="85" width="17" height="3.2" rx="1.6" fill="#DDEAF7"/>
+  <rect x="251" y="92" width="20" height="3.2" rx="1.6" fill="#DDEAF7"/>
+
+  <!-- Exchange link to marketplace -->
+  <path d="M230 85h8c5 0 8-3 8-8v-3" fill="none" stroke="#214787" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M242.8 76.8 246 73.6l3.2 3.2" fill="none" stroke="#214787" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Sale/offer coin group tied to marketplace -->
+  <circle cx="235" cy="116" r="8" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="247" cy="116" r="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="259" cy="116" r="8" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="235" cy="116" r="2.7" fill="#7999C0"/>
+  <circle cx="247" cy="116" r="2.7" fill="#7999C0"/>
+  <circle cx="259" cy="116" r="2.7" fill="#7999C0"/>
+
+  <!-- Small restrained support dots -->
+  <circle cx="24" cy="114" r="2.2" fill="#7999C0"/>
+  <circle cx="31" cy="114" r="1.6" fill="#DDEAF7"/>
+  <circle cx="276" cy="36" r="2.2" fill="#7999C0"/>
+  <circle cx="284" cy="36" r="1.6" fill="#DDEAF7"/>
+</svg>

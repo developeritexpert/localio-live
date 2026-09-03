@@ -1,0 +1,67 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Pale support geometry -->
+    <circle cx="149" cy="74" r="56" fill="#f7f9fb" stroke="none"/>
+    <circle cx="54" cy="55" r="25" fill="#DDEAF7" stroke="none"/>
+    <circle cx="247" cy="93" r="29" fill="#DDEAF7" stroke="none"/>
+    <circle cx="238" cy="39" r="17" fill="#f7f9fb" stroke="none"/>
+
+    <!-- Main domain status panel -->
+    <rect x="68" y="31" width="139" height="87" rx="9" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+    <rect x="81" y="43" width="113" height="18" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+    <circle cx="94" cy="52" r="4.7" fill="#7999C0" stroke="none"/>
+    <line x1="106" y1="52" x2="167" y2="52" stroke="#7999C0" stroke-width="1.1"/>
+    <circle cx="181" cy="52" r="3.1" fill="#214787" stroke="none"/>
+
+    <!-- Monitoring status rows -->
+    <rect x="145" y="70" width="48" height="11" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+    <circle cx="154" cy="75.5" r="2.8" fill="#7999C0" stroke="none"/>
+    <line x1="163" y1="75.5" x2="183" y2="75.5" stroke="#7999C0" stroke-width="0.9"/>
+
+    <rect x="145" y="86" width="48" height="11" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+    <circle cx="154" cy="91.5" r="2.8" fill="#214787" stroke="none"/>
+    <line x1="163" y1="91.5" x2="183" y2="91.5" stroke="#7999C0" stroke-width="0.9"/>
+
+    <rect x="145" y="102" width="48" height="8" rx="2.5" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+    <circle cx="154" cy="106" r="2.4" fill="#7999C0" stroke="none"/>
+    <line x1="162" y1="106" x2="182" y2="106" stroke="#7999C0" stroke-width="0.9"/>
+
+    <!-- Domain globe inside monitoring lens -->
+    <circle cx="113" cy="84" r="24" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+    <circle cx="113" cy="84" r="17" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.0"/>
+    <ellipse cx="113" cy="84" rx="8" ry="17" stroke="#7999C0" stroke-width="0.9"/>
+    <line x1="96" y1="84" x2="130" y2="84" stroke="#7999C0" stroke-width="0.9"/>
+    <path d="M99 76.5C103 79 108 80.2 113 80.2C118 80.2 123 79 127 76.5" stroke="#7999C0" stroke-width="0.9"/>
+    <path d="M99 91.5C103 89 108 87.8 113 87.8C118 87.8 123 89 127 91.5" stroke="#7999C0" stroke-width="0.9"/>
+
+    <!-- Magnifying-glass handle -->
+    <path d="M130.5 101.5L146 117" stroke="#214787" stroke-width="1.6"/>
+    <circle cx="147.5" cy="118.5" r="3" fill="#214787" stroke="none"/>
+
+    <!-- Change-alert card -->
+    <rect x="194" y="58" width="65" height="50" rx="7" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <rect x="204" y="67" width="45" height="12" rx="3" fill="#DDEAF7" stroke="none"/>
+    <circle cx="211" cy="73" r="2.8" fill="#7999C0" stroke="none"/>
+    <line x1="220" y1="73" x2="240" y2="73" stroke="#7999C0" stroke-width="0.9"/>
+    <path d="M213 93C213 87.8 216.8 84 222 84C227.2 84 231 87.8 231 93V96H213Z" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+    <line x1="222" y1="81.5" x2="222" y2="84" stroke="#7999C0" stroke-width="0.9"/>
+    <path d="M219.3 99C220.2 100.5 223.8 100.5 224.7 99" stroke="#214787" stroke-width="0.9"/>
+    <line x1="237" y1="88" x2="249" y2="88" stroke="#7999C0" stroke-width="0.9"/>
+    <line x1="237" y1="94" x2="246" y2="94" stroke="#7999C0" stroke-width="0.9"/>
+
+    <!-- Compact monitoring-history card -->
+    <rect x="39" y="70" width="43" height="36" rx="6" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <circle cx="51" cy="81" r="3" fill="#7999C0" stroke="none"/>
+    <line x1="60" y1="81" x2="72" y2="81" stroke="#7999C0" stroke-width="0.9"/>
+    <circle cx="51" cy="91" r="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+    <line x1="60" y1="91" x2="72" y2="91" stroke="#7999C0" stroke-width="0.9"/>
+    <circle cx="51" cy="101" r="3" fill="#214787" stroke="none"/>
+    <line x1="60" y1="101" x2="68" y2="101" stroke="#7999C0" stroke-width="0.9"/>
+
+    <!-- Small restrained status details -->
+    <circle cx="272" cy="47" r="3" fill="#7999C0" stroke="none"/>
+    <circle cx="279" cy="47" r="1.8" fill="#DDEAF7" stroke="none"/>
+    <circle cx="28" cy="109" r="2.6" fill="#7999C0" stroke="none"/>
+    <circle cx="35" cy="109" r="1.7" fill="#DDEAF7" stroke="none"/>
+  </g>
+</svg>

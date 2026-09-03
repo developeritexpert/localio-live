@@ -1,0 +1,54 @@
+<svg width="300" height="150" viewBox="0 0 300 150" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <!-- quiet support geometry -->
+    <circle cx="76" cy="74" r="52" fill="#f7f9fb"/>
+    <circle cx="226" cy="74" r="48" fill="#DDEAF7"/>
+
+    <!-- stacked domain cards: portfolio / registered names -->
+    <rect x="34" y="45" width="112" height="66" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.2"/>
+    <rect x="47" y="35" width="112" height="70" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <circle cx="70" cy="58" r="10" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+    <path d="M60.5 58H79.5M70 48.5C66.5 51.8 65.1 55 65.1 58C65.1 61 66.5 64.2 70 67.5M70 48.5C73.5 51.8 74.9 55 74.9 58C74.9 61 73.5 64.2 70 67.5M62.2 53.5H77.8M62.2 62.5H77.8" fill="none" stroke="#7999C0" stroke-width="0.75" stroke-linecap="round"/>
+    <rect x="88" y="50" width="48" height="5" rx="2" fill="#DDEAF7"/>
+    <rect x="88" y="60" width="35" height="4" rx="2" fill="#f7f9fb"/>
+    <rect x="88" y="69" width="42" height="4" rx="2" fill="#f7f9fb"/>
+
+    <!-- primary registration / ownership card -->
+    <rect x="65" y="48" width="128" height="76" rx="4" fill="#fdfdfd" stroke="#214787" stroke-width="1.4"/>
+    <rect x="77" y="60" width="104" height="26" rx="3" fill="#DDEAF7"/>
+    <circle cx="94" cy="73" r="9" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+    <path d="M85.8 73H102.2M94 64.8C91.1 67.6 90 70.1 90 73C90 75.9 91.1 78.4 94 81.2M94 64.8C96.9 67.6 98 70.1 98 73C98 75.9 96.9 78.4 94 81.2M87.3 69H100.7M87.3 77H100.7" fill="none" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+    <rect x="112" y="67" width="54" height="5" rx="2" fill="#fdfdfd"/>
+    <rect x="112" y="76" width="39" height="4" rx="2" fill="#f7f9fb"/>
+
+    <!-- ownership key -->
+    <circle cx="90" cy="105" r="6" fill="#DDEAF7" stroke="#214787" stroke-width="1.2"/>
+    <circle cx="90" cy="105" r="2" fill="#fdfdfd"/>
+    <path d="M96 105H117M108 105V110M114 105V108" fill="none" stroke="#214787" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="128" y="98" width="40" height="5" rx="2" fill="#DDEAF7"/>
+    <rect x="128" y="108" width="28" height="4" rx="2" fill="#f7f9fb"/>
+
+    <!-- registrar management panel -->
+    <rect x="166" y="32" width="99" height="88" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.4"/>
+    <rect x="178" y="45" width="75" height="21" rx="3" fill="#DDEAF7"/>
+    <circle cx="190" cy="55.5" r="6" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+    <path d="M184.7 55.5H195.3M190 50.2C188.1 52 187.4 53.7 187.4 55.5C187.4 57.3 188.1 59 190 60.8M190 50.2C191.9 52 192.6 53.7 192.6 55.5C192.6 57.3 191.9 59 190 60.8" fill="none" stroke="#7999C0" stroke-width="0.65" stroke-linecap="round"/>
+    <rect x="202" y="52" width="31" height="4" rx="2" fill="#fdfdfd"/>
+    <circle cx="242" cy="55.5" r="5.5" fill="#fdfdfd" stroke="#214787" stroke-width="1"/>
+    <path d="M239.5 55.5H244.5M242 53V58" fill="none" stroke="#214787" stroke-width="1" stroke-linecap="round"/>
+
+    <!-- abstract registered-domain rows -->
+    <rect x="178" y="76" width="75" height="11" rx="2" fill="#f7f9fb"/>
+    <circle cx="186" cy="81.5" r="3" fill="#7999C0"/>
+    <rect x="193" y="79.5" width="35" height="4" rx="2" fill="#DDEAF7"/>
+    <circle cx="245" cy="81.5" r="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+
+    <rect x="178" y="92" width="75" height="11" rx="2" fill="#f7f9fb"/>
+    <circle cx="186" cy="97.5" r="3" fill="#7999C0"/>
+    <rect x="193" y="95.5" width="42" height="4" rx="2" fill="#DDEAF7"/>
+    <circle cx="245" cy="97.5" r="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+
+    <!-- selected/managed-domain cursor cue -->
+    <path d="M252 108L263 113L258.5 115.5L261.5 121L258 122.8L255 117.2L251 120.5Z" fill="#DDEAF7" stroke="#214787" stroke-width="1" stroke-linejoin="round"/>
+  </g>
+</svg>

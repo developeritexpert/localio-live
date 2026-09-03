@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- Pale support geometry -->
+  <circle cx="48" cy="46" r="25" fill="#f7f9fb"/>
+  <circle cx="252" cy="104" r="28" fill="#DDEAF7"/>
+  <circle cx="270" cy="40" r="15" fill="#f7f9fb"/>
+  <circle cx="79" cy="116" r="18" fill="#f7f9fb"/>
+
+  <!-- Distributed edge nodes and connectors -->
+  <path d="M69 61 H94" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M69 93 H96" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M206 58 H232" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <path d="M207 94 H233" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+
+  <g>
+    <rect x="18" y="46" width="51" height="31" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <rect x="25" y="53" width="24" height="6" rx="2" fill="#DDEAF7"/>
+    <rect x="25" y="64" width="11" height="8" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+    <path d="M42 66 H61 M42 71 H57" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  </g>
+  <g>
+    <rect x="23" y="82" width="46" height="27" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <circle cx="31" cy="91" r="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+    <path d="M38 91 H60 M29 99 H59" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  </g>
+  <g>
+    <rect x="232" y="44" width="50" height="30" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <circle cx="241" cy="53" r="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+    <rect x="248" y="50" width="25" height="6" rx="2" fill="#DDEAF7"/>
+    <path d="M241 64 H271" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  </g>
+  <g>
+    <rect x="233" y="84" width="49" height="29" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+    <circle cx="242" cy="94" r="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+    <path d="M250 93 H273 M242 103 H270" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Dominant cloud-hosting anchor -->
+  <path d="M98 112
+           C85 112 75 103 75 91
+           C75 81 81 73 90 69
+           C90 67 90 65 90 63
+           C90 48 102 36 117 36
+           C124 36 131 39 136 44
+           C143 31 156 23 171 23
+           C191 23 208 38 211 58
+           C214 57 217 57 220 57
+           C235 57 247 69 247 84
+           C247 99 235 112 220 112
+           Z"
+        fill="#DDEAF7" stroke="#214787" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Server stack integrated inside the cloud -->
+  <rect x="105" y="48" width="95" height="18" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="116" cy="57" r="4" fill="#7999C0"/>
+  <path d="M126 57 H163" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="188" cy="57" r="3.5" fill="#214787"/>
+
+  <rect x="105" y="71" width="95" height="18" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="116" cy="80" r="4" fill="#7999C0"/>
+  <path d="M126 80 H163" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="188" cy="80" r="3.5" fill="#214787"/>
+
+  <rect x="105" y="94" width="95" height="18" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="116" cy="103" r="4" fill="#7999C0"/>
+  <path d="M126 103 H163" fill="none" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="188" cy="103" r="3.5" fill="#214787"/>
+
+  <!-- Small cloud-management indicators -->
+  <rect x="138" y="118" width="47" height="13" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="151" cy="124.5" r="2.7" fill="#7999C0"/>
+  <circle cx="161.5" cy="124.5" r="2.7" fill="#214787"/>
+  <circle cx="172" cy="124.5" r="2.7" fill="#7999C0"/>
+</svg>
