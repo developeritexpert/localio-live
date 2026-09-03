@@ -114,19 +114,27 @@
                     @php
                         $bTitle = $biz->translations->first()?->name ?? $biz->name ?? 'Business';
                     @endphp
-                    <div class="your-comp-pill">
+                    @if(count($businesses) > 1)
+                    <a href="javascript:void(0);" class="your-comp-pill remove-from-comparison" 
+                        data-url="{{ route('remove-from-comparison', ['locale' => app()->getLocale(), 'productId' => $biz->id]) }}"
+                        data-product-id="{{ $biz->id }}"
+                        title="Remove {{ $bTitle }}">
                         <div class="your-comp-pill-logo">
                             <x-business-logo :business="$biz" />
                         </div>
                         <span>{{ $bTitle }}</span>
-                        @if(count($businesses) > 1)
-                        <button type="button" class="your-comp-pill-remove remove-from-comparison" 
-                            data-url="{{ route('remove-from-comparison', ['locale' => app()->getLocale(), 'productId' => $biz->id]) }}"
-                            title="Remove {{ $bTitle }}">
+                        <span class="your-comp-pill-remove">
                             <i class="fas fa-times"></i>
-                        </button>
-                        @endif
+                        </span>
+                    </a>
+                    @else
+                    <div class="your-comp-pill" title="{{ $bTitle }}">
+                        <div class="your-comp-pill-logo">
+                            <x-business-logo :business="$biz" />
+                        </div>
+                        <span>{{ $bTitle }}</span>
                     </div>
+                    @endif
                 @endforeach
                 <span class="your-comp-count">{{ count($businesses) }} of 4 added </span>
             </div>
@@ -221,19 +229,22 @@
                                                 
 
                                             </div>
-                                            @if(!empty($business->is_affiliate))
-                                                <div class="auto-choice-btn fit-btn" style="max-width: 220px; margin-top: 0;">
-                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
-                                                        target="_blank"
-                                                        class="cta cta_orange d-flex align-items-center justify-content-center"
-                                                        style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 20px;text-decoration: none; width: 100%; border:none;"
-                                                        onmouseover="this.style.backgroundColor='#e64a19';"
-                                                        onmouseout="this.style.backgroundColor='#ff5722';">
-                                                        {{ static_text('visit_website') ?: 'Visit website' }}
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
-                                                    </a>
-                                                </div>
+                                            <div class="auto-choice-btn fit-btn d-flex align-items-center gap-2" style="margin-top: 0; flex-wrap: wrap;">
+                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()?->slug ?? $business->slug]) }}"
+                                                    class="cta cta_outline d-flex align-items-center justify-content-center"
+                                                    style="white-space: nowrap;">
+                                                    {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
+                                                </a>
+                                                @if(!empty($business->is_affiliate))
+                                                <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                                    target="_blank"
+                                                    class="btn-orng  cta cta_orange  d-flex align-items-center justify-content-center"
+                                                    style="white-space: nowrap;">
+                                                    {{ static_text('visit_website') ?: 'Visit website' }}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                </a>
                                                 @endif
+                                            </div>
                                         </div>
 
 
@@ -1226,7 +1237,9 @@
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                currentIds: @json($businesses->pluck('id')->toArray())
+                                productId: this.getAttribute('data-product-id') || null,
+                                currentIds: @json($businesses->pluck('id')->toArray()),
+                                comparison_slug: '{{ $comparison_slug ?? "" }}'
                             })
                         })
                         .then(response => {

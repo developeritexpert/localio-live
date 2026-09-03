@@ -226,10 +226,16 @@
     font-weight: 600;
     color: #002347;
     cursor: pointer;
+    text-decoration: none !important;
 }
 
 .your-comp-pill:hover {
     background: #e2e8f0;
+    color: #002347;
+}
+
+.your-comp-pill > * {
+    pointer-events: none;
 }
 
 .your-comp-pill-logo {
@@ -252,7 +258,6 @@
     padding: 0;
     margin-left: 4px;
     color: #5b6b7a;
-    cursor: pointer;
     font-size: 12px;
     display: inline-flex;
     align-items: center;
@@ -748,3 +753,6 @@
 .bg_new_grey {
     background-color: #f8fafc !important;
 }
+
+
+
