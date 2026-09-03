@@ -676,7 +676,7 @@
                                         {{ $ratingWord }}
                                     </span>
                                 @endif
-                                <div class="" style="margin-bottom: 4px; display: flex;">
+                                <div class="" style="margin-bottom: 3px; display: flex;">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($averageRating))
                                             <i class="fas fa-star text-warning" style="font-size: 18px;"></i>
@@ -687,7 +687,7 @@
                                         @endif
                                     @endfor
                                 </div>
-                                <span class="com-rating">Community rating · {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
+                                <span class="com-rating"> {{ number_format($totalReviews) }} {{ $totalReviews == 1 ? 'review' : 'reviews' }}</span>
                             </div>
                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section14" class="view-review-link" style="color: #06498b; font-weight: 600; font-size: 14px; text-decoration: none; padding-top: 5px;">
                                 View all reviews

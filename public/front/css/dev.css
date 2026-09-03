@@ -207,7 +207,7 @@
 
 .your-comp-title {
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 600;
     color: #1e3050;
     margin-right: 4px;
 }
@@ -218,11 +218,12 @@
     gap: 8px;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    border-radius: 180px;
     padding: 5px 12px 5px 8px;
     font-size: 13px;
     font-weight: 600;
     color: #002347;
+    cursor: pointer;
 }
 
 .your-comp-pill:hover {
@@ -257,7 +258,7 @@
     line-height: 1;
 }
 
-.your-comp-pill-remove:hover {
+.your-comp-pill:hover .your-comp-pill-remove {
     color: #002347;
 }
 
@@ -272,8 +273,8 @@
 }
 
 .add-products-btn {
-    background-color: #ffffff;
-    color: #002347;
+    background-color: #002347;
+    color: #ffffff;
     font-weight: 600;
     font-size: 13.5px;
     text-decoration: none;
@@ -283,12 +284,12 @@
     cursor: pointer;
     padding: 7px 16px;
     border-radius: 8px;
-    border: 1.5px solid #002347;
+    border: 1px solid #002347;
     line-height: 1.4;
 }
 
 .add-products-btn:hover {
-    background-color: #002347;
+    background-color: #033b74;
     color: #ffffff;
 }
 
