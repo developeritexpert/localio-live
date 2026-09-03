@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'parent_id', 'image','category_icon', 'top_rated_image', 'faq_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit'];
+    protected $fillable = [ 'parent_id', 'image','category_icon', 'top_rated_image', 'faq_image', 'status','total_products','total_reviews', 'show_on_homepage', 'homepage_order', 'homepage_product_limit', 'page_title_addition', 'top_rated_listing_headline_addition'];
 
     protected $lang_code, $lang_id;
 
