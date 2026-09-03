@@ -8,14 +8,24 @@
 
         {{-- Page Header --}}
         <div class="nk-block-head nk-block-head-sm">
-            <div class="nk-block-between">
+            <div class="nk-block-between align-items-center">
                 <div class="nk-block-head-content">
                     <h3 class="nk-block-title page-title">Content Generation</h3>
-                    <p class="nk-block-des text-soft">Select businesses and fields, then submit a batch to OpenAI or Claude.</p>
+                    <p class="nk-block-des text-soft">
+                        Select businesses and fields, then submit a batch to OpenAI or Claude.
+                        @if($lastPollAt)
+                            &bull; <span class="text-success"><em class="icon ni ni-clock me-1"></em>Last poll: {{ \Carbon\Carbon::parse($lastPollAt)->diffForHumans() }}</span>
+                        @else
+                            &bull; <span class="text-warning"><em class="icon ni ni-alert-circle me-1"></em>Scheduler poll not recorded yet</span>
+                        @endif
+                    </p>
                 </div>
-                <div class="nk-block-head-content">
-                    <a href="{{ route('content-gen.batch-jobs') }}" class="btn btn-outline-secondary btn-sm">
-                        <em class="icon ni ni-list"></em> <span>Batch Jobs</span>
+                <div class="nk-block-head-content d-flex gap-2">
+                    <a href="{{ route('content-gen.poll-now') }}" class="btn btn-info btn-sm">
+                        <em class="icon ni ni-reload me-1"></em> Poll Status Now
+                    </a>
+                    <a href="{{ route('content-gen.batch-jobs') }}" class="btn btn-secondary btn-sm">
+                        <em class="icon ni ni-list me-1"></em> <span>Batch Jobs</span>
                     </a>
                 </div>
             </div>
@@ -24,6 +34,12 @@
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
                 <em class="icon ni ni-check-circle me-1"></em> {!! session('success') !!}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if(session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show mb-3" role="alert">
+                <em class="icon ni ni-alert-circle me-1"></em> {!! session('warning') !!}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -119,31 +135,42 @@
                                 <th>Category</th>
                                 <th class="text-center" style="min-width:120px">Overall Status</th>
                                 @foreach($fields as $field)
-                                    <th class="text-center" style="min-width:100px">{{ \App\Models\AiContentQueue::$fieldLabels[$field] }}</th>
+                                    <th class="text-center" style="min-width:105px">
+                                        {{ \App\Models\AiContentQueue::$fieldLabels[$field] }}
+                                        @php $cfgPrompt = $configuredPrompts[$field] ?? null; @endphp
+                                        @if($cfgPrompt && $cfgPrompt->hasOpenAIPromptId())
+                                            <span class="badge bg-success" style="font-size:9px" title="Saved OpenAI Prompt ID: {{ $cfgPrompt->openai_prompt_id }}">ID</span>
+                                        @elseif($cfgPrompt)
+                                            <span class="badge bg-info" style="font-size:9px" title="Prompt configured (custom text)">Text</span>
+                                        @else
+                                            <span class="badge bg-light text-muted" style="font-size:9px" title="Default prompt text will be used">Default</span>
+                                        @endif
+                                    </th>
                                 @endforeach
-                                <th class="text-center">Actions</th>
+                                <th class="text-center" style="min-width:150px">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($businesses as $business)
                                 @php
-                                    $isLive = $business->status === 'active';
-                                    $name = optional($business->translations->first())->name ?? 'Business #'.$business->id;
-                                    $catName = optional($business->category)->name ?? '-';
-                                    $subCatName = '-';
-                                    $bizFields = $fieldStatusMap[$business->id] ?? [];
+                                    $name        = optional($business->translations->first())->name ?? 'Business #' . $business->id;
+                                    $catName     = optional($business->category)->name ?? '-';
+                                    $isLive      = $business->status === 'active';
+                                    $bizFields   = $fieldStatusMap[$business->id] ?? [];
 
-                                    // Compute overall status
-                                    $allStatuses = array_column($bizFields, 'status');
-                                    $hasAny = !empty($allStatuses);
-                                    $allComplete = $hasAny && count(array_filter($allStatuses, fn($s) => $s === 'completed')) === count($fields);
-                                    $hasFailed = in_array('failed', $allStatuses);
-                                    $hasProcessing = in_array('processing', $allStatuses) || in_array('pending', $allStatuses);
-                                    $isPartial = $hasAny && !$allComplete;
+                                    $hasAny        = count($bizFields) > 0;
+                                    $allComplete   = $hasAny && count(array_filter($fields, fn($f) => ($bizFields[$f]?->status ?? '') === 'completed')) === count($fields);
+                                    $hasCompleted  = count(array_filter($fields, fn($f) => ($bizFields[$f]?->status ?? '') === 'completed')) > 0;
+                                    $hasFailed     = count(array_filter($fields, fn($f) => ($bizFields[$f]?->status ?? '') === 'failed')) > 0;
+                                    $hasProcessing = count(array_filter($fields, fn($f) => in_array($bizFields[$f]?->status ?? '', ['processing', 'pending']))) > 0;
                                 @endphp
                                 <tr>
                                     <td class="text-center">
-                                        <input type="checkbox" name="business_ids[]" value="{{ $business->id }}" class="form-check-input business-check" onchange="updateCount()">
+                                        <input type="checkbox"
+                                               name="business_ids[]"
+                                               value="{{ $business->id }}"
+                                               class="form-check-input business-check"
+                                               onchange="updateCount()">
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
@@ -179,6 +206,13 @@
                                                 <a href="{{ route('content-gen.view-result', $qi->id) }}" class="btn btn-icon btn-xs btn-dim btn-outline-primary ms-1" title="View Result">
                                                     <em class="icon ni ni-eye"></em>
                                                 </a>
+                                                <button type="button"
+                                                    class="btn btn-icon btn-xs btn-dim btn-outline-secondary ms-1"
+                                                    title="Re-generate"
+                                                    onclick="retryField({{ $business->id }}, '{{ $field }}')"
+                                                >
+                                                    <em class="icon ni ni-reload"></em>
+                                                </button>
                                             @elseif($qi->status === 'processing' || $qi->status === 'pending')
                                                 <span class="badge badge-dim bg-info"><em class="icon ni ni-loader"></em></span>
                                             @elseif($qi->status === 'failed')
@@ -194,9 +228,16 @@
                                         </td>
                                     @endforeach
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-xs btn-outline-primary" onclick="generateAll({{ $business->id }})">
-                                            Generate all
-                                        </button>
+                                        <div class="d-inline-flex">
+                                            <button type="button" class="btn btn-xs btn-primary" onclick="generateAll({{ $business->id }})">
+                                                Generate all
+                                            </button>
+                                            @if($hasCompleted)
+                                                <button type="button" class="btn btn-xs btn-primary" title="Apply all completed fields to this business" onclick="applyAllCompleted({{ $business->id }})">
+                                                    <em class="icon ni ni-save me-1"></em> Apply
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -223,6 +264,12 @@
             <input type="hidden" name="business_id" id="retry_business_id">
             <input type="hidden" name="field" id="retry_field">
             <input type="hidden" name="provider" id="retry_provider" value="openai">
+        </form>
+
+        {{-- Apply All Completed hidden form --}}
+        <form id="applyAllForm" action="{{ route('content-gen.apply-all') }}" method="POST" class="d-none">
+            @csrf
+            <input type="hidden" name="business_id" id="apply_business_id">
         </form>
 
     </div>
@@ -263,7 +310,6 @@ document.getElementById('selectAllCheck').addEventListener('change', function() 
 });
 
 function generateAll(businessId) {
-    // Check all field checkboxes and select this business
     document.querySelectorAll('.business-check').forEach(c => c.checked = false);
     const bCheck = document.querySelector('.business-check[value="' + businessId + '"]');
     if (bCheck) bCheck.checked = true;
@@ -276,11 +322,18 @@ function generateAll(businessId) {
 
 function retryField(businessId, field) {
     const provider = document.querySelector('[name=provider]').value;
-    if (confirm('Retry generating "' + field + '" for this business?')) {
+    if (confirm('Generate / re-generate "' + field + '" for this business?')) {
         document.getElementById('retry_business_id').value = businessId;
         document.getElementById('retry_field').value = field;
         document.getElementById('retry_provider').value = provider;
         document.getElementById('retryForm').submit();
+    }
+}
+
+function applyAllCompleted(businessId) {
+    if (confirm('Apply all completed AI generated content to this business record?')) {
+        document.getElementById('apply_business_id').value = businessId;
+        document.getElementById('applyAllForm').submit();
     }
 }
 </script>
