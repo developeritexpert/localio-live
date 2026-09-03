@@ -1429,23 +1429,47 @@
                                                                                     </div>
                                                                                 </div>
                                                                                 <div style="display: flex; gap: 12px; align-items: center;">
-                                                                                    @auth
-                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-up"></i> 
-                                                                                            
-                                                                                        </button>
-                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-down"></i> 
-                                                                                        </button>
-                                                                                    @else
-                                                                                        <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-up"></i> 
-                                                                                        </button>
-                                                                                        <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                                                            <i class="fas fa-thumbs-down"></i> 
-                                                                                        </button>
-                                                                                    @endauth
-                                                                                </div>
+    @auth
+        <button
+            onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+            style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+            onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+            onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';"
+        >
+            <i class="fas fa-thumbs-up"></i>
+        </button>
+
+        <button
+            onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+            style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+            onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+            onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';"
+        >
+            <i class="fas fa-thumbs-down"></i>
+        </button>
+
+    @else
+
+        <button
+            onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+            style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+            onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+            onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';"
+        >
+            <i class="fas fa-thumbs-up"></i>
+        </button>
+
+        <button
+            onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+            style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+            onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+            onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';"
+        >
+            <i class="fas fa-thumbs-down"></i>
+        </button>
+
+    @endauth
+</div>
                                                                             </div>
 
                                                                             <div class="row review-row-prod-inr">
