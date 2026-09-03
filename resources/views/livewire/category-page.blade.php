@@ -968,26 +968,24 @@
                                     $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
                                     @endphp
 
-                                    <div class="position-relative d-inline-block">
-                                        <button type="button" wire:click="toggleSortDropdown"
-                                            class="sorting d-inline-flex align-items-center gap-2"
+                                    <div class="dropdown d-inline-block">
+                                        <button type="button" class="sorting d-inline-flex align-items-center gap-2"
+                                            id="categorySortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
                                             style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
-                                            <span>Sort: <span>{{ $currentLabel }}</span></span>
+                                            <span>Sort: <span style="font-weight: 600;">{{ $currentLabel }}</span></span>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                                 height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
-                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                                style="{{ !empty($showSortDropdown) ? 'transform: rotate(180deg);' : '' }}">
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="6 9 12 15 18 9" />
                                             </svg>
                                         </button>
 
-                                        @if(!empty($showSortDropdown))
-                                        <div wire:click="$set('showSortDropdown', false)" class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 9998; cursor: default;"></div>
-                                        <div class="position-absolute end-0 mt-2 bg-white py-2"
-                                            style="z-index: 9999; min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                                        <div class="dropdown-menu dropdown-menu-end shadow-sm"
+                                            aria-labelledby="categorySortDropdownBtn"
+                                            style="min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 6px 0; margin-top: 6px; overflow: hidden;">
                                             @foreach($sortOptionsMap as $val => $label)
                                             <button type="button" wire:click="setSortBy('{{ $val }}')"
-                                                class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
+                                                class="dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
                                                 style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
                                                 onmouseover="this.style.backgroundColor='#f1f5f9'"
                                                 onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
@@ -1004,7 +1002,6 @@
                                             </button>
                                             @endforeach
                                         </div>
-                                        @endif
                                     </div>
                                 </div>
                                 @if (!empty($products))
