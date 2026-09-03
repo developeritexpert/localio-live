@@ -161,7 +161,7 @@
                                                                         <x-business-logo :business="$altbusiness" :name="$altBizName" />
                                                                     </div>
                                                                     <div class="asn-rating">
-                                                                        <h6 class="m-0 fw_700">
+                                                                        <h6 class="m-0 fw_700" style="color: #002347">
                                                                             {{ $altBizName }}
                                                                         </h6>
                                                                         <div class="rating-group">
@@ -187,28 +187,28 @@
                                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
                                                                     <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Ease of Use</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Customer Service</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Customer Service</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Features</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Features</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}</span>
                                                                         </div>
                                                                     </div>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #555;">Value for Money</p>
+                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Value for Money</p>
                                                                         <div class="prgs_br d-flex align-items-center">
                                                                             <progress class="progress-bar" value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}" max="100"></progress>
                                                                             <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}</span>
@@ -354,7 +354,7 @@
                                                 <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
                                             </a>
                                             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
-                                                <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                                                <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -951,7 +951,7 @@
                                                                                         <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                             <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                         </div>
-                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                        <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                                                     </div>
                                                                                 @endforeach
                                                                             @else
@@ -959,19 +959,19 @@
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Free domain & SSL certificate</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Customizable automatic updates</p>
                                                                                 </div>
                                                                                 <div class="d-flex align-items-center size18">
                                                                                     <div class="grn_chk" style="width: 16px; margin-right: 8px; flex-shrink: 0;">
                                                                                         <img src="{{ asset('front/img/green-tick.svg') }}" style="width: 100%; height: auto;">
                                                                                     </div>
-                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
+                                                                                    <p class="m-0" style="font-size: 14px !important; font-weight:500 !important;  color: #002347; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Scalable performance management</p>
                                                                                 </div>
                                                                             @endif
                                                                         </div>
@@ -1036,7 +1036,7 @@
                                                                     <h3 style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
                                                                         {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
                                                                     </h3>
-                                                                    <p style="font-size: 11px; color: #444444; margin-bottom: 0;">Flat Rate, Per One_time</p>
+                                                                    <p style="font-size: 11px; margin-bottom: 0;">Flat Rate, Per One_time</p>
                                                                 </div>
                                                             @endif
                                                         </div>

@@ -471,7 +471,7 @@
                                         $finalTitle .= ' ' . $category->page_title_addition;
                                     }
                                 @endphp
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                <h1 >
                                     {{ $applyDynamicVars($finalTitle) }}
                                 </h1>
                             @else
@@ -481,13 +481,13 @@
                                         $baseTitle .= ' ' . $category->page_title_addition;
                                     }
                                 @endphp
-                                <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">
+                                <h1 >
                                     {{ $applyDynamicVars($baseTitle) }}
                                 </h1>
                             @endif
                             <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
-                            <div style="font-size: 15px; color: #444; margin-bottom: 0;" class="category-description-text">
+                            <div style="font-size: 15px; margin-bottom: 0;" class="category-description-text">
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
@@ -526,7 +526,7 @@
                                     <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                                 </div>
-                                <p style="font-size: 13px; color: #5b6b7a; margin-bottom: 0; line-height: 1.4;">
+                                <p style="font-size: 13px; margin-bottom: 0; ">
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
                             </div>
@@ -548,10 +548,10 @@
                                                 <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                                 <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
                                             </div>
-                                            <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                            <p style="font-size: 13px;  margin-bottom: 8px; ">
                                                 Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                             </p>
-                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
                                         </div>
                                     </div>
                                 </div>
@@ -611,7 +611,7 @@
                                                             id="subcat-{{ $subcat->id }}"
                                                             style="margin-right: 8px; cursor: pointer;">
                                                         <label class="form-check-label" for="subcat-{{ $subcat->id }}"
-                                                            style="font-size: 13px; color: #555; cursor: pointer;">
+                                                            style="font-size: 13px; color:#5b6b7a; cursor: pointer;">
                                                             {{ $subcatName }}
                                                         </label>
                                                     </div>
@@ -652,7 +652,7 @@
                                                                 id="option-{{ $option->id }}"
                                                                 style="margin-right: 8px; cursor: pointer;">
                                                             <label class="form-check-label" for="option-{{ $option->id }}"
-                                                                style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                style="font-size: 13px; color: #5b6b7a; cursor: pointer;">
                                                                 {{ $optionName }}
                                                             </label>
                                                         </div>
@@ -674,7 +674,7 @@
                                                                 value="{{ $option->id }}" id="option-{{ $option->id }}"
                                                                 style="margin-right: 8px; cursor: pointer;">
                                                             <label class="form-check-label" for="option-{{ $option->id }}"
-                                                                style="font-size: 13px; color: #555; cursor: pointer;">
+                                                                style="font-size: 13px; color: #5b6b7a; cursor: pointer;">
                                                                 {{ $optionName }}
                                                             </label>
                                                         </div>
@@ -901,7 +901,7 @@
                                                                id="feature-check-{{ $featId }}"
                                                                style="margin-right: 8px; cursor: pointer;">
                                                         <label class="form-check-label" for="feature-check-{{ $featId }}"
-                                                               style="font-size: 13px; color: #555; cursor: pointer; {{ $isChecked ? 'font-weight: 600; color: #002347;' : '' }}">
+                                                               style="font-size: 13px; color: #5b6b7a; cursor: pointer; {{ $isChecked ? 'font-weight: 600; color: #002347;' : '' }}">
                                                             {{ $featName }}
                                                         </label>
                                                     </div>
@@ -968,26 +968,24 @@
                                     $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
                                     @endphp
 
-                                    <div class="position-relative d-inline-block">
-                                        <button type="button" wire:click="toggleSortDropdown"
-                                            class="sorting d-inline-flex align-items-center gap-2"
+                                    <div class="dropdown d-inline-block">
+                                        <button type="button" class="sorting d-inline-flex align-items-center gap-2"
+                                            id="categorySortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
                                             style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
-                                            <span>Sort: <span>{{ $currentLabel }}</span></span>
+                                            <span>Sort: <span style="font-weight: 600;">{{ $currentLabel }}</span></span>
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                                 height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
-                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                                style="{{ !empty($showSortDropdown) ? 'transform: rotate(180deg);' : '' }}">
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                                 <polyline points="6 9 12 15 18 9" />
                                             </svg>
                                         </button>
 
-                                        @if(!empty($showSortDropdown))
-                                        <div wire:click="$set('showSortDropdown', false)" class="position-fixed top-0 start-0 w-100 h-100" style="z-index: 9998; cursor: default;"></div>
-                                        <div class="position-absolute end-0 mt-2 bg-white py-2"
-                                            style="z-index: 9999; min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                                        <div class="dropdown-menu dropdown-menu-end shadow-sm"
+                                            aria-labelledby="categorySortDropdownBtn"
+                                            style="min-width: 230px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 6px 0; margin-top: 6px; overflow: hidden;">
                                             @foreach($sortOptionsMap as $val => $label)
                                             <button type="button" wire:click="setSortBy('{{ $val }}')"
-                                                class="d-flex align-items-center justify-content-between w-100 px-3 py-2"
+                                                class="dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
                                                 style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
                                                 onmouseover="this.style.backgroundColor='#f1f5f9'"
                                                 onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
@@ -1004,7 +1002,6 @@
                                             </button>
                                             @endforeach
                                         </div>
-                                        @endif
                                     </div>
                                 </div>
                                 @if (!empty($products))
@@ -1138,7 +1135,7 @@
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
-                                                                            style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
+                                                                            style="font-size: 14px;color: #002347; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
                                                                             {{ $usp->text }}</p>
                                                                     </div>
                                                                     @endforeach
@@ -1150,7 +1147,7 @@
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
-                                                                            style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
+                                                                            style="font-size: 14px;color: #002347;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
                                                                             Free domain & SSL certificate</p>
                                                                     </div>
                                                                     <div class="d-flex align-items-center size18">
@@ -1160,7 +1157,7 @@
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
-                                                                            style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
+                                                                            style="font-size: 14px;color: #002347;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
                                                                             Customizable automatic updates</p>
                                                                     </div>
                                                                     <div class="d-flex align-items-center size18">
@@ -1170,7 +1167,7 @@
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
-                                                                            style="font-size: 14px;color: #333;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
+                                                                            style="font-size: 14px;color: #002347;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
                                                                             Scalable performance management</p>
                                                                     </div>
                                                                     @endif
@@ -1262,7 +1259,7 @@
                                                             style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
                                                             {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
                                                         </h3>
-                                                        <p style="font-size: 11px; color: #444444; margin-bottom: 0;">
+                                                        <p style="font-size: 11px; margin-bottom: 0;">
                                                             Flat Rate, Per One_time</p>
                                                     </div>
                                                     @endif
@@ -1375,7 +1372,7 @@
         
         <!-- Top Affiliated Businesses Section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
-        <section class="revie_img_sec" style="background: #f8fafc !important; border-top: 1px solid #e2e8f0;">
+        <section class="revie_img_sec border_bt bg_new_grey">
             <div class="container">
                 <div class="mb-4">
                     @foreach($topAffiliatedBusinesses as $index => $biz)
@@ -1419,12 +1416,32 @@
                                         if (empty($sliderImages)) {
                                             $sliderImages = is_array($biz->screenshot_urls) ? $biz->screenshot_urls : json_decode($biz->screenshot_urls ?? '[]', true);
                                         }
+                                        $sliderImages = array_values(array_filter((array) $sliderImages));
                                     @endphp
                                     @if(!empty($sliderImages) && count($sliderImages) > 0)
                                     <div class="business-preview-images mb-5">
-                                        <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                                            <img src="{{ asset($sliderImages[0]) }}" alt="{{ $bName }}" class="img-fluid w-100" style="object-fit: cover; max-height: 450px;">
-                                        </a>
+                                        @php
+                                            $firstImg = Str::startsWith($sliderImages[0], ['http://', 'https://']) ? $sliderImages[0] : asset($sliderImages[0]);
+                                        @endphp
+                                        <div class="business-main-preview mb-3">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                                <img src="{{ $firstImg }}" alt="{{ $bName }}" id="main-preview-img-{{ $biz->id }}" class="img-fluid w-100 preview-main-display" >
+                                            </a>
+                                        </div>
+                                        @if(count($sliderImages) > 1)
+                                        <div class="business-preview-thumbnails d-flex flex-wrap align-items-center justify-content-start">
+                                            @foreach($sliderImages as $thumbIndex => $thumbImg)
+                                                @php
+                                                    $tSrc = Str::startsWith($thumbImg, ['http://', 'https://']) ? $thumbImg : asset($thumbImg);
+                                                @endphp
+                                                <div class="preview-thumb-item {{ $thumbIndex === 0 ? 'active' : '' }}"
+                                                     onmouseenter="switchCategoryPreview('{{ $biz->id }}', '{{ $tSrc }}', this)"
+                                                     onclick="switchCategoryPreview('{{ $biz->id }}', '{{ $tSrc }}', this)">
+                                                    <img src="{{ $tSrc }}" alt="{{ $bName }} preview {{ $thumbIndex + 1 }}" class="preview-thumb-img">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
                                     </div>
                                     @endif
                                     
@@ -1883,7 +1900,7 @@
                                     </button>
                                 </h2>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
@@ -2056,5 +2073,21 @@ window.addEventListener('scroll-to-top', function() {
 </script>
 
 
+
+<script>
+function switchCategoryPreview(bizId, imgSrc, thumbElement) {
+    var mainImg = document.getElementById('main-preview-img-' + bizId);
+    if (mainImg && mainImg.src !== imgSrc) {
+        mainImg.src = imgSrc;
+    }
+    if (thumbElement && thumbElement.parentElement) {
+        var siblings = thumbElement.parentElement.querySelectorAll('.preview-thumb-item');
+        siblings.forEach(function(el) {
+            el.classList.remove('active');
+        });
+        thumbElement.classList.add('active');
+    }
+}
+</script>
 
 </div>

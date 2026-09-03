@@ -179,7 +179,7 @@ class BusinessImages extends Component
                 $targetUrl = "https://" . $targetUrl;
             }
 
-            $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.png';
+            $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.jpg';
             $fullPath = $destinationDir . '/' . $filename;
 
             $this->addConsoleLog("Attempting capture for target URL: " . $targetUrl);
@@ -216,77 +216,172 @@ class BusinessImages extends Component
         $this->isTakingScreenshots = false;
     }
 
-    private function captureRealScreenshot($savePath, $url)
-    {
-        $cleanUrl = trim($url);
-        if (empty($cleanUrl)) return false;
+private function captureRealScreenshot($savePath, $url)
+{
+    $cleanUrl = trim($url);
+    if (empty($cleanUrl)) return false;
 
-        if (!preg_match("~^(?:f|ht)tps?://~i", $cleanUrl)) {
-            $cleanUrl = "https://" . $cleanUrl;
-        }
+    if (!preg_match("~^(?:f|ht)tps?://~i", $cleanUrl)) {
+        $cleanUrl = "https://" . $cleanUrl;
+    }
 
-        // Standard browser headers to bypass datacenter blocking and bot detectors
-        $headers = [
-            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-            'Accept-Language' => 'en-US,en;q=0.5',
-            'Referer' => 'https://www.google.com/',
-        ];
+    // Standard browser headers to bypass datacenter blocking and bot detectors
+    $headers = [
+        'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language' => 'en-US,en;q=0.5',
+        'Referer' => 'https://www.google.com/',
+    ];
 
-        // HTTP timeout limit per API attempt
-        $apiTimeout = 30; // Increased to 30s because rendering screenshots can take time
+    // HTTP timeout limit per API attempt
+    $apiTimeout = 30;
 
-        try {
-            // 1st Attempt: Direct Embed redirect on Microlink (Most efficient, returns image directly)
-            $this->addConsoleLog("[Attempt 1] Calling Microlink Embed...");
-            $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
-            $embedResponse = Http::withoutVerifying()
-                ->withHeaders($headers)
-                ->timeout($apiTimeout)
-                ->get($embedUrl);
-            if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
-                file_put_contents($savePath, $embedResponse->body());
-                $this->addConsoleLog("[Attempt 1] SUCCESS: Image fetched and saved via Microlink.");
-                return true;
-            } else {
-                $this->addConsoleLog("[Attempt 1] FAILED: Microlink Embed status: " . $embedResponse->status() . ", Length: " . strlen($embedResponse->body()) . ", Response: " . substr($embedResponse->body(), 0, 300));
+    try {
+        // 1st Attempt: Direct Embed redirect on Microlink
+        $this->addConsoleLog("[Attempt 1] Calling Microlink Embed...");
+
+        $embedUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false&embed=screenshot.url";
+
+        $embedResponse = Http::withoutVerifying()
+            ->withHeaders($headers)
+            ->timeout($apiTimeout)
+            ->get($embedUrl);
+
+        if ($embedResponse->successful() && strlen($embedResponse->body()) > 5000) {
+
+            file_put_contents($savePath, $embedResponse->body());
+
+            // Optimize screenshot using Imagick
+            if ($this->optimizeScreenshot($savePath)) {
+                $this->addConsoleLog("[Attempt 1] Screenshot optimized successfully.");
             }
 
-            // 2nd Attempt: Microlink Screenshot API (JSON)
-            $this->addConsoleLog("[Attempt 2] Calling Microlink API (JSON)...");
-            $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false";
-            $response = Http::withoutVerifying()
-                ->withHeaders($headers)
-                ->timeout($apiTimeout)
-                ->get($apiUrl);
+            $this->addConsoleLog("[Attempt 1] SUCCESS: Image fetched and saved via Microlink.");
 
-            if ($response->successful()) {
-                $json = $response->json();
-                $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
-                if ($screenshotUrl) {
-                    $this->addConsoleLog("[Attempt 2] Microlink returned screenshot URL: " . $screenshotUrl . ". Fetching image...");
-                    $imgResponse = Http::withoutVerifying()
-                        ->withHeaders($headers)
-                        ->timeout($apiTimeout)
-                        ->get($screenshotUrl);
-                    if ($imgResponse->successful() && strlen($imgResponse->body()) > 5000) {
-                        file_put_contents($savePath, $imgResponse->body());
-                        $this->addConsoleLog("[Attempt 2] SUCCESS: Image fetched and saved via Microlink.");
-                        return true;
-                    } else {
-                        $this->addConsoleLog("[Attempt 2] FAILED: Image fetch failed. Status: " . $imgResponse->status());
+            return true;
+        } else {
+            $this->addConsoleLog(
+                "[Attempt 1] FAILED: Microlink Embed status: " .
+                $embedResponse->status() .
+                ", Length: " .
+                strlen($embedResponse->body()) .
+                ", Response: " .
+                substr($embedResponse->body(), 0, 300)
+            );
+        }
+
+        // 2nd Attempt: Microlink Screenshot API (JSON)
+        $this->addConsoleLog("[Attempt 2] Calling Microlink API (JSON)...");
+
+        $apiUrl = "https://api.microlink.io/?url=" . urlencode($cleanUrl) . "&screenshot=true&meta=false";
+
+        $response = Http::withoutVerifying()
+            ->withHeaders($headers)
+            ->timeout($apiTimeout)
+            ->get($apiUrl);
+
+        if ($response->successful()) {
+
+            $json = $response->json();
+
+            $screenshotUrl = $json['data']['screenshot']['url'] ?? null;
+
+            if ($screenshotUrl) {
+
+                $this->addConsoleLog(
+                    "[Attempt 2] Microlink returned screenshot URL: " .
+                    $screenshotUrl .
+                    ". Fetching image..."
+                );
+
+                $imgResponse = Http::withoutVerifying()
+                    ->withHeaders($headers)
+                    ->timeout($apiTimeout)
+                    ->get($screenshotUrl);
+
+                if ($imgResponse->successful() && strlen($imgResponse->body()) > 5000) {
+
+                    file_put_contents($savePath, $imgResponse->body());
+
+                    // Optimize screenshot using Imagick
+                    if ($this->optimizeScreenshot($savePath)) {
+                        $this->addConsoleLog("[Attempt 2] Screenshot optimized successfully.");
                     }
+
+                    $this->addConsoleLog("[Attempt 2] SUCCESS: Image fetched and saved via Microlink.");
+
+                    return true;
                 } else {
-                    $this->addConsoleLog("[Attempt 2] FAILED: JSON response did not contain screenshot URL.");
+                    $this->addConsoleLog(
+                        "[Attempt 2] FAILED: Image fetch failed. Status: " .
+                        $imgResponse->status()
+                    );
                 }
             } else {
-                $this->addConsoleLog("[Attempt 2] FAILED: Microlink API status: " . $response->status());
+                $this->addConsoleLog(
+                    "[Attempt 2] FAILED: JSON response did not contain screenshot URL."
+                );
             }
-        } catch (\Exception $e) {
-            $this->addConsoleLog("[Exception] Screenshot generation failed: " . $e->getMessage());
+        } else {
+            $this->addConsoleLog(
+                "[Attempt 2] FAILED: Microlink API status: " .
+                $response->status()
+            );
         }
 
-        return false;
+    } catch (\Exception $e) {
+
+        $this->addConsoleLog(
+            "[Exception] Screenshot generation failed: " .
+            $e->getMessage()
+        );
+    }
+
+    return false;
+}
+
+    private function optimizeScreenshot($imagePath)
+    {
+        try {
+            if (!file_exists($imagePath)) {
+                return false;
+            }
+
+            $image = new \Imagick($imagePath);
+
+            // Keep aspect ratio and make width maximum 800px
+            if ($image->getImageWidth() > 800) {
+                $image->resizeImage(
+                    800,
+                    0,
+                    \Imagick::FILTER_LANCZOS,
+                    1
+                );
+            }
+
+            // Convert screenshot to JPEG
+            $image->setImageFormat('jpeg');
+
+            // Remove unnecessary metadata
+            $image->stripImage();
+
+            // Initial compression
+            $image->setImageCompression(\Imagick::COMPRESSION_JPEG);
+            $image->setImageCompressionQuality(75);
+
+            $image->writeImage($imagePath);
+
+            $image->clear();
+            $image->destroy();
+
+            return true;
+        } catch (\Exception $e) {
+            $this->addConsoleLog(
+                "Image optimization failed: " . $e->getMessage()
+            );
+
+            return false;
+        }
     }
 
     /**

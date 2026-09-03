@@ -234,6 +234,10 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin-dashboard/content-generation/batch-jobs', [ContentGenerationController::class, 'batchJobs'])->name('content-gen.batch-jobs');
     Route::get('/admin-dashboard/content-generation/poll-batches', [ContentGenerationController::class, 'pollBatches'])->name('content-gen.poll-batches');
     Route::get('/admin-dashboard/content-generation/result/{item}', [ContentGenerationController::class, 'viewResult'])->name('content-gen.view-result');
+    Route::post('/admin-dashboard/content-generation/result/{item}/apply', [ContentGenerationController::class, 'applyResult'])->name('content-gen.apply-result');
+    Route::post('/admin-dashboard/content-generation/apply-all', [ContentGenerationController::class, 'applyAllCompleted'])->name('content-gen.apply-all');
+    Route::get('/admin-dashboard/content-generation/batch-jobs/{job}/items', [ContentGenerationController::class, 'batchJobItems'])->name('content-gen.batch-job-items');
+    Route::get('/admin-dashboard/content-generation/poll-now', [ContentGenerationController::class, 'pollNow'])->name('content-gen.poll-now');
 
 
 

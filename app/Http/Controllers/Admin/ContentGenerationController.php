@@ -7,46 +7,20 @@ use App\Models\AiBatchJob;
 use App\Models\AiContentQueue;
 use App\Models\AiPrompt;
 use App\Models\Business;
+use App\Models\BusinessFaq;
+use App\Models\BusinessFaqTranslation;
 use App\Models\BusinessTranslation;
+use App\Models\BusinessUsp;
 use App\Models\Category;
 use App\Models\WebSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class ContentGenerationController extends Controller
 {
-    // The 5 content fields we can generate
     const CONTENT_FIELDS = ['content', 'faqs', 'features', 'pros_cons', 'metatags'];
-
-    /*
-    |==========================================================================
-    | INPUT FORMAT sent to AI (as JSON variables):
-    |
-    |   {
-    |     "business_name": "Bluehost",
-    |     "category_name": "Web Hosting",
-    |     "subcategory_name": "Shared Hosting"
-    |   }
-    |
-    | EXPECTED OUTPUT FORMAT from AI (strict JSON):
-    |
-    |  content:
-    |   { "content": "Full HTML or plain text overview of the business..." }
-    |
-    |  faqs:
-    |   { "faqs": [{"question": "...", "answer": "..."}, ...] }
-    |
-    |  features:
-    |   { "features": [{"title": "...", "description": "..."}, ...] }
-    |
-    |  pros_cons:
-    |   { "pros": ["...", "..."], "cons": ["...", "..."] }
-    |
-    |  metatags:
-    |   { "meta_title": "...", "meta_description": "..." }
-    |==========================================================================
-    */
 
     // -------------------------------------------------------------------------
     // BUSINESSES LIST
@@ -74,14 +48,12 @@ class ContentGenerationController extends Controller
 
         $businesses = $query->orderBy('id', 'desc')->paginate(30)->withQueryString();
 
-        // Load AI queue statuses for all businesses on this page
         $businessIds = $businesses->pluck('id')->toArray();
         $queueItems  = AiContentQueue::where('resource_type', 'business')
             ->whereIn('resource_id', $businessIds)
             ->get()
             ->groupBy('resource_id');
 
-        // Keep only the latest entry per field per business
         $fieldStatusMap = [];
         foreach ($queueItems as $businessId => $items) {
             foreach ($items as $item) {
@@ -92,18 +64,17 @@ class ContentGenerationController extends Controller
             }
         }
 
-        // Load configured prompts per field for the prompt ID status indicator
         $configuredPrompts = [];
         foreach (self::CONTENT_FIELDS as $field) {
-            $p = AiPrompt::forContentField($field);
-            $configuredPrompts[$field] = $p;
+            $configuredPrompts[$field] = AiPrompt::forContentField($field);
         }
 
+        $lastPollAt = Cache::get('ai_batch_last_poll');
         $categories = Category::whereNull('parent_id')->orderBy('id')->get();
         $fields     = self::CONTENT_FIELDS;
 
         return view('Admin.content-generation.businesses', compact(
-            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts'
+            'businesses', 'fieldStatusMap', 'categories', 'fields', 'configuredPrompts', 'lastPollAt'
         ));
     }
 
@@ -124,7 +95,6 @@ class ContentGenerationController extends Controller
         $businessIds = $request->business_ids;
         $fields      = $request->fields;
 
-        // Get API credentials
         $apiKey = $provider === 'openai'
             ? optional(WebSetting::where('key', 'openai_api_key')->first())->value
             : optional(WebSetting::where('key', 'anthropic_api_key')->first())->value;
@@ -137,34 +107,34 @@ class ContentGenerationController extends Controller
             return back()->with('error', 'No API key configured for ' . ucfirst($provider) . '. Set it in AI Configuration.');
         }
 
-        // Build batch requests
         $requests  = [];
         $queueData = [];
 
         foreach ($businessIds as $businessId) {
-            $business = Business::with(['translations' => fn($q) => $q->where('lang_id', 1), 'category'])->find($businessId);
+            // GAP 11: load subCategories for variable injection
+            $business = Business::with([
+                'translations' => fn($q) => $q->where('lang_id', 1),
+                'category',
+                'subCategories',
+            ])->find($businessId);
             if (!$business) continue;
 
-            $businessName = optional($business->translations->first())->name ?? 'Business #' . $businessId;
-            $categoryName = optional($business->category)->name ?? '';
+            $businessName    = optional($business->translations->first())->name ?? 'Business #' . $businessId;
+            $categoryName    = optional($business->category)->name ?? '';
+            $subcategoryName = $business->subCategories->pluck('name')->filter()->implode(', ');
 
             foreach ($fields as $field) {
-                // Load the configured prompt for this field
-                $prompt = AiPrompt::forContentField($field);
-
+                $prompt   = AiPrompt::forContentField($field);
                 $customId = "biz_{$businessId}_{$field}";
 
-                // Input variables (JSON) sent to the AI
                 $inputVariables = [
                     'business_name'    => $businessName,
                     'category_name'    => $categoryName,
-                    'subcategory_name' => '',
+                    'subcategory_name' => $subcategoryName,
                 ];
 
                 if ($provider === 'openai') {
                     if ($prompt && $prompt->hasOpenAIPromptId()) {
-                        // === USE SAVED PROMPT ID (cheaper — no prompt text sent) ===
-                        // Uses OpenAI Responses API with prompt reference
                         $requests[] = [
                             'custom_id' => $customId,
                             'method'    => 'POST',
@@ -178,7 +148,6 @@ class ContentGenerationController extends Controller
                             ],
                         ];
                     } else {
-                        // === FALLBACK: send full prompt text (no saved prompt ID configured) ===
                         $promptText = $prompt
                             ? $prompt->getProcessedPrompt($inputVariables)
                             : $this->defaultPromptText($field, $businessName, $categoryName);
@@ -188,10 +157,10 @@ class ContentGenerationController extends Controller
                             'method'    => 'POST',
                             'url'       => '/v1/chat/completions',
                             'body'      => [
-                                'model'       => $model,
-                                'messages'    => [
+                                'model'           => $model,
+                                'messages'        => [
                                     ['role' => 'system', 'content' => 'You are a professional content writer for a business directory. Always respond with valid JSON only, no markdown, no explanation.'],
-                                    ['role' => 'user', 'content' => $promptText],
+                                    ['role' => 'user',   'content' => $promptText],
                                 ],
                                 'max_tokens'      => 2000,
                                 'temperature'     => 0.7,
@@ -200,38 +169,22 @@ class ContentGenerationController extends Controller
                         ];
                     }
                 } else {
-                    // Anthropic
-                    if ($prompt && $prompt->hasAnthropicPromptId()) {
-                        // Anthropic prompt-by-ID (via beta prompt tools if available)
-                        $requests[] = [
-                            'custom_id' => $customId,
-                            'params'    => [
-                                'model'      => $model,
-                                'max_tokens' => 2000,
-                                'betas'      => ['prompt-caching-2024-07-31'],
-                                'system'     => 'You are a professional content writer. Always respond with valid JSON only.',
-                                'messages'   => [
-                                    ['role' => 'user', 'content' => 'prompt_id:' . $prompt->anthropic_prompt_id . ' variables:' . json_encode($inputVariables)],
-                                ],
-                            ],
-                        ];
-                    } else {
-                        $promptText = $prompt
-                            ? $prompt->getProcessedPrompt($inputVariables)
-                            : $this->defaultPromptText($field, $businessName, $categoryName);
+                    // GAP 3: Anthropic has no saved prompt ID API — always expand full prompt text
+                    $promptText = $prompt
+                        ? $prompt->getProcessedPrompt($inputVariables)
+                        : $this->defaultPromptText($field, $businessName, $categoryName);
 
-                        $requests[] = [
-                            'custom_id' => $customId,
-                            'params'    => [
-                                'model'      => $model,
-                                'max_tokens' => 2000,
-                                'system'     => 'You are a professional content writer for a business directory. Always respond with valid JSON only, no markdown.',
-                                'messages'   => [
-                                    ['role' => 'user', 'content' => $promptText],
-                                ],
+                    $requests[] = [
+                        'custom_id' => $customId,
+                        'params'    => [
+                            'model'      => $model,
+                            'max_tokens' => 2000,
+                            'system'     => 'You are a professional content writer for a business directory. Always respond with valid JSON only, no markdown.',
+                            'messages'   => [
+                                ['role' => 'user', 'content' => $promptText],
                             ],
-                        ];
-                    }
+                        ],
+                    ];
                 }
 
                 $queueData[] = [
@@ -254,9 +207,11 @@ class ContentGenerationController extends Controller
                 ? $this->submitOpenAIBatch($apiKey, $requests)
                 : $this->submitAnthropicBatch($apiKey, $requests);
 
+            // GAP 4: Populate prompt_type with comma-joined field list
             $batchJob = AiBatchJob::create([
                 'provider'     => $provider,
                 'batch_id'     => $batchId,
+                'prompt_type'  => implode(',', $fields),
                 'status'       => 'processing',
                 'submitted_at' => now(),
                 'total_items'  => count($requests),
@@ -266,7 +221,8 @@ class ContentGenerationController extends Controller
                 AiContentQueue::create(array_merge($item, ['batch_job_id' => $batchJob->id]));
             }
 
-            return back()->with('success', "Batch submitted! ID: <code>{$batchId}</code>. Results will be processed automatically every 30 minutes. <a href='" . route('content-gen.batch-jobs') . "'>View batch jobs</a>");
+            $batchUrl = route('content-gen.batch-jobs');
+            return back()->with('success', "Batch submitted! ID: <code>{$batchId}</code>. Results will be processed automatically every 30 minutes. <a href='{$batchUrl}'>View batch jobs</a>");
 
         } catch (\Exception $e) {
             Log::error('Batch submission failed: ' . $e->getMessage());
@@ -275,7 +231,7 @@ class ContentGenerationController extends Controller
     }
 
     // -------------------------------------------------------------------------
-    // RETRY FAILED ITEMS
+    // RETRY / REGENERATE (GAP 8: works for both failed AND completed items)
     // -------------------------------------------------------------------------
     public function retryFailed(Request $request)
     {
@@ -285,11 +241,11 @@ class ContentGenerationController extends Controller
             'provider'    => 'required|in:openai,anthropic',
         ]);
 
-        // Delete existing failed items so we start fresh
+        // GAP 8: Allow re-generation of completed items too
         AiContentQueue::where('resource_type', 'business')
             ->where('resource_id', $request->business_id)
             ->where('content_field', $request->field)
-            ->where('status', 'failed')
+            ->whereIn('status', ['failed', 'completed'])
             ->delete();
 
         return $this->submitBatch(new Request([
@@ -304,8 +260,28 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function batchJobs()
     {
-        $jobs = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
-        return view('Admin.content-generation.batch-jobs', compact('jobs'));
+        $jobs       = AiBatchJob::withCount('queueItems')->orderBy('id', 'desc')->paginate(20);
+        $lastPollAt = Cache::get('ai_batch_last_poll');
+        return view('Admin.content-generation.batch-jobs', compact('jobs', 'lastPollAt'));
+    }
+
+    // -------------------------------------------------------------------------
+    // GAP 5: BATCH JOB ITEMS DRILL-DOWN
+    // -------------------------------------------------------------------------
+    public function batchJobItems(AiBatchJob $job)
+    {
+        $items = $job->queueItems()
+            ->with(['prompt'])
+            ->orderBy('resource_id')
+            ->orderBy('content_field')
+            ->paginate(50);
+
+        $businessIds   = $items->pluck('resource_id')->unique()->toArray();
+        $businessNames = BusinessTranslation::whereIn('business_id', $businessIds)
+            ->where('lang_id', 1)
+            ->pluck('name', 'business_id');
+
+        return view('Admin.content-generation.batch-job-items', compact('job', 'items', 'businessNames'));
     }
 
     // -------------------------------------------------------------------------
@@ -313,11 +289,76 @@ class ContentGenerationController extends Controller
     // -------------------------------------------------------------------------
     public function viewResult(AiContentQueue $item)
     {
-        return view('Admin.content-generation.result', compact('item'));
+        $businessName = BusinessTranslation::where('business_id', $item->resource_id)
+            ->where('lang_id', 1)
+            ->value('name') ?? 'Business #' . $item->resource_id;
+
+        return view('Admin.content-generation.result', compact('item', 'businessName'));
     }
 
     // -------------------------------------------------------------------------
-    // POLL BATCH RESULTS (called by scheduler every 30 min)
+    // GAP 1: APPLY SINGLE RESULT TO BUSINESS RECORD (manual)
+    // -------------------------------------------------------------------------
+    public function applyResult(AiContentQueue $item)
+    {
+        if ($item->status !== 'completed' || empty($item->result)) {
+            return back()->with('error', 'Cannot apply: item is not completed or has no result.');
+        }
+
+        $data = json_decode($item->result, true);
+        if (!is_array($data)) {
+            return back()->with('error', 'Result is not valid JSON — cannot apply automatically.');
+        }
+
+        try {
+            $this->applyResultToRecord($item, $data);
+            return back()->with('success', 'Content applied to business record successfully.');
+        } catch (\Exception $e) {
+            Log::error("applyResult failed for queue item {$item->id}: " . $e->getMessage());
+            return back()->with('error', 'Failed to apply content: ' . $e->getMessage());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // GAP 1 / GAP 6: BULK APPLY ALL COMPLETED RESULTS FOR A BUSINESS
+    // -------------------------------------------------------------------------
+    public function applyAllCompleted(Request $request)
+    {
+        $request->validate(['business_id' => 'required|integer|exists:businesses,id']);
+
+        $items = AiContentQueue::where('resource_type', 'business')
+            ->where('resource_id', $request->business_id)
+            ->where('status', 'completed')
+            ->whereNotNull('result')
+            ->get();
+
+        $applied = 0;
+        $errors  = [];
+
+        foreach ($items as $item) {
+            $data = json_decode($item->result, true);
+            if (!is_array($data)) {
+                $errors[] = "Field {$item->content_field}: invalid JSON";
+                continue;
+            }
+            try {
+                $this->applyResultToRecord($item, $data);
+                $applied++;
+            } catch (\Exception $e) {
+                $errors[] = "Field {$item->content_field}: " . $e->getMessage();
+            }
+        }
+
+        $total = $items->count();
+        $msg   = "Applied {$applied} of {$total} fields to the business record.";
+        if (!empty($errors)) {
+            return back()->with('warning', $msg . ' Errors: ' . implode('; ', $errors));
+        }
+        return back()->with('success', $msg);
+    }
+
+    // -------------------------------------------------------------------------
+    // POLL BATCH RESULTS (scheduler every 30 min + GAP 10: manual Poll Now)
     // -------------------------------------------------------------------------
     public function pollBatches()
     {
@@ -333,11 +374,165 @@ class ContentGenerationController extends Controller
                 Log::error("Error polling batch {$job->id}: " . $e->getMessage());
             }
         }
+        // GAP 10: Record last successful poll time
+        Cache::put('ai_batch_last_poll', now()->toDateTimeString(), now()->addDays(7));
     }
 
-    // -------------------------------------------------------------------------
+    // GAP 10: HTTP-accessible manual Poll Now button
+    public function pollNow()
+    {
+        $this->pollBatches();
+        return back()->with('success', 'Batch poll triggered. Status refreshed.');
+    }
+
+    // =========================================================================
     // PRIVATE HELPERS
-    // -------------------------------------------------------------------------
+    // =========================================================================
+
+    /**
+     * GAP 1: Write the parsed JSON result into the correct Localio record columns.
+     */
+    private function applyResultToRecord(AiContentQueue $item, array $data): void
+    {
+        $businessId = $item->resource_id;
+        $field      = $item->content_field;
+
+        switch ($field) {
+            case 'content':
+                $content = $data['content'] ?? null;
+                if ($content !== null) {
+                    BusinessTranslation::where('business_id', $businessId)
+                        ->where('lang_id', 1)
+                        ->update(['description' => $content]);
+                }
+                break;
+
+            case 'faqs':
+                $faqs = $data['faqs'] ?? [];
+                if (!empty($faqs) && is_array($faqs)) {
+                    // Remove all existing FAQs for this business before inserting AI-generated ones
+                    BusinessFaq::where('business_id', $businessId)->delete();
+
+                    foreach ($faqs as $index => $faq) {
+                        $question = $faq['question'] ?? null;
+                        $answer   = $faq['answer']   ?? null;
+                        if (!$question || !$answer) continue;
+
+                        $bizFaq = BusinessFaq::create([
+                            'business_id'              => $businessId,
+                            'business_faq_category_id' => null,
+                            'position'                 => $index + 1,
+                            'status'                   => true,
+                        ]);
+
+                        BusinessFaqTranslation::create([
+                            'business_faq_id' => $bizFaq->id,
+                            'lang_id'         => 1,
+                            'question'        => $question,
+                            'answer'          => $answer,
+                        ]);
+                    }
+                }
+                break;
+
+            case 'features':
+                // Store as USPs (business_usps): title + optional description combined
+                $features = $data['features'] ?? [];
+                if (!empty($features) && is_array($features)) {
+                    BusinessUsp::where('business_id', $businessId)->delete();
+
+                    foreach ($features as $index => $feature) {
+                        $title = $feature['title']       ?? null;
+                        $desc  = $feature['description'] ?? null;
+                        if (!$title) continue;
+
+                        $text = $desc ? "{$title}: {$desc}" : $title;
+
+                        BusinessUsp::create([
+                            'business_id' => $businessId,
+                            'text'        => $text,
+                            'sort_order'  => $index + 1,
+                        ]);
+                    }
+                }
+                break;
+
+            case 'pros_cons':
+                $pros = $data['pros'] ?? [];
+                $cons = $data['cons'] ?? [];
+
+                $prosText = is_array($pros) ? implode("\n", $pros) : (string) $pros;
+                $consText = is_array($cons) ? implode("\n", $cons) : (string) $cons;
+
+                Business::where('id', $businessId)->update([
+                    'pro_cons_intro'   => $prosText,
+                    'pro_cons_summary' => $consText,
+                ]);
+                break;
+
+            case 'metatags':
+                $updates = [];
+                if (isset($data['meta_title']))       $updates['meta_title']       = $data['meta_title'];
+                if (isset($data['meta_description'])) $updates['meta_description'] = $data['meta_description'];
+                if (!empty($updates)) {
+                    Business::where('id', $businessId)->update($updates);
+                }
+                break;
+        }
+    }
+
+    /**
+     * GAP 9: Validate AI JSON output matches expected schema for the given content field.
+     * Returns true on success, or an error string on failure.
+     */
+    private function validateOutputSchema(string $field, string $rawContent): bool|string
+    {
+        $data = json_decode($rawContent, true);
+
+        if (!is_array($data)) {
+            return 'Response is not valid JSON.';
+        }
+
+        switch ($field) {
+            case 'content':
+                if (!isset($data['content']) || !is_string($data['content'])) {
+                    return 'Expected {"content": "..."}, got: ' . substr($rawContent, 0, 100);
+                }
+                break;
+            case 'faqs':
+                if (!isset($data['faqs']) || !is_array($data['faqs'])) {
+                    return 'Expected {"faqs": [{"question":..., "answer":...}]}, got: ' . substr($rawContent, 0, 100);
+                }
+                foreach ($data['faqs'] as $i => $faq) {
+                    if (!isset($faq['question']) || !isset($faq['answer'])) {
+                        return "FAQ item #{$i} missing 'question' or 'answer' key.";
+                    }
+                }
+                break;
+            case 'features':
+                if (!isset($data['features']) || !is_array($data['features'])) {
+                    return 'Expected {"features": [{"title":..., "description":...}]}, got: ' . substr($rawContent, 0, 100);
+                }
+                foreach ($data['features'] as $i => $feat) {
+                    if (!isset($feat['title'])) {
+                        return "Feature item #{$i} missing 'title' key.";
+                    }
+                }
+                break;
+            case 'pros_cons':
+                if (!isset($data['pros']) || !isset($data['cons'])) {
+                    return 'Expected {"pros": [...], "cons": [...]}, got: ' . substr($rawContent, 0, 100);
+                }
+                break;
+            case 'metatags':
+                if (!isset($data['meta_title']) && !isset($data['meta_description'])) {
+                    return 'Expected {"meta_title":..., "meta_description":...}, got: ' . substr($rawContent, 0, 100);
+                }
+                break;
+        }
+
+        return true;
+    }
 
     private function defaultPromptText(string $field, string $businessName, string $categoryName): string
     {
@@ -358,7 +553,6 @@ class ContentGenerationController extends Controller
             $jsonl .= json_encode($req) . "\n";
         }
 
-        // Upload JSONL file
         $fileResponse = Http::withToken($apiKey)
             ->attach('file', $jsonl, 'batch_input.jsonl', ['Content-Type' => 'application/json'])
             ->post('https://api.openai.com/v1/files', ['purpose' => 'batch']);
@@ -369,10 +563,9 @@ class ContentGenerationController extends Controller
 
         $fileId = $fileResponse->json('id');
 
-        // Create batch
         $batchResponse = Http::withToken($apiKey)->post('https://api.openai.com/v1/batches', [
             'input_file_id'     => $fileId,
-            'endpoint'          => '/v1/responses',  // Responses API supports prompt ID
+            'endpoint'          => '/v1/responses',
             'completion_window' => '24h',
         ]);
 
@@ -436,8 +629,9 @@ class ContentGenerationController extends Controller
         if (empty($apiKey)) return;
 
         $response = Http::withHeaders([
-            'x-api-key' => $apiKey, 'anthropic-version' => '2023-06-01',
-            'anthropic-beta' => 'message-batches-2024-09-24',
+            'x-api-key'         => $apiKey,
+            'anthropic-version' => '2023-06-01',
+            'anthropic-beta'    => 'message-batches-2024-09-24',
         ])->get("https://api.anthropic.com/v1/messages/batches/{$job->batch_id}");
 
         if (!$response->successful()) return;
@@ -455,8 +649,9 @@ class ContentGenerationController extends Controller
             $resultsUrl = $data['results_url'] ?? null;
             if ($resultsUrl) {
                 $resultsResponse = Http::withHeaders([
-                    'x-api-key' => $apiKey, 'anthropic-version' => '2023-06-01',
-                    'anthropic-beta' => 'message-batches-2024-09-24',
+                    'x-api-key'         => $apiKey,
+                    'anthropic-version' => '2023-06-01',
+                    'anthropic-beta'    => 'message-batches-2024-09-24',
                 ])->get($resultsUrl);
                 if ($resultsResponse->successful()) {
                     $this->processAnthropicResults($job, $resultsResponse->body());
@@ -474,9 +669,7 @@ class ContentGenerationController extends Controller
             if (!$result) continue;
 
             $customId = $result['custom_id'] ?? '';
-
-            // Support both chat/completions and responses API output formats
-            $content = $result['response']['body']['choices'][0]['message']['content']
+            $content  = $result['response']['body']['choices'][0]['message']['content']
                 ?? $result['response']['body']['output'][0]['content'][0]['text']
                 ?? null;
             $error = $result['error']['message'] ?? null;
@@ -485,9 +678,21 @@ class ContentGenerationController extends Controller
             if (!$queueItem) continue;
 
             if ($content) {
-                // Try to parse JSON output — store raw if not valid JSON
-                $parsed = json_decode($content, true);
+                // GAP 9: Schema validation before marking complete
+                $schemaCheck = $this->validateOutputSchema($queueItem->content_field, $content);
+                if ($schemaCheck !== true) {
+                    $queueItem->update(['status' => 'failed', 'error_message' => 'Schema validation failed: ' . $schemaCheck]);
+                    continue;
+                }
+
                 $queueItem->update(['status' => 'completed', 'result' => $content]);
+
+                // GAP 1: Auto-apply result to the business record
+                try {
+                    $this->applyResultToRecord($queueItem, json_decode($content, true));
+                } catch (\Exception $e) {
+                    Log::warning("Auto-apply failed for queue item {$queueItem->id}: " . $e->getMessage());
+                }
             } else {
                 $queueItem->update(['status' => 'failed', 'error_message' => $error ?? 'Unknown error']);
             }
@@ -516,7 +721,21 @@ class ContentGenerationController extends Controller
             if (!$queueItem) continue;
 
             if ($content) {
+                // GAP 9: Schema validation
+                $schemaCheck = $this->validateOutputSchema($queueItem->content_field, $content);
+                if ($schemaCheck !== true) {
+                    $queueItem->update(['status' => 'failed', 'error_message' => 'Schema validation failed: ' . $schemaCheck]);
+                    continue;
+                }
+
                 $queueItem->update(['status' => 'completed', 'result' => $content]);
+
+                // GAP 1: Auto-apply result to the business record
+                try {
+                    $this->applyResultToRecord($queueItem, json_decode($content, true));
+                } catch (\Exception $e) {
+                    Log::warning("Auto-apply failed for queue item {$queueItem->id}: " . $e->getMessage());
+                }
             } else {
                 $queueItem->update(['status' => 'failed', 'error_message' => $error]);
             }

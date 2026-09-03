@@ -657,7 +657,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
 
         return view('User.product.product_comparison', compact('businesses', 'availableCategoryBusinesses', 'comparison_slug', 'categoryTranslation'));
     }
-    protected function getComparisonRedirectUrl(array $productIds)
+    protected function getComparisonRedirectUrl(array $productIds, $compSlug = null)
     {
         $locale = app()->getLocale();
         $count = count($productIds);
@@ -673,11 +673,14 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             ->values();
 
             if ($businesses->count() >= 2) {
-                $categoryId = $businesses->first()->category_id;
-                $catTrans = \App\Models\CategoryTranslation::where('category_id', $categoryId)
-                    ->where('lang_id', $lang_id)
-                    ->first();
-                $compSlug = $catTrans ? $catTrans->comparison_slug : null;
+                if (empty($compSlug)) {
+                    $firstWithCat = $businesses->firstWhere('category_id', '!=', null);
+                    $categoryId = $firstWithCat ? $firstWithCat->category_id : $businesses->first()->category_id;
+                    $catTrans = $categoryId ? \App\Models\CategoryTranslation::where('category_id', $categoryId)
+                        ->where('lang_id', $lang_id)
+                        ->first() : null;
+                    $compSlug = $catTrans ? $catTrans->comparison_slug : null;
+                }
 
                 $allHaveSlugs = $businesses->every(function($b) use ($lang_id) {
                     return !empty($b->translations->firstWhere('lang_id', $lang_id)?->slug ?? $b->translations->first()?->slug);
@@ -703,6 +706,13 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
                     ]);
                 }
             }
+        }
+
+        // When count is 1 or fewer, persist remaining in session so product-comparison page displays them
+        if (!empty($productIds)) {
+            session()->put('compared_products', $productIds);
+        } else {
+            session()->forget('compared_products');
         }
 
         return route('product-comparison', $locale);
@@ -733,10 +743,8 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             $comparedProducts = array_values($comparedProducts);
         }
 
-        // Do not persist compared_products in session here so category/top-rated pages do not show comparison bar unexpectedly
-        session()->forget('compared_products');
-
-        $redirectUrl = $this->getComparisonRedirectUrl($comparedProducts);
+        $comparison_slug = $request->input('comparison_slug');
+        $redirectUrl = $this->getComparisonRedirectUrl($comparedProducts, $comparison_slug);
 
         return response()->json([
             'success' => true,
@@ -764,10 +772,8 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             return (int)$id !== $productId;
         }));
 
-        // Do not persist compared_products in session here so category/top-rated pages do not show comparison bar unexpectedly
-        session()->forget('compared_products');
-
-        $redirectUrl = $this->getComparisonRedirectUrl($comparedProducts);
+        $comparison_slug = $request->input('comparison_slug');
+        $redirectUrl = $this->getComparisonRedirectUrl($comparedProducts, $comparison_slug);
 
         return response()->json([
             'success' => true,

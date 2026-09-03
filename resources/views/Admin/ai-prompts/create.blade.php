@@ -117,7 +117,7 @@
                                                 <input type="text" class="form-control font-monospace" id="anthropic_prompt_id" name="anthropic_prompt_id"
                                                     value="{{ old('anthropic_prompt_id', $aiPrompt->anthropic_prompt_id ?? '') }}"
                                                     placeholder="prmpt_xxxxxxxxxxxxx">
-                                                <div class="form-note"><small>The prompt ID from Anthropic console (if applicable)</small></div>
+                                                <div class="form-note"><small class="text-soft">Note: Claude/Anthropic does not offer a prompt-by-ID API. For Anthropic batches, the full prompt text above will always be dynamically rendered.</small></div>
                                             </div>
                                         </div>
                                     </div>

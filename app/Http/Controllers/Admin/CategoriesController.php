@@ -110,7 +110,10 @@ class CategoriesController extends Controller
         $category_faqs = [];
 
         if ($id != null) {
-            $catTransObj = CategoryTranslation::where('id', $id)->first();
+            $catTransObj = CategoryTranslation::with('category')->where('id', $id)->first();
+            if (!$catTransObj) {
+                $catTransObj = CategoryTranslation::with('category')->where('category_id', $id)->first();
+            }
             $category_data = $catTransObj ? $catTransObj->toArray() : null;
             if ($catTransObj) {
                 if (!empty($catTransObj->text_sections)) {
@@ -120,8 +123,8 @@ class CategoriesController extends Controller
                     $category_faqs = is_array($catTransObj->faqs) ? $catTransObj->faqs : json_decode($catTransObj->faqs, true);
                 }
             }
-            $categoryId = $category_data['category_id'];
-            $category = Category::where('id', $categoryId)->first();
+            $categoryId = $category_data ? ($category_data['category_id'] ?? null) : null;
+            $category = $categoryId ? Category::where('id', $categoryId)->first() : null;
             if ($category) {
                 $hasSubcategories = $category->subCategories()->exists();
                 $hasItems = $category->businesses()->exists() || $category->products()->exists();
@@ -383,6 +386,8 @@ class CategoriesController extends Controller
             'comparison_name' => 'nullable|string|max:255',
             'see_all_text' => 'nullable|string|max:255',
             'page_title' => 'nullable|string|max:255',
+            'page_title_addition' => 'nullable|string|max:255',
+            'top_rated_listing_headline_addition' => 'nullable|string|max:255',
             'title' => 'nullable|string|max:255',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
@@ -409,6 +414,8 @@ class CategoriesController extends Controller
                 if ($categoryTranslation) {
                     $category_id = $categoryTranslation->category_id;
                     $language_id = $categoryTranslation->lang_id;
+                } else {
+                    $category_id = $request->category_id;
                 }
             }
 
@@ -425,7 +432,7 @@ class CategoriesController extends Controller
                 }
 
                 if ($category_id) {
-                    $category = Category::find($request->category_id);
+                    $category = Category::find($category_id);
                     if ($category) {
                         if ($category->subCategories()->where('id', $parent_id)->exists()) {
                             $validator->errors()->add('parent_id', 'Circular reference detected: The selected parent category is a sub-category of this category.');
@@ -451,6 +458,8 @@ class CategoriesController extends Controller
             if ($categoryTranslation) {
                 $category_id = $categoryTranslation->category_id;
                 $language_id = $categoryTranslation->lang_id;
+            } else {
+                $category_id = $request->category_id;
             }
         }
             // dd($Category_ID);

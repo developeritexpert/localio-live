@@ -10,7 +10,7 @@
                     
                     <!-- Top right actions (Date & Copy link) -->
                     <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
-                        <span style="font-size: 12px; color: #777; font-weight: 500;">{{ $review->created_at->diffForHumans() }}</span>
+                        <span class="text-muted" style="font-size: 12px;">{{ $review->created_at->diffForHumans() }}</span>
                         <!-- <a href="javascript:void(0)" onclick="copyToClipboard('{{ url()->current() }}#review-{{ $review->id }}')" title="Copy link to review" style="color: #a0aec0; transition: color 0.2s; font-size: 15px;" onmouseover="this.style.color='#06498b';" onmouseout="this.style.color='#a0aec0';">
                             <i class="fas fa-link"></i>
                         </a> -->
@@ -18,24 +18,37 @@
 
                     <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
                         <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
-                            <div class="asn-img" style="flex-shrink: 0;">
-                                @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
-                                    <img src="{{ asset($review->user->profile_image) }}"
-                                        class="img-fluid profile-circle"
-                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
-                                        alt="User Image">
-                                @else
-                                    <div class="profile-circle" style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
-                                        <span style="color: white; font-weight: bold; font-size: 20px;">
-                                            @if ($review->user && $review->user->user_type === 'admin')
-                                                {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
-                                            @else
-                                                {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endif
-                            </div>
+                            
+<div class="asn-img" style="flex-shrink: 0;">
+    @if ($review->user)
+        <a href="{{ route('user.profile', ['id' => $review->user_id]) }}"
+            style="display: block; text-decoration: none;">
+
+            @if ($review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                <img src="{{ asset($review->user->profile_image) }}"
+                    class="img-fluid profile-circle"
+                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                    alt="User Image">
+            @else
+                <div class="profile-circle"
+                    style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center;">
+
+                    <span style="color: white; font-weight: bold; font-size: 20px;">
+                        @if ($review->user->user_type === 'admin')
+                            {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                        @else
+                            {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                        @endif
+                    </span>
+
+                </div>
+            @endif
+
+        </a>
+    @endif
+</div>
+
+
                             <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
                                 <h6 style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
                                     @if ($review->user && $review->user->user_type === 'admin')
@@ -115,9 +128,9 @@
             $rSlug = !empty($langObj->reviews_slug) ? $langObj->reviews_slug : 'reviews';
             $bSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()->slug ?? $business->translations->first()->slug ?? '';
         @endphp
-        <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+        <div class="btm-bttn light" >
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
-                style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">View more reviews</a>
+                >View more reviews</a>
         </div>
     </div>
     
