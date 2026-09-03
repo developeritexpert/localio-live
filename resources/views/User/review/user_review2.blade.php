@@ -330,34 +330,66 @@
                                  
                                 <div class="crm_review_box review_sec" id="all-reviews">
 
-                                    <div class="review-prompt-banner" id="reviewPromptBanner" style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
-                                        <div style="display: flex; align-items: center; gap: 16px;">
-                                            <div class="top-product-logo" style="">
-                                                <x-business-logo :business="$business" />
-                                            </div>
-                                            <div>
-                                                <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
-                                                <p style="margin: 0; font-size: 13.5px; color: #4a5568;">Share your experience with the community</p>
-                                            </div>
-                                        </div>
-                                        <div style="display: flex; gap: 12px; align-items: center;">
-                                            @auth
-                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                    <i class="fas fa-thumbs-up"></i> 
-                                                </button>
-                                                <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                    <i class="fas fa-thumbs-down"></i> 
-                                                </button>
-                                            @else
-                                                <button onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true }); document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                    <i class="fas fa-thumbs-up"></i> 
-                                                </button>
-                                                <button onclick="document.getElementById('reviewPromptBanner').style.display = 'none';" style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';" onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
-                                                    <i class="fas fa-thumbs-down"></i> 
-                                                </button>
-                                            @endauth
-                                        </div>
-                                    </div>
+                                
+<div class="review-prompt-banner" id="reviewPromptBanner"
+    style="background-color: #f7fafc; padding: 20px 24px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 20px;">
+
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <div class="top-product-logo">
+            <x-business-logo :business="$business" />
+        </div>
+
+        <div>
+            <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">
+                Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?
+            </h4>
+
+            <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
+                Share your experience with the community
+            </p>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+        @auth
+            <button
+                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                <i class="fas fa-thumbs-up"></i>
+            </button>
+
+            <button
+                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                <i class="fas fa-thumbs-down"></i>
+            </button>
+        @else
+            <button
+                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true });"
+                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                <i class="fas fa-thumbs-up"></i>
+            </button>
+
+            <button
+                onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false });"
+                style="padding: 12px 12px; border-radius: 30px; border: 1px solid #cbd5e0; background: #ffffff; color: #2d3748; font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.borderColor='#a0aec0'; this.style.backgroundColor='#f7fafc';"
+                onmouseout="this.style.borderColor='#cbd5e0'; this.style.backgroundColor='#ffffff';">
+                <i class="fas fa-thumbs-down"></i>
+            </button>
+        @endauth
+    </div>
+</div>
+
+
+
+
 
                                     <div class="row review-row-prod-inr">
 
