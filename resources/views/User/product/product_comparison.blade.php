@@ -51,7 +51,7 @@
                             @endif
                         </li>
                     @endif
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         @if (count($businesses) >= 2)
                             {{ $businesses[0]->translations->first()?->name ?? '' }} vs {{ $businesses[1]->translations->first()?->name ?? '' }}
                         @elseif (count($businesses) == 1)
@@ -764,7 +764,7 @@
                                         
                                         <!-- Top right actions (Date) -->
                                         <div class="review-actions-top-right" style="position: absolute; top: 22px; right: 22px; display: flex; align-items: center; gap: 12px;">
-                                            <span style="font-size: 12px; color: #777; font-weight: 500;">{{ $rev->created_at->diffForHumans() }}</span>
+                                            <span class="text-muted" style="font-size: 12px;">{{ $rev->created_at->diffForHumans() }}</span>
                                         </div>
 
                                         <!-- Reviewer Header -->

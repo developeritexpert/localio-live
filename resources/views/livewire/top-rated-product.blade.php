@@ -194,16 +194,14 @@
     .explore-categories-sec .top-product-info h6 {
         font-size: 14px;
         font-weight: 700;
-        color: #1e3050;
+        color: #002347;
         margin: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         transition: color 0.2s ease;
     }
-    .explore-categories-sec .top-product-card:hover .top-product-info h6 {
-        color: #e56b46;
-    }
+   
     .explore-categories-sec .top-product-rating {
         display: flex;
         align-items: center;
@@ -278,7 +276,7 @@
                                     style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
                                     Top rated on Localio
                                 </a> -->
-                                <span style=" color: #1e3050 !important; text-decoration:none; font-weight: 500;">Top rated on Localio</span>
+                                <span style=" color: #002347 !important; text-decoration:none; font-weight: 500;">Top rated on Localio</span>
                                 
                             </li>
 
@@ -293,10 +291,10 @@
             <div class="top-rated-heading-block">
                 <div class="row align-items-start">
                     <div class="col-md-8 text-start">
-                        <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
+                        <h1 >{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
                         <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
                             {{ now()->format('F j, Y') }}</p>
-                        <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                        <p style="font-size: 15px; margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
                     </div>
@@ -304,14 +302,14 @@
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
+                                <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                             </div>
-                            <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                            <p style="font-size: 13px; margin-bottom: 8px; ">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                             </p>
                             <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
-                                style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
+                                style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                         </div>
                     </div>
                 </div>
@@ -337,7 +335,7 @@
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
                                 <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                                <p style="font-size: 15px; color: #444; margin-bottom: 0;">
+                                <p style="font-size: 15px; margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
                             </div>
@@ -347,10 +345,10 @@
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                         <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
                                     </div>
-                                    <p style="font-size: 13px; color: #555; margin-bottom: 8px; line-height: 1.5;">
+                                    <p style="font-size: 13px;  margin-bottom: 8px; ">
                                         Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                     </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #06498b; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
                                 </div>
                             </div>
                         </div>
@@ -686,7 +684,7 @@
                                 <div class="dropdown d-inline-block">
                                     <button type="button" class="sorting d-inline-flex align-items-center gap-2"
                                         id="topRatedSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
-                                        style="background-color:#fdfdfd; color: #0f172a; border-radius: 20px; padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
+                                        style="background-color:#fdfdfd; color: #002347;  padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
                                         <span>Sort: <span style="font-weight: 600;">{{ $currentLabel }}</span></span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14"
                                             height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
@@ -701,7 +699,7 @@
                                         @foreach($sortOptionsMap as $val => $label)
                                         <button type="button" wire:click="setSortBy('{{ $val }}')"
                                             class="dropdown-item d-flex align-items-center justify-content-between px-3 py-2"
-                                            style="font-size: 13px; color: #1e3050; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
+                                            style="font-size: 13px; color: #002347; cursor: pointer; background: {{ $currentSort === $val ? '#f8fafc' : 'transparent' }}; border: none; text-align: left;"
                                             onmouseover="this.style.backgroundColor='#f1f5f9'"
                                             onmouseout="this.style.backgroundColor='{{ $currentSort === $val ? '#f8fafc' : 'transparent' }}'">
                                             <span
@@ -822,7 +820,7 @@
                                                 <!-- Short Description -->
                                                 @if(!empty($item->translations->first()->short_description))
                                                 <div class="mb-3 mt-1 text-start"
-                                                    style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                    style="font-size: 14px; color: #5b6b7a; width: 100%;">
                                                     {{ $item->translations->first()->short_description }}
                                                 </div>
                                                 @endif
@@ -846,7 +844,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; ">
                                                                         {{ $usp->text }}</p>
                                                                 </div>
                                                                 @endforeach
@@ -858,7 +856,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; ">
                                                                         Free domain & SSL certificate</p>
                                                                 </div>
                                                                 <div class="d-flex align-items-center size18">
@@ -868,7 +866,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
+                                                                        style="font-size: 14px; font-weight:500 !important; color: #002347; overflow: hidden; text-overflow: ellipsis; ">
                                                                         Customizable automatic updates</p>
                                                                 </div>
                                                                 <div class="d-flex align-items-center size18">
@@ -878,7 +876,7 @@
                                                                             style="width: 100%; height: auto;">
                                                                     </div>
                                                                     <p class="m-0"
-                                                                        style="font-size: 14px; font-weight:500 !important; color: #333; overflow: hidden; text-overflow: ellipsis; ">
+                                                                        style="font-size: 14px; font-weight:500 !important; color:#002347; overflow: hidden; text-overflow: ellipsis; ">
                                                                         Scalable performance management</p>
                                                                 </div>
                                                                 @endif
@@ -970,7 +968,7 @@
                                                         style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
                                                         {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
                                                     </h3>
-                                                    <p style="font-size: 11px; color: #444444; margin-bottom: 0;">Flat
+                                                    <p style="font-size: 11px; margin-bottom: 0;">Flat
                                                         Rate, Per One_time</p>
                                                 </div>
                                                 @endif
@@ -1090,7 +1088,7 @@
         <div class="container">
             <div class="text-start mb-4">
                 <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
-                <p style="font-size: 15px; color: #555; margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
+                <p style="font-size: 15px; margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
@@ -1123,7 +1121,7 @@
                         </a>
                     </div>
 
-                    <div class="category-description-text" style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px;">{!! $catItemDesc !!}</div>
+                    <div class="category-description-text" style="font-size: 14px; color: #5b6b7a; line-height: 1.6; margin-bottom: 20px;">{!! $catItemDesc !!}</div>
 
                     <div class="top-products-grid">
                         @foreach($cat->top_businesses ?? [] as $business)
@@ -1137,7 +1135,7 @@
                                     <x-business-logo :business="$business" :name="$bizName" />
                                 </div>
                                 <div class="top-product-info min-w-0">
-                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #1e3050;">
+                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px;">
                                         {{ $bizName }}
                                     </h6>
                                     <div class="rating-group" >
@@ -1200,7 +1198,7 @@
                         @endif
 
                         @if(!empty($section['h2_text']))
-                        <div class="rich-text-content" style="font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 20px;">
+                        <div class="rich-text-content" style="font-size: 15px; color: #5b6b7a; line-height: 1.7; margin-bottom: 20px;">
                             {!! $section['h2_text'] !!}
                         </div>
                         @endif
@@ -1221,7 +1219,7 @@
                                         </h3>
                                         @endif
                                         @if(!empty($sub['h3_text']))
-                                        <div class="rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7;">
+                                        <div class="rich-text-content" style="font-size: 14.5px; color: #5b6b7a; line-height: 1.7;">
                                             {!! $sub['h3_text'] !!}
                                         </div>
                                         @endif
@@ -1246,7 +1244,7 @@
                 <div class="">
                     <div class="text-start mb-4">
                         <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
-                        <p style="font-size: 15px; color: #555; margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
+                        <p style="font-size: 15px; margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
                     </div>
 
                     <div class="accordion" id="topRatedFaqAccordion">
@@ -1259,7 +1257,7 @@
                                 </button>
                             </h2>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
-                                <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #fdfdfd;">
+                                <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
                                     {!! $faq['answer'] !!}
                                 </div>
                             </div>
@@ -1268,7 +1266,7 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link" style="font-size:14px;">
+                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link" >
                             View more FAQs
                         </a>
                     </div>

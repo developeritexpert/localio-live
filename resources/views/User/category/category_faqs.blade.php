@@ -198,7 +198,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" style="color: #64748b; text-decoration: none;">{{ $catName }}</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1e3050; font-weight: 500;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         FAQs
                     </li>
                 </ol>
@@ -367,7 +367,7 @@
                                                     </button>
                                                 </h2>
                                                 <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; color: #555; line-height: 1.7; background-color: #ffffff;">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
                                                         </div>

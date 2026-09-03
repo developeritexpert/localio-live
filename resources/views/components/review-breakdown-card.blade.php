@@ -84,7 +84,7 @@
                 <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
             </a>
             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
-                <i class="fas fa-thumbs-down" style="font-size: 12px;"></i>
+                <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
             </a>
         </div>
     </div>

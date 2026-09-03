@@ -7805,6 +7805,7 @@ header .menu li.menu-item a {
 
 .revie_img_sec .main_feture .feture_box {
     border: 1px solid #06498b1a;
+    background: var(--color-white);
 }
 
 .revie_img_sec .review-header-box h5,
@@ -8518,7 +8519,7 @@ section.top-automotive-sec.top_rate_pg {
 
 .top-rated-heading-sec .breadcrumb-item a,
 .asn_main_sec .breadcrumb-item a {
-    color: #212529 !important;
+    color: var(--color-primary-grey-text) !important;
 }
 
 .asn_main_sec .breadcrumb .breadcrumb-item a:hover {
@@ -9743,10 +9744,10 @@ section#section15 .container .row > div {
     border-radius: 16px;
 }
 
-.asn-rating h6 a:hover,
+/* .asn-rating h6 a:hover,
 .asn-rating h6 .asn-rating-p:last-child:hover {
     text-decoration: underline;
-}
+} */
 
 .card-body ul li span:first-child {
     line-height: 1;
@@ -9902,8 +9903,12 @@ button.btn-vote-faq i.far:hover {
 }
 
 .ovr-progrs-div p,
-.prgs_br span {
+.prgs_br span,
+.review-user h6 {
     color: var(--color-dark-blue-text) !important;
 }
 
-
+.accordion-body.rich-text-content,
+.community-base-rating {
+    color: var(--color-primary-grey-text);
+}

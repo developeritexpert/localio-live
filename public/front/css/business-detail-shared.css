@@ -68,7 +68,7 @@
     align-items: center;
     padding: 9px 14px;
     border-radius: 8px;
-    color: #4a5568;
+    color: #5b6b7a;
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
@@ -85,7 +85,7 @@
 
 .sticky-nav-item.active {
     background-color: #eaf1f9;
-    color: #003f7d;
+    color: #002347;
     font-weight: 700;
 }
 
@@ -686,7 +686,7 @@ i.fa-solid.fa-minus {
 
 .feture_box.str_prc_box .starting-price-text {
     text-align: center !important;
-    color: #444444;
+    color: #5b6b7a;
     font-size: 12px;
 }
 
@@ -845,7 +845,7 @@ div[data-business-id],
 
 .review-sort-option {
     font-size: 13.5px !important;
-    color: #1e3050 !important;
+    color: #002347 !important;
     cursor: pointer;
     background-color: transparent !important;
     font-weight: 500;
