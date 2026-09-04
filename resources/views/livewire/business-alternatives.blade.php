@@ -132,15 +132,15 @@
                                                                 $altBizName = $altTrans->name ?? $altbusiness->name ?? 'Business';
                                                                 $altBizSlug = $altTrans->slug ?? $altbusiness->slug ?? 'business-' . $altbusiness->id;
 
-                                                                $altStartingPrice = 'N/A';
+                                                                $altStartingPrice = null;
                                                                 $altCurrency = '$';
-                                                                $altAdditionalInfo = 'NA';
+                                                                $altAdditionalInfo = null;
                                                                 $altPrice = getBusinessesWithStartingPrice($altbusiness);
                                                                 if (!empty($altPrice) && isset($altPrice[0]['starting_price'])) {
                                                                     $altBusinessPrice = $altPrice[0]['starting_price'];
-                                                                    $altStartingPrice = $altBusinessPrice['amount'] ?? 'N/A';
+                                                                    $altStartingPrice = $altBusinessPrice['amount'] ?? null;
                                                                     $altCurrency = $altBusinessPrice['currency'] ?? '$';
-                                                                    $altAdditionalInfo = $altBusinessPrice['additional_info'] ?? 'NA';
+                                                                    $altAdditionalInfo = $altBusinessPrice['additional_info'] ?? null;
                                                                 }
 
                                                                 $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)->get();
@@ -216,13 +216,20 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                                    <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
-                                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
-                                                                        <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
-                                                                    </h3>
-                                                                    <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
-                                                                </div>
+                                                                @php
+                                                                    $hasAltPrice = !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
+                                                                @endphp
+                                                                @if ($hasAltPrice)
+                                                                    <div class="start-from p_top_btm_sftwre pt-3 pb-3">
+                                                                        <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                                        <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important;">
+                                                                            <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
+                                                                        </h3>
+                                                                        @if(!empty($altAdditionalInfo) && !in_array(strtoupper(trim((string)$altAdditionalInfo)), ['NA', 'N/A', 'NULL']))
+                                                                            <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
 
                                                                 <div class="sftwre-alt-btn pt-2">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altBizSlug]) }}"
