@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- quiet support geometry -->
+  <ellipse cx="149" cy="76" rx="126" ry="61" fill="#f7f9fb"/>
+  <ellipse cx="231" cy="43" rx="35" ry="25" fill="#DDEAF7"/>
+
+  <!-- website-builder canvas -->
+  <rect x="39" y="17" width="222" height="116" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.3"/>
+  <path d="M39 34H261" fill="none" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="50" cy="26" r="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <circle cx="58" cy="26" r="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <circle cx="66" cy="26" r="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+
+  <!-- builder module rail -->
+  <rect x="48" y="42" width="42" height="80" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1"/>
+  <rect x="55" y="49" width="28" height="13" rx="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="55" y="68" width="28" height="19" rx="2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+  <path d="M60 75H78M60 80H73" fill="none" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <rect x="55" y="93" width="13" height="20" rx="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="70" y="93" width="13" height="20" rx="2" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- page content area -->
+  <rect x="99" y="42" width="151" height="80" rx="3" fill="#fdfdfd" stroke="#7999C0" stroke-width="1"/>
+  <rect x="107" y="50" width="39" height="28" rx="2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="107" y="84" width="39" height="28" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+  <path d="M113 72H139M113 106H139" fill="none" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+
+  <!-- dominant ecommerce cart -->
+  <path d="M137 49H151L161 96H224L236 57H156" fill="none" stroke="#214787" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M156 57H235L225 89H164Z" fill="#DDEAF7" stroke="#214787" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M162 73H230L225 89H164Z" fill="#f7f9fb"/>
+  <path d="M178 58V89M203 58V89" fill="none" stroke="#7999C0" stroke-width="0.9"/>
+  <path d="M161 96H223" fill="none" stroke="#214787" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="174" cy="107" r="6.5" fill="#fdfdfd" stroke="#214787" stroke-width="1.4"/>
+  <circle cx="214" cy="107" r="6.5" fill="#fdfdfd" stroke="#214787" stroke-width="1.4"/>
+  <circle cx="174" cy="107" r="2.2" fill="#DDEAF7"/>
+  <circle cx="214" cy="107" r="2.2" fill="#DDEAF7"/>
+
+  <!-- small product blocks inside cart -->
+  <rect x="168" y="62" width="12" height="10" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.7"/>
+  <rect x="184" y="62" width="12" height="10" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.7"/>
+  <rect x="200" y="62" width="12" height="10" rx="1.5" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.7"/>
+
+  <!-- single required orange micro-accent: cursor -->
+  <path d="M231 80L231.8 92.6L235.1 89.7L238 95.3L241.2 93.7L238.2 88.2L242.3 87.8Z" fill="#fb5c28"/>
+</svg>

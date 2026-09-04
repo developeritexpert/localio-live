@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- Soft support geometry -->
+  <circle cx="39" cy="31" r="22" fill="#f7f9fb"/>
+  <circle cx="267" cy="29" r="18" fill="#DDEAF7"/>
+  <circle cx="269" cy="118" r="22" fill="#f7f9fb"/>
+  <circle cx="102" cy="134" r="12" fill="#DDEAF7"/>
+
+  <!-- Builder tool palette -->
+  <rect x="15" y="55" width="39" height="43" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="23" y="64" width="10" height="10" rx="2.2" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="37" y="64" width="9" height="10" rx="2.2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="23" y="79" width="23" height="10" rx="3" fill="#DDEAF7"/>
+  <line x1="54" y1="77" x2="61" y2="77" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="58" cy="77" r="2.3" fill="#7999C0"/>
+
+  <!-- Main AI website-builder window -->
+  <rect x="61" y="17" width="184" height="116" rx="14" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+
+  <!-- Top browser/editor bar -->
+  <rect x="75" y="30" width="156" height="13" rx="6.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.0"/>
+  <circle cx="84" cy="36.5" r="2.4" fill="#7999C0"/>
+  <circle cx="92" cy="36.5" r="2.4" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="104" y="34" width="70" height="5" rx="2.5" fill="#f7f9fb"/>
+  <circle cx="220" cy="36.5" r="2.5" fill="#214787"/>
+
+  <!-- AI generation module -->
+  <rect x="74" y="52" width="61" height="65" rx="10" fill="#DDEAF7" stroke="#214787" stroke-width="1.35"/>
+  <rect x="84" y="61" width="41" height="41" rx="7" fill="#fdfdfd" stroke="#214787" stroke-width="1.25"/>
+
+  <!-- Microchip pins -->
+  <line x1="92" y1="57" x2="92" y2="62" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="100" y1="57" x2="100" y2="62" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="109" y1="57" x2="109" y2="62" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="117" y1="57" x2="117" y2="62" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="92" y1="101" x2="92" y2="106" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="100" y1="101" x2="100" y2="106" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="109" y1="101" x2="109" y2="106" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="117" y1="101" x2="117" y2="106" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="80" y1="69" x2="85" y2="69" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="80" y1="78" x2="85" y2="78" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="80" y1="87" x2="85" y2="87" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="124" y1="69" x2="129" y2="69" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="124" y1="78" x2="129" y2="78" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+  <line x1="124" y1="87" x2="129" y2="87" stroke="#214787" stroke-width="0.9" stroke-linecap="round"/>
+
+  <!-- Recognizable AI sparkle inside chip -->
+  <path d="M104.5 68.5
+           C105.6 74.8 109.2 78.4 115.5 79.5
+           C109.2 80.6 105.6 84.2 104.5 90.5
+           C103.4 84.2 99.8 80.6 93.5 79.5
+           C99.8 78.4 103.4 74.8 104.5 68.5Z"
+        fill="#DDEAF7" stroke="#214787" stroke-width="1.15" stroke-linejoin="round"/>
+  <circle cx="116.5" cy="69.5" r="2.5" fill="#7999C0"/>
+  <circle cx="92.5" cy="91.5" r="2.1" fill="#7999C0"/>
+
+  <!-- AI generation controls -->
+  <rect x="84" y="108" width="41" height="5" rx="2.5" fill="#fdfdfd"/>
+  <circle cx="94" cy="110.5" r="1.8" fill="#7999C0"/>
+  <circle cx="104.5" cy="110.5" r="1.8" fill="#214787"/>
+  <circle cx="115" cy="110.5" r="1.8" fill="#7999C0"/>
+
+  <!-- Generated website preview -->
+  <rect x="146" y="52" width="85" height="65" rx="10" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="156" y="61" width="65" height="22" rx="5" fill="#DDEAF7"/>
+  <circle cx="164" cy="70" r="4.2" fill="#7999C0"/>
+  <line x1="173" y1="67" x2="211" y2="67" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <line x1="173" y1="73" x2="199" y2="73" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <rect x="156" y="89" width="30" height="17" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="191" y="89" width="30" height="17" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.9"/>
+  <line x1="162" y1="95" x2="179" y2="95" stroke="#7999C0" stroke-width="0.85" stroke-linecap="round"/>
+  <line x1="197" y1="95" x2="214" y2="95" stroke="#7999C0" stroke-width="0.85" stroke-linecap="round"/>
+  <line x1="162" y1="100" x2="173" y2="100" stroke="#DDEAF7" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="197" y1="100" x2="208" y2="100" stroke="#DDEAF7" stroke-width="1.2" stroke-linecap="round"/>
+  <rect x="156" y="111" width="49" height="3" rx="1.5" fill="#DDEAF7"/>
+
+  <!-- Meaningful AI-to-page connection -->
+  <line x1="135" y1="81" x2="146" y2="81" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="140.5" cy="81" r="2.3" fill="#7999C0"/>
+
+  <!-- Single required Localio orange micro-accent: cursor -->
+  <path d="M129 90 L142 102 L136 103.2 L139.8 112.4 L135.2 114.2 L131.7 105.2 L127.4 109.2 Z"
+        fill="#fb5c28" stroke="#214787" stroke-width="0.8" stroke-linejoin="round"/>
+</svg>
