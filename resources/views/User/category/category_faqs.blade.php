@@ -233,7 +233,7 @@
             <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
                 @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                     <div class="cat-hero-img-wrap position-relative d-inline-block">
-                        <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+                        <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style=" object-fit: contain;">
                         @if(!empty($category->faq_overlay_image) && $category->faqOverlayMedia)
                             @php $pos = $category->faq_overlay_position ?? 'right'; @endphp
                             <img src="{{ asset($category->faqOverlayMedia->dir_path . '/' . $category->faqOverlayMedia->file_name) }}" alt="FAQ Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">

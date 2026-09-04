@@ -423,7 +423,7 @@
                                                                         @endfor
                                                                     </div>
                                                                     <!-- <span class="com-rating">Community rating</span> -->
-                                                                    <span lass="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                 </div>
                                                             </div>
 

@@ -1062,10 +1062,10 @@
                                             </div>
 
                                             <button type="button" 
-                                                    class="blue-btn btn alt-add-to-comp-btn flex-shrink-0 ms-2" 
+                                                    class="alt-add-to-comp-btn flex-shrink-0 ms-2" 
                                                     data-id="{{ $altProdId }}" 
                                                     title="Add {{ $altName }} to comparison"
-                                                    style="width: 30px; height: 30px;  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;padding: 0;">
+                                                    style="width: 30px; height: 30px;  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;padding: 0; border-radius:50% !important">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>

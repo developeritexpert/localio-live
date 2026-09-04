@@ -2068,6 +2068,7 @@ nav#mobile_res div#navbarSupportedContent .close_btn_mobile svg {
 
 .sftware-alternative-pck .sftwre-alt-btn {
     text-align: center;
+    margin-top: auto;
 }
 
 .new-accnt a:hover {
@@ -4696,10 +4697,6 @@ textarea#message {
     .sftware-alternative-pck {
         display: flex;
         flex-direction: column;
-    }
-
-    .sftware-alternative-pck .sftwre-alt-btn {
-        margin-top: auto;
     }
 
     .auto-choice-row .auto-choice-rgt {
