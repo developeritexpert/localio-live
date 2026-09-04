@@ -252,9 +252,9 @@
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
                         {{ !empty($categoryTranslation->faq_about_headline) ? $categoryTranslation->faq_about_headline : ('About ' . $catName) }}
                     </h2>
-                    <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                        @if(!empty($catDesc))
-                            <p>{{ $catDesc }}</p>
+                    <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
+                        @if(!empty($categoryTranslation->faq_about_description))
+                            {!! $categoryTranslation->faq_about_description !!}
                         @else
                             <p>
                                 Explore comprehensive information, user reviews, and comparisons for top {{ strtolower($catName) }} solutions. Our guide helps you discover the right options for your specific needs.
@@ -343,6 +343,7 @@
                             </div>
                             @endif
 
+                            @php $isFirstFaqOverall = true; @endphp
                             @foreach($uniqueCategories as $cat)
                                 @if(isset($groupedFaqs[$cat]) && count($groupedFaqs[$cat]) > 0)
                                 <div class="faq-category-group" data-category-group="{{ Str::slug($cat) }}">
@@ -358,15 +359,19 @@
                                                 $uniqueId = Str::slug($cat) . '_' . $fIndex; 
                                                 $question = $faq['question'] ?? '';
                                                 $answer = $faq['answer'] ?? '';
+                                                $openThisFaq = $isFirstFaqOverall && !empty($question);
+                                                if (!empty($question)) {
+                                                    $isFirstFaqOverall = false;
+                                                }
                                             @endphp
                                             @if(!empty($question))
                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
                                                 <h2 class="accordion-header" id="headingFaq{{ $uniqueId }}">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="false" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
+                                                    <button class="accordion-button {{ $openThisFaq ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="{{ $openThisFaq ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
                                                         {{ $question }}
                                                     </button>
                                                 </h2>
-                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
+                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}

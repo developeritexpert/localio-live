@@ -38,7 +38,8 @@ class CategoryTranslation extends Model
         'community_says_subtext',
         'faq_h1_title',
         'faq_subtext',
-        'faq_about_headline'
+        'faq_about_headline',
+        'faq_about_description'
     ];
 
     public function category()

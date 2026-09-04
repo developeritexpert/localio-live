@@ -401,6 +401,20 @@
                                                 @enderror
                                             </div>
                                         </div>
+
+                                        <!-- FAQ Page About Content with CKEditor -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_about_description">FAQ Page "About" Content</label>
+                                                <div class="form-control-wrap">
+                                                    <textarea class="form-control rich-editor" id="faq_about_description" name="faq_about_description" rows="5" placeholder="Enter introductory text displayed below the FAQ About headline...">{!! isset($category_data) ? ($category_data['faq_about_description'] ?? '') : old('faq_about_description') !!}</textarea>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Rich-text content displayed below the FAQ "About" headline on the FAQ page.</small>
+                                                @error('faq_about_description')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
