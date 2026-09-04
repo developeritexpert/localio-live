@@ -553,6 +553,9 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     })->where('page', '[0-9]+');
 
     Route::get('/categories/{category_slug}/{subcategory_slug}/{feature_slug}', function ($locale, $category_slug, $subcategory_slug, $feature_slug) {
+        if ($category_slug === $subcategory_slug) {
+            return redirect()->to('/' . $locale . '/' . $category_slug . '/' . $feature_slug, 301);
+        }
         return redirect()->to('/' . $locale . '/' . $category_slug . '/' . $subcategory_slug . '/' . $feature_slug, 301);
     });
 

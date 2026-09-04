@@ -97,6 +97,10 @@ class CategoryController extends Controller
      }
 
      public function subCategoryFeatureDetail($lang_code, $category_slug, $subcategory_slug, $feature_slug){
+       if ($category_slug === $subcategory_slug) {
+           return redirect()->to('/' . $lang_code . '/' . $category_slug . '/' . $feature_slug, 301);
+       }
+
        return view('User.category.category_detail', [
            'slug' => $subcategory_slug,
            'feature_slug' => $feature_slug,

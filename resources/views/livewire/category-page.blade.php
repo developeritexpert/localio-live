@@ -447,9 +447,7 @@
 
                             @if(!empty($feature_slug))
                                 @php
-                                    $catCompName = !empty($category->translations->comparison_name) 
-                                        ? $category->translations->comparison_name 
-                                        : (!empty($category->translations->page_title) ? $category->translations->page_title : (($category->translations->name ?? 'Category') . ' providers'));
+                                    $categoryName = $category->translations->name ?? $category->name ?? 'Category';
 
                                     $featureObj = null;
                                     if (!empty($selectedFeatures)) {
@@ -461,12 +459,18 @@
                                             return \Illuminate\Support\Str::slug($fName) === \Illuminate\Support\Str::slug($feature_slug);
                                         });
                                     }
+                                    if (!$featureObj) {
+                                        $featureObj = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
+                                            $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
+                                              ->orWhere('name', 'LIKE', $feature_slug);
+                                        })->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->first();
+                                    }
 
                                     $rawFeatName = $featureObj ? ($featureObj->translations->first()->name ?? $featureObj->name) : str_replace('-', ' ', $feature_slug);
                                     $keepCap = $featureObj ? (bool)$featureObj->keep_capitalized : false;
 
                                     $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
-                                    $finalTitle = $catCompName . ' with ' . $formattedFeatName;
+                                    $finalTitle = $categoryName . ' with ' . $formattedFeatName;
                                     if (!empty($category->page_title_addition)) {
                                         $finalTitle .= ' ' . $category->page_title_addition;
                                     }

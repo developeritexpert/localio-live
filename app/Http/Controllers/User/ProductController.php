@@ -568,7 +568,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             ->first();
             
         if (!$categoryTranslation) {
-            abort(404);
+            return app(\App\Http\Controllers\User\ViewController::class)->handleBusinessSubPage(request(), $locale, $comparison_slug, $comparison_businesses);
         }
 
         // The "vs" keyword is defined per country/language in site content
@@ -591,7 +591,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         
         // Support comparing from 2 up to 4 businesses
         if (count($slugs) < 2 || count($slugs) > 4) {
-            abort(404); // Invalid format
+            return app(\App\Http\Controllers\User\ViewController::class)->handleBusinessSubPage(request(), $locale, $comparison_slug, $comparison_businesses);
         }
         
         $businesses = Business::with([
