@@ -353,7 +353,7 @@ a.badge.rounded-pill.bg-light.text-dark.border.px-3.py-2.text-decoration-none:ho
     display: none !important;
 }
 
-.slider-nav:not(.slick-initialized) > div:not(:first-child) {
+.slider-nav:not(.slick-initialized)>div:not(:first-child) {
     display: none !important;
 }
 
@@ -472,8 +472,6 @@ i.fa-solid.fa-check {
     color: #15c731 !important;
 }
 
-::before {
-}
 
 i.fa-solid.fa-minus {
     color: #ff0000 !important;
@@ -565,7 +563,7 @@ i.fa-solid.fa-minus {
 }
 
 .view-review-link {
-    color: #002655;
+    color: #002347;
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
@@ -881,7 +879,7 @@ div[data-business-id],
     border-radius: 50% !important;
     border: 1.5px solid #214787 !important;
     background-color: #ffffff !important;
-    color: #214787!important;
+    color: #214787 !important;
     font-weight: 600 !important;
     font-size: 15px !important;
     text-decoration: none !important;
@@ -892,7 +890,7 @@ div[data-business-id],
 }
 
 .btn-pages .pagination-btn.active {
-    background-color: #214787!important;
+    background-color: #214787 !important;
     border-color: #214787 !important;
     color: #ffffff !important;
 }
@@ -906,7 +904,7 @@ div[data-business-id],
 .btn-pages .pagination-btn.pagination-arrow {
     background-color: #ffffff !important;
     border-color: #214787 !important;
-    color: #214787!important;
+    color: #214787 !important;
 }
 
 .btn-pages .pagination-btn.pagination-arrow:hover {

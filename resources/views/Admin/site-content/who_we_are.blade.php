@@ -28,21 +28,21 @@
                             <div class="nk-block">
                             </div>
 
-                            <div class="col-md-12">
+                             <div class="col-md-12" style="display: none;">
                                 <label class="form-label" for="main_heading">Main Heading</label>
                                 <input type="text" class="form-control" id="main_heading" name="main_heading"
                                     value="{{ $whoWeAre->main_heading ?? '' }}" />
                             </div>
 
                             <!-- Sub Heading -->
-                            <div class="col-md-12">
+                            <div class="col-md-12" style="display: none;">
                                 <label class="form-label" for="sub_heading">Sub Heading</label>
                                 <input type="text" class="form-control" id="sub_heading" name="sub_heading"
                                     value="{{ $whoWeAre->sub_heading ?? '' }}" />
                             </div>
 
                             <!-- Background Top Image -->
-                            {{-- <div class="col-md-12">
+                            {{-- <div class="col-md-12" style="display: none;">
                                 <label class="form-label" for="bg_top_img">Background Top Image</label>
                                 <input type="file" class="form-control" id="bg_top_img" name="bg_top_img" />
                                 @if (isset($whoWeAre->bg_top_img))
@@ -50,7 +50,7 @@
                                         style="width: 100px; height: auto;">
                                 @endif
                             </div> --}}
-                            <div class="col-md-12">
+                           <div class="col-md-12" style="display: none;">
                                 <label class="form-label" for="top_left_section_img">Top  Section Image</label>
                                 <input type="file" class="form-control" id="top_left_section_img"
                                     name="top_left_section_img" />
@@ -364,7 +364,9 @@
 
                                     <div class="mt-4">
                                         <button type="button" id="save-ss-button" class="btn btn-primary">Save Changes</button>
-                                        <button type="button" id="cancel-ss-edit" class="btn btn-secondary ms-2">Cancel</button>
+                                        <button type="button" id="cancel-ss-edit" class="btn btn-secondary ms-2">     
+    Cancel
+</button>
                                     </div>
                                 </div>
 
@@ -583,7 +585,7 @@
 
                 // Required fields validation
                 const requiredFields = {
-                    '#main_heading': 'required|string|max:255',
+                    '#main_heading': 'nullable|string|max:255',
                     '#meta_title': 'required|string|max:255',
                     '#meta_description': 'required|string'
                 };
@@ -985,8 +987,9 @@
                 let itemId = $('#updated-s-id').val();
                 let title = $('#updated-s-title').val();
                 let description = $('#updated-s-description').val();
-                let imageFile1 = $('#update-special-image-input')[0].files[0];
-                let imageFile2 = $('#update-small-image-input')[0].files[0];
+               let imageFile1 = $('#update-special-image-input')[0]?.files[0] || null;
+
+let imageFile2 = $('#update-small-image-input')[0]?.files[0] || null;
 
                 // Validate updated fields
                 let isValid = true;
@@ -1094,6 +1097,13 @@
                     }
                 });
             });
+           
+            $('#cancel-ss-edit').on('click', function() {
+    $('#updated-special-details').hide();
+});
+
+
+
 
             // Handle file input change for specialists image preview
             $('#update-special-image-input').on('change', function(event) {

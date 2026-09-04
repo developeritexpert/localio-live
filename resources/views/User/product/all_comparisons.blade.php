@@ -218,6 +218,13 @@
                     </p>
                 </div>
             </div>
+            <div class="col-md-4 col-12 mt-4 mt-md-0">
+                <div class="comparison-header-icons d-flex justify-content-md-end justify-content-start">
+                    <div class="comp-header-icon-box" style="width: 84px; height: 84px; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" title="{{ $bName }}">
+                        <x-business-logo :business="$business" :name="$bName" size="xl" style="width: 100%; height: 100%; object-fit: contain;" />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -366,10 +373,10 @@
                     <div class="do-you-recommend mt-3 pt-3" style="border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
                         <div style="display: flex; gap: 8px;">
-                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: rgb(23, 72, 137); color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
                                 <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>
                             </a>
-                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #06498b; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#f9633b';" onmouseout="this.style.backgroundColor='#06498b';">
+                            <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
                                 <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
                             </a>
                         </div>
@@ -547,7 +554,7 @@
 
 <!-- Explore Subcategories Section (Matching Category Page) -->
 @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
-<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;">
+<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
             <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
@@ -573,14 +580,25 @@
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
             @endphp
             <div class="col-lg-4 col-md-6 col-12">
-                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="explore-subcat-card">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="fa fa-folder-open-o text-primary" style="font-size: 16px;"></i>
-                        <h6 class="m-0 fw-bold" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
+                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
+                    <div class="p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between" style="box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s;">
+                        
+                        <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
+                            @if(isset($subcatItem->topRatedImageMedia))
+                                <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
+                            @else
+                                <!-- Placeholder if no SVG is uploaded -->
+                                <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
+                            @endif
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
+                            <h6 class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
+                            <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
+                                {{ $subcatItem->businesses()->count() ?? 0 }} listings
+                            </span>
+                        </div>
                     </div>
-                    <span class="badge bg-light text-secondary border rounded-pill px-2 py-1" style="font-size: 11px;">
-                        {{ $subcatItem->businesses_count ?? 0 }} {{ ($subcatItem->businesses_count ?? 0) == 1 ? 'listing' : 'listings' }}
-                    </span>
                 </a>
             </div>
             @endforeach

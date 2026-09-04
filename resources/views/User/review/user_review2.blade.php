@@ -78,7 +78,7 @@
 @include('User.partials.business_detail_styles')
 
 <!-- Upper Header Section -->
-<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
+<section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec business_reviews_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
@@ -397,7 +397,7 @@
                                             <div class="review-sidebar-sticky">
 
                                                 <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3; text-align: left;">
-                                                    {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
+                                                    {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews ({{ $totalReviewsCount }})
                                                 </h2>
                                                 <div class="review-filter-sec" style="display: block;">
                                                     <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
@@ -423,7 +423,7 @@
                                                                         @endfor
                                                                     </div>
                                                                     <!-- <span class="com-rating">Community rating</span> -->
-                                                                    <span lass="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
+                                                                    <span class="com-rating">{{ number_format($ratingCount) }} {{ $ratingCount == 1 ? 'review' : 'reviews' }}</span>
                                                                 </div>
                                                             </div>
 

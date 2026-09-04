@@ -54,10 +54,9 @@
         height: 28px;
     }
     .more-about-link-text {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 500;
-        color: #1e3050;
-        transition: color 0.2s ease;
+        color: #002347;
     }
     .more-about-link-arrow {
         font-size: 14px;
@@ -66,11 +65,11 @@
         flex-shrink: 0;
     }
     .more-about-link-item:hover .more-about-link-text {
-        color: #007bff;
+        color: #033b74;
     }
     
     .more-about-link-item:hover .more-about-link-arrow {
-        color: #007bff;
+        color: #033b74;
     }
 </style>
 

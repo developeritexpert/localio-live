@@ -230,9 +230,15 @@
                     </div>
                 </div>
             </div>
-            <div class="ccol-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
+            <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
                 @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
-                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+                    <div class="cat-hero-img-wrap position-relative d-inline-block">
+                        <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style=" object-fit: contain;">
+                        @if(!empty($category->faq_overlay_image) && $category->faqOverlayMedia)
+                            @php $pos = $category->faq_overlay_position ?? 'right'; @endphp
+                            <img src="{{ asset($category->faqOverlayMedia->dir_path . '/' . $category->faqOverlayMedia->file_name) }}" alt="FAQ Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">
+                        @endif
+                    </div>
                 @endif
             </div>
         </div>
@@ -252,9 +258,9 @@
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
                         {{ !empty($categoryTranslation->faq_about_headline) ? $categoryTranslation->faq_about_headline : ('About ' . $catName) }}
                     </h2>
-                    <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                        @if(!empty($catDesc))
-                            <p>{{ $catDesc }}</p>
+                    <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
+                        @if(!empty($categoryTranslation->faq_about_description))
+                            {!! $categoryTranslation->faq_about_description !!}
                         @else
                             <p>
                                 Explore comprehensive information, user reviews, and comparisons for top {{ strtolower($catName) }} solutions. Our guide helps you discover the right options for your specific needs.
@@ -343,6 +349,7 @@
                             </div>
                             @endif
 
+                            @php $isFirstFaqOverall = true; @endphp
                             @foreach($uniqueCategories as $cat)
                                 @if(isset($groupedFaqs[$cat]) && count($groupedFaqs[$cat]) > 0)
                                 <div class="faq-category-group" data-category-group="{{ Str::slug($cat) }}">
@@ -358,15 +365,19 @@
                                                 $uniqueId = Str::slug($cat) . '_' . $fIndex; 
                                                 $question = $faq['question'] ?? '';
                                                 $answer = $faq['answer'] ?? '';
+                                                $openThisFaq = $isFirstFaqOverall && !empty($question);
+                                                if (!empty($question)) {
+                                                    $isFirstFaqOverall = false;
+                                                }
                                             @endphp
                                             @if(!empty($question))
                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
                                                 <h2 class="accordion-header" id="headingFaq{{ $uniqueId }}">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="false" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
+                                                    <button class="accordion-button {{ $openThisFaq ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="{{ $openThisFaq ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
                                                         {{ $question }}
                                                     </button>
                                                 </h2>
-                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
+                                                <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
@@ -467,14 +478,14 @@
                                             @endif
                                             <div>
                                                 <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
-        @if(isset($rev) && $rev->user_id)
-            <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
-                {{ $displayName }}
-            </a>
-        @else
-            {{ $displayName }}
-        @endif
-        </h6>
+                                                @if(isset($rev) && $rev->user_id)
+                                                    <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                        {{ $displayName }}
+                                                    </a>
+                                                @else
+                                                    {{ $displayName }}
+                                                @endif
+                                                </h6>
         
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
@@ -593,6 +604,54 @@
                             </p>
                         </div>
                     </div>
+
+                    <!-- 3. Top 3 Box -->
+                    @if(isset($topBusinesses) && $topBusinesses->count() > 0)
+                    <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
+                        <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Top 3</h5>
+                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
+                                View all
+                            </a>
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            @foreach($topBusinesses as $topBiz)
+                                @php
+                                    $topBizTrans = $topBiz->translations->firstWhere('lang_id', $lang_id) ?? $topBiz->translations->first();
+                                    $topBizName = $topBizTrans->name ?? $topBiz->name ?? 'Business';
+                                    $topBizRating = round($topBiz->average_rating ?? $topBiz->reviews->where('status', 'active')->avg('rating') ?? 0, 1);
+                                    $affiliateUrl = $topBiz->getTrackedUrl();
+                                @endphp
+                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="top-biz-sidebar-item d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="transition: all 0.2s ease; border: 1px solid #f1f5f9; background: #fdfdfd;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="top-product-small-logo" style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0;">
+                                            <x-business-logo :business="$topBiz" :name="$topBizName" />
+                                        </div>
+                                        <div>
+                                            <h6 class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</h6>
+                                            <div class="d-flex align-items-center gap-1 mt-1">
+                                                <div class="d-flex align-items-center" style="color: #ff5722; font-size: 11px;">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($topBizRating >= $i)
+                                                            <i class="fas fa-star"></i>
+                                                        @elseif ($topBizRating >= $i - 0.5)
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-left: 3px;">{{ number_format($topBizRating, 1) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-external-link-alt text-muted" style="font-size: 12px; margin-right: 4px;"></i>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
 
                 </div>
             </div>

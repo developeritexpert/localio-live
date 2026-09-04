@@ -392,7 +392,7 @@
     </div>
     @endif
         <!-- section top-rated automaotive -->
-        <section class="top-rated-heading-sec">
+        <section class="top-rated-heading-sec cat_main_page_sec">
             <div class="container">
                 <div class=" bread_row row align-items-center mb-2">
                     <div class="col-8 ">
@@ -447,9 +447,7 @@
 
                             @if(!empty($feature_slug))
                                 @php
-                                    $catCompName = !empty($category->translations->comparison_name) 
-                                        ? $category->translations->comparison_name 
-                                        : (!empty($category->translations->page_title) ? $category->translations->page_title : (($category->translations->name ?? 'Category') . ' providers'));
+                                    $categoryName = $category->translations->name ?? $category->name ?? 'Category';
 
                                     $featureObj = null;
                                     if (!empty($selectedFeatures)) {
@@ -461,12 +459,18 @@
                                             return \Illuminate\Support\Str::slug($fName) === \Illuminate\Support\Str::slug($feature_slug);
                                         });
                                     }
+                                    if (!$featureObj) {
+                                        $featureObj = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
+                                            $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
+                                              ->orWhere('name', 'LIKE', $feature_slug);
+                                        })->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->first();
+                                    }
 
                                     $rawFeatName = $featureObj ? ($featureObj->translations->first()->name ?? $featureObj->name) : str_replace('-', ' ', $feature_slug);
                                     $keepCap = $featureObj ? (bool)$featureObj->keep_capitalized : false;
 
                                     $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
-                                    $finalTitle = $catCompName . ' with ' . $formattedFeatName;
+                                    $finalTitle = $categoryName . ' with ' . $formattedFeatName;
                                     if (!empty($category->page_title_addition)) {
                                         $finalTitle .= ' ' . $category->page_title_addition;
                                     }
@@ -485,15 +489,21 @@
                                     {{ $applyDynamicVars($baseTitle) }}
                                 </h1>
                             @endif
-                            <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
+                            <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
-                            <div style="font-size: 15px; margin-bottom: 0;" class="category-description-text">
+                            <div class="category-description-text">
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
-                                <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" >
+                                <div class="cat-hero-img-wrap position-relative d-inline-block">
+                                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img">
+                                    @if(!empty($category->category_overlay_image) && $category->categoryOverlayMedia)
+                                        @php $pos = $category->category_overlay_position ?? 'right'; @endphp
+                                        <img src="{{ asset($category->categoryOverlayMedia->dir_path . '/' . $category->categoryOverlayMedia->file_name) }}" alt="Category Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -514,19 +524,19 @@
                                     .top-rated-subtext-container p { margin-bottom: 0 !important; }
                                     .top-rated-subtext-container p:not(:last-child) { margin-bottom: 10px !important; }
                                 </style>
-                                <div style="font-size: 14px; color: #555; margin-bottom: 0;" class="top-rated-subtext-container ck-content">
+                                <div class="top-rated-subtext-container ck-content">
                                     {!! $category->translation->top_rated_listing_subtext !!}
                                 </div>
                             @endif
                         </div>
                         
                         <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 466px;">
-                            <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 12px 16px; border: 1px solid #e2e8f0; text-align: left;">
+                            <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
                                     <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                                 </div>
-                                <p style="font-size: 13px; margin-bottom: 0; ">
+                                <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
                             </div>
@@ -537,18 +547,18 @@
                                 <div class="row align-items-start">
                                     <div class="col-md-6 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
-                                        <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                        <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                             {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
                                         </p>
                                     </div>
                                     <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                        <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                        <div class="verified-insights-card">
                                             <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                                 <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                                 <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
                                             </div>
-                                            <p style="font-size: 13px;  margin-bottom: 8px; ">
+                                            <p>
                                                 Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                             </p>
                                             <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
@@ -1111,7 +1121,7 @@
                                                     <!-- Short Description -->
                                                     @if(!empty($item->translations->first()->short_description))
                                                     <div class="mb-3 mt-1 text-start"
-                                                        style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                        style="font-size: 14px; color: #002347; line-height: 1.5; width: 100%;">
                                                         {{ $item->translations->first()->short_description }}
                                                     </div>
                                                     @endif
@@ -1401,7 +1411,7 @@
                             <!-- Left Column: Description, Image, Pros/Cons -->
                             <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
                                     <div class="row sld_rw">
-                                        <h2 style="font-size: 28px; font-weight: 800; color: #111827; margin-bottom: 24px;">
+                                        <h2 style=" font-weight: 700 !important; margin-bottom: 24px;">
                                             #{{ $index + 1 }} {{ $bName }}
                                         </h2>
                                     
@@ -1462,9 +1472,9 @@
                                     @endphp
                                     <div class="col-lg-12 mt-2 mb-4 pros-cons-wrapper mt-4">
                                         <div class="pros-cons-header mb-3">
-                                            <h2 style="font-weight: 600; color: #1e3050; font-size: 22px; margin-bottom: 8px;">
+                                            <h3 style="margin-bottom: 8px;">
                                                 {{ $bName }} pros and cons
-                                            </h2>
+                                            </h3>
                                         </div>
                                         
                                         <div class="row g-4 d-flex">
@@ -1561,15 +1571,20 @@
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
-                        <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
-                            Compare {{ $category->translations->name ?? $category->name }} alternatives
+                        @php
+                            $compAlternativesHeadline = !empty($category->translations->compare_alternatives_headline) 
+                                ? $category->translations->compare_alternatives_headline 
+                                : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives');
+                        @endphp
+                        <h2>
+                            {{ $compAlternativesHeadline }}
                         </h2>
                         @if(!empty($category->translations->compare_alternatives_subtext))
                             <style>
                                 .compare-alternatives-subtext p { margin-bottom: 0 !important; }
                                 .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                             </style>
-                            <div style="font-size: 14px; color: #64748b; margin-bottom: 16px;" class="compare-alternatives-subtext ck-content">
+                            <div class="compare-alternatives-subtext ck-content">
                                 {!! $category->translations->compare_alternatives_subtext !!}
                             </div>
                         @else
@@ -1580,8 +1595,9 @@
                             <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                     <tr>
-                                        <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
+                                        <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                         @php
                                             $allCriteria = [];
                                             if (count($topAffiliatedBusinesses) > 0) {
@@ -1591,29 +1607,60 @@
                                             }
                                         @endphp
                                         @foreach($allCriteria as $criterion)
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">{{ $criterion->name }}</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">{{ $criterion->name }}</th>
                                         @endforeach
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Recommend</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Recommend</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $allStartingPrices = collect(getBusinessesWithStartingPrice($topAffiliatedBusinesses))->keyBy('business.id');
+                                    @endphp
                                     @foreach($topAffiliatedBusinesses as $biz)
                                         @php
                                             $bName = $biz->translations->first()->name ?? $biz->name ?? '';
+                                            $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? '';
+                                            $affiliateUrl = $biz->getTrackedUrl() ?? $biz->affiliate_link ?? $biz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]);
                                             $recommendPercent = $biz->reviews()->count() > 0 ? round(($biz->reviews()->where('recommend', 1)->count() / $biz->reviews()->count()) * 100) : 0;
+
+                                            $bizStartingPrice = $allStartingPrices->get($biz->id)['starting_price'] ?? null;
+                                            if (!$bizStartingPrice && $biz->products) {
+                                                $firstPrice = $biz->products->flatMap->prices->first();
+                                                if ($firstPrice) {
+                                                    $bizStartingPrice = [
+                                                        'amount' => $firstPrice->price,
+                                                        'currency' => $firstPrice->currency ?? '$',
+                                                        'time_unit' => $firstPrice->time_unit ?? 'month'
+                                                    ];
+                                                }
+                                            }
+                                            $bizCurrency = $bizStartingPrice['currency'] ?? '$';
+                                            $bizAmount = isset($bizStartingPrice['amount']) ? number_format($bizStartingPrice['amount'], 2) : null;
+                                            $bizTimeUnit = strtolower($bizStartingPrice['time_unit'] ?? '');
                                         @endphp
                                     <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                        <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                            <div class="d-flex align-items-center gap-2">
+                                        <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                 <div class="top-product-small-logo">
                                                     <x-business-logo :business="$biz" :name="$bName" />
                                                 </div>
-                                                <div class="d-flex align-items-center gap-1 flex-wrap">
-                                                    <span style="color: #002347;">{{ $bName }}</span>
+                                                <div class="d-flex align-items-center flex-nowrap">
+                                                    <span class="table-business-name" style="color: #002347; font-weight: 500;">{{ $bName }}</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </div>
-                                            </div>
+                                            </a>
                                         </td>
-                                        <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                        <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
+                                            @if($bizStartingPrice && $bizAmount !== null)
+                                                <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
+                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                    <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
+                                                @endif
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                 <span>{{ number_format($biz->average_rating ?? 0, 1) }}</span>
@@ -1623,7 +1670,7 @@
                                             @php
                                                 $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
                                             @endphp
-                                            <td class="text-center" style="padding: 14px; color: #475569;">
+                                            <td class="text-center" style="padding: 14px; color: #5b6b7a; font-weight:500">
                                                 {{ $avg !== null ? number_format($avg, 1) : '-' }}
                                             </td>
                                         @endforeach
@@ -1638,7 +1685,12 @@
                         
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
-                                <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">What the Localio community says</h2>
+                                @php
+                                    $commFeedbackHeadline = !empty($category->translations->community_says_headline) 
+                                        ? $category->translations->community_says_headline 
+                                        : 'What the Localio community says';
+                                @endphp
+                                <h2 style="margin-bottom: 4px;">{{ $commFeedbackHeadline }}</h2>
                                 @if(!empty($category->translations->community_says_subtext))
                                     <style>
                                         .community-says-subtext p { margin-bottom: 0 !important; }
@@ -1656,16 +1708,18 @@
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned pro</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned con</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned pro</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned con</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($topAffiliatedBusinesses as $biz)
                                             @php
                                                 $bName = $biz->translations->first()->name ?? $biz->name ?? '';
+                                                $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? '';
+                                                $affiliateUrl = $biz->getTrackedUrl() ?? $biz->affiliate_link ?? $biz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]);
                                                 $topPro = \Illuminate\Support\Facades\DB::table('review_pro_cons')
                                                     ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                                     ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
@@ -1689,17 +1743,18 @@
                                                     ->first();
                                             @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                            <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                                <div class="d-flex align-items-center gap-2">
+                                            <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
+                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                     <div class="top-product-small-logo">
                                                         <x-business-logo :business="$biz" :name="$bName" />
                                                     </div>
-                                                    <div class="d-flex align-items-center gap-1 flex-wrap">
-                                                        <span style="color: #002347;">{{ $bName }}</span>
+                                                    <div class="d-flex align-items-center flex-nowrap">
+                                                        <span class="table-business-name" style="color: #002347; font-weight: 500;">{{ $bName }}</span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                     </div>
-                                                </div>
+                                                </a>
                                             </td>
-                                            <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                            <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                                 <span class="d-inline-flex align-items-center gap-1">
                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                     <span>{{ number_format($biz->average_rating ?? 0, 1) }}</span>
@@ -1739,15 +1794,28 @@
         <!-- listing section -->
         <!-- 3. Explore Subcategories Section -->
         @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+        @php
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $exploreHeadline = !empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories');
+            $exploreSubtext = $catTrans->explore_subcategories_subtext ?? null;
+        @endphp
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
-                        {{ $exploreSubcategories['title'] }}
+                    <h2 class="explore-cat-h2">
+                        {{ $exploreHeadline }}
                     </h2>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">
-                        Browse specialized categories to find the exact tools and solutions for your requirements.
-                    </p>
+                    @if(!empty($exploreSubtext))
+                        <div class="explore-cat-subtext" style="color: #002347; margin: 0;">
+                            {!! $exploreSubtext !!}
+                        </div>
+                    @else
+                        <p style="color: #002347; margin: 0;">
+                            Browse specialized categories to find the exact tools and solutions for your requirements.
+                        </p>
+                    @endif
                 </div>
 
                 <div class="row g-3">
@@ -1766,7 +1834,7 @@
                     @endphp
                     <div class="col-lg-4 col-md-6 col-12">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
-                            <div class="p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between" style="box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s;">
+                            <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                                 
                                 <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
                                     @if(isset($subcatItem->topRatedImageMedia))
@@ -1797,17 +1865,28 @@
         <!-- Popular Category Comparisons Section -->
         @if(isset($popularComparisons) && count($popularComparisons) > 0)
         @php
-            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catCurrentName = $catTrans->name ?? $category->name ?? 'Category';
+            $popCompHeadline = !empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons';
+            $popCompSubtext = $catTrans->popular_comparisons_subtext ?? null;
         @endphp
         <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
             <div class="container">
                 <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
-                        Popular comparisons
+                    <h2 style="margin-bottom: 8px;">
+                        {{ $popCompHeadline }}
                     </h2>
-                    <p style="font-size: 15px; color: #64748b; margin: 0;">
-                        See how top {{ strtolower($catCurrentName) }} providers compare against each other.
-                    </p>
+                    @if(!empty($popCompSubtext))
+                        <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
+                            {!! $popCompSubtext !!}
+                        </div>
+                    @else
+                        <p style="color: #002347; margin: 0;">
+                            See how top {{ strtolower($catCurrentName) }} providers compare against each other.
+                        </p>
+                    @endif
                 </div>
 
                 <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
@@ -1863,7 +1942,7 @@
                     @endforeach
                 </div>
 
-                <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="mt-4 d-none" data-aos="fade-up" data-aos-duration="1000">
                     <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                         View more comparisons
                     </a>
@@ -1876,19 +1955,30 @@
         <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
         @php
-            $catFaqName = $category->translations->name ?? $category->name ?? 'Category';
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catFaqName = $catTrans->name ?? $category->name ?? 'Category';
+            $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
+            $faqSubtext = $catTrans->category_faqs_subtext ?? null;
         @endphp
         <section class="category-faqs-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="row ">
                     <div class="">
                         <div class="text-start mb-4">
-                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 8px;">
-                                Frequently asked questions
+                            <h2 style="margin-bottom: 8px;">
+                                {{ $faqHeadline }}
                             </h2>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">
-                                Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
-                            </p>
+                            @if(!empty($faqSubtext))
+                                <div class="category-faqs-subtext" style="color: #002347; margin: 0;">
+                                    {!! $faqSubtext !!}
+                                </div>
+                            @else
+                                <p style="color: #002347; margin: 0;">
+                                    Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
+                                </p>
+                            @endif
                         </div>
 
                         <div class="accordion" id="categoryFaqAccordion">

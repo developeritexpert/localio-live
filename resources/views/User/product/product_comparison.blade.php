@@ -344,7 +344,7 @@
                                     <p class="d-flex m-0">vs</p>
                                 </div>
                                 <div class="pdc_choice text-center d-flex flex-column align-items-center justify-content-center" style="min-height: 100%;">
-                                    <a href="javascript:void(0);" onclick="document.getElementById('toggleAddProductBtn')?.click(); window.scrollTo({top: 150, behavior: 'smooth'});" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px; border: 2px dashed #cbd5e1; border-radius: 16px; background: #f8fafc; transition: all 0.2s ease;">
+                                    <a href="javascript:void(0);" id="addFromCompareCardBtn" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px; border: 2px dashed #cbd5e1; border-radius: 16px; background: #f8fafc; transition: all 0.2s ease; cursor: pointer;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
                                             <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 44px; height: 44px;">
                                             <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare ({{ count($businesses) }}/4) </span>
@@ -1062,10 +1062,10 @@
                                             </div>
 
                                             <button type="button" 
-                                                    class="blue-btn btn alt-add-to-comp-btn flex-shrink-0 ms-2" 
+                                                    class="alt-add-to-comp-btn flex-shrink-0 ms-2" 
                                                     data-id="{{ $altProdId }}" 
                                                     title="Add {{ $altName }} to comparison"
-                                                    style="width: 30px; height: 30px;  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;padding: 0;">
+                                                    style="width: 30px; height: 30px;  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer;padding: 0; border-radius:50% !important">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -1150,6 +1150,19 @@
             const dropdown = document.getElementById('addCompDropdown');
             const searchInput = document.getElementById('addCompSearchInput');
             const itemsList = document.getElementById('addCompItemsList');
+            const addFromCardBtn = document.getElementById('addFromCompareCardBtn');
+
+            function openAddCompDropdown() {
+                if (!dropdown) return;
+                dropdown.style.display = 'block';
+                const wrapper = document.querySelector('.your-comparison-wrapper');
+                if (wrapper) {
+                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 250);
+                }
+            }
 
             if (toggleBtn && dropdown) {
                 toggleBtn.addEventListener('click', function(e) {
@@ -1161,8 +1174,16 @@
                     }
                 });
 
+                if (addFromCardBtn) {
+                    addFromCardBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openAddCompDropdown();
+                    });
+                }
+
                 document.addEventListener('click', function(e) {
-                    if (!dropdown.contains(e.target) && e.target !== toggleBtn) {
+                    if (!dropdown.contains(e.target) && e.target !== toggleBtn && (!addFromCardBtn || !addFromCardBtn.contains(e.target))) {
                         dropdown.style.display = 'none';
                     }
                 });

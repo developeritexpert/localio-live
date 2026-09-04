@@ -671,6 +671,42 @@ class ViewController extends Controller
             if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
                 return app(\App\Http\Controllers\User\CategoryController::class)->categoryComparisons($locale, $business_slug);
             }
+
+            // Check if second_segment is a child subcategory of this category
+            $subCategory = \App\Models\Category::where('parent_id', $category->id)
+                ->whereHas('translations', function ($query) use ($second_segment, $lang_id) {
+                    $query->where('slug', $second_segment)->where('lang_id', $lang_id);
+                })->first();
+
+            if (!$subCategory) {
+                $subCategory = \App\Models\Category::where('parent_id', $category->id)
+                    ->whereHas('translations', function ($query) use ($second_segment) {
+                        $query->where('slug', $second_segment);
+                    })->first();
+            }
+
+            if ($subCategory) {
+                return app(\App\Http\Controllers\User\CategoryController::class)->categoryDetail($locale, $second_segment);
+            }
+
+            // Check if second_segment is a Feature for this category
+            $featureExists = \App\Models\Feature::whereHas('translations', function ($query) use ($second_segment) {
+                $query->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
+                      ->orWhere('name', 'LIKE', $second_segment);
+            })->exists();
+
+            if (!$featureExists) {
+                $featureExists = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
+                    ->exists();
+            }
+
+            if ($featureExists) {
+                return view('User.category.category_detail', [
+                    'slug' => $category->translations->slug ?? $business_slug,
+                    'feature_slug' => $second_segment,
+                    'page' => 1
+                ]);
+            }
         }
 
         // 2. Business Subpages

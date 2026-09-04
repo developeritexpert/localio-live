@@ -179,6 +179,132 @@
                             </div>
                         </div>
 
+                        <!-- 1. Category / Subcategory Page Overlay SVG (150x150) -->
+                        <div class="col-md-12">
+                            <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-7 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="category_overlay_image">Category Page Overlay SVG (150x150)</label>
+                                            <div class="form-control-wrap">
+                                                <div class="form-file">
+                                                    <input type="file" class="form-file-input" id="category_overlay_image" name="category_overlay_image" accept="image/svg+xml,image/*">
+                                                    <label class="form-file-label" for="category_overlay_image">Choose Overlay SVG</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Small overlay graphic placed over the bottom area of the category hero image.</small>
+                                            @if(isset($category) && $category->category_overlay_image && $category->categoryOverlayMedia)
+                                                <div class="d-flex align-items-center gap-3 mt-2">
+                                                    <img src="{{ asset($category->categoryOverlayMedia->dir_path . '/' . $category->categoryOverlayMedia->file_name) }}" alt="Category Overlay" style="max-width: 50px; max-height: 50px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remove_category_overlay_image" value="1" id="remove_cat_overlay">
+                                                        <label class="form-check-label text-danger small" for="remove_cat_overlay">Remove current overlay</label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="category_overlay_position">Position (Bottom Area)</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-select" id="category_overlay_position" name="category_overlay_position">
+                                                    <option value="left" {{ (isset($category) && $category->category_overlay_position == 'left') ? 'selected' : '' }}>Left</option>
+                                                    <option value="center" {{ (isset($category) && $category->category_overlay_position == 'center') ? 'selected' : '' }}>Center</option>
+                                                    <option value="right" {{ (!isset($category) || !$category->category_overlay_position || $category->category_overlay_position == 'right') ? 'selected' : '' }}>Right</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Horizontal placement: Left, Center, or Right.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. FAQ Page Overlay SVG (150x150) -->
+                        <div class="col-md-12">
+                            <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-7 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="faq_overlay_image">FAQ Page Overlay SVG (150x150)</label>
+                                            <div class="form-control-wrap">
+                                                <div class="form-file">
+                                                    <input type="file" class="form-file-input" id="faq_overlay_image" name="faq_overlay_image" accept="image/svg+xml,image/*">
+                                                    <label class="form-file-label" for="faq_overlay_image">Choose Overlay SVG</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Small overlay graphic placed over the bottom area of the FAQ hero image.</small>
+                                            @if(isset($category) && $category->faq_overlay_image && $category->faqOverlayMedia)
+                                                <div class="d-flex align-items-center gap-3 mt-2">
+                                                    <img src="{{ asset($category->faqOverlayMedia->dir_path . '/' . $category->faqOverlayMedia->file_name) }}" alt="FAQ Overlay" style="max-width: 50px; max-height: 50px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remove_faq_overlay_image" value="1" id="remove_faq_overlay">
+                                                        <label class="form-check-label text-danger small" for="remove_faq_overlay">Remove current overlay</label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="faq_overlay_position">Position (Bottom Area)</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-select" id="faq_overlay_position" name="faq_overlay_position">
+                                                    <option value="left" {{ (isset($category) && $category->faq_overlay_position == 'left') ? 'selected' : '' }}>Left</option>
+                                                    <option value="center" {{ (isset($category) && $category->faq_overlay_position == 'center') ? 'selected' : '' }}>Center</option>
+                                                    <option value="right" {{ (!isset($category) || !$category->faq_overlay_position || $category->faq_overlay_position == 'right') ? 'selected' : '' }}>Right</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Horizontal placement: Left, Center, or Right.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Comparison Page Overlay SVG (150x150) -->
+                        <div class="col-md-12">
+                            <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-7 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="comparison_overlay_image">Comparison Page Overlay SVG (150x150)</label>
+                                            <div class="form-control-wrap">
+                                                <div class="form-file">
+                                                    <input type="file" class="form-file-input" id="comparison_overlay_image" name="comparison_overlay_image" accept="image/svg+xml,image/*">
+                                                    <label class="form-file-label" for="comparison_overlay_image">Choose Overlay SVG</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Small overlay graphic placed over the bottom area of the Comparison hero image.</small>
+                                            @if(isset($category) && $category->comparison_overlay_image && $category->comparisonOverlayMedia)
+                                                <div class="d-flex align-items-center gap-3 mt-2">
+                                                    <img src="{{ asset($category->comparisonOverlayMedia->dir_path . '/' . $category->comparisonOverlayMedia->file_name) }}" alt="Comparison Overlay" style="max-width: 50px; max-height: 50px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remove_comparison_overlay_image" value="1" id="remove_comp_overlay">
+                                                        <label class="form-check-label text-danger small" for="remove_comp_overlay">Remove current overlay</label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="comparison_overlay_position">Position (Bottom Area)</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-select" id="comparison_overlay_position" name="comparison_overlay_position">
+                                                    <option value="left" {{ (isset($category) && $category->comparison_overlay_position == 'left') ? 'selected' : '' }}>Left</option>
+                                                    <option value="center" {{ (isset($category) && $category->comparison_overlay_position == 'center') ? 'selected' : '' }}>Center</option>
+                                                    <option value="right" {{ (!isset($category) || !$category->comparison_overlay_position || $category->comparison_overlay_position == 'right') ? 'selected' : '' }}>Right</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Horizontal placement: Left, Center, or Right.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="top_rated_listing_headline">Top-Rated Listing Headline (H2)</label>
@@ -225,11 +351,26 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="compare_alternatives_subtext">Compare Alternatives Subtext</label>
+                                <label class="form-label fw-bold" for="compare_alternatives_headline">Compare Alternatives Headline (H2)</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="compare_alternatives_subtext" name="compare_alternatives_subtext" rows="3" placeholder="Enter subtext displayed below the Compare Alternatives headline">{{ isset($category_data) ? ($category_data['compare_alternatives_subtext'] ?? '') : old('compare_alternatives_subtext') }}</textarea>
+                                    <input type="text" class="form-control" id="compare_alternatives_headline" name="compare_alternatives_headline"
+                                        value="{{ isset($category_data) ? ($category_data['compare_alternatives_headline'] ?? '') : old('compare_alternatives_headline') }}"
+                                        placeholder="e.g. Compare [Category] alternatives">
                                 </div>
-                                <small class="text-muted d-block mt-1">Short text placed immediately below the "Compare {Category} alternatives" Headline.</small>
+                                <small class="text-muted d-block mt-1">Headline for the Compare Alternatives table section on the category page. Defaults to "Compare {Category} alternatives" if left empty.</small>
+                                @error('compare_alternatives_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="compare_alternatives_subtext">Compare Alternatives Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="compare_alternatives_subtext" name="compare_alternatives_subtext" rows="3" placeholder="Enter subtext displayed below the Compare Alternatives headline">{!! isset($category_data) ? ($category_data['compare_alternatives_subtext'] ?? '') : old('compare_alternatives_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Compare Alternatives headline. Defaults to empty if not provided.</small>
                                 @error('compare_alternatives_subtext')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
@@ -238,12 +379,111 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="community_says_subtext">Community Says Subtext</label>
+                                <label class="form-label fw-bold" for="community_says_headline">Community Says Headline (H2)</label>
                                 <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="community_says_subtext" name="community_says_subtext" rows="3" placeholder="Enter subtext displayed below the What the community says headline">{{ isset($category_data) ? ($category_data['community_says_subtext'] ?? '') : old('community_says_subtext') }}</textarea>
+                                    <input type="text" class="form-control" id="community_says_headline" name="community_says_headline"
+                                        value="{{ isset($category_data) ? ($category_data['community_says_headline'] ?? '') : old('community_says_headline') }}"
+                                        placeholder="e.g. What the Localio community says">
                                 </div>
-                                <small class="text-muted d-block mt-1">Short text placed immediately below the "What the Localio community says" Headline.</small>
+                                <small class="text-muted d-block mt-1">Headline for the community pros and cons feedback section on the category page. Defaults to "What the Localio community says" if left empty.</small>
+                                @error('community_says_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="community_says_subtext">Community Says Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="community_says_subtext" name="community_says_subtext" rows="3" placeholder="Enter subtext displayed below the What the community says headline">{!! isset($category_data) ? ($category_data['community_says_subtext'] ?? '') : old('community_says_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Community Says headline. Defaults to "Most mentioned pros and cons shared by real users." if left empty.</small>
                                 @error('community_says_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="explore_subcategories_headline">Explore Subcategories Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="explore_subcategories_headline" name="explore_subcategories_headline"
+                                        value="{{ isset($category_data) ? ($category_data['explore_subcategories_headline'] ?? '') : old('explore_subcategories_headline') }}"
+                                        placeholder="e.g. Explore [Category] categories">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the explore subcategories/categories section on the category page. Defaults to "Explore [Category] categories" if left empty.</small>
+                                @error('explore_subcategories_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="explore_subcategories_subtext">Explore Subcategories Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="explore_subcategories_subtext" name="explore_subcategories_subtext" rows="3" placeholder="Enter subtext displayed below the Explore subcategories headline">{{ isset($category_data) ? ($category_data['explore_subcategories_subtext'] ?? '') : old('explore_subcategories_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Explore subcategories headline. Defaults to "Browse specialized categories to find the exact tools and solutions for your requirements." if left empty.</small>
+                                @error('explore_subcategories_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="popular_comparisons_headline">Popular Comparisons Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="popular_comparisons_headline" name="popular_comparisons_headline"
+                                        value="{{ isset($category_data) ? ($category_data['popular_comparisons_headline'] ?? '') : old('popular_comparisons_headline') }}"
+                                        placeholder="e.g. Popular comparisons">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the Popular Comparisons section on the category page. Defaults to "Popular comparisons" if left empty.</small>
+                                @error('popular_comparisons_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="popular_comparisons_subtext">Popular Comparisons Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="popular_comparisons_subtext" name="popular_comparisons_subtext" rows="3" placeholder="Enter subtext displayed below the Popular Comparisons headline">{!! isset($category_data) ? ($category_data['popular_comparisons_subtext'] ?? '') : old('popular_comparisons_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Popular Comparisons headline on the category page. Defaults to "See how top [category] providers compare against each other." if left empty.</small>
+                                @error('popular_comparisons_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_faqs_headline">Category Page FAQs Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="category_faqs_headline" name="category_faqs_headline"
+                                        value="{{ isset($category_data) ? ($category_data['category_faqs_headline'] ?? '') : old('category_faqs_headline') }}"
+                                        placeholder="e.g. Frequently asked questions">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the FAQ section at the bottom of the main Category page. Defaults to "Frequently asked questions" if left empty.</small>
+                                @error('category_faqs_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_faqs_subtext">Category Page FAQs Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="category_faqs_subtext" name="category_faqs_subtext" rows="3" placeholder="Enter subtext displayed below the Category Page FAQ headline">{!! isset($category_data) ? ($category_data['category_faqs_subtext'] ?? '') : old('category_faqs_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the FAQ headline on the main Category page. Defaults to "Common questions and answers about [category] solutions and comparison criteria." if left empty.</small>
+                                @error('category_faqs_subtext')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -397,6 +637,20 @@
                                                 </div>
                                                 <small class="text-muted d-block mt-1">Headline displayed above the introductory text in the FAQ content section. Defaults to "About [Category Name]".</small>
                                                 @error('faq_about_headline')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- FAQ Page About Content with CKEditor -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_about_description">FAQ Page "About" Content</label>
+                                                <div class="form-control-wrap">
+                                                    <textarea class="form-control rich-editor" id="faq_about_description" name="faq_about_description" rows="5" placeholder="Enter introductory text displayed below the FAQ About headline...">{!! isset($category_data) ? ($category_data['faq_about_description'] ?? '') : old('faq_about_description') !!}</textarea>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Rich-text content displayed below the FAQ "About" headline on the FAQ page.</small>
+                                                @error('faq_about_description')
                                                     <div class="error text-danger">{{ $message }}</div>
                                                 @enderror
                                             </div>

@@ -492,6 +492,39 @@ class CategoriesController extends Controller
             $category->top_rated_image = $mediaTopRated->id;
         }
 
+        // Category Page Overlay SVG (150x150)
+        if ($request->hasFile('category_overlay_image')) {
+            $mediaCatOverlay = $this->mediaservice->uploadMedia($request->file('category_overlay_image'), 'category/overlays');
+            $category->category_overlay_image = $mediaCatOverlay->id;
+        } elseif ($request->has('remove_category_overlay_image')) {
+            $category->category_overlay_image = null;
+        }
+        if ($request->has('category_overlay_position')) {
+            $category->category_overlay_position = $request->input('category_overlay_position', 'right');
+        }
+
+        // FAQ Page Overlay SVG (150x150)
+        if ($request->hasFile('faq_overlay_image')) {
+            $mediaFaqOverlay = $this->mediaservice->uploadMedia($request->file('faq_overlay_image'), 'category/overlays');
+            $category->faq_overlay_image = $mediaFaqOverlay->id;
+        } elseif ($request->has('remove_faq_overlay_image')) {
+            $category->faq_overlay_image = null;
+        }
+        if ($request->has('faq_overlay_position')) {
+            $category->faq_overlay_position = $request->input('faq_overlay_position', 'right');
+        }
+
+        // Comparison Page Overlay SVG (150x150)
+        if ($request->hasFile('comparison_overlay_image')) {
+            $mediaCompOverlay = $this->mediaservice->uploadMedia($request->file('comparison_overlay_image'), 'category/overlays');
+            $category->comparison_overlay_image = $mediaCompOverlay->id;
+        } elseif ($request->has('remove_comparison_overlay_image')) {
+            $category->comparison_overlay_image = null;
+        }
+        if ($request->has('comparison_overlay_position')) {
+            $category->comparison_overlay_position = $request->input('comparison_overlay_position', 'right');
+        }
+
         $category->save();
         if ($category) {
             $slug = Str::slug($validate['name']);
@@ -555,11 +588,20 @@ class CategoriesController extends Controller
                     'description'  => $validate['description'],
                     'top_rated_listing_headline' => $request->input('top_rated_listing_headline'),
                     'top_rated_listing_subtext'  => $request->input('top_rated_listing_subtext'),
+                    'compare_alternatives_headline' => $request->input('compare_alternatives_headline'),
                     'compare_alternatives_subtext' => $request->input('compare_alternatives_subtext'),
+                    'community_says_headline' => $request->input('community_says_headline'),
                     'community_says_subtext' => $request->input('community_says_subtext'),
+                    'explore_subcategories_headline' => $request->input('explore_subcategories_headline'),
+                    'explore_subcategories_subtext' => $request->input('explore_subcategories_subtext'),
+                    'popular_comparisons_headline' => $request->input('popular_comparisons_headline'),
+                    'popular_comparisons_subtext' => $request->input('popular_comparisons_subtext'),
+                    'category_faqs_headline' => $request->input('category_faqs_headline'),
+                    'category_faqs_subtext' => $request->input('category_faqs_subtext'),
                     'faq_h1_title' => $request->input('faq_h1_title'),
                     'faq_subtext' => $request->input('faq_subtext'),
                     'faq_about_headline' => $request->input('faq_about_headline'),
+                    'faq_about_description' => $request->input('faq_about_description'),
                     'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,
