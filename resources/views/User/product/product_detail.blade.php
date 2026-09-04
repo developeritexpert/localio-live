@@ -610,7 +610,7 @@
                                                 <div class="is-asana-rgt">
                                                     <div class="row is-asan-slider">
 
-                                                        <div class="col-md-12 asan-slider slider-for">
+                                                        <div class="col-md-12 asan-slider slider-for business-main-preview mb-3" style="padding-left: 20px !important;">
                                                             @foreach ($images as $index => $image)
                                                                 @php
                                                                     $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
@@ -623,17 +623,16 @@
                                                                             'action' => 'visit_website',
                                                                             'label' => 'Visit Website',
                                                                         ]) }}"
-                                                                        target="_blank" style="display: block;">
+                                                                        target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
                                                                          <img src="{{ $imgSrc }}"
-                                                                             alt="Business Image {{ $index + 1 }}"
-                                                                             style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px;">
+                                                                             alt="Business Image {{ $index + 1 }}" class="img-fluid w-100 preview-main-display"
+                                                                             style="width: 100%; max-height: 650px; min-height: 250px; object-fit: cover; border-radius: 8px;">
                                                                      </a>
                                                                  </div>
                                                             @endforeach
                                                         </div>
 
-                                                        <div class="col-md-12 asan-slider asan-slider-btm slider-nav"
-                                                            style="margin-top: 14px !important;">
+                                                        <div class="col-md-12 asan-slider asan-slider-btm slider-nav">
                                                             @foreach ($images as $index => $image)
                                                                 @php
                                                                     $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
@@ -641,7 +640,7 @@
                                                                 <div style="padding: 0 5px; cursor: pointer;">
                                                                     <img src="{{ $imgSrc }}"
                                                                         alt="Thumbnail {{ $index + 1 }}"
-                                                                        style="width: 150px; height: 100px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;">
+                                                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px; cursor: pointer; border: none; outline: none;">
                                                                 </div>
                                                             @endforeach
                                                         </div>
@@ -656,13 +655,27 @@
                                                 setTimeout(() => {
                                                     var $slider = $('.asan-slider-btm');
 
-                                                    // Give the active slide the class initially
-                                                    $slider.find('.slick-current').addClass('hover_main');
+                                                    // Ensure only first thumbnail starts active
+                                                    $slider.find('.slick-slide').removeClass('active hover_main');
+                                                    $slider.find('.slick-slide[data-slick-index="0"]').addClass('active hover_main');
 
                                                     // On hover, add class and remove from others
                                                     $slider.on('mouseenter', '.slick-slide', function() {
-                                                        $slider.find('.slick-slide').removeClass('hover_main');
-                                                        $(this).addClass('hover_main');
+                                                        $slider.find('.slick-slide').removeClass('active hover_main');
+                                                        $(this).addClass('active hover_main');
+                                                        let index = $(this).data('slick-index');
+                                                        if (typeof index !== 'undefined' && $('.slider-for').hasClass('slick-initialized')) {
+                                                            $('.slider-for').slick('slickGoTo', parseInt(index, 10), true);
+                                                        }
+                                                    });
+
+                                                    $slider.on('click', '.slick-slide', function() {
+                                                        $slider.find('.slick-slide').removeClass('active hover_main');
+                                                        $(this).addClass('active hover_main');
+                                                        let index = $(this).data('slick-index');
+                                                        if (typeof index !== 'undefined' && $('.slider-for').hasClass('slick-initialized')) {
+                                                            $('.slider-for').slick('slickGoTo', parseInt(index, 10), true);
+                                                        }
                                                     });
                                                 }, 500);
                                             });
@@ -2762,14 +2775,16 @@
                     slidesToScroll: 1,
                     arrows: false,
                     fade: true,
-                    adaptiveHeight: true
+                    adaptiveHeight: true,
+                    accessibility: false,
+                    focusOnChange: false
                 });
 
                 // Initialize thumbnail slider (small images)
                 $('.slider-nav').on('init', function() {
-                    // Set initial border for active thumbnail after nav slider is initialized
                     setTimeout(() => {
-                        $('.slider-nav .slick-slide[data-slick-index="0"] img').css('border-color', '#007bff');
+                        $('.slider-nav .slick-slide').removeClass('active hover_main');
+                        $('.slider-nav .slick-slide[data-slick-index="0"]').addClass('active hover_main');
                     }, 50);
                 }).slick({
                     slidesToShow: 4,
@@ -2783,29 +2798,42 @@
                     draggable: false
                 });
 
+                // Keep thumbnails in sync when main slider changes
+                $('.slider-for').on('afterChange', function (event, slick, currentSlide) {
+                    $('.slider-nav .slick-slide').removeClass('active hover_main');
+                    $('.slider-nav .slick-slide[data-slick-index="' + currentSlide + '"]').addClass('active hover_main');
+                });
+
                 // Hover to change main image (only after sliders are ready)
                 $('.slider-nav').on('mouseenter', '.slick-slide', function () {
-                    if (!slidersReady) return; // Ensure sliders are fully initialized
+                    if (!slidersReady) return;
 
                     let $thumb = $(this);
                     let index = $thumb.data('slick-index');
 
                     if (typeof index !== 'undefined') {
-                        // Change main image to the clicked thumbnail's index
                         $('.slider-for').slick('slickGoTo', parseInt(index, 10), true);
+                        $('.slider-nav .slick-slide').removeClass('active hover_main');
+                        $thumb.addClass('active hover_main');
+                    }
+                });
 
-                        // Optional: Set active border color for the current thumbnail
-                        $('.slider-nav img').css('border-color', 'transparent');
-                        $thumb.find('img').css('border-color', '#007bff');
+                // Click to change main image
+                $('.slider-nav').on('click', '.slick-slide', function () {
+                    let $thumb = $(this);
+                    let index = $thumb.data('slick-index');
+                    if (typeof index !== 'undefined') {
+                        $('.slider-for').slick('slickGoTo', parseInt(index, 10), true);
+                        $('.slider-nav .slick-slide').removeClass('active hover_main');
+                        $thumb.addClass('active hover_main');
                     }
                 });
 
                 // Fallback: Reset to active thumbnail on mouse leave
                 $('.slider-nav').on('mouseleave', function () {
                     let currentIndex = $('.slider-for').slick('slickCurrentSlide');
-                    let $currentThumb = $('.slider-nav [data-slick-index="' + currentIndex + '"] img');
-                    $('.slider-nav img').css('border-color', 'transparent');
-                    $currentThumb.css('border-color', '#007bff');
+                    $('.slider-nav .slick-slide').removeClass('active hover_main');
+                    $('.slider-nav .slick-slide[data-slick-index="' + currentIndex + '"]').addClass('active hover_main');
                 });
 
                 // Click handlers to open the gallery modal using CustomEvent delegation
