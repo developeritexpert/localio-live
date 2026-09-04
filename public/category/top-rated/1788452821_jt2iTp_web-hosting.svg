@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- Quiet support geometry -->
+  <circle cx="76" cy="73" r="50" fill="#f7f9fb"/>
+  <circle cx="245" cy="48" r="31" fill="#f7f9fb"/>
+  <circle cx="224" cy="117" r="24" fill="#DDEAF7"/>
+  <circle cx="166" cy="126" r="13" fill="#f7f9fb"/>
+
+  <!-- Hosted website / browser environment (secondary, behind server) -->
+  <rect x="166" y="25" width="111" height="92" rx="8" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <line x1="166" y1="43" x2="277" y2="43" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="177" cy="34" r="2.3" fill="#7999C0"/>
+  <circle cx="185" cy="34" r="2.3" fill="#DDEAF7"/>
+  <circle cx="193" cy="34" r="2.3" fill="#DDEAF7"/>
+  <rect x="202" y="30.5" width="57" height="7" rx="3.5" fill="#f7f9fb"/>
+
+  <rect x="177" y="52" width="22" height="53" rx="3" fill="#f7f9fb"/>
+  <rect x="183" y="59" width="10" height="6" rx="2" fill="#DDEAF7"/>
+  <line x1="182" y1="73" x2="194" y2="73" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="182" y1="80" x2="194" y2="80" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="182" y1="87" x2="191" y2="87" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <rect x="207" y="52" width="58" height="29" rx="3" fill="#DDEAF7"/>
+  <circle cx="219" cy="63" r="5" fill="#7999C0"/>
+  <line x1="230" y1="61" x2="254" y2="61" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="230" y1="68" x2="248" y2="68" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <rect x="207" y="88" width="27" height="17" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+  <rect x="239" y="88" width="26" height="17" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.8"/>
+  <line x1="213" y1="94" x2="228" y2="94" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="213" y1="99" x2="224" y2="99" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="245" y1="94" x2="259" y2="94" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="245" y1="99" x2="255" y2="99" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+
+  <!-- Clean infrastructure connection -->
+  <line x1="154" y1="75" x2="166" y2="75" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="160" cy="75" r="3" fill="#7999C0"/>
+
+  <!-- Primary server infrastructure -->
+  <rect x="31" y="30" width="126" height="92" rx="10" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+
+  <rect x="43" y="42" width="102" height="20" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="55" cy="52" r="4.3" fill="#7999C0"/>
+  <line x1="67" y1="52" x2="111" y2="52" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="132" cy="52" r="3.6" fill="#214787"/>
+  <circle cx="121" cy="52" r="2.2" fill="#fb5c28"/>
+
+  <rect x="43" y="68" width="102" height="20" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="55" cy="78" r="4.3" fill="#7999C0"/>
+  <line x1="67" y1="78" x2="111" y2="78" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="132" cy="78" r="3.6" fill="#214787"/>
+  <circle cx="121" cy="78" r="2.2" fill="#7999C0"/>
+
+  <rect x="43" y="94" width="102" height="20" rx="4" fill="#DDEAF7" stroke="#7999C0" stroke-width="1"/>
+  <circle cx="55" cy="104" r="4.3" fill="#7999C0"/>
+  <line x1="67" y1="104" x2="111" y2="104" stroke="#7999C0" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="132" cy="104" r="3.6" fill="#214787"/>
+  <circle cx="121" cy="104" r="2.2" fill="#7999C0"/>
+
+  <!-- Rack control / management detail -->
+  <rect x="69" y="126" width="50" height="12" rx="6" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="81" cy="132" r="2.3" fill="#7999C0"/>
+  <circle cx="94" cy="132" r="2.3" fill="#214787"/>
+  <circle cx="107" cy="132" r="2.3" fill="#7999C0"/>
+</svg>

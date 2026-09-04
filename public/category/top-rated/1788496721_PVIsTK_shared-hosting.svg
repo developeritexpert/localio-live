@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- pale support geometry -->
+  <circle cx="49" cy="42" r="22" fill="#f7f9fb"/>
+  <circle cx="255" cy="104" r="27" fill="#DDEAF7"/>
+  <circle cx="235" cy="31" r="14" fill="#f7f9fb"/>
+
+  <!-- shared connection spine behind the foreground objects -->
+  <path d="M78 67 H92 M78 85 H92 M208 67 H222 M208 85 H222" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="85" cy="67" r="2.3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="85" cy="85" r="2.3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="215" cy="67" r="2.3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="215" cy="85" r="2.3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+
+  <!-- left website card -->
+  <rect x="24" y="49" width="54" height="54" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="31" y="57" width="40" height="8" rx="2" fill="#DDEAF7"/>
+  <circle cx="35" cy="61" r="1.6" fill="#7999C0"/>
+  <rect x="31" y="72" width="16" height="16" rx="2.2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <path d="M52 74 H68 M52 79 H64 M52 84 H60" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="31" y="93" width="32" height="4" rx="1.5" fill="#DDEAF7"/>
+
+  <!-- right website card -->
+  <rect x="222" y="49" width="54" height="54" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="229" y="57" width="40" height="8" rx="2" fill="#DDEAF7"/>
+  <circle cx="233" cy="61" r="1.6" fill="#7999C0"/>
+  <rect x="253" y="72" width="16" height="16" rx="2.2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <path d="M230 74 H247 M230 79 H244 M230 84 H240" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="237" y="93" width="32" height="4" rx="1.5" fill="#DDEAF7"/>
+
+  <!-- primary shared-hosting server anchor -->
+  <rect x="91" y="27" width="117" height="104" rx="4.5" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+
+  <!-- three tenants sharing one physical hosting frame -->
+  <rect x="103" y="40" width="93" height="19" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.0"/>
+  <circle cx="113" cy="49.5" r="4" fill="#7999C0"/>
+  <path d="M122 47 H157 M122 52 H145" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="167" y="45" width="13" height="3.5" rx="1.4" fill="#fdfdfd"/>
+  <rect x="167" y="51" width="19" height="3.5" rx="1.4" fill="#f7f9fb"/>
+  <circle cx="190" cy="49.5" r="2.6" fill="#fb5c28"/>
+
+  <rect x="103" y="65.5" width="93" height="19" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="1.0"/>
+  <circle cx="113" cy="75" r="4" fill="#7999C0"/>
+  <path d="M122 72.5 H154 M122 77.5 H142" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="167" y="70.5" width="13" height="3.5" rx="1.4" fill="#DDEAF7"/>
+  <rect x="167" y="76.5" width="19" height="3.5" rx="1.4" fill="#DDEAF7"/>
+  <circle cx="190" cy="75" r="2.2" fill="#7999C0"/>
+
+  <rect x="103" y="91" width="93" height="19" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.0"/>
+  <circle cx="113" cy="100.5" r="4" fill="#7999C0"/>
+  <path d="M122 98 H158 M122 103 H147" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="167" y="96" width="13" height="3.5" rx="1.4" fill="#fdfdfd"/>
+  <rect x="167" y="102" width="19" height="3.5" rx="1.4" fill="#f7f9fb"/>
+  <circle cx="190" cy="100.5" r="2.2" fill="#7999C0"/>
+
+  <!-- common shared resource rail across all tenant rows -->
+  <rect x="116" y="114.5" width="67" height="12.5" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="129" cy="120.75" r="2.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+  <circle cx="149.5" cy="120.75" r="2.8" fill="#7999C0"/>
+  <circle cx="170" cy="120.75" r="2.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+</svg>

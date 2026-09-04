@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- pale support geometry -->
+  <circle cx="64" cy="79" r="31" fill="#f7f9fb"/>
+  <circle cx="244" cy="91" r="28" fill="#DDEAF7"/>
+  <circle cx="236" cy="44" r="14" fill="#f7f9fb"/>
+
+  <!-- secondary regional node: left -->
+  <rect x="23" y="68" width="43" height="38" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="31" y="77" width="27" height="10" rx="2" fill="#DDEAF7"/>
+  <circle cx="35.5" cy="82" r="2.2" fill="#7999C0"/>
+  <path d="M41 82H53" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M31 94H48" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M31 99H42" fill="none" stroke="#DDEAF7" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- secondary regional node: right -->
+  <rect x="235" y="61" width="43" height="45" rx="4" fill="#fdfdfd" stroke="#7999C0" stroke-width="1.2"/>
+  <rect x="243" y="70" width="27" height="10" rx="2" fill="#DDEAF7"/>
+  <circle cx="247.5" cy="75" r="2.2" fill="#7999C0"/>
+  <path d="M253 75H265" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <rect x="243" y="87" width="10" height="10" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <path d="M258 90H269" fill="none" stroke="#7999C0" stroke-width="0.9" stroke-linecap="round"/>
+  <path d="M258 95H265" fill="none" stroke="#DDEAF7" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- connectors behind primary anchor -->
+  <path d="M66 87H79" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="79" cy="87" r="2.6" fill="#7999C0"/>
+  <path d="M221 82H235" fill="none" stroke="#7999C0" stroke-width="1.1" stroke-linecap="round"/>
+  <circle cx="221" cy="82" r="2.6" fill="#7999C0"/>
+
+  <!-- primary cloud hosting anchor -->
+  <path d="M84 116
+           C73 116 64 107 64 96
+           C64 84 73 74 85 73
+           C87 56 101 44 118 44
+           C129 44 139 49 145 57
+           C153 43 168 34 185 34
+           C207 34 225 50 228 71
+           C240 73 249 82 249 94
+           C249 106 239 116 227 116
+           Z"
+        fill="#fdfdfd" stroke="#214787" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- distributed compute connections -->
+  <path d="M126 81L143 72M174 72L191 81M158.5 81V96M126 96H191" fill="none" stroke="#7999C0" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="158.5" cy="96" r="2.4" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- compute node A -->
+  <rect x="93" y="76" width="36" height="22" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="100" cy="87" r="3" fill="#7999C0"/>
+  <path d="M107 84.5H123M107 89.5H119" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <!-- compute node B: central, orange micro-accent lives here -->
+  <rect x="140" y="58" width="37" height="23" rx="3" fill="#DDEAF7" stroke="#214787" stroke-width="1.2"/>
+  <circle cx="147" cy="69.5" r="3" fill="#7999C0"/>
+  <path d="M154 67H170M154 72H166" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <circle cx="171.5" cy="69.5" r="3.2" fill="#fb5c28"/>
+
+  <!-- compute node C -->
+  <rect x="188" y="76" width="36" height="22" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="1.1"/>
+  <circle cx="195" cy="87" r="3" fill="#7999C0"/>
+  <path d="M202 84.5H218M202 89.5H214" fill="none" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <!-- lower resource layer inside the cloud -->
+  <rect x="123" y="100" width="71" height="10" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <circle cx="132" cy="105" r="2.3" fill="#7999C0"/>
+  <circle cx="141" cy="105" r="2.3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <circle cx="150" cy="105" r="2.3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <path d="M159 105H184" fill="none" stroke="#DDEAF7" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

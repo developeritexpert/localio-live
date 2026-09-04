@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="150" viewBox="0 0 300 150">
+  <!-- Pale rack frame / support -->
+  <rect x="28" y="18" width="244" height="114" rx="10" fill="#f7f9fb" stroke="#DDEAF7" stroke-width="1.1"/>
+  <rect x="35" y="27" width="14" height="96" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="251" y="27" width="14" height="96" rx="3" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+
+  <!-- Rack rail openings -->
+  <rect x="39" y="36" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="39" y="53" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="39" y="70" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="39" y="87" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="39" y="104" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="255" y="36" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="255" y="53" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="255" y="70" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="255" y="87" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+  <rect x="255" y="104" width="6" height="8" rx="1.5" fill="#fdfdfd"/>
+
+  <!-- Dominant physical dedicated server -->
+  <rect x="47" y="34" width="206" height="84" rx="4" fill="#fdfdfd" stroke="#214787" stroke-width="1.5"/>
+
+  <!-- Mounting handles -->
+  <rect x="54" y="46" width="10" height="60" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="236" y="46" width="10" height="60" rx="2.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.9"/>
+  <line x1="59" y1="53" x2="59" y2="99" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+  <line x1="241" y1="53" x2="241" y2="99" stroke="#7999C0" stroke-width="0.8" stroke-linecap="round"/>
+
+  <!-- Storage bay bank -->
+  <rect x="72" y="47" width="98" height="58" rx="3" fill="#DDEAF7" stroke="#214787" stroke-width="1.15"/>
+  <line x1="121" y1="47" x2="121" y2="105" stroke="#7999C0" stroke-width="0.8"/>
+  <line x1="72" y1="76" x2="170" y2="76" stroke="#7999C0" stroke-width="0.8"/>
+
+  <!-- Four drive trays -->
+  <rect x="78" y="53" width="37" height="17" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.75"/>
+  <rect x="127" y="53" width="37" height="17" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.75"/>
+  <rect x="78" y="82" width="37" height="17" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.75"/>
+  <rect x="127" y="82" width="37" height="17" rx="2" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.75"/>
+  <line x1="85" y1="64" x2="108" y2="64" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="134" y1="64" x2="157" y2="64" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="85" y1="93" x2="108" y2="93" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="134" y1="93" x2="157" y2="93" stroke="#7999C0" stroke-width="0.7" stroke-linecap="round"/>
+  <circle cx="84" cy="58" r="1.5" fill="#DDEAF7"/>
+  <circle cx="133" cy="58" r="1.5" fill="#DDEAF7"/>
+  <circle cx="84" cy="87" r="1.5" fill="#DDEAF7"/>
+  <circle cx="133" cy="87" r="1.5" fill="#DDEAF7"/>
+
+  <!-- Ventilation and control zone -->
+  <rect x="180" y="47" width="47" height="58" rx="3" fill="#f7f9fb" stroke="#7999C0" stroke-width="0.9"/>
+  <rect x="187" y="54" width="25" height="31" rx="2" fill="#DDEAF7"/>
+  <circle cx="192" cy="59" r="1.35" fill="#7999C0"/>
+  <circle cx="199.5" cy="59" r="1.35" fill="#7999C0"/>
+  <circle cx="207" cy="59" r="1.35" fill="#7999C0"/>
+  <circle cx="192" cy="66" r="1.35" fill="#7999C0"/>
+  <circle cx="199.5" cy="66" r="1.35" fill="#7999C0"/>
+  <circle cx="207" cy="66" r="1.35" fill="#7999C0"/>
+  <circle cx="192" cy="73" r="1.35" fill="#7999C0"/>
+  <circle cx="199.5" cy="73" r="1.35" fill="#7999C0"/>
+  <circle cx="207" cy="73" r="1.35" fill="#7999C0"/>
+  <circle cx="192" cy="80" r="1.35" fill="#7999C0"/>
+  <circle cx="199.5" cy="80" r="1.35" fill="#7999C0"/>
+  <circle cx="207" cy="80" r="1.35" fill="#7999C0"/>
+
+  <!-- Control cluster; single orange status light -->
+  <circle cx="218.5" cy="58.5" r="3.2" fill="#fb5c28"/>
+  <circle cx="218.5" cy="67" r="1.8" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <rect x="215" y="88" width="7" height="8" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+
+  <!-- Small server-specific lower I/O details -->
+  <rect x="187" y="91" width="17" height="7" rx="1.5" fill="#DDEAF7" stroke="#7999C0" stroke-width="0.7"/>
+  <rect x="207" y="91" width="5" height="7" rx="1" fill="#fdfdfd" stroke="#7999C0" stroke-width="0.7"/>
+
+  <!-- Quiet structural top vents -->
+  <line x1="82" y1="41" x2="107" y2="41" stroke="#DDEAF7" stroke-width="1" stroke-linecap="round"/>
+  <line x1="112" y1="41" x2="137" y2="41" stroke="#DDEAF7" stroke-width="1" stroke-linecap="round"/>
+  <line x1="142" y1="41" x2="167" y2="41" stroke="#DDEAF7" stroke-width="1" stroke-linecap="round"/>
+</svg>
