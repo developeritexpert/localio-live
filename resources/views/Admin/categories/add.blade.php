@@ -375,6 +375,90 @@
                             </div>
                         </div>
 
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="explore_subcategories_headline">Explore Subcategories Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="explore_subcategories_headline" name="explore_subcategories_headline"
+                                        value="{{ isset($category_data) ? ($category_data['explore_subcategories_headline'] ?? '') : old('explore_subcategories_headline') }}"
+                                        placeholder="e.g. Explore [Category] categories">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the explore subcategories/categories section on the category page. Defaults to "Explore [Category] categories" if left empty.</small>
+                                @error('explore_subcategories_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="explore_subcategories_subtext">Explore Subcategories Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="explore_subcategories_subtext" name="explore_subcategories_subtext" rows="3" placeholder="Enter subtext displayed below the Explore subcategories headline">{{ isset($category_data) ? ($category_data['explore_subcategories_subtext'] ?? '') : old('explore_subcategories_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Explore subcategories headline. Defaults to "Browse specialized categories to find the exact tools and solutions for your requirements." if left empty.</small>
+                                @error('explore_subcategories_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="popular_comparisons_headline">Popular Comparisons Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="popular_comparisons_headline" name="popular_comparisons_headline"
+                                        value="{{ isset($category_data) ? ($category_data['popular_comparisons_headline'] ?? '') : old('popular_comparisons_headline') }}"
+                                        placeholder="e.g. Popular comparisons">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the Popular Comparisons section on the category page. Defaults to "Popular comparisons" if left empty.</small>
+                                @error('popular_comparisons_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="popular_comparisons_subtext">Popular Comparisons Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="popular_comparisons_subtext" name="popular_comparisons_subtext" rows="3" placeholder="Enter subtext displayed below the Popular Comparisons headline">{!! isset($category_data) ? ($category_data['popular_comparisons_subtext'] ?? '') : old('popular_comparisons_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Popular Comparisons headline on the category page. Defaults to "See how top [category] providers compare against each other." if left empty.</small>
+                                @error('popular_comparisons_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_faqs_headline">Category Page FAQs Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="category_faqs_headline" name="category_faqs_headline"
+                                        value="{{ isset($category_data) ? ($category_data['category_faqs_headline'] ?? '') : old('category_faqs_headline') }}"
+                                        placeholder="e.g. Frequently asked questions">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the FAQ section at the bottom of the main Category page. Defaults to "Frequently asked questions" if left empty.</small>
+                                @error('category_faqs_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_faqs_subtext">Category Page FAQs Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="category_faqs_subtext" name="category_faqs_subtext" rows="3" placeholder="Enter subtext displayed below the Category Page FAQ headline">{!! isset($category_data) ? ($category_data['category_faqs_subtext'] ?? '') : old('category_faqs_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the FAQ headline on the main Category page. Defaults to "Common questions and answers about [category] solutions and comparison criteria." if left empty.</small>
+                                @error('category_faqs_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
 
                         
                         <div class="col-md-12">

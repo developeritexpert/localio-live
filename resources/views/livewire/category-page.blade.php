@@ -1780,15 +1780,28 @@
         <!-- listing section -->
         <!-- 3. Explore Subcategories Section -->
         @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+        @php
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $exploreHeadline = !empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories');
+            $exploreSubtext = $catTrans->explore_subcategories_subtext ?? null;
+        @endphp
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
                     <h2 class="explore-cat-h2">
-                        {{ $exploreSubcategories['title'] }}
+                        {{ $exploreHeadline }}
                     </h2>
-                    <p style="color: #002347; margin: 0;">
-                        Browse specialized categories to find the exact tools and solutions for your requirements.
-                    </p>
+                    @if(!empty($exploreSubtext))
+                        <div class="explore-cat-subtext" style="color: #002347; margin: 0;">
+                            {!! $exploreSubtext !!}
+                        </div>
+                    @else
+                        <p style="color: #002347; margin: 0;">
+                            Browse specialized categories to find the exact tools and solutions for your requirements.
+                        </p>
+                    @endif
                 </div>
 
                 <div class="row g-3">
@@ -1838,17 +1851,28 @@
         <!-- Popular Category Comparisons Section -->
         @if(isset($popularComparisons) && count($popularComparisons) > 0)
         @php
-            $catCurrentName = $category->translations->name ?? $category->name ?? 'Category';
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catCurrentName = $catTrans->name ?? $category->name ?? 'Category';
+            $popCompHeadline = !empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons';
+            $popCompSubtext = $catTrans->popular_comparisons_subtext ?? null;
         @endphp
         <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
             <div class="container">
                 <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
                     <h2 style="margin-bottom: 8px;">
-                        Popular comparisons
+                        {{ $popCompHeadline }}
                     </h2>
-                    <p style="color: #002347; margin: 0;">
-                        See how top {{ strtolower($catCurrentName) }} providers compare against each other.
-                    </p>
+                    @if(!empty($popCompSubtext))
+                        <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
+                            {!! $popCompSubtext !!}
+                        </div>
+                    @else
+                        <p style="color: #002347; margin: 0;">
+                            See how top {{ strtolower($catCurrentName) }} providers compare against each other.
+                        </p>
+                    @endif
                 </div>
 
                 <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
@@ -1917,7 +1941,12 @@
         <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
         @php
-            $catFaqName = $category->translations->name ?? $category->name ?? 'Category';
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catFaqName = $catTrans->name ?? $category->name ?? 'Category';
+            $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
+            $faqSubtext = $catTrans->category_faqs_subtext ?? null;
         @endphp
         <section class="category-faqs-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
             <div class="container">
@@ -1925,11 +1954,17 @@
                     <div class="">
                         <div class="text-start mb-4">
                             <h2 style="margin-bottom: 8px;">
-                                Frequently asked questions
+                                {{ $faqHeadline }}
                             </h2>
-                            <p style="color: #002347; margin: 0;">
-                                Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
-                            </p>
+                            @if(!empty($faqSubtext))
+                                <div class="category-faqs-subtext" style="color: #002347; margin: 0;">
+                                    {!! $faqSubtext !!}
+                                </div>
+                            @else
+                                <p style="color: #002347; margin: 0;">
+                                    Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
+                                </p>
+                            @endif
                         </div>
 
                         <div class="accordion" id="categoryFaqAccordion">
