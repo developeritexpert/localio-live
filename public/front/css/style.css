@@ -121,7 +121,7 @@ h6 {
 
 p {
     line-height: 1.5;
-    color: var(--color-primary-grey-text);
+    color: var(--color-dark-blue-text);
 }
 
 img {
@@ -9685,7 +9685,7 @@ button#reviewFilterDropdownBtn span:nth-child(2):hover {
 }
 
 .view-review-link {
-    color: #002655;
+    color: var(--color-dark-blue-text);
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
@@ -9889,7 +9889,7 @@ button.btn-vote-faq i.far:hover {
 
 #nav-tabContent .btm-bttn.light,
 .btm-bttn.light {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--color-dark-blue-text);
     font-weight: 600;
     display: flex;
@@ -9967,4 +9967,26 @@ button.btn-vote-faq i.far:hover {
     text-transform: uppercase;
 }
 
+.alt-add-to-comp-btn {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    background: #e2e8f0;
+    border: none;
+}
 
+.alt-add-to-comp-btn i {
+    position: relative;
+    top: 1px;
+    color: var(--color-dark-blue-text);
+}
+
+.auto-choice-hd .auto-choice-btn .cta_orange {
+    padding: 8px 14px;
+}
