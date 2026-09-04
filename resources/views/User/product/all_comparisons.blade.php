@@ -218,6 +218,13 @@
                     </p>
                 </div>
             </div>
+            <div class="col-md-4 col-12 mt-4 mt-md-0">
+                <div class="comparison-header-icons d-flex justify-content-md-end justify-content-start">
+                    <div class="comp-header-icon-box" style="width: 84px; height: 84px; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" title="{{ $bName }}">
+                        <x-business-logo :business="$business" :name="$bName" size="xl" style="width: 100%; height: 100%; object-fit: contain;" />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
