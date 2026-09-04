@@ -397,7 +397,7 @@
                                             <div class="review-sidebar-sticky">
 
                                                 <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3; text-align: left;">
-                                                    {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews
+                                                    {{ $business->translations->first()->name ?? $business->name ?? '' }} user reviews ({{ $totalReviewsCount }})
                                                 </h2>
                                                 <div class="review-filter-sec" style="display: block;">
                                                     <div class="user-reviews-summary-card p-4 p-md-4 bg-white rounded-3 border w-100" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);">
