@@ -34,7 +34,10 @@ class CategoryTranslation extends Model
         'faqs',
         'top_rated_listing_headline',
         'top_rated_listing_subtext',
+        'compare_alternatives_headline',
         'compare_alternatives_subtext',
+        'community_says_headline',
+        
         'community_says_subtext',
         'explore_subcategories_headline',
         'explore_subcategories_subtext',

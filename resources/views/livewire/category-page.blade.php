@@ -392,7 +392,7 @@
     </div>
     @endif
         <!-- section top-rated automaotive -->
-        <section class="top-rated-heading-sec">
+        <section class="top-rated-heading-sec cat_main_page_sec">
             <div class="container">
                 <div class=" bread_row row align-items-center mb-2">
                     <div class="col-8 ">
@@ -1567,8 +1567,13 @@
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
+                        @php
+                            $compAlternativesHeadline = !empty($category->translations->compare_alternatives_headline) 
+                                ? $category->translations->compare_alternatives_headline 
+                                : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives');
+                        @endphp
                         <h2>
-                            Compare {{ $category->translations->name ?? $category->name }} alternatives
+                            {{ $compAlternativesHeadline }}
                         </h2>
                         @if(!empty($category->translations->compare_alternatives_subtext))
                             <style>
@@ -1676,7 +1681,12 @@
                         
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
-                                <h2 style="margin-bottom: 4px;">What the Localio community says</h2>
+                                @php
+                                    $commFeedbackHeadline = !empty($category->translations->community_says_headline) 
+                                        ? $category->translations->community_says_headline 
+                                        : 'What the Localio community says';
+                                @endphp
+                                <h2 style="margin-bottom: 4px;">{{ $commFeedbackHeadline }}</h2>
                                 @if(!empty($category->translations->community_says_subtext))
                                     <style>
                                         .community-says-subtext p { margin-bottom: 0 !important; }
@@ -1928,7 +1938,7 @@
                     @endforeach
                 </div>
 
-                <div class="mt-4" data-aos="fade-up" data-aos-duration="1000">
+                <div class="mt-4 d-none" data-aos="fade-up" data-aos-duration="1000">
                     <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
                         View more comparisons
                     </a>
