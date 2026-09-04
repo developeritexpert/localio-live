@@ -1586,7 +1586,8 @@
                             <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                     <tr>
-                                        <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                        <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
                                         <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                         @php
                                             $allCriteria = [];
@@ -1603,21 +1604,52 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $allStartingPrices = collect(getBusinessesWithStartingPrice($topAffiliatedBusinesses))->keyBy('business.id');
+                                    @endphp
                                     @foreach($topAffiliatedBusinesses as $biz)
                                         @php
                                             $bName = $biz->translations->first()->name ?? $biz->name ?? '';
+                                            $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? '';
+                                            $affiliateUrl = $biz->getTrackedUrl() ?? $biz->affiliate_link ?? $biz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]);
                                             $recommendPercent = $biz->reviews()->count() > 0 ? round(($biz->reviews()->where('recommend', 1)->count() / $biz->reviews()->count()) * 100) : 0;
+
+                                            $bizStartingPrice = $allStartingPrices->get($biz->id)['starting_price'] ?? null;
+                                            if (!$bizStartingPrice && $biz->products) {
+                                                $firstPrice = $biz->products->flatMap->prices->first();
+                                                if ($firstPrice) {
+                                                    $bizStartingPrice = [
+                                                        'amount' => $firstPrice->price,
+                                                        'currency' => $firstPrice->currency ?? '$',
+                                                        'time_unit' => $firstPrice->time_unit ?? 'month'
+                                                    ];
+                                                }
+                                            }
+                                            $bizCurrency = $bizStartingPrice['currency'] ?? '$';
+                                            $bizAmount = isset($bizStartingPrice['amount']) ? number_format($bizStartingPrice['amount'], 2) : null;
+                                            $bizTimeUnit = strtolower($bizStartingPrice['time_unit'] ?? '');
                                         @endphp
                                     <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                         <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                            <div class="d-flex align-items-center gap-2">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                 <div class="top-product-small-logo">
                                                     <x-business-logo :business="$biz" :name="$bName" />
                                                 </div>
-                                                <div class="d-flex align-items-center gap-1 flex-wrap">
-                                                    <span style="color: #002347;">{{ $bName }}</span>
+                                                <div class="d-flex align-items-center flex-nowrap">
+                                                    <span class="table-business-name" style="color: #002347; font-weight: 500;">{{ $bName }}</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                 </div>
-                                            </div>
+                                            </a>
+                                        </td>
+                                        <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
+                                            @if($bizStartingPrice && $bizAmount !== null)
+                                                <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
+                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                    <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
+                                                @endif
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
                                         </td>
                                         <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                             <span class="d-inline-flex align-items-center gap-1">
@@ -1662,7 +1694,7 @@
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                             <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned pro</th>
                                             <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned con</th>
@@ -1672,6 +1704,8 @@
                                         @foreach($topAffiliatedBusinesses as $biz)
                                             @php
                                                 $bName = $biz->translations->first()->name ?? $biz->name ?? '';
+                                                $bSlug = $biz->translations->first()->slug ?? $biz->slug ?? '';
+                                                $affiliateUrl = $biz->getTrackedUrl() ?? $biz->affiliate_link ?? $biz->permanent_url ?? route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]);
                                                 $topPro = \Illuminate\Support\Facades\DB::table('review_pro_cons')
                                                     ->join('reviews', 'review_pro_cons.review_id', '=', 'reviews.id')
                                                     ->join('category_pro_cons', 'review_pro_cons.category_pro_con_id', '=', 'category_pro_cons.id')
@@ -1695,15 +1729,16 @@
                                                     ->first();
                                             @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                            <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
-                                                <div class="d-flex align-items-center gap-2">
+                                            <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
+                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                     <div class="top-product-small-logo">
                                                         <x-business-logo :business="$biz" :name="$bName" />
                                                     </div>
-                                                    <div class="d-flex align-items-center gap-1 flex-wrap">
-                                                        <span style="color: #002347;">{{ $bName }}</span>
+                                                    <div class="d-flex align-items-center flex-nowrap">
+                                                        <span class="table-business-name" style="color: #002347; font-weight: 500;">{{ $bName }}</span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                     </div>
-                                                </div>
+                                                </a>
                                             </td>
                                             <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                                 <span class="d-inline-flex align-items-center gap-1">

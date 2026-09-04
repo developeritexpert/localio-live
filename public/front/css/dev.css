@@ -789,3 +789,14 @@
 .top-biz-sidebar-item:hover h6 {
     color: #06498b !important;
 }
+
+/* Business Table Links */
+.table-business-link:hover .table-business-name {
+    text-decoration: underline;
+}
+.table-business-link svg {
+    transition: transform 0.15s ease;
+}
+.table-business-link:hover svg {
+    transform: translate(1px, -1px);
+}
