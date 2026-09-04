@@ -498,7 +498,7 @@
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                                 <div class="cat-hero-img-wrap position-relative d-inline-block">
-                                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img">
+                                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
                                     @if(!empty($category->category_overlay_image) && $category->categoryOverlayMedia)
                                         @php $pos = $category->category_overlay_position ?? 'right'; @endphp
                                         <img src="{{ asset($category->categoryOverlayMedia->dir_path . '/' . $category->categoryOverlayMedia->file_name) }}" alt="Category Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">
@@ -1696,11 +1696,11 @@
                                         .community-says-subtext p { margin-bottom: 0 !important; }
                                         .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                                     </style>
-                                    <div style="font-size: 14px; color: #64748b; margin: 0;" class="community-says-subtext ck-content">
+                                    <div style="font-size: 16px; color: #64748b; margin: 0;" class="community-says-subtext ck-content">
                                         {!! $category->translations->community_says_subtext !!}
                                     </div>
                                 @else
-                                    <p style="font-size: 14px; color: #64748b; margin: 0;">Most mentioned pros and cons shared by real users.</p>
+                                    <p style="font-size: 16px; color: #64748b; margin: 0;">Most mentioned pros and cons shared by real users.</p>
                                 @endif
                             </div>
                             
