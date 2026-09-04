@@ -1164,9 +1164,12 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
                 ->whereHas('translations', function ($q) use ($lang_id) {
                     $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
                 })
-                ->with(['translations' => function ($q) use ($lang_id) {
-                    $q->where('lang_id', $lang_id);
-                }])
+                ->with([
+                    'translations' => function ($q) use ($lang_id) {
+                        $q->where('lang_id', $lang_id);
+                    },
+                    'topRatedImageMedia'
+                ])
                 ->withCount(['businesses' => function ($q) {
                     $q->where('status', 1);
                 }])
