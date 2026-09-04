@@ -485,9 +485,9 @@
                                     {{ $applyDynamicVars($baseTitle) }}
                                 </h1>
                             @endif
-                            <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
+                            <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
-                            <div style="font-size: 15px; margin-bottom: 0;" class="category-description-text">
+                            <div class="category-description-text">
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
@@ -514,19 +514,19 @@
                                     .top-rated-subtext-container p { margin-bottom: 0 !important; }
                                     .top-rated-subtext-container p:not(:last-child) { margin-bottom: 10px !important; }
                                 </style>
-                                <div style="font-size: 14px; color: #555; margin-bottom: 0;" class="top-rated-subtext-container ck-content">
+                                <div class="top-rated-subtext-container ck-content">
                                     {!! $category->translation->top_rated_listing_subtext !!}
                                 </div>
                             @endif
                         </div>
                         
                         <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 466px;">
-                            <div class="verified-insights-card" style="background-color: #fcfcfc; border-radius: 8px; padding: 12px 16px; border: 1px solid #e2e8f0; text-align: left;">
+                            <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
                                     <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                                 </div>
-                                <p style="font-size: 13px; margin-bottom: 0; ">
+                                <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
                             </div>
@@ -537,18 +537,18 @@
                                 <div class="row align-items-start">
                                     <div class="col-md-6 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
-                                        <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                        <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                             {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
                                         </p>
                                     </div>
                                     <div class="col-md-4 mt-4 mt-md-0 text-start">
-                                        <div class="verified-insights-card" style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
+                                        <div class="verified-insights-card">
                                             <div class="d-flex align-items-center mb-2" style="gap: 8px;">
                                                 <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                                 <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
                                             </div>
-                                            <p style="font-size: 13px;  margin-bottom: 8px; ">
+                                            <p>
                                                 Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                             </p>
                                             <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
@@ -1111,7 +1111,7 @@
                                                     <!-- Short Description -->
                                                     @if(!empty($item->translations->first()->short_description))
                                                     <div class="mb-3 mt-1 text-start"
-                                                        style="font-size: 14px; color: #444; line-height: 1.5; width: 100%;">
+                                                        style="font-size: 14px; color: #002347; line-height: 1.5; width: 100%;">
                                                         {{ $item->translations->first()->short_description }}
                                                     </div>
                                                     @endif
@@ -1401,7 +1401,7 @@
                             <!-- Left Column: Description, Image, Pros/Cons -->
                             <div class="is-asana-wrp imges_left_sde" data-aos="fade-up" data-aos-duration="1000">
                                     <div class="row sld_rw">
-                                        <h2 style="font-size: 28px; font-weight: 800; color: #111827; margin-bottom: 24px;">
+                                        <h2 style=" font-weight: 700 !important; margin-bottom: 24px;">
                                             #{{ $index + 1 }} {{ $bName }}
                                         </h2>
                                     
@@ -1462,9 +1462,9 @@
                                     @endphp
                                     <div class="col-lg-12 mt-2 mb-4 pros-cons-wrapper mt-4">
                                         <div class="pros-cons-header mb-3">
-                                            <h2 style="font-weight: 600; color: #1e3050; font-size: 22px; margin-bottom: 8px;">
+                                            <h3 style="margin-bottom: 8px;">
                                                 {{ $bName }} pros and cons
-                                            </h2>
+                                            </h3>
                                         </div>
                                         
                                         <div class="row g-4 d-flex">
@@ -1561,7 +1561,7 @@
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
-                        <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
+                        <h2>
                             Compare {{ $category->translations->name ?? $category->name }} alternatives
                         </h2>
                         @if(!empty($category->translations->compare_alternatives_subtext))
@@ -1569,7 +1569,7 @@
                                 .compare-alternatives-subtext p { margin-bottom: 0 !important; }
                                 .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                             </style>
-                            <div style="font-size: 14px; color: #64748b; margin-bottom: 16px;" class="compare-alternatives-subtext ck-content">
+                            <div class="compare-alternatives-subtext ck-content">
                                 {!! $category->translations->compare_alternatives_subtext !!}
                             </div>
                         @else
@@ -1580,8 +1580,8 @@
                             <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                     <tr>
-                                        <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
+                                        <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                         @php
                                             $allCriteria = [];
                                             if (count($topAffiliatedBusinesses) > 0) {
@@ -1591,9 +1591,9 @@
                                             }
                                         @endphp
                                         @foreach($allCriteria as $criterion)
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">{{ $criterion->name }}</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">{{ $criterion->name }}</th>
                                         @endforeach
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Recommend</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Recommend</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1603,7 +1603,7 @@
                                             $recommendPercent = $biz->reviews()->count() > 0 ? round(($biz->reviews()->where('recommend', 1)->count() / $biz->reviews()->count()) * 100) : 0;
                                         @endphp
                                     <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                        <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
+                                        <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="top-product-small-logo">
                                                     <x-business-logo :business="$biz" :name="$bName" />
@@ -1613,7 +1613,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                        <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                 <span>{{ number_format($biz->average_rating ?? 0, 1) }}</span>
@@ -1623,7 +1623,7 @@
                                             @php
                                                 $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
                                             @endphp
-                                            <td class="text-center" style="padding: 14px; color: #475569;">
+                                            <td class="text-center" style="padding: 14px; color: #5b6b7a; font-weight:500">
                                                 {{ $avg !== null ? number_format($avg, 1) : '-' }}
                                             </td>
                                         @endforeach
@@ -1638,7 +1638,7 @@
                         
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
-                                <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">What the Localio community says</h2>
+                                <h2 style="margin-bottom: 4px;">What the Localio community says</h2>
                                 @if(!empty($category->translations->community_says_subtext))
                                     <style>
                                         .community-says-subtext p { margin-bottom: 0 !important; }
@@ -1656,10 +1656,10 @@
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned pro</th>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 38%;">Most mentioned con</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned pro</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 38%;">Most mentioned con</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1699,7 +1699,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-center fw-bold" style="padding: 14px; color: #1e3050; white-space: nowrap;">
+                                            <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                                 <span class="d-inline-flex align-items-center gap-1">
                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
                                                     <span>{{ number_format($biz->average_rating ?? 0, 1) }}</span>
@@ -1742,10 +1742,10 @@
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
-                    <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                    <h2 class="explore-cat-h2">
                         {{ $exploreSubcategories['title'] }}
                     </h2>
-                    <p style="font-size: 14px; color: #64748b; margin: 0;">
+                    <p style="color: #002347; margin: 0;">
                         Browse specialized categories to find the exact tools and solutions for your requirements.
                     </p>
                 </div>
@@ -1766,7 +1766,7 @@
                     @endphp
                     <div class="col-lg-4 col-md-6 col-12">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
-                            <div class="p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between" style="box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s;">
+                            <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                                 
                                 <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
                                     @if(isset($subcatItem->topRatedImageMedia))
@@ -1802,10 +1802,10 @@
         <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
             <div class="container">
                 <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+                    <h2 style="margin-bottom: 8px;">
                         Popular comparisons
                     </h2>
-                    <p style="font-size: 15px; color: #64748b; margin: 0;">
+                    <p style="color: #002347; margin: 0;">
                         See how top {{ strtolower($catCurrentName) }} providers compare against each other.
                     </p>
                 </div>
@@ -1883,10 +1883,10 @@
                 <div class="row ">
                     <div class="">
                         <div class="text-start mb-4">
-                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                            <h2 style="margin-bottom: 8px;">
                                 Frequently asked questions
                             </h2>
-                            <p style="font-size: 14px; color: #64748b; margin: 0;">
+                            <p style="color: #002347; margin: 0;">
                                 Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
                             </p>
                         </div>

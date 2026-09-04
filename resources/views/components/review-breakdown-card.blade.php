@@ -81,7 +81,7 @@
         <span style="font-weight: 600; color: #1e3050; font-size: 14px;">Do you recommend {{ $bName }}?</span>
         <div style="display: flex; gap: 8px;">
             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: true })" style="width: 30px; height: 30px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74 ';" onmouseout="this.style.backgroundColor='#007bff';">
-                <i class="fas fa-thumbs-up" style="font-size: 12px;"></i>
+                <i class="fas fa-thumbs-up" style="font-size: 16px;"></i>
             </a>
             <a href="javascript:void(0)" onclick="Livewire.dispatch('openReviewModal', { businessId: {{ $business->id }}, recommend: false })" style="width: 28px; height: 28px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none;" onmouseover="this.style.backgroundColor='#033b74';" onmouseout="this.style.backgroundColor='#007bff';">
                 <i class="fas fa-thumbs-down" style="font-size: 16px;"></i>
