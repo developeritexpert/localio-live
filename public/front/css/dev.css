@@ -571,7 +571,7 @@
 
 .review-criteria-list {
     flex: 1 1 auto !important;
-    max-height: 150px;
+    /* max-height: 150px; */
 }
 
 .recommended-users-row {
