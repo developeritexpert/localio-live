@@ -33,6 +33,7 @@
                     <tr class="nk-tb-item nk-tb-head">
                         <th class="nk-tb-col"><span class="sub-text">Country/region</span></th>
                         <th class="nk-tb-col"><span class="sub-text">URL Locale Code</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">HTML Lang Attribute</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Translation Status</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Disclaimer Banner</span></th>
                         <th class="nk-tb-col tb-tnx-action"><span>Action</span></th>
@@ -47,6 +48,10 @@
 
                         <td class="nk-tb-col">
                             <span class="badge bg-outline-info">{{ $country->language?->lang_code ?? '—' }}</span>
+                        </td>
+
+                        <td class="nk-tb-col">
+                            <span class="badge bg-outline-primary">{{ !empty($country->language?->html_lang) ? $country->language->html_lang : '—' }}</span>
                         </td>
 
                         <td class="nk-tb-col">
