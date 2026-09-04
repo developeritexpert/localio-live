@@ -209,7 +209,7 @@ class AdminDashController extends Controller
 
         // Validate incoming request
         $validatedData = $request->validate([
-            'main_heading' => 'required|string|max:255',
+            'main_heading' => 'nullable|string|max:255',
             'sub_heading' => 'nullable|string|max:600',
             'mp_heading' => 'nullable|string|max:600',
             'mp_sub_heading' => 'nullable|string|max:600',
