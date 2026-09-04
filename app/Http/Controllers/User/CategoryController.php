@@ -346,7 +346,7 @@ class CategoryController extends Controller
     {
         $lang_id = getCurrentLanguageID();
 
-        $category = Category::with('imageMedia')->whereHas('categoryTranslations', function ($query) use ($slug, $lang_id) {
+        $category = Category::with(['imageMedia', 'topRatedImageMedia', 'faqOverlayMedia'])->whereHas('categoryTranslations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);
         })->first();
 
@@ -405,6 +405,28 @@ class CategoryController extends Controller
             $catIds = array_merge($catIds, $childIds);
         }
 
+        $topBusinesses = \App\Models\Business::where(function ($q) use ($catIds) {
+            $q->whereIn('category_id', $catIds)
+              ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                  $subQ->whereIn('categories.id', $catIds);
+              });
+        })
+        ->where('status', 1)
+        ->whereHas('translations', function ($q) use ($lang_id) {
+            $q->where('lang_id', $lang_id);
+        })
+        ->withCount(['reviews as active_reviews_count' => fn($q) => $q->where('status', 'active')])
+        ->withAvg(['reviews as average_rating' => fn($q) => $q->where('status', 'active')], 'rating')
+        ->with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+        ])
+        ->orderByDesc('is_affiliate')
+        ->orderByDesc('average_rating')
+        ->orderByDesc('active_reviews_count')
+        ->take(3)
+        ->get();
+
         $recentReviews = \App\Models\Review::whereHas('business', function ($q) use ($catIds) {
             $q->whereIn('category_id', $catIds)
               ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
@@ -435,7 +457,7 @@ class CategoryController extends Controller
 
         return view('User.category.category_faqs', compact(
             'category', 'categoryTranslation', 'parentCategory', 'parentTrans', 
-            'catName', 'faqs', 'recentReviews', 'lang_id'
+            'catName', 'faqs', 'recentReviews', 'topBusinesses', 'lang_id'
         ));
     }
 

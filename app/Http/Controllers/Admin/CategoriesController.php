@@ -492,6 +492,39 @@ class CategoriesController extends Controller
             $category->top_rated_image = $mediaTopRated->id;
         }
 
+        // Category Page Overlay SVG (150x150)
+        if ($request->hasFile('category_overlay_image')) {
+            $mediaCatOverlay = $this->mediaservice->uploadMedia($request->file('category_overlay_image'), 'category/overlays');
+            $category->category_overlay_image = $mediaCatOverlay->id;
+        } elseif ($request->has('remove_category_overlay_image')) {
+            $category->category_overlay_image = null;
+        }
+        if ($request->has('category_overlay_position')) {
+            $category->category_overlay_position = $request->input('category_overlay_position', 'right');
+        }
+
+        // FAQ Page Overlay SVG (150x150)
+        if ($request->hasFile('faq_overlay_image')) {
+            $mediaFaqOverlay = $this->mediaservice->uploadMedia($request->file('faq_overlay_image'), 'category/overlays');
+            $category->faq_overlay_image = $mediaFaqOverlay->id;
+        } elseif ($request->has('remove_faq_overlay_image')) {
+            $category->faq_overlay_image = null;
+        }
+        if ($request->has('faq_overlay_position')) {
+            $category->faq_overlay_position = $request->input('faq_overlay_position', 'right');
+        }
+
+        // Comparison Page Overlay SVG (150x150)
+        if ($request->hasFile('comparison_overlay_image')) {
+            $mediaCompOverlay = $this->mediaservice->uploadMedia($request->file('comparison_overlay_image'), 'category/overlays');
+            $category->comparison_overlay_image = $mediaCompOverlay->id;
+        } elseif ($request->has('remove_comparison_overlay_image')) {
+            $category->comparison_overlay_image = null;
+        }
+        if ($request->has('comparison_overlay_position')) {
+            $category->comparison_overlay_position = $request->input('comparison_overlay_position', 'right');
+        }
+
         $category->save();
         if ($category) {
             $slug = Str::slug($validate['name']);

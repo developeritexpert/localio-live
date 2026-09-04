@@ -179,6 +179,132 @@
                             </div>
                         </div>
 
+                        <!-- 1. Category / Subcategory Page Overlay SVG (150x150) -->
+                        <div class="col-md-12">
+                            <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-7 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="category_overlay_image">Category Page Overlay SVG (150x150)</label>
+                                            <div class="form-control-wrap">
+                                                <div class="form-file">
+                                                    <input type="file" class="form-file-input" id="category_overlay_image" name="category_overlay_image" accept="image/svg+xml,image/*">
+                                                    <label class="form-file-label" for="category_overlay_image">Choose Overlay SVG</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Small overlay graphic placed over the bottom area of the category hero image.</small>
+                                            @if(isset($category) && $category->category_overlay_image && $category->categoryOverlayMedia)
+                                                <div class="d-flex align-items-center gap-3 mt-2">
+                                                    <img src="{{ asset($category->categoryOverlayMedia->dir_path . '/' . $category->categoryOverlayMedia->file_name) }}" alt="Category Overlay" style="max-width: 50px; max-height: 50px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remove_category_overlay_image" value="1" id="remove_cat_overlay">
+                                                        <label class="form-check-label text-danger small" for="remove_cat_overlay">Remove current overlay</label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="category_overlay_position">Position (Bottom Area)</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-select" id="category_overlay_position" name="category_overlay_position">
+                                                    <option value="left" {{ (isset($category) && $category->category_overlay_position == 'left') ? 'selected' : '' }}>Left</option>
+                                                    <option value="center" {{ (isset($category) && $category->category_overlay_position == 'center') ? 'selected' : '' }}>Center</option>
+                                                    <option value="right" {{ (!isset($category) || !$category->category_overlay_position || $category->category_overlay_position == 'right') ? 'selected' : '' }}>Right</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Horizontal placement: Left, Center, or Right.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. FAQ Page Overlay SVG (150x150) -->
+                        <div class="col-md-12">
+                            <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-7 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="faq_overlay_image">FAQ Page Overlay SVG (150x150)</label>
+                                            <div class="form-control-wrap">
+                                                <div class="form-file">
+                                                    <input type="file" class="form-file-input" id="faq_overlay_image" name="faq_overlay_image" accept="image/svg+xml,image/*">
+                                                    <label class="form-file-label" for="faq_overlay_image">Choose Overlay SVG</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Small overlay graphic placed over the bottom area of the FAQ hero image.</small>
+                                            @if(isset($category) && $category->faq_overlay_image && $category->faqOverlayMedia)
+                                                <div class="d-flex align-items-center gap-3 mt-2">
+                                                    <img src="{{ asset($category->faqOverlayMedia->dir_path . '/' . $category->faqOverlayMedia->file_name) }}" alt="FAQ Overlay" style="max-width: 50px; max-height: 50px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remove_faq_overlay_image" value="1" id="remove_faq_overlay">
+                                                        <label class="form-check-label text-danger small" for="remove_faq_overlay">Remove current overlay</label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="faq_overlay_position">Position (Bottom Area)</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-select" id="faq_overlay_position" name="faq_overlay_position">
+                                                    <option value="left" {{ (isset($category) && $category->faq_overlay_position == 'left') ? 'selected' : '' }}>Left</option>
+                                                    <option value="center" {{ (isset($category) && $category->faq_overlay_position == 'center') ? 'selected' : '' }}>Center</option>
+                                                    <option value="right" {{ (!isset($category) || !$category->faq_overlay_position || $category->faq_overlay_position == 'right') ? 'selected' : '' }}>Right</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Horizontal placement: Left, Center, or Right.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Comparison Page Overlay SVG (150x150) -->
+                        <div class="col-md-12">
+                            <div class="card card-bordered p-3 mb-3 bg-light" style="border-radius: 8px;">
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-7 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="comparison_overlay_image">Comparison Page Overlay SVG (150x150)</label>
+                                            <div class="form-control-wrap">
+                                                <div class="form-file">
+                                                    <input type="file" class="form-file-input" id="comparison_overlay_image" name="comparison_overlay_image" accept="image/svg+xml,image/*">
+                                                    <label class="form-file-label" for="comparison_overlay_image">Choose Overlay SVG</label>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Small overlay graphic placed over the bottom area of the Comparison hero image.</small>
+                                            @if(isset($category) && $category->comparison_overlay_image && $category->comparisonOverlayMedia)
+                                                <div class="d-flex align-items-center gap-3 mt-2">
+                                                    <img src="{{ asset($category->comparisonOverlayMedia->dir_path . '/' . $category->comparisonOverlayMedia->file_name) }}" alt="Comparison Overlay" style="max-width: 50px; max-height: 50px; object-fit: contain; background: #fff; padding: 4px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="remove_comparison_overlay_image" value="1" id="remove_comp_overlay">
+                                                        <label class="form-check-label text-danger small" for="remove_comp_overlay">Remove current overlay</label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5 col-12">
+                                        <div class="form-group">
+                                            <label class="form-label fw-bold" for="comparison_overlay_position">Position (Bottom Area)</label>
+                                            <div class="form-control-wrap">
+                                                <select class="form-select" id="comparison_overlay_position" name="comparison_overlay_position">
+                                                    <option value="left" {{ (isset($category) && $category->comparison_overlay_position == 'left') ? 'selected' : '' }}>Left</option>
+                                                    <option value="center" {{ (isset($category) && $category->comparison_overlay_position == 'center') ? 'selected' : '' }}>Center</option>
+                                                    <option value="right" {{ (!isset($category) || !$category->comparison_overlay_position || $category->comparison_overlay_position == 'right') ? 'selected' : '' }}>Right</option>
+                                                </select>
+                                            </div>
+                                            <small class="text-muted d-block mt-1">Horizontal placement: Left, Center, or Right.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="top_rated_listing_headline">Top-Rated Listing Headline (H2)</label>

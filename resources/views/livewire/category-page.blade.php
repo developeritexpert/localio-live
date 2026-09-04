@@ -493,7 +493,13 @@
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
-                                <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" >
+                                <div class="cat-hero-img-wrap position-relative d-inline-block">
+                                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img">
+                                    @if(!empty($category->category_overlay_image) && $category->categoryOverlayMedia)
+                                        @php $pos = $category->category_overlay_position ?? 'right'; @endphp
+                                        <img src="{{ asset($category->categoryOverlayMedia->dir_path . '/' . $category->categoryOverlayMedia->file_name) }}" alt="Category Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>

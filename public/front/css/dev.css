@@ -753,3 +753,39 @@
 .bg_new_grey {
     background-color: #f8fafc !important;
 }
+/* Category Hero Overlay Images */
+.cat-hero-img-wrap {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+.cat-hero-overlay-img {
+    position: absolute;
+    bottom: 0;
+    width: 150px;
+    height: 150px;
+    max-width: 50%;
+    max-height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    z-index: 2;
+}
+.cat-hero-overlay-left {
+    left: 0;
+}
+.cat-hero-overlay-center {
+    left: 50%;
+    transform: translateX(-50%);
+}
+.cat-hero-overlay-right {
+    right: 0;
+}
+
+.top-biz-sidebar-item:hover {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.top-biz-sidebar-item:hover h6 {
+    color: #06498b !important;
+}

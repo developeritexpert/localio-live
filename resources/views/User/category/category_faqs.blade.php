@@ -230,9 +230,15 @@
                     </div>
                 </div>
             </div>
-            <div class="ccol-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
+            <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
                 @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
-                    <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+                    <div class="cat-hero-img-wrap position-relative d-inline-block">
+                        <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="max-width: 300px; max-height: 100px; object-fit: contain;">
+                        @if(!empty($category->faq_overlay_image) && $category->faqOverlayMedia)
+                            @php $pos = $category->faq_overlay_position ?? 'right'; @endphp
+                            <img src="{{ asset($category->faqOverlayMedia->dir_path . '/' . $category->faqOverlayMedia->file_name) }}" alt="FAQ Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">
+                        @endif
+                    </div>
                 @endif
             </div>
         </div>
@@ -472,14 +478,14 @@
                                             @endif
                                             <div>
                                                 <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
-        @if(isset($rev) && $rev->user_id)
-            <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
-                {{ $displayName }}
-            </a>
-        @else
-            {{ $displayName }}
-        @endif
-        </h6>
+                                                @if(isset($rev) && $rev->user_id)
+                                                    <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                        {{ $displayName }}
+                                                    </a>
+                                                @else
+                                                    {{ $displayName }}
+                                                @endif
+                                                </h6>
         
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
@@ -598,6 +604,54 @@
                             </p>
                         </div>
                     </div>
+
+                    <!-- 3. Top 3 Box -->
+                    @if(isset($topBusinesses) && $topBusinesses->count() > 0)
+                    <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
+                        <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
+                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Top 3</h5>
+                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
+                                View all
+                            </a>
+                        </div>
+
+                        <div class="d-flex flex-column gap-3">
+                            @foreach($topBusinesses as $topBiz)
+                                @php
+                                    $topBizTrans = $topBiz->translations->firstWhere('lang_id', $lang_id) ?? $topBiz->translations->first();
+                                    $topBizName = $topBizTrans->name ?? $topBiz->name ?? 'Business';
+                                    $topBizRating = round($topBiz->average_rating ?? $topBiz->reviews->where('status', 'active')->avg('rating') ?? 0, 1);
+                                    $affiliateUrl = $topBiz->getTrackedUrl();
+                                @endphp
+                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="top-biz-sidebar-item d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="transition: all 0.2s ease; border: 1px solid #f1f5f9; background: #fdfdfd;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="top-product-small-logo" style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0;">
+                                            <x-business-logo :business="$topBiz" :name="$topBizName" />
+                                        </div>
+                                        <div>
+                                            <h6 class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</h6>
+                                            <div class="d-flex align-items-center gap-1 mt-1">
+                                                <div class="d-flex align-items-center" style="color: #ff5722; font-size: 11px;">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($topBizRating >= $i)
+                                                            <i class="fas fa-star"></i>
+                                                        @elseif ($topBizRating >= $i - 0.5)
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                                <span style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-left: 3px;">{{ number_format($topBizRating, 1) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-external-link-alt text-muted" style="font-size: 12px; margin-right: 4px;"></i>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
 
                 </div>
             </div>
