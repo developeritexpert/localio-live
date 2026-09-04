@@ -280,7 +280,7 @@
 }
 
 .add-products-btn {
-    background-color: #002347;
+    background-color: #214787;
     color: #ffffff;
     font-weight: 600;
     font-size: 13.5px;
@@ -291,7 +291,7 @@
     cursor: pointer;
     padding: 7px 16px;
     border-radius: 8px;
-    border: 1px solid #002347;
+    border: 1px solid #214787;
     line-height: 1.4;
 }
 
