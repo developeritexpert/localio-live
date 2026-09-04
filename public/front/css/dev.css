@@ -234,7 +234,7 @@
     color: #002347;
 }
 
-.your-comp-pill > * {
+.your-comp-pill>* {
     pointer-events: none;
 }
 
@@ -753,6 +753,3 @@
 .bg_new_grey {
     background-color: #f8fafc !important;
 }
-
-
-
