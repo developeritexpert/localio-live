@@ -89,6 +89,7 @@ jobs:
             --exclude='node_modules' \
             --exclude='vendor' \
             --exclude='./.htaccess' \
+            --exclude='index.html' \
             --exclude='public/business_gallery' \
             --exclude='public/business_images' \
             --exclude='public/business_image' \
