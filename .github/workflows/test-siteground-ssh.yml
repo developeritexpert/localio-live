@@ -32,4 +32,4 @@ jobs:
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cd \"$DEPLOY_PATH\" && echo '=== SITEGROUND HTACCESS ===' && cat 12.htaccess123"
+            "pwd; ls -la .."
