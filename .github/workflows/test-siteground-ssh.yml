@@ -31,6 +31,5 @@ jobs:
             -i ~/.ssh/deploy_key \
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
-            -o ConnectTimeout=15 \
-            "$DEPLOY_USER@"DEPLOY_HOST" \
-            'pwd; echo === DEPLOY_PATG ===; ls -la "'"$DEPLOY_PATH"'"; echo === .htaccess ===; cat "'"$DEPLOY_PATH'/.htaccess'; head -n 10 ''"$DEPLOY_PATH'/index.php''
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd \"$DEPLOY_PATH\" && echo '=== PHP VERSION ===' && php -v && ls -la .htaccess* && echo '=== PREVI HTACCESS ===' && cat .htaccess"
