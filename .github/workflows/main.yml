@@ -124,3 +124,23 @@ jobs:
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
             "cd '$DEPLOY_PATH' && chmod -R u+rwX storage bootstrap/cache"
+
+      - name: Health check SiteGround
+        run: |
+          for i in {1..10}; do
+            STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" \
+              --resolve localio.com:443:34.174.187.26 \
+              https://localio.com/en-us)
+
+            echo "Health check attempt $i: HTTP $STATUS"
+
+            if [ "$STATUS" = "200" ]; then
+              echo "SiteGround health check passed."
+              exit 0
+            fi
+
+            sleep 3
+          done
+
+          echo "SiteGround health check failed."
+          exit 1
