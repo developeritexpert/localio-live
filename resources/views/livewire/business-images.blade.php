@@ -46,32 +46,63 @@
                         {{-- Middle Column: Preview Images Strip --}}
                         <td class="nk-tb-col">
                             <div class="d-flex align-items-center flex-wrap" style="gap: 10px">
-                                @if (!empty($business->business_images) && count($business->business_images) > 0)
-                                @foreach ($business->business_images as $img)
-                                <div class="border rounded p-1 shadow-sm bg-white" style="width: 90px; height: 60px;">
-                                    <a href="javascript:void(0)" onclick="document.getElementById('lightbox-img').src='{{ asset($img) }}'; document.getElementById('custom-lightbox').style.display='flex';">
+                                @php
+                                $displayImages = $this->getDisplayImages($business);
+                                @endphp
+
+                                @if (!empty($displayImages) && count($displayImages) > 0)
+
+                                @foreach ($displayImages as $img)
+
+                                <div class="border rounded p-1 shadow-sm bg-white"
+                                    style="width: 90px; height: 60px;">
+
+                                    <a href="javascript:void(0)"
+                                        onclick="document.getElementById('lightbox-img').src='{{ asset($img) }}'; document.getElementById('custom-lightbox').style.display='flex';">
+
                                         <img src="{{ asset($img) }}"
                                             alt="Business Image"
                                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 3px;">
+
                                     </a>
+
                                 </div>
+
                                 @endforeach
-                                @elseif (!empty($business->screenshot_urls) && count(array_filter($business->screenshot_urls)) > 0)
+
+                                @elseif (
+                                empty(trim($business->screenshot_display_category ?? '')) &&
+                                !empty($business->screenshot_urls) &&
+                                count(array_filter($business->screenshot_urls)) > 0
+                                )
+
                                 <div class="d-flex align-items-center gap-2">
+
                                     <span class="badge bg-light text-primary border px-2 py-1">
-                                        <em class="icon ni ni-link me-1"></em> {{ count(array_filter($business->screenshot_urls)) }} Screenshot URL(s) Configured
+                                        <em class="icon ni ni-link me-1"></em>
+                                        {{ count(array_filter($business->screenshot_urls)) }}
+                                        Screenshot URL(s) Configured
                                     </span>
+
                                     <button type="button"
                                         class="btn btn-xs btn-warning text-dark fw-bold"
                                         wire:click="openImageModal({{ $business->id }})"
                                         title="Click to generate screenshots from configured URLs">
-                                        <em class="icon ni ni-camera me-1"></em> Take Screenshots
+
+                                        <em class="icon ni ni-camera me-1"></em>
+                                        Take Screenshots
+
                                     </button>
+
                                 </div>
+
                                 @else
+
                                 <span class="badge bg-light text-muted border px-2 py-1">
-                                    <em class="icon ni ni-img me-1"></em> No images uploaded
+                                    <em class="icon ni ni-img me-1"></em>
+                                    No images uploaded
                                 </span>
+
                                 @endif
                             </div>
                         </td>
@@ -511,7 +542,8 @@
                                         <input
                                             type="radio"
                                             name="defaultCategory"
-                                            value="{{ $category['name'] }}">
+                                            value="{{ $category['name'] }}"
+                                            wire:click="setDefaultScreenshotCategory('{{ $category['name'] }}')">
 
                                         @endif
 
@@ -521,9 +553,10 @@
 
                                         <button
                                             type="button"
-                                            class="btn btn-sm btn-icon btn-outline-primary"
+                                            class="btn btn-sm btn-icon btn-primary"
                                             wire:click="openEditCategory({{ $index }})"
-                                            title="Edit Category">
+                                            title="Edit Category"
+                                            style="width: 32px; height: 32px;">
 
                                             <em class="icon ni ni-edit"></em>
 
@@ -531,8 +564,10 @@
 
                                         <button
                                             type="button"
-                                            class="btn btn-sm btn-icon btn-outline-danger ms-1"
-                                            title="Delete Category">
+                                            class="btn btn-sm btn-icon btn-danger ms-1"
+                                            wire:click="openDeleteCategoryModal({{ $index }})"
+                                            title="Delete Category"
+                                            style="width: 32px; height: 32px;">
 
                                             <em class="icon ni ni-trash"></em>
 
@@ -667,7 +702,7 @@
                     </div>
 
                     <!-- Information Note -->
-                    <div class="alert alert-warning mt-3 mb-0">
+                    <!-- <div class="alert alert-warning mt-3 mb-0">
 
                         <strong>Note:</strong>
 
@@ -684,7 +719,7 @@
 
                         </ul>
 
-                    </div>
+                    </div> -->
 
                 </div>
 
@@ -694,11 +729,8 @@
 
                     <button type="button"
                         class="btn btn-outline-secondary"
-                        data-bs-dismiss="modal"
-                        data-dismiss="modal">
-
+                        wire:click="closeManageCategoriesModal">
                         Cancel
-
                     </button>
 
                 </div>
@@ -1014,6 +1046,16 @@
 
         Livewire.on('show-delete-category-modal', () => showModal('deleteCategoryModal'));
         Livewire.on('hide-delete-category-modal', () => hideModal('deleteCategoryModal'));
+
+        Livewire.on('return-to-screenshot-url-modal', () => {
+
+            hideModal('manageCategoriesModal');
+
+            setTimeout(() => {
+                showModal('screenshotUrlsModal');
+            }, 150);
+
+        });
 
         Livewire.on('print-console-logs', (data) => {
             let logs = [];

@@ -31,7 +31,7 @@ class BusinessImages extends Component
     public $newScreenshotCategory = '';
 
     public $categoryPage = 1;
-    public $categoriesPerPage = 3;
+    public $categoriesPerPage = 5;
 
     public $editingScreenshotCategoryIndex = null;
     public $editingScreenshotCategoryName = '';
@@ -42,6 +42,7 @@ class BusinessImages extends Component
 
     public $categoryToDeleteIndex = null;
     public $categoryToDeleteName = '';
+
 
 
 
@@ -83,12 +84,72 @@ class BusinessImages extends Component
     public function openImageModal($businessId)
     {
         $business = Business::with('translations')->findOrFail($businessId);
+
         $this->selectedBusinessId = $businessId;
+
         $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name
             ?? $business->translations->first()?->name
             ?? 'Business #' . $businessId;
 
-        $this->currentImages = $business->business_images ?? [];
+        // Get the category which should currently be displayed
+        $selectedCategoryName = trim(
+            $business->screenshot_display_category ?? ''
+        );
+
+        $categories = $business->screenshot_categories ?? [];
+
+        $activeCategory = null;
+
+        /*
+|--------------------------------------------------------------------------
+| 1. Business has explicitly selected a category
+|--------------------------------------------------------------------------
+*/
+        if (!empty($selectedCategoryName)) {
+
+            $activeCategory = collect($categories)
+                ->first(function ($category) use ($selectedCategoryName) {
+
+                    return strcasecmp(
+                        trim($category['name'] ?? ''),
+                        $selectedCategoryName
+                    ) === 0;
+                });
+        }
+
+        /*
+|--------------------------------------------------------------------------
+| 2. No explicit category selected
+|    -> use the category currently marked as DEFAULT
+|--------------------------------------------------------------------------
+*/
+        if (!$activeCategory) {
+
+            $activeCategory = collect($categories)
+                ->first(function ($category) {
+
+                    return !empty($category['is_default']);
+                });
+        }
+
+        /*
+|--------------------------------------------------------------------------
+| 3. Show images from the active category
+|--------------------------------------------------------------------------
+*/
+        if ($activeCategory) {
+
+            $this->currentImages = $activeCategory['images'] ?? [];
+        } else {
+
+            /*
+    |--------------------------------------------------------------------------
+    | 4. No category and no DEFAULT category
+    |--------------------------------------------------------------------------
+    */
+            $this->currentImages = $business->business_images ?? [];
+        }
+
         $this->newUploads = [];
         $this->showImageModal = true;
 
@@ -101,6 +162,11 @@ class BusinessImages extends Component
             unset($this->currentImages[$index]);
             $this->currentImages = array_values($this->currentImages);
         }
+    }
+
+    public function closeManageCategoriesModal()
+    {
+        $this->dispatch('return-to-screenshot-url-modal');
     }
 
     public function removeNewUpload($index)
@@ -290,19 +356,152 @@ class BusinessImages extends Component
                 $this->addConsoleLog("FAILED: Could not capture screenshot for: " . $targetUrl);
             }
         }
+        $business = Business::findOrFail($this->selectedBusinessId);
+
+        $selectedCategoryName = trim($business->screenshot_display_category ?? '');
 
         if (!empty($generatedImages)) {
-            $maxImages = 5;
-            $spaceForNewImages = $maxImages - count($generatedImages);
 
-            $oldImages = array_slice($this->currentImages, 0, max(0, $spaceForNewImages));
-            $this->currentImages = array_merge($oldImages, $generatedImages);
-            $this->currentImages = array_slice($this->currentImages, 0, $maxImages);
-            $this->newUploads = [];
+            $maxImages = 5;
+
+            $categories = $business->screenshot_categories ?? [];
+
+            /*
+    |--------------------------------------------------------------------------
+    | 1. Business Edit me specific category selected hai
+    |--------------------------------------------------------------------------
+    */
+            if (!empty($selectedCategoryName)) {
+
+                foreach ($categories as $index => $category) {
+
+                    if (
+                        strcasecmp(
+                            trim($category['name'] ?? ''),
+                            $selectedCategoryName
+                        ) === 0
+                    ) {
+
+                        $existingImages = $category['images'] ?? [];
+
+                        // Saare NEW screenshots rakho.
+                        // Sirf utne OLD screenshots rakho jitne 5 ki limit me fit ho sake.
+                        $oldImagesAllowed = max(
+                            0,
+                            $maxImages - count($generatedImages)
+                        );
+
+                        $existingImages = array_slice(
+                            $existingImages,
+                            0,
+                            $oldImagesAllowed
+                        );
+
+                        $finalImages = array_merge(
+                            $existingImages,
+                            $generatedImages
+                        );
+
+                        $categories[$index]['images'] = $finalImages;
+
+                        $this->currentImages = $finalImages;
+
+                        break;
+                    }
+                }
+
+                $business->screenshot_categories = $categories;
+                $business->save();
+
+                $this->newUploads = [];
+
+                $this->addConsoleLog(
+                    "Screenshots saved inside category: " .
+                        $selectedCategoryName
+                );
+            }
+
+            /*
+    |--------------------------------------------------------------------------
+    | 2. Business Edit me koi specific category selected nahi hai
+    |    -> is_default = true wali category use hogi
+    |--------------------------------------------------------------------------
+    */ else {
+
+                $defaultCategoryIndex = null;
+
+                foreach ($categories as $index => $category) {
+
+                    if (!empty($category['is_default'])) {
+                        $defaultCategoryIndex = $index;
+                        break;
+                    }
+                }
+
+                if ($defaultCategoryIndex !== null) {
+
+                    $existingImages =
+                        $categories[$defaultCategoryIndex]['images'] ?? [];
+
+                    // Saare NEW screenshots rakho.
+                    // OLD screenshots sirf available space ke hisaab se rakho.
+                    $oldImagesAllowed = max(
+                        0,
+                        $maxImages - count($generatedImages)
+                    );
+
+                    $existingImages = array_slice(
+                        $existingImages,
+                        0,
+                        $oldImagesAllowed
+                    );
+
+                    $finalImages = array_merge(
+                        $existingImages,
+                        $generatedImages
+                    );
+
+                    $categories[$defaultCategoryIndex]['images'] = $finalImages;
+
+                    $business->screenshot_categories = $categories;
+                    $business->save();
+
+                    $this->currentImages = $finalImages;
+                    $this->newUploads = [];
+
+                    $this->addConsoleLog(
+                        "Screenshots saved inside default category: " .
+                            ($categories[$defaultCategoryIndex]['name'] ?? 'Default')
+                    );
+                }
+
+                /*
+        |--------------------------------------------------------------------------
+        | 3. Koi default category bhi nahi hai
+        |--------------------------------------------------------------------------
+        */ else {
+
+                    $business->business_images = array_slice(
+                        $generatedImages,
+                        0,
+                        $maxImages
+                    );
+
+                    $business->save();
+
+                    $this->currentImages = $business->business_images;
+                    $this->newUploads = [];
+
+                    $this->addConsoleLog(
+                        "No default category found. Screenshots saved as business images."
+                    );
+                }
+            }
 
             session()->flash(
                 'modal_success',
-                count($generatedImages) . ' website screenshot(s) generated successfully!'
+                count($generatedImages) .
+                    ' website screenshot(s) generated successfully!'
             );
         } else {
             $this->addConsoleLog("All screenshot capture attempts failed. Running self-diagnostics...");
@@ -313,6 +512,125 @@ class BusinessImages extends Component
         $this->addConsoleLog("Automated Screenshot capture process completed.");
         $this->dispatch('print-console-logs', logs: $this->logCollector);
         $this->isTakingScreenshots = false;
+    }
+
+
+    public function setDefaultScreenshotCategory($categoryName)
+    {
+        $business = Business::findOrFail($this->selectedBusinessId);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Only one category can be DEFAULT
+    |--------------------------------------------------------------------------
+    */
+        foreach ($this->screenshotCategories as $index => $category) {
+
+            $this->screenshotCategories[$index]['is_default'] =
+                strcasecmp(
+                    trim($category['name'] ?? ''),
+                    trim($categoryName)
+                ) === 0;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT:
+    | Do NOT change screenshot_display_category here.
+    |
+    | If Business Edit is using "Default (No Category)",
+    | it will remain NULL and will automatically follow
+    | whichever category is currently DEFAULT.
+    |--------------------------------------------------------------------------
+    */
+
+        $business->screenshot_categories = $this->screenshotCategories;
+        $business->save();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Find the newly selected DEFAULT category
+    |--------------------------------------------------------------------------
+    */
+        $defaultCategory = collect(
+            $this->screenshotCategories
+        )->first(function ($category) use ($categoryName) {
+
+            return strcasecmp(
+                trim($category['name'] ?? ''),
+                trim($categoryName)
+            ) === 0;
+        });
+
+        /*
+    |--------------------------------------------------------------------------
+    | Update current modal images immediately
+    |--------------------------------------------------------------------------
+    */
+        $this->currentImages = $defaultCategory['images'] ?? [];
+
+        /*
+    |--------------------------------------------------------------------------
+    | Do NOT set selectedScreenshotCategory here.
+    | That property belongs to the Screenshot URLs modal.
+    |--------------------------------------------------------------------------
+    */
+
+        $this->dispatch(
+            'show-toast',
+            type: 'success',
+            message: 'Default screenshot category updated successfully.'
+        );
+    }
+
+    public function getDisplayImages($business)
+    {
+        $selectedCategoryName = trim(
+            $business->screenshot_display_category ?? ''
+        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | 1. Specific category selected in Business Edit
+    |--------------------------------------------------------------------------
+    */
+        if (!empty($selectedCategoryName)) {
+
+            $selectedCategory = collect(
+                $business->screenshot_categories ?? []
+            )->first(function ($category) use ($selectedCategoryName) {
+
+                return strcasecmp(
+                    trim($category['name'] ?? ''),
+                    $selectedCategoryName
+                ) === 0;
+            });
+
+            return $selectedCategory['images'] ?? [];
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | 2. Business uses DEFAULT
+    |--------------------------------------------------------------------------
+    */
+        $defaultCategory = collect(
+            $business->screenshot_categories ?? []
+        )->first(function ($category) {
+
+            return !empty($category['is_default']);
+        });
+
+        if ($defaultCategory) {
+            return $defaultCategory['images'] ?? [];
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | 3. No default category
+    |--------------------------------------------------------------------------
+    */
+        return $business->business_images ?? [];
     }
 
 
@@ -869,7 +1187,7 @@ class BusinessImages extends Component
         ];
 
         // Add category to current Livewire state
-        $this->screenshotCategories[] = $newCategory;
+        array_unshift($this->screenshotCategories, $newCategory);
         $this->categoryPage = 1;
 
         // Save categories to database
@@ -968,7 +1286,7 @@ class BusinessImages extends Component
 
         // Re-index the array
         $this->screenshotCategories = array_values($this->screenshotCategories);
-
+        $this->categoryPage = 1;
         // Save updated categories to database
         $business = Business::findOrFail($this->selectedBusinessId);
 
