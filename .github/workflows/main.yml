@@ -41,7 +41,7 @@ jobs:
           node-version: "20"
 
       - name: Install frontend dependencies
-        run: npm install
+        run: npm install --no-package-lock
 
       - name: Build frontend assets
         run: npm run build
