@@ -12,6 +12,7 @@ use App\Models\Language;
 use App\Models\CategoryPageContent;
 use App\Models\Media;
 use App\Models\Review;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
@@ -268,7 +269,7 @@ class CategoryController extends Controller
                 $langCode = getLanguageCode($targetLangId);
 
                 if (!$langCode) {
-                    \Log::error("Missing language code for lang ID: {$targetLangId}");
+                    Log::error("Missing language code for lang ID: {$targetLangId}");
                     continue;
                 }
 
@@ -276,7 +277,7 @@ class CategoryController extends Controller
                 $translatedNameRaw = website_translator($sourceName, $langCode);
                 $translatedDescRaw = website_translator($sourceDescription ?? '', $langCode);
 
-                \Log::info("Translating category {$categoryId} to {$langCode}", [
+                Log::info("Translating category {$categoryId} to {$langCode}", [
                     'name' => $translatedNameRaw,
                     'desc' => $translatedDescRaw,
                 ]);
@@ -331,7 +332,7 @@ class CategoryController extends Controller
                 'message' => 'Translations saved successfully.'
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Translation Error: ' . $e->getMessage(), [
+            Log::error('Translation Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
 
@@ -407,6 +408,8 @@ class CategoryController extends Controller
         if ($category->parent_id === null) {
             $childIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
             $catIds = array_merge($catIds, $childIds);
+        } else {
+            $catIds[] = $category->parent_id;
         }
 
         $topBusinesses = \App\Models\Business::where(function ($q) use ($catIds) {
@@ -448,7 +451,7 @@ class CategoryController extends Controller
         ->get();
 
         if ($recentReviews->isEmpty()) {
-            $recentReviews = \App\Models\Review::where('status', 'active')
+            $recentReviews = Review::where('status', 'active')
                 ->with([
                     'user',
                     'translations' => fn($q) => $q->where('language_id', $lang_id),
@@ -492,6 +495,8 @@ class CategoryController extends Controller
         if ($category->parent_id === null) {
             $childIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
             $catIds = array_merge($catIds, $childIds);
+        } else {
+            $catIds[] = $category->parent_id;
         }
 
         $businesses = \App\Models\Business::where(function ($q) use ($catIds) {
@@ -562,7 +567,7 @@ class CategoryController extends Controller
             $slice, $total, $perPage, $page, ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        $recentReviews = \App\Models\Review::whereHas('business', function ($q) use ($catIds) {
+        $recentReviews = Review::whereHas('business', function ($q) use ($catIds) {
             $q->whereIn('category_id', $catIds)
               ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
                   $subQ->whereIn('categories.id', $catIds);

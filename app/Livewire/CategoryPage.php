@@ -243,11 +243,27 @@ class CategoryPage extends Component
             } else {
                 $targetCategoryIds = $allCategoryIds;
             }
+            $targetCategoryIds = array_unique(array_merge($targetCategoryIds, [$this->category->id]));
             $businesses = Business::select('id')
-                ->whereIn('category_id', $targetCategoryIds);
+                ->where(function ($q) use ($targetCategoryIds) {
+                    $q->whereIn('category_id', $targetCategoryIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($targetCategoryIds) {
+                          $subQ->whereIn('categories.id', $targetCategoryIds);
+                      });
+                });
         } else {
+            $subcatId = $this->category->id;
+            $parentId = $this->category->parent_id;
             $businesses = Business::select('id')
-                ->where('category_id', $this->category->id);
+                ->where(function ($q) use ($subcatId, $parentId) {
+                    $q->where('category_id', $subcatId);
+                    if ($parentId) {
+                        $q->orWhere('category_id', $parentId);
+                    }
+                    $q->orWhereHas('subCategories', function ($subQ) use ($subcatId) {
+                        $subQ->where('categories.id', $subcatId);
+                    });
+                });
         }
 
         $businesses = $businesses->where('status', 1)
@@ -288,9 +304,24 @@ class CategoryPage extends Component
         if ($this->isParentCategory) {
             $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
             $targetCategoryIds = array_merge([$this->category->id], $allSubcatIds);
-            $query = Business::whereIn('category_id', $targetCategoryIds);
+            $query = Business::where(function ($q) use ($targetCategoryIds) {
+                $q->whereIn('category_id', $targetCategoryIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($targetCategoryIds) {
+                      $subQ->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
         } else {
-            $query = Business::where('category_id', $this->category->id);
+            $subcatId = $this->category->id;
+            $parentId = $this->category->parent_id;
+            $query = Business::where(function ($q) use ($subcatId, $parentId) {
+                $q->where('category_id', $subcatId);
+                if ($parentId) {
+                    $q->orWhere('category_id', $parentId);
+                }
+                $q->orWhereHas('subCategories', function ($subQ) use ($subcatId) {
+                    $subQ->where('categories.id', $subcatId);
+                });
+            });
         }
 
         return $query->where('status', 1)
@@ -323,9 +354,25 @@ class CategoryPage extends Component
             } else {
                 $targetCategoryIds = $allCategoryIds;
             }
-            $query = Business::whereIn('category_id', $targetCategoryIds);
+            $targetCategoryIds = array_unique(array_merge($targetCategoryIds, [$this->category->id]));
+            $query = Business::where(function ($q) use ($targetCategoryIds) {
+                $q->whereIn('category_id', $targetCategoryIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($targetCategoryIds) {
+                      $subQ->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
         } else {
-            $query = Business::where('category_id', $this->category->id);
+            $subcatId = $this->category->id;
+            $parentId = $this->category->parent_id;
+            $query = Business::where(function ($q) use ($subcatId, $parentId) {
+                $q->where('category_id', $subcatId);
+                if ($parentId) {
+                    $q->orWhere('category_id', $parentId);
+                }
+                $q->orWhereHas('subCategories', function ($subQ) use ($subcatId) {
+                    $subQ->where('categories.id', $subcatId);
+                });
+            });
         }
 
         if (!empty($this->selectedFeatures)) {

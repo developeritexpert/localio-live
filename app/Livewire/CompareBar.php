@@ -1,6 +1,8 @@
 <?php
 namespace App\Livewire;
 
+use App\Models\Business;
+use App\Models\Category;
 use Livewire\Component;
 use App\Services\CompareService;
 
@@ -25,11 +27,15 @@ class CompareBar extends Component
         
         // If we have products and a categoryId is provided, validate they belong to this category family
         if (!empty($productIds) && !empty($productIds[0]) && $this->categoryId) {
-            $firstProduct = \App\Models\Business::find($productIds[0]);
+            $firstProduct = Business::find($productIds[0]);
             if ($firstProduct) {
-                $pCategory = \App\Models\Category::find($firstProduct->category_id);
+                $pCategory = Category::find($firstProduct->category_id);
+                $thisCategory = Category::find($this->categoryId);
                 $isValidCategory = $firstProduct->category_id == $this->categoryId 
-                    || ($pCategory && $pCategory->parent_id == $this->categoryId);
+                    || ($pCategory && $pCategory->parent_id == $this->categoryId)
+                    || ($thisCategory && $thisCategory->parent_id == $firstProduct->category_id)
+                    || ($pCategory && $thisCategory && $pCategory->parent_id && $pCategory->parent_id == $thisCategory->parent_id)
+                    || $firstProduct->subCategories()->where('categories.id', $this->categoryId)->exists();
 
                 if (!$isValidCategory) {
                     // If they belong to an unrelated category, clear the session
