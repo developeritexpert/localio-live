@@ -1,0 +1,146 @@
+name: Deploy SiteGround
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - siteground-cicd
+
+concurrency:
+  group: siteground-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout siteground-cicd
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, bcmath, curl, dom, fileinfo, gd, intl, json, mysql, openssl, pdo, pdo_mysql, tokenizer, xml, zip
+          tools: composer:2.4.3
+          coverage: none
+
+      - name: Validate Composer configuration
+        run: composer validate --no-check-publish
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Check Composer platform requirements
+        run: composer check-platform-reqs
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install frontend dependencies
+        run: npm install --no-package-lock
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Prepare SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh-keyscan -p "$DEPLOY_PORT" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: Test SiteGround SSH
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+        run: |
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes \
+            -o ConnectTimeout=15 \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            'echo "SSH connection successful"; hostname; pwd'
+
+      - name: Deploy application
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          tar \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.env' \
+            --exclude='storage' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='.htaccess' \
+            -czf - . | \
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "tar -xzf - -C '$DEPLOY_PATH'"
+
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$DEPLOY_PATH' && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader"
+
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$DEPLOY_PATH' && php artisan migrate --force"
+
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$DEPLOY_PATH' && php artisan optimize"
+
+          ssh \
+            -i ~/.ssh/deploy_key \
+            -p "$DEPLOY_PORT" \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$DEPLOY_PATH' && chmod -R u+rwX storage bootstrap/cache"
+
+      - name: Health check SiteGround
+        run: |
+          for i in {1..10}; do
+            STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" \
+              --resolve localio.com:443:34.174.187.26 \
+              https://localio.com/en-us)
+
+            echo "Health check attempt $i: HTTP $STATUS"
+
+            if [ "$STATUS" = "200" ]; then
+              echo "SiteGround health check passed."
+              exit 0
+            fi
+
+            sleep 3
+          done
+
+          echo "SiteGround health check failed."
+          exit 1
