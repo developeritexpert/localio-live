@@ -3,7 +3,7 @@ name: Update code on server
 on:
   push:
     branches:
-      - main   
+      - siteground-cicd   
 
 jobs:
   deploy:
