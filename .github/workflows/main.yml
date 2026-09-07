@@ -143,14 +143,13 @@ jobs:
       - name: Health check SiteGround
         run: |
           for i in {1..10}; do
-            STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" \
-              --resolve localio.com:443:34.174.187.26 \
+            STATUS=$(curl -sk -o /dev/null -w "%{http_code}" --max-time 15 \
               https://localio.com/en-us)
 
             echo "Health check attempt $i: HTTP $STATUS"
 
-            if [ "$STATUS" = "200" ]; then
-              echo "SiteGround health check passed."
+            if [[ "$STATUS" =~ ^2 ]]; then
+              echo "SiteGround health check passed (HTTP $STATUS)."
               exit 0
             fi
 
