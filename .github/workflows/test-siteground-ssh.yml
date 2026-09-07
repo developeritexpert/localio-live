@@ -32,4 +32,4 @@ jobs:
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "ls -la /home/customer/www/localio.com/"
+            "ls -la /home/customer/www/localio.com/public_html/"
