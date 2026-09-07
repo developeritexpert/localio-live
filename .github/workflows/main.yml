@@ -88,7 +88,21 @@ jobs:
             --exclude='storage' \
             --exclude='node_modules' \
             --exclude='vendor' \
-            --exclude='.htaccess' \
+            --exclude='./.htaccess' \
+            --exclude='public/business_gallery' \
+            --exclude='public/business_images' \
+            --exclude='public/business_image' \
+            --exclude='public/business_icon' \
+            --exclude='public/ArticleImages' \
+            --exclude='public/ArticleCategoryImages' \
+            --exclude='public/ProductImage' \
+            --exclude='public/ProductIcon' \
+            --exclude='public/category' \
+            --exclude='public/CategoryImages' \
+            --exclude='public/CategoryIcon' \
+            --exclude='public/tickets' \
+            --exclude='public/ticket_attachments' \
+            --exclude='public/offerings' \
             -czf - . | \
           ssh \
             -i ~/.ssh/deploy_key \
