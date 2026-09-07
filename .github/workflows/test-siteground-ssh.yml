@@ -32,4 +32,4 @@ jobs:
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "cd /home/customer/www/localio.com/public_html && cp 12.htaccess123 .htaccess && ls -la .htaccess && cat .htaccess"
+            "rm -f /home/customer/www/localio.com/public_html/index.html"
