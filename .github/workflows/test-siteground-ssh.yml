@@ -32,4 +32,4 @@ jobs:
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "pwd; ls -la .."
+            "pwd; ls -la ~"
