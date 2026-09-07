@@ -180,6 +180,13 @@ class Business extends Model
     {
         return $this->hasMany(BusinessFaq::class,'business_id')->active()->ordered();
     }
+    public function discussions()
+    {
+        return $this->hasMany(BusinessDiscussion::class, 'business_id')
+        ->where('status', 'active')
+        ->orderBy('is_pinned', 'desc')
+        ->latest();
+    }
 
     public function faqCategories()
     {

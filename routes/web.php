@@ -708,7 +708,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
         ->name('category.detail.page');
 
     // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
-    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
+    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])
         ->where('comparison_businesses', '.*-.*-.*')
         ->name('product-comparison.seo');
 
@@ -716,6 +716,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
     Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
     Route::get('/{slug}/{reviews_slug}', [ViewController::class, 'allReview'])->name('ReviewShow');
+    Route::get('/{business_slug}/discussions', [ViewController::class, 'businessDiscussions'])->name('business.discussions');
+    Route::get('/{business_slug}/{discussions_slug}', [ViewController::class, 'businessDiscussions'])->name('business.discussions_slug');
     Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
 
     // Dynamic 1-Segment Catch-all Routes (Categories, Subcategories, and Businesses)
@@ -728,9 +730,14 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
 Route::get('/set-site-active-language/{lang_id}', [SiteLanguagesController::class, 'setActiveSiteLanguage'])->name('set-site-languages');
 Route::get('/set-admin-active-language/{lang_id}', [SiteLanguagesController::class, 'setActiveAdminLanguage'])->name('set-admin-languages');
 // Business FAQ Vote and Report routes
-Route::post('/business-faq/vote', [\App\Http\Controllers\User\ViewController::class, 'voteBusinessFaq'])->name('business.faq.vote');
-Route::post('/business-faq/report', [\App\Http\Controllers\User\ViewController::class, 'reportBusinessFaq'])->name('business.faq.report');
-Route::post('/review/report', [\App\Http\Controllers\User\ViewController::class, 'reportReview'])->name('review.report');
+Route::post('/business-faq/vote', [ViewController::class, 'voteBusinessFaq'])->name('business.faq.vote');
+Route::post('/business-faq/report', [ViewController::class, 'reportBusinessFaq'])->name('business.faq.report');
+Route::post('/review/report', [ViewController::class, 'reportReview'])->name('review.report');
+// Business Discussion Action routes
+Route::post('/business-discussion/store', [ViewController::class, 'storeDiscussion'])->name('business.discussion.store');
+Route::post('/business-discussion/comment', [ViewController::class, 'storeDiscussionComment'])->name('business.discussion.comment');
+Route::post('/business-discussion/vote', [ViewController::class, 'voteDiscussion'])->name('business.discussion.vote');
+
 
 Route::get('/refresh-csrf', function () {
     return response()->json(['token' => csrf_token()]);
@@ -738,7 +745,7 @@ Route::get('/refresh-csrf', function () {
 
 
 // Ad tracking handling
-Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
+Route::post('/postback', [PostbackController::class, 'handle']);
 
 Route::post('/clear-register-session', function () {
     session()->forget(['register_profile_needed', 'register_email', 'register_first_name', 'register_last_name']);

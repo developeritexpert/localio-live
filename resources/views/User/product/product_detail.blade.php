@@ -1815,8 +1815,96 @@
 
                                                 </div>
 
-                                                <div id="sectionDiscussions">
+                                                <div id="sectionDiscussions" class="mt-5 pt-4">
+                                                    @php
+                                                        $discList = $business->discussions()->take(4)->get();
+                                                        $totalDiscs = $business->discussions()->count();
+                                                        $discIds = $business->discussions()->pluck('id');
+                                                        $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+                                                        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('business_id', $business->id)->where('updated_at', '>=', now()->startOfDay())->count();
+                                                        $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+                                                        $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+                                                    @endphp
 
+                                                    <div class="card p-4" style="border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+                                                        <div class="d-flex flex-wrap align-items-center justify-content-between pb-3 mb-3" style="border-bottom: 1px solid #f1f5f9;">
+                                                            <div>
+                                                                <h2 class="m-0" style="font-size: 24px; font-weight: 700; color: #002347;">Community</h2>
+                                                                <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 13.5px; color: #475569; font-weight: 500;">
+                                                                    <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
+                                                                    <span>•</span>
+                                                                    <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
+                                                                    <span>•</span>
+                                                                    <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+                                                                <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="btn btn-outline-primary btn-sm px-3" style="border-radius: 8px; font-weight: 600;">
+                                                                    View all {{ number_format($totalDiscs) }} discussions <i class="fas fa-arrow-right ms-1"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Reddit-style Discussions List -->
+                                                        @if($discList->isEmpty())
+                                                            <div class="text-center py-4 text-muted">
+                                                                <p class="m-0">No active discussions yet for {{ $bName }}.</p>
+                                                            </div>
+                                                        @else
+                                                            <div class="discussions-preview-list">
+                                                                @foreach($discList as $pDisc)
+                                                                    <div class="p-3 mb-3" style="background: #fafafa; border: 1px solid #e2e8f0; border-radius: 12px;">
+                                                                        <div class="d-flex align-items-start">
+                                                                            <!-- Vote Box -->
+                                                                            <div class="d-flex flex-column align-items-center me-3 pe-2" style="border-right: 1px solid #e2e8f0; min-width: 44px;">
+                                                                                <button class="vote-trigger btn btn-sm p-0 text-muted" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up">
+                                                                                    <i class="fas fa-chevron-up" style="font-size: 14px;"></i>
+                                                                                </button>
+                                                                                <span class="fw-bold my-1 vote-score-{{ $pDisc->id }}" style="font-size: 13px; color: #1e293b;">{{ $pDisc->upvotes_count - $pDisc->downvotes_count }}</span>
+                                                                                <button class="vote-trigger btn btn-sm p-0 text-muted" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="down">
+                                                                                    <i class="fas fa-chevron-down" style="font-size: 14px;"></i>
+                                                                                </button>
+                                                                            </div>
+
+                                                                            <!-- Discussion Detail -->
+                                                                            <div class="flex-grow-1">
+                                                                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                                                                    <div class="d-flex align-items-center gap-2">
+                                                                                        <span class="badge bg-secondary" style="font-weight: 500; font-size: 11px;">{{ $pDisc->category }}</span>
+                                                                                        <span class="text-muted" style="font-size: 12px;">by <strong>{{ $pDisc->author_display_name }}</strong> • {{ $pDisc->created_at->diffForHumans() }}</span>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <h4 style="font-size: 16px; font-weight: 700; color: #0f172a;" class="mb-1">
+                                                                                    <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}#discussion-{{ $pDisc->id }}" style="color: inherit; text-decoration: none;">
+                                                                                        {{ $pDisc->title }}
+                                                                                    </a>
+                                                                                </h4>
+
+                                                                                <p class="text-secondary m-0" style="font-size: 13.5px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                                                    {{ Str::limit(strip_tags($pDisc->content), 180) }}
+                                                                                </p>
+
+                                                                                <div class="mt-2 d-flex align-items-center gap-3" style="font-size: 12px; color: #64748b; font-weight: 600;">
+                                                                                    <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}#discussion-{{ $pDisc->id }}" class="text-decoration-none text-muted">
+                                                                                        💬 {{ $pDisc->comments_count }} {{ $pDisc->comments_count == 1 ? 'comment' : 'comments' }}
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+
+                                                        <!-- Footer Link -->
+                                                        <div class="text-center pt-2">
+                                                            <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="fw-bold" style="color: #06498b; font-size: 14px; text-decoration: none;">
+                                                                See all discussions about {{ $bName }} <i class="fas fa-chevron-right ms-1" style="font-size: 12px;"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="mt-5">
                                                     <section class="subs_sec light p_50 d-none" id="section16">
@@ -2344,6 +2432,9 @@
                                                     <a href="#section14" class="sticky-nav-item" data-target="section14">
                                                         <span>Reviews</span>
                                                     </a>
+                                                    <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
+                                                        <span>Community</span>
+                                                    </a>
                                                 </div>
 
 
@@ -2386,6 +2477,7 @@
                 <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
             @endif
             <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
+            <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">Community</a></li>
         </ul>
     </div>
     
