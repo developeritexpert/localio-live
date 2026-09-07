@@ -33,4 +33,4 @@ jobs:
             -o StrictHostKeyChecking=yes \
             -o ConnectTimeout=15 \
             "$DEPLOY_USER@"DEPLOY_HOST" \
-            "echo '=== DEPLOY_PATH ==='; pwd; ls -la \"$DEPLOY_PATH\"; echo '=== .htaccess ==='; cat \"$DEPLOY_PATH/.htaccess\"; echo '=== public/.htaccess ==='; cat \"$DEPLOY_PATH/public/.htaccess\""
+            'pwd; echo === DEPLOY_PATG ===; ls -la "'"$DEPLOY_PATH"'"; echo === .htaccess ===; cat "'"$DEPLOY_PATH'/.htaccess'; head -n 10 ''"$DEPLOY_PATH'/index.php''
