@@ -241,12 +241,7 @@
     }
 
     /* Category Page Enhanced Sections Styling */
-    .rich-text-content p {
-        margin-bottom: 12px;
-        line-height: 1.7;
-        color: #475569;
-        font-size: 15px;
-    }
+
     .rich-text-content ul, .rich-text-content ol {
         margin-left: 20px;
         margin-bottom: 12px;
@@ -259,11 +254,7 @@
         color: #06498b;
         text-decoration: underline;
     }
-    .comparison-box:hover {
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08) !important;
-        transform: translateY(-2px);
-        transition: all 0.2s ease;
-    }
+
     /* .top-product-medium-logo {
         width: 42px;
         height: 42px;
@@ -425,8 +416,8 @@
                     </div>
                 </div>
                 <div class="top-rated-heading-block">
-                    <div class="row align-items-start">
-                        <div class="col-md-6 text-start">
+                    <div class="host-parra row align-items-start">
+                        <div class="col-md-7 text-start">
                             @php
                                 $currentLangId = $lang_id ?? getCurrentLanguageID();
                                 $c1Obj = \App\Models\StaticContentKey::where('key', 'country1')->first();
@@ -495,7 +486,7 @@
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
-                        <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
+                        <div class="col-md-5 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                                 <div class="cat-hero-img-wrap position-relative d-inline-block">
                                     <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
@@ -515,7 +506,7 @@
             <div class="top-auto-btm">
                 <div class="container">
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
-                        <div class="flex-grow-1" style="max-width: 65%;">
+                        <div class="host-pro flex-grow-1" style="max-width: 65%;">
                             <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px; margin-top: 0;">
                                {{ $applyDynamicVars(($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '')) }}
                             </h2>
@@ -1130,8 +1121,7 @@
                                                     @if (!empty($item->is_affiliate))
                                                     <div class="slider_content_sec my-3"
                                                         style="width: 100% !important; max-width: 100% !important;">
-                                                        <div class="main_feature_lg"
-                                                            style="width: 100% !important; max-width: 100% !important;">
+                                                        <div class="main_feature_lg">
                                                             <div class="feture_box lft_check_box size18"
                                                                 style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
                                                                 <div class="usp-grid-container"
@@ -1145,7 +1135,7 @@
                                                                                 style="width: 100%; height: auto;">
                                                                         </div>
                                                                         <p class="m-0"
-                                                                            style="font-size: 14px;color: #002347; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;font-weight: 500;">
+                                                                            style="font-size: 14px;color: #002347; overflow: hidden;text-overflow: ellipsis;font-weight: 500;">
                                                                             {{ $usp->text }}</p>
                                                                     </div>
                                                                     @endforeach
@@ -1344,7 +1334,7 @@
                             <div class="auto-choice-rgt">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
-                                        <p class="m-0">Showing {{ $products->count() }} results </p>
+                                        <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
 
                                 </div>
@@ -1481,7 +1471,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                        <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1500,7 +1490,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                        <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1584,7 +1574,7 @@
                                 .compare-alternatives-subtext p { margin-bottom: 0 !important; }
                                 .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                             </style>
-                            <div class="compare-alternatives-subtext ck-content">
+                            <div class="compare-alternatives-subtext ck-content mb-3">
                                 {!! $category->translations->compare_alternatives_subtext !!}
                             </div>
                         @else
@@ -1597,7 +1587,7 @@
                                     <tr>
                                         <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                         <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                         @php
                                             $allCriteria = [];
                                             if (count($topAffiliatedBusinesses) > 0) {
@@ -1804,7 +1794,7 @@
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
                 <div class="text-start mb-4">
-                    <h2 class="explore-cat-h2">
+                    <h2 class="explore-cat-h2" style="text-transform: math-auto;">
                         {{ $exploreHeadline }}
                     </h2>
                     @if(!empty($exploreSubtext))
@@ -1832,7 +1822,7 @@
                         $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                         $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                     @endphp
-                    <div class="col-lg-4 col-md-6 col-12">
+                    <div class="col-lg-4 col-md-6 col-6">
                         <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
                             <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                                 
@@ -1845,7 +1835,7 @@
                                     @endif
                                 </div>
                                 
-                                <div class="d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
+                                <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                                     <h6 class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
                                     <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
                                         {{ $subcatItem->businesses()->count() ?? 0 }} listings
@@ -1892,7 +1882,7 @@
                 <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
                     @foreach($popularComparisons as $comp)
                     <div class="col-lg-4 col-md-4 col-12">
-                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
                             <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
 
                                 <!-- Business 1 -->

@@ -467,7 +467,7 @@
                                                  <div class="col-md-6">
                                                      <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                          <div class="card-body">
-                                                             <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                             <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
                                                              <ul class="list-unstyled mb-0">
                                                                  @foreach($aggregatedPros as $pro)
                                                                  <li class="d-flex align-items-start mb-2">
@@ -484,7 +484,7 @@
                                                  <div class="col-md-6">
                                                      <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                          <div class="card-body">
-                                                             <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                             <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
                                                              <ul class="list-unstyled mb-0">
                                                                  @foreach($aggregatedCons as $con)
                                                                  <li class="d-flex align-items-start mb-2">
@@ -520,7 +520,7 @@
                                                      <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
                                                          <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                              <div class="card-body">
-                                                                <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                                <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
                                                                  <ul class="list-unstyled mb-0">
                                                                      @foreach($aggregatedPros as $pro)
                                                                      <li class="d-flex align-items-start mb-2">
@@ -539,7 +539,7 @@
                                                      <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
                                                          <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                              <div class="card-body">
-                                                                <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                                <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
                                                                  <ul class="list-unstyled mb-0">
                                                                      @foreach($aggregatedCons as $con)
                                                                      <li class="d-flex align-items-start mb-2">
@@ -558,7 +558,7 @@
                                              <style>
                                                  #prosConsTab .nav-link.active { color: #1e3050 !important; }
                                                  #prosConsTab .nav-link.active::after {
-                                                     content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background-color: #00b0d8;
+                                                     content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background-color: #1e3050 ;
                                                  }
                                              </style>
 
@@ -1042,7 +1042,7 @@
                                                                                         </div>
 
                                                                                         <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                                            <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
+                                                                                            <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">User rating</h6>
                                                                                             <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                                                                 <p class="m-0" style="font-size: 12px; color: #555;">Ease of Use</p>
                                                                                                 <div class="prgs_br d-flex align-items-center">
@@ -1222,7 +1222,7 @@
                                                                                     ]);
                                                                                 @endphp
                                                                                 <div class="col-lg-6 col-md-6 col-12">
-                                                                                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                                                                                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
                                                                                         <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
 
                                                                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
@@ -1389,7 +1389,6 @@
                                                                             @media (max-width: 991px) {
                                                                                 .crm_sec {
                                                                                     background: transparent !important;
-                                                                                    padding: 0 !important;
                                                                                 }
                                                                                 .review-row-prod-inr {
                                                                                     display: block !important;
@@ -1524,7 +1523,7 @@
                                                                                                     <!-- Right Column: Review Breakdown & Recommendation -->
                                                                                                     <div class="col-lg-7 col-md-7 col-12 mt-0">
                                                                                                         @if(isset($criteria) && count($criteria) > 0)
-                                                                                                            <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
+                                                                                                            <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h5>
 
                                                                                                             <div class="mb-2">
                                                                                                                 @foreach ($criteria as $criterion)
@@ -1929,7 +1928,7 @@
 
                                                 @if ($hasUserReviews)
                                                     <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                                        Review breakdown
+                                                       User rating
                                                     </h2>
 
                                                     <div class="review-progress-list ">
@@ -2412,6 +2411,7 @@
         bottom: 0;
         left: 0;
         width: 100%;
+        height: 7svh;
         background-color: #ffffff;
         box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
         z-index: 9999;

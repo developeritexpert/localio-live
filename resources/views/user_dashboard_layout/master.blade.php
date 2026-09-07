@@ -436,7 +436,6 @@
 }
 .sidebar-section-title {
     font-size: 14px !important;
-    text-transform: uppercase;
     color: #111  !important;
     font-weight: 700  !important;
     margin-bottom: 12px !important;
@@ -666,7 +665,7 @@
                         </div>
                         <ul class="options" style="height: auto !important; bottom: 100% !important; max-height: 400px; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);">
                             <div class="container">
-                                <h3 style="color: black;">Choose your Country/Region</h3>
+                                <h3 style="color: black;">Choose your Country/region </h3>
                                 <div class="footer-langs-container">
                                     @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
                                     @if($country->language)
@@ -963,7 +962,7 @@
             icon.querySelector('i').classList.remove('fa-eye');
             icon.querySelector('i').classList.add('fa-eye-slash');
         }
-    }
+}
 </script>
 
 </body>

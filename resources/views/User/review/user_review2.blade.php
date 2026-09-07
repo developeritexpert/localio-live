@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h5 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</h5>
+                                        <h3 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</h3>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -224,7 +224,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h5 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</h5>
+                                        <h3 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</h3>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
                                                 @foreach($aggregatedCons as $con)
@@ -391,7 +391,7 @@
 
 
 
-                                    <div class="row review-row-prod-inr">
+                                    <div class="row review-row-prod-inr mx-0">
 
                                         <div class="col-lg-12">
                                             <div class="review-sidebar-sticky">
@@ -430,7 +430,7 @@
                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                             <div class="col-lg-7 col-md-7 col-12">
                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                    <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h5>
+                                                                    <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h5>
 
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
@@ -628,7 +628,7 @@
 
                                 @if ($hasUserReviews && isset($criteria) && count($criteria) > 0)
                                     <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                        Review breakdown
+                                       User rating
                                     </h2>
 
                                     <div class="review-progress-list mb-3">

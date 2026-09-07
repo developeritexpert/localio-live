@@ -694,8 +694,8 @@
                             </a>
                         </div>
 
-                        <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 700; color: #002347;">
-                            Review breakdown
+                        <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #002347;">
+                            User rating
                         </h2>
 
                         {{-- Breakdown --}}

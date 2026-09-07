@@ -66,7 +66,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="accor-txt-contnt">
-                            <h6>{{ $whoWeAre->top_card_title ?? '' }}</h6>
+                            <h2>{{ $whoWeAre->top_card_title ?? '' }}</h2>
                             <div class="ck-content">{!! $whoWeAre->top_card_desc ?? '' !!}</div>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                                             @endif
                                         </div>
                                         <div class="part_2_boxs">
-                                            <h6 class="big-bld">{{ $translation->title ?? '' }}</h6>
+                                            <h3 class="big-bld">{{ $translation->title ?? '' }}</h3>
                                             <p>{{ $translation->description ?? '' }}
                                         </div>
                                     </div>
@@ -124,7 +124,7 @@
                         </div>
                         <div class="succes_infp">
                             <div class="succes_text">
-                                <h6 class="big-bld">{{ $item->translations->first()->title ?? '' }}</h6>
+                                <h3 class="big-bld">{{ $item->translations->first()->title ?? '' }}</h3>
                                 <p>{{ $item->translations->first()->description ?? '' }}
                                 </p>
                             </div>

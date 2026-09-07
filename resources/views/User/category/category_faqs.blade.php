@@ -233,7 +233,7 @@
             <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
                 @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                     <div class="cat-hero-img-wrap position-relative d-inline-block">
-                        <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style=" object-fit: contain;">
+                        <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
                         @if(!empty($category->faq_overlay_image) && $category->faqOverlayMedia)
                             @php $pos = $category->faq_overlay_position ?? 'right'; @endphp
                             <img src="{{ asset($category->faqOverlayMedia->dir_path . '/' . $category->faqOverlayMedia->file_name) }}" alt="FAQ Overlay" class="cat-hero-overlay-img cat-hero-overlay-{{ $pos }}">
@@ -609,7 +609,7 @@
                     @if(isset($topBusinesses) && $topBusinesses->count() > 0)
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Top 3</h5>
+                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Web hosting top 3 </h5>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>
@@ -623,7 +623,7 @@
                                     $topBizRating = round($topBiz->average_rating ?? $topBiz->reviews->where('status', 'active')->avg('rating') ?? 0, 1);
                                     $affiliateUrl = $topBiz->getTrackedUrl();
                                 @endphp
-                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="top-biz-sidebar-item d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style="transition: all 0.2s ease; border: 1px solid #f1f5f9; background: #fdfdfd;">
+                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="top-biz-sidebar-item d-flex align-items-center justify-content-between p-2 rounded text-decoration-none" style=" border: 1px solid #f1f5f9; background: #fdfdfd;">
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="top-product-small-logo" style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid #e2e8f0;">
                                             <x-business-logo :business="$topBiz" :name="$topBizName" />

@@ -2386,7 +2386,6 @@
     flex-wrap: wrap;
   }
 
-  .main_feature_lg,
   .main_feature_sm {
     width: 48%;
     max-width: 48%;
@@ -3104,7 +3103,7 @@
     padding-top: 15px;
   }
 
-  .main_feature_lg,
+  
   .main_feature_sm {
     width: 100%;
     max-width: 100%;
