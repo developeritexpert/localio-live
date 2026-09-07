@@ -25,4 +25,4 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p "$DEPLOY_PORT" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
 
-          ssh -i ~/.ssh/deploy_key -p "$DEPLOY_PORT" -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" "cd \"$DEPLOY_PATH\" && pwd && ls -la && echo '=== .htaccess ===' && cat .htaccess"
+          ssh -i ~/.ssh/deploy_key -p "$DEPLOY_PORT" -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" "cd \"$DEPLOY_PATH\" && ls -la index* && echo '=== public index ===' && ls -la public/index* && echo '=== public/.htaccess ===' && cat public/.htaccess"
