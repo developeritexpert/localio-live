@@ -2,6 +2,9 @@ name: Test SiteGround SSH
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - siteground-cicd
 
 jobs:
   test-ssh:
@@ -21,11 +24,12 @@ jobs:
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          ssh-keyscan -p "$DEPLOY_PORT" "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          ssh-keyscan -p "$DEPLOY_PORT" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
 
-          ssh \
+          ssh -v \
             -i ~/.ssh/deploy_key \
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
+            -o ConnectTimeout=15 \
             "$DEPLOY_USER@$DEPLOY_HOST" \
             'echo "SSH connection successful"; hostname; pwd'
