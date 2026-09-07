@@ -17,6 +17,7 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -26,10 +27,10 @@ jobs:
 
           ssh-keyscan -p "$DEPLOY_PORT" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
 
-          ssh -v \
+          ssh \
             -i ~/.ssh/deploy_key \
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             -o ConnectTimeout=15 \
-            "$DEPLOY_USER@$DEPLOY_HOST" \
-            'echo "SSH connection successful"; hostname; pwd'
+            "$DEPLOY_USER@"DEPLOY_HOST" \
+            "echo '=== DEPLOY_PATH ==='; pwd; ls -la \"$DEPLOY_PATH\"; echo '=== .htaccess ==='; cat \"$DEPLOY_PATH/.htaccess\"; echo '=== public/.htaccess ==='; cat \"$DEPLOY_PATH/public/.htaccess\""
