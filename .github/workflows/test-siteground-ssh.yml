@@ -32,4 +32,4 @@ jobs:
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "curl -i -s -H 'Host: localio.com' http://127.0.0.1/ | head -n 15"
+            "php -r \"unlink('/home/customer/www/localio.com/public_html/index.html');\" && rm -f /home/customer/www/localio.com/public_html/index.html && ls -la /home/customer/www/localio.com/public_html/index*"
