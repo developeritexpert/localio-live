@@ -32,4 +32,4 @@ jobs:
             -p "$DEPLOY_PORT" \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "php /home/customer/www/localio.com/public_html/public/index.php ; curl -s http://127.0.0.1/index.php | head -n 10"
+            "curl -i -s -H 'Host: localio.com' http://127.0.0.1/ | head -n 15"
