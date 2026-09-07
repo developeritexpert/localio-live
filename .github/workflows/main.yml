@@ -2,6 +2,9 @@ name: Deploy SiteGround
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - siteground-cicd
 
 concurrency:
   group: siteground-production
