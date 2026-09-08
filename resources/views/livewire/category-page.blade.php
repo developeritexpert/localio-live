@@ -507,7 +507,7 @@
                 <div class="container">
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
                         <div class="host-pro flex-grow-1" style="max-width: 65%;">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px; margin-top: 0;">
+                            <h2 style="margin-bottom: 8px;">
                                {{ $applyDynamicVars(($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '')) }}
                             </h2>
                             @if(!empty($category->translation->top_rated_listing_subtext))

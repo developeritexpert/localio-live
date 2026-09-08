@@ -408,9 +408,9 @@ div#navbarSupportedContent {
     justify-content: center;
 }
 
-header .search-box input {
+.search-box input {
     font-size: 14px;
-    height: 40px;
+    height: 44px;
 }
 
 .cta.cta_white {
@@ -9912,9 +9912,12 @@ button.btn-vote-faq i.far:hover {
 
 /* ====style.css updated by-Kashish(04-sep-26)===== */
 
+.category-description-text,
 .category-description-text p,
 .top-rated-subtext-container.ck-content p,
-.rich-text-content p {
+.rich-text-content p,
+.ck-content,
+.legal-document-content {
     color: var(--color-dark-blue-text) !important;
     font-size: 16px;
     margin-bottom: 0;
@@ -10007,4 +10010,17 @@ button.btn-vote-faq i.far:hover {
 
 .profile-icon {
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) hue-rotate(0deg);
+}
+
+/* ====style.css updated by-Kashish(08-sep-26)===== */
+
+.subcat-link {
+    color: var(--color-dark-blue-text);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+#pvc_section h1 {
+    color: var(--color-dark-blue-text);
 }

@@ -4,8 +4,8 @@
 <!-- Hero Section -->
 <section class="write-review-hero text-center  text-white" style="background-color:#fdfdfd;">
     <div class="container">
-        <h1 class="fw-bold mb-3" style="color: #1e3050; font-weight: 700 !important; margin-bottom: 8px; font-size:28px !important"> Share your experience </h1>
-        <p class="text-white-50 mb-5 mx-auto" style=" font-weight: 400 !important; font-size: 16px !important; color: #444 !important; margin-bottom: 0;">
+        <h1 class=" mb-3" style="color: #002347;"> Share your experience </h1>
+        <p class=" mb-5 mx-auto" style="margin-bottom: 0;">
             Help the Localio community make better choices by sharing your experience with a business or product
         </p>
         
@@ -19,7 +19,7 @@
         
         <!-- Trending Section -->
         <div class="mb-5">
-            <h2  style="color: #002347; font-size: 24px; ">Popular with our community</h2>
+            <h2>Popular with our community</h2>
             <p class=" mb-4">See what the Localio community is reviewing right now</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($trendingBusinesses as $business)
@@ -62,7 +62,7 @@
                 <!-- Be the first to review Section -->
         @if(isset($unreviewedBusinesses) && $unreviewedBusinesses->count() > 0)
         <div class="mb-5 share_exp_wrp">
-            <h2 style="color: #002347; font-size: 24px;">Be the first to review</h2>
+            <h2>Be the first to review</h2>
             <p class="mb-4">Share your experience and help our community</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($unreviewedBusinesses as $business)
@@ -88,7 +88,7 @@
 
         <!-- Recently Reviewed Section -->
         <div class="recently_reviewed_wrp">
-            <h2 style="color: #002347; font-size: 24px;">Recently reviewed</h2>
+            <h2>Recently reviewed</h2>
             <p class=" mb-4">The latest experiences shared by the Localio community</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 @foreach($recentlyReviewed as $business)
