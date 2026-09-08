@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Country;
 use App\Models\Language;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -31,6 +32,7 @@ class CountryController extends Controller
         $request->validate([
             'name'      => 'required|unique:countries,name,' . $id,
             'lang_code' => 'required|string|max:20|regex:/^[a-z0-9-]+$/|unique:languages,lang_code,' . (Language::where('country_id', $id)->value('id') ?? 0),
+            'rating_separator' => ['required', Rule::in(['.', ','])],
         ]);
 
         try {
@@ -38,6 +40,7 @@ class CountryController extends Controller
             $oldName  = $country->name;
             $country->name             = $request->name;
             $country->show_disclaimer  = $request->has('show_disclaimer') ? 1 : 0;
+            $country->rating_separator = $request->rating_separator;
             $country->save();
 
             // Sync lang_code on the linked Language record
@@ -82,11 +85,13 @@ class CountryController extends Controller
             'name'      => 'required|unique:countries,name',
             'lang_code' => 'required|string|max:20|regex:/^[a-z0-9-]+$/|unique:languages,lang_code',
             'html_lang' => 'nullable|string|max:20',
+            'rating_separator' => ['required', Rule::in(['.', ','])],
         ]);
 
         $country = new Country;
         $country->name             = $request->name;
         $country->show_disclaimer  = $request->has('show_disclaimer') ? 1 : 0;
+        $country->rating_separator = $request->rating_separator;
         $country->status           = 1;
         $country->save();
 

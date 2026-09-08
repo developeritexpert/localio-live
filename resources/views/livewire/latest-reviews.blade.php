@@ -24,7 +24,7 @@
             <div class="slider_h" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="head_box" style="margin: 0;">
                     <!-- <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0;">{{ $title ?? static_text('latest_reviews') ?? 'Recent reviews' }}</h2> -->
-                    <h2 style="color: #0d1b2a !important; font-size: 28px; font-weight: 700; margin: 0; text-transform:none;">Latest reviews</h2>
+                    <h2 style=" margin: 0; text-transform:none;">Latest reviews</h2>
                 </div>
                 <div class="reviews-slider-nav" style="display: flex; gap: 8px;">
                     <button class="reviews-prev" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid #06498b; background: #ffffff; color: #06498b; display: flex; align-items: center; justify-content: center; cursor: pointer;" onmouseover="this.style.background='#174889'; this.style.color='#ffffff';" onmouseout="this.style.background='#ffffff'; this.style.color='#174889';"><i class="fas fa-chevron-left"></i></button>
@@ -84,7 +84,7 @@
 
                                         <!-- Middle part: Title & Description -->
                                         <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
-                                            <h5 >{{ $reviewTitle }}</h5>
+                                            <p class="review-card-title" >{{ $reviewTitle }}</p>
                                             <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     @if ($i <= floor($review->rating))

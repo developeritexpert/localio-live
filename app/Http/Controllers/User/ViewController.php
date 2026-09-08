@@ -384,15 +384,16 @@ class ViewController extends Controller
         }
 
         // Build reviews query
-        $reviewsQuery = Review::with([
-            'user',
-            'business.translations' => function ($query) use ($lang_id) {
-                $query->where('lang_id', $lang_id);
-            },
-            'translations' => function ($query) use ($lang_id) {
-                $query->where('language_id', $lang_id);
-            },
-        ])
+       $reviewsQuery = Review::with([
+    'user',
+    'business.translations' => function ($query) use ($lang_id) {
+        $query->where('lang_id', $lang_id);
+    },
+    'translations' => function ($query) use ($lang_id) {
+        $query->where('language_id', $lang_id);
+    },
+    'selectedProCons',
+])
             ->where('business_id', $business->id)
             ->whereHas('translations', function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);

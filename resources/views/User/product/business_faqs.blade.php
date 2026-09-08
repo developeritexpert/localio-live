@@ -323,12 +323,12 @@
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1;">
+                            <h1 style="margin: 0; ">
                                 {{ $bName }} FAQs
                             </h1>
                             <livewire:wishlist :product-id="$business->id" :wire:key="'wishlist-'.$business->id" />
                         </div>
-                        <p style="font-size: 16px; color: #444; margin: 0; font-weight:400;">
+                        <p class="text-meta" style="font-size: 16px; ">
                             {{ $subHeadline }}
                         </p>
                     </div>
@@ -357,7 +357,7 @@
                 @if(!empty($faqTitle1) || !empty($faqDesc1))
                 <div class="faq-top-intro mb-4" id="section-about-faq">
                     @if($faqTitle1)
-                        <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">{{ $faqTitle1 }}</h2>
+                        <h2 style="margin-bottom: 12px;">{{ $faqTitle1 }}</h2>
                     @endif
                     @if($faqDesc1)
                         <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
@@ -369,7 +369,7 @@
 
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
                 <div class="faq-search-wrapper" id="section-search-faq">
-                    <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 14px;">
+                    <h3 style="margin-bottom: 14px;">
                         Search {{ $bName }} FAQs
                     </h3>
                     <div class="faq-search-input-group">
@@ -381,7 +381,7 @@
                 <!-- Main FAQ Section: Headline & In-Page Navigation -->
                 <div class="main-faq-container" id="section-faq-list">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                        <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin: 0;">
+                        <h2 style="margin: 0;">
                             Frequently asked questions about {{ $bName }}
                         </h2>
                     </div>
@@ -542,10 +542,10 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner" id="section-ask-community">
                     <div>
-                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
+                        <h3 style="margin-bottom: 6px;">
                             Still have a question about {{ $bName }}?
                         </h3>
-                        <p style="font-size: 15px; margin-bottom: 0;">
+                        <p style="margin-bottom: 0;">
                             Ask the Localio community
                         </p>
                     </div>

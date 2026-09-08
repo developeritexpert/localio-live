@@ -183,7 +183,7 @@
                                                                     <div class="inn_h">
                                                                         <div class="sl_main">
                                                                             <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
-                                                                                <h6 class="head">{{ $businessTranslation->name ?? 'Business' }}</h6>
+                                                                                <p class="head">{{ $businessTranslation->name ?? 'Business' }}</p>
                                                                             </a>
                                                                             <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
                                                                                 @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))

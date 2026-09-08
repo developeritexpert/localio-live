@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Redis;
 use App\Models\StaticContentKey;
 use App\Services\AssetManager;
 
-function getCurrentLocale($type="lang_code")
+function getCurrentLocale($type = "lang_code")
 {
-    if($type == "lang_code"){
+    if ($type == "lang_code") {
         if (Cookie::get('lang_code_v2')) {
             $langcode = Cookie::get('lang_code_v2');
         } elseif (Session::get('lang_code')) {
@@ -24,7 +24,7 @@ function getCurrentLocale($type="lang_code")
             $langcode = "en-us";
         }
         return $langcode;
-    }else if($type == "lang_id"){
+    } else if ($type == "lang_id") {
         if (Cookie::get('lang_id_v2')) {
             $lang_id = Cookie::get('lang_id_v2');
         } elseif (Session::get('lang_id')) {
@@ -36,14 +36,15 @@ function getCurrentLocale($type="lang_code")
     }
 }
 
-function getCurrentCountry(){
+function getCurrentCountry()
+{
     $lang_id = getCurrentLanguageID();
     $country_language = CountryLanguage::where('language_id', $lang_id)->first();
-    
+
     if (!$country_language) {
         return null;
     }
-    
+
     $country_id = Country::where('id', $country_language->country_id)->value('id');
     return $country_id;
 }
@@ -141,17 +142,18 @@ function formatInr($amount)
 }
 
 
-function website_translator($logoName,$lang_code)
+function website_translator($logoName, $lang_code)
 {
     if ($logoName == "") {
-        return "";   }
+        return "";
+    }
     try {
         $translationService = app(TranslationService::class);
         $translatedLogoName = $translationService->translate($logoName, $lang_code);
-       // dd($translatedLogoName);
+        // dd($translatedLogoName);
         return $translatedLogoName;
     } catch (\Exception $e) {
-       saveLog('Language Translation Eroor', 'helpers', $e->getMessage());
+        saveLog('Language Translation Eroor', 'helpers', $e->getMessage());
     }
 }
 
@@ -222,11 +224,11 @@ function getWebSetting($key, $value = false)
     return $webSettings;
 }
 
-function changeUserLanguage($lang_id=1){
+function changeUserLanguage($lang_id = 1)
+{
 
 
-    if(isset($languages[$lang_id])){
-
+    if (isset($languages[$lang_id])) {
     }
 }
 function storePrefrences($data)
@@ -295,12 +297,12 @@ function getBusinessesWithStartingPrice($businesses)
                 $query->with('prices')
                     ->where(function ($q) use ($countryId) {
                         $q->where('active_all_countries', 1)
-                          ->orWhere(function ($subQuery) use ($countryId) {
-                              $subQuery->where('active_all_countries', 0)
-                                       ->whereHas('countries', function ($countryQuery) use ($countryId) {
-                                           $countryQuery->where('country_id', $countryId);
-                                       });
-                          });
+                            ->orWhere(function ($subQuery) use ($countryId) {
+                                $subQuery->where('active_all_countries', 0)
+                                    ->whereHas('countries', function ($countryQuery) use ($countryId) {
+                                        $countryQuery->where('country_id', $countryId);
+                                    });
+                            });
                     });
             }])
             ->get();
@@ -309,12 +311,12 @@ function getBusinessesWithStartingPrice($businesses)
             $query->with('prices')
                 ->where(function ($q) use ($countryId) {
                     $q->where('active_all_countries', 1)
-                      ->orWhere(function ($subQuery) use ($countryId) {
-                          $subQuery->where('active_all_countries', 0)
-                                   ->whereHas('countries', function ($countryQuery) use ($countryId) {
-                                       $countryQuery->where('country_id', $countryId);
-                                   });
-                      });
+                        ->orWhere(function ($subQuery) use ($countryId) {
+                            $subQuery->where('active_all_countries', 0)
+                                ->whereHas('countries', function ($countryQuery) use ($countryId) {
+                                    $countryQuery->where('country_id', $countryId);
+                                });
+                        });
                 });
         }])->get();
     } elseif ($businesses instanceof Business) {
@@ -323,12 +325,12 @@ function getBusinessesWithStartingPrice($businesses)
                 $query->with('prices')
                     ->where(function ($q) use ($countryId) {
                         $q->where('active_all_countries', 1)
-                          ->orWhere(function ($subQuery) use ($countryId) {
-                              $subQuery->where('active_all_countries', 0)
-                                       ->whereHas('countries', function ($countryQuery) use ($countryId) {
-                                           $countryQuery->where('country_id', $countryId);
-                                       });
-                          });
+                            ->orWhere(function ($subQuery) use ($countryId) {
+                                $subQuery->where('active_all_countries', 0)
+                                    ->whereHas('countries', function ($countryQuery) use ($countryId) {
+                                        $countryQuery->where('country_id', $countryId);
+                                    });
+                            });
                     });
             }])
         ]);
@@ -337,12 +339,12 @@ function getBusinessesWithStartingPrice($businesses)
             $query->with('prices')
                 ->where(function ($q) use ($countryId) {
                     $q->where('active_all_countries', 1)
-                      ->orWhere(function ($subQuery) use ($countryId) {
-                          $subQuery->where('active_all_countries', 0)
-                                   ->whereHas('countries', function ($countryQuery) use ($countryId) {
-                                       $countryQuery->where('country_id', $countryId);
-                                   });
-                      });
+                        ->orWhere(function ($subQuery) use ($countryId) {
+                            $subQuery->where('active_all_countries', 0)
+                                ->whereHas('countries', function ($countryQuery) use ($countryId) {
+                                    $countryQuery->where('country_id', $countryId);
+                                });
+                        });
                 });
         }]);
     } else {
@@ -360,7 +362,7 @@ function getBusinessesWithStartingPrice($businesses)
                 $type = 'base';
                 $currency = $price->currency;
                 $timeUnit = $price->time_unit;
-                $additional_info=$price->additional_info;
+                $additional_info = $price->additional_info;
                 if ($price->discount_price && (!$price->discount_expiration_date || $price->discount_expiration_date >= $now)) {
                     $effectivePrice = $price->discount_price;
                     $timeUnit = $price->discount_time_units ?? $price->time_unit;
@@ -385,7 +387,7 @@ function getBusinessesWithStartingPrice($businesses)
                         'price_type' => $type,
                         'product_id' => $product->id,
                         'normalized_price' => $monthlyEquivalent,
-                        'additional_info' =>$additional_info
+                        'additional_info' => $additional_info
                     ];
                 }
             }
@@ -430,7 +432,7 @@ function static_text($key)
 }
 
 
-function web_setting($key = null, $value = false, $type = null ,$modelRef = null)
+function web_setting($key = null, $value = false, $type = null, $modelRef = null)
 {
     $response = null;
 
@@ -459,12 +461,14 @@ function web_setting($key = null, $value = false, $type = null ,$modelRef = null
     return $response;
 }
 
-function dimage() {
+function dimage()
+{
     $setting = \App\Models\WebSetting::where('key', 'user_default_image')->first();
     return $setting && $setting->value ? asset($setting->value) : asset('default/user.png');
 }
 
-function dashboardDefaultImage() {
+function dashboardDefaultImage()
+{
     $setting = WebSetting::where('key', 'user_dashboard_default_page_image')->first();
     return $setting && $setting->value ? asset($setting->value) : asset('default/dashboard-page.svg');
 }
@@ -489,7 +493,7 @@ if (!function_exists('format_meta_text')) {
         $clean = html_entity_decode(strip_tags($text), ENT_QUOTES, 'UTF-8');
         $clean = trim($clean);
         $currentYear = date('Y');
-        
+
         // Replace all common year placeholders and raw blade/template tags
         $placeholders = [
             '[year]',
@@ -543,5 +547,30 @@ if (!function_exists('get_rating_label')) {
         }
 
         return '';
+    }
+
+
+
+
+    if (!function_exists('formatRating')) {
+        function formatRating($rating, $decimals = 1)
+        {
+            if ($rating === null || $rating === '') {
+                return '0';
+            }
+
+            $langId = getCurrentLanguageID();
+
+            $language = \App\Models\Language::with('country')->find($langId);
+
+            $separator = $language?->country?->rating_separator ?? '.';
+
+            return number_format(
+                (float) $rating,
+                $decimals,
+                $separator,
+                ''
+            );
+        }
     }
 }

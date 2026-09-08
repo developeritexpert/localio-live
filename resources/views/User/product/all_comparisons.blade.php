@@ -206,14 +206,14 @@
             <div class="col-md-8 col-12">
                 <div class="top_head">
                     <div class="an_lkd d-flex align-items-center gap-2 flex-wrap mb-1">
-                        <h1 style="font-size: 28px; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                        <h1 style=" margin: 0; ">
                             Compare {{ $bName }}
                         </h1>
                     </div>
                     <p class="text-meta">
                         Last updated on {{ now()->format('F j, Y') }}
                     </p>
-                    <p style="font-size: 16px; margin: 0; font-weight: 400;">
+                    <p style="margin: 0;">
                         {{ $subHeadline }}
                     </p>
                 </div>
@@ -238,7 +238,7 @@
                 <!-- Section 1: Intro Text -->
                 @if($compTitle1)
                     <div class="mb-4">
-                        <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
+                        <h2 style="margin-bottom: 12px;">
                             {{ $compTitle1 }}
                         </h2>
                         @if($compDesc1)
@@ -251,7 +251,7 @@
 
                 <!-- Section 2: Interactive Compare Tool Box (Replacing 2nd text) -->
                 <div class="p-4 bg-white rounded-3 border mb-4" style="border-radius: 16px !important; border: 1.5px solid #e2e8f0 !important; box-shadow: 0 4px 14px rgba(0,0,0,0.03); overflow: visible !important;">
-                    <h3 style="font-size: 18px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                    <h3 style="margin-bottom: 6px;">
                         Compare {{ $bName }} with any provider
                     </h3>
                     @php
@@ -260,7 +260,7 @@
                             $compareSubtext = 'Select another provider from the search box below to generate an instant side-by-side comparison.';
                         }
                     @endphp
-                    <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">
+                    <p>
                         {{ $compareSubtext }}
                     </p>
 
@@ -327,7 +327,7 @@
                             <div>
                                 <h3 style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</h3>
                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
-                                    <span>{{ number_format($averageRating, 1) }}</span>
+                                    <span>{{ formatRating($averageRating) }}</span>
                                     <div class="rating-stars" style="display: flex; gap: 2px;">
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($i <= floor($averageRating))
@@ -358,7 +358,7 @@
                                     <p class="m-0" style="font-size: 12px; font-weight: 500; color: #5b6b7a ;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                     </div>
                                 </div>
                             @endforeach
@@ -425,10 +425,10 @@
 <section class="compare-section py-5" style="background-color: #f7f9fb !important; border-top: 1px solid #e2e8f0;">
     <div class="container">
         <div class="hd_text mb-4">
-            <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 6px;">
+            <h2 style="margin-bottom: 6px;">
                 Popular {{ $bName }} comparisons
             </h2>
-            <p style="font-size: 15px; color: #64748b; margin: 0;">
+            <p style="margin: 0;">
                 See how {{ $bName }} compares to top competitors.
             </p>
         </div>
@@ -455,7 +455,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($businessRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -468,7 +468,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($popItemRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($averageRating, 1) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -491,10 +491,10 @@
 <section class="compare-section py-5" style="background-color: #ffffff !important; border-top: 1px solid #e2e8f0;">
     <div class="container">
         <div class="hd_text mb-4">
-            <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin-bottom: 6px;">
+            <h2 style="margin-bottom: 6px;">
                 Recently viewed comparisons
             </h2>
-            <p style="font-size: 15px; color: #64748b; margin: 0;">
+            <p>
                 Comparisons of {{ $bName }} recently viewed by users.
             </p>
         </div>
@@ -521,7 +521,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($businessRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($averageRating, 1) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -534,7 +534,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $recItemName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($recItemRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($recItemRating) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -557,10 +557,10 @@
 <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <div class="text-start mb-4">
-            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+            <h2 style="margin-bottom: 6px;">
                 {{ $exploreSubcategories['title'] }}
             </h2>
-            <p style="font-size: 14px; color: #64748b; margin: 0;">
+            <p>
                 Browse specialized categories to find the exact tools and solutions for your requirements.
             </p>
         </div>

@@ -125,11 +125,11 @@
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1;">
+                            <h1 style="margin: 0;">
                                 {{ $bName }} {{ $reviewsWord }} reviews
                             </h1>
                         </div>
-                        <p style="font-size: 16px; color: #444; margin: 0; font-weight:400;">
+                        <p class="text-meta" style="font-size: 16px;">
                             {{ $subHeadline }}
                         </p>
                     </div>
@@ -158,8 +158,8 @@
                     <!-- 1. Description / Overview Section -->
                     <div class="col-lg-12">
                         <div class="is-asana-lft" id="section1">
-                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">{{ $reviewsTitle1 }}</h2>
-                            <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
+                            <h2 style="margin-bottom: 12px;">{{ $reviewsTitle1 }}</h2>
+                            <div class="">
                                 @if(!empty($reviewsDesc1))
                                     {!! $reviewsDesc1 !!}
                                 @else
@@ -184,7 +184,7 @@
                     @if((isset($aggregatedPros) && count($aggregatedPros) > 0 && isset($aggregatedCons) && count($aggregatedCons) > 0) || (isset($pros) && $pros->count() > 0 && isset($cons) && $cons->count() > 0))
                     <div class="col-lg-12 mt-4 mb-4" id="section-pros-cons">
                         <div class="pros-cons-header mb-3">
-                            <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
+                            <h2 style="margin-bottom: 8px;">
                                 What the Localio community says
                             </h2>
                             @if(!empty($reviewsProConsIntro))
@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h3 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</h3>
+                                        <h3 class="card-title mb-3" style=" font-size: 18px !important;">Pros</h3>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -269,10 +269,10 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="text-start mb-4">
-                                            <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                                            <h2 style=" margin-bottom: 8px;">
                                                 {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
                                             </h2>
-                                            <p style="font-size: 15px; margin-bottom: 0;">
+                                            <p style=" margin-bottom: 0;">
                                                 {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
                                             </p>
                                         </div>
@@ -405,7 +405,7 @@
                                                             <!-- Left Column: Big Rating & Stars -->
                                                             <div class="col-lg-5 col-md-5 col-12">
                                                                 <div class="d-flex flex-column align-items-start">
-                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">{{ formatRating($averageRating) }}</span>
                                                                     @if($ratingWord = get_rating_label($averageRating))
                                                                         <span class="rating-word-label" style="font-size: 15px; font-weight: 700; color: #1e3050;">
                                                                             {{ $ratingWord }}
@@ -441,7 +441,7 @@
                                                                                     <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                                 </div>
                                                                             </div>
-                                                                            <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                            <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                                                         </div>
                                                                         @endforeach
                                                                     </div>
@@ -594,7 +594,7 @@
                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                         <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                            {{ number_format($averageRating, 1) }}
+                                            {{ formatRating($averageRating) }}
                                         </span>
                                         @if($ratingWord = get_rating_label($averageRating))
                                             <span class="rating-word-label">
@@ -637,7 +637,7 @@
                                                 <p class="m-0" style="font-size: 12px; font-weight: 500">{{ $criterion->name }}</p>
                                                 <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                     <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -792,7 +792,7 @@
                                             </h3>
                                             @if ($averageRating !== null)
                                                 <div class="rating-group sticky-nav-rating mb-3">
-                                                    <span>{{ number_format($averageRating, 1) }}</span>
+                                                    <span>{{ formatRating($averageRating) }}</span>
                                                     <div class="rating-star">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($i <= floor($averageRating))
