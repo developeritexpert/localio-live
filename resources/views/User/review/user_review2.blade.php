@@ -405,7 +405,7 @@
                                                             <!-- Left Column: Big Rating & Stars -->
                                                             <div class="col-lg-5 col-md-5 col-12">
                                                                 <div class="d-flex flex-column align-items-start">
-                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">{{ number_format($averageRating, 1) }}</span>
+                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">{{ formatRating($averageRating) }}</span>
                                                                     @if($ratingWord = get_rating_label($averageRating))
                                                                         <span class="rating-word-label" style="font-size: 15px; font-weight: 700; color: #1e3050;">
                                                                             {{ $ratingWord }}
@@ -441,7 +441,7 @@
                                                                                     <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                                 </div>
                                                                             </div>
-                                                                            <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                            <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                                                         </div>
                                                                         @endforeach
                                                                     </div>
@@ -594,7 +594,7 @@
                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
                                     <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                         <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                            {{ number_format($averageRating, 1) }}
+                                            {{ formatRating($averageRating) }}
                                         </span>
                                         @if($ratingWord = get_rating_label($averageRating))
                                             <span class="rating-word-label">
@@ -637,7 +637,7 @@
                                                 <p class="m-0" style="font-size: 12px; font-weight: 500">{{ $criterion->name }}</p>
                                                 <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                                     <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -792,7 +792,7 @@
                                             </h3>
                                             @if ($averageRating !== null)
                                                 <div class="rating-group sticky-nav-rating mb-3">
-                                                    <span>{{ number_format($averageRating, 1) }}</span>
+                                                    <span>{{ formatRating($averageRating) }}</span>
                                                     <div class="rating-star">
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($i <= floor($averageRating))

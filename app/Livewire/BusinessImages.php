@@ -1057,34 +1057,147 @@ class BusinessImages extends Component
         imagedestroy($img);
     }
 
-    public function saveImages()
-    {
-        $business = Business::findOrFail($this->selectedBusinessId);
-        $finalImages = $this->currentImages;
+public function saveImages()
+{
+    $business = Business::findOrFail($this->selectedBusinessId);
 
-        // Process newly uploaded files
-        if (!empty($this->newUploads)) {
-            foreach ($this->newUploads as $file) {
-                $savedPath = $this->storeOptimizedImage($file);
-                if ($savedPath) {
-                    $finalImages[] = $savedPath;
-                }
+    // Current images after removing images with X button
+    $finalImages = $this->currentImages;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Process newly uploaded manual images
+    |--------------------------------------------------------------------------
+    */
+    if (!empty($this->newUploads)) {
+        foreach ($this->newUploads as $file) {
+
+            $savedPath = $this->storeOptimizedImage($file);
+
+            if ($savedPath) {
+                $finalImages[] = $savedPath;
+            }
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Limit total images to maximum 5
+    |--------------------------------------------------------------------------
+    */
+    $finalImages = array_slice($finalImages, 0, 5);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Determine where these images should be saved
+    |--------------------------------------------------------------------------
+    */
+    $selectedCategoryName = trim(
+        $business->screenshot_display_category ?? ''
+    );
+
+    $categories = $business->screenshot_categories ?? [];
+
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Specific category selected in Business Edit
+    |--------------------------------------------------------------------------
+    */
+    if (!empty($selectedCategoryName)) {
+
+        foreach ($categories as $index => $category) {
+
+            if (
+                strcasecmp(
+                    trim($category['name'] ?? ''),
+                    $selectedCategoryName
+                ) === 0
+            ) {
+
+                $categories[$index]['images'] = $finalImages;
+
+                break;
             }
         }
 
-        // Limit to max 5 images
-        $finalImages = array_slice($finalImages, 0, 5);
-
-        $business->update([
-            'business_images' => $finalImages
-        ]);
-
-        $this->showImageModal = false;
-        $this->loadBusinesses();
-
-        $this->dispatch('hide-manage-images-modal');
-        $this->dispatch('show-toast', type: 'success', message: 'Business images updated successfully.');
+        $business->screenshot_categories = $categories;
+        $business->save();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 2. Business Edit is using "Default (No Category)"
+    |    -> Save images inside current DEFAULT category
+    |--------------------------------------------------------------------------
+    */
+    else {
+
+        $defaultCategoryIndex = null;
+
+        foreach ($categories as $index => $category) {
+
+            if (!empty($category['is_default'])) {
+
+                $defaultCategoryIndex = $index;
+
+                break;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DEFAULT category found
+        |--------------------------------------------------------------------------
+        */
+        if ($defaultCategoryIndex !== null) {
+
+            $categories[$defaultCategoryIndex]['images'] =
+                $finalImages;
+
+            $business->screenshot_categories = $categories;
+
+            $business->save();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | No DEFAULT category found
+        | -> Legacy business_images fallback
+        |--------------------------------------------------------------------------
+        */
+        else {
+
+            $business->business_images = $finalImages;
+
+            $business->save();
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Livewire state
+    |--------------------------------------------------------------------------
+    */
+    $this->currentImages = $finalImages;
+    $this->newUploads = [];
+
+    $this->showImageModal = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reload business list so the updated images appear immediately
+    |--------------------------------------------------------------------------
+    */
+    $this->loadBusinesses();
+
+    $this->dispatch('hide-manage-images-modal');
+
+    $this->dispatch(
+        'show-toast',
+        type: 'success',
+        message: 'Business images updated successfully.'
+    );
+}
 
     private function storeOptimizedImage($file)
     {

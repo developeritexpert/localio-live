@@ -327,7 +327,7 @@
                             <div>
                                 <h3 style="font-size: 16px !important; font-weight: 700 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</h3>
                                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
-                                    <span>{{ number_format($averageRating, 1) }}</span>
+                                    <span>{{ formatRating($averageRating) }}</span>
                                     <div class="rating-stars" style="display: flex; gap: 2px;">
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($i <= floor($averageRating))
@@ -358,7 +358,7 @@
                                     <p class="m-0" style="font-size: 12px; font-weight: 500; color: #5b6b7a ;">{{ $criterion->name }}</p>
                                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                                         <progress class="progress-bar w-100" value="{{ $criterion->average_rating * 20 }}" max="100" style="height: 8px;"></progress>
-                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                     </div>
                                 </div>
                             @endforeach
@@ -455,7 +455,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($businessRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -468,7 +468,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($popItemRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($averageRating, 1) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -521,7 +521,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($businessRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ number_format($averageRating, 1) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -534,7 +534,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $recItemName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($recItemRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($recItemRating) }}</span>
                                     </div>
                                 </div>
                             </div>

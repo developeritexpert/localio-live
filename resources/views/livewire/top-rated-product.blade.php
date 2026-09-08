@@ -793,7 +793,7 @@
                                                             </div>
                                                             <div class="rating-group  d-flex flex-col-mob">
                                                                 <span class="rate_box_num"
-                                                                    style="">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                    style="">{{ formatRating($item->reviews->avg('rating')) }}</span>
                                                                 <div class="">
                                                                     <div class="rating-stars " style="gap:1px;">
                                                                         @for ($i = 1; $i <= 5; $i++) @if ($i
@@ -1138,7 +1138,7 @@
                                         {{ $bizName }}
                                     </h6>
                                     <div class="rating-group" >
-                                        <span class="rate_box_num">{{ number_format($business->average_rating, 1) }}</span>
+                                        <span class="rate_box_num">{{ formatRating($business->average_rating) }}</span>
                                         <div class="rating-stars" >
                                             @php $rating = round($business->average_rating); @endphp
                                             @for($i = 1; $i <= 5; $i++)

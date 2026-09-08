@@ -1,5 +1,5 @@
-@extends('admin_layout.master')
-@section('content')
+    @extends('admin_layout.master')
+    @section('content')
     <div class="nk-block nk-block-lg">
         <div class="nk-block-head d-flex justify-content-between">
             <div class="nk-block-head-content">
@@ -23,7 +23,7 @@
                                 </div>
                                 <div class="form-text text-muted">As shown in the footer dropdown (e.g. United States – English, Deutschland – Deutsch).</div>
                                 @error('name')
-                                    <div class="error text-danger">{{ $message }}</div>
+                                <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -39,7 +39,7 @@
                                 </div>
                                 <div class="form-text text-muted">Used in URLs: localio.com/<strong>{{ $countryid->language?->lang_code ?? 'en-us' }}</strong>/... — must be lowercase.</div>
                                 @error('lang_code')
-                                    <div class="error text-danger">{{ $message }}</div>
+                                <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -55,11 +55,45 @@
                                 </div>
                                 <div class="form-text text-muted">Used in HTML header tag: &lt;html lang="<strong>{{ $countryid->language?->html_lang ?? 'en-US' }}</strong>"&gt;.</div>
                                 @error('html_lang')
-                                    <div class="error text-danger">{{ $message }}</div>
+                                <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Rating Decimal Separator -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="rating_separator">
+                                    Rating Decimal Separator
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <div class="form-control-wrap">
+                                    <select
+                                        class="form-select"
+                                        id="rating_separator"
+                                        name="rating_separator"
+                                        required>
+                                        <option value="." {{ old('rating_separator', $countryid->rating_separator ?? '.') === '.' ? 'selected' : '' }}>
+                                          4.5 — Dot (.)
+                                        </option>
+
+                                        <option value="," {{ old('rating_separator', $countryid->rating_separator ?? '.') === ',' ? 'selected' : '' }}>
+                                           4,5 — Comma (,)
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-text text-muted">
+                                    Select how decimal ratings should be displayed on the website.
+                                </div>
+
+                                @error('rating_separator')
+                                <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        
                         <!-- Affiliate Disclaimer Banner -->
                         <div class="col-md-6">
                             <div class="form-group">
@@ -76,12 +110,12 @@
                                     </span>
                                 </div>
                                 @error('show_disclaimer')
-                                    <div class="error text-danger">{{ $message }}</div>
+                                <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
-                                                <!-- Translation Status (Active vs Untranslated Fallback) -->
+                        <!-- Translation Status (Active vs Untranslated Fallback) -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label" for="is_active_translation">Translation Status</label>
@@ -96,12 +130,13 @@
                                         {{ old('is_active_translation', $countryid->language?->is_active_translation ?? 0) == 1 ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)' }}
                                     </span>
                                 </div>
-                                <div class="form-text text-muted">If disabled (Untranslated), the website automatically falls back to United States � English (en-US) content.</div>
+                                <div class="form-text text-muted">If disabled (Untranslated), the website automatically falls back to United States � English (en-US) content.</div>
                                 @error('is_active_translation')
-                                    <div class="error text-danger">{{ $message }}</div>
+                                <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
+
 
                         <!-- Submit -->
                         <div class="col-md-12">
@@ -131,4 +166,4 @@
             });
         });
     </script>
-@endsection
+    @endsection

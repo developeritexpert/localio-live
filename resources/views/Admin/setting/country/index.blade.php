@@ -36,6 +36,7 @@
                         <th class="nk-tb-col"><span class="sub-text">HTML Lang Attribute</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Translation Status</span></th>
                         <th class="nk-tb-col"><span class="sub-text">Disclaimer Banner</span></th>
+                        <th class="nk-tb-col"><span class="sub-text">Rating Decimal Separator</span></th>
                         <th class="nk-tb-col tb-tnx-action"><span>Action</span></th>
                     </tr>
                 </thead>
@@ -56,14 +57,19 @@
 
                         <td class="nk-tb-col">
                             @if(($country->language?->id == 1) || ($country->language?->is_active_translation == 1))
-                                <span class="badge badge-dim bg-success text-success">Translated (Active)</span>
+                            <span class="badge badge-dim bg-success text-success">Translated (Active)</span>
                             @else
-                                <span class="badge badge-dim bg-warning text-warning">Untranslated (US-English Fallback)</span>
+                            <span class="badge badge-dim bg-warning text-warning">Untranslated (US-English Fallback)</span>
                             @endif
                         </td>
                         <td class="nk-tb-col">
                             <span class="badge {{ $country->show_disclaimer ? 'badge-dim bg-success text-success' : 'badge-dim bg-danger text-danger' }}">
                                 {{ $country->show_disclaimer ? 'Enabled' : 'Disabled' }}
+                            </span>
+                        </td>
+                        <td class="nk-tb-col">
+                            <span class="badge bg-outline-primary">
+                                {{ $country->rating_separator ?? '.' }}
                             </span>
                         </td>
 
