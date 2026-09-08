@@ -1691,11 +1691,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
 
                             <div class="foot-col footer-dropdown">
-                                <h6 class="footer-title"> {{ $footerContents['discover'] ?? 'Discover' }}
+                                <p class="footer-title"> {{ $footerContents['discover'] ?? 'Discover' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
-                                </h6>
+                                </p>
                                 <ul class="foot-col-list">
                                     <li>
                                         <a
@@ -1715,12 +1715,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </ul>
                             </div>
                             <div class="foot-col footer-dropdown">
-                                <h6 class="footer-title">
+                                <p class="footer-title">
                                     {{ $footerContents['company'] ?? 'Company' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
-                                </h6>
+                                </p>
                                 <ul class="foot-col-list">
                                     <li><a
                                             href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['who_we_are'] ??
@@ -1754,11 +1754,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 </ul>
                             </div> --}}
                             <div class="foot-col footer-dropdown">
-                                <h6 class="footer-title">{{ $footerContents['help'] ?? 'Help' }}
+                                <p class="footer-title">{{ $footerContents['help'] ?? 'Help' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
-                                </h6>
+                                </p>
                                 <ul class="foot-col-list">
                                     {{-- <li>
                                         <a href="{{ route('expert-guide', ['locale' => session('lang_code', 'en-us')]) }}"

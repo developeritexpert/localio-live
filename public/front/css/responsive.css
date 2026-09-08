@@ -3743,7 +3743,6 @@ textarea#message {
     .search-box input {
         padding: 10px 20px;
         right: 6px;
-        height: 44px;
     }
 
     .key-feature-price {
@@ -9084,7 +9083,7 @@ textarea#message {
     }
 
     .auto-choice-btn {
-        flex-direction: row !important;
+        flex-direction: row-reverse !important;
     }
 
     .auto-choice-btn .cta {
@@ -9094,6 +9093,10 @@ textarea#message {
 
     .auto-choice-btn .cta {
         padding: 10px 10px !important;
+    }
+
+    #myID input[type="text"]::placeholder {
+        font-size: 12px !important;
     }
 }
 

@@ -410,7 +410,6 @@ div#navbarSupportedContent {
 
 .search-box input {
     font-size: 14px;
-    height: 44px;
 }
 
 .cta.cta_white {
@@ -819,8 +818,9 @@ footer ul li {
     height: 100%;
 }
 
-.foot-col h6 {
+.foot-col p {
     font-size: 15px;
+    font-weight: 700;
 }
 
 .foot-row {
@@ -2973,10 +2973,6 @@ select:focus {
 
 .reviews_block .inn_sl_hed {
     align-items: center;
-}
-
-.foot-row h6 {
-    font-weight: 700;
 }
 
 .banner_text_col .search-box input {
@@ -9826,7 +9822,7 @@ button.btn-vote-faq i.far:hover {
     line-height: 1.2;
 }
 
-.review-card-middle h5 {
+.review-card-middle .review-card-title {
     color: var(--color-dark-blue-text);
     font-size: 14px;
     font-weight: 600;

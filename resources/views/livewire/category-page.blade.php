@@ -416,9 +416,7 @@
                     </div>
                 </div>
                 <div class="top-rated-heading-block">
-                    <div class="host-parra row align-items-start">
-                        <div class="col-md-7 text-start">
-                            @php
+                       @php
                                 $currentLangId = $lang_id ?? getCurrentLanguageID();
                                 $c1Obj = \App\Models\StaticContentKey::where('key', 'country1')->first();
                                 $c2Obj = \App\Models\StaticContentKey::where('key', 'country2')->first();
@@ -480,8 +478,12 @@
                                     {{ $applyDynamicVars($baseTitle) }}
                                 </h1>
                             @endif
+
                             <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
+                    <div class="host-parra row align-items-start">
+                        <div class="col-md-7 text-start">
+                            
                             <div class="category-description-text">
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
