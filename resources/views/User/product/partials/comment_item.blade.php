@@ -72,12 +72,9 @@
                 <i class="far fa-share-square"></i> Share
             </button>
 
-            @auth
-                <!-- Pin Button (Visible to logged-in users only) -->
-                <button type="button" class="comment-action-btn pin-trigger {{ $isPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="comment" data-id="{{ $comment->id }}" title="{{ $isPinnedForUser ? 'Unpin Comment' : 'Pin Comment' }}">
-                    <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isPinnedForUser ? 'Pinned' : 'Pin' }}</span>
-                </button>
-            @endauth
+            <button type="button" class="comment-action-btn pin-trigger {{ $isPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="comment" data-id="{{ $comment->id }}" title="{{ $isPinnedForUser ? 'Unpin Comment' : 'Pin Comment' }}">
+                <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isPinnedForUser ? 'Pinned' : 'Pin' }}</span>
+            </button>
         </div>
 
         <!-- Nested Reply Form Box (Hidden by default) -->

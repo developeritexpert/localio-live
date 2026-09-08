@@ -458,10 +458,17 @@
                             <div class="post-author-avatar">
                                 {{ auth()->check() ? strtoupper(substr(auth()->user()->first_name ?? 'U', 0, 1)) : '?' }}
                             </div>
-                            <input type="text" class="form-control" placeholder="Start a discussion or ask a question about {{ $bName }}..." style="border-radius: 20px; background: #f8fafc; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#newDiscussionModal" readonly>
-                            <button class="btn btn-primary text-nowrap px-3 py-2" style="background: #06498b; border-color: #06498b; border-radius: 8px; font-weight: 600;" data-bs-toggle="modal" data-bs-target="#newDiscussionModal">
-                                <i class="fas fa-pen me-1"></i> Post
-                            </button>
+                            @if(auth()->check())
+                                <input type="text" class="form-control" placeholder="Start a discussion or ask a question about {{ $bName }}..." style="border-radius: 20px; background: #f8fafc; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#newDiscussionModal" readonly>
+                                <button class="btn btn-primary text-nowrap px-3 py-2" style="background: #06498b; border-color: #06498b; border-radius: 8px; font-weight: 600;" data-bs-toggle="modal" data-bs-target="#newDiscussionModal">
+                                    <i class="fas fa-pen me-1"></i> Post
+                                </button>
+                            @else
+                                <input type="text" class="form-control" placeholder="Start a discussion or ask a question about {{ $bName }}..." style="border-radius: 20px; background: #f8fafc; cursor: pointer;" onclick="triggerAuthLoginModal()" readonly>
+                                <button class="btn btn-primary text-nowrap px-3 py-2" style="background: #06498b; border-color: #06498b; border-radius: 8px; font-weight: 600;" onclick="triggerAuthLoginModal()">
+                                    <i class="fas fa-pen me-1"></i> Post
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -551,11 +558,9 @@
                                          <button class="post-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#discussion-{{ $disc->id }}'); alert('Discussion link copied!');">
                                              <i class="far fa-share-square"></i> Share
                                          </button>
-                                         @auth
                                          <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
-                                                  <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
-                                              </button>
-                                          @endauth
+                                              <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
+                                          </button>
                                      </div>
 
                                     <div class="comments-thread-container collapse mt-3" id="comments-{{ $disc->id }}">
@@ -662,6 +667,29 @@
 
 @push('scripts')
 <script>
+const IS_USER_LOGGED_IN = {{ auth()->check() ? 'true' : 'false' }};
+
+function triggerAuthLoginModal() {
+    if (typeof openLoginModal === 'function') {
+        openLoginModal();
+        return;
+    }
+    const modal = document.getElementById('login-modal') || document.getElementById('loginModal');
+    if (modal) {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            let bsModal = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+            bsModal.show();
+        } else {
+            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+        }
+    } else {
+        window.location.href = "{{ route('login', ['locale' => app()->getLocale()]) }}";
+    }
+}
+
 function toggleCommentThread(commentId) {
     const item = document.getElementById('comment-' + commentId);
     if (item) {
@@ -670,6 +698,10 @@ function toggleCommentThread(commentId) {
 }
 
 function toggleReplyForm(commentId) {
+    if (!IS_USER_LOGGED_IN) {
+        triggerAuthLoginModal();
+        return;
+    }
     const formContainer = document.getElementById('reply-form-' + commentId);
     if (formContainer) {
         formContainer.classList.toggle('d-none');
@@ -701,6 +733,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!btn) return;
 
         e.preventDefault();
+        if (!IS_USER_LOGGED_IN) {
+            triggerAuthLoginModal();
+            return;
+        }
+
         const type = btn.getAttribute('data-type');
         const id = btn.getAttribute('data-id');
         const vote = btn.getAttribute('data-vote');
@@ -735,6 +772,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!form) return;
 
         e.preventDefault();
+        if (!IS_USER_LOGGED_IN) {
+            triggerAuthLoginModal();
+            return;
+        }
 
         const submitBtn = form.querySelector('button[type="submit"]');
         if (submitBtn) {
@@ -802,6 +843,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!btn) return;
 
         e.preventDefault();
+        if (!IS_USER_LOGGED_IN) {
+            triggerAuthLoginModal();
+            return;
+        }
         const type = btn.getAttribute('data-type');
         const id = btn.getAttribute('data-id');
 
