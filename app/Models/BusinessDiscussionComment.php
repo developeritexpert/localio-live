@@ -21,10 +21,12 @@ class BusinessDiscussionComment extends Model
         'content',
         'upvotes_count',
         'downvotes_count',
+        'is_pinned',
         'status',
     ];
 
     protected $casts = [
+        'is_pinned' => 'boolean',
         'upvotes_count' => 'integer',
         'downvotes_count' => 'integer',
     ];
@@ -46,9 +48,19 @@ class BusinessDiscussionComment extends Model
 
     public function replies()
     {
-        return $this->hasMany(BusinessDiscussionComment::class, 'parent_id')
+        $userPinnedComments = session()->get('user_pinned_comments', []);
+        $userPinnedComments = is_array($userPinnedComments) ? array_filter(array_map('intval', $userPinnedComments)) : [];
+
+        $relation = $this->hasMany(BusinessDiscussionComment::class, 'parent_id')
             ->where('status', 'active')
-            ->orderBy('created_at', 'asc');
+            ->orderByDesc('is_pinned');
+
+        if (!empty($userPinnedComments)) {
+            $idsStr = implode(',', $userPinnedComments);
+            $relation->orderByRaw("CASE WHEN id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+        }
+
+        return $relation->orderBy('created_at', 'asc');
     }
 
     public function votes()

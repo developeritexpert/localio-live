@@ -1157,13 +1157,23 @@ class ViewController extends Controller
         }
 
         // Sort
+        $userPinnedDiscIds = session()->get('user_pinned_discussions', []);
+        $userPinnedDiscIds = is_array($userPinnedDiscIds) ? array_filter(array_map('intval', $userPinnedDiscIds)) : [];
+
+        $query->orderByDesc('is_pinned');
+
+        if (!empty($userPinnedDiscIds)) {
+            $idsStr = implode(',', $userPinnedDiscIds);
+            $query->orderByRaw("CASE WHEN id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+        }
+
         $sort = $request->get('sort', 'popular');
         if ($sort === 'recent') {
             $query->latest();
         } elseif ($sort === 'commented') {
             $query->orderByDesc('comments_count');
         } else {
-            $query->orderByDesc('is_pinned')->orderByDesc('upvotes_count')->latest();
+            $query->orderByDesc('upvotes_count')->latest();
         }
 
         $discussions = $query->paginate(15);
@@ -1221,8 +1231,8 @@ class ViewController extends Controller
             'business_id' => $request->business_id,
             'user_id' => $user?->id,
             'author_name' => $user ? $user->displayName() : ($request->author_name ?: 'Anonymous'),
-            'author_title' => $user?->job_title ?: '',
-            'category' => $request->category ?: '',
+            'author_title' => $user?->job_title ?: 'Community Member',
+            'category' => $request->category ?: 'General',
             'title' => $request->title,
             'content' => $request->content,
             'status' => 'active',
@@ -1269,12 +1279,10 @@ class ViewController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Comment added!',
-                'comment' => $comment,
                 'html' => $html,
-                'comments_count' => $discussion->comments_count,
                 'parent_id' => $comment->parent_id,
-                'discussion_id' => $discussion->id
+                'discussion_id' => $discussion->id,
+                'comments_count' => $discussion->comments_count,
             ]);
         }
 
@@ -1355,5 +1363,64 @@ class ViewController extends Controller
             'score' => max(0, $item->upvotes_count - $item->downvotes_count),
             'voted' => $votedState,
         ]);
+    }
+
+    public function pinDiscussionOrComment(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:discussion,comment',
+            'id' => 'required|integer',
+        ]);
+
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Kindly login to pin items.'], 401);
+        }
+
+        if ($request->type === 'discussion') {
+            $item = BusinessDiscussion::find($request->id);
+            $businessId = $item?->business_id;
+        } else {
+            $item = BusinessDiscussionComment::find($request->id);
+            $businessId = $item?->discussion?->business_id;
+        }
+
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Item not found'], 404);
+        }
+
+        $user = auth()->user();
+        $isAdminOrOwner = $user && ($user->user_type === 'admin' || ($user->business_id && $user->business_id == $businessId));
+
+        if ($isAdminOrOwner) {
+            $item->is_pinned = !$item->is_pinned;
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'is_pinned' => (bool)$item->is_pinned,
+                'is_global' => true,
+                'message' => $item->is_pinned ? 'Globally pinned!' : 'Globally unpinned!'
+            ]);
+        } else {
+            // Regular User Personal Pin (Session / Account storage)
+            $sessionKey = ($request->type === 'discussion') ? 'user_pinned_discussions' : 'user_pinned_comments';
+            $userPinnedItems = session()->get($sessionKey, []);
+
+            if (in_array($item->id, $userPinnedItems)) {
+                $userPinnedItems = array_diff($userPinnedItems, [$item->id]);
+                $isPinned = false;
+            } else {
+                $userPinnedItems[] = $item->id;
+                $isPinned = true;
+            }
+            session()->put($sessionKey, array_values(array_unique($userPinnedItems)));
+
+            return response()->json([
+                'success' => true,
+                'is_pinned' => $isPinned,
+                'is_global' => false,
+                'message' => $isPinned ? 'Item pinned to your account!' : 'Item unpinned from your account!'
+            ]);
+        }
     }
 }

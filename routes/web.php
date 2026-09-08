@@ -737,6 +737,7 @@ Route::post('/review/report', [ViewController::class, 'reportReview'])->name('re
 Route::post('/business-discussion/store', [ViewController::class, 'storeDiscussion'])->name('business.discussion.store');
 Route::post('/business-discussion/comment', [ViewController::class, 'storeDiscussionComment'])->name('business.discussion.comment');
 Route::post('/business-discussion/vote', [ViewController::class, 'voteDiscussion'])->name('business.discussion.vote');
+Route::post('/business-discussion/pin', [ViewController::class, 'pinDiscussionOrComment'])->name('business.discussion.pin');
 
 
 Route::get('/refresh-csrf', function () {

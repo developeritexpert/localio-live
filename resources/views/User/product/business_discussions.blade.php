@@ -532,27 +532,38 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @php
+                                         $isDiscGloballyPinned = !empty($disc->is_pinned);
+                                         $isDiscUserPinned = in_array($disc->id, session()->get('user_pinned_discussions', []));
+                                         $isDiscPinnedForUser = $isDiscGloballyPinned || $isDiscUserPinned;
+                                     @endphp
 
-                                    <h3 class="h5 font-weight-bold mb-2" style="color: #0f172a; font-size: 18px; font-weight: 700;">
-                                        @if($disc->is_pinned)
-                                            <span class="badge bg-warning text-dark me-1" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned</span>
-                                        @endif
-                                        {{ $disc->title }}
-                                    </h3>
+                                     <h3 class="h5 font-weight-bold mb-2" style="color: #0f172a; font-size: 18px; font-weight: 700;">
+                                         @if($isDiscGloballyPinned)
+                                             <span class="badge bg-warning text-dark me-1 disc-pinned-badge" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned by admin</span>
+                                         @elseif($isDiscUserPinned)
+                                             <span class="badge bg-info text-white me-1 user-disc-pinned-badge" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned by you</span>
+                                         @endif
+                                         {{ $disc->title }}
+                                     </h3>
 
-                                    <p class="text-secondary mb-3" style="font-size: 14.5px; line-height: 1.6; color: #334155;">
-                                        {!! nl2br(e($disc->content)) !!}
-                                    </p>
+                                     <p class="text-secondary mb-3" style="font-size: 14.5px; line-height: 1.6; color: #334155;">
+                                         {!! nl2br(e($disc->content)) !!}
+                                     </p>
 
-                                    <!-- Post Footer Actions -->
-                                    <div class="d-flex align-items-center gap-3">
-                                        <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}">
-                                            <i class="far fa-comment-alt"></i> {{ $disc->comments_count }} Comments
-                                        </button>
-                                        <button class="post-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#discussion-{{ $disc->id }}'); alert('Discussion link copied!');">
-                                            <i class="far fa-share-square"></i> Share
-                                        </button>
-                                    </div>
+                                     <!-- Post Footer Actions -->
+                                     <div class="d-flex align-items-center gap-3">
+                                         <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}">
+                                             <i class="far fa-comment-alt"></i> {{ $disc->comments_count }} Comments
+                                         </button>
+                                         <button class="post-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#discussion-{{ $disc->id }}'); alert('Discussion link copied!');">
+                                             <i class="far fa-share-square"></i> Share
+                                         </button>
+                                         <!-- Pin Button (Always visible for personal pinning) -->
+                                         <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
+                                             <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
+                                         </button>
+                                     </div>
 
                                     <!-- Comments Accordion Section -->
                                     <div class="comments-thread-container collapse mt-3" id="comments-{{ $disc->id }}">
@@ -807,6 +818,129 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Delegated AJAX Pin/Unpin Handler (No Page Reload)
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.pin-trigger');
+        if (!btn) return;
+
+        e.preventDefault();
+        const type = btn.getAttribute('data-type');
+        const id = btn.getAttribute('data-id');
+
+        fetch('{{ route("business.discussion.pin") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ type, id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const pinText = btn.querySelector('.pin-text');
+                if (data.is_pinned) {
+                    btn.classList.add('text-primary', 'fw-bold');
+                    if (pinText) pinText.textContent = 'Pinned';
+                    btn.setAttribute('title', type === 'discussion' ? 'Unpin Discussion' : 'Unpin Comment');
+                } else {
+                    btn.classList.remove('text-primary', 'fw-bold');
+                    if (pinText) pinText.textContent = 'Pin';
+                    btn.setAttribute('title', type === 'discussion' ? 'Pin Discussion' : 'Pin Comment');
+                }
+
+                if (type === 'discussion') {
+                    const postCard = document.getElementById('discussion-' + id);
+                    if (postCard) {
+                        const titleEl = postCard.querySelector('h3.h5');
+                        let globalBadge = postCard.querySelector('.disc-pinned-badge');
+                        let userBadge = postCard.querySelector('.user-disc-pinned-badge');
+                        if (data.is_pinned) {
+                            if (data.is_global) {
+                                if (!globalBadge && titleEl) {
+                                    if (userBadge) userBadge.remove();
+                                    titleEl.insertAdjacentHTML('afterbegin', `<span class="badge bg-warning text-dark me-1 disc-pinned-badge" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned</span>`);
+                                }
+                            } else {
+                                if (!userBadge && !globalBadge && titleEl) {
+                                    titleEl.insertAdjacentHTML('afterbegin', `<span class="badge bg-info text-white me-1 user-disc-pinned-badge" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned by you</span>`);
+                                }
+                            }
+                        } else {
+                            if (data.is_global) {
+                                if (globalBadge) globalBadge.remove();
+                            } else {
+                                if (userBadge) userBadge.remove();
+                            }
+                        }
+                        reorderPinnedElement(postCard, data.is_pinned, data.is_global, 'discussion');
+                    }
+                } else if (type === 'comment') {
+                    const commentEl = document.getElementById('comment-' + id);
+                    if (commentEl) {
+                        const headerEl = commentEl.querySelector('.comment-header');
+                        let globalBadge = commentEl.querySelector('.comment-pinned-badge');
+                        let userBadge = commentEl.querySelector('.user-pinned-badge');
+                        const authorName = headerEl ? headerEl.querySelector('.comment-author-name') : null;
+
+                        if (data.is_pinned) {
+                            if (data.is_global) {
+                                if (!globalBadge && authorName) {
+                                    if (userBadge) userBadge.remove();
+                                    authorName.insertAdjacentHTML('afterend', ` <span class="badge bg-warning text-dark me-1 comment-pinned-badge" style="font-size: 10px;"><i class="fas fa-thumbtack"></i> Pinned</span>`);
+                                }
+                            } else {
+                                if (!userBadge && !globalBadge && authorName) {
+                                    authorName.insertAdjacentHTML('afterend', ` <span class="badge bg-info text-white me-1 user-pinned-badge" style="font-size: 10px;"><i class="fas fa-thumbtack"></i> Pinned by you</span>`);
+                                }
+                            }
+                        } else {
+                            if (data.is_global) {
+                                if (globalBadge) globalBadge.remove();
+                            } else {
+                                if (userBadge) userBadge.remove();
+                            }
+                        }
+                        reorderPinnedElement(commentEl, data.is_pinned, data.is_global, 'comment');
+                    }
+                }
+            }
+        })
+        .catch(err => console.error('Pin error:', err));
+    });
 });
+
+function reorderPinnedElement(element, isPinned, isGlobal, type) {
+    const container = element.parentElement;
+    if (!container) return;
+
+    const globalBadgeSelector = type === 'discussion' ? '.disc-pinned-badge' : '.comment-pinned-badge';
+    const userBadgeSelector = type === 'discussion' ? '.user-disc-pinned-badge' : '.user-pinned-badge';
+
+    if (isPinned) {
+        if (isGlobal) {
+            container.prepend(element);
+        } else {
+            const siblings = Array.from(container.children);
+            const globalPinnedItems = siblings.filter(child => child !== element && child.querySelector(globalBadgeSelector));
+            
+            if (globalPinnedItems.length > 0) {
+                const lastGlobal = globalPinnedItems[globalPinnedItems.length - 1];
+                lastGlobal.after(element);
+            } else {
+                container.prepend(element);
+            }
+        }
+    } else {
+        const siblings = Array.from(container.children);
+        const remainingPinnedItems = siblings.filter(child => child !== element && (child.querySelector(globalBadgeSelector) || child.querySelector(userBadgeSelector)));
+        
+        if (remainingPinnedItems.length > 0) {
+            const lastPinned = remainingPinnedItems[remainingPinnedItems.length - 1];
+            lastPinned.after(element);
+        }
+    }
+}
 </script>
 @endpush

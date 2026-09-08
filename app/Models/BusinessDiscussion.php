@@ -48,10 +48,20 @@ class BusinessDiscussion extends Model
 
     public function comments()
     {
-        return $this->hasMany(BusinessDiscussionComment::class, 'business_discussion_id')
+        $userPinnedComments = session()->get('user_pinned_comments', []);
+        $userPinnedComments = is_array($userPinnedComments) ? array_filter(array_map('intval', $userPinnedComments)) : [];
+
+        $relation = $this->hasMany(BusinessDiscussionComment::class, 'business_discussion_id')
             ->where('status', 'active')
             ->whereNull('parent_id')
-            ->orderBy('created_at', 'asc');
+            ->orderByDesc('is_pinned');
+
+        if (!empty($userPinnedComments)) {
+            $idsStr = implode(',', $userPinnedComments);
+            $relation->orderByRaw("CASE WHEN id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+        }
+
+        return $relation->orderBy('created_at', 'asc');
     }
 
     public function allComments()
