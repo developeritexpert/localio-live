@@ -1084,7 +1084,7 @@
                                                                 <div class="rating-group d-flex align-items-center"
                                                                     style="gap: 6px;">
                                                                     <span class="rate_box_num"
-                                                                        style="">{{ number_format($item->reviews->avg('rating'), 1) }}</span>
+                                                                        style="">{{ formatRating($item->reviews->avg('rating')) }}</span>
                                                                     <div class="">
                                                                         <div class="rating-stars ">
                                                                             @for ($i = 1; $i <= 5; $i++) @if ($i
@@ -1653,7 +1653,7 @@
                                         <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                <span>{{ number_format($biz->average_rating ?? 0, 1) }}</span>
+                                                <span>{{ formatRating($biz->average_rating ?? 0) }}</span>
                                             </span>
                                         </td>
                                         @foreach($allCriteria as $criterion)
@@ -1661,7 +1661,7 @@
                                                 $avg = $biz->reviews()->join('review_ratings', 'reviews.id', '=', 'review_ratings.review_id')->where('review_ratings.criteria_id', $criterion->id)->avg('review_ratings.rating');
                                             @endphp
                                             <td class="text-center" style="padding: 14px; color: #5b6b7a; font-weight:500">
-                                                {{ $avg !== null ? number_format($avg, 1) : '-' }}
+                                                {{ $avg !== null ? formatRating($avg) : '-' }}
                                             </td>
                                         @endforeach
                                         <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">
@@ -1747,7 +1747,7 @@
                                             <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                                 <span class="d-inline-flex align-items-center gap-1">
                                                     <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                                    <span>{{ number_format($biz->average_rating ?? 0, 1) }}</span>
+                                                    <span>{{ formatRating($biz->average_rating ?? 0) }}</span>
                                                 </span>
                                             </td>
                                             <td style="padding: 14px 18px; color: #334155; font-weight: 500;">
@@ -1897,7 +1897,7 @@
                                         </div>
                                         <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ number_format($comp['business_1_rating'], 1) }}</span>
+                                            <span>{{ formatRating($comp['business_1_rating']) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1916,7 +1916,7 @@
                                         </div>
                                         <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ number_format($comp['business_2_rating'], 1) }}</span>
+                                            <span>{{ formatRating($comp['business_2_rating']) }}</span>
                                         </div>
                                     </div>
                                 </div>

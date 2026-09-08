@@ -1,134 +1,165 @@
 @extends('admin_layout.master')
 @section('content')
-    <div class="nk-block nk-block-lg">
-        <div class="nk-block-head d-flex justify-content-between">
-            <div class="nk-block-head-content">
-                <h4 class="title nk-block-title">Add Country/region</h4>
-            </div>
-            <div></div>
+<div class="nk-block nk-block-lg">
+    <div class="nk-block-head d-flex justify-content-between">
+        <div class="nk-block-head-content">
+            <h4 class="title nk-block-title">Add Country/region</h4>
         </div>
-        <div class="card card-bordered">
-            <div class="card-inner">
-                <form action="{{ route('country.addProcc') }}" class="form-validate" novalidate="novalidate" method="post">
-                    @csrf
-                    <div class="row g-gs">
-                        <!-- Country/region Name -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="name">Country/region</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        placeholder="e.g. United States - English"
-                                        value="{{ old('name') }}" />
-                                </div>
-                                <div class="form-text text-muted">As shown in the footer dropdown (e.g. United States – English, Deutschland – Deutsch).</div>
-                                @error('name')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
+        <div></div>
+    </div>
+    <div class="card card-bordered">
+        <div class="card-inner">
+            <form action="{{ route('country.addProcc') }}" class="form-validate" novalidate="novalidate" method="post">
+                @csrf
+                <div class="row g-gs">
+                    <!-- Country/region Name -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Country/region</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="name" name="name"
+                                    placeholder="e.g. United States - English"
+                                    value="{{ old('name') }}" />
                             </div>
-                        </div>
-
-                        <!-- URL Locale Code -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="lang_code">URL Locale Code <span class="text-danger">*</span></label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="lang_code" name="lang_code"
-                                        placeholder="e.g. en-us, de-de, es-mx, fr-fr"
-                                        value="{{ old('lang_code') }}" required />
-                                </div>
-                                <div class="form-text text-muted">Used in URLs: localio.com/<strong>en-us</strong>/... — must be lowercase (e.g. en-us, de-de, es-mx).</div>
-                                @error('lang_code')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- HTML lang attribute -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="html_lang">HTML lang attribute</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="html_lang" name="html_lang"
-                                        placeholder="e.g. en-US, de-DE, es-AR"
-                                        value="{{ old('html_lang') }}" />
-                                </div>
-                                <div class="form-text text-muted">Used in HTML header tag: &lt;html lang="<strong>en-US</strong>"&gt;.</div>
-                                @error('html_lang')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Affiliate Disclaimer Banner -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="show_disclaimer">Affiliate Disclaimer Banner</label>
-                                <div class="form-control-wrap d-flex align-items-center gap-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="show_disclaimer" name="show_disclaimer"
-                                            value="1"
-                                            {{ old('show_disclaimer', 0) == 1 ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="show_disclaimer"></label>
-                                    </div>
-                                    <span id="disclaimerText" style="font-weight: 600;">
-                                        {{ old('show_disclaimer', 0) == 1 ? 'Enabled' : 'Disabled' }}
-                                    </span>
-                                </div>
-                                @error('show_disclaimer')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                                                <!-- Translation Status (Active vs Untranslated Fallback) -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label" for="is_active_translation">Translation Status</label>
-                                <div class="form-control-wrap d-flex align-items-center gap-2">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="is_active_translation" name="is_active_translation"
-                                            value="1"
-                                            {{ old('is_active_translation', 0) == 1 ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="is_active_translation"></label>
-                                    </div>
-                                    <span id="activeTransText" style="font-weight: 600;">
-                                        {{ old('is_active_translation', 0) == 1 ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)' }}
-                                    </span>
-                                </div>
-                                <div class="form-text text-muted">If disabled (Untranslated), the website automatically falls back to United States � English (en-US) content.</div>
-                                @error('is_active_translation')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Submit -->
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-lg btn-primary btn-localio">Save</button>
-                            </div>
+                            <div class="form-text text-muted">As shown in the footer dropdown (e.g. United States – English, Deutschland – Deutsch).</div>
+                            @error('name')
+                            <div class="error text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
-                </form>
-            </div>
+
+                    <!-- URL Locale Code -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="lang_code">URL Locale Code <span class="text-danger">*</span></label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="lang_code" name="lang_code"
+                                    placeholder="e.g. en-us, de-de, es-mx, fr-fr"
+                                    value="{{ old('lang_code') }}" required />
+                            </div>
+                            <div class="form-text text-muted">Used in URLs: localio.com/<strong>en-us</strong>/... — must be lowercase (e.g. en-us, de-de, es-mx).</div>
+                            @error('lang_code')
+                            <div class="error text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- HTML lang attribute -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="html_lang">HTML lang attribute</label>
+                            <div class="form-control-wrap">
+                                <input type="text" class="form-control" id="html_lang" name="html_lang"
+                                    placeholder="e.g. en-US, de-DE, es-AR"
+                                    value="{{ old('html_lang') }}" />
+                            </div>
+                            <div class="form-text text-muted">Used in HTML header tag: &lt;html lang="<strong>en-US</strong>"&gt;.</div>
+                            @error('html_lang')
+                            <div class="error text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Rating Decimal Separator -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="rating_separator">
+                                Rating Decimal Separator <span class="text-danger">*</span>
+                            </label>
+
+                            <div class="form-control-wrap">
+                                <select class="form-control" id="rating_separator" name="rating_separator" required>
+                                    <option value="." {{ old('rating_separator', '.') == '.' ? 'selected' : '' }}>
+                                        4.5 — Dot (.)
+                                    </option>
+
+                                    <option value="," {{ old('rating_separator') == ',' ? 'selected' : '' }}>
+                                        4,5 — Comma (,)
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-text text-muted">
+                                Choose the decimal separator used for ratings throughout the website.
+                            </div>
+
+                            @error('rating_separator')
+                            <div class="error text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Affiliate Disclaimer Banner -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="show_disclaimer">Affiliate Disclaimer Banner</label>
+                            <div class="form-control-wrap d-flex align-items-center gap-2">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="show_disclaimer" name="show_disclaimer"
+                                        value="1"
+                                        {{ old('show_disclaimer', 0) == 1 ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="show_disclaimer"></label>
+                                </div>
+                                <span id="disclaimerText" style="font-weight: 600;">
+                                    {{ old('show_disclaimer', 0) == 1 ? 'Enabled' : 'Disabled' }}
+                                </span>
+                            </div>
+                            @error('show_disclaimer')
+                            <div class="error text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+
+
+                    <!-- Translation Status (Active vs Untranslated Fallback) -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="is_active_translation">Translation Status</label>
+                            <div class="form-control-wrap d-flex align-items-center gap-2">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="is_active_translation" name="is_active_translation"
+                                        value="1"
+                                        {{ old('is_active_translation', 0) == 1 ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="is_active_translation"></label>
+                                </div>
+                                <span id="activeTransText" style="font-weight: 600;">
+                                    {{ old('is_active_translation', 0) == 1 ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)' }}
+                                </span>
+                            </div>
+                            <div class="form-text text-muted">If disabled (Untranslated), the website automatically falls back to United States � English (en-US) content.</div>
+                            @error('is_active_translation')
+                            <div class="error text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-lg btn-primary btn-localio">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <script>
-        $(document).ready(function() {
-            $('#is_active_translation').on('change', function() {
-                $('#activeTransText').text($(this).is(':checked') ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)');
-            });
-
-            $('#show_disclaimer').on('change', function() {
-                $('#disclaimerText').text($(this).is(':checked') ? 'Enabled' : 'Disabled');
-            });
-
-            // Auto-format lang_code: lowercase, only letters/digits/hyphens
-            $('#lang_code').on('input', function() {
-                $(this).val($(this).val().toLowerCase().replace(/[^a-z0-9-]/g, ''));
-            });
+<script>
+    $(document).ready(function() {
+        $('#is_active_translation').on('change', function() {
+            $('#activeTransText').text($(this).is(':checked') ? 'Fully Translated (Active)' : 'Untranslated (Fallback to US-English)');
         });
-    </script>
+
+        $('#show_disclaimer').on('change', function() {
+            $('#disclaimerText').text($(this).is(':checked') ? 'Enabled' : 'Disabled');
+        });
+
+        // Auto-format lang_code: lowercase, only letters/digits/hyphens
+        $('#lang_code').on('input', function() {
+            $(this).val($(this).val().toLowerCase().replace(/[^a-z0-9-]/g, ''));
+        });
+    });
+</script>
 @endsection

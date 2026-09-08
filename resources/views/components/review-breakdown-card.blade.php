@@ -34,7 +34,7 @@
             <div>
                 <h3 style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</h3>
                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
-                    <span style="">{{ number_format($bizAvgRating, 1) }}</span>
+                    <span style="">{{ formatRating($bizAvgRating) }}</span>
                     <div class="rating-stars" style="display: flex; gap: 0px;">
                         @for ($i = 1; $i <= 5; $i++)
                             @if ($i <= floor($bizAvgRating))
@@ -65,7 +65,7 @@
                     <p class="m-0" style="font-size: 12px; font-weight: 500; color: #444;">{{ $cName }}</p>
                     <div class="prgs_br d-flex align-items-center" style="flex: 1; max-width: 60%; justify-content: flex-end;">
                         <progress class="progress-bar w-100" value="{{ $cRating * 20 }}" max="100" style="height: 8px;"></progress>
-                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ number_format($cRating, 1) }}</span>
+                        <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 35px; text-align: right;">{{ formatRating($cRating) }}</span>
                     </div>
                 </div>
             @endforeach
