@@ -77,6 +77,7 @@
                     <div class="review_text size18" style="padding-right: 0;">
                         <h3 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
                             {{ $review->translations->first()->title ?? '' }}
+                            
                         </h3>
                         
                         <!-- Ratings below headline -->
@@ -102,6 +103,43 @@
                         <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                             {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                         </div>
+@php
+    $selectedPros = $review->selectedProCons->where('type', 'pro');
+    $selectedCons = $review->selectedProCons->where('type', 'con');
+@endphp
+
+@if($selectedPros->isNotEmpty())
+    <div style="margin-top: 18px;">
+        <div style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+            Pros
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            @foreach($selectedPros as $pro)
+                <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #f0fdf4; color: #166534; border-radius: 6px; font-size: 13px; font-weight: 500;">
+                    {{ $pro->text }}
+                </span>
+            @endforeach
+        </div>
+    </div>
+@endif
+
+@if($selectedCons->isNotEmpty())
+    <div style="margin-top: 14px;">
+        <div style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+            Cons
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            @foreach($selectedCons as $con)
+                <span style="display: inline-flex; align-items: center; padding: 6px 12px; background: #fef2f2; color: #991b1b; border-radius: 6px; font-size: 13px; font-weight: 500;">
+                    {{ $con->text }}
+                </span>
+            @endforeach
+        </div>
+    </div>
+@endif
+
                     </div>
 
                     <!-- Bottom right actions (Report flag & Share) -->

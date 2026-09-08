@@ -135,8 +135,13 @@ class ProductController extends Controller
         };
 
         // Build reviews
-        $reviewsQuery = Review::where('business_id', $business->id);
-        $reviews = $applyFiltersAndSort($reviewsQuery)->get();
+        $reviewsQuery = Review::with([
+    'user',
+    'selectedProCons',
+    'translations' => fn($q) => $q->where('language_id', $lang_id)
+])->where('business_id', $business->id);
+
+$reviews = $applyFiltersAndSort($reviewsQuery)->get();
 
         $topReviews = Review::with([
             'user',
