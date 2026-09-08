@@ -760,11 +760,6 @@ div[data-business-id],
     overflow: visible !important;
 }
 
-.review_sec .review_detl {
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
-    border-radius: 20px !important;
-}
 
 .review_sec .review_detl:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07) !important;
@@ -774,7 +769,6 @@ div[data-business-id],
 @media (max-width: 991px) {
     .crm_sec {
         background: transparent !important;
-        padding: 0 !important;
     }
 
     .review-row-prod-inr {

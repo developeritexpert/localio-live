@@ -121,10 +121,10 @@
                                 Compare {{ $catName }}
                             </h1>
                         </div>
-                        <p class="text-muted" style="font-size: 13px; margin-bottom: 14px; color: #888;">
+                        <p class="text-meta">
                             Last updated on {{ now()->format('F j, Y') }}
                         </p>
-                        <p style="font-size: 16px; color: #444; margin: 0; font-weight: 400;">
+                        <p style="font-size: 16px; margin: 0; font-weight: 400;">
                             See how top {{ strtolower($catName) }} providers compare side-by-side on features, pricing, reviews, and community satisfaction.
                         </p>
                     </div>
@@ -222,7 +222,7 @@
         <div class="row g-4" data-aos="fade-up" data-aos-duration="1000">
             @forelse($paginatedComparisons as $comp)
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; ">
                         <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
                             <!-- Business 1 -->
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">

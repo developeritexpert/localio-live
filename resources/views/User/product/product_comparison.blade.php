@@ -136,7 +136,7 @@
                     </div>
                     @endif
                 @endforeach
-                <span class="your-comp-count">{{ count($businesses) }} of 4 added </span>
+                <span class="your-comp-count d-none ">{{ count($businesses) }} of 4 added </span>
             </div>
 
             @if(count($businesses) < 4)
@@ -266,7 +266,7 @@
                                             }
                                         @endphp
                                         <div class="review-breakdown-card w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
-                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Review breakdown</h6>
+                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h6>
                                             <ul class="list-unstyled mb-0 d-flex flex-column review-criteria-list" style="gap: 10px; flex: 1 1 auto;">
                                                 @forelse($criteria as $criterion)
                                                     @php
@@ -347,7 +347,7 @@
                                     <a href="javascript:void(0);" id="addFromCompareCardBtn" class="pdc_ryt" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; text-decoration: none; min-height: 320px; border: 2px dashed #cbd5e1; border-radius: 16px; background: #f8fafc; transition: all 0.2s ease; cursor: pointer;">
                                         <div class="ad_lnk" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
                                             <img src="{{ asset('front/img/pls-add.svg') }}" style="width: 44px; height: 44px;">
-                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare ({{ count($businesses) }}/4) </span>
+                                            <span style="font-size: 15px; font-weight: 600; color: #06498b;"> Add to compare </span>
                                         </div>
                                     </a>
                                 </div>

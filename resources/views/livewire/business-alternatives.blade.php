@@ -14,11 +14,11 @@
                                         $altTitle = !empty($bTrans->alternatives_title) ? $bTrans->alternatives_title : ($businessName . ' alternatives');
                                         $altDesc = !empty($bTrans->alternatives_description) ? $bTrans->alternatives_description : ('Compare the best alternatives to ' . $businessName . '. Find similar products based on pricing, features, user ratings, and reviews.');
                                     @endphp
-                                    <h1 style="color: #002347; font-size: 24px !important; font-weight: 600 !important; margin-bottom: 4px;">
+                                    <h2 style="margin-bottom: 4px;">
                                         {{ $altTitle }}
-                                    </h1>
+                                    </h2>
                 
-                                    <div style="font-size: 14.5px; color: #475569; line-height: 1.6;">
+                                    <div style="color: #002347;">
                                         {!! $altDesc !!}
                                     </div>
 
@@ -185,7 +185,7 @@
                                                                 </div>
 
                                                                 <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                    <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">Review breakdown</h6>
+                                                                    <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">User rating</h6>
                                                                     <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
                                                                         <p class="m-0" style="font-size: 12px; color: #002347;">Ease of Use</p>
                                                                         <div class="prgs_br d-flex align-items-center">
@@ -335,7 +335,7 @@
                                     </div>
 
                                     @if(count($bCriteria) > 0)
-                                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Review breakdown</h6>
+                                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">User rating</h6>
                                         <div class="mb-3">
                                             @foreach ($bCriteria as $criterion)
                                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -379,7 +379,7 @@
 
                         <!-- 2. Compare alternatives (Affiliated Table 1) -->
                         <div class="comparison-table-section my-5 pt-3">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                            <h2 style="margin-bottom: 16px;">
                                 Compare {{ $businessName }} alternatives
                             </h2>
 
@@ -387,14 +387,14 @@
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
                                     <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                         <tr>
-                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;">Business</th>
+                                            <th scope="col" style="padding: 14px 18px; font-weight: 700; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Features</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Ease of use</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Value for money</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Performance & reliability</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Customer support</th>
-                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347;">Recommend</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Features</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Ease of use</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Value for money</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Performance & reliability</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Customer support</th>
+                                            <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Recommend</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -425,7 +425,7 @@
                                                 }
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                                <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
+                                                <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <div class="top-product-small-logo" >
                                                             <x-business-logo :business="$rowBiz" :name="$rName" />
@@ -462,10 +462,10 @@
                         <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
-                                <h2 style="font-size: 22px; font-weight: 700; color: #002347; margin-bottom: 4px;">
+                                <h2 style="margin-bottom: 4px;">
                                     What the Localio community says
                                 </h2>
-                                <p style="font-size: 14px; color: #64748b; margin: 0;">
+                                <p style="margin: 0;">
                                     Most mentioned pros and cons shared by real users.
                                 </p>
                             </div>
@@ -507,7 +507,7 @@
                                                 $conStr = $topConObj ? $topConObj->text . ' (' . $topConObj->cnt . ')' : '-';
                                             @endphp
                                             <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
-                                                <td style="padding: 14px 18px; font-weight: 700; color: #002347;">
+                                                <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
                                                     <div class="d-flex align-items-center gap-2">
                                                         <div class="top-product-small-logo">
                                                             <x-business-logo :business="$rowBiz" :name="$rName" />
@@ -949,7 +949,7 @@
 
                                                             <!-- Features -->
                                                             <div class="slider_content_sec my-3" style="width: 100% !important; max-width: 100% !important;">
-                                                                <div class="main_feature_lg" style="width: 100% !important; max-width: 100% !important;">
+                                                                <div class="main_feature_lg">
                                                                     <div class="feture_box lft_check_box size18" style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
                                                                         <div class="usp-grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                                                             @if ($item->usps->count() > 0)
@@ -1138,7 +1138,7 @@
                             <div class="auto-choice-rgt">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
-                                        <p class="m-0">Showing {{ $products->count() }} results </p>
+                                        <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
                                     <x-social-icon/>
                                 </div>

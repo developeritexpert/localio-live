@@ -1410,7 +1410,7 @@
                         </div>
                         <ul class="options">
                             <div class="container">
-                                <h3 style="color: black;">Choose your Country/Region</h3>
+                                <h3 style="color: black;">Choose your Country/region </h3>
                                 <div class="footer-langs-container">
                                     @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
                                     @if($country->language)
@@ -2519,7 +2519,6 @@
 
     .sidebar-section-title {
         font-size: 14px !important;
-        text-transform: uppercase;
         color: #111 !important;
         font-weight: 700 !important;
         margin-bottom: 12px !important;
