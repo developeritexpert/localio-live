@@ -68,7 +68,7 @@
                 <i class="far fa-comment-alt"></i> Reply
             </button>
 
-            <button type="button" class="comment-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#comment-{{ $comment->id }}'); alert('Comment link copied!');">
+            <button type="button" class="comment-action-btn share-trigger-btn" onclick="openShareModal('{{ url()->current() }}#comment-{{ $comment->id }}', 'Comment on discussion', event)">
                 <i class="far fa-share-square"></i> Share
             </button>
 

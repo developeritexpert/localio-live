@@ -555,9 +555,9 @@
                                          <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}">
                                              <i class="far fa-comment-alt"></i> {{ $disc->comments_count }} Comments
                                          </button>
-                                         <button class="post-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#discussion-{{ $disc->id }}'); alert('Discussion link copied!');">
-                                             <i class="far fa-share-square"></i> Share
-                                         </button>
+                                          <button type="button" class="post-action-btn share-trigger-btn" onclick="openShareModal('{{ url()->current() }}#discussion-{{ $disc->id }}', '{{ addslashes($disc->title) }}', event)">
+                                              <i class="far fa-share-square"></i> Share
+                                          </button>
                                          <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
                                               <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
                                           </button>
@@ -609,7 +609,7 @@
                             </p>
 
                             <div class="d-grid gap-2 mt-3">
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDiscussionModal" style="background: #06498b; border-color: #06498b; font-weight: 600;">
+                                <button class="btn btn-primary" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="triggerAuthLoginModal()" @endif style="background: #06498b; border-color: #06498b; font-weight: 600;">
                                     <i class="fas fa-plus me-1"></i> Start New Discussion
                                 </button>
                             </div>
@@ -631,7 +631,7 @@
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('business.discussion.store') }}" method="POST">
+            <form action="{{ route('business.discussion.store') }}" method="POST" onsubmit="if(!IS_USER_LOGGED_IN) { event.preventDefault(); var m = bootstrap.Modal.getInstance(document.getElementById('newDiscussionModal')); if(m) m.hide(); triggerAuthLoginModal(); return false; }">
                 @csrf
                 <input type="hidden" name="business_id" value="{{ $business->id }}">
                 <div class="modal-body p-4">

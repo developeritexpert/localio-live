@@ -1217,6 +1217,13 @@ class ViewController extends Controller
 
     public function storeDiscussion(Request $request)
     {
+        if (!auth()->check()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Please sign in to post a discussion.', 'require_login' => true], 401);
+            }
+            return redirect()->back()->with('error', 'Please sign in to post a discussion.');
+        }
+
         $request->validate([
             'business_id' => 'required|exists:businesses,id',
             'title' => 'required|string|max:255',
@@ -1229,9 +1236,9 @@ class ViewController extends Controller
 
         $discussion = BusinessDiscussion::create([
             'business_id' => $request->business_id,
-            'user_id' => $user?->id,
-            'author_name' => $user ? $user->displayName() : ($request->author_name ?: 'Anonymous'),
-            'author_title' => $user?->job_title ?: 'Community Member',
+            'user_id' => $user->id,
+            'author_name' => $user->displayName(),
+            'author_title' => $user->job_title ?: 'Community Member',
             'category' => $request->category ?: 'General',
             'title' => $request->title,
             'content' => $request->content,
@@ -1247,6 +1254,12 @@ class ViewController extends Controller
 
     public function storeDiscussionComment(Request $request)
     {
+        if (!auth()->check()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Please sign in to post a comment.', 'require_login' => true], 401);
+            }
+            return redirect()->back()->with('error', 'Please sign in to post a comment.');
+        }
         $request->validate([
             'business_discussion_id' => 'required|exists:business_discussions,id',
             'content' => 'required|string',
