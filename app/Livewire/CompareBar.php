@@ -18,7 +18,7 @@ class CompareBar extends Component
         $this->categoryId = $categoryId;
         $this->refreshComparedProducts();
     }
-
+    
     public function refreshComparedProducts()
     {
         $productIds = array_values(app(CompareService::class)->getComparedProducts());
@@ -28,14 +28,26 @@ class CompareBar extends Component
             $firstProduct = \App\Models\Business::find($productIds[0]);
             if ($firstProduct) {
                 $pCategory = \App\Models\Category::find($firstProduct->category_id);
-                $isValidCategory = $firstProduct->category_id == $this->categoryId 
-                    || ($pCategory && $pCategory->parent_id == $this->categoryId);
+$currentCategory = \App\Models\Category::find($this->categoryId);
 
-                if (!$isValidCategory) {
-                    // If they belong to an unrelated category, clear the session
-                    session()->forget('compared_products');
-                    $productIds = [];
-                }
+$isValidCategory = false;
+
+if ($pCategory && $currentCategory) {
+    $isValidCategory =
+        // Same category
+        $firstProduct->category_id == $this->categoryId
+
+        // Product is assigned to child, current page is parent
+        || $pCategory->parent_id == $this->categoryId
+
+        // Product is assigned to parent, current page is child
+        || $currentCategory->parent_id == $firstProduct->category_id;
+}
+
+if (!$isValidCategory) {
+    session()->forget('compared_products');
+    $productIds = [];
+}
             }
         }
         

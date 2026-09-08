@@ -315,18 +315,48 @@ class CategoryPage extends Component
     public function getProductsProperty()
     {
         // Start with businesses in this category or its subcategories if parent category
-        if ($this->isParentCategory) {
-            $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
-            $allCategoryIds = array_merge([$this->category->id], $allSubcatIds);
-            if (!empty($this->selectedSubCategories)) {
-                $targetCategoryIds = array_intersect($allCategoryIds, array_map('intval', (array)$this->selectedSubCategories));
-            } else {
-                $targetCategoryIds = $allCategoryIds;
-            }
-            $query = Business::whereIn('category_id', $targetCategoryIds);
-        } else {
-            $query = Business::where('category_id', $this->category->id);
-        }
+       // Include parent category businesses in all child/subcategory pages
+if ($this->isParentCategory) {
+    $childIds = Category::where('parent_id', $this->category->id)
+        ->pluck('id')
+        ->map(fn ($id) => (int) $id)
+        ->toArray();
+
+    if (!empty($this->selectedSubCategories)) {
+        $selectedIds = array_map(
+            'intval',
+            (array) $this->selectedSubCategories
+        );
+
+        $selectedIds = array_values(
+            array_intersect($childIds, $selectedIds)
+        );
+
+        // Keep parent category businesses even when a subcategory is selected
+        $targetCategoryIds = array_merge(
+            [(int) $this->category->id],
+            $selectedIds
+        );
+    } else {
+        // Parent + all child categories
+        $targetCategoryIds = array_merge(
+            [(int) $this->category->id],
+            $childIds
+        );
+    }
+
+    $query = Business::whereIn('category_id', $targetCategoryIds);
+} else {
+    // Child category page:
+    // Include businesses assigned to this child OR directly to its parent
+    $targetCategoryIds = [(int) $this->category->id];
+
+    if (!empty($this->category->parent_id)) {
+        $targetCategoryIds[] = (int) $this->category->parent_id;
+    }
+
+    $query = Business::whereIn('category_id', array_unique($targetCategoryIds));
+}
 
         if (!empty($this->selectedFeatures)) {
             $featIds = array_filter($this->selectedFeatures);
