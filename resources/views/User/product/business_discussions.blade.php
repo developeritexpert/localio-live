@@ -18,6 +18,255 @@
             margin-bottom: 20px;
         }
 
+        /* Reddit Comment Thread Lines & Layout */
+        .comments-thread-container {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .reddit-comment-item {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        .reddit-comment-item.nested-comment-item {
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+        /* Left Thread Column: Avatar & Continuous Vertical Root Line */
+        .comment-thread-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 28px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .comment-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comment-avatar .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .comment-avatar .avatar-initial {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: #ffffff;
+            border-radius: 50%;
+        }
+
+        .avatar-color-1 { background: #06498b; }
+        .avatar-color-2 { background: #0d9488; }
+        .avatar-color-3 { background: #7c3aed; }
+        .avatar-color-4 { background: #d97706; }
+        .avatar-color-5 { background: #e11d48; }
+        .avatar-color-6 { background: #2563eb; }
+
+        /* Continuous Root Thread Line */
+        .comment-thread-line-container {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .comment-thread-line {
+            width: 2px;
+            height: 100%;
+            background-color: #cbd5e1;
+            transition: background-color 0.2s ease, width 0.2s ease;
+            border-radius: 2px;
+        }
+
+        /* Hover interaction: Highlight connecting root line when hovered */
+        .comment-thread-line-container:hover .comment-thread-line,
+        .reddit-comment-item:hover > .comment-thread-left > .comment-thread-line-container .comment-thread-line {
+            background-color: #06498b;
+            width: 3px;
+        }
+
+        /* Right Content Column */
+        .comment-content-col {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .btn-thread-toggle {
+            background: transparent;
+            border: none;
+            padding: 0;
+            color: #94a3b8;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease;
+        }
+
+        .btn-thread-toggle:hover {
+            color: #06498b;
+        }
+
+        .comment-author-name {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #0f172a;
+        }
+
+        .comment-author-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .comment-timestamp {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .collapsed-summary-pill {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .collapsed-summary-pill:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .comment-text-content {
+            font-size: 14px;
+            line-height: 1.55;
+            color: #1e293b;
+            margin-top: 3px;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        /* Reddit Action Bar */
+        .comment-action-bar {
+            font-size: 12px;
+        }
+
+        .comment-vote-group {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 2px 8px;
+            gap: 4px;
+        }
+
+        .comment-vote-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .comment-vote-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .comment-vote-score {
+            font-weight: 700;
+            font-size: 12px;
+            color: #1e293b;
+            min-width: 14px;
+            text-align: center;
+        }
+
+        .comment-action-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .comment-action-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        /* Thread Collapse State */
+        .reddit-comment-item.is-collapsed > .comment-content-col > .comment-body-wrapper {
+            display: none !important;
+        }
+
+        .reddit-comment-item.is-collapsed > .comment-thread-left > .comment-thread-line-container {
+            display: none !important;
+        }
+
+        .reddit-comment-item.is-collapsed > .comment-content-col .collapsed-summary-pill {
+            display: inline-block !important;
+        }
+
+        .reddit-comment-item.is-collapsed > .comment-content-col .btn-thread-toggle .collapse-icon-minus {
+            display: none !important;
+        }
+
+        .reddit-comment-item.is-collapsed > .comment-content-col .btn-thread-toggle .collapse-icon-plus {
+            display: inline-block !important;
+        }
+
+        .comment-replies-container {
+            position: relative;
+        }
+
         .reddit-post-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -345,56 +594,7 @@
 
                                         <!-- Render Existing Top-level Comments -->
                                         @foreach($disc->comments as $comment)
-                                            <div class="comment-item">
-                                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">{{ $comment->author_display_name }}</span>
-                                                        @if($comment->author_title)
-                                                            <span class="text-muted" style="font-size: 11px;">{{ $comment->author_title }}</span>
-                                                        @endif
-                                                        <span class="text-muted" style="font-size: 11px;">• {{ $comment->created_at->diffForHumans() }}</span>
-                                                    </div>
-                                                </div>
-
-                                                <p class="m-0 text-dark" style="font-size: 13.5px; line-height: 1.5;">
-                                                    {!! nl2br(e($comment->content)) !!}
-                                                </p>
-
-                                                <div class="d-flex align-items-center gap-3 mt-1">
-                                                    <button class="vote-btn vote-trigger px-2 py-0" data-type="comment" data-id="{{ $comment->id }}" data-vote="up" style="height:24px; font-size:11px;">
-                                                        ▲ <span class="vote-score-comment-{{ $comment->id }}">{{ $comment->upvotes_count }}</span>
-                                                    </button>
-                                                    <button class="post-action-btn py-0 px-1" style="font-size:11px;" onclick="document.getElementById('reply-form-{{ $comment->id }}').classList.toggle('d-none');">
-                                                        Reply
-                                                    </button>
-                                                </div>
-
-                                                <!-- Nested Reply Form -->
-                                                <div class="reply-box d-none" id="reply-form-{{ $comment->id }}">
-                                                    <form action="{{ route('business.discussion.comment') }}" method="POST" class="comment-submit-form">
-                                                        @csrf
-                                                        <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
-                                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                                        <div class="mb-2">
-                                                            <textarea name="content" class="form-control" rows="2" placeholder="Write a reply..." required style="font-size: 13px;"></textarea>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-sm btn-secondary" style="font-size: 12px;">Submit Reply</button>
-                                                    </form>
-                                                </div>
-
-                                                <!-- Render Sub-Replies -->
-                                                @foreach($comment->replies as $reply)
-                                                    <div class="comment-item mt-2 ms-3" style="border-left-color: #cbd5e1;">
-                                                        <div class="d-flex align-items-center gap-2 mb-1">
-                                                            <span class="fw-bold" style="font-size: 12.5px; color: #1e293b;">{{ $reply->author_display_name }}</span>
-                                                            <span class="text-muted" style="font-size: 11px;">• {{ $reply->created_at->diffForHumans() }}</span>
-                                                        </div>
-                                                        <p class="m-0 text-dark" style="font-size: 13px;">
-                                                            {!! nl2br(e($reply->content)) !!}
-                                                        </p>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                            @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc])
                                         @endforeach
                                     </div>
                                 </div>
@@ -489,6 +689,29 @@
 
 @push('scripts')
 <script>
+function toggleCommentThread(commentId) {
+    const item = document.getElementById('comment-' + commentId);
+    if (item) {
+        item.classList.toggle('is-collapsed');
+    }
+}
+
+function toggleReplyForm(commentId) {
+    const formContainer = document.getElementById('reply-form-' + commentId);
+    if (formContainer) {
+        formContainer.classList.toggle('d-none');
+    }
+}
+
+function copyCommentLink(commentId) {
+    const url = window.location.href.split('#')[0] + '#comment-' + commentId;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('Comment link copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy link:', err);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Accordion Toggle for Comments
     document.querySelectorAll('.toggle-comments-btn').forEach(btn => {
@@ -501,36 +724,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // AJAX Upvote/Downvote Handler
-    document.querySelectorAll('.vote-trigger').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const type = this.getAttribute('data-type');
-            const id = this.getAttribute('data-id');
-            const vote = this.getAttribute('data-vote');
+    // Delegated AJAX Upvote/Downvote Handler for posts & recursive comments
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.vote-trigger');
+        if (!btn) return;
 
-            fetch('{{ route("business.discussion.vote") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ type, id, vote })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    if(type === 'discussion') {
-                        const scoreEl = document.querySelector(`.vote-score-${id}`);
-                        if(scoreEl) scoreEl.textContent = data.score;
-                    } else if(type === 'comment') {
-                        const commentScore = document.querySelector(`.vote-score-comment-${id}`);
-                        if(commentScore) commentScore.textContent = data.upvotes;
+        e.preventDefault();
+        const type = btn.getAttribute('data-type');
+        const id = btn.getAttribute('data-id');
+        const vote = btn.getAttribute('data-vote');
+
+        fetch('{{ route("business.discussion.vote") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ type, id, vote })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                if(type === 'discussion') {
+                    const scoreEl = document.querySelector(`.vote-score-${id}`);
+                    if(scoreEl) scoreEl.textContent = data.score;
+                } else if(type === 'comment') {
+                    const commentScore = document.querySelector(`.vote-score-comment-${id}`);
+                    if(commentScore) {
+                        commentScore.textContent = data.score !== undefined ? data.score : (data.upvotes - (data.downvotes || 0));
                     }
                 }
-            })
-            .catch(err => console.error('Vote error:', err));
-        });
+            }
+        })
+        .catch(err => console.error('Vote error:', err));
     });
 });
 </script>
