@@ -1221,8 +1221,8 @@ class ViewController extends Controller
             'business_id' => $request->business_id,
             'user_id' => $user?->id,
             'author_name' => $user ? $user->displayName() : ($request->author_name ?: 'Anonymous'),
-            'author_title' => $user?->job_title ?: 'Community Member',
-            'category' => $request->category ?: 'General',
+            'author_title' => $user?->job_title ?: '',
+            'category' => $request->category ?: '',
             'title' => $request->title,
             'content' => $request->content,
             'status' => 'active',
@@ -1259,11 +1259,26 @@ class ViewController extends Controller
 
         $discussion->increment('comments_count');
 
-        if ($request->wantsJson()) {
-            return response()->json(['success' => true, 'message' => 'Comment added!', 'comment' => $comment]);
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+            $comment->load('replies');
+            $html = view('User.product.partials.comment_item', [
+                'comment' => $comment,
+                'disc' => $discussion,
+                'level' => $request->parent_id ? 1 : 0
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment added!',
+                'comment' => $comment,
+                'html' => $html,
+                'comments_count' => $discussion->comments_count,
+                'parent_id' => $comment->parent_id,
+                'discussion_id' => $discussion->id
+            ]);
         }
 
-        return redirect()->back()->with('success', 'Comment added successfully!');
+        return redirect()->back();
     }
 
     public function voteDiscussion(Request $request)

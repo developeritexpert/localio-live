@@ -36,9 +36,9 @@
 
             <span class="comment-author-name">{{ $comment->author_display_name }}</span>
 
-            @if($comment->author_title)
+            <!-- @if($comment->author_title)
                 <span class="comment-author-badge">{{ $comment->author_title }}</span>
-            @endif
+            @endif -->
 
             <span class="comment-timestamp">• {{ $comment->created_at ? $comment->created_at->diffForHumans() : 'Just now' }}</span>
 
@@ -73,9 +73,9 @@
                 </button>
 
                 <!-- Award Button -->
-                <button type="button" class="comment-action-btn d-none d-sm-inline-flex">
+                <!-- <button type="button" class="comment-action-btn d-none d-sm-inline-flex">
                     <i class="fas fa-award"></i> Award
-                </button>
+                </button> -->
 
                 <!-- Share Button -->
                 <button type="button" class="comment-action-btn" onclick="copyCommentLink({{ $comment->id }})">
@@ -83,9 +83,9 @@
                 </button>
 
                 <!-- More Options Button -->
-                <button type="button" class="comment-action-btn px-1" title="More actions">
+                <!-- <button type="button" class="comment-action-btn px-1" title="More actions">
                     <i class="fas fa-ellipsis-h"></i>
-                </button>
+                </button> -->
             </div>
 
             <!-- Nested Reply Form -->
@@ -114,13 +114,13 @@
             </div>
 
             <!-- Render Sub-Replies (Recursive) -->
-            @if($hasReplies)
-                <div class="comment-replies-container mt-2" id="replies-container-{{ $comment->id }}">
+            <div class="comment-replies-container mt-2" id="replies-container-{{ $comment->id }}">
+                @if($hasReplies)
                     @foreach($comment->replies as $reply)
                         @include('User.product.partials.comment_item', ['comment' => $reply, 'disc' => $disc, 'level' => $level + 1])
                     @endforeach
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 </div>

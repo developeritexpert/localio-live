@@ -76,7 +76,7 @@ class BusinessDiscussion extends Model
         if ($this->user) {
             return $this->user->displayName();
         }
-        return $this->author_name ?: 'Community Member';
+        return $this->author_name ?: '';
     }
 
     public function getAuthorInitialAttribute()

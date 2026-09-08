@@ -458,12 +458,7 @@
     <div class="container-fluid my-4">
         <div class="row">
             <div class="col-lg-8">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+
                 <div class="card mb-4" style="border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
                     <div class="card-body p-3 p-md-4">
                         <div class="d-flex align-items-center gap-3">
@@ -480,24 +475,14 @@
 
                 <div class="discussions-filter-card">
                     <form method="GET" action="{{ url()->current() }}" class="row align-items-center">
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1;"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0" placeholder="Search discussions..." style="border-color: #cbd5e1;">
                             </div>
                         </div>
 
-                        <div class="col-md-3">
-                            <select name="category" class="form-select" onchange="this.form.submit()" style="border-color: #cbd5e1;">
-                                <option value="all" {{ request('category') == 'all' ? 'selected' : '' }}>All Topics</option>
-                                <option value="Features & Usage" {{ request('category') == 'Features & Usage' ? 'selected' : '' }}>Features & Usage</option>
-                                <option value="Pricing & Plans" {{ request('category') == 'Pricing & Plans' ? 'selected' : '' }}>Pricing & Plans</option>
-                                <option value="API & Integrations" {{ request('category') == 'API & Integrations' ? 'selected' : '' }}>API & Integrations</option>
-                                <option value="General" {{ request('category') == 'General' ? 'selected' : '' }}>General</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <select name="sort" class="form-select" onchange="this.form.submit()" style="border-color: #cbd5e1;">
                                 <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Top / Popular</option>
                                 <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
@@ -546,8 +531,6 @@
                                                 <div class="text-muted" style="font-size: 11px;">{{ $disc->created_at->diffForHumans() }}</div>
                                             </div>
                                         </div>
-
-                                        <span class="post-cat-badge">{{ $disc->category }}</span>
                                     </div>
 
                                     <h3 class="h5 font-weight-bold mb-2" style="color: #0f172a; font-size: 18px; font-weight: 700;">
@@ -593,9 +576,11 @@
                                         </form>
 
                                         <!-- Render Existing Top-level Comments -->
-                                        @foreach($disc->comments as $comment)
-                                            @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc])
-                                        @endforeach
+                                        <div class="top-level-comments-list" id="top-level-comments-{{ $disc->id }}">
+                                            @foreach($disc->comments as $comment)
+                                                @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc])
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -620,7 +605,7 @@
 
                             <div class="d-grid gap-2 mt-3">
                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDiscussionModal" style="background: #06498b; border-color: #06498b; font-weight: 600;">
-                                    <i class="fas fa-plus me-1"></i> Start New Topic
+                                    <i class="fas fa-plus me-1"></i> Start New Discussion
                                 </button>
                             </div>
                         </div>
@@ -648,15 +633,6 @@
                 @csrf
                 <input type="hidden" name="business_id" value="{{ $business->id }}">
                 <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label font-weight-semibold" style="font-weight: 600; color: #1e293b;">Topic Category</label>
-                        <select name="category" class="form-select" required style="border-color: #cbd5e1;">
-                            <option value="General">General Discussion</option>
-                            <option value="Features & Usage">Features & Usage</option>
-                            <option value="Pricing & Plans">Pricing & Plans</option>
-                            <option value="API & Integrations">API & Integrations</option>
-                        </select>
-                    </div>
 
                     <div class="mb-3">
                         <label class="form-label font-weight-semibold" style="font-weight: 600; color: #1e293b;">Title / Question</label>
@@ -757,6 +733,79 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(err => console.error('Vote error:', err));
+    });
+
+    // AJAX Comment Submission Handler (No Page Reload, Keep Comment Box Open)
+    document.addEventListener('submit', function(e) {
+        const form = e.target.closest('.comment-submit-form');
+        if (!form) return;
+
+        e.preventDefault();
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.dataset.originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+        }
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.html) {
+                const parentId = data.parent_id;
+                const discussionId = data.discussion_id;
+
+                if (parentId) {
+                    // Append to parent comment's replies container
+                    const repliesContainer = document.getElementById('replies-container-' + parentId);
+                    if (repliesContainer) {
+                        repliesContainer.insertAdjacentHTML('beforeend', data.html);
+                    }
+                    // Hide reply form box after reply is submitted
+                    const replyFormBox = document.getElementById('reply-form-' + parentId);
+                    if (replyFormBox) {
+                        replyFormBox.classList.add('d-none');
+                    }
+                } else {
+                    // Append to top-level comments container for this discussion
+                    const topLevelContainer = document.getElementById('top-level-comments-' + discussionId);
+                    if (topLevelContainer) {
+                        topLevelContainer.insertAdjacentHTML('beforeend', data.html);
+                    }
+                }
+
+                // Update comments count text on discussion card
+                const commentsCountBtn = document.querySelector(`[data-target="#comments-${discussionId}"]`);
+                if (commentsCountBtn) {
+                    commentsCountBtn.innerHTML = `<i class="far fa-comment-alt"></i> ${data.comments_count} Comments`;
+                }
+
+                // Reset comment textarea input so user can comment again
+                form.reset();
+            } else if (data.message) {
+                alert(data.message);
+            }
+        })
+        .catch(err => {
+            console.error('Comment submit error:', err);
+        })
+        .finally(() => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.dataset.originalText || 'Post Comment';
+            }
+        });
     });
 });
 </script>
