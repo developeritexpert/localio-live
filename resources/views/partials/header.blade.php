@@ -275,7 +275,6 @@
         font-size: 15px !important;
         font-weight: 700 !important;
         letter-spacing: 0.5px;
-        text-transform: uppercase;
     }
 
     /* .mobile-sidebar-body .section_divider {
@@ -489,7 +488,7 @@
             border-bottom: none !important;
         }
 
-
+    }
                         @media (max-width: 991px) {
 
                             /* Backdrop */
@@ -578,7 +577,7 @@
                             .msp_subtitle {
                                 color: rgba(255, 255, 255, 0.7) !important;
                                 font-size: 13px;
-                                margin: 0 0 18px !important;
+                                margin: 0 0 40px !important;
                                 line-height: 1.4;
                             }
 
@@ -588,16 +587,12 @@
                                 gap: 10px;
                             }
 
-                            .msp_buttons a {
-                                border-radius: 70px;
-                            }
-
 
                             .msp_btn {
                                 flex: 1;
                                 text-align: center;
                                 padding: 10px 12px;
-                                border-radius: 4px;
+                                border-radius: 8px;
                                 font-size: 14px;
                                 font-weight: 600;
                                 text-decoration: none;
@@ -1214,7 +1209,7 @@
                                         <a href="javascript:void(0);" id="open-mobile-cat-panel"
                                             class="section_heading_link">
                                             <h4 class="section_heading">
-                                                {{ $headerContent['Categories'] ?? 'All Categories' }}
+                                                {{ $headerContent['Categories'] ?? 'Categories ' }}
                                                 <i class="fa-solid fa-chevron-right ms-2"></i>
                                             </h4>
                                         </a>

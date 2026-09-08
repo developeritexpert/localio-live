@@ -182,7 +182,6 @@
                 font-size: 18px !important;
                 font-weight: 600 !important;
                 letter-spacing: 0.5px;
-                text-transform: uppercase;
             }
 
             .mobile-sidebar-body .section_divider {
@@ -1862,7 +1861,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                             <ul class="options">
                                 <div class="container">
-                                    <h3 style="color: black;">Choose your Country/Region</h3>
+                                    <h3 style="color: black;">Choose your Country/region </h3>
                                 <div class="footer-langs-container">
                                     @foreach ($languages as $language)
                                     <li>
@@ -2877,7 +2876,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         .sidebar-section-title {
             font-size: 14px !important;
-            text-transform: uppercase;
             color: #111  !important;
             font-weight: 700  !important;
             margin-bottom: 12px !important;
@@ -3093,6 +3091,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         observe();
-    </script>
+</script>
 </body>
 </html>

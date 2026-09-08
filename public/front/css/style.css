@@ -410,7 +410,7 @@ div#navbarSupportedContent {
 
 header .search-box input {
     font-size: 14px;
-    height: 44px;
+    height: 40px;
 }
 
 .cta.cta_white {
@@ -1836,7 +1836,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     margin-bottom: 20px;
     color: var(--color-primary-blue);
 }
-
+/* 
 .review_sec .review_detl {
     padding: 25px 40px;
     border: 1px solid #06498b08;
@@ -1844,7 +1844,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     margin-bottom: 30px;
     background-color: var(--color-white);
     border: 1px solid #e2e8f0 !important;
-}
+} */
 
 .review_sec .review_detl:hover {
     box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%);
@@ -3434,9 +3434,9 @@ header.drk_header {
     border-bottom: 1px solid #06498b1a;
 }
 
-.populr-alternative {
+/* .populr-alternative {
     padding: 26px 0;
-}
+} */
 
 .altr-mid-div {
     background-color: var(--color-white);
@@ -4300,7 +4300,7 @@ header .container-fluid.top_hd_spacing {
 
 .pdc_box .pdc_choice .auto-choice-hd .inn_sl_hed {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -4982,7 +4982,6 @@ footer .footer-wrp .foot-col {
 
 .main_feature_lg {
     width: 100%;
-    max-width: 415px;
 }
 
 .main_feature_sm {
@@ -7946,7 +7945,7 @@ header .menu li.menu-item a {
     display: block;
     z-index: 10;
     overflow-y: scroll;
-    border-top: 3px solid #a5a5a5;
+    border-top: 2px solid #a5a5a5dc;
 }
 
 footer .footer-wrp ul li {
@@ -8250,11 +8249,6 @@ section.right_tool_sec .otr_rgtool h2 {
     font-weight: 600 !important;
 }
 
-.crm_sec.revie_left_rgt_sec .review_text h5 {
-    font-size: 16px !important;
-    font-weight: 600 !important;
-}
-
 .crm_sec.revie_left_rgt_sec .review_text .rating {
     margin-bottom: 10px !important;
 }
@@ -8452,7 +8446,7 @@ body .product_sec li.breadcrumb-item.active {
 }
 
 .revie_left_rgt_sec .review_detl {
-    background-color: var(--color-bg-light-grey) !important;
+    background-color: var(--color-bg-default);
 }
 
 .revie_left_rgt_sec .review-star-box .progress-box {
@@ -9162,7 +9156,6 @@ a.cta.btn_blue:hover,
 .top_header.dark {
     overflow-x: auto;
     overflow-y: hidden;
-    white-space: nowrap;
     cursor: grab;
     user-select: none;
     position: relative;
@@ -9936,7 +9929,7 @@ button.btn-vote-faq i.far:hover {
 }
 
 .verified-insights-card p {
-    font-size: 13px;
+    font-size: 14px;
     margin-bottom: 0;
     color: var(--color-dark-blue-text);
 }
@@ -9985,8 +9978,33 @@ button.btn-vote-faq i.far:hover {
     position: relative;
     top: 1px;
     color: var(--color-dark-blue-text);
+    margin-top: 1px;
 }
 
 .auto-choice-hd .auto-choice-btn .cta_orange {
     padding: 8px 14px;
+}
+
+/* ====style.css updated by-Kashish(07-sep-26)===== */
+
+#categories-sidebar-close:hover {
+    background: #90909050;
+}
+
+#categories-sidebar-close {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+}
+
+.comparison-box:hover {
+    box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
+}
+
+.rating.light .rating-stars i {
+    font-size: 16px !important;
+}
+
+.profile-icon {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) hue-rotate(0deg);
 }

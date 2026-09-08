@@ -829,8 +829,7 @@
                                                 @if (!empty($item->is_affiliate))
                                                 <div class="slider_content_sec my-3"
                                                     style="width: 100% !important; max-width: 100% !important;">
-                                                    <div class="main_feature_lg"
-                                                        style="width: 100% !important; max-width: 100% !important;">
+                                                    <div class="main_feature_lg">
                                                         <div class="feture_box lft_check_box size18"
                                                             style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
                                                             <div class="usp-grid-container"
@@ -1049,7 +1048,7 @@
                            
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="showing_tabs">
-                                    <p class="m-0">Showing {{ $products->count() }} results </p>
+                                    <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                 </div>
                                 <div class="d-none">
                                     <x-social-icon />

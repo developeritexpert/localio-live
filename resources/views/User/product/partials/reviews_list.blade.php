@@ -6,7 +6,7 @@
             </div>
         @else
             @foreach ($allReviews as $review)
-                <div class="review_detl populr-alternative" id="review-{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
+                <div class="review_detl populr-alternative" id="review-{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="padding: 24px;margin-bottom: 24px; position: relative;">
                     
                     <!-- Top right actions (Date & Copy link) -->
                     <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
@@ -75,21 +75,21 @@
                     </div>
 
                     <div class="review_text size18" style="padding-right: 0;">
-                        <h5 class="size22 big-bld" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                        <h3 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
                             {{ $review->translations->first()->title ?? '' }}
-                        </h5>
+                        </h3>
                         
                         <!-- Ratings below headline -->
-                        <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                        <div class="rating light" style="display: flex; align-items: center; gap: 8px; ">
                             <div class="inn_ul">
                                 <div class="rating-stars" style="display: flex; gap: 2px;">
                                     @for ($i = 1; $i <= 5; $i++)
                                         @if ($i <= floor($review->rating))
                                             <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
                                         @elseif ($i - 0.5 <= $review->rating)
-                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                            <i class="fas fa-star-half-alt text-warning"></i>
                                         @else
-                                            <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                            <i class="far fa-star text-warning"></i>
                                         @endif
                                     @endfor
                                 </div>
@@ -99,7 +99,7 @@
                             </div> -->
                         </div>
 
-                        <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
+                        <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                             {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                         </div>
                     </div>
@@ -198,9 +198,9 @@
                         </div>
 
                         <div class="review_text size18" style="padding-right: 0;">
-                            <h5 class="size22 big-bld" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                            <h3 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
                                 {{ $review->translations->first()->title ?? '' }}
-                            </h5>
+                            </h3>
                             
                             <!-- Ratings below headline -->
                             <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
@@ -208,11 +208,11 @@
                                     <div class="rating-stars" style="display: flex; gap: 2px;">
                                         @for ($i = 1; $i <= 5; $i++)
                                             @if ($i <= floor($review->rating))
-                                                <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                                <i class="fas fa-star text-warning"></i>
                                             @elseif ($i - 0.5 <= $review->rating)
-                                                <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                                <i class="fas fa-star-half-alt text-warning"></i>
                                             @else
-                                                <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                                <i class="far fa-star text-warning"></i>
                                             @endif
                                         @endfor
                                     </div>
@@ -222,7 +222,7 @@
                                 </div>
                             </div>
 
-                            <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
+                            <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                                 {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                             </div>
                         </div>
@@ -323,7 +323,7 @@
                         </div>
                     </div>
                     <div class="review_text size18">
-                        <p class="size22 big-bld" style="margin-bottom: 4px;">
+                        <p class="review-title" style="margin-bottom: 4px;">
                             {{ $review->translations->first()->title ?? '' }}
                         </p>
                         <p style="font-size: 13px; color: #777; margin: 0 0 10px 0;">{{ $review->created_at->diffForHumans() }}</p>

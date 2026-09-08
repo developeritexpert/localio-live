@@ -32,12 +32,15 @@ class Business extends Model
         'pro_cons_intro',
         'pro_cons_summary',
         'admin_rating',
+        'screenshot_categories',
+        'screenshot_display_category',
     ];
     protected $casts = [
         'is_affiliate' => 'integer',
         'admin_rating' => 'float',
         'business_images' => 'array',
         'screenshot_urls' => 'array',
+        'screenshot_categories' => 'array',
     ];
 
     protected $table = 'businesses';
