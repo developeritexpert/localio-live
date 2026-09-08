@@ -29,6 +29,17 @@
 
     <!-- Right Comment Content Body -->
     <div class="comment-content-body">
+        <!-- Collapsed Comment Summary Row (Visible only when is-collapsed) -->
+        <div class="comment-collapsed-summary align-items-center gap-2" onclick="toggleCommentThread({{ $comment->id }})" title="Expand comment thread">
+            <i class="fas fa-plus-circle text-muted" style="font-size: 14px;"></i>
+            <span class="comment-author-name" style="font-size: 13px; color: #475569;">{{ $comment->author_display_name }}</span>
+            <span class="comment-dot-sep">•</span>
+            <span class="comment-timestamp" style="font-size: 12px; color: #64748b;">{{ $comment->created_at ? $comment->created_at->diffForHumans() : 'Just now' }}</span>
+            @if($hasReplies)
+                <span class="badge bg-light text-secondary border ms-1" style="font-size: 11px;">+{{ $replyCount }} {{ $replyCount == 1 ? 'reply' : 'replies' }}</span>
+            @endif
+        </div>
+
         <!-- Comment Header (Author, Badge, Date) -->
         <div class="comment-header d-flex align-items-center flex-wrap gap-2 mb-1">
             <span class="comment-author-name">{{ $comment->author_display_name }}</span>
@@ -54,6 +65,10 @@
 
         <!-- Comment Action Toolbar (Upvote/Downvote, Reply, Share, Pin) -->
         <div class="comment-action-bar d-flex align-items-center gap-3 flex-wrap">
+            <button type="button" class="comment-collapse-toggle-btn" onclick="toggleCommentThread({{ $comment->id }})" title="Collapse comment thread">
+                <i class="fas fa-minus-circle"></i>
+            </button>
+
             <div class="comment-vote-pill d-inline-flex align-items-center">
                 <button type="button" class="comment-vote-btn vote-trigger" data-type="comment" data-id="{{ $comment->id }}" data-vote="up" title="Upvote">
                     <i class="fas fa-arrow-up"></i>

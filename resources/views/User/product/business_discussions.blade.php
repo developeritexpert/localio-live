@@ -236,24 +236,52 @@
             color: #0f172a;
         }
 
-        .reddit-comment-item.is-collapsed > .comment-content-col > .comment-body-wrapper {
+        .comment-collapse-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+        .comment-collapse-toggle-btn:hover {
+            color: #0f172a;
+            background: #e2e8f0;
+        }
+
+        .comment-collapsed-summary {
+            display: none;
+            cursor: pointer;
+            padding: 6px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+        .comment-collapsed-summary:hover {
+            background: #f1f5f9;
+        }
+
+        .reddit-comment-item.is-collapsed > .comment-thread-left {
             display: none !important;
         }
 
-        .reddit-comment-item.is-collapsed > .comment-thread-left > .comment-thread-line-container {
+        .reddit-comment-item.is-collapsed > .comment-content-body > .comment-header,
+        .reddit-comment-item.is-collapsed > .comment-content-body > .comment-text-content,
+        .reddit-comment-item.is-collapsed > .comment-content-body > .comment-action-bar,
+        .reddit-comment-item.is-collapsed > .comment-content-body > .reply-form-box,
+        .reddit-comment-item.is-collapsed > .comment-content-body > .comment-replies-container {
             display: none !important;
         }
 
-        .reddit-comment-item.is-collapsed > .comment-content-col .collapsed-summary-pill {
-            display: inline-block !important;
-        }
-
-        .reddit-comment-item.is-collapsed > .comment-content-col .btn-thread-toggle .collapse-icon-minus {
-            display: none !important;
-        }
-
-        .reddit-comment-item.is-collapsed > .comment-content-col .btn-thread-toggle .collapse-icon-plus {
-            display: inline-block !important;
+        .reddit-comment-item.is-collapsed > .comment-content-body > .comment-collapsed-summary {
+            display: flex !important;
         }
 
         .comment-replies-container {
