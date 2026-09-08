@@ -245,12 +245,7 @@
     }
 
     /* Category Page Enhanced Sections Styling */
-    .rich-text-content p {
-        margin-bottom: 12px;
-        line-height: 1.7;
-        color: #475569;
-        font-size: 15px;
-    }
+ 
     .rich-text-content ul, .rich-text-content ol {
         margin-left: 20px;
         margin-bottom: 12px;
@@ -1098,8 +1093,7 @@
                                                     @if (!empty($item->is_affiliate))
                                                     <div class="slider_content_sec my-3"
                                                         style="width: 100% !important; max-width: 100% !important;">
-                                                        <div class="main_feature_lg"
-                                                            style="width: 100% !important; max-width: 100% !important;">
+                                                        <div class="main_feature_lg">
                                                             <div class="feture_box lft_check_box size18"
                                                                 style="border: none; padding: 0; background: transparent; min-height: auto; width: 100% !important; max-width: 100% !important;">
                                                                 <div class="usp-grid-container"
@@ -1312,7 +1306,7 @@
                             <div class="auto-choice-rgt">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
-                                        <p class="m-0">Showing {{ $products->count() }} results </p>
+                                        <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
 
                                 </div>
@@ -1414,7 +1408,7 @@
                             <div class="row g-3">
                                 @foreach($popularComparisons as $comp)
                                 <div class="col-12">
-                                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #fdfdfd !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #fdfdfd !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
                                         <div class="d-flex align-items-center justify-content-between mb-3">
                                             <!-- Business 1 -->
                                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
@@ -1559,7 +1553,7 @@
                                         <div class="col-md-6">
                                             <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                 <div class="card-body">
-                                                    <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h5>
+                                                    <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
                                                     <ul class="list-unstyled mb-0">
                                                         @forelse($topPros as $pro)
                                                         <li class="d-flex align-items-start mb-2">
@@ -1578,7 +1572,7 @@
                                         <div class="col-md-6">
                                             <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                 <div class="card-body">
-                                                    <h5 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h5>
+                                                    <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
                                                     <ul class="list-unstyled mb-0">
                                                         @forelse($topCons as $con)
                                                         <li class="d-flex align-items-start mb-2">
@@ -1659,7 +1653,7 @@
 
                                             @if ($bizTotalReviews > 0 && count($criteriaRatings) > 0)
                                                 <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 700; color: #002347;">
-                                                    Review breakdown
+                                                    User rating
                                                 </h2>
 
                                                 <div class="review-progress-list mb-3">

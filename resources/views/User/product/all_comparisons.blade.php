@@ -210,10 +210,10 @@
                             Compare {{ $bName }}
                         </h1>
                     </div>
-                    <p class="text-muted" style="font-size: 13px; margin-bottom: 14px; color: #888;">
+                    <p class="text-meta">
                         Last updated on {{ now()->format('F j, Y') }}
                     </p>
-                    <p style="font-size: 16px; color: #444; margin: 0; font-weight: 400;">
+                    <p style="font-size: 16px; margin: 0; font-weight: 400;">
                         {{ $subHeadline }}
                     </p>
                 </div>
@@ -351,7 +351,7 @@
                     </div>
 
                     @if(isset($criteria) && count($criteria) > 0)
-                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Review breakdown</h6>
+                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">User rating</h6>
                         <div class="mb-3">
                             @foreach ($criteria as $criterion)
                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -445,7 +445,7 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; ">
                         <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
@@ -511,7 +511,7 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; ">
                         <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
@@ -581,7 +581,7 @@
             @endphp
             <div class="col-lg-4 col-md-6 col-12">
                 <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $subSlug]) }}" class="text-decoration-none d-block h-100">
-                    <div class="p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between" style="box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: all 0.2s;">
+                    <div class="comparison-box p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                         
                         <div class="mb-3 w-100 d-flex align-items-center justify-content-center">
                             @if(isset($subcatItem->topRatedImageMedia))

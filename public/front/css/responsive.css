@@ -661,10 +661,6 @@ div#howRankingsWorkModal .circle_11 {
     padding-right: 15px;
 }
 
-.sec_head .search-box input {
-    padding: 16px 20px;
-}
-
 .sec_head .bottom_header > .container-fluid .header_row .search_logo {
     width: 207px;
 }
@@ -2300,13 +2296,12 @@ ul.list-unstyled.m-0 li:hover a .time span {
 }
 
 .inner_part_boxx .part_1_boxs {
-    width: 72px;
-    height: 72px;
+    width: 100px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
     margin: auto;
-    margin-bottom: 20px;
 }
 
 .inner_part_boxx .part_2_boxs h2 {
@@ -5882,7 +5877,6 @@ textarea#message {
         flex-wrap: wrap;
     }
 
-    .main_feature_lg,
     .main_feature_sm {
         width: 48%;
         max-width: 48%;
@@ -6127,9 +6121,7 @@ textarea#message {
 
     .mobile-search-container .search-box input {
         width: 100%;
-        padding: 14px 60px 14px 24px !important;
         border: none !important;
-        font-size: 15px !important;
         background-color: var(--color-white) !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
         color: var(--color-primary-grey-text) !important;
@@ -6153,8 +6145,8 @@ textarea#message {
         transform: translateY(-50%) !important;
         background-color: var(--color-primary-orange) !important;
         color: var(--color-white) !important;
-        width: 40px !important;
-        height: 40px !important;
+        width: 30px !important;
+        height: 30px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -6307,14 +6299,6 @@ textarea#message {
 
     #section1 .asn_dv .asn_dv_contnt .div_prent_ever {
         width: 100%;
-    }
-
-    #section-compare .comparison-box > div {
-        flex-direction: column;
-        align-items: start !important;
-        gap: 15px;
-        width: fit-content;
-        margin-inline: auto;
     }
 
     #section-compare .comparison-box > div .fw-normal {
@@ -7019,7 +7003,6 @@ textarea#message {
         padding-top: 15px;
     }
 
-    .main_feature_lg,
     .main_feature_sm {
         width: 100%;
         max-width: 100%;
@@ -7382,11 +7365,6 @@ textarea#message {
 
     .banner_sec.help-cntr-bnr.inr-bnr .banner_row .banner_text_col h1 {
         font-size: 30px;
-    }
-
-    .banner_text_col .search-box input {
-        padding: 15px 24px;
-        padding-right: 83px;
     }
 
     .hlp-crd-row {
@@ -8029,9 +8007,8 @@ textarea#message {
     }
 
     .banner_text_col .search-box input {
-        padding: 12px 12px;
-        padding-right: 83px;
-        font-size: 14px;
+        padding: 8px 12px;
+        padding-right: 55px;
     }
 
     .xclu-txt-btn .cta {
@@ -8202,7 +8179,7 @@ textarea#message {
 
     .software-like {
         border-radius: 10px;
-        padding: 10px;
+        padding: 10px 0;
     }
 
     .compare-information > div {
@@ -8221,10 +8198,6 @@ textarea#message {
         font-size: 28px !important;
     }
 
-    .banner_text_col .search-box input {
-        font-size: 14px !important;
-    }
-
     .foot-logo img {
         width: 180px;
     }
@@ -8234,7 +8207,7 @@ textarea#message {
     }
 
     .banner_text_col .search-box input::placeholder {
-        font-size: 10px !important;
+        font-size: 12px !important;
     }
 
     .frst_rw {
@@ -8243,10 +8216,6 @@ textarea#message {
 
     .banner_content_inner h1 {
         font-size: 22px !important;
-    }
-
-    .banner_text_col .search-box input {
-        font-size: 12px !important;
     }
 
     .top-rated-heading-sec .breadcrumb-item a,
@@ -8376,11 +8345,6 @@ textarea#message {
         font-size: 16px;
     }
 
-    .software-like {
-        border-radius: 10px;
-        padding: 10px;
-    }
-
     .compare-information > div {
         gap: 0px !important;
     }
@@ -8465,7 +8429,7 @@ textarea#message {
     }
 
     .faq-section {
-        padding: 40px 0 !important;
+        padding: 40px 0px !important;
     }
 
     .business-features {
@@ -8644,7 +8608,7 @@ textarea#message {
     }
 
     .home_bnr_sec .search-box i {
-        padding: 9px 20px;
+        padding: 10px;
     }
 
     .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
@@ -8726,7 +8690,7 @@ textarea#message {
     }
 
     .automotive-card .inn_sl_hed {
-        gap: 1px !important;
+        gap: 15px !important;
     }
 
     h2.modal-title {
@@ -8810,15 +8774,11 @@ textarea#message {
     }
 
     section#section-compare {
-        padding: 15px !important;
+        padding: 15px 0px !important;
     }
 
     section#section-compare p {
         font-size: 14px !important;
-    }
-
-    section#section-compare {
-        padding: 40px 0 !important;
     }
 
     .most-populr-sec .top-pro-btn .cta {
@@ -8859,8 +8819,6 @@ textarea#message {
         font-size: 12px;
         padding: 7px 7px;
     }
-
- 
 
     .modal-header {
         padding-right: 0;
@@ -9076,12 +9034,64 @@ textarea#message {
         align-items: flex-start;
     }
 
-    .row.sld_rw {
+    .row.is-asan-slider {
         padding: 0 13px;
     }
 
-    .row.is-asan-slider {
-        padding: 0 13px;
+    .modal-close {
+        top: 5px;
+        right: 5px;
+    }
+
+    .is-asana-lft .is_text p {
+        padding-right: 0;
+    }
+
+    section#section9 .container,
+    section#section-compare .container {
+        padding: 0;
+    }
+
+    .host-pro {
+        max-width: 100% !important;
+    }
+
+    .verified-insights-card h6 {
+        font-size: 14px;
+    }
+
+    .verified-insights-card img {
+        height: 30px;
+    }
+
+    .host-parra {
+        flex-direction: column-reverse;
+    }
+
+    .cat_img_header {
+        height: 170px;
+        margin-top: 0 !important;
+    }
+
+    .exp-cating h6 {
+        font-size: 12px !important;
+    }
+
+    .explore-cat-card {
+        padding: 10px !important;
+    }
+
+    .auto-choice-btn {
+        flex-direction: row !important;
+    }
+
+    .auto-choice-btn .cta {
+        width: auto !important;
+        flex: 1;
+    }
+
+    .auto-choice-btn .cta {
+        padding: 10px 10px !important;
     }
 }
 

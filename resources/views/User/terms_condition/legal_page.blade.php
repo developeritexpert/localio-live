@@ -13,7 +13,7 @@
                 <!-- Right Content -->
                 <div class="col-md-9">
                     <div class="mb-5">
-                        <h2 class="mb-4">{{ $document->title ?? $documentTitle }}</h2>
+                        <h1 class="mb-4">{{ $document->title ?? $documentTitle }}</h1>
                         <div class="legal-document-content">
                             {!! $document->description ?? '' !!}
                         </div>

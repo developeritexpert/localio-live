@@ -1,7 +1,7 @@
 <div class="review-cntnt-btm">
     @if ($reviews->isNotEmpty())
         @foreach ($reviews as $review)
-            <div class="review_detl populr-alternative review-card" id="review-{{ $review->id }}" data-review-id="{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="background-color: #f9fafb; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px; position: relative;">
+            <div class="review_detl populr-alternative review-card" id="review-{{ $review->id }}" data-review-id="{{ $review->id }}" data-aos="fade-up" data-aos-duration="1000" style="  padding: 24px; margin-bottom: 24px; position: relative;">
                 
                 <!-- Top right actions (Date & Copy link) -->
                 <div class="review-actions-top-right" style="position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 16px;">
@@ -64,7 +64,7 @@
                     @endphp
 
                     @if(!empty($title))
-                        <h5 class="size22 big-bld" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                        <h5 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
                             {{ $title }}
                         </h5>
                     @endif
@@ -75,18 +75,18 @@
                             <div class="rating-stars" style="display: flex; gap: 2px;">
                                 @for ($i = 1; $i <= 5; $i++)
                                     @if ($i <= floor($review->rating))
-                                        <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                        <i class="fas fa-star text-warning"></i>
                                     @elseif ($i - 0.5 <= $review->rating)
-                                        <i class="fas fa-star-half-alt text-warning" style="font-size: 14px;"></i>
+                                        <i class="fas fa-star-half-alt text-warning"></i>
                                     @else
-                                        <i class="far fa-star text-warning" style="font-size: 14px;"></i>
+                                        <i class="far fa-star text-warning"></i>
                                     @endif
                                 @endfor
                             </div>
                         </div>
                     </div>
 
-                    <div style="color: #444; line-height: 1.6; font-size: 14px; margin-bottom: 0;">
+                    <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                         <p class="review-text">
                             {!! nl2br(e(strip_tags($description))) !!}
                         </p>
