@@ -43,6 +43,10 @@ class BusinessEdit extends Component
     public $isSubmitting = false;
     public $addbusiness = true;
 
+    public $screenshotCategories = [];
+    public $selectedScreenshotCategory = null;
+    public $selectedScreenshotDisplayCategory = null;
+
     // Country selection
     public $countryWebsiteUrls = []; // Associative array: countryId => [URLs]
     public $selectedCountryForUrl = null; // Country selected when adding a URL
@@ -163,10 +167,14 @@ class BusinessEdit extends Component
 
     // Pros & Cons
     public $businessPros = [
-        ['text' => ''], ['text' => ''], ['text' => '']
+        ['text' => ''],
+        ['text' => ''],
+        ['text' => '']
     ];
     public $businessCons = [
-        ['text' => ''], ['text' => ''], ['text' => '']
+        ['text' => ''],
+        ['text' => ''],
+        ['text' => '']
     ];
 
     // Offerings
@@ -243,7 +251,7 @@ class BusinessEdit extends Component
         'featuresUpdated' => 'handleFeaturesUpdated',
         'aiContentGenerated' => 'handleAiContentGenerated',
         'updateTopicDescription' => 'updateTopicDescription',
-        'featuresSelected'=>'updateFeatures',
+        'featuresSelected' => 'updateFeatures',
     ];
 
     // #[On('featuresSelected')]
@@ -256,11 +264,10 @@ class BusinessEdit extends Component
 
     public function mount($id = null)
     {
-        if(isset($id) && $id != null){
+        if (isset($id) && $id != null) {
             $this->businessId = $id;
             $this->editBusiness($id);
-        }
-        else{
+        } else {
             // Add Business
             $this->showAddForm();
         }
@@ -272,10 +279,15 @@ class BusinessEdit extends Component
 
         if ($id) {
             $business = Business::with(['countries', 'websites', 'pricingOptions', 'features'])->findOrFail($id);
+
             $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
             $this->selectedFeatures = $business->features->pluck('id')->toArray();
             $this->selectedCountries = $business->countries->pluck('id')->toArray();
+
+            $this->screenshotCategories = $business->screenshot_categories ?? [];
+
             $this->countryWebsiteUrls = [];
+
             foreach ($business->websites as $website) {
                 $this->countryWebsiteUrls[$website->country_id] = [
                     'url' => $website->website_url,
@@ -283,9 +295,15 @@ class BusinessEdit extends Component
                     'status' => $website->status ?? 1
                 ];
             }
+
             if ($business && $business->business_images) {
                 $this->business_images = $business->business_images;
             }
+
+
+            $this->screenshotCategories = $business->screenshot_categories ?? [];
+
+            $this->selectedScreenshotCategory = $business->screenshot_display_category ?? null;
         }
 
         $this->countries = Country::with('language')->get();
@@ -302,7 +320,7 @@ class BusinessEdit extends Component
 
     public function render()
     {
-        return view('livewire.business-edit' ,[
+        return view('livewire.business-edit', [
             'countries' => $this->countries,
         ]);
     }
@@ -756,14 +774,13 @@ class BusinessEdit extends Component
         }
 
         $translatedFeatures = $this->categoryFeatures = Feature::where('category_id', $categoryId)
-        ->where('status', 'active')
-        ->with([
-            'translations' => function ($query) {
-                $query->whereIn('lang_id', [$this->lang_id, 1]);
-            }
-        ])
-        ->get();
-
+            ->where('status', 'active')
+            ->with([
+                'translations' => function ($query) {
+                    $query->whereIn('lang_id', [$this->lang_id, 1]);
+                }
+            ])
+            ->get();
     }
 
     public function refreshPricingOptions()
@@ -931,9 +948,8 @@ class BusinessEdit extends Component
         $lang_id = getCurrentLanguageID();
 
         $this->pricingOptions = PricingOption::with(['translations' => function ($query) use ($lang_id) {
-            $query->whereIn('lang_id', [$this->lang_id , 1]);
+            $query->whereIn('lang_id', [$this->lang_id, 1]);
         }])->where('status', 1)->get();
-
     }
 
     protected function loadCountries()
@@ -1079,7 +1095,7 @@ class BusinessEdit extends Component
             fn($text) => ['text' => $text],
             array_pad($existingCons, 3, '')
         );
-        
+
         $this->pro_cons_intro = $business->pro_cons_intro ?? '';
         $this->pro_cons_summary = $business->pro_cons_summary ?? '';
         $this->pro_cons_headline = $business->pro_cons_headline ?? '';
@@ -1349,6 +1365,10 @@ class BusinessEdit extends Component
             // dd('State before saving:', $this->countryWebsiteUrls);
 
             $this->updateBusinessData($business);
+
+            $business->screenshot_display_category = $this->selectedScreenshotCategory ?: null;
+            $business->save();
+
             $this->updateBusinessTranslation($business);
 
             $this->syncBusinessRelationships($business);
@@ -1366,7 +1386,7 @@ class BusinessEdit extends Component
             $this->isSubmitting = false;
             session()->flash('success', 'Business updated successfully.');
 
-            return redirect()->route('business.listing.livewire' , ['id' => $this->businessId]);
+            return redirect()->route('business.listing.livewire', ['id' => $this->businessId]);
         } catch (\Exception $e) {
             DB::rollBack();
             $this->isSubmitting = false;
@@ -1522,68 +1542,68 @@ class BusinessEdit extends Component
         }
     }
     public function updatedLanguagesSupported($value)
-{
-    if (!$value) {
-        return;
-    }
+    {
+        if (!$value) {
+            return;
+        }
 
-    // Sirf edit mode mein hi translation switch karo
-    if (!$this->businessId) {
-        return;
-    }
+        // Sirf edit mode mein hi translation switch karo
+        if (!$this->businessId) {
+            return;
+        }
 
-    $business = Business::with('translations')->find($this->businessId);
+        $business = Business::with('translations')->find($this->businessId);
 
-    if (!$business) {
-        return;
-    }
+        if (!$business) {
+            return;
+        }
 
-    // Us language ki translation dhundo — agar nahi mili to empty rakho
-    // taaki naya translation manually likha ja sake
-    $translation = $business->translations->firstWhere('lang_id', $value);
+        // Us language ki translation dhundo — agar nahi mili to empty rakho
+        // taaki naya translation manually likha ja sake
+        $translation = $business->translations->firstWhere('lang_id', $value);
 
-    $this->name                     = $translation->name ?? '';
-    $this->headquaters               = $translation->headquarters ?? '';
-    $this->support_options           = $translation->support_options ?? '';
-    $this->description_title         = $translation->description_title ?? '';
-    $this->business_description      = $translation->description ?? '';
+        $this->name                     = $translation->name ?? '';
+        $this->headquaters               = $translation->headquarters ?? '';
+        $this->support_options           = $translation->support_options ?? '';
+        $this->description_title         = $translation->description_title ?? '';
+        $this->business_description      = $translation->description ?? '';
         $this->long_preview_description = $translation->long_preview_description ?? '';
-    $this->alternatives_title        = $translation->alternatives_title ?? '';
-    $this->alternatives_description  = $translation->alternatives_description ?? '';
-    $this->alternatives_title_2      = $translation->alternatives_title_2 ?? '';
-    $this->alternatives_description_2= $translation->alternatives_description_2 ?? '';
-    $this->reviews_title             = $translation->reviews_title ?? '';
-    $this->reviews_description       = $translation->reviews_description ?? '';
-    $this->reviews_title_2           = $translation->reviews_title_2 ?? '';
-    $this->reviews_description_2     = $translation->reviews_description_2 ?? '';
+        $this->alternatives_title        = $translation->alternatives_title ?? '';
+        $this->alternatives_description  = $translation->alternatives_description ?? '';
+        $this->alternatives_title_2      = $translation->alternatives_title_2 ?? '';
+        $this->alternatives_description_2 = $translation->alternatives_description_2 ?? '';
+        $this->reviews_title             = $translation->reviews_title ?? '';
+        $this->reviews_description       = $translation->reviews_description ?? '';
+        $this->reviews_title_2           = $translation->reviews_title_2 ?? '';
+        $this->reviews_description_2     = $translation->reviews_description_2 ?? '';
         $this->reviews_pro_cons_intro     = $translation->reviews_pro_cons_intro ?? '';
         $this->reviews_pro_cons_summary   = $translation->reviews_pro_cons_summary ?? '';
-    $this->faqs_title                = $translation->faqs_title ?? '';
-    $this->faqs_description          = $translation->faqs_description ?? '';
-    $this->faqs_title_2              = $translation->faqs_title_2 ?? '';
-    $this->faqs_description_2        = $translation->faqs_description_2 ?? '';
-    $this->comparison_title          = $translation->comparison_title ?? '';
-    $this->comparison_description    = $translation->comparison_description ?? '';
-    $this->comparison_title_2        = $translation->comparison_title_2 ?? '';
-    $this->comparison_description_2  = $translation->comparison_description_2 ?? '';
-    $this->short_description         = $translation->short_description ?? '';
-    $this->after_image_description   = $translation->after_image_description ?? '';
-    $this->primary_keywords          = $translation->primary_keywords ?? '';
-    $this->secondary_keywords        = $translation->secondary_keywords ?? '';
-    $this->long_tail_keywords        = $translation->long_tail_keywords ?? '';
-    $this->high_intent_keywords      = $translation->high_intent_keywords ?? '';
+        $this->faqs_title                = $translation->faqs_title ?? '';
+        $this->faqs_description          = $translation->faqs_description ?? '';
+        $this->faqs_title_2              = $translation->faqs_title_2 ?? '';
+        $this->faqs_description_2        = $translation->faqs_description_2 ?? '';
+        $this->comparison_title          = $translation->comparison_title ?? '';
+        $this->comparison_description    = $translation->comparison_description ?? '';
+        $this->comparison_title_2        = $translation->comparison_title_2 ?? '';
+        $this->comparison_description_2  = $translation->comparison_description_2 ?? '';
+        $this->short_description         = $translation->short_description ?? '';
+        $this->after_image_description   = $translation->after_image_description ?? '';
+        $this->primary_keywords          = $translation->primary_keywords ?? '';
+        $this->secondary_keywords        = $translation->secondary_keywords ?? '';
+        $this->long_tail_keywords        = $translation->long_tail_keywords ?? '';
+        $this->high_intent_keywords      = $translation->high_intent_keywords ?? '';
 
-    // CKEditor fields (business_description, after_image_description) ko
-    // visually refresh karne ke liye JS event bhejo
-    $this->dispatch('languageSwitched');
+        // CKEditor fields (business_description, after_image_description) ko
+        // visually refresh karne ke liye JS event bhejo
+        $this->dispatch('languageSwitched');
 
-    if (!$translation) {
-        $this->dispatch('notify', [
-            'message' => 'No translation exists for this language yet — you can create one.',
-            'type' => 'info'
-        ]);
+        if (!$translation) {
+            $this->dispatch('notify', [
+                'message' => 'No translation exists for this language yet — you can create one.',
+                'type' => 'info'
+            ]);
+        }
     }
-}
 
     protected function getValidationRules()
     {
@@ -1820,7 +1840,7 @@ class BusinessEdit extends Component
                 'support_options' => $this->support_options,
                 'description_title' => $this->description_title,
                 'description' => $this->business_description,
-            'long_preview_description' => $this->long_preview_description,
+                'long_preview_description' => $this->long_preview_description,
                 'alternatives_title' => $this->alternatives_title,
                 'alternatives_description' => $this->alternatives_description,
                 'alternatives_title_2' => $this->alternatives_title_2,
@@ -1829,8 +1849,8 @@ class BusinessEdit extends Component
                 'reviews_description' => $this->reviews_description,
                 'reviews_title_2' => $this->reviews_title_2,
                 'reviews_description_2' => $this->reviews_description_2,
-            'reviews_pro_cons_intro' => $this->reviews_pro_cons_intro,
-            'reviews_pro_cons_summary' => $this->reviews_pro_cons_summary,
+                'reviews_pro_cons_intro' => $this->reviews_pro_cons_intro,
+                'reviews_pro_cons_summary' => $this->reviews_pro_cons_summary,
                 'faqs_title' => $this->faqs_title,
                 'faqs_description' => $this->faqs_description,
                 'faqs_title_2' => $this->faqs_title_2,
@@ -2259,7 +2279,7 @@ class BusinessEdit extends Component
         $this->affiliate_link = '';
         $this->websiteUrls = [''];
         $this->features = ['', '', ''];
-       $this->languages_supported = 1;
+        $this->languages_supported = 1;
         $this->active_all_countries = 1;
         $this->loadCountries();
     }
