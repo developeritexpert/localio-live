@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - siteground-cicd
+      - main
 
 concurrency:
   group: siteground-production
