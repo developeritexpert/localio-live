@@ -91,8 +91,6 @@
         margin-bottom: 8px;
     }
     .subcat-block p {
-        font-size: 14px;
-        color: #555;
         margin-bottom: 15px;
     }
     .subcat-block .subcat-popular-text {

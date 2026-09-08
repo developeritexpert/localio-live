@@ -1,6 +1,6 @@
 <section class="sfwr_sec cat_page_secs light p_120" style="background: #fdfdfd !important;">
     <div class="container">
-        <h1 class="popular-categories-title" style="font-size: 28px !important; font-weight: 700 !important;">Browse all categories</h1>
+        <h1 class="popular-categories-title" style="font-size: 28px !important;">Browse all categories</h1>
         <div class="sfwr_content">
             <div class="row gy-4">
                 <div class="col-lg-3 mb-4">
@@ -90,8 +90,8 @@
                         @if(!empty($catName))
                         <div class="subcat-block" wire:key="sub-{{ $subcat->id }}" style="background: #f7f9fb;">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h2 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catName }}</h3>
-                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;">See all {{ $catName }}</a>
+                                <h2 style="margin: 0;">{{ $catName }}</h3>
+                                <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="subcat-link" >See all {{ $catName }}</a>
                             </div>
 
                             <p>{{ $desc }}</p>
