@@ -559,10 +559,12 @@
                                          <button class="post-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#discussion-{{ $disc->id }}'); alert('Discussion link copied!');">
                                              <i class="far fa-share-square"></i> Share
                                          </button>
-                                         <!-- Pin Button (Always visible for personal pinning) -->
-                                         <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
-                                             <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
-                                         </button>
+                                         @auth
+                                              <!-- Pin Button (Visible for logged-in users only) -->
+                                              <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
+                                                  <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
+                                              </button>
+                                          @endauth
                                      </div>
 
                                     <!-- Comments Accordion Section -->
@@ -874,7 +876,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (userBadge) userBadge.remove();
                             }
                         }
-                        reorderPinnedElement(postCard, data.is_pinned, data.is_global, 'discussion');
+                        reorderPinnedElement(postCard, data.is_pinned, 'discussion');
                     }
                 } else if (type === 'comment') {
                     const commentEl = document.getElementById('comment-' + id);
@@ -902,7 +904,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (userBadge) userBadge.remove();
                             }
                         }
-                        reorderPinnedElement(commentEl, data.is_pinned, data.is_global, 'comment');
+                        reorderPinnedElement(commentEl, data.is_pinned, 'comment');
                     }
                 }
             }
@@ -911,31 +913,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function reorderPinnedElement(element, isPinned, isGlobal, type) {
+function reorderPinnedElement(element, isPinned, type) {
     const container = element.parentElement;
     if (!container) return;
 
     const globalBadgeSelector = type === 'discussion' ? '.disc-pinned-badge' : '.comment-pinned-badge';
     const userBadgeSelector = type === 'discussion' ? '.user-disc-pinned-badge' : '.user-pinned-badge';
 
+    const siblings = Array.from(container.children);
+    const otherPinnedItems = siblings.filter(child => 
+        child !== element && 
+        (child.querySelector(globalBadgeSelector) || child.querySelector(userBadgeSelector))
+    );
+
     if (isPinned) {
-        if (isGlobal) {
-            container.prepend(element);
+        if (otherPinnedItems.length > 0) {
+            const lastPinned = otherPinnedItems[otherPinnedItems.length - 1];
+            lastPinned.after(element);
         } else {
-            const siblings = Array.from(container.children);
-            const globalPinnedItems = siblings.filter(child => child !== element && child.querySelector(globalBadgeSelector));
-            
-            if (globalPinnedItems.length > 0) {
-                const lastGlobal = globalPinnedItems[globalPinnedItems.length - 1];
-                lastGlobal.after(element);
+            const formEl = container.querySelector('.comment-submit-form');
+            if (formEl) {
+                formEl.after(element);
             } else {
                 container.prepend(element);
             }
         }
     } else {
-        const siblings = Array.from(container.children);
-        const remainingPinnedItems = siblings.filter(child => child !== element && (child.querySelector(globalBadgeSelector) || child.querySelector(userBadgeSelector)));
-        
+        const remainingPinnedItems = siblings.filter(child => 
+            child !== element && 
+            (child.querySelector(globalBadgeSelector) || child.querySelector(userBadgeSelector))
+        );
+
         if (remainingPinnedItems.length > 0) {
             const lastPinned = remainingPinnedItems[remainingPinnedItems.length - 1];
             lastPinned.after(element);

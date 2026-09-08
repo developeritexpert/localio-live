@@ -1160,11 +1160,11 @@ class ViewController extends Controller
         $userPinnedDiscIds = session()->get('user_pinned_discussions', []);
         $userPinnedDiscIds = is_array($userPinnedDiscIds) ? array_filter(array_map('intval', $userPinnedDiscIds)) : [];
 
-        $query->orderByDesc('is_pinned');
-
         if (!empty($userPinnedDiscIds)) {
             $idsStr = implode(',', $userPinnedDiscIds);
-            $query->orderByRaw("CASE WHEN id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+            $query->orderByRaw("CASE WHEN is_pinned = 1 OR id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+        } else {
+            $query->orderByDesc('is_pinned');
         }
 
         $sort = $request->get('sort', 'popular');

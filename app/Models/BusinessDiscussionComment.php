@@ -52,12 +52,13 @@ class BusinessDiscussionComment extends Model
         $userPinnedComments = is_array($userPinnedComments) ? array_filter(array_map('intval', $userPinnedComments)) : [];
 
         $relation = $this->hasMany(BusinessDiscussionComment::class, 'parent_id')
-            ->where('status', 'active')
-            ->orderByDesc('is_pinned');
+            ->where('status', 'active');
 
         if (!empty($userPinnedComments)) {
             $idsStr = implode(',', $userPinnedComments);
-            $relation->orderByRaw("CASE WHEN id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+            $relation->orderByRaw("CASE WHEN is_pinned = 1 OR id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+        } else {
+            $relation->orderByDesc('is_pinned');
         }
 
         return $relation->orderBy('created_at', 'asc');
