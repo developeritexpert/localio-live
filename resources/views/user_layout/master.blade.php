@@ -244,22 +244,6 @@
             border-radius: 50% !important;
         }
 
-        /* .sl_h {
-            flex: 1 1 auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 4px !important;
-            padding-right: 8px !important;
-        } */
-
-        .sl_h h6 {
-            font-size: 16px !important;
-            font-weight: 700 !important;
-            color: #002347 !important;
-            margin: 0 !important;
-            line-height: 1.3 !important;
-        }
-
         .rate_box {
             display: flex !important;
             align-items: center !important;
@@ -356,15 +340,6 @@
             width: 100% !important;
         }
 
-        .sl_main h6.head,
-        .sl_main h6 {
-            flex: 1 1 auto !important;
-            padding-right: 0 !important;
-            /* Clear old absolute padding offset */
-            font-size: 16px !important;
-            line-height: 1.3 !important;
-            margin: 0 !important;
-        }
 
         .sl_main div[wire\:key*="wishlist-container"] {
             position: static !important;
@@ -495,7 +470,7 @@
             position: relative !important;
         }
 
-        .top-rate-innr .sl_main h6.head,
+        .top-rate-innr .sl_main p.head,
         .reviews_block .sl_main h6.head,
         .automotive-card .sl_main h6.head {
             flex: 1 1 auto !important;
@@ -1227,11 +1202,11 @@
                             </div>
 
                             <div class="foot-col footer-dropdown">
-                                <h6 class="footer-title"> {{ $footerContents['discover'] ?? 'Discover' }}
+                                <p class="footer-title"> {{ $footerContents['discover'] ?? 'Discover' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
-                                </h6>
+                                </p>
                                 <ul class="foot-col-list">
                                     <li>
                                         <a href="{{ route('category', ['locale' => session('lang_code', 'en-us')]) }}">
@@ -1254,12 +1229,12 @@
                                     </li> --}}
                             </div>
                             <div class="foot-col footer-dropdown">
-                                <h6 class="footer-title">
+                                <p class="footer-title">
                                     {{ $footerContents['company'] ?? 'Legal' }}
                                     <span class="footer-arrow d-flex d-md-none">
                                         <i class="fas fa-chevron-down"></i>
                                     </span>
-                                </h6>
+                                </p>
                                 <ul class="foot-col-list">
                                     <li><a
                                             href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">{{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}</a>
@@ -1302,11 +1277,11 @@
                             </ul>
                         </div> --}}
                         <div class="foot-col footer-dropdown">
-                            <h6 class="footer-title">{{ $footerContents['help'] ?? 'Help' }}
+                            <p class="footer-title">{{ $footerContents['help'] ?? 'Help' }}
                                 <span class="footer-arrow d-flex d-md-none">
                                     <i class="fas fa-chevron-down"></i>
                                 </span>
-                            </h6>
+                            </p>
                             <ul class="foot-col-list">
                                 {{-- <li>
                                         <a href="{{ route('expert-guide', ['locale' => session('lang_code', 'en-us')]) }}"

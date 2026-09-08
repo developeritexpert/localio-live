@@ -84,7 +84,7 @@
 
                                         <!-- Middle part: Title & Description -->
                                         <div class="review-card-middle" style="flex-grow: 1; margin-bottom: 12px; overflow: hidden;">
-                                            <h5 >{{ $reviewTitle }}</h5>
+                                            <p class="review-card-title" >{{ $reviewTitle }}</p>
                                             <div class="rating-stars" style="display: flex; gap: 2px; margin-bottom: 8px;">
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     @if ($i <= floor($review->rating))
