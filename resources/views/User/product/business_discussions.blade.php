@@ -18,7 +18,6 @@
             margin-bottom: 20px;
         }
 
-        /* Reddit Comment Thread Lines & Layout */
         .comments-thread-container {
             margin-top: 18px;
             padding-top: 18px;
@@ -41,7 +40,6 @@
             margin-bottom: 6px;
         }
 
-        /* Left Thread Column: Avatar & Continuous Vertical Root Line */
         .comment-thread-left {
             display: flex;
             flex-direction: column;
@@ -88,7 +86,6 @@
         .avatar-color-5 { background: #e11d48; }
         .avatar-color-6 { background: #2563eb; }
 
-        /* Continuous Root Thread Line */
         .comment-thread-line-container {
             flex-grow: 1;
             width: 100%;
@@ -107,14 +104,12 @@
             border-radius: 2px;
         }
 
-        /* Hover interaction: Highlight connecting root line when hovered */
         .comment-thread-line-container:hover .comment-thread-line,
         .reddit-comment-item:hover > .comment-thread-left > .comment-thread-line-container .comment-thread-line {
             background-color: #06498b;
             width: 3px;
         }
 
-        /* Right Content Column */
         .comment-content-col {
             flex-grow: 1;
             min-width: 0;
@@ -182,7 +177,6 @@
             word-break: break-word;
         }
 
-        /* Reddit Action Bar */
         .comment-action-bar {
             font-size: 12px;
         }
@@ -242,7 +236,6 @@
             color: #0f172a;
         }
 
-        /* Thread Collapse State */
         .reddit-comment-item.is-collapsed > .comment-content-col > .comment-body-wrapper {
             display: none !important;
         }
@@ -526,7 +519,7 @@
                                             <div>
                                                 <span class="fw-bold" style="color: #0f172a; font-size: 14px;">{{ $disc->author_display_name }}</span>
                                                 @if($disc->author_title)
-                                                    <span class="text-muted" style="font-size: 12px;">• {{ $disc->author_title }}</span>
+                                                    <!-- <span class="text-muted" style="font-size: 12px;">• {{ $disc->author_title }}</span> -->
                                                 @endif
                                                 <div class="text-muted" style="font-size: 11px;">{{ $disc->created_at->diffForHumans() }}</div>
                                             </div>
@@ -551,7 +544,6 @@
                                          {!! nl2br(e($disc->content)) !!}
                                      </p>
 
-                                     <!-- Post Footer Actions -->
                                      <div class="d-flex align-items-center gap-3">
                                          <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}">
                                              <i class="far fa-comment-alt"></i> {{ $disc->comments_count }} Comments
@@ -560,16 +552,13 @@
                                              <i class="far fa-share-square"></i> Share
                                          </button>
                                          @auth
-                                              <!-- Pin Button (Visible for logged-in users only) -->
-                                              <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
+                                         <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
                                                   <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
                                               </button>
                                           @endauth
                                      </div>
 
-                                    <!-- Comments Accordion Section -->
                                     <div class="comments-thread-container collapse mt-3" id="comments-{{ $disc->id }}">
-                                        <!-- Add Comment Input -->
                                         <form action="{{ route('business.discussion.comment') }}" method="POST" class="mb-4 comment-submit-form">
                                             @csrf
                                             <input type="hidden" name="business_discussion_id" value="{{ $disc->id }}">
@@ -588,7 +577,6 @@
                                             </button>
                                         </form>
 
-                                        <!-- Render Existing Top-level Comments -->
                                         <div class="top-level-comments-list" id="top-level-comments-{{ $disc->id }}">
                                             @foreach($disc->comments as $comment)
                                                 @include('User.product.partials.comment_item', ['comment' => $comment, 'disc' => $disc])
@@ -606,7 +594,6 @@
                 @endif
             </div>
 
-            <!-- Right Sidebar Column -->
             <div class="col-lg-4">
                 <div class="thre_revi_rgt">
                     <div class="main_feture mb-4">
@@ -623,8 +610,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Navigation Subpages Component -->
                     <x-more-about-business :business="$business" />
                 </div>
             </div>
@@ -632,7 +617,6 @@
     </div>
 </div>
 
-<!-- Modal for Creating New Discussion -->
 <div class="modal fade" id="newDiscussionModal" tabindex="-1" aria-labelledby="newDiscussionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content" style="border-radius: 14px;">
@@ -702,7 +686,6 @@ function copyCommentLink(commentId) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Accordion Toggle for Comments
     document.querySelectorAll('.toggle-comments-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
@@ -713,7 +696,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Delegated AJAX Upvote/Downvote Handler for posts & recursive comments
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.vote-trigger');
         if (!btn) return;
@@ -748,7 +730,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(err => console.error('Vote error:', err));
     });
 
-    // AJAX Comment Submission Handler (No Page Reload, Keep Comment Box Open)
     document.addEventListener('submit', function(e) {
         const form = e.target.closest('.comment-submit-form');
         if (!form) return;
@@ -780,31 +761,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const discussionId = data.discussion_id;
 
                 if (parentId) {
-                    // Append to parent comment's replies container
                     const repliesContainer = document.getElementById('replies-container-' + parentId);
                     if (repliesContainer) {
                         repliesContainer.insertAdjacentHTML('beforeend', data.html);
                     }
-                    // Hide reply form box after reply is submitted
                     const replyFormBox = document.getElementById('reply-form-' + parentId);
                     if (replyFormBox) {
                         replyFormBox.classList.add('d-none');
                     }
                 } else {
-                    // Append to top-level comments container for this discussion
                     const topLevelContainer = document.getElementById('top-level-comments-' + discussionId);
                     if (topLevelContainer) {
                         topLevelContainer.insertAdjacentHTML('beforeend', data.html);
                     }
                 }
 
-                // Update comments count text on discussion card
                 const commentsCountBtn = document.querySelector(`[data-target="#comments-${discussionId}"]`);
                 if (commentsCountBtn) {
                     commentsCountBtn.innerHTML = `<i class="far fa-comment-alt"></i> ${data.comments_count} Comments`;
                 }
 
-                // Reset comment textarea input so user can comment again
                 form.reset();
             } else if (data.message) {
                 alert(data.message);
@@ -821,7 +797,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Delegated AJAX Pin/Unpin Handler (No Page Reload)
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.pin-trigger');
         if (!btn) return;

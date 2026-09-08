@@ -1410,7 +1410,10 @@
                         </div>
                         <ul class="options">
                             <div class="container">
-                                <h3 style="color: black;">Choose your Country/Region</h3>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 style="color: black; margin: 0;">Choose your Country/Region</h3>
+                                    <button type="button" onclick="event.stopPropagation(); this.closest('.select-menu').classList.remove('active');" aria-label="Close" style="background: none; border: none; font-size: 22px; color: #333; cursor: pointer; padding: 0; line-height: 1;">✕</button>
+                                </div>
                                 <div class="footer-langs-container">
                                     @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
                                     @if($country->language)

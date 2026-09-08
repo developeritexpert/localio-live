@@ -10,7 +10,6 @@
 @endphp
 
 <div class="reddit-comment-item {{ $level > 0 ? 'nested-comment-item' : '' }}" id="comment-{{ $comment->id }}" data-comment-id="{{ $comment->id }}">
-    <!-- Left Thread Column (Avatar & Connecting Root Line) -->
     <div class="comment-thread-left">
         <div class="comment-avatar">
             @if($comment->author_avatar)
@@ -55,7 +54,6 @@
 
         <!-- Comment Action Toolbar (Upvote/Downvote, Reply, Share, Pin) -->
         <div class="comment-action-bar d-flex align-items-center gap-3 flex-wrap">
-            <!-- Vote Box Pill -->
             <div class="comment-vote-pill d-inline-flex align-items-center">
                 <button type="button" class="comment-vote-btn vote-trigger" data-type="comment" data-id="{{ $comment->id }}" data-vote="up" title="Upvote">
                     <i class="fas fa-arrow-up"></i>
@@ -66,12 +64,10 @@
                 </button>
             </div>
 
-            <!-- Reply Button -->
             <button type="button" class="comment-action-btn toggle-reply-btn" onclick="toggleReplyForm({{ $comment->id }})">
                 <i class="far fa-comment-alt"></i> Reply
             </button>
 
-            <!-- Share Button -->
             <button type="button" class="comment-action-btn" onclick="navigator.clipboard.writeText('{{ url()->current() }}#comment-{{ $comment->id }}'); alert('Comment link copied!');">
                 <i class="far fa-share-square"></i> Share
             </button>

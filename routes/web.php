@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\BaseLanguageController;
 use App\Http\Controllers\Admin\Bcp47LanguageController;
-use App\Http\Controllers\Admin\{ContentGenerationController,AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
+use App\Http\Controllers\Admin\{ContentGenerationController,AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, ContributorBadgeController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
 use App\Http\Controllers\Admin\CategoryFeatureContentController;
 
@@ -266,12 +266,12 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/update-filter-order', [FilterController::class, 'updateFilterOrder'])->name('update-filter-order');
 
     // Contributor Badges
-    Route::get('/admin-dashboard/contributor-badges', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'index'])->name('admin.contributor.badges');
-    Route::get('/admin-dashboard/contributor-badges/create', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'create'])->name('admin.contributor.badges.create');
-    Route::post('/admin-dashboard/contributor-badges/store', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'store'])->name('admin.contributor.badges.store');
-    Route::get('/admin-dashboard/contributor-badges/edit/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'edit'])->name('admin.contributor.badges.edit');
-    Route::post('/admin-dashboard/contributor-badges/update/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'update'])->name('admin.contributor.badges.update');
-    Route::get('/admin-dashboard/contributor-badges/delete/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'destroy'])->name('admin.contributor.badges.delete');
+    Route::get('/admin-dashboard/contributor-badges', [ContributorBadgeController::class, 'index'])->name('admin.contributor.badges');
+    Route::get('/admin-dashboard/contributor-badges/create', [ContributorBadgeController::class, 'create'])->name('admin.contributor.badges.create');
+    Route::post('/admin-dashboard/contributor-badges/store', [ContributorBadgeController::class, 'store'])->name('admin.contributor.badges.store');
+    Route::get('/admin-dashboard/contributor-badges/edit/{id}', [ContributorBadgeController::class, 'edit'])->name('admin.contributor.badges.edit');
+    Route::post('/admin-dashboard/contributor-badges/update/{id}', [ContributorBadgeController::class, 'update'])->name('admin.contributor.badges.update');
+    Route::get('/admin-dashboard/contributor-badges/delete/{id}', [ContributorBadgeController::class, 'destroy'])->name('admin.contributor.badges.delete');
 
     // Features Controller :
     Route::get('/admin-dashboard/features', [FeatureController::class, 'index'])->name('features');

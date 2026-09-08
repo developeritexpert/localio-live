@@ -1871,8 +1871,12 @@
                                                                             <div class="flex-grow-1">
                                                                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                                                                     <div class="d-flex align-items-center gap-2">
-                                                                                        <span class="badge bg-secondary" style="font-weight: 500; font-size: 11px;">{{ $pDisc->category }}</span>
-                                                                                        <span class="text-muted" style="font-size: 12px;">by <strong>{{ $pDisc->author_display_name }}</strong> • {{ $pDisc->created_at->diffForHumans() }}</span>
+                                                                                        <!-- <span class="badge bg-secondary" style="font-weight: 500; font-size: 11px;">{{ $pDisc->category }}</span> -->
+                                                                                        <span 
+                                                                                        class="text-muted" style="font-size: 12px;">
+                                                                                        <!-- by  -->
+                                                                                        <strong>
+                                                                                        {{ $pDisc->author_display_name }}</strong>  {{ $pDisc->created_at->diffForHumans() }}</span>
                                                                                     </div>
                                                                                 </div>
 
