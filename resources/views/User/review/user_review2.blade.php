@@ -125,11 +125,11 @@
                     </div>
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
-                            <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1;">
+                            <h1 style="margin: 0;">
                                 {{ $bName }} {{ $reviewsWord }} reviews
                             </h1>
                         </div>
-                        <p style="font-size: 16px; color: #444; margin: 0; font-weight:400;">
+                        <p class="text-meta" style="font-size: 16px;">
                             {{ $subHeadline }}
                         </p>
                     </div>
@@ -158,8 +158,8 @@
                     <!-- 1. Description / Overview Section -->
                     <div class="col-lg-12">
                         <div class="is-asana-lft" id="section1">
-                            <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">{{ $reviewsTitle1 }}</h2>
-                            <div class="is_text" style="font-size: 15px; color: #475569; line-height: 1.7;">
+                            <h2 style="margin-bottom: 12px;">{{ $reviewsTitle1 }}</h2>
+                            <div class="">
                                 @if(!empty($reviewsDesc1))
                                     {!! $reviewsDesc1 !!}
                                 @else
@@ -184,7 +184,7 @@
                     @if((isset($aggregatedPros) && count($aggregatedPros) > 0 && isset($aggregatedCons) && count($aggregatedCons) > 0) || (isset($pros) && $pros->count() > 0 && isset($cons) && $cons->count() > 0))
                     <div class="col-lg-12 mt-4 mb-4" id="section-pros-cons">
                         <div class="pros-cons-header mb-3">
-                            <h2 style="font-weight: 600; color: #1e3050; font-size: 24px; margin-bottom: 8px;">
+                            <h2 style="margin-bottom: 8px;">
                                 What the Localio community says
                             </h2>
                             @if(!empty($reviewsProConsIntro))
@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h3 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</h3>
+                                        <h3 class="card-title mb-3" style=" font-size: 18px !important;">Pros</h3>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -269,10 +269,10 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="text-start mb-4">
-                                            <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">
+                                            <h2 style=" margin-bottom: 8px;">
                                                 {{ $faq_title?->default_value ?: 'Frequently asked questions' }}
                                             </h2>
-                                            <p style="font-size: 15px; margin-bottom: 0;">
+                                            <p style=" margin-bottom: 0;">
                                                 {{ $faq_description?->default_value ?: ('Everything you need to know about ' . $bName . ' and its services.') }}
                                             </p>
                                         </div>

@@ -94,7 +94,7 @@ div#navbarSupportedContent .close_btn_mobile {
 }
 
 .sec_head .header_row:has(.search-results) .search-box input {
-    border-radius: 25px 25px 0px 0px;
+    border-radius: 8px 8px 0px 0px;
 }
 
 .accordion-bdy-wrp .review_card:hover {
@@ -3740,7 +3740,7 @@ textarea#message {
         padding-bottom: 10px;
     }
 
-    header .search-box input {
+    .search-box input {
         padding: 10px 20px;
         right: 6px;
     }
@@ -7485,6 +7485,7 @@ textarea#message {
 
     .search-box input {
         font-size: 14px;
+        height: 40px;
     }
 
     .range-wrapper .values {
@@ -9082,7 +9083,7 @@ textarea#message {
     }
 
     .auto-choice-btn {
-        flex-direction: row !important;
+        flex-direction: row-reverse !important;
     }
 
     .auto-choice-btn .cta {
@@ -9092,6 +9093,10 @@ textarea#message {
 
     .auto-choice-btn .cta {
         padding: 10px 10px !important;
+    }
+
+    #myID input[type="text"]::placeholder {
+        font-size: 12px !important;
     }
 }
 

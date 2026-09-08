@@ -3,7 +3,7 @@
     <i class="fa-solid fa-magnifying-glass"></i>
     @if (!empty($results) || $query)
         <div class="search-results"
-            style="position: absolute; width: 100%; background-color: white;   border-radius: 0px 0px 25px 25px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); z-index: 10; max-height: 250px; overflow-y: auto;">
+            style="position: absolute; width: 100%; background-color: white;   border-radius: 0px 0px 8px 8px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); z-index: 10; max-height: 250px; overflow-y: auto;">
             <ul style="list-style: none; padding: 0; margin: 0;">
                 @forelse ($results as $result)
 

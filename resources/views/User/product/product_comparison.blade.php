@@ -71,7 +71,7 @@
         <div class="row align-items-center justify-content-between">
             <div class="comparison-header-left">
                 <div class="top_head">
-                    <h1 style="font-size: 28px !important; font-weight: 700; color: #1e3050; margin: 0; line-height: 1.2;">
+                    <h1 style="font-size: 28px !important; color: #002347; margin: 0;">
                         @if (count($businesses) >= 2)
                             {{ $businesses->map(fn($b) => $b->translations->first()?->name ?? $b->name ?? '')->filter()->implode(' vs ') }}: Comparison
                         @elseif (count($businesses) == 1)
@@ -80,8 +80,8 @@
                             Businesses Comparison
                         @endif
                     </h1>
-                    <p class="text-muted" style="font-size: 13px; margin-top: 4px; margin-bottom: 14px;">Last updated on {{ now()->format('F j, Y') }}</p>
-                    <p style="font-size: 15px; margin-bottom: 0; ">
+                    <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
+                    <p style="margin-bottom: 0; ">
                         @if(!empty($catName))
                             Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.
                         @else
@@ -615,7 +615,7 @@
             <div class="crm_content" data-aos="fade-up" data-aos-duration="1000">
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
-                        <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin: 0;">Reviews</h2>
+                        <h2 style="margin: 0;">Reviews</h2>
                     </div>
                 </div>
 
@@ -636,7 +636,7 @@
                         @endphp
                         <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
                             <div class="p-3 bg-white d-flex align-items-center justify-content-between" style="border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); min-height: 80px;">
-                                <div class="d-flex align-items-center gap-1" style="min-width: 0;">
+                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                     <div class="top-product-medium-logo" style="width: 44px; height: 44px; flex-shrink: 0;">
                                         <x-business-logo :business="$business" :name="$bName" />
                                     </div>
@@ -989,7 +989,7 @@
                 {{-- Section Title --}}
                 <div class="crm_hd mb-4">
                     <div class="crm_lft">
-                        <h2 style="font-size: 26px; font-weight: 700; color: #1e3050; margin: 0;">Alternatives</h2>
+                        <h2 style="margin: 0;">Alternatives</h2>
                     </div>
                 </div>
 
@@ -1043,13 +1043,13 @@
                                             $altReviews = $alt->reviews->where('status', 'active');
                                             $altRating = $altReviews->count() > 0 ? round($altReviews->avg('rating'), 1) : 0;
                                         @endphp
-                                        <div class="comp-alt-item d-flex align-items-center justify-content-between p-2 rounded" style="background-color: #f8fafc; border: 1px solid #edf2f7; transition: all 0.2s;">
+                                        <div class="comp-alt-item d-flex align-items-center justify-content-between p-2 rounded" style="background-color: #f8fafc; border: 1px solid #edf2f7;   ">
                                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                                                 <div class="top-product-medium-logo" style="width: 34px; height: 34px; flex-shrink: 0;">
                                                     <x-business-logo :business="$alt" :name="$altName" />
                                                 </div>
                                                 <div style="min-width: 0;">
-                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $alt->translations->first()?->slug ?? $alt->slug]) }}" style="font-size: 13.5px; font-weight: 600; color: #1e3050; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $altName }}">
+                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $alt->translations->first()?->slug ?? $alt->slug]) }}" style="font-size: 13.5px; font-weight: 600; color: #002347; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $altName }}">
                                                         {{ $altName }}
                                                     </a>
                                                     @if($altRating > 0)

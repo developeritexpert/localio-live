@@ -416,9 +416,7 @@
                     </div>
                 </div>
                 <div class="top-rated-heading-block">
-                    <div class="host-parra row align-items-start">
-                        <div class="col-md-7 text-start">
-                            @php
+                       @php
                                 $currentLangId = $lang_id ?? getCurrentLanguageID();
                                 $c1Obj = \App\Models\StaticContentKey::where('key', 'country1')->first();
                                 $c2Obj = \App\Models\StaticContentKey::where('key', 'country2')->first();
@@ -480,8 +478,12 @@
                                     {{ $applyDynamicVars($baseTitle) }}
                                 </h1>
                             @endif
+
                             <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
+                    <div class="host-parra row align-items-start">
+                        <div class="col-md-7 text-start">
+                            
                             <div class="category-description-text">
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
@@ -507,7 +509,7 @@
                 <div class="container">
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
                         <div class="host-pro flex-grow-1" style="max-width: 65%;">
-                            <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 8px; margin-top: 0;">
+                            <h2 style="margin-bottom: 8px;">
                                {{ $applyDynamicVars(($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '')) }}
                             </h2>
                             @if(!empty($category->translation->top_rated_listing_subtext))

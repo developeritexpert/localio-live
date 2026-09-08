@@ -408,9 +408,8 @@ div#navbarSupportedContent {
     justify-content: center;
 }
 
-header .search-box input {
+.search-box input {
     font-size: 14px;
-    height: 40px;
 }
 
 .cta.cta_white {
@@ -819,8 +818,9 @@ footer ul li {
     height: 100%;
 }
 
-.foot-col h6 {
+.foot-col p {
     font-size: 15px;
+    font-weight: 700;
 }
 
 .foot-row {
@@ -2973,10 +2973,6 @@ select:focus {
 
 .reviews_block .inn_sl_hed {
     align-items: center;
-}
-
-.foot-row h6 {
-    font-weight: 700;
 }
 
 .banner_text_col .search-box input {
@@ -9826,7 +9822,7 @@ button.btn-vote-faq i.far:hover {
     line-height: 1.2;
 }
 
-.review-card-middle h5 {
+.review-card-middle .review-card-title {
     color: var(--color-dark-blue-text);
     font-size: 14px;
     font-weight: 600;
@@ -9912,9 +9908,12 @@ button.btn-vote-faq i.far:hover {
 
 /* ====style.css updated by-Kashish(04-sep-26)===== */
 
+.category-description-text,
 .category-description-text p,
 .top-rated-subtext-container.ck-content p,
-.rich-text-content p {
+.rich-text-content p,
+.ck-content,
+.legal-document-content {
     color: var(--color-dark-blue-text) !important;
     font-size: 16px;
     margin-bottom: 0;
@@ -10007,4 +10006,17 @@ button.btn-vote-faq i.far:hover {
 
 .profile-icon {
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) hue-rotate(0deg);
+}
+
+/* ====style.css updated by-Kashish(08-sep-26)===== */
+
+.subcat-link {
+    color: var(--color-dark-blue-text);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+#pvc_section h1 {
+    color: var(--color-dark-blue-text);
 }

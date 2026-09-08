@@ -292,9 +292,9 @@
                 <div class="row align-items-start">
                     <div class="col-md-8 text-start">
                         <h1 >{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
-                        <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on
+                        <p class="text-meta">Last updated on
                             {{ now()->format('F j, Y') }}</p>
-                        <p style="font-size: 15px; margin-bottom: 0;">
+                        <p style=" margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
                     </div>
@@ -305,7 +305,7 @@
                                 <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                             </div>
-                            <p style="font-size: 13px; margin-bottom: 8px; ">
+                            <p style=" margin-bottom: 8px; ">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                             </p>
                             <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
@@ -321,7 +321,7 @@
         
         <div class="top-auto-btm">
             <div class="container">
-                <h2 style="font-size: 22px; font-weight: 700; color: #1e3050; margin-bottom: 16px; margin-top: 0; ">
+                <h2 style="margin-bottom: 16px; margin-top: 0; ">
                     {{ $topProductContents['top_rated_listing_headline'] ?? '“Top-rated brands, products and services' }}
                 </h2>
                 @if(!empty($topProductContents['top_rated_listing_subheadline']))
@@ -345,7 +345,7 @@
                                         <img src="{{ asset('user-dashboard-theme/img/bell_icon.svg') }}" style="width: 20px; height: 20px;" alt="Verified">
                                         <h6 style="margin: 0; font-weight: 700; color: #1e3050; font-size: 16px;">Real Ratings</h6>
                                     </div>
-                                    <p style="font-size: 13px;  margin-bottom: 8px; ">
+                                    <p style=" margin-bottom: 8px; ">
                                         Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                     </p>
                                     <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
@@ -820,7 +820,7 @@
                                                 <!-- Short Description -->
                                                 @if(!empty($item->translations->first()->short_description))
                                                 <div class="mb-3 mt-1 text-start"
-                                                    style="font-size: 14px; color: #5b6b7a; width: 100%;">
+                                                    style="font-size: 14px; color: #002347; width: 100%;">
                                                     {{ $item->translations->first()->short_description }}
                                                 </div>
                                                 @endif
@@ -1086,8 +1086,8 @@
     <section class="explore-categories-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="text-start mb-4">
-                <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
-                <p style="font-size: 15px; margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
+                <h2 style="margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
+                <p style=" margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
@@ -1114,13 +1114,13 @@
                 @if(!empty($catItemName))
                 <div class="subcat-block p-4" style="background: #fdfdfd; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin: 0;">{{ $catItemName }}</h3>
-                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" style="color: #002655; font-size: 13px; font-weight: 600; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                        <h3 style="margin: 0;">{{ $catItemName }}</h3>
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
                             {{ !empty($catItemSeeAllText) ? $catItemSeeAllText : 'See all ' . $catItemName }}
                         </a>
                     </div>
 
-                    <div class="category-description-text" style="font-size: 14px; color: #5b6b7a; line-height: 1.6; margin-bottom: 20px;">{!! $catItemDesc !!}</div>
+                    <div class="category-description-text" style="margin-bottom: 20px;">{!! $catItemDesc !!}</div>
 
                     <div class="top-products-grid">
                         @foreach($cat->top_businesses ?? [] as $business)
@@ -1134,7 +1134,7 @@
                                     <x-business-logo :business="$business" :name="$bizName" />
                                 </div>
                                 <div class="top-product-info min-w-0">
-                                    <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px;">
+                                    <h6 class="m-0 d-flex align-items-center gap-1" >
                                         {{ $bizName }}
                                     </h6>
                                     <div class="rating-group" >
@@ -1191,13 +1191,13 @@
                     @foreach($textSections as $section)
                     <div class="content-section-block mb-5">
                         @if(!empty($section['h2_title']))
-                        <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 16px;">
+                        <h2 style="margin-bottom: 16px;">
                             {{ $section['h2_title'] }}
                         </h2>
                         @endif
 
                         @if(!empty($section['h2_text']))
-                        <div class="rich-text-content" style="font-size: 15px; color: #5b6b7a; line-height: 1.7; margin-bottom: 20px;">
+                        <div class="rich-text-content" style=" color: #5b6b7a; margin-bottom: 20px;">
                             {!! $section['h2_text'] !!}
                         </div>
                         @endif
@@ -1213,12 +1213,12 @@
                                     @endif
                                     <div class="sub-section-content flex-grow-1">
                                         @if(!empty($sub['h3_title']))
-                                        <h3 style="font-size: 18px; font-weight: 600; color: #1e3050; margin-bottom: 10px;">
+                                        <h3 style="margin-bottom: 10px;">
                                             {{ $sub['h3_title'] }}
                                         </h3>
                                         @endif
                                         @if(!empty($sub['h3_text']))
-                                        <div class="rich-text-content" style="font-size: 14.5px; color: #5b6b7a; line-height: 1.7;">
+                                        <div class="rich-text-content" style="color: #5b6b7a;">
                                             {!! $sub['h3_text'] !!}
                                         </div>
                                         @endif
@@ -1242,8 +1242,8 @@
             <div class="row">
                 <div class="">
                     <div class="text-start mb-4">
-                        <h2 style="font-size: 26px; font-weight: 700; color: #002347; margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
-                        <p style="font-size: 15px; margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
+                        <h2 style="margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
+                        <p style="margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
                     </div>
 
                     <div class="accordion" id="topRatedFaqAccordion">
@@ -1256,7 +1256,7 @@
                                 </button>
                             </h2>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
-                                <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fdfdfd;">
                                     {!! $faq['answer'] !!}
                                 </div>
                             </div>
