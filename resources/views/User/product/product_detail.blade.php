@@ -317,7 +317,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         @if ($averageRating !== null)
                                         <div class="main-view-rating-hide">
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
-                                                {{ number_format($averageRating, 1) }}
+                                                {{ formatRating($averageRating) }}
                                             </span>
                                             <div style="display: flex; gap: 2px;">
                                                 @for ($i = 1; $i <= 5; $i++)
@@ -796,7 +796,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($featRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($featRatingVal) }}</span>
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                             </div>
@@ -845,7 +845,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($easeRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($easeRatingVal) }}</span>
 
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
@@ -881,7 +881,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($crRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($crRatingVal) }}</span>
 
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
@@ -915,7 +915,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($vfmRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($vfmRatingVal) }}</span>
 
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
@@ -1080,7 +1080,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         <h6 class="m-0 fw_700" style="color: #002347">Name not available</h6>
                                                                         @endif
                                                                         <div class="rating-group">
-                                                                            <span class="rate_box_num fw-medium" style="">{{ number_format($altRatingAvg, 1) }}</span>
+                                                                            <span class="rate_box_num fw-medium" style="">{{ formatRating($altRatingAvg) }}</span>
                                                                             <div class="rating-stars" style="">
                                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                                     @if ($i <=floor($altRatingAvg))
@@ -1301,7 +1301,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ number_format($averageRating, 1) }}</span>
+                            <span>{{ formatRating($averageRating) }}</span>
                         </div>
                     </div>
                 </div>
@@ -1325,7 +1325,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ number_format($peerRating, 1) }}</span>
+                            <span>{{ formatRating($peerRating) }}</span>
                         </div>
                     </div>
                 </div>
@@ -1597,7 +1597,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             <!-- Left Column: Big Rating & Stars -->
                                                                             <div class="col-lg-5 col-md-5 col-12 mt-0">
                                                                                 <div class="d-flex flex-column align-items-start">
-                                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
+                                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ formatRating($averageRating) }}</span>
                                                                                     @if($ratingWord = get_rating_label($averageRating))
                                                                                     <span class="rating-word-label " style="">
                                                                                         {{ $ratingWord }}
@@ -1633,7 +1633,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                                 <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                                             </div>
                                                                                         </div>
-                                                                                        <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                                        <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                                                                     </div>
                                                                                     @endforeach
                                                                                 </div>
@@ -1992,7 +1992,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
                                         <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                             <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                                {{ number_format($averageRating,1) }}
+                                                {{ formatRating($averageRating) }}
                                             </span>
                                             @if($ratingWord = get_rating_label($averageRating))
                                             <span class="rating-word-label">
@@ -2038,7 +2038,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <progress class="progress-bar w-100"
                                                     value="{{ $criterion->average_rating * 20 }}"
                                                     max="100" style="height: 8px;"></progress>
-                                                <span style="font-size: 12px; font-weight: 600;  min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                <span style="font-size: 12px; font-weight: 600;  min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                             </div>
                                         </div>
                                         @endforeach
@@ -2379,7 +2379,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div
                                                             class="rating-group sticky-nav-rating">
                                                             <span
-                                                                style="">{{ number_format($averageRating, 1) }}</span>
+                                                                style="">{{ formatRating($averageRating) }}</span>
                                                             <div class="rating-star" style="">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <=floor($averageRating))
@@ -3235,7 +3235,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         @endif
                                         @endfor
                             </div>
-                            <span style="font-weight: 600; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                            <span style="font-weight: 600; color: #333;">{{ formatRating($averageRating) }}</span>
                             <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
                         </div>
                     </div>
