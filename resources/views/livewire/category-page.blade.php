@@ -25,7 +25,6 @@
         background-color: #ffffff !important;
         border-color: #cbd5e1 !important;
         box-shadow: 0 6px 18px rgba(0, 35, 71, 0.08) !important;
-        transform: translateY(-2px);
     }
     .cat-compare-item {
         padding: 10px 16px;
@@ -1478,7 +1477,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1497,7 +1496,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1825,7 +1824,7 @@
                 <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
                     @foreach($popularComparisons as $comp)
                     <div class="col-lg-4 col-md-4 col-12">
-                        <a href="{{ $comp['url'] }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; color: inherit; text-decoration: none; display: flex;">
+                        <a href="{{ $comp['url'] }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #fff !important; border-radius: 12px !important; color: inherit; text-decoration: none; display: flex;">
                             <div class="d-flex align-items-center justify-content-between gap-2">
 
                                 <!-- Business 1 -->
@@ -2306,7 +2305,7 @@
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                                 <p class="accordion-header" id="headingFaq{{ $fIndex }}">
-                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                    <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                         {{ $faq['question'] }}
                                     </button>
                                 </p>

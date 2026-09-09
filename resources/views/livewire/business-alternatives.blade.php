@@ -239,9 +239,9 @@ foreach ($altCriteria as $criterion) {
     <!-- <pre style="background:#fff;color:#000;padding:10px;font-size:11px;">
 
 </pre> -->
-     <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">
-        User rating
-    </h6>
+     <p class="fw_700 mb-3" style="color: #002347; font-size:12px;">
+        Detailed user ratings 
+    </p>
 
     @foreach ($altCriteria as $criterion)
         <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -392,7 +392,7 @@ foreach ($altCriteria as $criterion) {
                                     </div>
 
                                     @if(count($bCriteria) > 0)
-                                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">User rating</h6>
+                                        <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
                                         <div class="mb-3">
                                             @foreach ($bCriteria as $criterion)
                                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -976,11 +976,11 @@ foreach ($altCriteria as $criterion) {
                                                 $from = ($currentPage - 1) * $perPage + 1;
                                                 $to = min($currentPage * $perPage, $total);
                                             @endphp
-                                            <p class="m-0">
+                                            <p class="m-0 showing-p">
                                                 Showing {{$from}}-{{$to}} of {{$total}}
                                             </p>
                                         @else
-                                            <p class="m-0">Showing {{ $products->count() }} results</p>
+                                            <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
                                     <div wire:ignore class="d-none">

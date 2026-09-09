@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style=" font-size: 18px !important;">Pros</p>
+                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -288,7 +288,7 @@
                                                                 data-bs-target="#faqCollapse{{ $index }}"
                                                                 aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
                                                                 aria-controls="faqCollapse{{ $index }}"
-                                                                style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                                style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                                 <span>{{ $translation->question }}</span>
                                                             </button>
                                                         </p>
@@ -296,7 +296,7 @@
                                                             class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                             aria-labelledby="faqHeading{{ $index }}"
                                                             data-bs-parent="#businessFaqAccordion">
-                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                                 {!! $translation->answer !!}
                                                             </div>
                                                         </div>
@@ -430,7 +430,7 @@
                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                             <div class="col-lg-7 col-md-7 col-12">
                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                    <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</p>
+                                                                    <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
 
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
@@ -627,9 +627,9 @@
                                 </div>
 
                                 @if ($hasUserReviews && isset($criteria) && count($criteria) > 0)
-                                    <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                       User rating
-                                    </h2>
+                                    <p class="breakdown-title" style="margin-bottom: 15px;">
+                                       Detailed user ratings 
+                                    </p>
 
                                     <div class="review-progress-list mb-3">
                                         @foreach ($criteria as $criterion)

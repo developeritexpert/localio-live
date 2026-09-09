@@ -75,7 +75,7 @@
 
 <div class="boxshadow_border bg-white p-4 more-about-business-card" style="border-radius: 16px !important;">
     <div class="pb-2 mb-1" style="border-bottom: 1px solid #f0f0f0;">
-        <h5 class="m-0 card-h-title">More about {{ $bName }}</h5>
+        <p class="m-0 card-h-title">More about {{ $bName }}</p>
     </div>
 
     <div class="more-about-links-list d-flex flex-column">

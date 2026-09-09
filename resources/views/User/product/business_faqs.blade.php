@@ -428,12 +428,12 @@
                                             @if($trans)
                                             <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="{{ $cat->id }}" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
                                                 <p class="accordion-header" id="faqHeading{{ $faq->id }}">
-                                                    <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                    <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                         {{ $trans->question }}
                                                     </button>
                                                 </p>
                                                 <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                         <div class="faq-answer-text mb-3">
                                                             {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                         </div>
@@ -487,12 +487,12 @@
                                         @if($trans)
                                         <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="general" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
                                             <p class="accordion-header" id="faqHeading{{ $faq->id }}">
-                                                <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                     {{ $trans->question }}
                                                 </button>
                                             </p>
                                             <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fdfdfd;">
+                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fff;">
                                                     <div class="faq-answer-text mb-3">
                                                         {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                     </div>
@@ -694,9 +694,9 @@
                             </a>
                         </div>
 
-                        <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #002347;">
-                            User rating
-                        </h2>
+                        <p class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #002347;">
+                           Detailed user ratings 
+                        </p>
 
                         {{-- Breakdown --}}
                         <div class="review-progress-list">
@@ -756,8 +756,8 @@
                         <div class="innr_price_trail d-flex flex-column gap-3">
                             @if($hasStartingPrice)
                             <div class="feture_box str_prc_box p-4 bg-white boxshadow_border" style="border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="starting-price-title">Starting price</h6>
-                                <h2 class="starting-price-value">{{ $currency }}{{ $startingPrice }}</h2>
+                                <p class="starting-price-title">Starting price</p>
+                                <p class="starting-price-value">{{ $currency }}{{ $startingPrice }}</p>
                                 <p class="starting-price-text">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link" >
                                     View pricing
