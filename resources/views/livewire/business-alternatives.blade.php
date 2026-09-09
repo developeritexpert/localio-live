@@ -436,9 +436,26 @@ foreach ($altCriteria as $criterion) {
 
                         <!-- 2. Compare alternatives (Affiliated Table 1) -->
                         <div class="comparison-table-section my-5 pt-3">
-                            <h2 style="margin-bottom: 16px;">
-                                Compare {{ $businessName }} alternatives
+                            @php
+                                if (!isset($bTrans) || !$bTrans) {
+                                    $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
+                                }
+                                $compAlternativesHeadline = !empty($bTrans->compare_alternatives_headline)
+                                    ? $bTrans->compare_alternatives_headline
+                                    : ('Compare ' . $businessName . ' alternatives');
+                            @endphp
+                            <h2 style="margin-bottom: {{ !empty($bTrans->compare_alternatives_subtext) ? '6px' : '16px' }};">
+                                {{ $compAlternativesHeadline }}
                             </h2>
+                            @if(!empty($bTrans->compare_alternatives_subtext))
+                                <style>
+                                    .compare-alternatives-subtext p { margin-bottom: 0 !important; }
+                                    .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                                </style>
+                                <div class="compare-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                                    {!! $bTrans->compare_alternatives_subtext !!}
+                                </div>
+                            @endif
 
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
@@ -519,12 +536,27 @@ foreach ($altCriteria as $criterion) {
                         <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
+                                @php
+                                    $commFeedbackHeadline = !empty($bTrans->community_says_headline)
+                                        ? $bTrans->community_says_headline
+                                        : 'What the Localio community says';
+                                @endphp
                                 <h2 style="margin-bottom: 4px;">
-                                    What the Localio community says
+                                    {{ $commFeedbackHeadline }}
                                 </h2>
-                                <p style="margin: 0;">
-                                    Most mentioned pros and cons shared by real users.
-                                </p>
+                                @if(!empty($bTrans->community_says_subtext))
+                                    <style>
+                                        .community-says-subtext p { margin-bottom: 0 !important; }
+                                        .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                                    </style>
+                                    <div class="community-says-subtext ck-content" style="font-size: 15px; color: #64748b; margin: 0;">
+                                        {!! $bTrans->community_says_subtext !!}
+                                    </div>
+                                @else
+                                    <p style="margin: 0; font-size: 15px; color: #64748b;">
+                                        Most mentioned pros and cons shared by real users.
+                                    </p>
+                                @endif
                             </div>
 
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
@@ -612,7 +644,23 @@ foreach ($altCriteria as $criterion) {
                             </div>
                         </div>
 
-<h2 class="mt-3">All {{ $businessName }} alternatives </h2>
+@php
+                            $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
+                                ? $bTrans->all_alternatives_headline
+                                : ('All ' . $businessName . ' alternatives');
+                        @endphp
+                        <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
+                            {{ $allAlternativesHeadline }}
+                        </h2>
+                        @if(!empty($bTrans->all_alternatives_subtext))
+                            <style>
+                                .all-alternatives-subtext p { margin-bottom: 0 !important; }
+                                .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                            </style>
+                            <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                                {!! $bTrans->all_alternatives_subtext !!}
+                            </div>
+                        @endif
                     </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
