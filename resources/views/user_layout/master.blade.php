@@ -2365,7 +2365,7 @@
                 <div class="category-sidebar-panel sub-panel" id="sub-panel-{{ $cat->id }}">
                     <div class="sub-panel-back">
                         <a href="javascript:void(0);" class="back-to-main-btn">
-                            <i class="fa-solid fa-arrow-left me-2"></i> All categories
+                            <i class="fa-solid fa-arrow-left me-2"></i> Categories
                         </a>
                     </div>
                     <div class="sidebar-menu-divider"></div>
