@@ -662,9 +662,8 @@
                     padding: 0 48px 0 0 !important; /* Space on the right for absolute wishlist badge */
                     position: relative !important;
                 }
-                .top-rate-innr .sl_main h6.head,
-                .reviews_block .sl_main h6.head,
-                .automotive-card .sl_main h6.head {
+                .top-rate-innr .sl_main .head,
+                .reviews_block .sl_main .head {
                     flex: 1 1 auto !important;
                     font-size: 20px !important;
                     line-height: 1!important;
@@ -837,7 +836,7 @@
                     margin: 0 !important;
                     padding: 0 !important;
                 }
-                .automotive-card .sl_main h6.head {
+                .automotive-card .sl_main .head {
                     flex: 1 1 auto !important;
                     font-size: 20px !important;
                     line-height: 1 !important;

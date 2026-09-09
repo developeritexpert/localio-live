@@ -1648,7 +1648,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     line-height: normal;
 }
 
-.asn-rating h6 {
+.asn-rating p {
     font-weight: 700;
 }
 
@@ -1720,12 +1720,12 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     text-align: center;
 }
 
-.main_feture .feture_box p {
+/* .main_feture .feture_box p {
     text-align: left;
     font-weight: 600;
     color: var(--color-primary-grey-text);
     font-size: 14px;
-}
+} */
 
 .cta.clm_btn {
     padding: 11px 30px;
@@ -2238,9 +2238,9 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     margin-bottom: 0;
 }
 
-.review_sec .review_detl .ans_lft .asn-rating h6 {
+.review_sec .review_detl .ans_lft .asn-rating p {
     margin-bottom: 2px;
-    color: var(--color-dark-blue-text) !important;
+    color: var(--color-dark-blue-text);
 }
 
 .contact_sec .contact_content {
@@ -3554,7 +3554,7 @@ header.drk_header {
     max-width: max-content;
 }
 
-.sftware-alternative-pck .asn-rating h6 {
+.sftware-alternative-pck .asn-rating p {
     font-size: 18px;
 }
 
@@ -7823,7 +7823,7 @@ header .menu li.menu-item a {
     margin-bottom: 8px;
 }
 
-.product_integra_sec .asn-rating h6 {
+.product_integra_sec .asn-rating p {
     font-weight: 600;
 }
 
@@ -7944,7 +7944,7 @@ header .menu li.menu-item a {
     display: block;
     z-index: 10;
     overflow-y: scroll;
-    border-top: 2px solid #a5a5a5dc;
+    border-top: 1px solid #e2e8f0;  
 }
 
 footer .footer-wrp ul li {
@@ -8006,7 +8006,7 @@ footer .foot-row-lft .foot-logo p {
     gap: 0 !important;
 }
 
-.product_integra_sec .sftware-alternative-pck .asn-rating h6 {
+.product_integra_sec .sftware-alternative-pck .asn-rating p {
     font-size: 16px;
     font-weight: 600;
 }
@@ -8226,7 +8226,7 @@ section.right_tool_sec .otr_rgtool h2 {
     margin-bottom: 10px;
 }
 
-.revie_img_sec .sidebar-review-card h5 {
+.sidebar-review-card-p {
     margin-bottom: 8px !important;
 }
 
@@ -8736,8 +8736,8 @@ h5.card-title.mb-3 {
 .fa-flag:before {
     font-size: 11px;
     position: relative;
-    right: -1px;
-    top: -1px;
+    /* right: -1px;
+    top: -1px; */
     color: var(--color-primary-blue);
 }
 
@@ -9027,11 +9027,11 @@ a.cta.btn_blue:hover,
     position: relative;
 }
 
-.asn-rating h6 .asn-rating-p:first-of-type {
+.asn-rating p .asn-rating-p:first-of-type {
     margin-top: 5px !important;
 }
 
-.asn-rating h6 .asn-rating-p {
+.asn-rating-p {
     font-size: 12px !important;
 }
 
@@ -9560,7 +9560,8 @@ section.write-review-hero .container h1 {
 .page-route-contact .search-box,
 .page-alternatives .search-box,
 .page-who-we-are .search-box,
-.page-product-comparison-seo .search-box {
+.page-product-comparison-seo .search-box,
+.page-terms-condition .search-box {
     display: block !important;
 }
 
@@ -9637,7 +9638,7 @@ section.write-review-hero .container h1 {
     color: var(--color-primary-blue) !important;
 }
 
-.review-user h6:hover {
+.review-user p:hover {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -9855,7 +9856,7 @@ button.btn-vote-faq i.far:hover {
     margin-bottom: 42px;
 }
 
-.asn-rating h6 :hover {
+.asn-rating p :hover {
     text-decoration: underline;
 }
 
@@ -10035,4 +10036,11 @@ button.btn-vote-faq i.far:hover {
 .accordion-header {
     font-size: 24px !important;
     font-weight: 700 !important;
+}
+
+.main_feture .sidebar-review-card-p {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #002655;
 }

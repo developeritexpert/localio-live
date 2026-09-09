@@ -602,7 +602,7 @@
                                         @if($isParentCategory)
                                             @if(isset($subCategories) && count($subCategories) > 0)
                                             <div class="filter-section mt-3 mb-3 pb-3 border-bottom">
-                                                <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">Categories</h3>
+                                                <p class="fw-semibold text-dark mb-3" style="font-size: 16px;">Categories</p>
                                                 <div class="d-flex flex-column gap-2 custom-scrollbar" style="max-height: 180px; overflow-y: auto;">
                                                     @foreach ($subCategories as $subcat)
                                                     @php
@@ -636,9 +636,9 @@
                                                 @endphp
 
                                                 <div class="filter-section mt-3 mb-3 pb-3 border-bottom">
-                                                    <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                                    <p class="fw-semibold text-dark mb-3" style="font-size: 16px;">
                                                         {{ $filterName }}
-                                                    </h3>
+                                                    </p>
 
                                                     <div class="accordion-body custom-scrollbar" style="padding: 0; max-height: 180px; overflow-y: auto;">
                                                         @if ($filterType === 'checkbox')
@@ -1073,9 +1073,9 @@
                                                             <div class="sl_h">
                                                                 <div class="inn_h">
                                                                     <div class="sl_main">
-                                                                        <h6 class="head">
+                                                                        <p class="head">
                                                                             {{ $item->translations->first()->name }}
-                                                                        </h6>
+                                                                        </p>
                                                                         <div class="d-none"
                                                                             wire:key="wishlist-container-{{ $item->id }}">
                                                                             @livewire('wishlist', ['productId' =>
@@ -1473,7 +1473,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1492,7 +1492,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">

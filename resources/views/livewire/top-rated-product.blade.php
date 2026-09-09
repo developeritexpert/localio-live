@@ -782,8 +782,8 @@
                                                         <div class="sl_h">
                                                             <div class="inn_h">
                                                                 <div class="sl_main">
-                                                                    <h6 class="head">
-                                                                        {{ $item->translations->first()->name }}</h6>
+                                                                    <p class="head">
+                                                                        {{ $item->translations->first()->name }}</p>
                                                                     <div class="d-none"
                                                                         wire:key="wishlist-container-{{ $item->id }}">
                                                                         @livewire('wishlist', ['productId' =>

@@ -26,7 +26,7 @@
     padding-bottom: 0;
 }
 
-.sidebar-review-card h5 {
+.sidebar-review-card p {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 8px;
@@ -70,12 +70,6 @@
 .review-user {
     display: flex;
     gap: 12px;
-}
-
-.review-user h6 {
-    margin: 0 0 5px;
-    font-size: 15px;
-    font-weight: 600;
 }
 
 .review-user img {
