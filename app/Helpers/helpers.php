@@ -553,26 +553,26 @@ if (!function_exists('get_rating_label')) {
 
 
     if (!function_exists('formatRating')) {
- function formatRating($rating, $decimals = 1)
-{
-    if ($rating === null || $rating === '') {
-        return '0';
-    }
+        function formatRating($rating, $decimals = 1)
+        {
+            if ($rating === null || $rating === '') {
+                return '0';
+            }
 
-    $langCode = request()->route('locale') ?? session('lang_code') ?? 'en-us';
+            $langCode = request()->route('locale') ?? session('lang_code') ?? 'en-us';
 
-    $language = \App\Models\Language::with('country')
-        ->where('lang_code', $langCode)
-        ->first();
+            $language = \App\Models\Language::with('country')
+                ->where('lang_code', $langCode)
+                ->first();
 
-    $separator = $language?->country?->rating_separator ?? '.';
+            $separator = $language?->country?->rating_separator ?? '.';
 
-    return number_format(
-        (float) $rating,
-        $decimals,
-        $separator,
-        ''
-    );
-}
+            return number_format(
+                (float) $rating,
+                $decimals,
+                $separator,
+                ''
+            );
+        }
     }
 }
