@@ -783,7 +783,7 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px; padding-right: 75px;">
+                                                <div class="asn-rating" style="display: flex; flex-direction: column; padding-right: 75px;">
                                                     <h6 style="font-size: 14.5px; font-weight: 600; margin: 0; color: #1e3050;">
                                                         @if ($revUser)
                                                             <a href="{{ route('user.profile', ['id' => $revUser->id]) }}" style="color: inherit; ">

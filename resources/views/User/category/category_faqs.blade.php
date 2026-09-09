@@ -483,7 +483,7 @@
                                                 </div>
                                             @endif
                                             <div>
-                                                <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                                                <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                                 @if(isset($rev) && $rev->user_id)
                                                     <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
                                                         {{ $displayName }}
@@ -491,7 +491,7 @@
                                                 @else
                                                     {{ $displayName }}
                                                 @endif
-                                                </h6>
+                                                </p>
         
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
@@ -526,7 +526,7 @@
                                         @endfor
                                     </div>
                                     @if($revTrans && !empty($revTrans->description))
-                                        <p style="font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($revTrans->description), 85) }}</p>
+                                        <p style="font-weight: 400; font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($revTrans->description), 85) }}</p>
                                     @endif
                                 </div>
                             @endforeach
@@ -538,7 +538,7 @@
                                             <span style="color: white; font-weight: bold; font-size: 16px;">B</span>
                                         </div>
                                         <div>
-                                            <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Beck K.</h6>
+                                            <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Beck K.</p>
                                             <div style="font-size: 11px; color: #777;">Fugiat aute anim eni</div>
                                         </div>
                                     </div>
@@ -554,7 +554,7 @@
                                     <i class="fas fa-star text-warning"></i>
                                     <i class="fas fa-star text-warning"></i>
                                 </div>
-                                <p style="font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">Numquam officia rem</p>
+                                <p style="font-weight: 400; font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">Numquam officia rem</p>
                             </div>
                         @endif
                     </div>
@@ -575,7 +575,7 @@
                                         <span style="color: white; font-weight: bold; font-size: 16px;">M</span>
                                     </div>
                                     <div>
-                                        <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Marc L.</h6>
+                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Marc L.</p>
                                         <div style="font-size: 11px; color: #777;">Product Manager • Small Business</div>
                                     </div>
                                 </div>
@@ -596,7 +596,7 @@
                                         <span style="color: white; font-weight: bold; font-size: 16px;">S</span>
                                     </div>
                                     <div>
-                                        <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Sarah J.</h6>
+                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Sarah J.</p>
                                         <div style="font-size: 11px; color: #777;">CTO • Mid-Market</div>
                                     </div>
                                 </div>

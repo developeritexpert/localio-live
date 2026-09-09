@@ -516,7 +516,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
+                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedPros as $pro)
                                                 <li class="d-flex align-items-start mb-2">
@@ -533,7 +533,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
+                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedCons as $con)
                                                 <li class="d-flex align-items-start mb-2">
@@ -569,7 +569,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedPros as $pro)
                                                     <li class="d-flex align-items-start mb-2">
@@ -588,7 +588,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedCons as $con)
                                                     <li class="d-flex align-items-start mb-2">
@@ -1205,7 +1205,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             @php $translation = $faq->translations->first(); @endphp
                                                             @if ($translation)
                                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                                <h2 class="accordion-header" id="faqHeading{{ $index }}">
+                                                                <p class="accordion-header" id="faqHeading{{ $index }}">
                                                                     <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
                                                                         type="button" data-bs-toggle="collapse"
                                                                         data-bs-target="#faqCollapse{{ $index }}"
@@ -1214,7 +1214,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                                                         <span>{{ $translation->question }}</span>
                                                                     </button>
-                                                                </h2>
+                                                                </p>
                                                                 <div id="faqCollapse{{ $index }}"
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                                     aria-labelledby="faqHeading{{ $index }}"
@@ -1539,7 +1539,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 <x-business-logo :business="$business" />
                                                             </div>
                                                             <div>
-                                                                <h4 style="margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
+                                                                <p style="font-size: 18px !important; margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
                                                                 <p style="margin: 0; font-size: 13.5px; ">Share your experience with the community</p>
                                                             </div>
                                                         </div>
@@ -1622,7 +1622,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                                             <div class="col-lg-7 col-md-7 col-12 mt-0">
                                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                                <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h5>
+                                                                                <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</p>
 
                                                                                 <div class="mb-2">
                                                                                     @foreach ($criteria as $criterion)
@@ -2240,7 +2240,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         @endif
 
                                                         <div>
-                                                            <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                                            <p >
                                                                 @if($review->user)
                                                                 <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                                                                     {{ $review->user->displayName() }}
@@ -2248,7 +2248,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @else
                                                                 Anonymous
                                                                 @endif
-                                                            </h6>
+                                                            </p>
                                                             @php
                                                             $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
                                                             @endphp
@@ -2270,9 +2270,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                 </div>
 
-                                                <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: #1e3050;">
+                                                <p class="sidebar-review-card-p">
                                                     {{ $review->translations->first()->title ?? 'Review' }}
-                                                </h5>
+                                                </p>
 
                                                 <div class="rating-stars-wrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                                     <div class="rating-stars">
@@ -2313,7 +2313,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
                                                         </div>
                                                         <div>
-                                                            <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">Marc L.</h6>
+                                                            <p>Marc L.</p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
                                                                 Product Manager • Small Business (1-50 emp.)
                                                             </div>
@@ -2324,9 +2324,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
 
-                                                <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                                <p class="sidebar-review-card-p" style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
                                                     Is there a free tier for API access or is it trial only?
-                                                </h5>
+                                                </p>
                                                 <p>
                                                     We are looking to integrate this into our workflow and want to test the latency over a few weeks...
                                                 </p>
@@ -2339,7 +2339,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <span style="color: white; font-weight: bold; font-size: 20px;">S</span>
                                                         </div>
                                                         <div>
-                                                            <h6 style="margin: 0;  font-weight: 700; ">Sarah J.</h6>
+                                                            <p>Sarah J.</p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
                                                                 CTO • Mid-Market (51-1000 emp.)
                                                             </div>
@@ -2350,9 +2350,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
 
-                                                <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                                <p class="sidebar-review-card-p" style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
                                                     How does the performance compare to alternatives in large datasets?
-                                                </h5>
+                                                </p>
                                                 <p>
                                                     We noticed some latency spikes during queries with more than 10k items. Anyone else facing this?
                                                 </p>
@@ -2371,10 +2371,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
 
                                                     <div class="sticky-wrap-mf">
-                                                        <h3 class="sticky-nav-title mb-1"
+                                                        <p class="sticky-nav-title mb-1"
                                                             style="font-size: 17px; font-weight: 700; color: #002347;">
                                                             {{ $business->translations->first()->name ?? '' }}
-                                                        </h3>
+                                                        </p>
                                                         @if ($averageRating !== null)
                                                         <div
                                                             class="rating-group sticky-nav-rating">
