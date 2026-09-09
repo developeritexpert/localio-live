@@ -45,20 +45,29 @@
                                         })
                                         ->take(3);
 
-                                    if ($popularAltBusinesses->count() < 3) {
-                                        $morePop = \App\Models\Business::where('id', '!=', $business->id)
-                                            ->where('status', 1)
-                                            ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
-                                            ->with([
-                                                'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                                                'reviews' => fn($q) => $q->where('status', 'active'),
-                                                'category.ratingCriteria',
-                                                'products.prices'
-                                            ])
-                                            ->get()
-                                            ->take(3 - $popularAltBusinesses->count());
-                                        $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
-                                    }
+                                  if ($popularAltBusinesses->count() < 3) {
+    $morePop = \App\Models\Business::where('id', '!=', $business->id)
+        ->where('status', 1)
+        ->whereNotNull('category_id')
+        ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
+        ->with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'reviews' => fn($q) => $q->where('status', 'active'),
+            'category.ratingCriteria',
+            'products.prices'
+        ])
+        ->get()
+        ->sortByDesc(function ($b) {
+            $r = $b->reviews->where('status', 'active');
+
+            return $r->count() > 0
+                ? $r->avg('rating')
+                : ($b->admin_rating ?? 0);
+        })
+        ->take(3 - $popularAltBusinesses->count());
+
+    $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
+}
 
                                     // 2. Fetch 10 affiliated businesses for tables
                                     $affiliatedTableBusinesses = \App\Models\Business::where('is_affiliate', 1)
@@ -143,11 +152,53 @@
                                                                     $altAdditionalInfo = $altBusinessPrice['additional_info'] ?? null;
                                                                 }
 
-                                                                $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)->get();
-                                                                $altEaseOfUseAvg = round($altReviews->avg('ease_of_use_rating'), 1);
-                                                                $altValueForMoneyAvg = round($altReviews->avg('value_for_money_rating'), 1);
-                                                                $altCustomerServiceAvg = round($altReviews->avg('customer_service_rating'), 1);
-                                                                $altExclusiveFeatureAvg = round($altReviews->avg('exclusive_service_rating'), 1);
+                                                            $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)
+    ->where('status', 'active')
+    ->get();
+
+$altCriteria = $altbusiness->category
+    ? $altbusiness->category->getEffectiveRatingCriteria()
+    : collect();
+
+foreach ($altCriteria as $criterion) {
+    $totalScore = 0;
+    $ratingCount = 0;
+
+    foreach ($altReviews as $review) {
+        $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+            ->where('criteria_id', $criterion->id)
+            ->first();
+
+        if ($ratingRecord && $ratingRecord->rating !== null) {
+            $totalScore += (float) $ratingRecord->rating;
+            $ratingCount++;
+            continue;
+        }
+
+        $legacyVal = null;
+        $criterionName = strtolower(trim($criterion->name));
+
+        if ($criterionName === 'ease of use') {
+            $legacyVal = $review->ease_of_use_rating;
+        } elseif ($criterionName === 'customer service') {
+            $legacyVal = $review->customer_service_rating;
+        } elseif ($criterionName === 'features') {
+            $legacyVal = $review->exclusive_service_rating;
+        } elseif ($criterionName === 'value for money') {
+            $legacyVal = $review->value_for_money_rating;
+        }
+
+        if ($legacyVal !== null && $legacyVal !== '') {
+            $totalScore += (float) $legacyVal;
+            $ratingCount++;
+        }
+    }
+
+    $criterion->average_rating = $ratingCount > 0
+        ? round($totalScore / $ratingCount, 1)
+        : null;
+}
+
 
                                                                 $altRatingAvg = $altbusiness->reviews->avg('rating');
                                                                 $count = $altbusiness->reviews->where('status', 'active')->count();
@@ -184,37 +235,43 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                    <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">User rating</h6>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Ease of Use</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Customer Service</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Features</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Value for Money</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
+    <!-- <pre style="background:#fff;color:#000;padding:10px;font-size:11px;">
+
+</pre> -->
+     <p class="fw_700 mb-3" style="color: #002347; font-size:12px;">
+        Detailed user ratings 
+    </p>
+
+    @foreach ($altCriteria as $criterion)
+        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+
+            <p class="m-0" style="font-size: 12px; color: #002347;">
+                {{ $criterion->name }}
+            </p>
+
+            <div class="prgs_br d-flex align-items-center">
+
+                @if ($criterion->average_rating !== null)
+                    <progress
+                        class="progress-bar"
+                        value="{{ $criterion->average_rating * 20 }}"
+                        max="100">
+                    </progress>
+
+                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">
+                        {{ number_format($criterion->average_rating, 1) }}
+                    </span>
+                @else
+                    <span style="font-size: 12px; font-weight: 600; color: #999; min-width: 32px; text-align: right;">
+                        N/A
+                    </span>
+                @endif
+
+            </div>
+        </div>
+    @endforeach
+</div>
 
                                                                 @php
                                                                     $hasAltPrice = !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
@@ -335,7 +392,7 @@
                                     </div>
 
                                     @if(count($bCriteria) > 0)
-                                        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">User rating</h6>
+                                        <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
                                         <div class="mb-3">
                                             @foreach ($bCriteria as $criterion)
                                                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
@@ -379,9 +436,26 @@
 
                         <!-- 2. Compare alternatives (Affiliated Table 1) -->
                         <div class="comparison-table-section my-5 pt-3">
-                            <h2 style="margin-bottom: 16px;">
-                                Compare {{ $businessName }} alternatives
+                            @php
+                                if (!isset($bTrans) || !$bTrans) {
+                                    $bTrans = $business ? ($business->translations->firstWhere('lang_id', $lang_id) ?? ($business->translations->where('language_id', $lang_id)->first() ?? $business->translations->first())) : null;
+                                }
+                                $compAlternativesHeadline = !empty($bTrans->compare_alternatives_headline)
+                                    ? $bTrans->compare_alternatives_headline
+                                    : ('Compare ' . $businessName . ' alternatives');
+                            @endphp
+                            <h2 style="margin-bottom: {{ !empty($bTrans->compare_alternatives_subtext) ? '6px' : '16px' }};">
+                                {{ $compAlternativesHeadline }}
                             </h2>
+                            @if(!empty($bTrans->compare_alternatives_subtext))
+                                <style>
+                                    .compare-alternatives-subtext p { margin-bottom: 0 !important; }
+                                    .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                                </style>
+                                <div class="compare-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                                    {!! $bTrans->compare_alternatives_subtext !!}
+                                </div>
+                            @endif
 
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                 <table class="table align-middle mb-0" style="font-size: 14px; color: #1e3050;">
@@ -462,12 +536,27 @@
                         <!-- 3. What the Localio community says (Pros/Cons Table 2) -->
                         <div class="community-feedback-table-section my-5 pt-3">
                             <div class="mb-3">
+                                @php
+                                    $commFeedbackHeadline = !empty($bTrans->community_says_headline)
+                                        ? $bTrans->community_says_headline
+                                        : 'What the Localio community says';
+                                @endphp
                                 <h2 style="margin-bottom: 4px;">
-                                    What the Localio community says
+                                    {{ $commFeedbackHeadline }}
                                 </h2>
-                                <p style="margin: 0;">
-                                    Most mentioned pros and cons shared by real users.
-                                </p>
+                                @if(!empty($bTrans->community_says_subtext))
+                                    <style>
+                                        .community-says-subtext p { margin-bottom: 0 !important; }
+                                        .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                                    </style>
+                                    <div class="community-says-subtext ck-content" style="font-size: 15px; color: #64748b; margin: 0;">
+                                        {!! $bTrans->community_says_subtext !!}
+                                    </div>
+                                @else
+                                    <p style="margin: 0; font-size: 15px; color: #64748b;">
+                                        Most mentioned pros and cons shared by real users.
+                                    </p>
+                                @endif
                             </div>
 
                             <div class="table-responsive rounded-3 border bg-white" style="border-radius: 14px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
@@ -555,7 +644,23 @@
                             </div>
                         </div>
 
-<h2 class="mt-3">All {{ $businessName }} alternatives </h2>
+@php
+                            $allAlternativesHeadline = !empty($bTrans->all_alternatives_headline)
+                                ? $bTrans->all_alternatives_headline
+                                : ('All ' . $businessName . ' alternatives');
+                        @endphp
+                        <h2 class="mt-3" style="margin-bottom: {{ !empty($bTrans->all_alternatives_subtext) ? '6px' : '16px' }};">
+                            {{ $allAlternativesHeadline }}
+                        </h2>
+                        @if(!empty($bTrans->all_alternatives_subtext))
+                            <style>
+                                .all-alternatives-subtext p { margin-bottom: 0 !important; }
+                                .all-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
+                            </style>
+                            <div class="all-alternatives-subtext ck-content mb-3" style="font-size: 15px; color: #64748b;">
+                                {!! $bTrans->all_alternatives_subtext !!}
+                            </div>
+                        @endif
                     </div>
                     <div class="auto-choice-row d-flex ">
                         <div class="auto-choice-lft">
@@ -565,8 +670,8 @@
                                 <div class="col-md-12">
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
-                                        <h3 class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</h3>
+                                        <p class="fw-semibold text-dark mb-2">
+                                            {{ static_text('user_rating') }}</p>
 
                                         <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
@@ -601,7 +706,7 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <p class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</p>
 
                                         <div class="price-slider-container">
                                             <div
@@ -638,9 +743,9 @@
                                             @endphp
 
                                             <div class="filter-section">
-                                                <h3>
+                                                <p>
                                                     {{ $filterName }}
-                                                </h3>
+                                                </p>
 
                                                 <div class="accordion-body" style="padding: 0;">
                                                     @if ($filterType === 'checkbox')
@@ -871,11 +976,11 @@
                                                 $from = ($currentPage - 1) * $perPage + 1;
                                                 $to = min($currentPage * $perPage, $total);
                                             @endphp
-                                            <p class="m-0">
+                                            <p class="m-0 showing-p">
                                                 Showing {{$from}}-{{$to}} of {{$total}}
                                             </p>
                                         @else
-                                            <p class="m-0">Showing {{ $products->count() }} results</p>
+                                            <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
                                     <div wire:ignore class="d-none">
@@ -894,7 +999,7 @@
                                                      @if($isRecommended)
                                                          <div style="margin-bottom: 25px;">
                                                              <span style="background-color: #f8fafc; color: #06498b; border: 1px solid #06498b; padding: 4px 12px; border-radius: 20px; ;">
-                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> Top choice
+                                                                 <i class="far fa-star text-warning" style="margin-right: 4px; color: #06498b !important;"></i> {{ static_text('category_badge_label') ?: 'Top rated' }}
                                                              </span>
                                                          </div>
                                                      @endif

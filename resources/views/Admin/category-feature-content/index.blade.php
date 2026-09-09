@@ -102,8 +102,7 @@
                     <tbody>
                         @forelse($contents as $item)
                             @php
-                                $cName = $item->category?->translations->firstWhere('lang_id', $item->lang_id)?->name 
-                                    ?? ($item->category?->translations->first()?->name ?? 'Category #'.$item->category_id);
+                                $cName = $item->category?->translation?->name ?? ($item->category?->name ?? 'Category #'.$item->category_id);
                                 $fName = $item->feature?->translations->firstWhere('lang_id', $item->lang_id)?->name 
                                     ?? ($item->feature?->translations->first()?->name ?? 'Feature #'.$item->feature_id);
                                 $secArr = !empty($item->text_sections) ? (is_array($item->text_sections) ? $item->text_sections : json_decode($item->text_sections, true)) : [];
@@ -145,14 +144,14 @@
                                     {{ $item->updated_at->format('M d, Y') }}
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-inline-flex gap-1">
+                                    <div class="d-inline-flex">
                                         <a href="{{ route('admin.category-feature-content.edit', $item->id) }}" class="btn btn-sm btn-icon btn-light" title="Edit">
                                             <em class="icon ni ni-edit"></em>
                                         </a>
                                         <form method="POST" action="{{ route('admin.category-feature-content.destroy', $item->id) }}" onsubmit="return confirm('Are you sure you want to delete this content?');" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Delete">
+                                            <button type="submit" class="btn btn-sm btn-icon btn-danger" title="Delete" style="margin-left: 10px;">
                                                 <em class="icon ni ni-trash"></em>
                                             </button>
                                         </form>

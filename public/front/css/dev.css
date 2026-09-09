@@ -48,6 +48,7 @@
 }
 
 @media (max-width: 768px) {
+
     /* .automotive-card {
                 padding-bottom: 20px !important;
             } */
@@ -124,6 +125,7 @@
 }
 
 @media (max-width: 768px) {
+
     /* .top-automotive-sec.top_rate_pg {
                 padding-top: 110px !important;
             } */
@@ -232,7 +234,7 @@
     color: #002347;
 }
 
-.your-comp-pill > * {
+.your-comp-pill>* {
     pointer-events: none;
 }
 
@@ -895,16 +897,8 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-.is-asan-slider
-    .slider-for
-    .slick-list.draggable
-    .slick-track
-    .asan-slider-inr.slick-slide,
-.is-asan-slider
-    .slider-for
-    .slick-list.draggable
-    .slick-track
-    .asan-slider-inr.slick-slide.slick-current,
+.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide,
+.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide.slick-current,
 .slider-for .slick-slide,
 .slider-for .slick-current,
 .slider-for .asan-slider-inr,
@@ -931,4 +925,51 @@
 
 .asan-slider.slider-for {
     padding-left: 20px !important;
+}
+
+section.community-feedback-sec {
+    background: #f7f9fb;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.cat-faq-sec {
+    background: #fdfdfd;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Country / Region Selection Modal Close Button */
+.close-country-menu {
+    position: relative !important;
+    background: none !important;
+    border: none !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    color: #9ca3af !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    z-index: 99 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
+}
+
+.close-country-menu:hover {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+}
+
+.inner_part_boxx .part_2_boxs h3.big-bld {
+    color: #fdfdfd !important;
+}
+
+.inner_part_boxx .part_1_boxs img {
+    max-height: 100% !important;
 }

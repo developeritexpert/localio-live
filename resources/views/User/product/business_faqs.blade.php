@@ -427,13 +427,13 @@
                                             @endphp
                                             @if($trans)
                                             <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="{{ $cat->id }}" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                <h2 class="accordion-header" id="faqHeading{{ $faq->id }}">
-                                                    <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                <p class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                                    <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                         {{ $trans->question }}
                                                     </button>
-                                                </h2>
+                                                </p>
                                                 <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                         <div class="faq-answer-text mb-3">
                                                             {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                         </div>
@@ -486,13 +486,13 @@
                                         @endphp
                                         @if($trans)
                                         <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="general" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                            <h2 class="accordion-header" id="faqHeading{{ $faq->id }}">
-                                                <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                            <p class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                                <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                     {{ $trans->question }}
                                                 </button>
-                                            </h2>
+                                            </p>
                                             <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fdfdfd;">
+                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fff;">
                                                     <div class="faq-answer-text mb-3">
                                                         {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                     </div>
@@ -573,9 +573,9 @@
                                     </div>
 
                                     <div class="sticky-wrap-mf">
-                                        <h3 class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
+                                        <p class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
                                             {{ $business->translations->first()->name ?? '' }}
-                                        </h3>
+                                        </p>
                                         @if (isset($averageRating) && $averageRating !== null)
                                             <div class="rating-group sticky-nav-rating mb-3">
                                                 <span>{{ number_format($averageRating, 1) }}</span>
@@ -694,9 +694,9 @@
                             </a>
                         </div>
 
-                        <h2 class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #002347;">
-                            User rating
-                        </h2>
+                        <p class="breakdown-title" style="margin-bottom: 15px; font-size: 16px; font-weight: 600; color: #002347;">
+                           Detailed user ratings 
+                        </p>
 
                         {{-- Breakdown --}}
                         <div class="review-progress-list">
@@ -756,8 +756,8 @@
                         <div class="innr_price_trail d-flex flex-column gap-3">
                             @if($hasStartingPrice)
                             <div class="feture_box str_prc_box p-4 bg-white boxshadow_border" style="border-radius: 16px; border: 1px solid #e2e8f0;">
-                                <h6 class="starting-price-title">Starting price</h6>
-                                <h2 class="starting-price-value">{{ $currency }}{{ $startingPrice }}</h2>
+                                <p class="starting-price-title">Starting price</p>
+                                <p class="starting-price-value">{{ $currency }}{{ $startingPrice }}</p>
                                 <p class="starting-price-text">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link" >
                                     View pricing
@@ -811,7 +811,7 @@
                                                 </div>
                                             @endif
                                             <div>
-                                                <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                                                <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
         @if(isset($rev) && $rev->user_id)
             <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
                 {{ $displayName }}
@@ -819,7 +819,7 @@
         @else
             {{ $displayName }}
         @endif
-        </h6>
+        </p>
         
                                                 @php
                                                     $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
@@ -852,7 +852,7 @@
                                         @endfor
                                     </div>
                                     @if($revTrans && !empty($revTrans->description))
-                                        <p style="font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($revTrans->description), 85) }}</p>
+                                        <p style="font-weight: 400; font-size: 13px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">{{ \Illuminate\Support\Str::limit(strip_tags($revTrans->description), 85) }}</p>
                                     @endif
                                 </div>
                             @endforeach
@@ -875,7 +875,7 @@
                                         <span style="color: white; font-weight: bold; font-size: 16px;">M</span>
                                     </div>
                                     <div>
-                                        <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Marc L.</h6>
+                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Marc L.</p>
                                         <div style="font-size: 11px; color: #777;">Product Manager • Small Business</div>
                                     </div>
                                 </div>
@@ -896,7 +896,7 @@
                                         <span style="color: white; font-weight: bold; font-size: 16px;">S</span>
                                     </div>
                                     <div>
-                                        <h6 style="margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Sarah J.</h6>
+                                        <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">Sarah J.</p>
                                         <div style="font-size: 11px; color: #777;">CTO • Mid-Market</div>
                                     </div>
                                 </div>

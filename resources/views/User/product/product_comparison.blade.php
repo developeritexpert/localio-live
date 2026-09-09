@@ -266,7 +266,7 @@
                                             }
                                         @endphp
                                         <div class="review-breakdown-card w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
-                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h6>
+                                            <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
                                             <ul class="list-unstyled mb-0 d-flex flex-column review-criteria-list" style="gap: 10px; flex: 1 1 auto;">
                                                 @forelse($criteria as $criterion)
                                                     @php
@@ -408,7 +408,7 @@
                         @endforeach
                     </div>
 
-                    <!-- Pros and Cons Section with Tabs for Each Business in Comparison Grid -->
+                    <!-- Pros and Cons Section for Each Business in Comparison Grid -->
                     @php
                         $businessesWithProCons = collect();
                         foreach ($businesses as $b) {
@@ -444,9 +444,6 @@
                                     $bName = $business->translations->first()?->name ?? 'Business';
                                     $bPros = $bProCons ? $bProCons['pros'] : collect();
                                     $bCons = $bProCons ? $bProCons['cons'] : collect();
-                                    $tabId = "prosConsTab_" . $business->id;
-                                    $prosTarget = "pros_content_" . $business->id;
-                                    $consTarget = "cons_content_" . $business->id;
                                 @endphp
                                 <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12">
                                     <div class="bg-white p-4 h-100" style="border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); display: flex; flex-direction: column;">
@@ -462,73 +459,64 @@
                                         </div>
 
                                         @if($bPros->isNotEmpty() || $bCons->isNotEmpty())
-                                            {{-- Pros & Cons Nav Tabs --}}
-                                            <ul class="nav nav-tabs nav-justified mb-3 comp-pros-cons-tabs" id="{{ $tabId }}" role="tablist" style="border-bottom: 1.5px solid #e2e8f0;">
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pros-tab-{{ $business->id }}" data-bs-toggle="tab" data-bs-target="#{{ $prosTarget }}" type="button" role="tab" aria-controls="{{ $prosTarget }}" aria-selected="true" style="font-weight: 600; font-size: 13.5px; border: none; background: transparent; padding-bottom: 8px;">
-                                                        <span style="color: rgb(33, 172, 33);">
-                                                            <i class="fas fa-plus-circle me-1"></i>
-                                                        </span> Pros
-                                                         <!-- ({{ $bPros->count() }}) -->
-                                                    </button>
-                                                </li>
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="cons-tab-{{ $business->id }}" data-bs-toggle="tab" data-bs-target="#{{ $consTarget }}" type="button" role="tab" aria-controls="{{ $consTarget }}" aria-selected="false" style="font-weight: 600; font-size: 13.5px; border: none; background: transparent; padding-bottom: 8px;">
-                                                        <span style="color: rgb(247, 40, 60);">
-                                                            <i class="fas fa-minus-circle me-1"></i>
-                                                        </span> Cons 
-                                                        <!-- ({{ $bCons->count() }}) -->
-                                                    </button>
-                                                </li>
-                                            </ul>
-
-                                            {{-- Tab Panes --}}
-                                            <div class="tab-content flex-grow-1" id="{{ $tabId }}Content">
-                                                <!-- Pros Content -->
-                                                <div class="tab-pane fade show active" id="{{ $prosTarget }}" role="tabpanel" aria-labelledby="pros-tab-{{ $business->id }}">
-                                                    @if($bPros->isNotEmpty())
-                                                        <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
-                                                            @foreach($bPros->take(6) as $pro)
-                                                                <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                    <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height:1">
-                                                                        <i class="fas fa-plus-circle"></i>
-                                                                    </span>
-                                                                    <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
-                                                                        {{ $pro->text }}
-                                                                        <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
-                                                                            from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}
-                                                                        </small>
-                                                                    </span>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    @else
-                                                        <p class="text-muted small mb-0 py-3 text-center">No pros added yet.</p>
-                                                    @endif
+                                            {{-- Pros Section --}}
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
+                                                    <span style="color: rgb(33, 172, 33);" class="me-2">
+                                                        <i class="fas fa-plus-circle"></i>
+                                                    </span>
+                                                    Pros
                                                 </div>
+                                                @if($bPros->isNotEmpty())
+                                                    <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
+                                                        @foreach($bPros->take(6) as $pro)
+                                                            <li class="d-flex align-items-start" style="gap: 8px;">
+                                                                <span style="color: rgb(33, 172, 33); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height: 1;">
+                                                                    <i class="fas fa-plus-circle"></i>
+                                                                </span>
+                                                                <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
+                                                                    {{ $pro->text }}
+                                                                    <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
+                                                                        from {{ $pro->review_count }} {{ $pro->review_count == 1 ? 'review' : 'reviews' }}
+                                                                    </small>
+                                                                </span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-muted small mb-0 py-1">No pros added yet.</p>
+                                                @endif
+                                            </div>
 
-                                                <!-- Cons Content -->
-                                                <div class="tab-pane fade" id="{{ $consTarget }}" role="tabpanel" aria-labelledby="cons-tab-{{ $business->id }}">
-                                                    @if($bCons->isNotEmpty())
-                                                        <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
-                                                            @foreach($bCons->take(6) as $con)
-                                                                <li class="d-flex align-items-start" style="gap: 8px;">
-                                                                    <span style="color: rgb(247, 40, 60); flex-shrink: 0; font-size: 15px; margin-top: 2px;">
-                                                                        <i class="fas fa-minus-circle"></i>
-                                                                    </span>
-                                                                    <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
-                                                                        {{ $con->text }}
-                                                                        <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
-                                                                            from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}
-                                                                        </small>
-                                                                    </span>
-                                                                </li>
-                                                            @endforeach
-                                                        </ul>
-                                                    @else
-                                                        <p class="text-muted small mb-0 py-3 text-center">No cons added yet.</p>
-                                                    @endif
+                                            <hr class="my-3" style="border-top: 1px solid #e2e8f0; opacity: 0.8;">
+
+                                            {{-- Cons Section --}}
+                                            <div class="mb-1">
+                                                <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
+                                                    <span style="color: rgb(247, 40, 60);" class="me-2">
+                                                        <i class="fas fa-minus-circle"></i>
+                                                    </span>
+                                                    Cons
                                                 </div>
+                                                @if($bCons->isNotEmpty())
+                                                    <ul class="list-unstyled mb-0 d-flex flex-column" style="gap: 10px;">
+                                                        @foreach($bCons->take(6) as $con)
+                                                            <li class="d-flex align-items-start" style="gap: 8px;">
+                                                                <span style="color: rgb(247, 40, 60); flex-shrink: 0; font-size: 15px; margin-top: 2px; line-height: 1;">
+                                                                    <i class="fas fa-minus-circle"></i>
+                                                                </span>
+                                                                <span style="color: #202124; font-size: 13.5px; line-height: 1.4;">
+                                                                    {{ $con->text }}
+                                                                    <small class="badge font-weight-normal ms-1" style="background: #f7f9fb; color: #002347; font-weight: 500; font-size: 11px; border: 1px solid #edf2f7;">
+                                                                        from {{ $con->review_count }} {{ $con->review_count == 1 ? 'review' : 'reviews' }}
+                                                                    </small>
+                                                                </span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-muted small mb-0 py-1">No cons added yet.</p>
+                                                @endif
                                             </div>
                                         @else
                                             <div class="d-flex align-items-center justify-content-center text-muted small flex-grow-1" style="min-height: 120px;">
@@ -568,12 +556,12 @@
                                         <div class="col-6">
                                             <div class="p-3 bg-white border h-100 d-flex flex-column justify-content-between text-center" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                                 <div>
-                                                    <h6 class="starting-price-title">Starting price</h6>
+                                                    <p class="starting-price-title">Starting price</p>
                                                     @if($startingPrice)
-                                                        <h2 class="starting-price-value">{{ $currency }}{{ $amountStr ?? 'Free' }}</h2>
+                                                        <p class="starting-price-value">{{ $currency }}{{ $amountStr ?? 'Free' }}</p>
                                                         <p class="starting-price-text">Flat Rate, Per {{ $timeUnit }}</p>
                                                     @else
-                                                        <h2 class="starting-price-value">Contact</h2>
+                                                        <p class="starting-price-value">Contact</p>
                                                         <p class="starting-price-text">Custom subscription</p>
                                                     @endif
                                                 </div>
@@ -795,7 +783,7 @@
                                                         </div>
                                                     @endif
                                                 </div>
-                                                <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px; padding-right: 75px;">
+                                                <div class="asn-rating" style="display: flex; flex-direction: column; padding-right: 75px;">
                                                     <h6 style="font-size: 14.5px; font-weight: 600; margin: 0; color: #1e3050;">
                                                         @if ($revUser)
                                                             <a href="{{ route('user.profile', ['id' => $revUser->id]) }}" style="color: inherit; ">

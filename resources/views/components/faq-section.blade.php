@@ -21,7 +21,7 @@
                                 @if ($faqtranslation)
                                     <!-- Check if the faqtranslation is not null -->
                                     <div class="accordion-item" data-aos="fade-up" data-aos-duration="1000">
-                                        <h2 class="accordion-header" id="headingOne{{ $faq->id }}">
+                                        <p class="accordion-header" id="headingOne{{ $faq->id }}">
                                             <button class="accordion-button {{ $isFirst ? '' : 'collapsed' }}" type="button"
                                                 data-bs-toggle="collapse"
                                                 data-bs-target="#collapseOne{{ $faq->id }}"
@@ -29,7 +29,7 @@
                                                 aria-controls="collapseOne{{ $faq->id }}">
                                                 <span>{{ $faqtranslation->question ?? 'No question available' }}</span>
                                             </button>
-                                        </h2>
+                                        </p>
                                         <div id="collapseOne{{ $faq->id }}" class="accordion-collapse collapse {{ $isFirst ? 'show' : '' }}"
                                             aria-labelledby="headingOne{{ $faq->id }}"
                                             data-bs-parent="#accordionExample">
@@ -51,12 +51,12 @@
                         @else
                             {{-- <!-- Display this if no FAQs have translations -->
                             <div class="accordion-item" data-aos="fade-up" data-aos-duration="1000">
-                                <h2 class="accordion-header" id="headingOne">
+                                <p class="accordion-header" id="headingOne">
                                     <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                         <span>{{ $help->faq_section_title ?? static_text('no_faq_avaliable') }}</span>
                                     </button>
-                                </h2>
+                                </p>
                                 <div id="collapseOne" class="accordion-collapse collapse"
                                     aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">

@@ -58,10 +58,6 @@ div#navbarSupportedContent .close_btn_mobile {
     padding: 2px 10px;
 }
 
-.auto-choice-lft h3 {
-    font-size: 14px !important;
-}
-
 .auto-choice-lft .filter-section .accordion-body select {
     font-size: 13px;
     padding: 6px 12px !important;
@@ -2302,6 +2298,7 @@ ul.list-unstyled.m-0 li:hover a .time span {
     justify-content: center;
     align-items: center;
     margin: auto;
+    transform: scale(1.4);
 }
 
 .inner_part_boxx .part_2_boxs h2 {
@@ -3741,7 +3738,7 @@ textarea#message {
     }
 
     .search-box input {
-        padding: 10px 20px;
+        padding: 12px 20px;
         right: 6px;
     }
 
@@ -6271,8 +6268,7 @@ textarea#message {
     }
 
     .ft-btm-rgt .select-menu.active .options {
-        max-height: 300px;
-        overflow-y: scroll;
+        overflow-y: auto;
         scrollbar-gutter: smooth;
         scrollbar-width: thin;
         scrollbar-color: var(--color-primary-orange) #f1f1f1;
@@ -7485,7 +7481,13 @@ textarea#message {
 
     .search-box input {
         font-size: 14px;
-        height: 40px;
+        height: 35px;
+    }
+
+    .mobile-search-container .search-box > i.fa-magnifying-glass,
+    .mobile-search-container .search-box > i.fa-search {
+        width: 26px !important;
+        height: 26px !important;
     }
 
     .range-wrapper .values {
@@ -8009,7 +8011,7 @@ textarea#message {
 
     .banner_text_col .search-box input {
         padding: 8px 12px;
-        padding-right: 55px;
+        padding-bottom: 13px;
     }
 
     .xclu-txt-btn .cta {
@@ -8539,7 +8541,7 @@ textarea#message {
     }
 
     .ft-btm-rgt .select-menu.active .options {
-        max-height: 400px;
+        overflow-y: auto;
     }
 
     .contact_sec .contact_content {
@@ -8609,7 +8611,14 @@ textarea#message {
     }
 
     .home_bnr_sec .search-box i {
-        padding: 10px;
+        height: 26px;
+        width: 26px;
+        padding: 8px 20px 7px 20px;
+        position: absolute !important;
+        right: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
@@ -8775,7 +8784,7 @@ textarea#message {
     }
 
     section#section-compare {
-        padding: 15px 0px !important;
+        padding: 15px 10px !important;
     }
 
     section#section-compare p {
@@ -9058,11 +9067,15 @@ textarea#message {
     }
 
     .verified-insights-card h6 {
-        font-size: 14px;
+        font-size: 14px !important;
+    }
+
+    .verified-insights-card p {
+        font-size: 12px !important;
     }
 
     .verified-insights-card img {
-        height: 30px;
+        height: 23px !important;
     }
 
     .host-parra {

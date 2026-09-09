@@ -229,6 +229,10 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
     // ===== Content Generation =====
     Route::get('/admin-dashboard/content-generation/businesses', [ContentGenerationController::class, 'businesses'])->name('content-gen.businesses');
+    Route::get('/admin-dashboard/content-generation/features', [ContentGenerationController::class, 'features'])->name('content-gen.features');
+    Route::post('/admin-dashboard/content-generation/features/submit-batch', [ContentGenerationController::class, 'submitFeaturesBatch'])->name('content-gen.features.submit-batch');
+    Route::post('/admin-dashboard/content-generation/features/apply-all', [ContentGenerationController::class, 'applyAllFeatureCompleted'])->name('content-gen.features.apply-all');
+    Route::post('/admin-dashboard/content-generation/features/retry-field', [ContentGenerationController::class, 'retryFeatureField'])->name('content-gen.features.retry-field');
     Route::post('/admin-dashboard/content-generation/submit-batch', [ContentGenerationController::class, 'submitBatch'])->name('content-gen.submit-batch');
     Route::post('/admin-dashboard/content-generation/retry-failed', [ContentGenerationController::class, 'retryFailed'])->name('content-gen.retry-failed');
     Route::get('/admin-dashboard/content-generation/batch-jobs', [ContentGenerationController::class, 'batchJobs'])->name('content-gen.batch-jobs');

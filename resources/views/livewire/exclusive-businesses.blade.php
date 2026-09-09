@@ -73,7 +73,7 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mb-4 pb-3 border-bottom">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <p class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</p>
 
                                         <div class="price-slider-container">
                                             <div
@@ -109,9 +109,9 @@
                                             @endphp
 
                                             <div class="filter-section">
-                                                <h3>
+                                                <p>
                                                     {{ $filterName }}
-                                                </h3>
+                                                </p>
 
                                                 <div class="accordion-body" style="padding: 0;">
                                                     @if ($filterType === 'checkbox')
@@ -386,8 +386,8 @@
                                                         <div class="sl_h">
                                                             <div class="inn_h">
                                                                 <div class="sl_main">
-                                                                    <h6 class="head">
-                                                                        {{ $item->translations->first()->name }}</h6>
+                                                                    <p class="head">
+                                                                        {{ $item->translations->first()->name }}</p>
                                                                     <div
                                                                         wire:key="wishlist-container-{{ $item->id }}">
                                                                         @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))

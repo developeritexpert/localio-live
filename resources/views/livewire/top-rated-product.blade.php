@@ -191,9 +191,9 @@
     .explore-categories-sec .top-product-card:hover {
         box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
     }
-    .explore-categories-sec .top-product-info h6 {
+    .explore-categories-sec .top-product-info p {
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 600;
         color: #002347;
         margin: 0;
         white-space: nowrap;
@@ -302,7 +302,7 @@
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
+                                <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
@@ -361,9 +361,9 @@
                                 <div class="col-md-12">
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
-                                        <h3 class="fw-semibold text-dark mb-2">
+                                        <p class="fw-semibold text-dark mb-2">
                                             {{ static_text('user_rating') ?: 'User rating' }}
-                                        </h3>
+                                        </p>
 
                                         <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
@@ -396,11 +396,11 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">
+                                        <p class="fw-semibold text-dark mb-3">
                                             <!-- {{ static_text('price_range') }} -->
                                             {{ static_text('price_range') ?: 'Price range' }}
 
-                                        </h3>
+                                        </p>
 
                                         <div class="price-slider-container">
                                             <div class="price-inputs d-flex gap-2 align-items-center mt-3">
@@ -436,9 +436,9 @@
                                         @endphp
 
                                         <div class="filter-section">
-                                            <h3>
+                                            <p>
                                                 {{ $filterName }}
-                                            </h3>
+                                            </p>
 
                                             <div class="accordion-body" style="padding: 0;">
                                                 @if ($filterType === 'checkbox')
@@ -660,11 +660,11 @@
                                     $from = ($currentPage - 1) * $perPage + 1;
                                     $to = min($currentPage * $perPage, $total);
                                     @endphp
-                                    <p class="m-0">
+                                    <p class="m-0 showing-p">
                                         Showing {{$from}}-{{$to}} of {{$total}}
                                     </p>
                                     @else
-                                    <p class="m-0">Showing {{ $products->count() }} results</p>
+                                    <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                     @endif
                                 </div>
                                 @php
@@ -743,7 +743,7 @@
                                             <div class="best-value-inline">
                                                 <!-- <i class="fa-regular fa-thumbs-up"></i> -->
                                                 <i class="far fa-star text-warning"></i>
-                                                <span style="text-transform: none !important;">Top choice</span>
+                                                <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
                                             </div>
                                             <!-- start recomment this section here -->
                                             @if($totalRevCount > 0 && !empty($item->is_affiliate))
@@ -757,7 +757,7 @@
                                                             d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
                                                         </path>
                                                     </svg>
-                                                    <span>{{ $recPercent }}% recommend this</span>
+                                                    <span>{{ $recPercent }}% {{ static_text('recommend_this') ?: 'of users recommend' }}</span>
                                                 </div>
                                             @endif
                                             <!-- end recomment this section here -->
@@ -782,8 +782,8 @@
                                                         <div class="sl_h">
                                                             <div class="inn_h">
                                                                 <div class="sl_main">
-                                                                    <h6 class="head">
-                                                                        {{ $item->translations->first()->name }}</h6>
+                                                                    <p class="head">
+                                                                        {{ $item->translations->first()->name }}</p>
                                                                     <div class="d-none"
                                                                         wire:key="wishlist-container-{{ $item->id }}">
                                                                         @livewire('wishlist', ['productId' =>
@@ -1134,9 +1134,9 @@
                                     <x-business-logo :business="$business" :name="$bizName" />
                                 </div>
                                 <div class="top-product-info min-w-0">
-                                    <h6 class="m-0 d-flex align-items-center gap-1" >
+                                    <p class="m-0 d-flex align-items-center gap-1" >
                                         {{ $bizName }}
-                                    </h6>
+                                    </p>
                                     <div class="rating-group" >
                                         <span class="rate_box_num">{{ formatRating($business->average_rating) }}</span>
                                         <div class="rating-stars" >
@@ -1250,13 +1250,13 @@
                         @foreach($faqs as $fIndex => $faq)
                         @if($loop->iteration > 10) @break @endif
                         <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                            <h2 class="accordion-header" id="faqHeading{{ $fIndex }}">
-                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                            <p class="accordion-header" id="faqHeading{{ $fIndex }}">
+                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                     {{ $faq['question'] }}
                                 </button>
-                            </h2>
+                            </p>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
-                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fdfdfd;">
+                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fff;">
                                     {!! $faq['answer'] !!}
                                 </div>
                             </div>

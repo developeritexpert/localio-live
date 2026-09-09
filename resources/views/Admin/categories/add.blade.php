@@ -53,25 +53,9 @@
                             @enderror
                             </div>
                         </div>
-                                                <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="comparison_name">Category name for comparison</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="comparison_name" name="comparison_name"
-                                        value="{{ isset($category_data) ? ($category_data['comparison_name'] ?? '') : old('comparison_name') }}" 
-                                        placeholder="e.g. Shared hosting providers" />
-                                </div>
-                                <small class="text-muted d-block mt-1">Used to generate feature page headlines (e.g. <i>Shared hosting providers with noise cancellation</i>). Defaults to Category Name if left blank.</small>
-                                <small class="text-primary d-block mt-1"><strong>Dynamic Variables Supported:</strong> You can use <code>[year]</code>, <code>[country1]</code>, and <code>[country2]</code>. Example: <em>Web hosting comparison [year] [country2]</em></small>
-                                @error('comparison_name')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="see_all_text">"See All" Link Text</label>
+                                <label class="form-label" for="see_all_text">"Explore [business]" Link Text</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="see_all_text" name="see_all_text"
                                         value="{{ isset($category_data) ? ($category_data['see_all_text'] ?? '') : old('see_all_text') }}" 
@@ -147,7 +131,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="description">Description</label>
+                                <label class="form-label" for="description">Header Text</label>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{!! isset($category_data) ? $category_data['description'] : old('description') !!}</textarea>
                                 </div>
@@ -307,7 +291,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="top_rated_listing_headline">Top-Rated Listing Headline (H2)</label>
+                                <label class="form-label" for="top_rated_listing_headline">Compare Top-Rated Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="top_rated_listing_headline" name="top_rated_listing_headline"
                                         value="{{ isset($category_data) ? ($category_data['top_rated_listing_headline'] ?? '') : old('top_rated_listing_headline') }}"
@@ -323,7 +307,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="top_rated_listing_headline_addition">Top-Rated Listing Headline (H2) addition (no translate)</label>
+                                <label class="form-label" for="top_rated_listing_headline_addition">Compare Top-Rated Headline (H2) addition (no translate)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="top_rated_listing_headline_addition" name="top_rated_listing_headline_addition"
                                         value="{{ old('top_rated_listing_headline_addition', $category->top_rated_listing_headline_addition ?? ($category_data['category']['top_rated_listing_headline_addition'] ?? '')) }}"
@@ -338,7 +322,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="top_rated_listing_subtext">Top-Rated Listing Subtext</label>
+                                <label class="form-label" for="top_rated_listing_subtext">Compare Top-Rated Subtext</label>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="top_rated_listing_subtext" name="top_rated_listing_subtext" rows="3" placeholder="Enter subtext displayed below the H2 headline on the Top Rated page">{{ isset($category_data) ? ($category_data['top_rated_listing_subtext'] ?? '') : old('top_rated_listing_subtext') }}</textarea>
                                 </div>
@@ -351,7 +335,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="compare_alternatives_headline">Compare Alternatives Headline (H2)</label>
+                                <label class="form-label fw-bold" for="compare_alternatives_headline">Top 10 Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="compare_alternatives_headline" name="compare_alternatives_headline"
                                         value="{{ isset($category_data) ? ($category_data['compare_alternatives_headline'] ?? '') : old('compare_alternatives_headline') }}"
@@ -366,7 +350,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="compare_alternatives_subtext">Compare Alternatives Subtext</label>
+                                <label class="form-label fw-bold" for="compare_alternatives_subtext">Top 10 Subtext</label>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="compare_alternatives_subtext" name="compare_alternatives_subtext" rows="3" placeholder="Enter subtext displayed below the Compare Alternatives headline">{!! isset($category_data) ? ($category_data['compare_alternatives_subtext'] ?? '') : old('compare_alternatives_subtext') !!}</textarea>
                                 </div>
@@ -379,7 +363,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="community_says_headline">Community Says Headline (H2)</label>
+                                <label class="form-label fw-bold" for="community_says_headline">Pros and Cons Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="community_says_headline" name="community_says_headline"
                                         value="{{ isset($category_data) ? ($category_data['community_says_headline'] ?? '') : old('community_says_headline') }}"
@@ -394,7 +378,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label fw-bold" for="community_says_subtext">Community Says Subtext</label>
+                                <label class="form-label fw-bold" for="community_says_subtext">Pros and Cons Subtext</label>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="community_says_subtext" name="community_says_subtext" rows="3" placeholder="Enter subtext displayed below the What the community says headline">{!! isset($category_data) ? ($category_data['community_says_subtext'] ?? '') : old('community_says_subtext') !!}</textarea>
                                 </div>
@@ -463,6 +447,34 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label fw-bold" for="compare_tool_headline">Comparison Tool Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="compare_tool_headline" name="compare_tool_headline"
+                                        value="{{ isset($category_data) ? ($category_data['compare_tool_headline'] ?? '') : old('compare_tool_headline') }}"
+                                        placeholder="e.g. Compare {category} with any provider">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the interactive provider comparison box on the category page. Defaults to "Compare [Category] with any provider" if left empty.</small>
+                                @error('compare_tool_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="compare_tool_subtext">Comparison Tool Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="compare_tool_subtext" name="compare_tool_subtext" rows="3" placeholder="Enter subtext displayed below the Comparison Tool headline">{!! isset($category_data) ? ($category_data['compare_tool_subtext'] ?? '') : old('compare_tool_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short explanatory text displayed below the comparison tool headline. Defaults to "Select another provider from the search box below to generate an instant side-by-side comparison." if left empty.</small>
+                                @error('compare_tool_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label fw-bold" for="category_faqs_headline">Category Page FAQs Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="category_faqs_headline" name="category_faqs_headline"
@@ -508,7 +520,7 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="meta_title">Meta Title</label>
+                                <label class="form-label" for="meta_title">Meta Title (Category Page)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="meta_title" name="meta_title"
                                         value="{{ isset($category_data) ? ($category_data['meta_title'] ?? '') : old('meta_title') }}" 
@@ -522,12 +534,39 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="meta_description">Meta Description</label>
+                                <label class="form-label" for="meta_description">Meta Description (Category Page)</label>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control" id="meta_description" name="meta_description" rows="3" 
                                         placeholder="Enter SEO meta description for this category/subcategory page">{{ isset($category_data) ? ($category_data['meta_description'] ?? '') : old('meta_description') }}</textarea>
                                 </div>
                                 @error('meta_description')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="faq_meta_title">Meta Title (Category FAQs Page)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="faq_meta_title" name="faq_meta_title"
+                                        value="{{ isset($category_data) ? ($category_data['faq_meta_title'] ?? '') : old('faq_meta_title') }}" 
+                                        placeholder="Enter SEO meta title for this category's FAQ page" />
+                                </div>
+                                @error('faq_meta_title')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="faq_meta_description">Meta Description (Category FAQs Page)</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control" id="faq_meta_description" name="faq_meta_description" rows="3" 
+                                        placeholder="Enter SEO meta description for this category's FAQ page">{{ isset($category_data) ? ($category_data['faq_meta_description'] ?? '') : old('faq_meta_description') }}</textarea>
+                                </div>
+                                @error('faq_meta_description')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -629,7 +668,7 @@
                                         <!-- FAQ Page About Headline (H2) -->
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="form-label fw-bold" for="faq_about_headline">FAQ Page "About" Headline (H2)</label>
+                                                <label class="form-label fw-bold" for="faq_about_headline">FAQ Page Second Headline (H2)</label>
                                                 <div class="form-control-wrap">
                                                     <input type="text" class="form-control" id="faq_about_headline" name="faq_about_headline"
                                                         value="{{ isset($category_data) ? ($category_data['faq_about_headline'] ?? '') : old('faq_about_headline') }}"
@@ -645,7 +684,7 @@
                                         <!-- FAQ Page About Content with CKEditor -->
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label class="form-label fw-bold" for="faq_about_description">FAQ Page "About" Content</label>
+                                                <label class="form-label fw-bold" for="faq_about_description">FAQ Page Content Text</label>
                                                 <div class="form-control-wrap">
                                                     <textarea class="form-control rich-editor" id="faq_about_description" name="faq_about_description" rows="5" placeholder="Enter introductory text displayed below the FAQ About headline...">{!! isset($category_data) ? ($category_data['faq_about_description'] ?? '') : old('faq_about_description') !!}</textarea>
                                                 </div>

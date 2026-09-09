@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h3 class="card-title mb-3" style=" font-size: 18px !important;">Pros</h3>
+                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -224,7 +224,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h3 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</h3>
+                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
                                                 @foreach($aggregatedCons as $con)
@@ -282,21 +282,21 @@
                                                 @php $translation = $faq->translations->first(); @endphp
                                                 @if ($translation)
                                                     <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                        <h2 class="accordion-header" id="faqHeading{{ $index }}">
+                                                        <p class="accordion-header" id="faqHeading{{ $index }}">
                                                             <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
                                                                 type="button" data-bs-toggle="collapse"
                                                                 data-bs-target="#faqCollapse{{ $index }}"
                                                                 aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
                                                                 aria-controls="faqCollapse{{ $index }}"
-                                                                style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                                style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                                 <span>{{ $translation->question }}</span>
                                                             </button>
-                                                        </h2>
+                                                        </p>
                                                         <div id="faqCollapse{{ $index }}"
                                                             class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                             aria-labelledby="faqHeading{{ $index }}"
                                                             data-bs-parent="#businessFaqAccordion">
-                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                                 {!! $translation->answer !!}
                                                             </div>
                                                         </div>
@@ -340,9 +340,9 @@
         </div>
 
         <div>
-            <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">
+            <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
                 Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?
-            </h4>
+            </p>
 
             <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
                 Share your experience with the community
@@ -430,7 +430,7 @@
                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                             <div class="col-lg-7 col-md-7 col-12">
                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                    <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h5>
+                                                                    <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
 
                                                                     <div class="mb-2">
                                                                         @foreach ($criteria as $criterion)
@@ -627,9 +627,9 @@
                                 </div>
 
                                 @if ($hasUserReviews && isset($criteria) && count($criteria) > 0)
-                                    <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                       User rating
-                                    </h2>
+                                    <p class="breakdown-title" style="margin-bottom: 15px;">
+                                       Detailed user ratings 
+                                    </p>
 
                                     <div class="review-progress-list mb-3">
                                         @foreach ($criteria as $criterion)
@@ -716,7 +716,7 @@
 </a>
 
                                                 <div>
-                                                    <h6 style="margin: 0; font-weight: 600;">
+                                                    <p style="margin: 0; font-weight: 600;">
                                                         @if ($review->user && $review->user->user_type === 'admin')
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
@@ -730,7 +730,7 @@
         @endif
         
                                                         @endif
-                                                    </h6>
+                                                    </p>
                                                     @if($review->user && $review->user->job_title)
                                                         <div style="font-size: 12px; color: #5b6b7a; line-height:1;">{{ $review->user->job_title }}</div>
                                                     @endif
@@ -745,9 +745,9 @@
                                         </div>
 
                                         @if($review->translations && $review->translations->first() && $review->translations->first()->title)
-                                            <h5 style="margin-top: 10px; margin-bottom: 8px; font-size: 15px; font-weight: 600; color: #1e3050;">
+                                            <p class="sidebar-review-card-p">
                                                 {{ $review->translations->first()->title }}
-                                            </h5>
+                                            </p>
                                         @endif
 
                                         <div class="d-flex align-items-center gap-1 mb-2" style="margin-top: 4px;">
@@ -787,9 +787,9 @@
                                             <x-business-logo :business="$business" />
                                         </div>
                                         <div class="sticky-wrap-mf">
-                                            <h3 class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
+                                            <p class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
                                                 {{ $business->translations->first()->name ?? '' }}
-                                            </h3>
+                                            </p>
                                             @if ($averageRating !== null)
                                                 <div class="rating-group sticky-nav-rating mb-3">
                                                     <span>{{ formatRating($averageRating) }}</span>

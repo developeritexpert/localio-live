@@ -815,8 +815,10 @@
                 <!-- Alternatives Page Description Section -->
                 <div class="card card-bordered mb-3">
                     <div class="card-inner">
+                        <h5 class="title text-dark mb-3"><i class="fas fa-exchange-alt me-1"></i> Alternatives Page Settings & Sections</h5>
+
                         <div class="form-group mb-3">
-                            <label class="form-label">Alternatives page title</label>
+                            <label class="form-label fw-bold">Alternatives page title (Hero H1/H2)</label>
                             <input type="text" class="form-control @error('alternatives_title') is-invalid @enderror"
                                 wire:model.live="alternatives_title" placeholder="e.g. Best {{ $name ?: 'Business Name' }} Alternatives" />
                             @error('alternatives_title')
@@ -825,7 +827,7 @@
                         </div>
 
                         <div class="form-group d-flex justify-content-between align-items-center">
-                            <label class="form-label">Alternatives page description</label>
+                            <label class="form-label fw-bold">Alternatives page description</label>
                         </div>
 
                         <div wire:ignore x-data="{
@@ -845,6 +847,9 @@
                                                         editor.setData(e.detail.fields.alternatives_description);
                                                     }
                                                 });
+                                                window.addEventListener('languageSwitched', () => {
+                                                    editor.setData(this.$wire.alternatives_description || '');
+                                                });
                                             })
                                             .catch(error => {
                                                 console.error(error);
@@ -863,6 +868,174 @@
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+
+                        <!-- 1. Compare Alternatives Section (Table 1) -->
+                        <hr class="my-4">
+                        <h6 class="title text-primary mb-3"><i class="fas fa-columns me-1"></i> Compare Alternatives Section (Table 1)</h6>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Compare alternatives headline (H2)</label>
+                            <input type="text" class="form-control @error('compare_alternatives_headline') is-invalid @enderror"
+                                wire:model.live="compare_alternatives_headline" placeholder="e.g. Compare {{ $name ?: 'Business Name' }} alternatives" />
+                            <small class="text-muted d-block mt-1">Headline for the Compare Alternatives table. Defaults to "Compare {Business} alternatives" if left blank.</small>
+                            @error('compare_alternatives_headline')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Compare alternatives subtext</label>
+                            <div wire:ignore x-data="{
+                                    editor: null,
+                                    init() {
+                                        this.$nextTick(() => {
+                                            ClassicEditor
+                                                .create(this.$refs.editor_compare_alt)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    editor.model.document.on('change:data', () => {
+                                                        this.$wire.compare_alternatives_subtext = editor.getData();
+                                                    });
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.compare_alternatives_subtext !== undefined) {
+                                                            editor.setData(e.detail.fields.compare_alternatives_subtext);
+                                                        }
+                                                    });
+                                                    window.addEventListener('languageSwitched', () => {
+                                                        editor.setData(this.$wire.compare_alternatives_subtext || '');
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error(error);
+                                                });
+                                        });
+                                    }
+                                }">
+                                <textarea
+                                    x-ref="editor_compare_alt"
+                                    class="form-control @error('compare_alternatives_subtext') is-invalid @enderror"
+                                    wire:model.live="compare_alternatives_subtext"
+                                    rows="3"
+                                    placeholder="Enter subtext displayed below the Compare alternatives headline...">
+                                </textarea>
+                            </div>
+                            <small class="text-muted d-block mt-1">Short text placed immediately below the Compare alternatives headline.</small>
+                            @error('compare_alternatives_subtext')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- 2. Community Says Section (Pros & Cons Table 2) -->
+                        <hr class="my-4">
+                        <h6 class="title text-primary mb-3"><i class="fas fa-users me-1"></i> Community Says Section (Pros & Cons Table 2)</h6>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Community says headline (H2)</label>
+                            <input type="text" class="form-control @error('community_says_headline') is-invalid @enderror"
+                                wire:model.live="community_says_headline" placeholder="e.g. What the Localio community says" />
+                            <small class="text-muted d-block mt-1">Headline for the community feedback section. Defaults to "What the Localio community says" if left blank.</small>
+                            @error('community_says_headline')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Community says subtext</label>
+                            <div wire:ignore x-data="{
+                                    editor: null,
+                                    init() {
+                                        this.$nextTick(() => {
+                                            ClassicEditor
+                                                .create(this.$refs.editor_comm_says)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    editor.model.document.on('change:data', () => {
+                                                        this.$wire.community_says_subtext = editor.getData();
+                                                    });
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.community_says_subtext !== undefined) {
+                                                            editor.setData(e.detail.fields.community_says_subtext);
+                                                        }
+                                                    });
+                                                    window.addEventListener('languageSwitched', () => {
+                                                        editor.setData(this.$wire.community_says_subtext || '');
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error(error);
+                                                });
+                                        });
+                                    }
+                                }">
+                                <textarea
+                                    x-ref="editor_comm_says"
+                                    class="form-control @error('community_says_subtext') is-invalid @enderror"
+                                    wire:model.live="community_says_subtext"
+                                    rows="3"
+                                    placeholder="e.g. Most mentioned pros and cons shared by real users.">
+                                </textarea>
+                            </div>
+                            <small class="text-muted d-block mt-1">Short text placed immediately below the Community says headline. Defaults to "Most mentioned pros and cons shared by real users." if left blank.</small>
+                            @error('community_says_subtext')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- 3. All Alternatives Section (Grid & Filters) -->
+                        <hr class="my-4">
+                        <h6 class="title text-primary mb-3"><i class="fas fa-list me-1"></i> All Alternatives Section (Grid & Filters)</h6>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">All alternatives headline (H2)</label>
+                            <input type="text" class="form-control @error('all_alternatives_headline') is-invalid @enderror"
+                                wire:model.live="all_alternatives_headline" placeholder="e.g. All {{ $name ?: 'Business Name' }} alternatives" />
+                            <small class="text-muted d-block mt-1">Headline for all alternatives section. Defaults to "All {Business} alternatives" if left blank.</small>
+                            @error('all_alternatives_headline')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label class="form-label fw-bold">All alternatives subtext</label>
+                            <div wire:ignore x-data="{
+                                    editor: null,
+                                    init() {
+                                        this.$nextTick(() => {
+                                            ClassicEditor
+                                                .create(this.$refs.editor_all_alt)
+                                                .then(editor => {
+                                                    this.editor = editor;
+                                                    editor.model.document.on('change:data', () => {
+                                                        this.$wire.all_alternatives_subtext = editor.getData();
+                                                    });
+                                                    window.addEventListener('ai-content-applied', function(e) {
+                                                        if (e.detail && e.detail.fields && e.detail.fields.all_alternatives_subtext !== undefined) {
+                                                            editor.setData(e.detail.fields.all_alternatives_subtext);
+                                                        }
+                                                    });
+                                                    window.addEventListener('languageSwitched', () => {
+                                                        editor.setData(this.$wire.all_alternatives_subtext || '');
+                                                    });
+                                                })
+                                                .catch(error => {
+                                                    console.error(error);
+                                                });
+                                        });
+                                    }
+                                }">
+                                <textarea
+                                    x-ref="editor_all_alt"
+                                    class="form-control @error('all_alternatives_subtext') is-invalid @enderror"
+                                    wire:model.live="all_alternatives_subtext"
+                                    rows="3"
+                                    placeholder="Enter subtext displayed below the All alternatives headline...">
+                                </textarea>
+                            </div>
+                            <small class="text-muted d-block mt-1">Short text placed immediately below the All alternatives headline.</small>
+                            @error('all_alternatives_subtext')
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>

@@ -995,13 +995,7 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         }
 
         if (!$business) {
-            $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug) {
-                $query->where('slug', $business_slug);
-            })->first();
-            if ($category) {
-                return app(\App\Http\Controllers\User\CategoryController::class)->categoryComparisons($locale, $business_slug);
-            }
-            abort(404, 'Business or Category not found');
+            abort(404, 'Business not found');
         }
 
         $totalReviews = $business->reviews->count();

@@ -317,7 +317,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         @if ($averageRating !== null)
                                         <div class="main-view-rating-hide">
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
-                                                {{ number_format($averageRating, 1) }}
+                                                {{ formatRating($averageRating) }}
                                             </span>
                                             <div style="display: flex; gap: 2px;">
                                                 @for ($i = 1; $i <= 5; $i++)
@@ -516,7 +516,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
+                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedPros as $pro)
                                                 <li class="d-flex align-items-start mb-2">
@@ -533,7 +533,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
+                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedCons as $con)
                                                 <li class="d-flex align-items-start mb-2">
@@ -569,7 +569,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
+                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedPros as $pro)
                                                     <li class="d-flex align-items-start mb-2">
@@ -588,7 +588,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
+                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedCons as $con)
                                                     <li class="d-flex align-items-start mb-2">
@@ -796,7 +796,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $featPercent }}%; border-radius: 10px;" aria-valuenow="{{ $featRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($featRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($featRatingVal) }}</span>
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
                             </div>
@@ -845,7 +845,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $easePercent }}%; border-radius: 10px;" aria-valuenow="{{ $easeRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($easeRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($easeRatingVal) }}</span>
 
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
@@ -881,7 +881,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $crPercent }}%; border-radius: 10px;" aria-valuenow="{{ $crRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($crRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($crRatingVal) }}</span>
 
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
@@ -915,7 +915,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="progress" style="height: 8px; width: 140px; background-color: #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 0;">
                                         <div class="progress-bar" role="progressbar" style="width: {{ $vfmPercent }}%; border-radius: 10px;" aria-valuenow="{{ $vfmRatingVal }}" aria-valuemin="0" aria-valuemax="5"></div>
                                     </div>
-                                    <span class="rating_bar_span">{{ number_format($vfmRatingVal, 1) }}</span>
+                                    <span class="rating_bar_span">{{ formatRating($vfmRatingVal) }}</span>
 
                                 </div>
                                 <div class="community-base-rating">Based on {{ $effReviewCount }} {{ $effReviewCount == 1 ? 'rating' : 'ratings' }}</div>
@@ -1080,7 +1080,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         <h6 class="m-0 fw_700" style="color: #002347">Name not available</h6>
                                                                         @endif
                                                                         <div class="rating-group">
-                                                                            <span class="rate_box_num fw-medium" style="">{{ number_format($altRatingAvg, 1) }}</span>
+                                                                            <span class="rate_box_num fw-medium" style="">{{ formatRating($altRatingAvg) }}</span>
                                                                             <div class="rating-stars" style="">
                                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                                     @if ($i <=floor($altRatingAvg))
@@ -1205,21 +1205,21 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             @php $translation = $faq->translations->first(); @endphp
                                                             @if ($translation)
                                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                                <h2 class="accordion-header" id="faqHeading{{ $index }}">
+                                                                <p class="accordion-header" id="faqHeading{{ $index }}">
                                                                     <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
                                                                         type="button" data-bs-toggle="collapse"
                                                                         data-bs-target="#faqCollapse{{ $index }}"
                                                                         aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
                                                                         aria-controls="faqCollapse{{ $index }}"
-                                                                        style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                                        style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                                         <span>{{ $translation->question }}</span>
                                                                     </button>
-                                                                </h2>
+                                                                </p>
                                                                 <div id="faqCollapse{{ $index }}"
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                                     aria-labelledby="faqHeading{{ $index }}"
                                                                     data-bs-parent="#businessFaqAccordion">
-                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                                         {!! $translation->answer !!}
                                                                     </div>
                                                                 </div>
@@ -1285,7 +1285,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between"
             style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
 
-            <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
+            <div class="d-flex align-items-center justify-content-between gap-2">
 
                 <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                     <div class="top-product-medium-logo">
@@ -1301,7 +1301,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ number_format($averageRating, 1) }}</span>
+                            <span>{{ formatRating($averageRating) }}</span>
                         </div>
                     </div>
                 </div>
@@ -1325,7 +1325,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                         <div class="d-flex align-items-center gap-1"
                             style="font-size: 12px; color: #5b6b7a;">
                             <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                            <span>{{ number_format($peerRating, 1) }}</span>
+                            <span>{{ formatRating($peerRating) }}</span>
                         </div>
                     </div>
                 </div>
@@ -1539,7 +1539,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 <x-business-logo :business="$business" />
                                                             </div>
                                                             <div>
-                                                                <h4 style="margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</h4>
+                                                                <p style="font-size: 18px !important; margin: 0 0 4px 0; font-weight: 700 !important; ">Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?</p>
                                                                 <p style="margin: 0; font-size: 13.5px; ">Share your experience with the community</p>
                                                             </div>
                                                         </div>
@@ -1597,7 +1597,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             <!-- Left Column: Big Rating & Stars -->
                                                                             <div class="col-lg-5 col-md-5 col-12 mt-0">
                                                                                 <div class="d-flex flex-column align-items-start">
-                                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ number_format($averageRating, 1) }}</span>
+                                                                                    <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1; ">{{ formatRating($averageRating) }}</span>
                                                                                     @if($ratingWord = get_rating_label($averageRating))
                                                                                     <span class="rating-word-label " style="">
                                                                                         {{ $ratingWord }}
@@ -1622,7 +1622,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                                             <div class="col-lg-7 col-md-7 col-12 mt-0">
                                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                                <h5 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h5>
+                                                                                <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
 
                                                                                 <div class="mb-2">
                                                                                     @foreach ($criteria as $criterion)
@@ -1633,7 +1633,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                                                 <div class="progress-bar rounded-pill" role="progressbar" style="width: {{ ($criterion->average_rating / 5) * 100 }}%;" aria-valuenow="{{ $criterion->average_rating }}" aria-valuemin="0" aria-valuemax="5"></div>
                                                                                             </div>
                                                                                         </div>
-                                                                                        <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                                                        <span style="font-size: 13px; font-weight: 600; color: #002347; min-width: 28px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                                                                     </div>
                                                                                     @endforeach
                                                                                 </div>
@@ -1992,7 +1992,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom:15px;">
                                         <div class="overall-rating-box" style="display: flex; flex-direction: column; align-items: flex-start;">
                                             <span class="overall-rating-number" style="font-size: 42px; font-weight: 700; color: #002347; line-height: 1;">
-                                                {{ number_format($averageRating,1) }}
+                                                {{ formatRating($averageRating) }}
                                             </span>
                                             @if($ratingWord = get_rating_label($averageRating))
                                             <span class="rating-word-label">
@@ -2026,9 +2026,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     @endif
 
                                     @if ($hasUserReviews)
-                                    <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                        User rating
-                                    </h2>
+                                    <p class="breakdown-title" style="margin-bottom: 15px;">
+                                        Detailed user ratings 
+                                    </p>
 
                                     <div class="review-progress-list ">
                                         @foreach ($criteria as $criterion)
@@ -2038,7 +2038,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <progress class="progress-bar w-100"
                                                     value="{{ $criterion->average_rating * 20 }}"
                                                     max="100" style="height: 8px;"></progress>
-                                                <span style="font-size: 12px; font-weight: 600;  min-width: 35px; text-align: right;">{{ number_format($criterion->average_rating, 1) }}</span>
+                                                <span style="font-size: 12px; font-weight: 600;  min-width: 35px; text-align: right;">{{ formatRating($criterion->average_rating) }}</span>
                                             </div>
                                         </div>
                                         @endforeach
@@ -2092,13 +2092,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="main_feature_sm">
                                     <div class="feture_box str_prc_box">
 
-                                        <h6 class="starting-price-title">
+                                        <p class="starting-price-title">
                                             Starting price
-                                        </h6>
+                                        </p>
 
-                                        <h2 class="starting-price-value">
+                                        <p class="starting-price-value">
                                             {{ $currency }}{{ $startingPrice }}
-                                        </h2>
+                                        </p>
 
                                         <p class="starting-price-text">
                                             Flat Rate, Per {{ ucfirst($timeUnit) }}
@@ -2240,7 +2240,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         @endif
 
                                                         <div>
-                                                            <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                                            <p style="line-height:1">
                                                                 @if($review->user)
                                                                 <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                                                                     {{ $review->user->displayName() }}
@@ -2248,7 +2248,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 @else
                                                                 Anonymous
                                                                 @endif
-                                                            </h6>
+                                                            </p>
                                                             @php
                                                             $badge = isset($review) && $review->user ? $review->user->getContributorBadge() : (isset($u) ? $u->getContributorBadge() : null);
                                                             @endphp
@@ -2270,9 +2270,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                                 </div>
 
-                                                <h5 style="margin-top: 10px; margin-bottom: 4px; font-size: 15px; font-weight: 600; color: #1e3050;">
+                                                <p class="sidebar-review-card-p">
                                                     {{ $review->translations->first()->title ?? 'Review' }}
-                                                </h5>
+                                                </p>
 
                                                 <div class="rating-stars-wrapper" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                                     <div class="rating-stars">
@@ -2313,7 +2313,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
                                                         </div>
                                                         <div>
-                                                            <h6 style="margin: 0; font-size: 14px; font-weight: 600; color: #1e3050;">Marc L.</h6>
+                                                            <p style="line-height:1">Marc L.</p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
                                                                 Product Manager • Small Business (1-50 emp.)
                                                             </div>
@@ -2324,9 +2324,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
 
-                                                <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                                <p class="sidebar-review-card-p" style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
                                                     Is there a free tier for API access or is it trial only?
-                                                </h5>
+                                                </p>
                                                 <p>
                                                     We are looking to integrate this into our workflow and want to test the latency over a few weeks...
                                                 </p>
@@ -2339,7 +2339,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <span style="color: white; font-weight: bold; font-size: 20px;">S</span>
                                                         </div>
                                                         <div>
-                                                            <h6 style="margin: 0;  font-weight: 700; ">Sarah J.</h6>
+                                                            <p style="line-height:1">Sarah J.</p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
                                                                 CTO • Mid-Market (51-1000 emp.)
                                                             </div>
@@ -2350,9 +2350,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
                                                 </div>
 
-                                                <h5 style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
+                                                <p class="sidebar-review-card-p" style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
                                                     How does the performance compare to alternatives in large datasets?
-                                                </h5>
+                                                </p>
                                                 <p>
                                                     We noticed some latency spikes during queries with more than 10k items. Anyone else facing this?
                                                 </p>
@@ -2371,15 +2371,15 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     </div>
 
                                                     <div class="sticky-wrap-mf">
-                                                        <h3 class="sticky-nav-title mb-1"
+                                                        <p class="sticky-nav-title mb-1"
                                                             style="font-size: 17px; font-weight: 700; color: #002347;">
                                                             {{ $business->translations->first()->name ?? '' }}
-                                                        </h3>
+                                                        </p>
                                                         @if ($averageRating !== null)
                                                         <div
                                                             class="rating-group sticky-nav-rating">
                                                             <span
-                                                                style="">{{ number_format($averageRating, 1) }}</span>
+                                                                style="">{{ formatRating($averageRating) }}</span>
                                                             <div class="rating-star" style="">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     @if ($i <=floor($averageRating))
@@ -3235,7 +3235,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                         @endif
                                         @endfor
                             </div>
-                            <span style="font-weight: 600; color: #333;">{{ number_format($averageRating, 1) }}</span>
+                            <span style="font-weight: 600; color: #333;">{{ formatRating($averageRating) }}</span>
                             <span style="color: #888;">({{ $ratingCount }} {{ $ratingCount == 1 ? 'review' : 'reviews' }})</span>
                         </div>
                     </div>

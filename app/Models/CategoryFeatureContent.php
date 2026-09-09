@@ -27,4 +27,11 @@ class CategoryFeatureContent extends Model
     {
         return $this->belongsTo(Language::class, 'lang_id');
     }
+
+    public function scopeForCategoryAndFeature($query, $categoryId, $featureId, $langId = 1)
+    {
+        return $query->where('category_id', $categoryId)
+                     ->where('feature_id', $featureId)
+                     ->where('lang_id', $langId);
+    }
 }

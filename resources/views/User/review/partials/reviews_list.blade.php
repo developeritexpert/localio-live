@@ -30,8 +30,8 @@
                             @endif
 </a>
                         </div>
-                        <div class="asn-rating" style="display: flex; flex-direction: column; gap: 2px;">
-                            <h6 style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
+                        <div class="asn-rating" style="display: flex; flex-direction: column; ">
+                            <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050;">
                                 @if ($review->user && $review->user->user_type === 'admin')
                                     {{ $review->public_name ?? 'Public' }}
                                 @else
@@ -45,7 +45,7 @@
         @endif
         
                                 @endif
-                            </h6>
+                            </p>
                             @if($review->user && $review->user->job_title)
                                 <p style="font-size: 12px; color: #777; margin: 0; line-height: 1.2; font-weight:500;">{{ $review->user->job_title }}</p>
                             @endif
@@ -64,9 +64,9 @@
                     @endphp
 
                     @if(!empty($title))
-                        <h5 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                        <h3 class="review-title" style="font-size: 18px !important; font-weight: 700 !important; margin-bottom: 12px;">
                             {{ $title }}
-                        </h5>
+                        </h3>
                     @endif
                     
                     <!-- Ratings below headline -->

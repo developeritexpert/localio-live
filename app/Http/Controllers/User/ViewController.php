@@ -670,7 +670,7 @@ class ViewController extends Controller
                 return app(\App\Http\Controllers\User\CategoryController::class)->categoryFaqs($locale, $business_slug);
             }
             if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
-                return app(\App\Http\Controllers\User\CategoryController::class)->categoryComparisons($locale, $business_slug);
+                abort(404);
             }
 
             // Check if second_segment is a child subcategory of this category

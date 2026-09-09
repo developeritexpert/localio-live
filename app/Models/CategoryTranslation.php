@@ -37,18 +37,21 @@ class CategoryTranslation extends Model
         'compare_alternatives_headline',
         'compare_alternatives_subtext',
         'community_says_headline',
-        
         'community_says_subtext',
         'explore_subcategories_headline',
         'explore_subcategories_subtext',
         'popular_comparisons_headline',
         'popular_comparisons_subtext',
+        'compare_tool_headline',
+        'compare_tool_subtext',
         'category_faqs_headline',
         'category_faqs_subtext',
         'faq_h1_title',
         'faq_subtext',
         'faq_about_headline',
-        'faq_about_description'
+        'faq_about_description',
+        'faq_meta_title',
+        'faq_meta_description'
     ];
 
     public function category()
