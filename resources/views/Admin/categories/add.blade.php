@@ -463,6 +463,34 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <label class="form-label fw-bold" for="compare_tool_headline">Comparison Tool Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="compare_tool_headline" name="compare_tool_headline"
+                                        value="{{ isset($category_data) ? ($category_data['compare_tool_headline'] ?? '') : old('compare_tool_headline') }}"
+                                        placeholder="e.g. Compare {category} with any provider">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the interactive provider comparison box on the category page. Defaults to "Compare [Category] with any provider" if left empty.</small>
+                                @error('compare_tool_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="compare_tool_subtext">Comparison Tool Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="compare_tool_subtext" name="compare_tool_subtext" rows="3" placeholder="Enter subtext displayed below the Comparison Tool headline">{!! isset($category_data) ? ($category_data['compare_tool_subtext'] ?? '') : old('compare_tool_subtext') !!}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short explanatory text displayed below the comparison tool headline. Defaults to "Select another provider from the search box below to generate an instant side-by-side comparison." if left empty.</small>
+                                @error('compare_tool_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
                                 <label class="form-label fw-bold" for="category_faqs_headline">Category Page FAQs Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="category_faqs_headline" name="category_faqs_headline"

@@ -596,6 +596,8 @@ class CategoriesController extends Controller
                     'explore_subcategories_subtext' => $request->input('explore_subcategories_subtext'),
                     'popular_comparisons_headline' => $request->input('popular_comparisons_headline'),
                     'popular_comparisons_subtext' => $request->input('popular_comparisons_subtext'),
+                    'compare_tool_headline' => $request->input('compare_tool_headline'),
+                    'compare_tool_subtext' => $request->input('compare_tool_subtext'),
                     'category_faqs_headline' => $request->input('category_faqs_headline'),
                     'category_faqs_subtext' => $request->input('category_faqs_subtext'),
                     'faq_h1_title' => $request->input('faq_h1_title'),

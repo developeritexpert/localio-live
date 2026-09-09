@@ -43,6 +43,8 @@ class CategoryTranslation extends Model
         'explore_subcategories_subtext',
         'popular_comparisons_headline',
         'popular_comparisons_subtext',
+        'compare_tool_headline',
+        'compare_tool_subtext',
         'category_faqs_headline',
         'category_faqs_subtext',
         'faq_h1_title',

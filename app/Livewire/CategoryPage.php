@@ -1240,6 +1240,51 @@ if ($this->isParentCategory) {
         $this->resetPage();
     }
 
+    public function getAllSearchableBusinessesProperty()
+    {
+        $lang_id = $this->lang_id;
+        $catIds = [$this->category->id];
+        if ($this->category->parent_id === null) {
+            $childIds = \App\Models\Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
+            $catIds = array_merge($catIds, $childIds);
+        }
+
+        $businesses = \App\Models\Business::where(function ($q) use ($catIds) {
+                $q->whereIn('category_id', $catIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                      $subQ->whereIn('categories.id', $catIds);
+                  });
+            })
+            ->where('status', 1)
+            ->with(['translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            }])
+            ->get();
+
+        if ($businesses->count() < 2) {
+            $businesses = \App\Models\Business::where('status', 1)
+                ->with(['translations' => function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id);
+                }])
+                ->get();
+        }
+
+        return $businesses->map(function ($b) use ($lang_id) {
+            $trans = $b->translations->firstWhere('lang_id', $lang_id) ?? $b->translations->first();
+            $name = trim($trans->name ?? $b->name ?? $b->slug);
+            $rawIcon = $b->getRawOriginal('icon_id') ?? $b->icon_id ?? null;
+            return [
+                'id' => $b->id,
+                'name' => $name,
+                'slug' => $trans->slug ?? $b->slug,
+                'icon' => !empty($rawIcon) ? asset($rawIcon) : '',
+            ];
+        })
+        ->filter(fn($b) => !empty($b['name']))
+        ->values()
+        ->toArray();
+    }
+
     public function render()
     {
         $topAffiliatedBusinesses = \App\Models\Business::with(['reviews', 'category.ratingCriteria'])
@@ -1265,6 +1310,7 @@ if ($this->isParentCategory) {
             'popularBusinesses' => $this->popularBusinesses,
             'faqs' => $this->faqs,
             'topAffiliatedBusinesses' => $topAffiliatedBusinesses,
+            'allSearchableBusinesses' => $this->allSearchableBusinesses,
         ]);
     }
 }
