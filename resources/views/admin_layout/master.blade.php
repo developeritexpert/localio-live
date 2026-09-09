@@ -376,6 +376,11 @@
                                             </a>
                                         </li>
                                         <li class="nk-menu-item">
+                                            <a href="{{ route('content-gen.features') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Features</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item">
                                             <a href="{{ route('content-gen.batch-jobs') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Batch Jobs</span>
                                             </a>

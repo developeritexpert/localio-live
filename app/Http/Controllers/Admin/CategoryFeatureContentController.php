@@ -75,9 +75,24 @@ class CategoryFeatureContentController extends Controller
         ));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $lang_id = getCurrentLanguageID();
+        $selectedCategoryId = $request->query('category_id');
+        $selectedFeatureId  = $request->query('feature_id');
+        $lang_id            = $request->query('lang_id') ?: getCurrentLanguageID();
+
+        // If a record already exists for this exact combination, redirect straight to edit
+        if ($selectedCategoryId && $selectedFeatureId) {
+            $existing = CategoryFeatureContent::where('category_id', $selectedCategoryId)
+                ->where('feature_id', $selectedFeatureId)
+                ->where('lang_id', $lang_id)
+                ->first();
+            if ($existing) {
+                return redirect()->route('admin.category-feature-content.edit', $existing->id)
+                    ->with('info', 'Content already exists for this Category and Feature. Opened in edit mode.');
+            }
+        }
+
         $categories = Category::with(['translation' => fn($q) => $q->where('lang_id', $lang_id)])->get()->map(function($cat) {
             $cat->display_name = ($cat->parent_id ? '— ' : '') . ($cat->translation->name ?? $cat->name ?? ('Category #' . $cat->id));
             return $cat;
@@ -90,7 +105,7 @@ class CategoryFeatureContentController extends Controller
 
         $languages = Language::where('status', 1)->get();
 
-        return view('Admin.category-feature-content.create', compact('categories', 'features', 'languages', 'lang_id'));
+        return view('Admin.category-feature-content.create', compact('categories', 'features', 'languages', 'lang_id', 'selectedCategoryId', 'selectedFeatureId'));
     }
 
     public function store(Request $request)
@@ -99,7 +114,20 @@ class CategoryFeatureContentController extends Controller
             'category_id' => 'required|exists:categories,id',
             'feature_id' => 'required|exists:features,id',
             'lang_id' => 'required|exists:languages,id',
+            'page_title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'top_rated_listing_headline' => 'nullable|string|max:255',
+            'top_rated_listing_subtext' => 'nullable|string',
+            'compare_alternatives_headline' => 'nullable|string|max:255',
+            'compare_alternatives_subtext' => 'nullable|string',
+            'community_says_headline' => 'nullable|string|max:255',
+            'community_says_subtext' => 'nullable|string',
+            'explore_subcategories_headline' => 'nullable|string|max:255',
+            'explore_subcategories_subtext' => 'nullable|string',
+            'popular_comparisons_headline' => 'nullable|string|max:255',
+            'popular_comparisons_subtext' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
         ]);
 
         // Process Dynamic Text Sections
@@ -135,7 +163,20 @@ class CategoryFeatureContentController extends Controller
                 'lang_id' => $request->lang_id,
             ],
             [
+                'page_title' => $request->page_title,
                 'description' => $request->description,
+                'top_rated_listing_headline' => $request->top_rated_listing_headline,
+                'top_rated_listing_subtext' => $request->top_rated_listing_subtext,
+                'compare_alternatives_headline' => $request->compare_alternatives_headline,
+                'compare_alternatives_subtext' => $request->compare_alternatives_subtext,
+                'community_says_headline' => $request->community_says_headline,
+                'community_says_subtext' => $request->community_says_subtext,
+                'explore_subcategories_headline' => $request->explore_subcategories_headline,
+                'explore_subcategories_subtext' => $request->explore_subcategories_subtext,
+                'popular_comparisons_headline' => $request->popular_comparisons_headline,
+                'popular_comparisons_subtext' => $request->popular_comparisons_subtext,
+                'meta_title' => $request->meta_title,
+                'meta_description' => $request->meta_description,
                 'text_sections' => !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
             ]
         );
@@ -177,7 +218,20 @@ class CategoryFeatureContentController extends Controller
             'category_id' => 'required|exists:categories,id',
             'feature_id' => 'required|exists:features,id',
             'lang_id' => 'required|exists:languages,id',
+            'page_title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'top_rated_listing_headline' => 'nullable|string|max:255',
+            'top_rated_listing_subtext' => 'nullable|string',
+            'compare_alternatives_headline' => 'nullable|string|max:255',
+            'compare_alternatives_subtext' => 'nullable|string',
+            'community_says_headline' => 'nullable|string|max:255',
+            'community_says_subtext' => 'nullable|string',
+            'explore_subcategories_headline' => 'nullable|string|max:255',
+            'explore_subcategories_subtext' => 'nullable|string',
+            'popular_comparisons_headline' => 'nullable|string|max:255',
+            'popular_comparisons_subtext' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
         ]);
 
         // Process Dynamic Text Sections
@@ -210,7 +264,20 @@ class CategoryFeatureContentController extends Controller
             'category_id' => $request->category_id,
             'feature_id' => $request->feature_id,
             'lang_id' => $request->lang_id,
+            'page_title' => $request->page_title,
             'description' => $request->description,
+            'top_rated_listing_headline' => $request->top_rated_listing_headline,
+            'top_rated_listing_subtext' => $request->top_rated_listing_subtext,
+            'compare_alternatives_headline' => $request->compare_alternatives_headline,
+            'compare_alternatives_subtext' => $request->compare_alternatives_subtext,
+            'community_says_headline' => $request->community_says_headline,
+            'community_says_subtext' => $request->community_says_subtext,
+            'explore_subcategories_headline' => $request->explore_subcategories_headline,
+            'explore_subcategories_subtext' => $request->explore_subcategories_subtext,
+            'popular_comparisons_headline' => $request->popular_comparisons_headline,
+            'popular_comparisons_subtext' => $request->popular_comparisons_subtext,
+            'meta_title' => $request->meta_title,
+            'meta_description' => $request->meta_description,
             'text_sections' => !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
         ]);
 
@@ -235,18 +302,14 @@ class CategoryFeatureContentController extends Controller
     public function jsonImportProcess(Request $request)
     {
         $request->validate([
-            'json_file' => 'nullable|file|mimes:json,txt',
-            'json_data' => 'nullable|string',
+            'json_data' => 'required|string',
             'default_lang_id' => 'nullable|exists:languages,id'
         ]);
 
         $rawJson = $request->json_data;
-        if ($request->hasFile('json_file')) {
-            $rawJson = file_get_contents($request->file('json_file')->getRealPath());
-        }
 
         if (empty($rawJson) || trim($rawJson) === '') {
-            return redirect()->back()->with('error', 'Please provide JSON data or upload a JSON file.');
+            return redirect()->back()->with('error', 'Please paste JSON content in the text area.');
         }
 
         $items = json_decode($rawJson, true);
@@ -332,7 +395,20 @@ class CategoryFeatureContentController extends Controller
                         'lang_id' => $langId,
                     ],
                     [
+                        'page_title' => $item['page_title'] ?? null,
                         'description' => $description,
+                        'top_rated_listing_headline' => $item['top_rated_listing_headline'] ?? null,
+                        'top_rated_listing_subtext' => $item['top_rated_listing_subtext'] ?? null,
+                        'compare_alternatives_headline' => $item['compare_alternatives_headline'] ?? null,
+                        'compare_alternatives_subtext' => $item['compare_alternatives_subtext'] ?? null,
+                        'community_says_headline' => $item['community_says_headline'] ?? null,
+                        'community_says_subtext' => $item['community_says_subtext'] ?? null,
+                        'explore_subcategories_headline' => $item['explore_subcategories_headline'] ?? null,
+                        'explore_subcategories_subtext' => $item['explore_subcategories_subtext'] ?? null,
+                        'popular_comparisons_headline' => $item['popular_comparisons_headline'] ?? null,
+                        'popular_comparisons_subtext' => $item['popular_comparisons_subtext'] ?? null,
+                        'meta_title' => $item['meta_title'] ?? null,
+                        'meta_description' => $item['meta_description'] ?? null,
                         'text_sections' => !empty($textSections) ? json_encode($textSections) : null,
                     ]
                 );
@@ -370,7 +446,7 @@ class CategoryFeatureContentController extends Controller
         }
 
         $records = $query->get()->map(function($item) {
-            $catTrans = $item->category?->translations->firstWhere('lang_id', $item->lang_id) ?? $item->category?->translations->first();
+            $catTrans = $item->category?->translation ?? $item->category?->translations;
             $featTrans = $item->feature?->translations->firstWhere('lang_id', $item->lang_id) ?? $item->feature?->translations->first();
 
             return [
@@ -381,7 +457,20 @@ class CategoryFeatureContentController extends Controller
                 'feature_name' => $featTrans?->name ?? '',
                 'lang_id' => $item->lang_id,
                 'lang_code' => $item->language?->lang_code ?? 'en-us',
+                'page_title' => $item->page_title,
                 'description' => $item->description,
+                'top_rated_listing_headline' => $item->top_rated_listing_headline,
+                'top_rated_listing_subtext' => $item->top_rated_listing_subtext,
+                'compare_alternatives_headline' => $item->compare_alternatives_headline,
+                'compare_alternatives_subtext' => $item->compare_alternatives_subtext,
+                'community_says_headline' => $item->community_says_headline,
+                'community_says_subtext' => $item->community_says_subtext,
+                'explore_subcategories_headline' => $item->explore_subcategories_headline,
+                'explore_subcategories_subtext' => $item->explore_subcategories_subtext,
+                'popular_comparisons_headline' => $item->popular_comparisons_headline,
+                'popular_comparisons_subtext' => $item->popular_comparisons_subtext,
+                'meta_title' => $item->meta_title,
+                'meta_description' => $item->meta_description,
                 'text_sections' => !empty($item->text_sections) ? (is_array($item->text_sections) ? $item->text_sections : json_decode($item->text_sections, true)) : [],
             ];
         });

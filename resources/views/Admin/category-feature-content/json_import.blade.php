@@ -42,20 +42,10 @@
                                 </div>
                             </div>
 
-                            <!-- Upload JSON File -->
+                            <!-- Paste JSON Direct -->
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label class="form-label" for="json_file">Upload JSON File</label>
-                                    <div class="form-control-wrap">
-                                        <input type="file" name="json_file" id="json_file" class="form-control" accept=".json,.txt">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- OR Paste JSON Direct -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="form-label" for="json_data">Or Paste JSON Content Below</label>
+                                    <label class="form-label fw-bold" for="json_data">Paste JSON Content Below <span class="text-danger">*</span></label>
                                     <div class="form-control-wrap">
                                         <textarea name="json_data" id="json_data" class="form-control" rows="12" placeholder='[
   {

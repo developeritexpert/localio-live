@@ -63,6 +63,9 @@ class CategoryPage extends Component
     ];
 
     public $feature_slug = null;
+    public $locked_feature_id = null;
+    public $locked_feature_name = '';
+    public $locked_feature_obj = null;
     public $selectedFeatures = [];
     public $availableFeatures = [];
 
@@ -815,7 +818,14 @@ if ($this->isParentCategory) {
 
     public function updatedSelectedFeatures()
     {
-        $this->feature_slug = null;
+        if ($this->locked_feature_id) {
+            $lockedIdStr = (string)$this->locked_feature_id;
+            if (!in_array($lockedIdStr, array_map('strval', $this->selectedFeatures))) {
+                $this->selectedFeatures[] = $lockedIdStr;
+            }
+        } else {
+            $this->feature_slug = null;
+        }
         $this->resetPage();
     }
 
@@ -912,7 +922,29 @@ if ($this->isParentCategory) {
     }
 
 
-        public function getFeatureDescriptionProperty()
+            public function getFeatureContentProperty()
+    {
+        $featId = $this->locked_feature_id;
+        if (!$featId && !empty($this->feature_slug) && $this->category) {
+            $slugToMatch = $this->feature_slug;
+            $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
+                $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
+                  ->orWhere('name', 'LIKE', $slugToMatch);
+            })->first();
+            $featId = $matched?->id;
+        }
+
+        if ($featId && $this->category) {
+            return \App\Models\CategoryFeatureContent::where('category_id', $this->category->id)
+                ->where('feature_id', $featId)
+                ->where('lang_id', $this->lang_id)
+                ->first();
+        }
+
+        return null;
+    }
+
+public function getFeatureDescriptionProperty()
     {
         if (!empty($this->feature_slug) && $this->category) {
             $activeFeatId = null;
@@ -1196,7 +1228,7 @@ if ($this->isParentCategory) {
             ->get()
             ->unique('id');
 
-        if (!empty($this->feature_slug) && empty($this->selectedFeatures)) {
+        if (!empty($this->feature_slug)) {
             $slugToMatch = $this->feature_slug;
             $matched = $this->availableFeatures->first(function($f) use ($slugToMatch) {
                 $fSlug = $f->translations->first()?->slug ?? \Illuminate\Support\Str::slug($f->name);
@@ -1211,8 +1243,15 @@ if ($this->isParentCategory) {
                 })->first();
             }
 
-            if ($matched && !in_array($matched->id, $this->selectedFeatures)) {
-                $this->selectedFeatures[] = (string)$matched->id;
+            if ($matched) {
+                $this->locked_feature_id = $matched->id;
+                $this->locked_feature_obj = $matched;
+                $fTrans = $matched->translations->firstWhere('lang_id', $this->lang_id) ?? $matched->translations->first();
+                $this->locked_feature_name = $fTrans?->name ?? $matched->name ?? 'Feature';
+
+                if (!in_array((string)$matched->id, array_map('strval', $this->selectedFeatures))) {
+                    $this->selectedFeatures[] = (string)$matched->id;
+                }
             }
         }
     }
@@ -1222,6 +1261,11 @@ if ($this->isParentCategory) {
         $idStr = (string)$featureId;
         $idInt = (int)$featureId;
 
+        // If this is the locked feature on a feature page, it cannot be removed
+        if ($this->locked_feature_id && $idInt === (int)$this->locked_feature_id) {
+            return;
+        }
+
         $exists = in_array($idStr, array_map('strval', $this->selectedFeatures)) || in_array($idInt, array_map('intval', $this->selectedFeatures));
         if ($exists) {
             $this->selectedFeatures = array_values(array_filter($this->selectedFeatures, fn($v) => (int)$v !== $idInt));
@@ -1229,14 +1273,21 @@ if ($this->isParentCategory) {
             $this->selectedFeatures[] = $idStr;
         }
 
-        $this->feature_slug = null;
+        if (!$this->locked_feature_id) {
+            $this->feature_slug = null;
+        }
         $this->resetPage();
     }
 
     public function clearAllFeatures()
     {
-        $this->selectedFeatures = [];
-        $this->feature_slug = null;
+        if ($this->locked_feature_id) {
+            // Retain the locked feature, remove all extra features
+            $this->selectedFeatures = [(string)$this->locked_feature_id];
+        } else {
+            $this->selectedFeatures = [];
+            $this->feature_slug = null;
+        }
         $this->resetPage();
     }
 
@@ -1298,11 +1349,18 @@ if ($this->isParentCategory) {
         ->take(10)
         ->get();
 
-        return view('livewire.category-page', [
+        $viewName = (!empty($this->feature_slug) || !empty($this->locked_feature_id)) ? 'livewire.feature-page' : 'livewire.category-page';
+
+        return view($viewName, [
+            'category' => $this->category,
             'products' => $this->products,
             'sortBy' => $this->sortBy,
             'showSortDropdown' => $this->showSortDropdown,
             'lang_id' => getCurrentLanguageID(),
+            'featureContent' => $this->featureContent,
+            'lockedFeatureId' => $this->locked_feature_id,
+            'lockedFeatureName' => $this->locked_feature_name,
+            'lockedFeatureObj' => $this->locked_feature_obj,
             'featureDescription' => $this->featureDescription,
             'textSections' => $this->textSections,
             'popularComparisons' => $this->popularComparisons,
@@ -1311,6 +1369,9 @@ if ($this->isParentCategory) {
             'faqs' => $this->faqs,
             'topAffiliatedBusinesses' => $topAffiliatedBusinesses,
             'allSearchableBusinesses' => $this->allSearchableBusinesses,
+            'isParentCategory' => $this->isParentCategory,
+            'subCategories' => $this->subCategories,
+            'filters' => $this->filters,
         ]);
     }
 }

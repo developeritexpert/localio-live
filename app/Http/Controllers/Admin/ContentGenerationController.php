@@ -12,6 +12,8 @@ use App\Models\BusinessFaqTranslation;
 use App\Models\BusinessTranslation;
 use App\Models\BusinessUsp;
 use App\Models\Category;
+use App\Models\Feature;
+use App\Models\CategoryFeatureContent;
 use App\Models\WebSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -21,6 +23,281 @@ use Illuminate\Support\Facades\Log;
 class ContentGenerationController extends Controller
 {
     const CONTENT_FIELDS = ['content', 'faqs', 'features', 'pros_cons', 'metatags'];
+
+    const FEATURE_CONTENT_FIELDS = [
+        'header',
+        'top_rated',
+        'top_10',
+        'pros_cons',
+        'explore_comparisons',
+        'metatags',
+    ];
+
+    public static array $featureFieldLabels = [
+        'header'              => 'Header Text',
+        'top_rated'           => 'Compare Top-Rated',
+        'top_10'              => 'Top 10',
+        'pros_cons'           => 'Pros & Cons',
+        'explore_comparisons' => 'Explore & Comparisons',
+        'metatags'            => 'Meta Tags',
+    ];
+
+
+    // -------------------------------------------------------------------------
+    // FEATURES LIST
+    // -------------------------------------------------------------------------
+    public function features(Request $request)
+    {
+        $query = Feature::with([
+            'category.translation' => fn($q) => $q->where('lang_id', 1),
+            'translations'         => fn($q) => $q->where('lang_id', 1),
+        ]);
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('search')) {
+            $query->whereHas('translations', function ($q) use ($request) {
+                $q->where('lang_id', 1)->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $features   = $query->orderBy('id', 'desc')->paginate(30)->withQueryString();
+        $featureIds = $features->pluck('id')->toArray();
+
+        $queueItems = AiContentQueue::where('resource_type', 'category_feature')
+            ->whereIn('resource_id', $featureIds)
+            ->get()
+            ->groupBy('resource_id');
+
+        $fieldStatusMap = [];
+        foreach ($queueItems as $featureId => $items) {
+            foreach ($items as $item) {
+                if (!isset($fieldStatusMap[$featureId][$item->content_field]) ||
+                    $item->updated_at > $fieldStatusMap[$featureId][$item->content_field]->updated_at) {
+                    $fieldStatusMap[$featureId][$item->content_field] = $item;
+                }
+            }
+        }
+
+        $existingContents = CategoryFeatureContent::whereIn('feature_id', $featureIds)
+            ->get()
+            ->keyBy('feature_id');
+
+        $lastPollAt = Cache::get('ai_batch_last_poll');
+        $categories = Category::with(['translation' => fn($q) => $q->where('lang_id', 1)])
+            ->orderBy('parent_id')
+            ->orderBy('id')
+            ->get()
+            ->map(function($cat) {
+                $catName = $cat->translation?->name ?? ($cat->name ?? ('Category #' . $cat->id));
+                $cat->display_name = ($cat->parent_id ? '— ' : '') . $catName;
+                return $cat;
+            });
+        $fields     = self::FEATURE_CONTENT_FIELDS;
+
+        return view('Admin.content-generation.features', compact(
+            'features', 'fieldStatusMap', 'existingContents', 'categories', 'fields', 'lastPollAt'
+        ));
+    }
+
+    // -------------------------------------------------------------------------
+    // SUBMIT FEATURES BATCH
+    // -------------------------------------------------------------------------
+    public function submitFeaturesBatch(Request $request)
+    {
+        $request->validate([
+            'feature_ids'   => 'required|array|min:1',
+            'feature_ids.*' => 'integer|exists:features,id',
+            'fields'        => 'required|array|min:1',
+            'fields.*'      => 'string|in:header,top_rated,top_10,pros_cons,explore_comparisons,metatags',
+            'provider'      => 'required|in:openai,anthropic',
+        ]);
+
+        $provider   = $request->provider;
+        $featureIds = $request->feature_ids;
+        $fields     = $request->fields;
+
+        $apiKey = $provider === 'openai'
+            ? optional(WebSetting::where('key', 'openai_api_key')->first())->value
+            : optional(WebSetting::where('key', 'anthropic_api_key')->first())->value;
+
+        $model = $provider === 'openai'
+            ? (optional(WebSetting::where('key', 'openai_default_model')->first())->value ?: 'gpt-4o')
+            : (optional(WebSetting::where('key', 'anthropic_default_model')->first())->value ?: 'claude-opus-4-5');
+
+        if (empty($apiKey)) {
+            return back()->with('error', 'No API key configured for ' . ucfirst($provider) . '. Set it in AI Configuration.');
+        }
+
+        $requests  = [];
+        $queueData = [];
+
+        foreach ($featureIds as $featureId) {
+            $feature = Feature::with([
+                'translations'         => fn($q) => $q->where('lang_id', 1),
+                'category.translation' => fn($q) => $q->where('lang_id', 1),
+            ])->find($featureId);
+            if (!$feature) continue;
+
+            $featureName  = optional($feature->translations->first())->name ?? 'Feature #' . $featureId;
+            $categoryName = optional($feature->category)->translation?->name ?? (optional($feature->category)->name ?? 'General');
+
+            foreach ($fields as $field) {
+                $prompt   = AiPrompt::forContentField("feat_{$field}");
+                $customId = "feat_{$featureId}_{$field}";
+
+                $inputVariables = [
+                    'feature_name'  => $featureName,
+                    'category_name' => $categoryName,
+                ];
+
+                if ($provider === 'openai') {
+                    if ($prompt && $prompt->hasOpenAIPromptId()) {
+                        $requests[] = [
+                            'custom_id' => $customId,
+                            'method'    => 'POST',
+                            'url'       => '/v1/responses',
+                            'body'      => [
+                                'model'  => $model,
+                                'prompt' => [
+                                    'id'        => $prompt->openai_prompt_id,
+                                    'variables' => $inputVariables,
+                                ],
+                            ],
+                        ];
+                    } else {
+                        $promptText = $prompt
+                            ? $prompt->getProcessedPrompt($inputVariables)
+                            : $this->defaultFeaturePromptText($field, $featureName, $categoryName);
+
+                        $requests[] = [
+                            'custom_id' => $customId,
+                            'method'    => 'POST',
+                            'url'       => '/v1/chat/completions',
+                            'body'      => [
+                                'model'           => $model,
+                                'messages'        => [
+                                    ['role' => 'system', 'content' => 'You are a professional content writer for a business and software directory. Always respond with valid JSON only, no markdown, no explanation.'],
+                                    ['role' => 'user',   'content' => $promptText],
+                                ],
+                                'response_format' => ['type' => 'json_object'],
+                            ],
+                        ];
+                    }
+                } else {
+                    $promptText = $prompt
+                        ? $prompt->getProcessedPrompt($inputVariables)
+                        : $this->defaultFeaturePromptText($field, $featureName, $categoryName);
+
+                    $requests[] = [
+                        'custom_id' => $customId,
+                        'params'    => [
+                            'model'      => $model,
+                            'max_tokens' => 2000,
+                            'system'     => 'You are a professional content writer for a business and software directory. Always respond with valid JSON only, no markdown.',
+                            'messages'   => [
+                                ['role' => 'user', 'content' => $promptText],
+                            ],
+                        ],
+                    ];
+                }
+
+                $queueData[] = [
+                    'resource_type'     => 'category_feature',
+                    'resource_id'       => $featureId,
+                    'content_field'     => $field,
+                    'openai_request_id' => $customId,
+                    'status'            => 'processing',
+                    'prompt_id'         => $prompt?->id,
+                ];
+            }
+        }
+
+        if (empty($requests)) {
+            return back()->with('error', 'No valid requests could be built for selected features.');
+        }
+
+        try {
+            $batchId = $provider === 'openai'
+                ? $this->submitOpenAIBatch($apiKey, $requests)
+                : $this->submitAnthropicBatch($apiKey, $requests);
+
+            $batchJob = AiBatchJob::create([
+                'provider'     => $provider,
+                'batch_id'     => $batchId,
+                'prompt_type'  => 'feature:' . implode(',', $fields),
+                'status'       => 'processing',
+                'submitted_at' => now(),
+                'total_items'  => count($requests),
+            ]);
+
+            foreach ($queueData as $item) {
+                $item['batch_job_id'] = $batchJob->id;
+                $item['created_at']   = now();
+                $item['updated_at']   = now();
+                AiContentQueue::create($item);
+            }
+
+            return back()->with('success', "Batch submitted for {$batchJob->total_items} feature field(s). Provider: {$provider}. Batch ID: {$batchId}");
+        } catch (\Exception $e) {
+            Log::error("Feature batch dispatch failed: " . $e->getMessage());
+            return back()->with('error', 'Batch submission failed: ' . $e->getMessage());
+        }
+    }
+
+    public function retryFeatureField(Request $request)
+    {
+        $request->validate([
+            'feature_id' => 'required|integer|exists:features,id',
+            'field'      => 'required|string|in:header,top_rated,top_10,pros_cons,explore_comparisons,metatags',
+            'provider'   => 'required|in:openai,anthropic',
+        ]);
+
+        return $this->submitFeaturesBatch(new Request([
+            'feature_ids' => [$request->feature_id],
+            'fields'      => [$request->field],
+            'provider'    => $request->provider,
+        ]));
+    }
+
+    public function applyAllFeatureCompleted(Request $request)
+    {
+        $request->validate(['feature_id' => 'required|integer|exists:features,id']);
+
+        $items = AiContentQueue::where('resource_type', 'category_feature')
+            ->where('resource_id', $request->feature_id)
+            ->where('status', 'completed')
+            ->whereNotNull('result')
+            ->get();
+
+        $applied = 0;
+        $errors  = [];
+
+        foreach ($items as $item) {
+            $data = json_decode($item->result, true);
+            if (!is_array($data)) {
+                $errors[] = "Field {$item->content_field}: invalid JSON";
+                continue;
+            }
+            try {
+                $this->applyResultToRecord($item, $data);
+                $applied++;
+            } catch (\Exception $e) {
+                $errors[] = "Field {$item->content_field}: " . $e->getMessage();
+            }
+        }
+
+        $total = $items->count();
+        $msg   = "Applied {$applied} of {$total} fields to the category feature content.";
+        if (!empty($errors)) {
+            return back()->with('warning', $msg . ' Errors: ' . implode('; ', $errors));
+        }
+        return back()->with('success', $msg);
+    }
 
     // -------------------------------------------------------------------------
     // BUSINESSES LIST
@@ -394,6 +671,53 @@ class ContentGenerationController extends Controller
      */
     private function applyResultToRecord(AiContentQueue $item, array $data): void
     {
+        if ($item->resource_type === 'category_feature') {
+            $featureId = $item->resource_id;
+            $feature   = Feature::find($featureId);
+            if (!$feature) return;
+
+            $categoryId = $feature->category_id;
+            if (!$categoryId) return;
+
+            $content = CategoryFeatureContent::firstOrNew([
+                'category_id' => $categoryId,
+                'feature_id'  => $featureId,
+                'lang_id'     => 1,
+            ]);
+
+            $field = $item->content_field;
+            switch ($field) {
+                case 'header':
+                    if (isset($data['page_title']))  $content->page_title = $data['page_title'];
+                    if (isset($data['description'])) $content->description = $data['description'];
+                    break;
+                case 'top_rated':
+                    if (isset($data['top_rated_listing_headline'])) $content->top_rated_listing_headline = $data['top_rated_listing_headline'];
+                    if (isset($data['top_rated_listing_subtext']))  $content->top_rated_listing_subtext = $data['top_rated_listing_subtext'];
+                    break;
+                case 'top_10':
+                    if (isset($data['compare_alternatives_headline'])) $content->compare_alternatives_headline = $data['compare_alternatives_headline'];
+                    if (isset($data['compare_alternatives_subtext']))  $content->compare_alternatives_subtext = $data['compare_alternatives_subtext'];
+                    break;
+                case 'pros_cons':
+                    if (isset($data['community_says_headline'])) $content->community_says_headline = $data['community_says_headline'];
+                    if (isset($data['community_says_subtext']))  $content->community_says_subtext = $data['community_says_subtext'];
+                    break;
+                case 'explore_comparisons':
+                    if (isset($data['explore_subcategories_headline'])) $content->explore_subcategories_headline = $data['explore_subcategories_headline'];
+                    if (isset($data['explore_subcategories_subtext']))  $content->explore_subcategories_subtext = $data['explore_subcategories_subtext'];
+                    if (isset($data['popular_comparisons_headline']))   $content->popular_comparisons_headline = $data['popular_comparisons_headline'];
+                    if (isset($data['popular_comparisons_subtext']))    $content->popular_comparisons_subtext = $data['popular_comparisons_subtext'];
+                    break;
+                case 'metatags':
+                    if (isset($data['meta_title']))       $content->meta_title = $data['meta_title'];
+                    if (isset($data['meta_description'])) $content->meta_description = $data['meta_description'];
+                    break;
+            }
+            $content->save();
+            return;
+        }
+
         $businessId = $item->resource_id;
         $field      = $item->content_field;
 
@@ -532,6 +856,20 @@ class ContentGenerationController extends Controller
         }
 
         return true;
+    }
+
+
+    private function defaultFeaturePromptText(string $field, string $featureName, string $categoryName): string
+    {
+        return match ($field) {
+            'header' => "Write an engaging page title (H1) and introductory header text for the feature '{$featureName}' in category '{$categoryName}'. Return JSON: {\"page_title\": \"Top {$categoryName} with {$featureName}\", \"description\": \"Detailed overview...\"}",
+            'top_rated' => "Write a Compare Top-Rated section Headline (H2) and explanatory subtext for '{$featureName}' in '{$categoryName}'. Return JSON: {\"top_rated_listing_headline\": \"Compare Top-Rated {$categoryName} with {$featureName}\", \"top_rated_listing_subtext\": \"Discover highest rated options...\"}",
+            'top_10' => "Write a Top 10 alternatives Headline (H2) and subtext for '{$featureName}' in '{$categoryName}'. Return JSON: {\"compare_alternatives_headline\": \"Top 10 {$categoryName} with {$featureName}\", \"compare_alternatives_subtext\": \"Explore alternatives...\"}",
+            'pros_cons' => "Write a Pros and Cons Headline (H2) and subtext evaluating '{$featureName}' in '{$categoryName}'. Return JSON: {\"community_says_headline\": \"Pros and Cons of {$featureName} in {$categoryName}\", \"community_says_subtext\": \"What users love and find challenging...\"}",
+            'explore_comparisons' => "Write section headlines and subtexts for exploring categories and popular comparisons for '{$featureName}' in '{$categoryName}'. Return JSON: {\"explore_subcategories_headline\": \"Explore Categories with {$featureName}\", \"explore_subcategories_subtext\": \"...\", \"popular_comparisons_headline\": \"Popular Comparisons\", \"popular_comparisons_subtext\": \"...\"}",
+            'metatags' => "Write an SEO meta title and meta description for '{$featureName}' in '{$categoryName}'. Return JSON: {\"meta_title\": \"Best {$categoryName} with {$featureName} | Localio\", \"meta_description\": \"Compare top options...\"}",
+            default => "Generate content for '{$featureName}' in category '{$categoryName}'. Return JSON.",
+        };
     }
 
     private function defaultPromptText(string $field, string $businessName, string $categoryName): string

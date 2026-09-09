@@ -474,50 +474,15 @@
                                 };
                             @endphp
 
-                            @if(!empty($feature_slug))
-                                @php
-                                    $categoryName = $category->translations->name ?? $category->name ?? 'Category';
-
-                                    $featureObj = null;
-                                    if (!empty($selectedFeatures)) {
-                                        $featureObj = \App\Models\Feature::with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->find(reset($selectedFeatures));
-                                    }
-                                    if (!$featureObj && !empty($availableFeatures)) {
-                                        $featureObj = $availableFeatures->first(function($f) use ($feature_slug) {
-                                            $fName = $f->translations->first()?->name ?? $f->name;
-                                            return \Illuminate\Support\Str::slug($fName) === \Illuminate\Support\Str::slug($feature_slug);
-                                        });
-                                    }
-                                    if (!$featureObj) {
-                                        $featureObj = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
-                                            $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
-                                              ->orWhere('name', 'LIKE', $feature_slug);
-                                        })->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->first();
-                                    }
-
-                                    $rawFeatName = $featureObj ? ($featureObj->translations->first()->name ?? $featureObj->name) : str_replace('-', ' ', $feature_slug);
-                                    $keepCap = $featureObj ? (bool)$featureObj->keep_capitalized : false;
-
-                                    $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
-                                    $finalTitle = $categoryName . ' with ' . $formattedFeatName;
-                                    if (!empty($category->page_title_addition)) {
-                                        $finalTitle .= ' ' . $category->page_title_addition;
-                                    }
-                                @endphp
-                                <h1 >
-                                    {{ $applyDynamicVars($finalTitle) }}
-                                </h1>
-                            @else
-                                @php
-                                    $baseTitle = !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products');
-                                    if (!empty($category->page_title_addition)) {
-                                        $baseTitle .= ' ' . $category->page_title_addition;
-                                    }
-                                @endphp
-                                <h1 >
-                                    {{ $applyDynamicVars($baseTitle) }}
-                                </h1>
-                            @endif
+                            @php
+                                $baseTitle = !empty($category->translations->page_title) ? $category->translations->page_title : ($category->translations->name ?? 'Products');
+                                if (!empty($category->page_title_addition)) {
+                                    $baseTitle .= ' ' . $category->page_title_addition;
+                                }
+                            @endphp
+                            <h1>
+                                {{ $applyDynamicVars($baseTitle) }}
+                            </h1>
 
                             <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
@@ -525,7 +490,7 @@
                         <div class="col-md-8 text-start">
                             
                             <div class="category-description-text">
-                                {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
+                                {!! $category->translations->description ?? 'Browse and compare the best options' !!}
                             </div>
                         </div>
                         <div class="col-md-4 mt-4 mt-md-0 text-end cat_img_header">
@@ -1915,7 +1880,7 @@
                     if (empty($vsKeyword) || $vsKeyword === 'vs_keyword') $vsKeyword = 'vs';
                     $vsKeySlug = \Illuminate\Support\Str::slug($vsKeyword);
                 @endphp
-                <div class="category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
+                <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
                         <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px;">
                             {{ $compToolHeadline }}

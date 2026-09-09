@@ -79,14 +79,115 @@
                         </div>
                     </div>
 
-                    <!-- Top Description -->
+                    <!-- Page Title (H1) -->
                     <div class="col-12">
                         <div class="form-group">
-                            <label class="form-label" for="description">Top Description (Displayed below H1 headline)</label>
+                            <label class="form-label fw-bold" for="page_title">Page Title (H1 Heading)</label>
                             <div class="form-control-wrap">
-                                <textarea name="description" id="description" class="form-control rich-editor" rows="5" placeholder="Enter introductory description for this category-feature page...">{{ old('description', $content->description) }}</textarea>
+                                <input type="text" name="page_title" id="page_title" class="form-control" value="{{ old('page_title', $content->page_title) }}" placeholder="e.g. Best Web Hosting Services for the U.S. ([year])">
                             </div>
-                            <small class="text-muted d-block mt-1">If left blank, the standard category description will be displayed as fallback.</small>
+                            <small class="text-muted d-block mt-1">Main H1 headline shown at the top of the feature page. Supports dynamic variables: <code>[year]</code>, <code>[country1]</code>, <code>[country2]</code>. Defaults to "[Category Name] with [Feature Name]" if left blank.</small>
+                        </div>
+                    </div>
+
+                    <!-- Header Text / Description -->
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="form-label fw-bold" for="description">Header Text (Intro Description)</label>
+                            <div class="form-control-wrap">
+                                <textarea name="description" id="description" class="form-control rich-editor" rows="4" placeholder="Enter introductory description for this category-feature page...">{{ old('description', $content->description) }}</textarea>
+                            </div>
+                            <small class="text-muted d-block mt-1">Displayed below the H1 headline. If left blank, the standard category description will be displayed as fallback.</small>
+                        </div>
+                    </div>
+
+                    <!-- Compare Top-Rated Section -->
+                    <div class="col-12">
+                        <div class="card card-bordered p-3 bg-light">
+                            <h6 class="fw-bold text-primary mb-3">Compare Top-Rated Section</h6>
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold" for="top_rated_listing_headline">Compare Top-Rated Headline (H2)</label>
+                                <input type="text" name="top_rated_listing_headline" id="top_rated_listing_headline" class="form-control" value="{{ old('top_rated_listing_headline', $content->top_rated_listing_headline) }}" placeholder="e.g. Top-rated web hosting providers comparison">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="top_rated_listing_subtext">Compare Top-Rated Subtext</label>
+                                <textarea name="top_rated_listing_subtext" id="top_rated_listing_subtext" class="form-control rich-editor" rows="3" placeholder="Enter subtext displayed below the Compare Top-Rated headline...">{{ old('top_rated_listing_subtext', $content->top_rated_listing_subtext) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top 10 Section -->
+                    <div class="col-12">
+                        <div class="card card-bordered p-3 bg-light">
+                            <h6 class="fw-bold text-primary mb-3">Top 10 Section</h6>
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold" for="compare_alternatives_headline">Top 10 Headline (H2)</label>
+                                <input type="text" name="compare_alternatives_headline" id="compare_alternatives_headline" class="form-control" value="{{ old('compare_alternatives_headline', $content->compare_alternatives_headline) }}" placeholder="e.g. Top 10 web hosting services compared">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="compare_alternatives_subtext">Top 10 Subtext</label>
+                                <textarea name="compare_alternatives_subtext" id="compare_alternatives_subtext" class="form-control rich-editor" rows="3" placeholder="Enter subtext displayed below the Top 10 headline...">{{ old('compare_alternatives_subtext', $content->compare_alternatives_subtext) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pros and Cons Section -->
+                    <div class="col-12">
+                        <div class="card card-bordered p-3 bg-light">
+                            <h6 class="fw-bold text-primary mb-3">Pros and Cons Section</h6>
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold" for="community_says_headline">Pros and Cons Headline (H2)</label>
+                                <input type="text" name="community_says_headline" id="community_says_headline" class="form-control" value="{{ old('community_says_headline', $content->community_says_headline) }}" placeholder="e.g. What the localio community says">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="community_says_subtext">Pros and Cons Subtext</label>
+                                <textarea name="community_says_subtext" id="community_says_subtext" class="form-control rich-editor" rows="3" placeholder="Enter subtext displayed below the Pros and Cons headline...">{{ old('community_says_subtext', $content->community_says_subtext) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explore Categories Section -->
+                    <div class="col-12">
+                        <div class="card card-bordered p-3 bg-light">
+                            <h6 class="fw-bold text-primary mb-3">Explore Categories Section</h6>
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold" for="explore_subcategories_headline">Explore Categories Headline (H2)</label>
+                                <input type="text" name="explore_subcategories_headline" id="explore_subcategories_headline" class="form-control" value="{{ old('explore_subcategories_headline', $content->explore_subcategories_headline) }}" placeholder="e.g. Not sure? explore hosting categories">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="explore_subcategories_subtext">Explore Categories Subtext</label>
+                                <textarea name="explore_subcategories_subtext" id="explore_subcategories_subtext" class="form-control rich-editor" rows="3" placeholder="Enter subtext displayed below the Explore Categories headline...">{{ old('explore_subcategories_subtext', $content->explore_subcategories_subtext) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popular Comparisons Section -->
+                    <div class="col-12">
+                        <div class="card card-bordered p-3 bg-light">
+                            <h6 class="fw-bold text-primary mb-3">Popular Comparisons Section</h6>
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold" for="popular_comparisons_headline">Popular Comparisons Headline (H2)</label>
+                                <input type="text" name="popular_comparisons_headline" id="popular_comparisons_headline" class="form-control" value="{{ old('popular_comparisons_headline', $content->popular_comparisons_headline) }}" placeholder="e.g. Compare popular web hosting services">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="popular_comparisons_subtext">Popular Comparisons Subtext</label>
+                                <textarea name="popular_comparisons_subtext" id="popular_comparisons_subtext" class="form-control rich-editor" rows="3" placeholder="Enter subtext displayed below the Popular Comparisons headline...">{{ old('popular_comparisons_subtext', $content->popular_comparisons_subtext) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEO Meta Tags -->
+                    <div class="col-12">
+                        <div class="card card-bordered p-3 bg-light">
+                            <h6 class="fw-bold text-primary mb-3">SEO Meta Tags</h6>
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold" for="meta_title">Meta Title</label>
+                                <input type="text" name="meta_title" id="meta_title" class="form-control" value="{{ old('meta_title', $content->meta_title) }}" placeholder="Enter SEO meta title">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="meta_description">Meta Description</label>
+                                <textarea name="meta_description" id="meta_description" class="form-control" rows="3" placeholder="Enter SEO meta description">{{ old('meta_description', $content->meta_description) }}</textarea>
+                            </div>
                         </div>
                     </div>
 
