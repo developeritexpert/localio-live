@@ -2302,6 +2302,7 @@ ul.list-unstyled.m-0 li:hover a .time span {
     justify-content: center;
     align-items: center;
     margin: auto;
+    transform: scale(1.4);
 }
 
 .inner_part_boxx .part_2_boxs h2 {
@@ -7485,7 +7486,13 @@ textarea#message {
 
     .search-box input {
         font-size: 14px;
-        height: 40px;
+        height: 35px;
+    }
+
+    .mobile-search-container .search-box > i.fa-magnifying-glass,
+    .mobile-search-container .search-box > i.fa-search {
+        width: 26px !important;
+        height: 26px !important;
     }
 
     .range-wrapper .values {
@@ -8009,7 +8016,7 @@ textarea#message {
 
     .banner_text_col .search-box input {
         padding: 8px 12px;
-        padding-right: 55px;
+        padding-bottom: 13px;
     }
 
     .xclu-txt-btn .cta {
@@ -8609,7 +8616,14 @@ textarea#message {
     }
 
     .home_bnr_sec .search-box i {
-        padding: 10px;
+        height: 26px;
+        width: 26px;
+        padding: 8px 20px 7px 20px;
+        position: absolute !important;
+        right: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .asn_main_sec_2 .asn_dv.fixed-div .frst_rw {
@@ -8775,7 +8789,7 @@ textarea#message {
     }
 
     section#section-compare {
-        padding: 15px 0px !important;
+        padding: 15px 10px !important;
     }
 
     section#section-compare p {
@@ -9058,11 +9072,15 @@ textarea#message {
     }
 
     .verified-insights-card h6 {
-        font-size: 14px;
+        font-size: 14px !important;
+    }
+
+    .verified-insights-card p {
+        font-size: 12px !important;
     }
 
     .verified-insights-card img {
-        height: 30px;
+        height: 23px !important;
     }
 
     .host-parra {

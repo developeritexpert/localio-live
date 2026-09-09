@@ -7716,7 +7716,8 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
     font-size: 14px !important;
 }
 
-.top-automotive-sec .auto-choice-rgt > div:first-child p {
+.top-automotive-sec .auto-choice-rgt > div:first-child p,
+.showing-p {
     font-size: 13px;
     color: var(--color-primary-grey-text);
 }
@@ -10019,4 +10020,10 @@ button.btn-vote-faq i.far:hover {
 
 #pvc_section h1 {
     color: var(--color-dark-blue-text);
+}
+
+/* ====style.css updated by-Kashish(09-sep-26)===== */
+
+.review_text .review-title {
+    margin-bottom: 6px;
 }
