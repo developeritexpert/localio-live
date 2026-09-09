@@ -37,7 +37,6 @@ class CategoryTranslation extends Model
         'compare_alternatives_headline',
         'compare_alternatives_subtext',
         'community_says_headline',
-        
         'community_says_subtext',
         'explore_subcategories_headline',
         'explore_subcategories_subtext',
@@ -50,7 +49,9 @@ class CategoryTranslation extends Model
         'faq_h1_title',
         'faq_subtext',
         'faq_about_headline',
-        'faq_about_description'
+        'faq_about_description',
+        'faq_meta_title',
+        'faq_meta_description'
     ];
 
     public function category()
