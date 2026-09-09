@@ -64,9 +64,9 @@
                     @endphp
 
                     @if(!empty($title))
-                        <h5 class="review-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin-bottom: 12px;">
+                        <h3 class="review-title" style="font-size: 18px !important; font-weight: 700 !important; margin-bottom: 12px;">
                             {{ $title }}
-                        </h5>
+                        </h3>
                     @endif
                     
                     <!-- Ratings below headline -->

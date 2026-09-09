@@ -266,7 +266,7 @@
                                             }
                                         @endphp
                                         <div class="review-breakdown-card w-100 text-start d-flex flex-column" style="flex: 1 1 auto;">
-                                            <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</h6>
+                                            <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
                                             <ul class="list-unstyled mb-0 d-flex flex-column review-criteria-list" style="gap: 10px; flex: 1 1 auto;">
                                                 @forelse($criteria as $criterion)
                                                     @php
@@ -556,12 +556,12 @@
                                         <div class="col-6">
                                             <div class="p-3 bg-white border h-100 d-flex flex-column justify-content-between text-center" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                                                 <div>
-                                                    <h6 class="starting-price-title">Starting price</h6>
+                                                    <p class="starting-price-title">Starting price</p>
                                                     @if($startingPrice)
-                                                        <h2 class="starting-price-value">{{ $currency }}{{ $amountStr ?? 'Free' }}</h2>
+                                                        <p class="starting-price-value">{{ $currency }}{{ $amountStr ?? 'Free' }}</p>
                                                         <p class="starting-price-text">Flat Rate, Per {{ $timeUnit }}</p>
                                                     @else
-                                                        <h2 class="starting-price-value">Contact</h2>
+                                                        <p class="starting-price-value">Contact</p>
                                                         <p class="starting-price-text">Custom subscription</p>
                                                     @endif
                                                 </div>

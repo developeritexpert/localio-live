@@ -36,7 +36,7 @@
 .sidebar-review-card p {
     margin: 0;
     font-size: 14px;
-    color: #666;
+    color: #5b6b7a;
     line-height: 1.6;
 }
 
@@ -154,7 +154,7 @@
 }
 
 .breakdown-title {
-    font-size: 16px;
+    font-size: 14px;
     color: #002655;
     font-weight: 600;
     margin-bottom: 16px;

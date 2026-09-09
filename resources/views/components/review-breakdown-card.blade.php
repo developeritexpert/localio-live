@@ -58,7 +58,7 @@
     </div>
 
     @if(count($criteriaRatings) > 0)
-        <h6 style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">User rating</h6>
+        <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 15px;">Detailed user ratings </p>
         <div class="mb-3">
             @foreach ($criteriaRatings as $cName => $cRating)
                 <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">

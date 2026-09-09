@@ -191,9 +191,9 @@
     .explore-categories-sec .top-product-card:hover {
         box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
     }
-    .explore-categories-sec .top-product-info h6 {
+    .explore-categories-sec .top-product-info p {
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 600;
         color: #002347;
         margin: 0;
         white-space: nowrap;
@@ -1134,9 +1134,9 @@
                                     <x-business-logo :business="$business" :name="$bizName" />
                                 </div>
                                 <div class="top-product-info min-w-0">
-                                    <h6 class="m-0 d-flex align-items-center gap-1" >
+                                    <p class="m-0 d-flex align-items-center gap-1" >
                                         {{ $bizName }}
-                                    </h6>
+                                    </p>
                                     <div class="rating-group" >
                                         <span class="rate_box_num">{{ formatRating($business->average_rating) }}</span>
                                         <div class="rating-stars" >
@@ -1251,12 +1251,12 @@
                         @if($loop->iteration > 10) @break @endif
                         <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
                             <p class="accordion-header" id="faqHeading{{ $fIndex }}">
-                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                     {{ $faq['question'] }}
                                 </button>
                             </p>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
-                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fdfdfd;">
+                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fff;">
                                     {!! $faq['answer'] !!}
                                 </div>
                             </div>

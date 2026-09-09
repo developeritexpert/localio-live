@@ -516,7 +516,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
+                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedPros as $pro)
                                                 <li class="d-flex align-items-start mb-2">
@@ -533,7 +533,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
+                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedCons as $con)
                                                 <li class="d-flex align-items-start mb-2">
@@ -569,7 +569,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
+                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedPros as $pro)
                                                     <li class="d-flex align-items-start mb-2">
@@ -588,7 +588,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
+                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedCons as $con)
                                                     <li class="d-flex align-items-start mb-2">
@@ -1211,7 +1211,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         data-bs-target="#faqCollapse{{ $index }}"
                                                                         aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
                                                                         aria-controls="faqCollapse{{ $index }}"
-                                                                        style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
+                                                                        style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                                         <span>{{ $translation->question }}</span>
                                                                     </button>
                                                                 </p>
@@ -1219,7 +1219,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                                     aria-labelledby="faqHeading{{ $index }}"
                                                                     data-bs-parent="#businessFaqAccordion">
-                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                                         {!! $translation->answer !!}
                                                                     </div>
                                                                 </div>
@@ -1285,7 +1285,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
         <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between"
             style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
 
-            <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
+            <div class="d-flex align-items-center justify-content-between gap-2">
 
                 <div class="d-flex align-items-center gap-2" style="min-width: 0;">
                     <div class="top-product-medium-logo">
@@ -1622,7 +1622,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             <!-- Right Column: Review Breakdown & Recommendation -->
                                                                             <div class="col-lg-7 col-md-7 col-12 mt-0">
                                                                                 @if(isset($criteria) && count($criteria) > 0)
-                                                                                <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">User rating</p>
+                                                                                <p style="font-size: 14px; font-weight: 600; color: #002347; margin-bottom: 14px;">Detailed user ratings </p>
 
                                                                                 <div class="mb-2">
                                                                                     @foreach ($criteria as $criterion)
@@ -2026,9 +2026,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     @endif
 
                                     @if ($hasUserReviews)
-                                    <h2 class="breakdown-title" style="margin-bottom: 15px;">
-                                        User rating
-                                    </h2>
+                                    <p class="breakdown-title" style="margin-bottom: 15px;">
+                                        Detailed user ratings 
+                                    </p>
 
                                     <div class="review-progress-list ">
                                         @foreach ($criteria as $criterion)
@@ -2092,13 +2092,13 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="main_feature_sm">
                                     <div class="feture_box str_prc_box">
 
-                                        <h6 class="starting-price-title">
+                                        <p class="starting-price-title">
                                             Starting price
-                                        </h6>
+                                        </p>
 
-                                        <h2 class="starting-price-value">
+                                        <p class="starting-price-value">
                                             {{ $currency }}{{ $startingPrice }}
-                                        </h2>
+                                        </p>
 
                                         <p class="starting-price-text">
                                             Flat Rate, Per {{ ucfirst($timeUnit) }}
@@ -2240,7 +2240,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         @endif
 
                                                         <div>
-                                                            <p >
+                                                            <p style="line-height:1">
                                                                 @if($review->user)
                                                                 <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                                                                     {{ $review->user->displayName() }}
@@ -2313,7 +2313,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
                                                         </div>
                                                         <div>
-                                                            <p>Marc L.</p>
+                                                            <p style="line-height:1">Marc L.</p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
                                                                 Product Manager • Small Business (1-50 emp.)
                                                             </div>
@@ -2339,7 +2339,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             <span style="color: white; font-weight: bold; font-size: 20px;">S</span>
                                                         </div>
                                                         <div>
-                                                            <p>Sarah J.</p>
+                                                            <p style="line-height:1">Sarah J.</p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
                                                                 CTO • Mid-Market (51-1000 emp.)
                                                             </div>
