@@ -2,6 +2,46 @@
     @include('User.partials.business_detail_styles')
     <style>
     [x-cloak] { display: none !important; }
+    .table-business-link {
+        display: inline-flex !important;
+        align-items: center;
+        padding: 6px 12px;
+        margin: -6px -12px;
+        border-radius: 10px;
+        background-color: transparent;
+        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        text-decoration: none !important;
+        color: inherit;
+        width: fit-content;
+        max-width: 100%;
+    }
+    .table-business-link:hover {
+        background-color: #e9edf5 !important;
+    }
+    .comparison-box {
+        transition: all 0.2s ease-in-out;
+    }
+    .comparison-box:hover {
+        background-color: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        box-shadow: 0 6px 18px rgba(0, 35, 71, 0.08) !important;
+        transform: translateY(-2px);
+    }
+    .cat-compare-item {
+        padding: 10px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e3050;
+        transition: background 0.15s ease;
+    }
+    .cat-compare-item:hover {
+        background: #f1f5f9;
+        color: #002347;
+    }
     .auto-choice-hd {
         margin-bottom: 15px !important;
     }
@@ -1034,7 +1074,7 @@
                                                 <div class="best-value-inline">
                                                     <!-- <i class="fa-regular fa-thumbs-up"></i> -->
                                                     <i class="far fa-star text-warning"></i>
-                                                    <span style="text-transform: none !important;">Top choice</span>
+                                                    <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
                                                 </div>
 
                                             @if($totalRevCount > 0 && !empty($item->is_affiliate))
@@ -1048,7 +1088,7 @@
                                                             d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
                                                         </path>
                                                     </svg>
-                                                    <span>{{ $recPercent }}% recommend this</span>
+                                                    <span>{{ $recPercent }}% {{ static_text('recommend_this') ?: 'of users recommend' }}</span>
                                                 </div>
                                             @endif
 
@@ -1559,7 +1599,7 @@
         @endif
         <!-- Top Affiliated Businesses compare section -->
         @if(isset($topAffiliatedBusinesses) && count($topAffiliatedBusinesses) > 0)
-            <section>
+            <section class="comparison-table-sec">
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
@@ -1588,7 +1628,6 @@
                                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                     <tr>
                                         <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
                                         <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                         @php
                                             $allCriteria = [];
@@ -1602,6 +1641,7 @@
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">{{ $criterion->name }}</th>
                                         @endforeach
                                         <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Recommend</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1642,16 +1682,6 @@
                                                 </div>
                                             </a>
                                         </td>
-                                        <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
-                                            @if($bizStartingPrice && $bizAmount !== null)
-                                                <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
-                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
-                                                    <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
-                                                @endif
-                                            @else
-                                                <span style="color: #5b6b7a;">-</span>
-                                            @endif
-                                        </td>
                                         <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
@@ -1669,13 +1699,30 @@
                                         <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">
                                             {{ $recommendPercent }}%
                                         </td>
+                                        <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
+                                            @if($bizStartingPrice && $bizAmount !== null)
+                                                <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
+                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                    <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
+                                                @endif
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        
-                        <div class="community-feedback-table-section my-5 pt-3">
+                    </div>
+                </div>
+            </section>
+            <!-- community section -->
+            <section class="community-feedback-sec">
+                <!-- Comparison Tables -->
+                <div class="container">
+                    <div class="comparison-table-section">
+                        <div class="community-feedback-table-section">
                             <div class="mb-3">
                                 @php
                                     $commFeedbackHeadline = !empty($category->translations->community_says_headline) 
@@ -1782,6 +1829,412 @@
                 </div>
             </section>
         @endif
+        <!-- here we add now comparition section -->
+                <!-- Popular Category Comparisons Section -->
+        @if(isset($popularComparisons) && count($popularComparisons) > 0)
+        @php
+            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catCurrentName = $catTrans->name ?? $category->name ?? 'Category';
+            $popCompHeadline = !empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons';
+            $popCompSubtext = $catTrans->popular_comparisons_subtext ?? null;
+        @endphp
+        <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
+            <div class="container">
+                <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
+                    <h2 style="margin-bottom: 8px;">
+                        {{ $popCompHeadline }}
+                    </h2>
+                    @if(!empty($popCompSubtext))
+                        <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
+                            {!! $popCompSubtext !!}
+                        </div>
+                    @else
+                        <p style="color: #002347; margin: 0;">
+                            See how top {{ strtolower($catCurrentName) }} providers compare against each other.
+                        </p>
+                    @endif
+                </div>
+
+                <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
+                    @foreach($popularComparisons as $comp)
+                    <div class="col-lg-4 col-md-4 col-12">
+                        <a href="{{ $comp['url'] }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; color: inherit; text-decoration: none; display: flex;">
+                            <div class="d-flex align-items-center justify-content-between gap-2">
+
+                                <!-- Business 1 -->
+                                <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1 1 0%;">
+                                    <div class="top-product-medium-logo">
+                                        <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
+                                    </div>
+
+                                    <div style="min-width: 0;">
+                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
+                                            {{ $comp['business_1_name'] }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                            <span>{{ formatRating($comp['business_1_rating']) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- VS Circle -->
+                                <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
+
+                                <!-- Business 2 -->
+                                <div class="d-flex align-items-center gap-2 justify-content-end" style="min-width: 0; flex: 1 1 0%;">
+                                    <div class="top-product-medium-logo">
+                                        <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
+                                            {{ $comp['business_2_name'] }}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
+                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
+                                            <span>{{ formatRating($comp['business_2_rating']) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    @endforeach
+                </div>
+
+                <!-- Interactive Compare Tool (Bottom of Section) -->
+                @php
+                    $compToolHeadline = !empty($catTrans->compare_tool_headline)
+                        ? $catTrans->compare_tool_headline
+                        : 'Compare ' . $catCurrentName . ' with any provider';
+                    $compToolSubtext = $catTrans->compare_tool_subtext ?? null;
+                    $compSlug = $catTrans->comparison_slug ?? 'compare';
+                    $vsKeyword = static_text('vs_keyword') ?: 'vs';
+                    if (empty($vsKeyword) || $vsKeyword === 'vs_keyword') $vsKeyword = 'vs';
+                    $vsKeySlug = \Illuminate\Support\Str::slug($vsKeyword);
+                @endphp
+                <div class="category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
+                    <div class="mb-3">
+                        <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                            {{ $compToolHeadline }}
+                        </h3>
+                        @if(!empty($compToolSubtext))
+                            <div class="compare-tool-subtext" style="color: #64748b; font-size: 14px; margin: 0;">
+                                {!! $compToolSubtext !!}
+                            </div>
+                        @else
+                            <p style="color: #64748b; font-size: 14px; margin: 0;">
+                                Select another provider from the search box below to generate an instant side-by-side comparison.
+                            </p>
+                        @endif
+                    </div>
+
+                    <div class="p-3 rounded-3" style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px !important; overflow: visible !important;">
+                        <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap" style="position: relative; overflow: visible !important;">
+                            
+                            <!-- Left Business Selector (50% equal width) -->
+                            <div class="compare-box-col position-relative" style="flex: 1 1 0%; min-width: 220px; overflow: visible !important; position: relative;">
+                                <!-- Search Input Wrapper -->
+                                <div id="catCompareLeftInputWrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+                                    <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none; z-index: 2;"></i>
+                                    <input type="text" id="catCompareLeftInput" class="form-control" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
+                                </div>
+                                <!-- Dropdown -->
+                                <div id="catCompareLeftDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; width: 100%; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 999999;"></div>
+
+                                <!-- Selected Pill -->
+                                <div id="catCompareLeftPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white border" style="display: none !important; border-color: #cbd5e1 !important; height: 48px; border-radius: 10px !important;">
+                                    <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                        <div class="top-product-small-logo" id="catCompareLeftLogo" style="width: 28px; height: 28px; flex-shrink: 0;"></div>
+                                        <span id="catCompareLeftName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+                                    </div>
+                                    <button type="button" id="btnRemoveLeftBusiness" class="btn p-0 border-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; border-radius: 6px; background: #f1f5f9; color: #64748b; font-size: 12px; cursor: pointer; flex-shrink: 0;" title="Remove selection">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- VS Label -->
+                            <span class="fw-bold text-muted px-1 text-center" style="font-size: 15px; font-family: sans-serif; flex-shrink: 0;">vs</span>
+
+                            <!-- Right Business Selector (50% equal width) -->
+                            <div class="compare-box-col position-relative" style="flex: 1 1 0%; min-width: 220px; overflow: visible !important; position: relative;">
+                                <!-- Search Input Wrapper -->
+                                <div id="catCompareRightInputWrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
+                                    <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none; z-index: 2;"></i>
+                                    <input type="text" id="catCompareRightInput" class="form-control" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
+                                </div>
+                                <!-- Dropdown -->
+                                <div id="catCompareRightDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; width: 100%; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 999999;"></div>
+
+                                <!-- Selected Pill -->
+                                <div id="catCompareRightPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white border" style="display: none !important; border-color: #cbd5e1 !important; height: 48px; border-radius: 10px !important;">
+                                    <div class="d-flex align-items-center gap-2" style="min-width: 0;">
+                                        <div class="top-product-small-logo" id="catCompareRightLogo" style="width: 28px; height: 28px; flex-shrink: 0;"></div>
+                                        <span id="catCompareRightName" style="font-size: 14px; font-weight: 600; color: #1e3050; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+                                    </div>
+                                    <button type="button" id="btnRemoveRightBusiness" class="btn p-0 border-0 d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; border-radius: 6px; background: #f1f5f9; color: #64748b; font-size: 12px; cursor: pointer; flex-shrink: 0;" title="Remove selection">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Compare Action Button -->
+                            <button type="button" id="btnRunCategoryCompare" class="blue-btn btn px-4 fw-semibold" style="background-color: #174889; border-color: #174889; color: #ffffff; font-size: 14px; white-space: nowrap; height: 48px; border-radius: 10px; opacity: 0.6; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; min-width: 110px; cursor: not-allowed;" disabled>
+                                Compare
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </section>
+        @endif
+        
+        <!-- Category Compare Data for JS -->
+        <script id="cat-compare-data" type="application/json">
+        {!! json_encode([
+            'businesses' => $allSearchableBusinesses ?? [],
+            'compSlug' => $compSlug,
+            'vsKeySlug' => $vsKeySlug,
+            'locale' => app()->getLocale(),
+        ]) !!}
+        </script>
+
+        <script>
+        (function() {
+            function initCategoryCompare() {
+                const dataEl = document.getElementById('cat-compare-data');
+                if (!dataEl) return;
+
+                let config = {};
+                try {
+                    config = JSON.parse(dataEl.textContent);
+                } catch (e) {
+                    console.error('Failed to parse compare data', e);
+                    return;
+                }
+
+                const searchableBusinesses = Array.isArray(config.businesses) ? config.businesses : [];
+                const compSlug = config.compSlug || 'compare';
+                const vsKeySlug = config.vsKeySlug || 'vs';
+                const currentLocale = config.locale || 'en-us';
+
+                const leftInput = document.getElementById('catCompareLeftInput');
+                const leftInputWrapper = document.getElementById('catCompareLeftInputWrapper');
+                const leftDropdown = document.getElementById('catCompareLeftDropdown');
+                const leftPill = document.getElementById('catCompareLeftPill');
+                const leftLogo = document.getElementById('catCompareLeftLogo');
+                const leftName = document.getElementById('catCompareLeftName');
+                const btnRemoveLeft = document.getElementById('btnRemoveLeftBusiness');
+
+                const rightInput = document.getElementById('catCompareRightInput');
+                const rightInputWrapper = document.getElementById('catCompareRightInputWrapper');
+                const rightDropdown = document.getElementById('catCompareRightDropdown');
+                const rightPill = document.getElementById('catCompareRightPill');
+                const rightLogo = document.getElementById('catCompareRightLogo');
+                const rightName = document.getElementById('catCompareRightName');
+                const btnRemoveRight = document.getElementById('btnRemoveRightBusiness');
+
+                const btnCompare = document.getElementById('btnRunCategoryCompare');
+
+                if (!leftInput || !rightInput || !btnCompare) return;
+
+                let selectedLeft = null;
+                let selectedRight = null;
+
+                function normalize(str) {
+                    return (str || '')
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .trim();
+                }
+
+                function updateCompareButtonState() {
+                    if (selectedLeft && selectedRight && selectedLeft.slug !== selectedRight.slug) {
+                        btnCompare.disabled = false;
+                        btnCompare.style.opacity = '1';
+                        btnCompare.style.cursor = 'pointer';
+                    } else {
+                        btnCompare.disabled = true;
+                        btnCompare.style.opacity = '0.6';
+                        btnCompare.style.cursor = 'not-allowed';
+                    }
+                }
+
+                function setBusinessLogo(container, name, icon) {
+                    if (!container) return;
+                    if (icon && icon.trim() !== '') {
+                        container.innerHTML = '<img src="' + icon + '" alt="' + name + '" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">';
+                    } else {
+                        const initial = name ? name.trim().charAt(0).toUpperCase() : 'B';
+                        container.innerHTML = '<div class="business-initial-logo" style="width: 100%; height: 100%; font-size: 12px; font-weight: 700; border-radius: 6px; display: flex; align-items: center; justify-content: center; background: #002347; color: #ffffff;">' + initial + '</div>';
+                    }
+                }
+
+                function selectLeft(b) {
+                    selectedLeft = b;
+                    leftName.textContent = b.name;
+                    setBusinessLogo(leftLogo, b.name, b.icon);
+                    leftInputWrapper.style.display = 'none';
+                    leftDropdown.style.display = 'none';
+                    leftPill.style.setProperty('display', 'flex', 'important');
+                    updateCompareButtonState();
+                }
+
+                function clearLeft() {
+                    selectedLeft = null;
+                    leftInput.value = '';
+                    leftPill.style.setProperty('display', 'none', 'important');
+                    leftInputWrapper.style.display = 'flex';
+                    leftInput.focus();
+                    updateCompareButtonState();
+                }
+
+                function selectRight(b) {
+                    selectedRight = b;
+                    rightName.textContent = b.name;
+                    setBusinessLogo(rightLogo, b.name, b.icon);
+                    rightInputWrapper.style.display = 'none';
+                    rightDropdown.style.display = 'none';
+                    rightPill.style.setProperty('display', 'flex', 'important');
+                    updateCompareButtonState();
+                }
+
+                function clearRight() {
+                    selectedRight = null;
+                    rightInput.value = '';
+                    rightPill.style.setProperty('display', 'none', 'important');
+                    rightInputWrapper.style.display = 'flex';
+                    rightInput.focus();
+                    updateCompareButtonState();
+                }
+
+                if (btnRemoveLeft) {
+                    btnRemoveLeft.onclick = function(e) {
+                        e.stopPropagation();
+                        clearLeft();
+                    };
+                }
+                if (btnRemoveRight) {
+                    btnRemoveRight.onclick = function(e) {
+                        e.stopPropagation();
+                        clearRight();
+                    };
+                }
+
+                function renderDropdown(dropdown, input, side) {
+                    const rawQuery = input.value;
+                    const normQuery = normalize(rawQuery);
+                    const excludeSlug = side === 'left' ? (selectedRight ? selectedRight.slug : null) : (selectedLeft ? selectedLeft.slug : null);
+
+                    let matches = searchableBusinesses.filter(function(b) {
+                        return b.slug !== excludeSlug;
+                    });
+
+                    if (normQuery.length > 0) {
+                        matches = matches.filter(function(b) {
+                            const normName = normalize(b.name);
+                            const normSlug = normalize(b.slug).replace(/-/g, ' ');
+                            return normName.indexOf(normQuery) !== -1 || normSlug.indexOf(normQuery) !== -1;
+                        });
+                    }
+
+                    if (matches.length === 0) {
+                        dropdown.innerHTML = '<div class="p-3 text-muted small text-center">No businesses found matching "' + rawQuery + '"</div>';
+                        dropdown.style.display = 'block';
+                        return;
+                    }
+
+                    let html = '';
+                    matches.slice(0, 10).forEach(function(b) {
+                        const initial = b.name ? b.name.trim().charAt(0).toUpperCase() : 'B';
+                        const iconHtml = (b.icon && b.icon.trim() !== '')
+                            ? '<img src="' + b.icon + '" width="24" height="24" style="border-radius:6px; object-fit:cover; flex-shrink:0;">'
+                            : '<div style="width:24px;height:24px;border-radius:6px;background:#002347;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">' + initial + '</div>';
+                        
+                        html += '<div class="cat-compare-item" data-slug="' + b.slug + '" data-name="' + encodeURIComponent(b.name) + '" data-icon="' + (b.icon || '') + '" style="padding: 10px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #1e3050; transition: background 0.15s ease;">' + iconHtml + '<span>' + b.name + '</span></div>';
+                    });
+
+                    dropdown.innerHTML = html;
+                    dropdown.style.display = 'block';
+
+                    const items = dropdown.querySelectorAll('.cat-compare-item');
+                    items.forEach(function(item) {
+                        item.onclick = function(e) {
+                            e.stopPropagation();
+                            const b = {
+                                name: decodeURIComponent(this.getAttribute('data-name')),
+                                slug: this.getAttribute('data-slug'),
+                                icon: this.getAttribute('data-icon')
+                            };
+                            if (side === 'left') {
+                                selectLeft(b);
+                            } else {
+                                selectRight(b);
+                            }
+                        };
+                        item.onmouseover = function() {
+                            this.style.background = '#f1f5f9';
+                            this.style.color = '#002347';
+                        };
+                        item.onmouseout = function() {
+                            this.style.background = '#ffffff';
+                            this.style.color = '#1e3050';
+                        };
+                    });
+                }
+
+                leftInput.onfocus = function() { renderDropdown(leftDropdown, leftInput, 'left'); };
+                leftInput.oninput = function() { renderDropdown(leftDropdown, leftInput, 'left'); };
+                leftInput.onkeydown = function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const firstItem = leftDropdown.querySelector('.cat-compare-item');
+                        if (firstItem) firstItem.click();
+                    }
+                };
+
+                rightInput.onfocus = function() { renderDropdown(rightDropdown, rightInput, 'right'); };
+                rightInput.oninput = function() { renderDropdown(rightDropdown, rightInput, 'right'); };
+                rightInput.onkeydown = function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const firstItem = rightDropdown.querySelector('.cat-compare-item');
+                        if (firstItem) firstItem.click();
+                    }
+                };
+
+                document.addEventListener('click', function(e) {
+                    if (leftInputWrapper && !leftInputWrapper.contains(e.target) && leftDropdown && !leftDropdown.contains(e.target)) {
+                        leftDropdown.style.display = 'none';
+                    }
+                    if (rightInputWrapper && !rightInputWrapper.contains(e.target) && rightDropdown && !rightDropdown.contains(e.target)) {
+                        rightDropdown.style.display = 'none';
+                    }
+                });
+
+                btnCompare.onclick = function() {
+                    if (!selectedLeft || !selectedRight || selectedLeft.slug === selectedRight.slug) return;
+                    const targetUrl = '/' + currentLocale + '/' + compSlug + '/' + selectedLeft.slug + '-' + vsKeySlug + '-' + selectedRight.slug;
+                    window.location.href = targetUrl;
+                };
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initCategoryCompare);
+            } else {
+                initCategoryCompare();
+            }
+            document.addEventListener('livewire:navigated', initCategoryCompare);
+            document.addEventListener('livewire:initialized', initCategoryCompare);
+        })();
+        </script>
+        
 
         <!-- listing section -->
         <!-- 3. Explore Subcategories Section -->
@@ -1854,95 +2307,6 @@
 
 
         
-        <!-- Popular Category Comparisons Section -->
-        @if(isset($popularComparisons) && count($popularComparisons) > 0)
-        @php
-            $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
-                ? $category->translations->first() 
-                : ($category->translations ?? $category->translation);
-            $catCurrentName = $catTrans->name ?? $category->name ?? 'Category';
-            $popCompHeadline = !empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons';
-            $popCompSubtext = $catTrans->popular_comparisons_subtext ?? null;
-        @endphp
-        <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
-            <div class="container">
-                <div class="hd_text mb-4" data-aos="fade-up" data-aos-duration="1000">
-                    <h2 style="margin-bottom: 8px;">
-                        {{ $popCompHeadline }}
-                    </h2>
-                    @if(!empty($popCompSubtext))
-                        <div class="popular-comparisons-subtext" style="color: #002347; margin: 0;">
-                            {!! $popCompSubtext !!}
-                        </div>
-                    @else
-                        <p style="color: #002347; margin: 0;">
-                            See how top {{ strtolower($catCurrentName) }} providers compare against each other.
-                        </p>
-                    @endif
-                </div>
-
-                <div class="row g-3" data-aos="fade-up" data-aos-duration="1000">
-                    @foreach($popularComparisons as $comp)
-                    <div class="col-lg-4 col-md-4 col-12">
-                        <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
-                            <div class="d-flex align-items-center justify-content-between mb-3 gap-2">
-
-                                <!-- Business 1 -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                    <div class="top-product-medium-logo">
-                                        <x-business-logo :business="$comp['business_1']" :name="$comp['business_1_name']" />
-                                    </div>
-
-                                    <div style="min-width: 0;">
-                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_1_name'] }}">
-                                            {{ $comp['business_1_name'] }}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ formatRating($comp['business_1_rating']) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- VS Circle -->
-                                <div class="px-2 vs_circle text-muted flex-shrink-0" style="font-size: 16px; font-family: sans-serif;">vs</div>
-
-                                <!-- Business 2 -->
-                                <div class="d-flex align-items-center gap-2" style="min-width: 0;">
-                                    <div class="top-product-medium-logo">
-                                        <x-business-logo :business="$comp['business_2']" :name="$comp['business_2_name']" />
-                                    </div>
-                                    <div style="min-width: 0;">
-                                        <div class="fw-semibold text-dark text-truncate" style="font-size: 13px; color: #1e293b !important;" title="{{ $comp['business_2_name'] }}">
-                                            {{ $comp['business_2_name'] }}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
-                                            <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
-                                            <span>{{ formatRating($comp['business_2_rating']) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="cmpre_btn w-100 mt-auto">
-                                <a href="{{ $comp['url'] }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
-                                    Compare
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-
-                <div class="mt-4 d-none" data-aos="fade-up" data-aos-duration="1000">
-                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                        View more comparisons
-                    </a>
-                </div>
-            </div>
-        </section>
-        @endif
-        
 
         <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
@@ -1954,7 +2318,7 @@
             $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
             $faqSubtext = $catTrans->category_faqs_subtext ?? null;
         @endphp
-        <section class="category-faqs-sec py-5" style="background: #f8fafc; border-top: 1px solid #e2e8f0;">
+        <section class="category-faqs-sec cat-faq-sec py-5" style="">
             <div class="container">
                 <div class="row ">
                     <div class="">
@@ -2171,5 +2535,7 @@ function switchCategoryPreview(bizId, imgSrc, thumbElement) {
     }
 }
 </script>
+
+
 
 </div>

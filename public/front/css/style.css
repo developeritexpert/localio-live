@@ -5442,11 +5442,14 @@ ul.dropdown_menu.dropdown_menu--animated.dropdown_menu-6.mob-drp-contnt.show
     position: absolute;
     bottom: 65px;
     margin: 0;
-    padding: 20px 30px;
-    height: 100%;
+    padding: 24px 30px 32px 30px;
+    height: auto;
+    min-height: auto;
+    max-height: calc(100vh - 80px);
     width: 100% !important;
     z-index: 5;
     display: none;
+    overflow-y: auto;
 }
 
 .ft-btm-rgt .select-menu .options .footer-langs-container {

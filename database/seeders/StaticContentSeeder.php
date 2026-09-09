@@ -67,7 +67,12 @@ class StaticContentSeeder extends Seeder
             [
                 'key' => 'category_badge_label',
                 'lang_id' => 1,
-                'value' => 'Top Choice',
+                'value' => 'Top rated',
+            ],
+            [
+                'key' => 'recommend_this',
+                'lang_id' => 1,
+                'value' => 'of users recommend',
             ],
             [
                 'key' => 'product_badge_label',

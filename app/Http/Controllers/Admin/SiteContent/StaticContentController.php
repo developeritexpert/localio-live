@@ -178,6 +178,14 @@ class StaticContentController extends Controller
                     'how_rankings_work',
                 ],
             ],
+            'listing_badges' => [
+                'title' => 'Listing Badges & Recommendation (Category & Top-Rated Cards)',
+                'keys' => [
+                    'category_badge_label',
+                    'recommend_this',
+                    'product_badge_label',
+                ],
+            ],
             'action_buttons' => [
                 'title' => 'Card & Listing Action Buttons',
                 'keys' => [

@@ -6268,8 +6268,7 @@ textarea#message {
     }
 
     .ft-btm-rgt .select-menu.active .options {
-        max-height: 300px;
-        overflow-y: scroll;
+        overflow-y: auto;
         scrollbar-gutter: smooth;
         scrollbar-width: thin;
         scrollbar-color: var(--color-primary-orange) #f1f1f1;
@@ -8542,7 +8541,7 @@ textarea#message {
     }
 
     .ft-btm-rgt .select-menu.active .options {
-        max-height: 400px;
+        overflow-y: auto;
     }
 
     .contact_sec .contact_content {

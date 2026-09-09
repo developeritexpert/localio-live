@@ -171,11 +171,17 @@
     $parentCatName = $parentTrans->name ?? ($parentCategory->name ?? null);
     $parentCatSlug = $parentTrans->slug ?? ($parentCategory->slug ?? null);
     $catDesc = strip_tags($categoryTranslation->description ?? '');
+    $faqMetaTitle = !empty($categoryTranslation->faq_meta_title) 
+        ? $categoryTranslation->faq_meta_title 
+        : "{$catName} FAQs & Questions Answered | Localio";
+    $faqMetaDesc = !empty($categoryTranslation->faq_meta_description) 
+        ? $categoryTranslation->faq_meta_description 
+        : (!empty($catDesc) ? "Find answers to frequently asked questions about {$catName} providers, features, pricing, and reviews on Localio." : null);
 @endphp
 
-@section('meta_title', format_meta_text("{$catName} FAQs & Questions Answered | Localio"))
-@if(!empty($catDesc))
-@section('meta_description', format_meta_text("Find answers to frequently asked questions about {$catName} providers, features, pricing, and reviews on Localio."))
+@section('meta_title', format_meta_text($faqMetaTitle))
+@if(!empty($faqMetaDesc))
+@section('meta_description', format_meta_text($faqMetaDesc))
 @endif
 
 @section('content')
