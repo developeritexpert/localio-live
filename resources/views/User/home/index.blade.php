@@ -3,227 +3,163 @@
 @section('meta_title', format_meta_text($homeContents['meta_home_title'] ?? '', 'Default Title'))
 @section('meta_description', format_meta_text($homeContents['meta_home_description'] ?? ($homeContents['Meta_home_description'] ?? ''), 'Default Description'))
 @section('content')
-<section class="banner_sec dark home_bnr_sec" style="background-color: #003F7D;">
-    <div class="bubble-wrp">
-        <?php
-        $headerBackgroundImage = $homeContantImages->get('header_background_img');
-        $headerImage = $homeContantImages->get('header_img');
-        $trustedBrandImages = $homeContantImages->get('trusted_brands_img');
-        $aiLeftImage = $homeContantImages->get('ai_section_left_img');
-        $aiRightImage = $homeContantImages->get('ai_section_right_img');
-        $findToolRightImage = $homeContantImages->get('find_tool_right_img');
-        $findToolLeftImage = $homeContantImages->get('find_tool_left_img');
-        $verifiedImage = $homeContantImages->get('user_reviews_img');
-        $featureImage = $homeContantImages->get('price_compare_img');
-        $indepentImage = $homeContantImages->get('independent_img');
-        $reviewRightImage = $homeContantImages->get('review_section_right_img');
-        $reviewLeftImage = $homeContantImages->get('review_section_left_img');
-        $aiImage = $homeContantImages->get('ai_send_img');
+    <section class="banner_sec dark home_bnr_sec" style="background-color: #003F7D;">
+        <div class="bubble-wrp">
+            <?php
+            $headerBackgroundImage = $homeContantImages->get('header_background_img');
+            $headerImage = $homeContantImages->get('header_img');
+            $trustedBrandImages = $homeContantImages->get('trusted_brands_img');
+            $aiLeftImage = $homeContantImages->get('ai_section_left_img');
+            $aiRightImage = $homeContantImages->get('ai_section_right_img');
+            $findToolRightImage = $homeContantImages->get('find_tool_right_img');
+            $findToolLeftImage = $homeContantImages->get('find_tool_left_img');
+            $verifiedImage = $homeContantImages->get('user_reviews_img');
+            $featureImage = $homeContantImages->get('price_compare_img');
+            $indepentImage = $homeContantImages->get('independent_img');
+            $reviewRightImage = $homeContantImages->get('review_section_right_img');
+            $reviewLeftImage = $homeContantImages->get('review_section_left_img');
+            $aiImage = $homeContantImages->get('ai_send_img');
 
-        ?>
-        @if (isset($headerBackgroundImage))
-        <img src="{{ asset($headerBackgroundImage->meta_value) }}" alt="{{ $headerBackgroundImage->meta_key }}">
-        @else
-        <img src="{{ asset('front/img/bnnr-bg.png') }}" alt="">
-        @endif
-    </div>
-    <div class="banner_content">
-        <div class="container">
-            <div class="banner_row" data-aos="fade-up" data-aos-duration="1000">
-                <div class="banner_text_col">
-                    <div class="banner_content_inner">
-                        <h1>{{ $homeContents['header_title'] ?? null }}</h1>
-                        <p>{{ $homeContents['header_description'] ?? null }}</p>
-                        @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search...'])
+            ?>
+            @if (isset($headerBackgroundImage))
+                <img src="{{ asset($headerBackgroundImage->meta_value) }}" alt="{{ $headerBackgroundImage->meta_key }}">
+            @else
+                <img src="{{ asset('front/img/bnnr-bg.png') }}" alt="">
+            @endif
+        </div>
+        <div class="banner_content">
+            <div class="container">
+                <div class="banner_row" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="banner_text_col">
+                        <div class="banner_content_inner">
+                            <h1>{{ $homeContents['header_title'] ?? null }}</h1>
+                            <p>{{ $homeContents['header_description'] ?? null }}</p>
+                            @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search...'])
+                        </div>
                     </div>
-                </div>
-                <div class="banner_image_col d-none">
-                    <div class="banner_image">
-                        @if (isset($headerImage))
-                        <img src="{{ asset($headerImage->meta_value) }}" alt="{{ $headerImage->meta_key }}">
-                        @else
-                        <img src="{{ asset('front/img/banner_image.png') }}" alt="">
-                        @endif
+                    <div class="banner_image_col d-none">
+                        <div class="banner_image">
+                            @if (isset($headerImage))
+                                <img src="{{ asset($headerImage->meta_value) }}" alt="{{ $headerImage->meta_key }}">
+                            @else
+                                <img src="{{ asset('front/img/banner_image.png') }}" alt="">
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
-<!-- end  -->
-<!-- section trusted brands marquee -->
-<section class="trusted-brands">
-    <div class="container">
-        <div class="trst-brnd-wrp" style="display: none;">
-            {{-- <div class="brnd-wrp-lft">
+    </section>
+    <!-- end  -->
+    <!-- section trusted brands marquee -->
+    <section class="trusted-brands">
+        <div class="container">
+            <div class="trst-brnd-wrp" style="display: none;">
+                {{-- <div class="brnd-wrp-lft">
                     <p class="m-0 brnd-p-txt">
                         {{ $homeContents['trusted_brands_text'] ?? null }}
-            </p>
-        </div> --}}
+                    </p>
+                </div> --}}
 
-        <div class="trust-brnd-marque">
-            @if (isset($trustedBrapPndImages))
-            @php
-            $imageIds = json_decode($trustedBrandImages->meta_value);
-            @endphp
-            @if (is_array($imageIds))
-            @foreach ($imageIds as $imageId)
-            @php
-            $media = \App\Models\HomeContentMedia::find($imageId);
-            @endphp
-            <div class="marq-innr">
-                <img src="{{ asset($media->file_path) }}" alt="{{ $media->meta_key }}">
-            </div>
-            @endforeach
-            @else
-            <img src="{{ asset($trustedBrandImages->meta_value) }}"
-                alt="{{ $trustedBrandImages->meta_key }}" style="width: 100px; height: auto;">
-            @endif
-            @endif
-        </div>
-    </div>
-    </div>
-</section>
-<!-- section most-popular -->
-<section class="most-populr-sec light p_120">
-    <div class="container">
-        @if (isset($categories) && $categories->isNotEmpty())
-        <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
-            <!-- Left Sidebar Column: Category list -->
-            <div class="col-lg-3 col-12 mb-4 mb-lg-0">
-                <h2 class="popular-categories-title">{{ !empty($homeContents['most_popular']) ? $homeContents['most_popular'] : 'Most popular categories' }}</h2>
-                <div class="popular-categories-sidebar">
-                    <div class="nav flex-column nav-pills popular-categories-nav" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        @php $activeSet = false; @endphp
-                        @foreach ($categories as $key => $category)
-                        @if ($category->translations && $category->businesses->isNotEmpty())
+                <div class="trust-brnd-marque">
+                    @if (isset($trustedBrapPndImages))
                         @php
-                        $isActive = !$activeSet;
-                        $activeSet = true;
+                            $imageIds = json_decode($trustedBrandImages->meta_value);
                         @endphp
-                        <button class="nav-link text-start popular-category-tab-btn {{ $isActive ? 'active' : '' }}"
-                            id="v-pills-{{ $category->id }}-tab"
-                            data-bs-toggle="pill"
-                            data-bs-target="#v-pills-{{ $category->id }}"
-                            type="button"
-                            role="tab"
-                            aria-controls="v-pills-{{ $category->id }}"
-                            aria-selected="{{ $isActive ? 'true' : 'false' }}">
-                            {{-- <span class="category-icon-wrapper">
-                                                <img src="{{ $category->media ? asset($category->media->dir_path . '/' . $category->media->file_name) : asset('images/no-image.png') }}" alt="" class="category-btn-icon">
-                            </span> --}}
-                            <span class="category-btn-text">{{ $category->translations->name }}</span>
-                        </button>
+                        @if (is_array($imageIds))
+                            @foreach ($imageIds as $imageId)
+                                @php
+                                    $media = \App\Models\HomeContentMedia::find($imageId);
+                                @endphp
+                                <div class="marq-innr">
+                                    <img src="{{ asset($media->file_path) }}" alt="{{ $media->meta_key }}">
+                                </div>
+                            @endforeach
+                        @else
+                            <img src="{{ asset($trustedBrandImages->meta_value) }}"
+                                alt="{{ $trustedBrandImages->meta_key }}" style="width: 100px; height: auto;">
                         @endif
-                        @endforeach
-                    </div>
+                    @endif
                 </div>
             </div>
-
-            <!-- Right Column: Products/Businesses in active Category -->
-            <div class="col-lg-9 col-12">
-                <div class="tab-content popular-categories-content" id="v-pills-tabContent">
-                    @php $activePaneSet = false; @endphp
-                    @foreach ($categories as $key => $category)
-                    @if ($category->translations && $category->businesses->isNotEmpty())
-                    @php
-                    $isActivePane = !$activePaneSet;
-                    $activePaneSet = true;
-                    @endphp
-                    <div class="tab-pane fade {{ $isActivePane ? 'show active' : '' }}"
-                        id="v-pills-{{ $category->id }}"
-                        role="tabpanel"
-                        aria-labelledby="v-pills-{{ $category->id }}-tab"
-                        tabindex="0">
-
-                        <!-- Top Row: See all Category link -->
-                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center" style="display:flex;">
-                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
-                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
-                            </a>
+        </div>
+    </section>
+    <!-- section most-popular -->
+    <section class="most-populr-sec light p_120">
+        <div class="container">
+            @if (isset($categories) && $categories->isNotEmpty())
+                <div class="row most-popular-g2-layout" data-aos="fade-up" data-aos-duration="1000">
+                    <!-- Left Sidebar Column: Category list -->
+                    <div class="col-lg-3 col-12 mb-4 mb-lg-0">
+                        <h2 class="popular-categories-title">{{ !empty($homeContents['most_popular']) ? $homeContents['most_popular'] : 'Most popular categories' }}</h2>
+                        <div class="popular-categories-sidebar">
+                            <div class="nav flex-column nav-pills popular-categories-nav" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                @php $activeSet = false; @endphp
+                                @foreach ($categories as $key => $category)
+                                    @if ($category->translations && $category->businesses->isNotEmpty())
+                                        @php
+                                            $isActive = !$activeSet;
+                                            $activeSet = true;
+                                        @endphp
+                                        <button class="nav-link text-start popular-category-tab-btn {{ $isActive ? 'active' : '' }}" 
+                                            id="v-pills-{{ $category->id }}-tab" 
+                                            data-bs-toggle="pill" 
+                                            data-bs-target="#v-pills-{{ $category->id }}" 
+                                            type="button" 
+                                            role="tab" 
+                                            aria-controls="v-pills-{{ $category->id }}" 
+                                            aria-selected="{{ $isActive ? 'true' : 'false' }}">
+                                            {{-- <span class="category-icon-wrapper">
+                                                <img src="{{ $category->media ? asset($category->media->dir_path . '/' . $category->media->file_name) : asset('images/no-image.png') }}" alt="" class="category-btn-icon">
+                                            </span> --}}
+                                            <span class="category-btn-text">{{ $category->translations->name }}</span>
+                                        </button>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
+                    </div>
 
-                        <!-- Grid of boxes (2 per row) -->
-                        <div class="row g-4 justify-content-start">
-                            @php
-                            $businesses = $category->businesses
-                            ->where('is_affiliate', 1)
-                            ->sortByDesc('reviews_avg_rating');
-                            @endphp
-
-                            @foreach ($businesses as $index => $business)
-                            @php
-                            $businessTranslation = $business->translations->first();
-                            $review = $business->reviews->first();
-                            $reviewTranslation = $review && $review->translations ? $review->translations->first() : null;
-                            $avgRating = $business->reviews_avg_rating ?? 0;
-                            $ratingsCount = $business->reviews->count() ?? 0;
-                            $isBestValue = $index === 0;
-                            @endphp
-
-                            <div class="col-lg-4 col-md-6 col-12">
-                                <div class="review_card light top-rate-card h-100 {{ $isBestValue ? 'center-card-pack' : '' }}" style="margin: 0 !important;">
-                                    <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between" style="background-color: #f7f9fb; position: relative;">
-                                        @if ($isBestValue)
-                                        <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
-                                            <div class="best-value-inline">
-                                                <!-- <i class="fa-regular fa-thumbs-up"></i> -->
-                                                <i class="far fa-star text-warning"></i>
-                                                <span style="text-transform: none !important;">Top choice</span>
-                                            </div>
-                                        </div>
-                                        @endif
-                                        <div class="inn_sl_hed mst_hdn">
-                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
-                                                <div class="top-product-logo">
-                                                    <img class="" src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}" alt="">
-                                                </div>
+                    <!-- Right Column: Products/Businesses in active Category -->
+                    <div class="col-lg-9 col-12">
+                        <div class="tab-content popular-categories-content" id="v-pills-tabContent">
+                            @php $activePaneSet = false; @endphp
+                            @foreach ($categories as $key => $category)
+                                @if ($category->translations && $category->businesses->isNotEmpty())
+                                    @php
+                                        $isActivePane = !$activePaneSet;
+                                        $activePaneSet = true;
+                                    @endphp
+                                    <div class="tab-pane fade {{ $isActivePane ? 'show active' : '' }}" 
+                                        id="v-pills-{{ $category->id }}" 
+                                        role="tabpanel" 
+                                        aria-labelledby="v-pills-{{ $category->id }}-tab" 
+                                        tabindex="0">
+                                        
+                                        <!-- Top Row: See all Category link -->
+                                        <div class="deskp-top-row see-all-category-container  justify-content-end align-items-center"style="display:flex;">
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
+                                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
                                             </a>
-                                            <div class="sl_h">
-                                                <div class="inn_h">
-                                                    <div class="sl_main">
-                                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
-                                                            <p class="head">{{ $businessTranslation->name ?? 'Business' }}</p>
-                                                        </a>
-                                                        <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
-                                                            @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="rating-group" style="">
-                                                    <span class="rate_box_num" style="">{{ formatRating($avgRating) }}</span>
-                                                    <div class="inn_ul d-inline-flex m-0">
-                                                        <div class="tab_star_li">
-                                                            @php
-                                                            $avgRating = $business->reviews_avg_rating ?? 0;
-                                                            $rating = round($avgRating);
-                                                            @endphp
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                <i class="fa-star {{ $i <= $rating ? 'fas text-warning' : 'far text-warning' }}"></i>
-                                                                @endfor
-                                                        </div>
-                                                    </div>
-                                                    <span class="rate_box_count" style="">({{ $ratingsCount }})</span>
-                                                </div>
-                                            </div>
                                         </div>
 
-                                        <!-- Short Description -->
-                                        @if(!empty($business->translations->first()->short_description))
-                                        <div class="mt-4 text-start" style="font-size: 13px; color: #5b6b7a; width: 100%;">
-                                            {{ $business->translations->first()->short_description }}
-                                        </div>
-                                        @endif
+                                        <!-- Grid of boxes (2 per row) -->
+                                        <div class="row g-4 justify-content-start">
+                                            @php
+                                                $businesses = $category->businesses
+                                                    ->where('is_affiliate', 1)
+                                                    ->sortByDesc('reviews_avg_rating');
+                                            @endphp
 
-                                        <div class="slider_content_sec my-4">
-                                            <div class="main_feature_lg">
-                                                <div class="feture_box lft_check_box" style="border: none; padding: 0; background: transparent; min-height: auto;">
-                                                    <ul class="list-unstyled" style="margin: 0; padding: 0;">
-                                                        @if ($business->usps->count() > 0)
-                                                        @foreach ($business->usps->take(4) as $usp)
-                                                        <li class="d-flex align-items-center" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
-                                                            <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                            @foreach ($businesses as $index => $business)
+                                                @php
+                                                    $businessTranslation = $business->translations->first();
+                                                    $review = $business->reviews->first();
+                                                    $reviewTranslation = $review && $review->translations ? $review->translations->first() : null;
+                                                    $avgRating = number_format($business->reviews_avg_rating ?? 0, 1);
+                                                    $ratingsCount = $business->reviews->count() ?? 0;
+                                                    $isBestValue = $index === 0;
+                                                @endphp
 
                                                 <div class="col-lg-4 col-md-6 col-12">
                                                     <div class="review_card light top-rate-card h-100 {{ $isBestValue ? 'center-card-pack' : '' }}" style="margin: 0 !important;">
@@ -270,398 +206,412 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
-                                                        </li>
-                                                        @endforeach
-                                                        @else
-                                                        <li class="d-flex align-items-center" style="margin-bottom: 8px;">
-                                                            <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
 
+                                                             <!-- Short Description -->
+                                                             @if(!empty($business->translations->first()->short_description))
+                                                                 <div class="mt-4 text-start" style="font-size: 13px; color: #5b6b7a; width: 100%;">
+                                                                     {{ $business->translations->first()->short_description }}
+                                                                 </div>
+                                                             @endif
+
+                                                            <div class="slider_content_sec my-4">
+                                                                <div class="main_feature_lg">
+                                                                    <div class="feture_box lft_check_box" style="border: none; padding: 0; background: transparent; min-height: auto;">
+                                                                        <ul class="list-unstyled" style="margin: 0; padding: 0;">
+                                                                            @if ($business->usps->count() > 0)
+                                                                                @foreach ($business->usps->take(4) as $usp)
+                                                                                    <li class="d-flex align-items-center" style="margin-bottom: {{ $loop->last ? '0' : '8px' }};">
+                                                                                        <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                            <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                            
+                                                                                        </div>
+                                                                                        <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
+                                                                                    </li>
+                                                                                @endforeach
+                                                                            @else
+                                                                                <li class="d-flex align-items-center" style="margin-bottom: 8px;">
+                                                                                    <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                        
+                                                                                    </div>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Free domain & SSL certificate</p>
+                                                                                </li>
+                                                                                <li class="d-flex align-items-center" style="margin-bottom: 8px;">
+                                                                                    <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                    </div>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable updates</p>
+                                                                                </li>
+                                                                                <li class="d-flex align-items-center" style="margin-bottom: 0;">
+                                                                                    <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
+                                                                                        <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+                                                                                    </div>
+                                                                                    <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Friendly Customer Service</p>
+                                                                                </li>
+                                                                            @endif
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Free domain & SSL certificate</p>
-                                                        </li>
-                                                        <li class="d-flex align-items-center" style="margin-bottom: 8px;">
-                                                            <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
+
+                                                            <div class="top-pro-box" style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+                                                                <div class="top-pro-btn" style="flex: 1;">
+                                                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}"
+                                                                        class="cta cta_outline d-flex align-items-center justify-content-center" style="width: 100%;">
+                                                                        {{ static_text('profile_and_reviews') ?: ($homeContents['profile_and_reviews'] ?? 'Profile & reviews') }}
+                                                                    </a>
+                                                                </div>
+                                                                <div class="top-pro-btn" style="flex: 1;">
+                                                                    <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? '#' }}"
+                                                                        class="btn-orng cta cta_orange d-flex align-items-center justify-content-center"
+                                                                        target="_blank" rel="noopener noreferrer"
+                                                                        style="width:100%; white-space: nowrap;">
+                                                                        {{ static_text('visit_website') ?: ($homeContents['visit_website'] ?? 'Visit website') }}
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                                                    </a>
+                                                                </div>
                                                             </div>
-                                                            <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Customizable updates</p>
-                                                        </li>
-                                                        <li class="d-flex align-items-center" style="margin-bottom: 0;">
-                                                            <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
-                                                                <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
-                                                            </div>
-                                                            <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333;">Friendly Customer Service</p>
-                                                        </li>
-                                                        @endif
-                                                    </ul>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            @endforeach
                                         </div>
-
-                                        <div class="top-pro-box" style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-                                            <div class="top-pro-btn" style="flex: 1;">
-                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}"
-                                                    class="cta cta_outline d-flex align-items-center justify-content-center" style="width: 100%;">
-                                                    {{ static_text('profile_and_reviews') ?: ($homeContents['profile_and_reviews'] ?? 'Profile & reviews') }}
-                                                </a>
-                                            </div>
-                                            <div class="top-pro-btn" style="flex: 1;">
-                                                <a href="{{ $business->affiliate_link ?? $business->permanent_url ?? '#' }}"
-                                                    class="btn-orng cta cta_orange d-flex align-items-center justify-content-center"
-                                                    target="_blank" rel="noopener noreferrer"
-                                                    style="width:100%; white-space: nowrap;">
-                                                    {{ static_text('visit_website') ?: ($homeContents['visit_website'] ?? 'Visit website') }}
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;">
-                                                        <path d="M15 3h6v6"></path>
-                                                        <path d="M10 14 21 3"></path>
-                                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                                    </svg>
-                                                </a>
-                                            </div>
+                                        <div class=" mobe-bottom-row see-all-category-containerjustify-content-end align-items-center">
+                                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
+                                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
+                                @endif
                             @endforeach
                         </div>
-                        <div class=" mobe-bottom-row see-all-category-containerjustify-content-end align-items-center">
-                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $category->translations->slug]) }}" class="see-all-category-link">
-                                {{ !empty($category->translations->homepage_link_text) ? $category->translations->homepage_link_text : (!empty($category->translations->title) ? $category->translations->title : 'View all ' . $category->translations->name . ' software') }}
-                            </a>
-                        </div>
                     </div>
-                    @endif
-                    @endforeach
                 </div>
-            </div>
+            @endif
         </div>
-        @endif
-    </div>
-</section>
-<!-- scetion exclusive deals -->
-{{-- <section class="xclusve-deal light p_120 ">
+    </section>
+    <!-- scetion exclusive deals -->
+    {{-- <section class="xclusve-deal light p_120 ">
         <div class="section_hed xclu-m">
             <div class="container">
                 <div class="slider_h">
                     <div class="head_box">
                         <h2 class="text-center"> {{ $homeContents['exclusive_deals'] ?? null }}</h2>
-</div>
-
-<div class="review_box text-right revw-width">
-    @if ($exclusive_products->count())
-    <a class="cta cta_white"> {{ $homeContents['all_exclusive'] ?? null }}</a>
-    @endif
-</div>
-
-</div>
-</div>
-</div>
-
-@if ($exclusive_products->count())
-<div class="container">
-    <div class="xclusve-wrp" data-aos="fade-up" data-aos-duration="1000">
-        <div class="xclusve-slider">
-            @foreach ($exclusive_products as $product)
-            <div class="xclusve-pack">
-                <a
-                    href="{{ route('user.product_detail', ['locale' => getCurrentLocale(), 'id' => $product->businesses->first()->translations()->first()->slug ?? '#']) }}">
-                    <div class="save">
-                        <div class="save-txt">
-                            <p class="size22">Save {{ $product->discount_percentage }}%</p>
-                            <div class="save-img">
-                                <img src="{{ asset('front/img/save-img.png') }}" alt="">
-                            </div>
-                        </div>
                     </div>
-                    <div class="xclusve-img">
-                        <img src="{{ $product->product_icon ?? asset('front/img/default-product.png') }}"
-                            alt="">
+
+                    <div class="review_box text-right revw-width">
+                        @if ($exclusive_products->count())
+                        <a class="cta cta_white"> {{ $homeContents['all_exclusive'] ?? null }}</a>
+                        @endif
                     </div>
-                    <div class="xclusve-txt">
-                        <h3>
-                            {{ $product->businesses->first()?->translations->first()?->name ?? 'Business Title' }}
-                            - {{ $product->translations->name ?? '' }}
-                        </h3>
-                        @php
-                        $price = $product->prices->first();
-                        @endphp
-                        <p class="grey-txt">
-                            @if ($price)
-                            <span
-                                class="line-through">{{ $price->currency }}{{ number_format($price->price, 2) }}</span>
-                            <span
-                                class="orange-txt">{{ $price->currency }}{{ number_format($price->discount_price, 2) }}</span>
-                            @endif
-                        </p>
-                        <div class="xclu-txt-btn">
-                            <a href="{{ $product->translations->product_link }}" class="cta cta_white">
-                                {{ $homeContents['get_this_deal'] ?? 'Get This Deal' }}
-                            </a>
-                        </div>
-                    </div>
-                </a>
+
+                </div>
             </div>
-            @endforeach
         </div>
-    </div>
-</div>
-@else
-<div class="container text-center py-5">
-    <h4 class="text-muted">
-        {{ $homeContents['no_exclusive_deals'] ?? 'No exclusive deals available at the moment.' }}
-    </h4>
-</div>
-@endif
-</section> --}}
-<!--  -------------------------------------------slider section start ------------------------------------->
-<section class="outer_slider dark">
-    {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
+
+        @if ($exclusive_products->count())
+            <div class="container">
+                <div class="xclusve-wrp" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="xclusve-slider">
+                        @foreach ($exclusive_products as $product)
+                            <div class="xclusve-pack">
+                                <a
+                                href="{{ route('user.product_detail', ['locale' => getCurrentLocale(), 'id' => $product->businesses->first()->translations()->first()->slug ?? '#']) }}">
+                                <div class="save">
+                                    <div class="save-txt">
+                                        <p class="size22">Save {{ $product->discount_percentage }}%</p>
+                                        <div class="save-img">
+                                            <img src="{{ asset('front/img/save-img.png') }}" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                                   <div  class="xclusve-img">
+                                        <img src="{{ $product->product_icon ?? asset('front/img/default-product.png') }}"
+                                            alt="">
+                                    </div>
+                                  <div class="xclusve-txt">
+                                    <h3>
+                                            {{ $product->businesses->first()?->translations->first()?->name ?? 'Business Title' }}
+                                            - {{ $product->translations->name ?? '' }}
+                                        </h3>
+                                    @php
+                                        $price = $product->prices->first();
+                                    @endphp
+                                    <p class="grey-txt">
+                                        @if ($price)
+                                            <span
+                                                class="line-through">{{ $price->currency }}{{ number_format($price->price, 2) }}</span>
+                                            <span
+                                                class="orange-txt">{{ $price->currency }}{{ number_format($price->discount_price, 2) }}</span>
+                                        @endif
+                                    </p>
+                                    <div class="xclu-txt-btn">
+                                        <a href="{{ $product->translations->product_link }}" class="cta cta_white">
+                                            {{ $homeContents['get_this_deal'] ?? 'Get This Deal' }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </a>
+                         </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @else
+            <div class="container text-center py-5">
+                <h4 class="text-muted">
+                    {{ $homeContents['no_exclusive_deals'] ?? 'No exclusive deals available at the moment.' }}</h4>
+            </div>
+        @endif
+    </section> --}}
+    <!--  -------------------------------------------slider section start ------------------------------------->
+    <section class="outer_slider dark">
+        {{-- <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">
                     <div class="head_box">
                         <h2> {{ $homeContents['latest_reviews'] ?? 'Recent reviews' }}</h2>
-    </div>
-    <div class="review_box text-right">
-
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="reviews_block" data-aos="fade-up" data-aos-duration="1000">
-        <div class="container">
-            <div class="row">
-                <div class="latest-reviews-slider reviews_slider ">
-                    @if ($reviews)
-                    @foreach ($reviews as $group)
-                    @foreach ($group as $review)
-                    @php
-                    $translation = optional($review->translations)->first();
-                    $business = $review->business;
-                    $user = $review->user;
-                    $businessRating = optional(optional($business)->reviews)->avg('rating');
-                    $businessName =
-                    optional(optional($business)->translations->first())->name ??
-                    'Default Business Name';
-                    $businessImage =
-                    $business && $business->image_id
-                    ? asset($business->image_id)
-                    : asset('front/img/default-business.png');
-                    @endphp
-                    <div class="review_card light">
-                        <div class="inner_box_silder ">
-                            <div class="inn_sl_hed">
-                                <div class="sli_img">
-                                    <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
-                                        <img src="{{ asset($business->icon_id) }}" class="header_img"
-                                            alt="{{ $business->translations->first()->name ?? 'Business' }}">
-                                    </a>
-                                </div>
-
-                                <div class="sl_h">
-                                    <div class="inn_h">
-                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
-                                            <div class="sl_main">
-                                                <h6 class="head">{{ $businessName }}</h6>
-                                                <div class="wishlist">
-                                                    <livewire:wishlist :product-id="$business->id"
-                                                        :wire:key="'wishlist-'.$business->id" />
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
-                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
-                                        <div class="inn_ul d-inline-flex m-0">
-                                            <div class="tab_star_li">
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <span
-                                                    class="rating-{{ $i <= $review->rating ? 'on' : 'off' }} rate-{{ $i }}"
-                                                    data-rating="{{ $i }}"></span>
-                                                    @endfor
-
-                                            </div>
-                                            <div><i class="fa-solid fa-angle-down"></i>
-                                            </div>
-
-                                        </div>
-                                        <span class="rate_box_count " style="font-size: 13px;">({{ $business->reviews->count() }})</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="slider_content_sec">
-                                <div class="first_box"> {{ $translation->title ?? 'Review Title' }} </div>
-                                <div class="content_para">
-                                    {{ \Illuminate\Support\Str::limit(strip_tags($translation->description), 150) }}
-
-                                </div>
-                            </div>
-                            <div class="joh_box">
-                                <div class="joh_img">
-                                    @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
-                                    <img src="{{ asset($review->user->profile_image) }}"
-                                        class="img-fluid profile-circle"
-                                        style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
-                                        alt="User Image">
-                                    @else
-                                    <div class="profile-circle" style="width: 70px; height: 70px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-                                        <span style="color: white; font-weight: bold; font-size: 28px;">
-                                            @if ($review->user && $review->user->user_type === 'admin')
-                                            {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
-                                            @else
-                                            {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                    @endif
-                                </div>
-                                <div class="joh_sec">
-                                    <div class="joh_head">
-                                        @if ($review->user && $review->user->user_type === 'admin')
-                                        {{ $review->public_name ?? 'Public' }}
-                                        @else
-                                        {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
-                                        @endif
-                                    </div>
-                                    <div class="joh_pos"> {{ $review->user->job_title ?? 'User' }} </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    @endforeach
-                    @endforeach
-                    @endif
+                    <div class="review_box text-right">
+
+                    </div>
                 </div>
             </div>
         </div>
-    </div> --}}
-    @livewire('latest-reviews')
-</section>
-<!--  -------------------------------------------slider section end ------------------------------------->
-<!----------------------------------------- read section start --------------------------------------- -->
-{{-- <section class="read_sec_outer light p_120">
+        <div class="reviews_block" data-aos="fade-up" data-aos-duration="1000">
+            <div class="container">
+                <div class="row">
+                    <div class="latest-reviews-slider reviews_slider ">
+                        @if ($reviews)
+                            @foreach ($reviews as $group)
+                                @foreach ($group as $review)
+                                    @php
+                                        $translation = optional($review->translations)->first();
+                                        $business = $review->business;
+                                        $user = $review->user;
+                                        $businessRating = optional(optional($business)->reviews)->avg('rating');
+                                        $businessName =
+                                            optional(optional($business)->translations->first())->name ??
+                                            'Default Business Name';
+                                        $businessImage =
+                                            $business && $business->image_id
+                                                ? asset($business->image_id)
+                                                : asset('front/img/default-business.png');
+                                    @endphp
+                                    <div class="review_card light">
+                                        <div class="inner_box_silder ">
+                                            <div class="inn_sl_hed">
+                                                <div class="sli_img">
+                                                <a   href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
+                                                    <img src="{{ asset($business->icon_id) }}" class="header_img"
+                                                        alt="{{ $business->translations->first()->name ?? 'Business' }}">
+                                                    </a>
+                                                </div>
+
+                                                <div class="sl_h">
+                                                    <div class="inn_h">
+                                                        <a   href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations()->first()->slug]) }}">
+                                                        <div class="sl_main">
+                                                            <h6 class="head">{{ $businessName }}</h6>
+                                                            <div class="wishlist">
+                                                                <livewire:wishlist :product-id="$business->id"
+                                                                    :wire:key="'wishlist-'.$business->id" />
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                    </div>
+                                                    <div class="tp-btm d-flex align-items-center" style="gap: 6px;">
+                                                        <span class="rate_box_num" style="font-size: 13px; font-weight: 500; color: #333;">{{ number_format($businessRating, 1) }}</span>
+                                                        <div class="inn_ul d-inline-flex m-0">
+                                                            <div class="tab_star_li">
+                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                    <span
+                                                                        class="rating-{{ $i <= $review->rating ? 'on' : 'off' }} rate-{{ $i }}"
+                                                                        data-rating="{{ $i }}"></span>
+                                                                @endfor
+
+                                                            </div>
+                                                            <div><i class="fa-solid fa-angle-down"></i>
+                                                            </div>
+
+                                                        </div>
+                                                        <span class="rate_box_count " style="font-size: 13px;">({{ $business->reviews->count() }})</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slider_content_sec">
+                                                <div class="first_box"> {{ $translation->title ?? 'Review Title' }} </div>
+                                                <div class="content_para">
+                                                    {{ \Illuminate\Support\Str::limit(strip_tags($translation->description), 150) }}
+
+                                                </div>
+                                            </div>
+                                            <div class="joh_box">
+                                                <div class="joh_img">
+                                                    @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
+                                                        <img src="{{ asset($review->user->profile_image) }}"
+                                                            class="img-fluid profile-circle"
+                                                            style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%;"
+                                                            alt="User Image">
+                                                    @else
+                                                        <div class="profile-circle" style="width: 70px; height: 70px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                                            <span style="color: white; font-weight: bold; font-size: 28px;">
+                                                                @if ($review->user && $review->user->user_type === 'admin')
+                                                                    {{ strtoupper(substr($review->public_name ?? 'P', 0, 1)) }}
+                                                                @else
+                                                                    {{ strtoupper(substr($review->user->first_name ?? 'A', 0, 1)) }}
+                                                                @endif
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="joh_sec">
+                                                    <div class="joh_head">
+                                                        @if ($review->user && $review->user->user_type === 'admin')
+                                                            {{ $review->public_name ?? 'Public' }}
+                                                        @else
+                                                            {{ $review->user ? $review->user->displayName() : 'Anonymous' }}
+                                                        @endif
+                                                    </div>
+                                                    <div class="joh_pos"> {{ $review->user->job_title ?? 'User' }} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+        @livewire('latest-reviews')
+    </section>
+    <!--  -------------------------------------------slider section end ------------------------------------->
+    <!----------------------------------------- read section start --------------------------------------- -->
+    {{-- <section class="read_sec_outer light p_120">
         <div class="section_hed" data-aos="fade-up" data-aos-duration="1000">
             <div class="container">
                 <div class="slider_h">
                     <div class="head_box">
                         <h2>{{ $homeContents['read_article'] ?? 'Read Articles' }}</h2>
-</div>
-<div class="review_box text-right">
-    <a class="cta cta_white" href="{{ route('expert-guide', ['locale' => app()->getLocale()]) }}">
-        {{ $homeContents['view_all_article'] ?? null }}
-    </a>
-</div>
-</div>
-</div>
-</div>
-@if (!empty($articles))
-<div class="read_content_sec light" data-aos="fade-up" data-aos-duration="1000">
-    <div class="container">
-        <div class="row">
-            @foreach ($articles as $article)
-            @php
-            $translation = $article->translationForCurrentLang;
-            $catTranslation = $article->category ? $article->category->translations->first() : null;
-            @endphp
+                    </div>
+                    <div class="review_box text-right">
+                        <a class="cta cta_white" href="{{ route('expert-guide', ['locale' => app()->getLocale()]) }}">
+                            {{ $homeContents['view_all_article'] ?? null }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (!empty($articles))
+            <div class="read_content_sec light" data-aos="fade-up" data-aos-duration="1000">
+                <div class="container">
+                    <div class="row">
+                        @foreach ($articles as $article)
+                            @php
+                                $translation = $article->translationForCurrentLang;
+                                $catTranslation = $article->category ? $article->category->translations->first() : null;
+                            @endphp
 
-            @if ($translation && $translation->slug && $catTranslation && $catTranslation->slug)
-            <div class="col-lg-4 col-md-4">
-                <a href="{{ route('expert-guide-article', [
+                            @if ($translation && $translation->slug && $catTranslation && $catTranslation->slug)
+                                <div class="col-lg-4 col-md-4">
+                                    <a href="{{ route('expert-guide-article', [
                                         'locale' => session('lang_code', 'en-us'),
                                         'cat_slug' => $catTranslation->slug,
                                         'art_slug' => $translation->slug,
                                     ]) }}"
-                    class="in_cont_box" style="width:100%">
-                    <div class="read_img" style="width:100%">
-                        <div class="blog_thumb">
-                            <img class="r_img" src="{{ asset($article->image) }}" alt="">
-                        </div>
+                                        class="in_cont_box" style="width:100%">
+                                        <div class="read_img" style="width:100%">
+                                            <div class="blog_thumb">
+                                                <img class="r_img" src="{{ asset($article->image) }}" alt="">
+                                            </div>
+                                        </div>
+                                        <div class="read_content_in">
+                                            <div class="read_cont_h">
+                                                <h3 class="read_text">
+                                                    {{ $translation->preview_title ?? ($translation->title ?? 'No Title') }}
+                                                </h3>
+                                            </div>
+                                            <div class="read_para">
+                                                <p>{!! $translation->preview_description ?? ($translation->description ?? 'no Preview description available') !!}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
-                    <div class="read_content_in">
-                        <div class="read_cont_h">
-                            <h3 class="read_text">
-                                {{ $translation->preview_title ?? ($translation->title ?? 'No Title') }}
-                            </h3>
-                        </div>
-                        <div class="read_para">
-                            <p>{!! $translation->preview_description ?? ($translation->description ?? 'no Preview description available') !!}</p>
-                        </div>
-                    </div>
-                </a>
+                </div>
             </div>
-            @endif
-            @endforeach
-        </div>
-    </div>
-</div>
-@endif
-</section> --}}
+        @endif
+    </section> --}}
 
-@guest
-<!-- section right-tool -->
-<section class="right_tool_sec dark ">
-    <div class="container">
-        <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
-            <div class="otr_rgtool">
-                <h2>Join the Localio community</h2>
-                <p class="text-white size16 " style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
-            </div>
-            <div class="right-tool-pack">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="tool-card">
-                            <div class="tool-card-img">
-                                <i class="fa-solid fa-user" style="color: #06498b; font-size: 24px;"></i>
-                            </div>
-                            <div class="tool-crd-bdy">
-                                <h3 class="tool_hed">Share your experience</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="tool-card">
-                            <div class="tool-card-img">
-                                <i class="fa-solid fa-comments" style="color: #06498b; font-size: 24px;"></i>
-                            </div>
-                            <div class="tool-crd-bdy">
-                                <h3 class="tool_hed">Join discussions</h3>
+    @guest
+    <!-- section right-tool -->
+    <section class="right_tool_sec dark ">
+        <div class="container">
+            <div class="right-tool-wrp text-center" data-aos="fade-up" data-aos-duration="1000">
+                <div class="otr_rgtool">
+                    <h2>Join the Localio community</h2>
+                    <p class="text-white size16 " style="max-width: 700px; margin: 0 auto 0;">Write reviews, join discussions, and help others make better buying decisions.</p>
+                </div>
+                <div class="right-tool-pack">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="tool-card">
+                                <div class="tool-card-img">
+                                    <i class="fa-solid fa-user" style="color: #06498b; font-size: 24px;"></i>
+                                </div>
+                                <div class="tool-crd-bdy">
+                                    <h3 class="tool_hed">Share your experience</h3>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="tool-card">
-                            <div class="tool-card-img">
-                                <i class="fa-solid fa-star" style="color: #06498b; font-size: 24px;"></i>
+                        <div class="col-lg-4">
+                            <div class="tool-card">
+                                <div class="tool-card-img">
+                                    <i class="fa-solid fa-comments" style="color: #06498b; font-size: 24px;"></i>
+                                </div>
+                                <div class="tool-crd-bdy">
+                                    <h3 class="tool_hed">Join discussions</h3>
+                                </div>
                             </div>
-                            <div class="tool-crd-bdy">
-                                <h3 class="tool_hed">Build your reputation</h3>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="tool-card">
+                                <div class="tool-card-img">
+                                    <i class="fa-solid fa-star" style="color: #06498b; font-size: 24px;"></i>
+                                </div>
+                                <div class="tool-crd-bdy">
+                                    <h3 class="tool_hed">Build your reputation</h3>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="right-tool-btn text-center">
-                <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Get started </a>
+                <div class="right-tool-btn text-center">
+                    <a href="javascript:void(0)" onclick="openLoginModal()" class="blue-btn cta">Get started </a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="back-image1">
-        @if (isset($findToolLeftImage))
-        <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1"
-            alt="{{ $findToolLeftImage->meta_key }}">
-        @endif
-        <!-- <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
-    </div>
-    <div class="back-image2">
-        @if (isset($findToolRightImage))
-        <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2"
-            alt="{{ $findToolRightImage->meta_key }}">
-        @endif
-        <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
-    </div>
-</section>
-@endguest
+        <div class="back-image1">
+            @if (isset($findToolLeftImage))
+                <img src="{{ asset($findToolLeftImage->meta_value) }}" class="image-pattern1"
+                    alt="{{ $findToolLeftImage->meta_key }}">
+            @endif
+            <!-- <img src="{{ asset('front/img/right-tool-vector1.png') }}" class="image-pattern1" alt=""> -->
+        </div>
+        <div class="back-image2">
+            @if (isset($findToolRightImage))
+                <img src="{{ asset($findToolRightImage->meta_value) }}" class="image-pattern2"
+                    alt="{{ $findToolRightImage->meta_key }}">
+            @endif
+            <!-- <img src="{{ asset('front/img/right-tool-vector2.png') }}" class="image-pattern2" alt=""> -->
+        </div>
+    </section>
+    @endguest
 @endsection
 
 <script>
