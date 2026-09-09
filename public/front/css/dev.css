@@ -966,3 +966,10 @@ section.community-feedback-sec {
     color: #374151 !important;
 }
 
+.inner_part_boxx .part_2_boxs h3.big-bld {
+    color: #fdfdfd !important;
+}
+
+.inner_part_boxx .part_1_boxs img {
+    max-height: 100% !important;
+}
