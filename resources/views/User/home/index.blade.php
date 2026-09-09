@@ -169,7 +169,7 @@
                                                                     <div class="best-value-inline" >
                                                                         <!-- <i class="fa-regular fa-thumbs-up"></i> -->
                                                                         <i class="far fa-star text-warning"></i>
-                                                                       <span style="text-transform: none !important;">Top choice</span>
+                                                                       <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
                                                                     </div>
                                                                 </div>
                                                             @endif
