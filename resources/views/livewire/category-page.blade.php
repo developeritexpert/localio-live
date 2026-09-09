@@ -1588,7 +1588,6 @@
                                 <thead style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                                     <tr>
                                         <th scope="col" style="padding: 14px 18px; font-weight: 500; color: #002347; width: 240px; min-width: 240px; max-width: 240px;"></th>
-                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
                                         <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 700; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Overall rating</th>
                                         @php
                                             $allCriteria = [];
@@ -1602,6 +1601,7 @@
                                             <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">{{ $criterion->name }}</th>
                                         @endforeach
                                         <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347;">Recommend</th>
+                                        <th scope="col" class="text-center" style="padding: 14px 14px; font-weight: 500; color: #002347; width: 140px; min-width: 140px; max-width: 140px;">Starting price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1642,16 +1642,6 @@
                                                 </div>
                                             </a>
                                         </td>
-                                        <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
-                                            @if($bizStartingPrice && $bizAmount !== null)
-                                                <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
-                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
-                                                    <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
-                                                @endif
-                                            @else
-                                                <span style="color: #5b6b7a;">-</span>
-                                            @endif
-                                        </td>
                                         <td class="text-center fw-bold" style="padding: 14px; color: #002347; white-space: nowrap;">
                                             <span class="d-inline-flex align-items-center gap-1">
                                                 <i class="fas fa-star text-warning" style="font-size: 11px;"></i>
@@ -1668,6 +1658,16 @@
                                         @endforeach
                                         <td class="text-center fw-semibold" style="padding: 14px; color: #002347;">
                                             {{ $recommendPercent }}%
+                                        </td>
+                                        <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
+                                            @if($bizStartingPrice && $bizAmount !== null)
+                                                <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
+                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                    <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
+                                                @endif
+                                            @else
+                                                <span style="color: #5b6b7a;">-</span>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach
