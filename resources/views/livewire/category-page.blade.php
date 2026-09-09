@@ -566,7 +566,7 @@
                         <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 466px;">
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
-                                    <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
+                                    <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
@@ -607,9 +607,9 @@
                                     <div class="col-md-12 sticky-top" style="top: 100px; z-index: 10; padding-bottom: 20px;">
                                         <!-- Rating Filter Section - Styled like the image -->
                                         <div class="filter-section">
-                                            <h3 class="fw-semibold text-dark mb-2">
+                                            <p class="fw-semibold text-dark mb-2">
                                                 {{ static_text('user_rating') ?: 'User rating' }}
-                                            </h3>
+                                            </p>
 
                                             <div class="form-check mb-2">
                                                 <input type="checkbox" class="form-check-input"
@@ -887,9 +887,9 @@
                                             href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                         <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                            <p class="fw-semibold text-dark mb-3" style="font-size: 16px;">
                                                 {{ static_text('price_range') ?: 'Price range' }}
-                                            </h3>
+                                            </p>
 
                                             <div class="price-slider-container">
                                                 <div class="price-inputs d-flex gap-2 align-items-center mt-3">
@@ -917,9 +917,9 @@
                                         <!-- Features Filter Section -->
                                         @if(isset($availableFeatures) && count($availableFeatures) > 0)
                                         <div class="filter-section mt-3 mb-3">
-                                            <h3 class="fw-semibold text-dark mb-3" style="font-size: 16px;">
+                                            <p class="fw-semibold text-dark mb-3" style="font-size: 16px;">
                                                 Features
-                                            </h3>
+                                            </p>
                                             @php
                                                 $sortedFeatures = collect($availableFeatures)->sortBy(function($feat) use ($lang_id) {
                                                     $currentLangId = $lang_id ?? getCurrentLanguageID();
@@ -1513,7 +1513,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</h3>
+                                                        <p class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1532,7 +1532,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <h3 class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</h3>
+                                                        <p class="card-title mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -2291,7 +2291,7 @@
                                 </div>
                                 
                                 <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
-                                    <h6 class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</h6>
+                                    <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                                     <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
                                         {{ $subcatItem->businesses()->count() ?? 0 }} listings
                                     </span>
@@ -2340,11 +2340,11 @@
                         <div class="accordion" id="categoryFaqAccordion">
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                <h2 class="accordion-header" id="headingFaq{{ $fIndex }}">
+                                <p class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                         {{ $faq['question'] }}
                                     </button>
-                                </h2>
+                                </p>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
                                         {!! $faq['answer'] !!}

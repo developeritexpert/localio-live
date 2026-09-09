@@ -565,7 +565,7 @@
                                     <i class="fa-solid fa-user" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed">Share your experience</h3>
+                                    <p class="tool_hed">Share your experience</p>
                                 </div>
                             </div>
                         </div>
@@ -575,7 +575,7 @@
                                     <i class="fa-solid fa-comments" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed">Join discussions</h3>
+                                    <p class="tool_hed">Join discussions</p>
                                 </div>
                             </div>
                         </div>
@@ -585,7 +585,7 @@
                                     <i class="fa-solid fa-star" style="color: #06498b; font-size: 24px;"></i>
                                 </div>
                                 <div class="tool-crd-bdy">
-                                    <h3 class="tool_hed">Build your reputation</h3>
+                                    <p class="tool_hed">Build your reputation</p>
                                 </div>
                             </div>
                         </div>

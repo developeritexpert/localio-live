@@ -378,11 +378,11 @@
                                             @endphp
                                             @if(!empty($question))
                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
-                                                <h2 class="accordion-header" id="headingFaq{{ $uniqueId }}">
+                                                <p class="accordion-header" id="headingFaq{{ $uniqueId }}">
                                                     <button class="accordion-button {{ $openThisFaq ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="{{ $openThisFaq ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
                                                         {{ $question }}
                                                     </button>
-                                                </h2>
+                                                </p>
                                                 <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">

@@ -302,7 +302,7 @@
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <h6 style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</h6>
+                                <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
@@ -361,9 +361,9 @@
                                 <div class="col-md-12">
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
-                                        <h3 class="fw-semibold text-dark mb-2">
+                                        <p class="fw-semibold text-dark mb-2">
                                             {{ static_text('user_rating') ?: 'User rating' }}
-                                        </h3>
+                                        </p>
 
                                         <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
@@ -396,11 +396,11 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">
+                                        <p class="fw-semibold text-dark mb-3">
                                             <!-- {{ static_text('price_range') }} -->
                                             {{ static_text('price_range') ?: 'Price range' }}
 
-                                        </h3>
+                                        </p>
 
                                         <div class="price-slider-container">
                                             <div class="price-inputs d-flex gap-2 align-items-center mt-3">
@@ -436,9 +436,9 @@
                                         @endphp
 
                                         <div class="filter-section">
-                                            <h3>
+                                            <p>
                                                 {{ $filterName }}
-                                            </h3>
+                                            </p>
 
                                             <div class="accordion-body" style="padding: 0;">
                                                 @if ($filterType === 'checkbox')
@@ -1250,11 +1250,11 @@
                         @foreach($faqs as $fIndex => $faq)
                         @if($loop->iteration > 10) @break @endif
                         <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                            <h2 class="accordion-header" id="faqHeading{{ $fIndex }}">
+                            <p class="accordion-header" id="faqHeading{{ $fIndex }}">
                                 <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                     {{ $faq['question'] }}
                                 </button>
-                            </h2>
+                            </p>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
                                 <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fdfdfd;">
                                     {!! $faq['answer'] !!}

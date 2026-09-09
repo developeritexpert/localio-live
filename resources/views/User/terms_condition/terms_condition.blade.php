@@ -46,7 +46,7 @@
                             <img src="{{asset('front/img/right-tool-img1.png') }}" alt="">
                          </div>
                          <div class="tool-crd-bdy">
-                            <h3 class="tool_hed">Verified User Reviews</h3>
+                            <p class="tool_hed">Verified User Reviews</p>
                             <p class="size18">Read real feedback from verified users to help you make the right choice.</p>
                          </div>
                       </div>
@@ -57,7 +57,7 @@
                             <img src="{{asset('front/img/right-tool-img2.png') }}" alt="">
                          </div>
                          <div class="tool-crd-bdy">
-                            <h3 class="tool_hed">Feature and Price Comparisons</h3>
+                            <p class="tool_hed">Feature and Price Comparisons</p>
                             <p class="size18">Easily compare software based on key features, pricing, and customer ratings. </p>
                          </div>
                       </div>
@@ -68,7 +68,7 @@
                             <img src="{{asset('front/img/right-tool-img3.png') }}" alt="">
                          </div>
                          <div class="tool-crd-bdy">
-                            <h3 class="tool_hed">Independent Insights</h3>
+                            <p class="tool_hed">Independent Insights</p>
                             <p class="size18">Access unbiased, data-driven research to get the most value from your software. </p>
                          </div>
                       </div>

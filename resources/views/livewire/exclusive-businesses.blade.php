@@ -109,9 +109,9 @@
                                             @endphp
 
                                             <div class="filter-section">
-                                                <h3>
+                                                <p>
                                                     {{ $filterName }}
-                                                </h3>
+                                                </p>
 
                                                 <div class="accordion-body" style="padding: 0;">
                                                     @if ($filterType === 'checkbox')
