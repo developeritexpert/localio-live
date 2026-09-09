@@ -1802,12 +1802,8 @@
                                                                             }
                                                                         });
                                                                         </script>
-
                                                                     </div>
                                                                 </section>
-
-
-                                                                <!-- this is end section -->
                                                             </div>
                                                         </div>
 
@@ -1841,33 +1837,122 @@
 
                                                             <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
                                                                 <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="btn btn-outline-primary btn-sm px-3" style="border-radius: 8px; font-weight: 600;">
-                                                                    View all {{ number_format($totalDiscs) }} discussions <i class="fas fa-arrow-right ms-1"></i>
+                                                                    <!-- View all {{ number_format($totalDiscs) }} discussions <i class="fas fa-arrow-right ms-1"></i> -->
                                                                 </a>
                                                             </div>
                                                         </div>
-
-                                                        <!-- Reddit-style Discussions List -->
                                                         @if($discList->isEmpty())
                                                             <div class="text-center py-4 text-muted">
                                                                 <p class="m-0">No active discussions yet for {{ $bName }}.</p>
                                                             </div>
                                                         @else
+                                                            <style>
+                                                                .vote-sidebar {
+                                                                    display: flex;
+                                                                    flex-direction: column;
+                                                                    align-items: center;
+                                                                    justify-content: flex-start;
+                                                                    padding-right: 16px;
+                                                                    margin-right: 16px;
+                                                                    border-right: 1px solid #f1f5f9;
+                                                                    min-width: 48px;
+                                                                }
+                                                                .vote-btn {
+                                                                    background: #ffffff !important;
+                                                                    border: 1px solid #cbd5e1 !important;
+                                                                    color: #64748b !important;
+                                                                    width: 34px !important;
+                                                                    height: 34px !important;
+                                                                    border-radius: 8px !important;
+                                                                    display: inline-flex !important;
+                                                                    align-items: center !important;
+                                                                    justify-content: center !important;
+                                                                    font-size: 13px !important;
+                                                                    cursor: pointer !important;
+                                                                    transition: all 0.15s ease !important;
+                                                                    padding: 0 !important;
+                                                                    box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+                                                                    outline: none !important;
+                                                                }
+                                                                .vote-btn:hover {
+                                                                    background: #06498b !important;
+                                                                    border-color: #06498b !important;
+                                                                    color: #ffffff !important;
+                                                                }
+                                                                .vote-btn.active-up {
+                                                                    background: #ff4500 !important;
+                                                                    border-color: #ff4500 !important;
+                                                                    color: #ffffff !important;
+                                                                }
+                                                                .vote-btn.active-down {
+                                                                    background: #7193ff !important;
+                                                                    border-color: #7193ff !important;
+                                                                    color: #ffffff !important;
+                                                                }
+                                                                .vote-score {
+                                                                    font-size: 14px !important;
+                                                                    font-weight: 700 !important;
+                                                                    color: #1e293b !important;
+                                                                    margin: 6px 0 !important;
+                                                                    text-align: center !important;
+                                                                    line-height: 1 !important;
+                                                                }
+                                                            </style>
+                                                            <script>
+                                                                document.addEventListener('click', function(e) {
+                                                                    const btn = e.target.closest('.vote-trigger');
+                                                                    if (!btn) return;
+
+                                                                    e.preventDefault();
+                                                                    const isUserLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+
+                                                                    if (!isUserLoggedIn) {
+                                                                        if (typeof triggerAuthLoginModal === 'function') {
+                                                                            triggerAuthLoginModal();
+                                                                        } else if (typeof $ !== 'undefined' && $('#loginModal').length) {
+                                                                            $('#loginModal').modal('show');
+                                                                        }
+                                                                        return;
+                                                                    }
+
+                                                                    const type = btn.getAttribute('data-type');
+                                                                    const id = btn.getAttribute('data-id');
+                                                                    const vote = btn.getAttribute('data-vote');
+
+                                                                    fetch('{{ route("business.discussion.vote") }}', {
+                                                                        method: 'POST',
+                                                                        headers: {
+                                                                            'Content-Type': 'application/json',
+                                                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                                        },
+                                                                        body: JSON.stringify({ type, id, vote })
+                                                                    })
+                                                                    .then(res => res.json())
+                                                                    .then(data => {
+                                                                        if(data.success) {
+                                                                            const scoreEl = document.querySelector(`.vote-score-${id}`);
+                                                                            if(scoreEl) scoreEl.textContent = data.score;
+                                                                        } else if(data.message) {
+                                                                            alert(data.message);
+                                                                        }
+                                                                    })
+                                                                    .catch(err => console.error('Vote error:', err));
+                                                                });
+                                                            </script>
                                                             <div class="discussions-preview-list">
                                                                 @foreach($discList as $pDisc)
-                                                                    <div class="p-3 mb-3" style="background: #fafafa; border: 1px solid #e2e8f0; border-radius: 12px;">
+                                                                    <div class="p-3 {{ $loop->last ? 'mb-0' : 'mb-3' }}" style="background: #fafafa; border: 1px solid #e2e8f0; border-radius: 12px;">
                                                                         <div class="d-flex align-items-start">
-                                                                            <!-- Vote Box -->
-                                                                            <div class="d-flex flex-column align-items-center me-3 pe-2" style="border-right: 1px solid #e2e8f0; min-width: 44px;">
-                                                                                <button class="vote-trigger btn btn-sm p-0 text-muted" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up">
-                                                                                    <i class="fas fa-chevron-up" style="font-size: 14px;"></i>
+                                                                            <div class="vote-sidebar">
+                                                                                <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" title="Upvote">
+                                                                                    <i class="fas fa-chevron-up"></i>
                                                                                 </button>
-                                                                                <span class="fw-bold my-1 vote-score-{{ $pDisc->id }}" style="font-size: 13px; color: #1e293b;">{{ $pDisc->upvotes_count - $pDisc->downvotes_count }}</span>
-                                                                                <button class="vote-trigger btn btn-sm p-0 text-muted" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="down">
-                                                                                    <i class="fas fa-chevron-down" style="font-size: 14px;"></i>
+                                                                                <span class="vote-score vote-score-{{ $pDisc->id }}">{{ $pDisc->upvotes_count - $pDisc->downvotes_count }}</span>
+                                                                                <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="down" title="Downvote">
+                                                                                    <i class="fas fa-chevron-down"></i>
                                                                                 </button>
                                                                             </div>
 
-                                                                            <!-- Discussion Detail -->
                                                                             <div class="flex-grow-1">
                                                                                 <div class="d-flex align-items-center justify-content-between mb-1">
                                                                                     <div class="d-flex align-items-center gap-2">
@@ -1901,13 +1986,13 @@
                                                                 @endforeach
                                                             </div>
                                                         @endif
+                                                    </div>
 
-                                                        <!-- Footer Link -->
-                                                        <div class="text-center pt-2">
-                                                            <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="fw-bold" style="color: #06498b; font-size: 14px; text-decoration: none;">
-                                                                See all discussions about {{ $bName }} <i class="fas fa-chevron-right ms-1" style="font-size: 12px;"></i>
-                                                            </a>
-                                                        </div>
+                                                    <!-- Footer Link -->
+                                                    <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+                                                        <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                                            See all discussions about {{ $bName }}
+                                                        </a>
                                                     </div>
                                                 </div>
                                                 <div class="mt-5">
