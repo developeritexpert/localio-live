@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h3 class="card-title mb-3" style=" font-size: 18px !important;">Pros</h3>
+                                        <p class="card-title mb-3" style=" font-size: 18px !important;">Pros</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -224,7 +224,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <h3 class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</h3>
+                                        <p class="card-title mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
                                                 @foreach($aggregatedCons as $con)
@@ -282,7 +282,7 @@
                                                 @php $translation = $faq->translations->first(); @endphp
                                                 @if ($translation)
                                                     <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                        <h2 class="accordion-header" id="faqHeading{{ $index }}">
+                                                        <p class="accordion-header" id="faqHeading{{ $index }}">
                                                             <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
                                                                 type="button" data-bs-toggle="collapse"
                                                                 data-bs-target="#faqCollapse{{ $index }}"
@@ -291,7 +291,7 @@
                                                                 style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                                                 <span>{{ $translation->question }}</span>
                                                             </button>
-                                                        </h2>
+                                                        </p>
                                                         <div id="faqCollapse{{ $index }}"
                                                             class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                             aria-labelledby="faqHeading{{ $index }}"
@@ -340,9 +340,9 @@
         </div>
 
         <div>
-            <h4 style="margin: 0 0 4px 0; font-size: 17px !important; font-weight: 700 !important; color: #1e3050 !important;">
+            <p style="margin: 0 0 4px 0; font-size: 18px !important; font-weight: 700 !important;">
                 Would you recommend {{ $business->translations->first()->name ?? 'this product' }} to others?
-            </h4>
+            </p>
 
             <p style="margin: 0; font-size: 13.5px; color: #4a5568;">
                 Share your experience with the community
@@ -716,7 +716,7 @@
 </a>
 
                                                 <div>
-                                                    <h6 style="margin: 0; font-weight: 600;">
+                                                    <p style="margin: 0; font-weight: 600;">
                                                         @if ($review->user && $review->user->user_type === 'admin')
                                                             {{ $review->public_name ?? 'Public' }}
                                                         @else
@@ -730,7 +730,7 @@
         @endif
         
                                                         @endif
-                                                    </h6>
+                                                    </p>
                                                     @if($review->user && $review->user->job_title)
                                                         <div style="font-size: 12px; color: #5b6b7a; line-height:1;">{{ $review->user->job_title }}</div>
                                                     @endif
@@ -787,9 +787,9 @@
                                             <x-business-logo :business="$business" />
                                         </div>
                                         <div class="sticky-wrap-mf">
-                                            <h3 class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
+                                            <p class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
                                                 {{ $business->translations->first()->name ?? '' }}
-                                            </h3>
+                                            </p>
                                             @if ($averageRating !== null)
                                                 <div class="rating-group sticky-nav-rating mb-3">
                                                     <span>{{ formatRating($averageRating) }}</span>

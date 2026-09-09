@@ -32,9 +32,9 @@
                             <div style="" class="mb-3 top-product-logo">
                                 <x-business-logo :business="$business" />
                             </div>
-                            <h5 class="mb-1 text-truncate w-100" style="color:#002347; font-size: 16px; font-weight:600;">
+                            <p class="mb-1 text-truncate w-100" style="color:#002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
-                            </h5>
+                            </p>
                             <div class="rating-group d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 6px;">
                                 <span style="">{{ number_format($ratingAvg, 1) }}</span>
                                 <div class="text-warning d-flex" style="font-size: 11px; color: #ff9d28 !important;">
@@ -72,9 +72,9 @@
                                 <div class="mb-3 top-product-logo">
                                     <x-business-logo :business="$business" />
                                 </div>
-                                <h5 class="mb-4 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
+                                <p class="mb-4 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
                                     {{ $business->translations->first()->name ?? 'Unnamed' }}
-                                </h5>
+                                </p>
                             </div>
                             <a href="/{{ app()->getLocale() }}/{{ $business->translations->first()->slug ?? '' }}?write_review=1" class=" blue-btn btn btn-outline-primary w-100 py-2 border-2 fw-semibold" style="border-radius: 20px; font-size: 14px; transition:unset !important; color: #fff; background-color: #003f7d;">
                                 Review
@@ -101,9 +101,9 @@
                             <div style="" class="mb-3 top-product-logo">
                                 <x-business-logo :business="$business" />
                             </div>
-                            <h5 class=" mb-2 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
+                            <p class=" mb-1 text-truncate w-100" style="color: #002347; font-size: 16px; font-weight:600;">
                                 {{ $business->translations->first()->name ?? 'Unnamed' }}
-                            </h5>
+                            </p>
                             <div class="rating-group d-flex align-items-center justify-content-center mb-4 flex-wrap" style="gap: 6px;">
                                 <span style="f color: #333;">{{ number_format($ratingAvg, 1) }}</span>
                                 <div class="text-warning d-flex " style="font-size: 11px; color: #ff9d28 !important;">

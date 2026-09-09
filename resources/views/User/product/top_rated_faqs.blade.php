@@ -292,11 +292,11 @@
                                             @endphp
                                             @if(!empty($question))
                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
-                                                <h2 class="accordion-header" id="faqHeading{{ $itemGlobalIndex }}">
+                                                <p class="accordion-header" id="faqHeading{{ $itemGlobalIndex }}">
                                                     <button class="accordion-button {{ $itemGlobalIndex > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $itemGlobalIndex }}" aria-expanded="{{ $itemGlobalIndex === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $itemGlobalIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
                                                         {{ $question }}
                                                     </button>
-                                                </h2>
+                                                </p>
                                                 <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse {{ $itemGlobalIndex === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">

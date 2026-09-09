@@ -7174,8 +7174,10 @@ input:checked ~ .toggle-dot {
     color: var(--color-white) !important;
 }
 
-.right_tool_sec .right-tool-pack .tool-card .tool-crd-bdy h3 {
-    color: var(--color-white) !important;
+.tool_hed {
+    color: var(--color-white);
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .asn_main_sec .asn_dv .ans_ryt .site_vsit .right_bottom .rate_box {
@@ -7386,9 +7388,9 @@ section.reviews-section .swiper.myReviewSlider .swiper-button-next:hover,
     padding: 0;
 }
 
-.auto-choice-lft h3 {
+.auto-choice-lft p {
     color: var(--color-dark-blue-text) !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
     font-weight: 600 !important;
 }
 
@@ -9427,10 +9429,11 @@ a.more-about-link-item:hover {
 
 /* ====style.css updated by-Kashish(21-aug-26)===== */
 
-h3.sticky-nav-title {
+.sticky-nav-title {
     font-weight: 700 !important;
     line-height: 1 !important;
     text-align: left;
+    font-size: 20px !important;
 }
 
 a.sticky-nav-item {
@@ -9898,7 +9901,8 @@ button.btn-vote-faq i.far:hover {
 
 .ovr-progrs-div p,
 .prgs_br span,
-.review-user h6 {
+.review-user h6,
+.review-user p {
     color: var(--color-dark-blue-text) !important;
 }
 
@@ -10026,4 +10030,9 @@ button.btn-vote-faq i.far:hover {
 
 .review_text .review-title {
     margin-bottom: 6px;
+}
+
+.accordion-header {
+    font-size: 24px !important;
+    font-weight: 700 !important;
 }

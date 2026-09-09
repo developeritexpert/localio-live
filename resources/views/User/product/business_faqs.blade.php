@@ -427,11 +427,11 @@
                                             @endphp
                                             @if($trans)
                                             <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="{{ $cat->id }}" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                <h2 class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                                <p class="accordion-header" id="faqHeading{{ $faq->id }}">
                                                     <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                                         {{ $trans->question }}
                                                     </button>
-                                                </h2>
+                                                </p>
                                                 <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
                                                         <div class="faq-answer-text mb-3">
@@ -486,11 +486,11 @@
                                         @endphp
                                         @if($trans)
                                         <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="general" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                            <h2 class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                            <p class="accordion-header" id="faqHeading{{ $faq->id }}">
                                                 <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                                     {{ $trans->question }}
                                                 </button>
-                                            </h2>
+                                            </p>
                                             <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
                                                 <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fdfdfd;">
                                                     <div class="faq-answer-text mb-3">
@@ -573,9 +573,9 @@
                                     </div>
 
                                     <div class="sticky-wrap-mf">
-                                        <h3 class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
+                                        <p class="sticky-nav-title mb-1" style="font-size: 17px; font-weight: 700; color: #002347;">
                                             {{ $business->translations->first()->name ?? '' }}
-                                        </h3>
+                                        </p>
                                         @if (isset($averageRating) && $averageRating !== null)
                                             <div class="rating-group sticky-nav-rating mb-3">
                                                 <span>{{ number_format($averageRating, 1) }}</span>

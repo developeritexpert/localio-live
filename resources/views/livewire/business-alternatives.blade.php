@@ -565,8 +565,8 @@
                                 <div class="col-md-12">
                                     <!-- Rating Filter Section - Styled like the image -->
                                     <div class="filter-section">
-                                        <h3 class="fw-semibold text-dark mb-2">
-                                            {{ static_text('user_rating') }}</h3>
+                                        <p class="fw-semibold text-dark mb-2">
+                                            {{ static_text('user_rating') }}</p>
 
                                         <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
@@ -601,7 +601,7 @@
                                         href="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.css" />
 
                                     <div class="filter-section mt-3 mb-3 pb-3 border-bottom pric_rnge">
-                                        <h3 class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</h3>
+                                        <p class="fw-semibold text-dark mb-3">{{ static_text('price_range') }}</p>
 
                                         <div class="price-slider-container">
                                             <div
@@ -638,9 +638,9 @@
                                             @endphp
 
                                             <div class="filter-section">
-                                                <h3>
+                                                <p>
                                                     {{ $filterName }}
-                                                </h3>
+                                                </p>
 
                                                 <div class="accordion-body" style="padding: 0;">
                                                     @if ($filterType === 'checkbox')

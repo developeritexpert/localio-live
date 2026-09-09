@@ -172,7 +172,7 @@
                                             $language = $languages->find($translation->lang_id);
                                         @endphp
                                         <div class="accordion-item  rounded mb-2">
-                                            <h2 class="accordion-header" id="heading{{ $translation->lang_id }}">
+                                            <p class="accordion-header" id="heading{{ $translation->lang_id }}">
                                                 <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }} bg-light"
                                                         type="button" data-bs-toggle="collapse"
                                                         data-bs-target="#collapse{{ $translation->lang_id }}"
@@ -182,7 +182,7 @@
                                                         <span class="badge badge-primary ms-2">Default</span>
                                                     @endif
                                                 </button>
-                                            </h2>
+                                            </p>
                                             <div id="collapse{{ $translation->lang_id }}"
                                                  class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}"
                                                  data-bs-parent="#translationsAccordion" >
