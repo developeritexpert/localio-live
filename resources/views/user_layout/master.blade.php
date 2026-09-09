@@ -2351,7 +2351,11 @@
                     </div>
                     <div class="sidebar-menu-divider"></div>
                     <div class="sidebar-menu-section">
-                        <h3 class="sidebar-section-title">{{ $cat->translation->name }}</h3>
+                        <h3 class="sidebar-section-title">
+                            <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $cat->translation->slug]) }}">
+                                {{ $cat->translation->name }}
+                            </a>
+                        </h3>
                         <ul class="sidebar-menu-list">
                             @foreach($cat->subCategories as $subCat)
                             @if($subCat->translation)
@@ -2500,6 +2504,19 @@
         letter-spacing: 0.5px !important;
     }
 
+    .sidebar-section-title a {
+        color: #111 !important;
+        font-weight: 700 !important;
+        text-decoration: none !important;
+        display: inline-block;
+        transition: color 0.15s ease;
+    }
+
+    .sidebar-section-title a:hover {
+        color: #f26522 !important;
+        text-decoration: underline !important;
+    }
+
     .sidebar-menu-list {
         list-style: none;
         padding: 0;
@@ -2512,7 +2529,8 @@
 
     .sidebar-menu-list li a {
         display: block;
-        padding: 10px 12px;
+        padding: 8px 12px;
+        margin: 0 -12px;
         color: #444;
         font-size: 14px;
         font-weight: 500;

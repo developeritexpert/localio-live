@@ -225,6 +225,50 @@
                                                             <div class="grn_chk d-flex align-items-center justify-content-center" style="width: 14px; height: 14px; margin-right: 8px; flex-shrink: 0;">
                                                                 <img class="check_icon_img" src="{{ asset('front/img/green-tick.svg') }}" alt="">
 
+                                                <div class="col-lg-4 col-md-6 col-12">
+                                                    <div class="review_card light top-rate-card h-100 {{ $isBestValue ? 'center-card-pack' : '' }}" style="margin: 0 !important;">
+                                                        <div class="inner_box_silder top-rate-innr top-rate-innr_2 h-100 d-flex flex-column justify-content-between" style="background-color: #f7f9fb; position: relative;">
+                                                            @if ($isBestValue)
+                                                                <div class="best-value-inline-container" style="position: absolute; top: 12px; right: 12px; margin: 0 !important; width: auto !important; z-index: 2;">
+                                                                    <div class="best-value-inline" >
+                                                                        <!-- <i class="fa-regular fa-thumbs-up"></i> -->
+                                                                        <i class="far fa-star text-warning"></i>
+                                                                       <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+                                                            <div class="inn_sl_hed mst_hdn">
+                                                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
+                                                                    <div class="top-product-logo">
+                                                                        <img class="" src="{{ $business->icon_id ? asset($business->icon_id) : asset('front/img/slider' . ($index + 1) . '_img.svg') }}" alt="">
+                                                                    </div>
+                                                                </a>
+                                                                <div class="sl_h">
+                                                                    <div class="inn_h">
+                                                                        <div class="sl_main">
+                                                                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $businessTranslation->slug]) }}">
+                                                                                <p class="head">{{ $businessTranslation->name ?? 'Business' }}</p>
+                                                                            </a>
+                                                                            <div wire:key="wishlist-container-{{ $business->id }}" class="d-none">
+                                                                                @livewire('wishlist', ['productId' => $business->id], key('wishlist-' . $business->id))
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="rating-group" style="">
+                                                                        <span class="rate_box_num" style="">{{ $avgRating }}</span>
+                                                                        <div class="inn_ul d-inline-flex m-0">
+                                                                            <div class="tab_star_li">
+                                                                                @php
+                                                                                    $rating = $avgRating > 0 ? round($avgRating) : 0;
+                                                                                @endphp
+                                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                                    <i class="fa-star {{ $i <= $rating ? 'fas text-warning' : 'far text-warning' }}"></i>
+                                                                                @endfor
+                                                                            </div>
+                                                                        </div>
+                                                                        <span class="rate_box_count" style="">({{ $ratingsCount }})</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <p class="m-0" style="font-size: 12px; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $usp->text }}</p>
                                                         </li>

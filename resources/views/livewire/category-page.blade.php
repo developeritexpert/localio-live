@@ -1034,7 +1034,7 @@
                                                 <div class="best-value-inline">
                                                     <!-- <i class="fa-regular fa-thumbs-up"></i> -->
                                                     <i class="far fa-star text-warning"></i>
-                                                    <span style="text-transform: none !important;">Top choice</span>
+                                                    <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
                                                 </div>
 
                                             @if($totalRevCount > 0 && !empty($item->is_affiliate))
@@ -1048,7 +1048,7 @@
                                                             d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
                                                         </path>
                                                     </svg>
-                                                    <span>{{ $recPercent }}% recommend this</span>
+                                                    <span>{{ $recPercent }}% {{ static_text('recommend_this') ?: 'of users recommend' }}</span>
                                                 </div>
                                             @endif
 
