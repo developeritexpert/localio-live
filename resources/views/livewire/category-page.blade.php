@@ -1989,11 +1989,7 @@
                     </div>
                 </div>
 
-                <div class="mt-4 d-none" data-aos="fade-up" data-aos-duration="1000">
-                    <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/comparisons') }}" class="view-more-link" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
-                        View more comparisons
-                    </a>
-                </div>
+
             </div>
         </section>
         @endif
