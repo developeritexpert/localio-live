@@ -2030,12 +2030,20 @@
         </section>
         @endif
         
+        @php
+            $catTransForCompare = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $safeCompSlug = $compSlug ?? ($catTransForCompare->comparison_slug ?? 'compare');
+            if (empty($safeCompSlug)) $safeCompSlug = 'compare';
+            $safeVsKeySlug = $vsKeySlug ?? (\Illuminate\Support\Str::slug(static_text('vs_keyword') ?: 'vs') ?: 'vs');
+        @endphp
         <!-- Category Compare Data for JS -->
         <script id="cat-compare-data" type="application/json">
         {!! json_encode([
             'businesses' => $allSearchableBusinesses ?? [],
-            'compSlug' => $compSlug,
-            'vsKeySlug' => $vsKeySlug,
+            'compSlug' => $safeCompSlug,
+            'vsKeySlug' => $safeVsKeySlug,
             'locale' => app()->getLocale(),
         ]) !!}
         </script>

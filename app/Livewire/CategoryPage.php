@@ -84,7 +84,21 @@ class CategoryPage extends Component
             $query->where('lang_id', $this->lang_id);
         }, 'parent.translations' => function ($query) {
             $query->where('lang_id', $this->lang_id);
-        }])->firstOrFail();
+        }])->first();
+
+        if (!$this->category) {
+            $this->category = Category::whereHas('translations', function ($query) {
+                $query->where('slug', $this->slug);
+            })->with(['translations' => function ($query) {
+                $query->where('lang_id', $this->lang_id);
+            }, 'parent.translations' => function ($query) {
+                $query->where('lang_id', $this->lang_id);
+            }])->first();
+        }
+
+        if (!$this->category) {
+            abort(404);
+        }
 
         $this->availableCriteria = $this->category->getEffectiveRatingCriteria();
 
