@@ -45,20 +45,29 @@
                                         })
                                         ->take(3);
 
-                                    if ($popularAltBusinesses->count() < 3) {
-                                        $morePop = \App\Models\Business::where('id', '!=', $business->id)
-                                            ->where('status', 1)
-                                            ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
-                                            ->with([
-                                                'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                                                'reviews' => fn($q) => $q->where('status', 'active'),
-                                                'category.ratingCriteria',
-                                                'products.prices'
-                                            ])
-                                            ->get()
-                                            ->take(3 - $popularAltBusinesses->count());
-                                        $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
-                                    }
+                                  if ($popularAltBusinesses->count() < 3) {
+    $morePop = \App\Models\Business::where('id', '!=', $business->id)
+        ->where('status', 1)
+        ->whereNotNull('category_id')
+        ->whereNotIn('id', $popularAltBusinesses->pluck('id'))
+        ->with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'reviews' => fn($q) => $q->where('status', 'active'),
+            'category.ratingCriteria',
+            'products.prices'
+        ])
+        ->get()
+        ->sortByDesc(function ($b) {
+            $r = $b->reviews->where('status', 'active');
+
+            return $r->count() > 0
+                ? $r->avg('rating')
+                : ($b->admin_rating ?? 0);
+        })
+        ->take(3 - $popularAltBusinesses->count());
+
+    $popularAltBusinesses = $popularAltBusinesses->merge($morePop);
+}
 
                                     // 2. Fetch 10 affiliated businesses for tables
                                     $affiliatedTableBusinesses = \App\Models\Business::where('is_affiliate', 1)
@@ -143,11 +152,53 @@
                                                                     $altAdditionalInfo = $altBusinessPrice['additional_info'] ?? null;
                                                                 }
 
-                                                                $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)->get();
-                                                                $altEaseOfUseAvg = round($altReviews->avg('ease_of_use_rating'), 1);
-                                                                $altValueForMoneyAvg = round($altReviews->avg('value_for_money_rating'), 1);
-                                                                $altCustomerServiceAvg = round($altReviews->avg('customer_service_rating'), 1);
-                                                                $altExclusiveFeatureAvg = round($altReviews->avg('exclusive_service_rating'), 1);
+                                                            $altReviews = \App\Models\Review::where('business_id', $altbusiness->id)
+    ->where('status', 'active')
+    ->get();
+
+$altCriteria = $altbusiness->category
+    ? $altbusiness->category->getEffectiveRatingCriteria()
+    : collect();
+
+foreach ($altCriteria as $criterion) {
+    $totalScore = 0;
+    $ratingCount = 0;
+
+    foreach ($altReviews as $review) {
+        $ratingRecord = \App\Models\ReviewRating::where('review_id', $review->id)
+            ->where('criteria_id', $criterion->id)
+            ->first();
+
+        if ($ratingRecord && $ratingRecord->rating !== null) {
+            $totalScore += (float) $ratingRecord->rating;
+            $ratingCount++;
+            continue;
+        }
+
+        $legacyVal = null;
+        $criterionName = strtolower(trim($criterion->name));
+
+        if ($criterionName === 'ease of use') {
+            $legacyVal = $review->ease_of_use_rating;
+        } elseif ($criterionName === 'customer service') {
+            $legacyVal = $review->customer_service_rating;
+        } elseif ($criterionName === 'features') {
+            $legacyVal = $review->exclusive_service_rating;
+        } elseif ($criterionName === 'value for money') {
+            $legacyVal = $review->value_for_money_rating;
+        }
+
+        if ($legacyVal !== null && $legacyVal !== '') {
+            $totalScore += (float) $legacyVal;
+            $ratingCount++;
+        }
+    }
+
+    $criterion->average_rating = $ratingCount > 0
+        ? round($totalScore / $ratingCount, 1)
+        : null;
+}
+
 
                                                                 $altRatingAvg = $altbusiness->reviews->avg('rating');
                                                                 $count = $altbusiness->reviews->where('status', 'active')->count();
@@ -184,37 +235,43 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
-                                                                    <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">User rating</h6>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Ease of Use</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altEaseOfUseAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altEaseOfUseAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Customer Service</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altCustomerServiceAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altCustomerServiceAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Features</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altExclusiveFeatureAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altExclusiveFeatureAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
-                                                                        <p class="m-0" style="font-size: 12px; color: #002347;">Value for Money</p>
-                                                                        <div class="prgs_br d-flex align-items-center">
-                                                                            <progress class="progress-bar" value="{{ ($altValueForMoneyAvg ?? 0) * 20 }}" max="100"></progress>
-                                                                            <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">{{ $altValueForMoneyAvg ?? 0 }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+     <div class="over-rate-progress p_top_btm_sftwre pt-3 pb-3" style="border-bottom: 1px solid #eee;">
+    <!-- <pre style="background:#fff;color:#000;padding:10px;font-size:11px;">
+
+</pre> -->
+     <h6 class="fw_700 mb-3" style="color: #002347; font-size:12px;">
+        User rating
+    </h6>
+
+    @foreach ($altCriteria as $criterion)
+        <div class="ovr-progrs-div d-flex align-items-center justify-content-between mb-2">
+
+            <p class="m-0" style="font-size: 12px; color: #002347;">
+                {{ $criterion->name }}
+            </p>
+
+            <div class="prgs_br d-flex align-items-center">
+
+                @if ($criterion->average_rating !== null)
+                    <progress
+                        class="progress-bar"
+                        value="{{ $criterion->average_rating * 20 }}"
+                        max="100">
+                    </progress>
+
+                    <span style="font-size: 12px; font-weight: 600; color: #333; min-width: 32px; text-align: right;">
+                        {{ number_format($criterion->average_rating, 1) }}
+                    </span>
+                @else
+                    <span style="font-size: 12px; font-weight: 600; color: #999; min-width: 32px; text-align: right;">
+                        N/A
+                    </span>
+                @endif
+
+            </div>
+        </div>
+    @endforeach
+</div>
 
                                                                 @php
                                                                     $hasAltPrice = !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
