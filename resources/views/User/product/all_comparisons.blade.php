@@ -117,6 +117,14 @@
         background: #f1f5f9;
         color: #002347;
     }
+    a.comparison-box {
+        transition: all 0.2s ease;
+    }
+    a.comparison-box:hover {
+        border-color: #06498b !important;
+        box-shadow: 0 6px 18px rgba(6, 73, 139, 0.09) !important;
+        transform: translateY(-2px);
+    }
 </style>
 @endpush
 
@@ -445,8 +453,8 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; ">
-                        <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
+                    <a href="{{ $seoUrlPop }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #ffffff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; color: inherit; text-decoration: none; display: flex; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+                        <div class="cmpr_bx d-flex align-items-center justify-content-between mb-0">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                     <x-business-logo :business="$business" :name="$bName" />
@@ -468,17 +476,12 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $popItemName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($averageRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($popItemRating) }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="cmpre_btn w-100 mt-auto">
-                            <a href="{{ $seoUrlPop }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important;  font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
-                                Compare
-                            </a>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>
@@ -511,8 +514,8 @@
                     ]);
                 @endphp
                 <div class="col-lg-4 col-md-6 col-12">
-                    <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; ">
-                        <div class="cmpr_bx d-flex align-items-center justify-content-between mb-3">
+                    <a href="{{ $seoUrlRec }}" class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-center text-decoration-none" style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; color: inherit; text-decoration: none; display: flex; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
+                        <div class="cmpr_bx d-flex align-items-center justify-content-between mb-0">
                             <div class="d-flex align-items-center gap-2" style="min-width: 0; flex: 1;">
                                 <div style="width: 38px; height: 38px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                     <x-business-logo :business="$business" :name="$bName" />
@@ -521,7 +524,7 @@
                                     <div class="fw-semibold text-truncate" style="font-size: 13.5px; color: #1e3050;">{{ $bName }}</div>
                                     <div class="d-flex align-items-center gap-1" style="font-size: 12px; color: #64748b;">
                                         <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
-                                        <span style="font-weight: 600; color: #475569;">{{ number_format($averageRating, 1) }}</span>
+                                        <span style="font-weight: 600; color: #475569;">{{ formatRating($businessRating) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -539,12 +542,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="cmpre_btn w-100 mt-auto">
-                            <a href="{{ $seoUrlRec }}" class="cta cta_btn text-decoration-none w-100" style="padding: 8px 20px !important; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; width: 100%;">
-                                Compare
-                            </a>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             @endforeach
         </div>
