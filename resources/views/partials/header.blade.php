@@ -1246,7 +1246,7 @@
                             <div class="mobile-cat-panel-header">
                                 <button class="mobile-cat-back" id="mobile-cat-back">
                                     <i class="fa-solid fa-chevron-left"></i>
-                                    {{ $headerContent['Categories'] ?? 'All Categories' }}
+                                    {{ $headerContent['Categories'] ?? 'Categories' }}
                                 </button>
                                 <button class="mobile-cat-close" id="mobile-cat-close">
                                     <i class="fa-solid fa-xmark"></i>

@@ -660,11 +660,11 @@
                                     $from = ($currentPage - 1) * $perPage + 1;
                                     $to = min($currentPage * $perPage, $total);
                                     @endphp
-                                    <p class="m-0">
+                                    <p class="m-0 showing-p">
                                         Showing {{$from}}-{{$to}} of {{$total}}
                                     </p>
                                     @else
-                                    <p class="m-0">Showing {{ $products->count() }} results</p>
+                                    <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                     @endif
                                 </div>
                                 @php

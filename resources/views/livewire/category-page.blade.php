@@ -482,13 +482,13 @@
                             <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
                     <div class="host-parra row align-items-start">
-                        <div class="col-md-7 text-start">
+                        <div class="col-md-8 text-start">
                             
                             <div class="category-description-text">
                                 {!! !empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options') !!}
                             </div>
                         </div>
-                        <div class="col-md-5 mt-4 mt-md-0 text-end cat_img_header">
+                        <div class="col-md-4 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                                 <div class="cat-hero-img-wrap position-relative d-inline-block">
                                     <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
@@ -950,11 +950,11 @@
                                         $from = ($currentPage - 1) * $perPage + 1;
                                         $to = min($currentPage * $perPage, $total);
                                         @endphp
-                                        <p class="m-0">
+                                        <p class="m-0 showing-p">
                                             Showing {{$from}}-{{$to}} of {{$total}}
                                         </p>
                                         @else
-                                        <p class="m-0">Showing {{ $products->count() }} results</p>
+                                        <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
                                     @php
