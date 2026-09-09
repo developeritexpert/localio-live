@@ -937,3 +937,32 @@ section.community-feedback-sec {
     background: #fdfdfd;
     border-top: 1px solid #e2e8f0;
 }
+
+/* Country / Region Selection Modal Close Button */
+.close-country-menu {
+    position: relative !important;
+    background: none !important;
+    border: none !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    color: #9ca3af !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    z-index: 99 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: background 0.2s ease, color 0.2s ease !important;
+}
+
+.close-country-menu:hover {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+}
+

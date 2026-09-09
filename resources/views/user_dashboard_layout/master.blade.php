@@ -665,7 +665,12 @@
                         </div>
                         <ul class="options" style="height: auto !important; bottom: 100% !important; max-height: 400px; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);">
                             <div class="container">
-                                <h3 style="color: black;">Choose your Country/region </h3>
+                                <div class="country-modal-header d-flex align-items-center justify-content-between mb-2">
+                                    <h3 style="color: black; margin: 0;">Choose your Country or region</h3>
+                                    <button type="button" class="close-country-menu" aria-label="Close modal" title="Close" style="background:none;border:none;font-size:16px;color:#9ca3af;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;">
+                                        ✕
+                                    </button>
+                                </div>
                                 <div class="footer-langs-container">
                                     @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
                                     @if($country->language)

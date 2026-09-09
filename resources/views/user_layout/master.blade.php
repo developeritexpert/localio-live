@@ -1385,7 +1385,12 @@
                         </div>
                         <ul class="options">
                             <div class="container">
-                                <h3 style="color: black;">Choose your Country/region </h3>
+                                <div class="country-modal-header d-flex align-items-center justify-content-between">
+                                    <h3 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">Choose your Country or region</h3>
+                                    <button type="button" class="close-country-menu" aria-label="Close modal" title="Close">
+                                        ✕
+                                    </button>
+                                </div>
                                 <div class="footer-langs-container">
                                     @foreach ($footer_countries->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE) as $country)
                                     @if($country->language)
@@ -2128,12 +2133,19 @@
     <script>
     // When the user clicks on the select button, toggle the dropdown menu
     $('.select-btn').on('click', function() {
-        $(this).closest('.select-menu').toggleClass('open');
+        $(this).closest('.select-menu').toggleClass('open active');
+    });
+
+    // Close button click on top right of country selection modal
+    $(document).on('click', '.close-country-menu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $('.select-menu').removeClass('open active');
     });
 
     @if(session('show_country_modal'))
         $(document).ready(function() {
-            $('.select-menu').addClass('open');
+            $('.select-menu').addClass('open active');
             $('html, body').animate({
                 scrollTop: $('.select-menu').offset().top - 200
             }, 600);
@@ -2143,7 +2155,14 @@
     // Optional: Close the dropdown if the user clicks outside of it
     $(document).on('click', function(event) {
         if (!$(event.target).closest('.select-menu').length) {
-            $('.select-menu').removeClass('open');
+            $('.select-menu').removeClass('open active');
+        }
+    });
+
+    // Close on Escape key press
+    $(document).on('keydown', function(event) {
+        if (event.key === 'Escape' || event.keyCode === 27) {
+            $('.select-menu').removeClass('open active');
         }
     });
     </script>
@@ -3036,6 +3055,132 @@
     });
 </script>
 
+
+<style>
+/* Country / Region Selection Modal Styling */
+    .ft-btm-rgt .select-menu .options {
+        background-color: #ffffff !important;
+        left: 0 !important;
+        right: 0 !important;
+        position: absolute !important;
+        bottom: 65px !important;
+        margin: 0 !important;
+        padding: 24px 30px 32px 30px !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: calc(100vh - 80px) !important;
+        width: 100% !important;
+        z-index: 1000 !important;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12) !important;
+        border-top: 3px solid var(--color-primary-orange, #fb5c28) !important;
+        overflow-y: auto !important;
+    }
+
+    .ft-btm-rgt .select-menu.active .options,
+    .ft-btm-rgt .select-menu.open .options {
+        display: block !important;
+    }
+
+    .country-modal-header {
+        border-bottom: 1px solid #edf2f7;
+        padding-bottom: 12px;
+        margin-bottom: 18px;
+    }
+
+    .close-country-menu {
+        position: relative !important;
+        background: none !important;
+        border: none !important;
+        font-size: 16px !important;
+        cursor: pointer !important;
+        color: #9ca3af !important;
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 50% !important;
+        z-index: 99 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        outline: none !important;
+        box-shadow: none !important;
+        transition: background 0.2s ease, color 0.2s ease !important;
+    }
+
+    .close-country-menu:hover {
+        background: #f3f4f6 !important;
+        color: #374151 !important;
+    }
+
+    .ft-btm-rgt .select-menu .options .footer-langs-container {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        row-gap: 6px !important;
+        padding-bottom: 15px !important;
+    }
+
+    .ft-btm-rgt .select-menu .options li {
+        color: var(--color-black) !important;
+        width: 20% !important;
+        padding: 4px 10px 4px 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .ft-btm-rgt .select-menu .options li a {
+        font-size: 13.5px !important;
+        color: #1e293b !important;
+        text-decoration: none !important;
+        display: inline-block !important;
+        transition: color 0.15s ease !important;
+    }
+
+    .ft-btm-rgt .select-menu .options li a:hover {
+        color: var(--color-primary-orange, #fb5c28) !important;
+        text-decoration: underline !important;
+    }
+
+    /* Small screens / mobile / short viewports: Open over entire screen */
+    @media (max-width: 991px), (max-height: 650px) {
+        .ft-btm-rgt .select-menu.active .options,
+        .ft-btm-rgt .select-menu.open .options {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            z-index: 999999 !important;
+            margin: 0 !important;
+            padding: 20px 20px 40px 20px !important;
+            border-top: 4px solid var(--color-primary-orange, #fb5c28) !important;
+            border-radius: 0 !important;
+            overflow-y: auto !important;
+        }
+
+        .country-modal-header {
+            position: sticky !important;
+            top: -20px !important;
+            background: #ffffff !important;
+            z-index: 10 !important;
+            padding-top: 6px !important;
+            padding-bottom: 12px !important;
+        }
+
+        .ft-btm-rgt .select-menu .options li {
+            width: 33.333% !important;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ft-btm-rgt .select-menu .options li {
+            width: 50% !important;
+        }
+    }
+</style>
 </body>
 
 </html>
