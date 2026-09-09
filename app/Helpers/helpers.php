@@ -559,9 +559,11 @@ if (!function_exists('get_rating_label')) {
                 return '0';
             }
 
-            $langId = getCurrentLanguageID();
+            $langCode = request()->route('locale') ?? session('lang_code') ?? 'en-us';
 
-            $language = \App\Models\Language::with('country')->find($langId);
+            $language = \App\Models\Language::with('country')
+                ->where('lang_code', $langCode)
+                ->first();
 
             $separator = $language?->country?->rating_separator ?? '.';
 
