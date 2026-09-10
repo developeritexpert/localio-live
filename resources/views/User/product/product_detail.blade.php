@@ -10,13 +10,6 @@
     text-decoration: none;
 }
 
-.comparison-box-link .comparison-box {
-    transition: all 0.2s ease;
-}
-
-.comparison-box-link:hover .comparison-box {
-    transform: translateY(-2px);
-}
 </style>
 
 
