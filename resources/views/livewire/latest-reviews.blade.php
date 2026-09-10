@@ -64,7 +64,7 @@
                                     <a href="{{ $reviewsPageUrl }}" class="review_card light" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; height: auto; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: unset; margin-bottom: 20px; text-decoration: none; color: inherit;">
                                         <!-- Top part: user icon, name, rating -->
                                         <div class="review-card-top" style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                            <div class="user-avatar" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <div class="user-avatar">
                                                 @if ($user && $user->profile_image && $user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($user->profile_image) }}" style="width: 100%; height: 100%; object-fit: cover;">
                                                 @else
