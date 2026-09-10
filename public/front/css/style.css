@@ -1267,8 +1267,9 @@ textarea:focus-visible {
 }
 
 .most-popular-wrp h3 {
-    margin-bottom: 20px;
-    line-height: 26px;
+    margin-bottom: 10px;
+    color: #fdfdfd !important;
+    margin-top: 10px;
 }
 
 .popular-accordion-wrp .accordion-button::after {
@@ -7947,7 +7948,7 @@ header .menu li.menu-item a {
     display: block;
     z-index: 10;
     overflow-y: scroll;
-    border-top: 1px solid #e2e8f0;  
+    border-top: 1px solid #e2e8f0;
 }
 
 footer .footer-wrp ul li {
@@ -8491,7 +8492,7 @@ body .product_sec li.breadcrumb-item.active {
 }
 
 .top-rated-heading-sec h1 {
-    font-size: 28px !important;
+    font-size: 34px !important;
 }
 
 .faq-accor .accordion-button:hover::after,
@@ -9381,7 +9382,7 @@ input#rating-4 {
 
 .top-rated-heading-sec .row,
 .bread_row {
-    padding-bottom: 4px;
+    padding-bottom: 15px;
 }
 
 .accordion-button:focus,
@@ -9959,7 +9960,6 @@ button.btn-vote-faq i.far:hover {
 
 .comparison-table-section h2,
 .explore-cat-h2 {
-    text-transform: lowercase;
     margin-bottom: 4px;
 }
 
@@ -10048,3 +10048,5 @@ button.btn-vote-faq i.far:hover {
     color: #002655;
     line-height: 1;
 }
+
+/* ====style.css updated by-Kashish(10-sep-26)===== */

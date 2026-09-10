@@ -18,14 +18,11 @@
     .table-business-link:hover {
         background-color: #e9edf5 !important;
     }
-    .comparison-box {
-        transition: all 0.2s ease-in-out;
-    }
+  
     .comparison-box:hover {
         background-color: #ffffff !important;
         border-color: #cbd5e1 !important;
         box-shadow: 0 6px 18px rgba(0, 35, 71, 0.08) !important;
-        transform: translateY(-2px);
     }
     .cat-compare-item {
         padding: 10px 16px;
@@ -548,7 +545,7 @@
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
                                     <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
-                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
+                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}

@@ -8,7 +8,7 @@
 }
 
 .top-rated-heading-block h1 {
-    font-size: 28px !important;
+    font-size: 34px !important;
     font-weight: 700;
     padding: 0 !important;
     margin-bottom: 4px !important;
@@ -964,10 +964,6 @@ section.community-feedback-sec {
 .close-country-menu:hover {
     background: #f3f4f6 !important;
     color: #374151 !important;
-}
-
-.inner_part_boxx .part_2_boxs h3.big-bld {
-    color: #fdfdfd !important;
 }
 
 .inner_part_boxx .part_1_boxs img {

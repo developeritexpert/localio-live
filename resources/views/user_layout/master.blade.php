@@ -2519,6 +2519,7 @@
         color: #111 !important;
         font-weight: 700 !important;
         margin-bottom: 12px !important;
+        margin-top: 8px;
         letter-spacing: 0.5px !important;
     }
 
@@ -2532,7 +2533,6 @@
 
     .sidebar-section-title a:hover {
         color: #f26522 !important;
-        text-decoration: underline !important;
     }
 
     .sidebar-menu-list {
@@ -3081,7 +3081,6 @@
     }
 
     .country-modal-header {
-        border-bottom: 1px solid #edf2f7;
         padding-bottom: 12px;
         margin-bottom: 18px;
     }
@@ -3166,7 +3165,6 @@
             background: #ffffff !important;
             z-index: 10 !important;
             padding-top: 6px !important;
-            padding-bottom: 12px !important;
         }
 
         .ft-btm-rgt .select-menu .options li {
