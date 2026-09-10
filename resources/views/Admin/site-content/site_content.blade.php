@@ -188,6 +188,7 @@
                                                     'category_badge_label' => 'Top Rated Badge (formerly "Top choice")',
                                                     'recommend_this' => 'Recommendation Text (e.g. "of users recommend")',
                                                     'product_badge_label' => 'Product Feature Badge (e.g. "Key Features")',
+                                     'compare_search_placeholder' => 'Compare Tool Search Placeholder (e.g. "Search by name...")',
                                                 ];
                                                 $displayLabel = $keyLabels[$key] ?? ucwords(str_replace('_', ' ', $key));
 
@@ -195,6 +196,7 @@
                                                     'category_badge_label' => 'Displays in the star pill badge on top recommended listings (e.g., "Top rated").',
                                                     'recommend_this' => 'Displays after the percentage on category/top-rated listing cards (e.g., "100% of users recommend").',
                                                     'product_badge_label' => 'Displays in the USP/features badge on the product detail page (e.g., "Key Features").',
+                                     'compare_search_placeholder' => 'Placeholder text for the category page comparison tool search inputs (e.g., "Search by name...")',
                                                 ];
                                                 $displayHint = $keyHints[$key] ?? null;
                                             @endphp

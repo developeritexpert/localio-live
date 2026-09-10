@@ -1903,7 +1903,7 @@
                                 <!-- Search Input Wrapper -->
                                 <div id="catCompareLeftInputWrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
                                     <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none; z-index: 2;"></i>
-                                    <input type="text" id="catCompareLeftInput" class="form-control" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
+                                    <input type="text" id="catCompareLeftInput" class="form-control" placeholder="{{ static_text("compare_search_placeholder") ?: "Search by name..." }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
                                 </div>
                                 <!-- Dropdown -->
                                 <div id="catCompareLeftDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; width: 100%; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 999999;"></div>
@@ -1928,7 +1928,7 @@
                                 <!-- Search Input Wrapper -->
                                 <div id="catCompareRightInputWrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
                                     <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none; z-index: 2;"></i>
-                                    <input type="text" id="catCompareRightInput" class="form-control" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
+                                    <input type="text" id="catCompareRightInput" class="form-control" placeholder="{{ static_text("compare_search_placeholder") ?: "Search by name..." }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
                                 </div>
                                 <!-- Dropdown -->
                                 <div id="catCompareRightDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; width: 100%; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 999999;"></div>
@@ -2328,7 +2328,7 @@
 
                         <div class="text-center mt-4">
                             <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
-                                View more FAQs
+                                View all FAQs
                             </a>
                         </div>
                     </div>
