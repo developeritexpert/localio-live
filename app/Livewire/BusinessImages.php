@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Business;
+use App\Models\Country;
+use App\Models\Language;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +16,7 @@ class BusinessImages extends Component
 {
     use WithFileUploads;
 
-    public $lang_id = 1;
+    public $lang_id;
     public $businesses = [];
 
     // Modal state for Manage Images
@@ -28,6 +30,11 @@ class BusinessImages extends Component
 
     public $screenshotCategories = [];
     public $selectedScreenshotCategory = null;
+    public $selectedScreenshotCountry = null;
+    public $screenshotCountries = [];
+    public $businessScreenshotCategories = [];
+    public $showAddScreenshotCategoryModal = false;
+    public $showAddScreenshotCategoryForm = false;
     public $newScreenshotCategory = '';
 
     public $categoryPage = 1;
@@ -44,6 +51,9 @@ class BusinessImages extends Component
     public $categoryToDeleteName = '';
 
 
+    public $pendingScreenshotImages = [];
+    public $modalOriginalImages = [];
+
 
 
     private $logCollector = [];
@@ -57,6 +67,7 @@ class BusinessImages extends Component
     // Modal state for Screenshot URLs
     public $showUrlModal = false;
     public $screenshotUrls = ['', '', '', '', ''];
+    public $screenshotUrlDrafts = [];
 
     protected $listeners = [
         'closeModal' => 'closeModals'
@@ -64,6 +75,7 @@ class BusinessImages extends Component
 
     public function mount()
     {
+        $this->lang_id = getCurrentLanguageID();
         $this->loadBusinesses();
     }
 
@@ -80,90 +92,99 @@ class BusinessImages extends Component
     }
 
     // --- Manage Images Modal Actions ---
-
     public function openImageModal($businessId)
     {
         $business = Business::with('translations')->findOrFail($businessId);
 
         $this->selectedBusinessId = $businessId;
 
-        $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name
+        $this->selectedBusinessName =
+            $business->translations->firstWhere('lang_id', $this->lang_id)?->name
             ?? $business->translations->first()?->name
             ?? 'Business #' . $businessId;
 
-        // Get the category which should currently be displayed
-        $selectedCategoryName = trim(
-            $business->screenshot_display_category ?? ''
+        /*
+    |--------------------------------------------------------------------------
+    | Get active country
+    |--------------------------------------------------------------------------
+    */
+        $activeLanguageId = session(
+            'business_active_language_' . $businessId
         );
+
+        if (empty($activeLanguageId)) {
+            $activeLanguageId = $business->languages_supported;
+        }
+
+        $activeLanguage = \App\Models\Language::find($activeLanguageId);
+
+        $activeCountryId = (int) ($activeLanguage?->country_id ?? 0);
 
         $categories = $business->screenshot_categories ?? [];
 
-        $activeCategory = null;
+        /*
+    |--------------------------------------------------------------------------
+    | Priority 1: Selected category of active country
+    |--------------------------------------------------------------------------
+    */
+        $activeCategory = collect($categories)
+            ->first(function ($category) use ($activeCountryId) {
+                return
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId
+                    &&
+                    !empty($category['is_selected']);
+            });
 
         /*
-|--------------------------------------------------------------------------
-| 1. Business has explicitly selected a category
-|--------------------------------------------------------------------------
-*/
-        if (!empty($selectedCategoryName)) {
-
-            $activeCategory = collect($categories)
-                ->first(function ($category) use ($selectedCategoryName) {
-
-                    return strcasecmp(
-                        trim($category['name'] ?? ''),
-                        $selectedCategoryName
-                    ) === 0;
-                });
-        }
-
-        /*
-|--------------------------------------------------------------------------
-| 2. No explicit category selected
-|    -> use the category currently marked as DEFAULT
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | Priority 2: Default category of active country
+    |--------------------------------------------------------------------------
+    */
         if (!$activeCategory) {
 
             $activeCategory = collect($categories)
-                ->first(function ($category) {
-
-                    return !empty($category['is_default']);
+                ->first(function ($category) use ($activeCountryId) {
+                    return
+                        (int) ($category['country_id'] ?? 0) === $activeCountryId
+                        &&
+                        !empty($category['is_default']);
                 });
         }
 
         /*
-|--------------------------------------------------------------------------
-| 3. Show images from the active category
-|--------------------------------------------------------------------------
-*/
-        if ($activeCategory) {
-
-            $this->currentImages = $activeCategory['images'] ?? [];
-        } else {
-
-            /*
     |--------------------------------------------------------------------------
-    | 4. No category and no DEFAULT category
+    | Priority 1 / 2 images
     |--------------------------------------------------------------------------
     */
-            $this->currentImages = $business->business_images ?? [];
+        if ($activeCategory) {
+
+            $this->currentImages = array_slice(
+                $activeCategory['images'] ?? [],
+                0,
+                5
+            );
         }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Priority 3: Global Default Images
+    |--------------------------------------------------------------------------
+    */ else {
+
+            $this->currentImages = array_slice(
+                $business->business_images ?? [],
+                0,
+                5
+            );
+        }
+        $this->modalOriginalImages = $this->currentImages;
+        $this->pendingScreenshotImages = [];
 
         $this->newUploads = [];
         $this->showImageModal = true;
 
         $this->dispatch('show-manage-images-modal');
     }
-
-    public function removeCurrentImage($index)
-    {
-        if (isset($this->currentImages[$index])) {
-            unset($this->currentImages[$index]);
-            $this->currentImages = array_values($this->currentImages);
-        }
-    }
-
     public function closeManageCategoriesModal()
     {
         $this->dispatch('return-to-screenshot-url-modal');
@@ -177,409 +198,553 @@ class BusinessImages extends Component
         }
     }
 
+
+    public function removeCurrentImage($index)
+    {
+        if (!isset($this->currentImages[$index])) {
+            return;
+        }
+
+        unset($this->currentImages[$index]);
+
+        $this->currentImages = array_values(
+            $this->currentImages
+        );
+    }
+    public function openAddScreenshotCategoryModal()
+    {
+        if (empty($this->selectedScreenshotCountry)) {
+            $this->addError(
+                'selectedScreenshotCountry',
+                'Please select a country / region first.'
+            );
+
+            return;
+        }
+
+        $this->newScreenshotCategory = '';
+
+        $this->resetErrorBag();
+
+        $this->showAddScreenshotCategoryModal = true;
+    }
+
     public function takeScreenshots()
     {
         $this->isTakingScreenshots = true;
         $this->logCollector = [];
 
-        $this->addConsoleLog("Starting Automated Screenshot capture process...");
+        $this->addConsoleLog(
+            "Starting Automated Screenshot capture process..."
+        );
 
-        // Increase script time limit on slower hosts
         try {
             if (function_exists('set_time_limit')) {
                 set_time_limit(120);
-                $this->addConsoleLog("Extended script execution time limit to 120s.");
+
+                $this->addConsoleLog(
+                    "Extended script execution time limit to 120s."
+                );
             }
         } catch (\Exception $e) {
-            $this->addConsoleLog("Failed to extend script time limit: " . $e->getMessage());
+            $this->addConsoleLog(
+                "Failed to extend script time limit: " . $e->getMessage()
+            );
         }
 
-        $business = Business::with('websites')->findOrFail($this->selectedBusinessId);
+        /*
+    |--------------------------------------------------------------------------
+    | Load Business
+    |--------------------------------------------------------------------------
+    */
+        $business = Business::with('websites')
+            ->findOrFail($this->selectedBusinessId);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Variables
+    |--------------------------------------------------------------------------
+    */
         $urls = [];
 
-        // 1. First priority: Selected Screenshot Category
-        $selectedCategoryName = trim($business->screenshot_display_category ?? '');
+        $selectedCategory = null;
+        $selectedCategoryIndex = null;
 
-        if (!empty($selectedCategoryName)) {
+        $usingGlobalDefault = false;
 
-            $selectedCategory = collect($business->screenshot_categories ?? [])
-                ->first(function ($category) use ($selectedCategoryName) {
-                    return strcasecmp(
-                        trim($category['name'] ?? ''),
-                        $selectedCategoryName
-                    ) === 0;
-                });
+        $categories = $business->screenshot_categories ?? [];
 
-            if ($selectedCategory) {
-                $categoryUrls = $selectedCategory['urls'] ?? [];
+        /*
+    |--------------------------------------------------------------------------
+    | Get Active Language / Country
+    |--------------------------------------------------------------------------
+    */
+        $activeLanguageId = session(
+            'business_active_language_' . $this->selectedBusinessId
+        );
 
-                $urls = array_values(array_filter($categoryUrls, function ($url) {
-                    return !empty(trim($url));
-                }));
-
-                $this->addConsoleLog(
-                    "Selected screenshot category: " . $selectedCategoryName
-                );
-
-                $this->addConsoleLog(
-                    "Category URLs found: " . count($urls)
-                );
-            } else {
-                $this->addConsoleLog(
-                    "Selected screenshot category not found: " . $selectedCategoryName
-                );
-            }
+        if (empty($activeLanguageId)) {
+            $activeLanguageId = $business->languages_supported;
         }
 
-        // 2. Second priority: Default Screenshot Category
-        if (empty($urls)) {
+        $activeLanguage = \App\Models\Language::find(
+            $activeLanguageId
+        );
 
-            $defaultCategory = collect($business->screenshot_categories ?? [])
-                ->firstWhere('is_default', true);
+        if (!$activeLanguage || empty($activeLanguage->country_id)) {
 
-            if ($defaultCategory) {
+            $this->addConsoleLog(
+                "FAILED: Active country could not be determined."
+            );
 
-                $defaultUrls = $defaultCategory['urls'] ?? [];
+            session()->flash(
+                'modal_error',
+                'Could not determine the active country/region.'
+            );
 
-                $urls = array_values(array_filter($defaultUrls, function ($url) {
-                    return !empty(trim($url));
-                }));
+            $this->dispatch(
+                'print-console-logs',
+                logs: $this->logCollector
+            );
 
-                if (!empty($urls)) {
-                    $this->addConsoleLog(
-                        "Using default screenshot category: " .
-                            ($defaultCategory['name'] ?? 'Default')
-                    );
-
-                    $this->addConsoleLog(
-                        "Default category URLs found: " . count($urls)
-                    );
-                }
-            }
-        }
-
-        // 3. Third priority: Legacy screenshot_urls
-        if (empty($urls) && !empty($business->screenshot_urls) && is_array($business->screenshot_urls)) {
-
-            $urls = array_values(array_filter($business->screenshot_urls, function ($url) {
-                return !empty(trim($url));
-            }));
-
-            if (!empty($urls)) {
-                $this->addConsoleLog("Using legacy screenshot_urls.");
-            }
-        }
-
-        // 4. Fourth priority: affiliate_link
-        if (empty($urls) && !empty(trim($business->affiliate_link ?? ''))) {
-            $urls[] = trim($business->affiliate_link);
-
-            $this->addConsoleLog("Using affiliate_link as fallback URL.");
-        }
-
-        // 5. Fifth priority: Country / regional website URLs
-        if (empty($urls) && $business->websites && $business->websites->isNotEmpty()) {
-
-            foreach ($business->websites as $web) {
-
-                $websiteUrl = trim($web->website_url ?? '');
-
-                if (!empty($websiteUrl) && !in_array($websiteUrl, $urls)) {
-                    $urls[] = $websiteUrl;
-                }
-            }
-
-            if (!empty($urls)) {
-                $this->addConsoleLog("Using country/regional website URLs.");
-            }
-        }
-
-        // 6. Sixth priority: Business permanent_url
-        if (empty($urls) && !empty(trim($business->permanent_url ?? ''))) {
-
-            $urls[] = trim($business->permanent_url);
-
-            $this->addConsoleLog("Using business permanent_url.");
-        }
-
-        $this->addConsoleLog("Detected target URL list: " . implode(', ', $urls));
-
-        if (empty($urls)) {
-            session()->flash('modal_error', 'No website or screenshot URL found for this business. Please configure Screenshot URLs first.');
-            $this->addConsoleLog("FAILED: No target URLs found.");
-            $this->dispatch('print-console-logs', logs: $this->logCollector);
             $this->isTakingScreenshots = false;
+
             return;
         }
 
-        $generatedImages = [];
-        $destinationDir = public_path('business_images');
-        $this->addConsoleLog("Target public folder path: " . $destinationDir);
+        $activeCountryId = (int) $activeLanguage->country_id;
 
-        if (!File::exists($destinationDir)) {
-            try {
-                File::makeDirectory($destinationDir, 0775, true);
-                $this->addConsoleLog("Created public folder: business_images");
-            } catch (\Exception $e) {
-                $this->addConsoleLog("Failed to create folder: " . $e->getMessage());
+        $this->addConsoleLog(
+            "Active country ID: " . $activeCountryId
+        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | PRIORITY 1
+    |
+    | Current active country + selected category
+    |--------------------------------------------------------------------------
+    */
+        foreach ($categories as $index => $category) {
+
+            if (
+                (int) ($category['country_id'] ?? 0) === $activeCountryId
+                &&
+                !empty($category['is_selected'])
+            ) {
+                $selectedCategory = $category;
+                $selectedCategoryIndex = $index;
+
+                break;
             }
-        } else {
-            // Attempt to automatically make it writable if it isn't
-            if (!is_writable($destinationDir)) {
-                try {
-                    @chmod($destinationDir, 0775);
-                } catch (\Exception $e) {
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | PRIORITY 2
+    |
+    | Current active country + default category
+    |--------------------------------------------------------------------------
+    */
+        if (!$selectedCategory) {
+
+            foreach ($categories as $index => $category) {
+
+                if (
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId
+                    &&
+                    !empty($category['is_default'])
+                ) {
+                    $selectedCategory = $category;
+                    $selectedCategoryIndex = $index;
+
+                    break;
                 }
             }
         }
 
-        // Capture up to 5 URLs
+        /*
+    |--------------------------------------------------------------------------
+    | Get URLs from selected/default category
+    |--------------------------------------------------------------------------
+    */
+        if ($selectedCategory) {
+
+            $selectedCategoryName = trim(
+                $selectedCategory['name'] ?? ''
+            );
+
+            $categoryUrls = $selectedCategory['urls'] ?? [];
+
+            $urls = array_values(
+                array_filter($categoryUrls, function ($url) {
+                    return !empty(trim($url));
+                })
+            );
+
+            $this->addConsoleLog(
+                "Using category: " . $selectedCategoryName
+            );
+
+            $this->addConsoleLog(
+                "Category URLs found: " . count($urls)
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | PRIORITY 3
+    |
+    | Global Default URLs
+    |
+    | These are stored in screenshot_urls
+    |--------------------------------------------------------------------------
+    */
+        if (empty($urls)) {
+
+            $defaultUrls = $business->screenshot_urls ?? [];
+
+            if (is_array($defaultUrls)) {
+
+                $urls = array_values(
+                    array_filter($defaultUrls, function ($url) {
+                        return !empty(trim($url));
+                    })
+                );
+            }
+
+            if (!empty($urls)) {
+
+                $usingGlobalDefault = true;
+
+                $this->addConsoleLog(
+                    "Using Global Default URLs."
+                );
+
+                $this->addConsoleLog(
+                    "Global Default URLs found: " . count($urls)
+                );
+            }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | No URLs available
+    |--------------------------------------------------------------------------
+    */
+        if (empty($urls)) {
+
+            $this->addConsoleLog(
+                "FAILED: No screenshot URLs available."
+            );
+
+            session()->flash(
+                'modal_error',
+                'No screenshot URLs are available for the current category, current country default, or Global Default.'
+            );
+
+            $this->dispatch(
+                'print-console-logs',
+                logs: $this->logCollector
+            );
+
+            $this->isTakingScreenshots = false;
+
+            return;
+        }
+
+        $this->addConsoleLog(
+            "Detected target URL list: " . implode(', ', $urls)
+        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | Prepare Screenshot Directory
+    |--------------------------------------------------------------------------
+    */
+        $generatedImages = [];
+
+        $destinationDir = public_path('business_images');
+
+        $this->addConsoleLog(
+            "Target public folder path: " . $destinationDir
+        );
+
+        if (!File::exists($destinationDir)) {
+
+            try {
+
+                File::makeDirectory(
+                    $destinationDir,
+                    0775,
+                    true
+                );
+
+                $this->addConsoleLog(
+                    "Created public folder: business_images"
+                );
+            } catch (\Exception $e) {
+
+                $this->addConsoleLog(
+                    "Failed to create folder: " . $e->getMessage()
+                );
+            }
+        } elseif (!is_writable($destinationDir)) {
+
+            try {
+                @chmod($destinationDir, 0775);
+            } catch (\Exception $e) {
+            }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Capture maximum 5 URLs
+    |--------------------------------------------------------------------------
+    */
         $urlsToCapture = array_slice($urls, 0, 5);
 
         foreach ($urlsToCapture as $idx => $targetUrl) {
+
             $targetUrl = trim($targetUrl);
-            if (empty($targetUrl)) continue;
+
+            if (empty($targetUrl)) {
+                continue;
+            }
 
             if (!preg_match("~^(?:f|ht)tps?://~i", $targetUrl)) {
                 $targetUrl = "https://" . $targetUrl;
             }
 
-            $filename = 'screenshot_' . $this->selectedBusinessId . '_' . time() . '_' . ($idx + 1) . '.jpg';
+            $filename =
+                'screenshot_' .
+                $this->selectedBusinessId .
+                '_' .
+                time() .
+                '_' .
+                ($idx + 1) .
+                '.jpg';
+
             $fullPath = $destinationDir . '/' . $filename;
 
-            $this->addConsoleLog("Attempting capture for target URL: " . $targetUrl);
-            $captured = $this->captureRealScreenshot($fullPath, $targetUrl);
+            $this->addConsoleLog(
+                "Attempting capture for target URL: " . $targetUrl
+            );
+
+            $captured = $this->captureRealScreenshot(
+                $fullPath,
+                $targetUrl
+            );
+
             if ($captured) {
-                $generatedImages[] = 'business_images/' . $filename;
-                $this->addConsoleLog("SUCCESS: Screenshot saved as business_images/" . $filename);
+
+                $generatedImages[] =
+                    'business_images/' . $filename;
+
+                $this->addConsoleLog(
+                    "SUCCESS: Screenshot saved as business_images/" . $filename
+                );
             } else {
-                $this->addConsoleLog("FAILED: Could not capture screenshot for: " . $targetUrl);
+
+                $this->addConsoleLog(
+                    "FAILED: Could not capture screenshot for: " .
+                        $targetUrl
+                );
             }
         }
-        $business = Business::findOrFail($this->selectedBusinessId);
 
-        $selectedCategoryName = trim($business->screenshot_display_category ?? '');
-
+        /*
+    |--------------------------------------------------------------------------
+    | Save Generated Screenshots
+    |--------------------------------------------------------------------------
+    */
         if (!empty($generatedImages)) {
 
             $maxImages = 5;
 
-            $categories = $business->screenshot_categories ?? [];
-
             /*
     |--------------------------------------------------------------------------
-    | 1. Business Edit me specific category selected hai
+    | Keep enough old images to stay within 5-image limit
     |--------------------------------------------------------------------------
     */
-            if (!empty($selectedCategoryName)) {
+            $oldImagesAllowed = max(
+                0,
+                $maxImages - count($generatedImages)
+            );
 
-                foreach ($categories as $index => $category) {
-
-                    if (
-                        strcasecmp(
-                            trim($category['name'] ?? ''),
-                            $selectedCategoryName
-                        ) === 0
-                    ) {
-
-                        $existingImages = $category['images'] ?? [];
-
-                        // Saare NEW screenshots rakho.
-                        // Sirf utne OLD screenshots rakho jitne 5 ki limit me fit ho sake.
-                        $oldImagesAllowed = max(
-                            0,
-                            $maxImages - count($generatedImages)
-                        );
-
-                        $existingImages = array_slice(
-                            $existingImages,
-                            0,
-                            $oldImagesAllowed
-                        );
-
-                        $finalImages = array_merge(
-                            $existingImages,
-                            $generatedImages
-                        );
-
-                        $categories[$index]['images'] = $finalImages;
-
-                        $this->currentImages = $finalImages;
-
-                        break;
-                    }
-                }
-
-                $business->screenshot_categories = $categories;
-                $business->save();
-
-                $this->newUploads = [];
-
-                $this->addConsoleLog(
-                    "Screenshots saved inside category: " .
-                        $selectedCategoryName
-                );
-            }
+            $existingImages = array_slice(
+                $this->currentImages,
+                0,
+                $oldImagesAllowed
+            );
 
             /*
     |--------------------------------------------------------------------------
-    | 2. Business Edit me koi specific category selected nahi hai
-    |    -> is_default = true wali category use hogi
+    | Add newly generated screenshots
     |--------------------------------------------------------------------------
-    */ else {
+    */
+            $finalImages = array_merge(
+                $existingImages,
+                $generatedImages
+            );
 
-                $defaultCategoryIndex = null;
+            /*
+    |--------------------------------------------------------------------------
+    | Maximum 5 images
+    |--------------------------------------------------------------------------
+    */
+            $finalImages = array_slice(
+                $finalImages,
+                0,
+                $maxImages
+            );
 
-                foreach ($categories as $index => $category) {
+            /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT:
+    | Do NOT save to DB here.
+    |--------------------------------------------------------------------------
+    */
+            $this->currentImages = $finalImages;
 
-                    if (!empty($category['is_default'])) {
-                        $defaultCategoryIndex = $index;
-                        break;
-                    }
-                }
+            /*
+    |--------------------------------------------------------------------------
+    | Remember newly generated files as pending
+    |--------------------------------------------------------------------------
+    */
+            $this->pendingScreenshotImages = array_merge(
+                $this->pendingScreenshotImages,
+                $generatedImages
+            );
 
-                if ($defaultCategoryIndex !== null) {
-
-                    $existingImages =
-                        $categories[$defaultCategoryIndex]['images'] ?? [];
-
-                    // Saare NEW screenshots rakho.
-                    // OLD screenshots sirf available space ke hisaab se rakho.
-                    $oldImagesAllowed = max(
-                        0,
-                        $maxImages - count($generatedImages)
-                    );
-
-                    $existingImages = array_slice(
-                        $existingImages,
-                        0,
-                        $oldImagesAllowed
-                    );
-
-                    $finalImages = array_merge(
-                        $existingImages,
-                        $generatedImages
-                    );
-
-                    $categories[$defaultCategoryIndex]['images'] = $finalImages;
-
-                    $business->screenshot_categories = $categories;
-                    $business->save();
-
-                    $this->currentImages = $finalImages;
-                    $this->newUploads = [];
-
-                    $this->addConsoleLog(
-                        "Screenshots saved inside default category: " .
-                            ($categories[$defaultCategoryIndex]['name'] ?? 'Default')
-                    );
-                }
-
-                /*
-        |--------------------------------------------------------------------------
-        | 3. Koi default category bhi nahi hai
-        |--------------------------------------------------------------------------
-        */ else {
-
-                    $business->business_images = array_slice(
-                        $generatedImages,
-                        0,
-                        $maxImages
-                    );
-
-                    $business->save();
-
-                    $this->currentImages = $business->business_images;
-                    $this->newUploads = [];
-
-                    $this->addConsoleLog(
-                        "No default category found. Screenshots saved as business images."
-                    );
-                }
-            }
+            $this->addConsoleLog(
+                "Screenshots generated but NOT saved to database yet."
+            );
 
             session()->flash(
                 'modal_success',
                 count($generatedImages) .
-                    ' website screenshot(s) generated successfully!'
+                    ' screenshot(s) generated. Click Save Changes to save them.'
             );
         } else {
-            $this->addConsoleLog("All screenshot capture attempts failed. Running self-diagnostics...");
-            $this->runScreenshotDiagnostics($urlsToCapture[0] ?? 'None');
-            session()->flash('modal_error', 'Could not capture screenshots. Please verify the URL or try uploading images manually.');
+
+            $this->addConsoleLog(
+                "All screenshot capture attempts failed. Running self-diagnostics..."
+            );
+
+            $this->runScreenshotDiagnostics(
+                $urlsToCapture[0] ?? 'None'
+            );
+
+            session()->flash(
+                'modal_error',
+                'Could not capture screenshots. Please verify the URL or try uploading images manually.'
+            );
         }
 
-        $this->addConsoleLog("Automated Screenshot capture process completed.");
-        $this->dispatch('print-console-logs', logs: $this->logCollector);
+        /*
+    |--------------------------------------------------------------------------
+    | Complete
+    |--------------------------------------------------------------------------
+    */
+        $this->addConsoleLog(
+            "Automated Screenshot capture process completed."
+        );
+
+        $this->dispatch(
+            'print-console-logs',
+            logs: $this->logCollector
+        );
+
         $this->isTakingScreenshots = false;
     }
-
-
     public function setDefaultScreenshotCategory($categoryName)
     {
         $business = Business::findOrFail($this->selectedBusinessId);
 
+        $categoryName = trim($categoryName);
+
         /*
     |--------------------------------------------------------------------------
-    | Only one category can be DEFAULT
+    | Check whether clicked category is already DEFAULT
     |--------------------------------------------------------------------------
     */
-        foreach ($this->screenshotCategories as $index => $category) {
+        $currentlyDefault = collect($this->screenshotCategories)
+            ->first(function ($category) use ($categoryName) {
+                return
+                    strcasecmp(
+                        trim($category['name'] ?? ''),
+                        $categoryName
+                    ) === 0
+                    &&
+                    !empty($category['is_default']);
+            });
 
-            $this->screenshotCategories[$index]['is_default'] =
-                strcasecmp(
-                    trim($category['name'] ?? ''),
-                    trim($categoryName)
-                ) === 0;
+        /*
+    |--------------------------------------------------------------------------
+    | If already DEFAULT -> remove DEFAULT
+    | Otherwise -> make it DEFAULT
+    |--------------------------------------------------------------------------
+    */
+        if ($currentlyDefault) {
+
+            foreach ($this->screenshotCategories as $index => $category) {
+
+                if (
+                    strcasecmp(
+                        trim($category['name'] ?? ''),
+                        $categoryName
+                    ) === 0
+                ) {
+                    $this->screenshotCategories[$index]['is_default'] = false;
+                }
+            }
+
+            $message = 'Default screenshot category removed successfully.';
+        } else {
+
+            /*
+        |--------------------------------------------------------------------------
+        | Only one category can be DEFAULT
+        |--------------------------------------------------------------------------
+        */
+            foreach ($this->screenshotCategories as $index => $category) {
+
+                $this->screenshotCategories[$index]['is_default'] =
+                    strcasecmp(
+                        trim($category['name'] ?? ''),
+                        $categoryName
+                    ) === 0;
+            }
+
+            $message = 'Default screenshot category updated successfully.';
         }
 
         /*
     |--------------------------------------------------------------------------
-    | IMPORTANT:
-    | Do NOT change screenshot_display_category here.
-    |
-    | If Business Edit is using "Default (No Category)",
-    | it will remain NULL and will automatically follow
-    | whichever category is currently DEFAULT.
+    | Save
     |--------------------------------------------------------------------------
     */
-
         $business->screenshot_categories = $this->screenshotCategories;
         $business->save();
 
         /*
     |--------------------------------------------------------------------------
-    | Find the newly selected DEFAULT category
+    | Refresh current images
     |--------------------------------------------------------------------------
     */
-        $defaultCategory = collect(
-            $this->screenshotCategories
-        )->first(function ($category) use ($categoryName) {
+        $defaultCategory = collect($this->screenshotCategories)
+            ->first(function ($category) {
+                return !empty($category['is_default']);
+            });
 
-            return strcasecmp(
-                trim($category['name'] ?? ''),
-                trim($categoryName)
-            ) === 0;
-        });
-
-        /*
-    |--------------------------------------------------------------------------
-    | Update current modal images immediately
-    |--------------------------------------------------------------------------
-    */
-        $this->currentImages = $defaultCategory['images'] ?? [];
-
-        /*
-    |--------------------------------------------------------------------------
-    | Do NOT set selectedScreenshotCategory here.
-    | That property belongs to the Screenshot URLs modal.
-    |--------------------------------------------------------------------------
-    */
+        $this->currentImages =
+            $defaultCategory['images'] ?? [];
 
         $this->dispatch(
             'show-toast',
             type: 'success',
-            message: 'Default screenshot category updated successfully.'
+            message: $message
         );
     }
 
@@ -646,6 +811,62 @@ class BusinessImages extends Component
         $this->showEditCategoryModal = true;
 
         $this->dispatch('show-edit-category-modal');
+    }
+
+
+    public function updatedSelectedScreenshotCountry($countryId)
+    {
+        $this->selectedScreenshotCategory = null;
+        $this->screenshotUrls = ['', '', '', '', ''];
+
+        if (empty($countryId)) {
+            $this->screenshotCategories = [];
+            return;
+        }
+
+        /*
+     * Load only categories assigned to selected country.
+     */
+        $this->screenshotCategories = collect(
+            $this->businessScreenshotCategories
+        )
+            ->filter(function ($category) use ($countryId) {
+                return (int) ($category['country_id'] ?? 0)
+                    === (int) $countryId;
+            })
+            ->values()
+            ->all();
+
+        /*
+     * No category for this country.
+     */
+        if (empty($this->screenshotCategories)) {
+            $this->selectedScreenshotCategory = null;
+            return;
+        }
+
+        /*
+     * Select DEFAULT category.
+     * If no default exists, select first category.
+     */
+        $selectedCategory = collect($this->screenshotCategories)
+            ->first(function ($category) {
+                return !empty($category['is_default']);
+            });
+
+        if (!$selectedCategory) {
+            $selectedCategory = $this->screenshotCategories[0];
+        }
+
+        $this->selectedScreenshotCategory =
+            $selectedCategory['name'] ?? null;
+
+        /*
+     * Load URLs of selected category.
+     */
+        $this->updatedSelectedScreenshotCategory(
+            $this->selectedScreenshotCategory
+        );
     }
 
     public function updateScreenshotCategory()
@@ -1057,147 +1278,213 @@ class BusinessImages extends Component
         imagedestroy($img);
     }
 
-public function saveImages()
-{
-    $business = Business::findOrFail($this->selectedBusinessId);
+    public function saveImages()
+    {
+        $business = Business::findOrFail(
+            $this->selectedBusinessId
+        );
 
-    // Current images after removing images with X button
-    $finalImages = $this->currentImages;
-
-    /*
+        /*
     |--------------------------------------------------------------------------
-    | Process newly uploaded manual images
+    | Final images currently visible in modal
     |--------------------------------------------------------------------------
     */
-    if (!empty($this->newUploads)) {
-        foreach ($this->newUploads as $file) {
+        $finalImages = array_slice(
+            $this->currentImages,
+            0,
+            5
+        );
 
-            $savedPath = $this->storeOptimizedImage($file);
+        /*
+    |--------------------------------------------------------------------------
+    | Process manually uploaded images
+    |--------------------------------------------------------------------------
+    */
+        if (!empty($this->newUploads)) {
 
-            if ($savedPath) {
-                $finalImages[] = $savedPath;
+            foreach ($this->newUploads as $file) {
+
+                $savedPath = $this->storeOptimizedImage($file);
+
+                if ($savedPath) {
+                    $finalImages[] = $savedPath;
+                }
             }
         }
-    }
 
-    /*
+        /*
     |--------------------------------------------------------------------------
-    | Limit total images to maximum 5
+    | Final hard limit
     |--------------------------------------------------------------------------
     */
-    $finalImages = array_slice($finalImages, 0, 5);
+        $finalImages = array_slice(
+            $finalImages,
+            0,
+            5
+        );
 
-    /*
+        /*
     |--------------------------------------------------------------------------
-    | Determine where these images should be saved
+    | Get active country
     |--------------------------------------------------------------------------
     */
-    $selectedCategoryName = trim(
-        $business->screenshot_display_category ?? ''
-    );
+        $activeLanguageId = session(
+            'business_active_language_' . $this->selectedBusinessId
+        );
 
-    $categories = $business->screenshot_categories ?? [];
+        if (empty($activeLanguageId)) {
+            $activeLanguageId = $business->languages_supported;
+        }
 
-    /*
+        $activeLanguage = \App\Models\Language::find(
+            $activeLanguageId
+        );
+
+        $activeCountryId = (int) (
+            $activeLanguage?->country_id ?? 0
+        );
+
+        $categories = $business->screenshot_categories ?? [];
+
+        /*
     |--------------------------------------------------------------------------
-    | 1. Specific category selected in Business Edit
+    | Priority 1: Selected category
     |--------------------------------------------------------------------------
     */
-    if (!empty($selectedCategoryName)) {
+        $categoryIndex = null;
 
         foreach ($categories as $index => $category) {
 
             if (
-                strcasecmp(
-                    trim($category['name'] ?? ''),
-                    $selectedCategoryName
-                ) === 0
+                (int) ($category['country_id'] ?? 0) === $activeCountryId
+                &&
+                !empty($category['is_selected'])
             ) {
-
-                $categories[$index]['images'] = $finalImages;
-
-                break;
-            }
-        }
-
-        $business->screenshot_categories = $categories;
-        $business->save();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 2. Business Edit is using "Default (No Category)"
-    |    -> Save images inside current DEFAULT category
-    |--------------------------------------------------------------------------
-    */
-    else {
-
-        $defaultCategoryIndex = null;
-
-        foreach ($categories as $index => $category) {
-
-            if (!empty($category['is_default'])) {
-
-                $defaultCategoryIndex = $index;
-
+                $categoryIndex = $index;
                 break;
             }
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | DEFAULT category found
-        |--------------------------------------------------------------------------
-        */
-        if ($defaultCategoryIndex !== null) {
+    |--------------------------------------------------------------------------
+    | Priority 2: Default category
+    |--------------------------------------------------------------------------
+    */
+        if ($categoryIndex === null) {
 
-            $categories[$defaultCategoryIndex]['images'] =
+            foreach ($categories as $index => $category) {
+
+                if (
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId
+                    &&
+                    !empty($category['is_default'])
+                ) {
+                    $categoryIndex = $index;
+                    break;
+                }
+            }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Priority 1 / 2: Save category images
+    |--------------------------------------------------------------------------
+    */
+        if ($categoryIndex !== null) {
+
+            $categories[$categoryIndex]['images'] =
                 $finalImages;
 
-            $business->screenshot_categories = $categories;
+            $business->screenshot_categories =
+                $categories;
 
             $business->save();
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | No DEFAULT category found
-        | -> Legacy business_images fallback
-        |--------------------------------------------------------------------------
-        */
-        else {
+    |--------------------------------------------------------------------------
+    | Priority 3: Global Default
+    |--------------------------------------------------------------------------
+    */ else {
 
-            $business->business_images = $finalImages;
+            $business->business_images =
+                $finalImages;
 
             $business->save();
         }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Delete images removed during this modal session
+    |--------------------------------------------------------------------------
+    */
+        $removedImages = array_diff(
+            $this->modalOriginalImages,
+            $finalImages
+        );
+
+        /*
+    | Don't delete files that are still used
+    | anywhere in screenshot categories.
+    */
+        foreach ($removedImages as $imagePath) {
+
+            $stillUsedInCategories = collect(
+                $categories
+            )
+                ->flatMap(function ($category) {
+                    return $category['images'] ?? [];
+                })
+                ->contains($imagePath);
+
+            $stillUsedAsGlobal =
+                in_array(
+                    $imagePath,
+                    $business->business_images ?? [],
+                    true
+                );
+
+            if (
+                !$stillUsedInCategories
+                &&
+                !$stillUsedAsGlobal
+            ) {
+
+                $fullPath = public_path($imagePath);
+
+                if (File::exists($fullPath)) {
+                    File::delete($fullPath);
+                }
+            }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Successful save
+    |--------------------------------------------------------------------------
+    */
+        $this->currentImages = $finalImages;
+
+        $this->modalOriginalImages = $finalImages;
+
+        $this->pendingScreenshotImages = [];
+
+        $this->newUploads = [];
+
+        $this->showImageModal = false;
+
+        $this->loadBusinesses();
+
+        $this->dispatch(
+            'hide-manage-images-modal'
+        );
+
+        $this->dispatch(
+            'show-toast',
+            type: 'success',
+            message: 'Business images updated successfully.'
+        );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update Livewire state
-    |--------------------------------------------------------------------------
-    */
-    $this->currentImages = $finalImages;
-    $this->newUploads = [];
-
-    $this->showImageModal = false;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Reload business list so the updated images appear immediately
-    |--------------------------------------------------------------------------
-    */
-    $this->loadBusinesses();
-
-    $this->dispatch('hide-manage-images-modal');
-
-    $this->dispatch(
-        'show-toast',
-        type: 'success',
-        message: 'Business images updated successfully.'
-    );
-}
 
     private function storeOptimizedImage($file)
     {
@@ -1219,50 +1506,133 @@ public function saveImages()
 
     public function abortImageModal()
     {
-        $this->showImageModal = false;
-        $this->currentImages = [];
+        /*
+    |--------------------------------------------------------------------------
+    | Delete ONLY newly generated pending screenshots
+    |--------------------------------------------------------------------------
+    */
+        foreach ($this->pendingScreenshotImages as $imagePath) {
+
+            $fullPath = public_path($imagePath);
+
+            if (File::exists($fullPath)) {
+                File::delete($fullPath);
+            }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Restore original DB images
+    |--------------------------------------------------------------------------
+    */
+        $this->currentImages = $this->modalOriginalImages;
+
+        $this->pendingScreenshotImages = [];
         $this->newUploads = [];
+
+        $this->showImageModal = false;
+
         $this->dispatch('hide-manage-images-modal');
     }
-
     // --- Screenshot URLs Modal Actions ---
 
     public function openUrlModal($businessId)
     {
+        $this->lang_id = getCurrentLanguageID();
+
         $business = Business::with('translations')->findOrFail($businessId);
 
         $this->selectedBusinessId = $businessId;
 
-        $this->selectedBusinessName = $business->translations->firstWhere('lang_id', $this->lang_id)->name
+        $activeLanguageId = $business->languages_supported;
+
+        $activeLanguage = \App\Models\Language::find($activeLanguageId);
+
+        $this->selectedBusinessName =
+            $business->translations->firstWhere('lang_id', $this->lang_id)?->name
             ?? $business->translations->first()?->name
             ?? 'Business #' . $businessId;
 
-        // Load screenshot categories from database
-        $this->screenshotCategories = $business->screenshot_categories ?? [];
+        /*
+|--------------------------------------------------------------------------
+| Load countries first
+|--------------------------------------------------------------------------
+*/
+        $this->screenshotCountries = Country::orderBy('name')->get();
 
-        // Find default category
-        $defaultCategory = collect($this->screenshotCategories)
-            ->firstWhere('is_default', true);
+        /*
+|--------------------------------------------------------------------------
+| Set active country
+|--------------------------------------------------------------------------
+*/
+        $this->selectedScreenshotCountry = $activeLanguage?->country_id
+            ? (int) $activeLanguage->country_id
+            : null;
 
-        if ($defaultCategory) {
-            $this->selectedScreenshotCategory = $defaultCategory['name'];
-            $urls = $defaultCategory['urls'] ?? [];
-        } else {
-            // Backward compatibility with existing screenshot_urls
-            $this->selectedScreenshotCategory = null;
+        // Reset modal state
 
-            $urls = [];
-            if (\Illuminate\Support\Facades\Schema::hasColumn('businesses', 'screenshot_urls')) {
-                $urls = $business->screenshot_urls ?? [];
-            }
+        $this->selectedScreenshotCategory = null;
+        $this->screenshotCategories = [];
+        $this->screenshotUrls = ['', '', '', '', ''];
+
+        // All categories
+        $this->businessScreenshotCategories =
+            $business->screenshot_categories ?? [];
+
+        // Only categories of active country
+        if ($this->selectedScreenshotCountry) {
+
+            $countryId = (int) $this->selectedScreenshotCountry;
+
+            $this->screenshotCategories = collect(
+                $this->businessScreenshotCategories
+            )
+                ->filter(function ($category) use ($countryId) {
+                    return (int) ($category['country_id'] ?? 0) === $countryId;
+                })
+                ->values()
+                ->all();
         }
 
-        // Ensure array has at least 5 slots
-        while (count($urls) < 5) {
-            $urls[] = '';
+        // Category priority:
+        // 1. Assigned category
+        // 2. Default category
+        // 3. First category
+        $selectedCategory = collect($this->screenshotCategories)
+            ->first(function ($category) {
+                return !empty($category['is_selected']);
+            });
+
+        if (!$selectedCategory) {
+            $selectedCategory = collect($this->screenshotCategories)
+                ->first(function ($category) {
+                    return !empty($category['is_default']);
+                });
         }
 
-        $this->screenshotUrls = $urls;
+        if (!$selectedCategory && !empty($this->screenshotCategories)) {
+            $selectedCategory = $this->screenshotCategories[0];
+        }
+
+        // Load selected category URLs
+        if ($selectedCategory) {
+
+            $this->selectedScreenshotCategory =
+                $selectedCategory['name'] ?? null;
+
+            $urls = $selectedCategory['urls'] ?? [];
+
+            $this->screenshotUrls = array_values(
+                array_filter($urls, function ($url) {
+                    return !empty(trim($url));
+                })
+            );
+        }
+
+        // Always keep 5 URL inputs
+        while (count($this->screenshotUrls) < 5) {
+            $this->screenshotUrls[] = '';
+        }
 
         $this->showUrlModal = true;
 
@@ -1270,55 +1640,125 @@ public function saveImages()
     }
 
 
+
+
     public function addScreenshotCategory()
     {
-        $categoryName = trim($this->newScreenshotCategory);
+        $this->validate([
+            'newScreenshotCategory' => 'required|string|max:100',
+            'selectedScreenshotCountry' => 'required',
+        ]);
 
-        // Empty category name
-        if (empty($categoryName)) {
+        $business = Business::findOrFail($this->selectedBusinessId);
+
+        $categoryName = trim($this->newScreenshotCategory);
+        $countryId = (int) $this->selectedScreenshotCountry;
+
+        $country = collect($this->screenshotCountries)
+            ->firstWhere('id', $countryId);
+
+        if (!$country) {
+            $this->addError(
+                'selectedScreenshotCountry',
+                'Please select a valid country / region.'
+            );
+
             return;
         }
 
-        // Prevent duplicate category names
-        foreach ($this->screenshotCategories as $category) {
-            if (strcasecmp($category['name'] ?? '', $categoryName) === 0) {
+        /*
+     * Load the actual categories saved in DB.
+     */
+        $categories = $business->screenshot_categories ?? [];
 
-                $this->addError(
-                    'newScreenshotCategory',
-                    'This category already exists.'
-                );
+        /*
+     * Check duplicate only for the selected country.
+     */
+        $exists = collect($categories)->contains(function ($category) use ($categoryName, $countryId) {
+            return (int) ($category['country_id'] ?? 0) === $countryId
+                && strcasecmp(
+                    trim($category['name'] ?? ''),
+                    $categoryName
+                ) === 0;
+        });
 
-                return;
-            }
+        if ($exists) {
+            $this->addError(
+                'newScreenshotCategory',
+                'This category already exists for the selected country / region.'
+            );
+
+            return;
         }
 
-        // Create new category
-        $newCategory = [
+        /*
+     * Add new category at TOP.
+     */
+        array_unshift($categories, [
             'name' => $categoryName,
+            'country_id' => $countryId,
+            'country_name' => $country->name,
             'urls' => [],
-            'is_default' => empty($this->screenshotCategories),
-        ];
-
-        // Add category to current Livewire state
-        array_unshift($this->screenshotCategories, $newCategory);
-        $this->categoryPage = 1;
-
-        // Save categories to database
-        $business = Business::findOrFail($this->selectedBusinessId);
-
-        $business->update([
-            'screenshot_categories' => $this->screenshotCategories,
+            'images' => [],
+            'is_default' => false,
         ]);
 
-        // Select newly added category
-        $this->selectedScreenshotCategory = $categoryName;
+        /*
+     * Save directly to DB.
+     */
+        $business->update([
+            'screenshot_categories' => $categories,
+        ]);
 
-        // Clear input field
+        /*
+     * Refresh Livewire state.
+     */
+        $this->businessScreenshotCategories = $categories;
+
+        $this->screenshotCategories = collect($categories)
+            ->filter(function ($category) use ($countryId) {
+                return (int) ($category['country_id'] ?? 0) === $countryId;
+            })
+            ->values()
+            ->all();
+
+        $this->categoryPage = 1;
         $this->newScreenshotCategory = '';
-        $this->resetErrorBag('newScreenshotCategory'); // clear after successful save too
 
-        // Success message
-        session()->flash('category_success', 'Screenshot category added successfully.');
+        $this->resetErrorBag('newScreenshotCategory');
+
+        $this->dispatch(
+            'show-toast',
+            type: 'success',
+            message: 'Screenshot category added successfully.'
+        );
+    }
+
+    public function loadCategoriesForSelectedCountry()
+    {
+        if (empty($this->selectedScreenshotCountry)) {
+            $this->screenshotCategories = [];
+            $this->selectedScreenshotCategory = null;
+            return;
+        }
+
+        $country = collect($this->businessScreenshotCategories ?? [])
+            ->firstWhere(
+                'country_id',
+                (int) $this->selectedScreenshotCountry
+            );
+
+        $this->screenshotCategories = $country['categories'] ?? [];
+
+        if (
+            $this->selectedScreenshotCategory &&
+            !collect($this->screenshotCategories)->contains(
+                'name',
+                $this->selectedScreenshotCategory
+            )
+        ) {
+            $this->selectedScreenshotCategory = null;
+        }
     }
 
 
@@ -1349,35 +1789,82 @@ public function saveImages()
 
     public function updatedSelectedScreenshotCategory($categoryName)
     {
-        // Find selected category
+        $countryId = (int) $this->selectedScreenshotCountry;
+        $categoryName = trim($categoryName);
+
+        // No country or No Category
+        if (empty($countryId) || empty($categoryName)) {
+            $this->screenshotUrls = ['', '', '', '', ''];
+            return;
+        }
+
+        /*
+     * First priority:
+     * Load temporary URLs entered by the user
+     * for this country + category.
+     */
+        if (
+            isset($this->screenshotUrlDrafts[$countryId][$categoryName])
+        ) {
+            $this->screenshotUrls =
+                $this->screenshotUrlDrafts[$countryId][$categoryName];
+
+            return;
+        }
+
+        /*
+     * Otherwise load saved URLs from the category.
+     */
         $category = collect($this->screenshotCategories)
-            ->first(function ($item) use ($categoryName) {
-                return ($item['name'] ?? '') === $categoryName;
+            ->first(function ($item) use ($categoryName, $countryId) {
+
+                return
+                    (int) ($item['country_id'] ?? 0) === $countryId
+                    &&
+                    strcasecmp(
+                        trim($item['name'] ?? ''),
+                        $categoryName
+                    ) === 0;
             });
 
-        // If category was not found
         if (!$category) {
             $this->screenshotUrls = ['', '', '', '', ''];
             return;
         }
 
-        // Load URLs belonging to this category
         $urls = $category['urls'] ?? [];
 
-        // Reset URL fields first
         $this->screenshotUrls = [];
 
-        // Put saved URLs into the fields
         foreach ($urls as $url) {
             if (!empty(trim($url))) {
                 $this->screenshotUrls[] = $url;
             }
         }
 
-        // Keep minimum 5 fields
         while (count($this->screenshotUrls) < 5) {
             $this->screenshotUrls[] = '';
         }
+    }
+
+    public function updatedScreenshotUrls($value, $key)
+    {
+        if (
+            empty($this->selectedScreenshotCountry) ||
+            empty($this->selectedScreenshotCategory)
+        ) {
+            return;
+        }
+
+        $countryId = (int) $this->selectedScreenshotCountry;
+        $categoryName = trim($this->selectedScreenshotCategory);
+
+        /*
+     * Keep the current URL fields as a temporary draft
+     * for the selected country + category.
+     */
+        $this->screenshotUrlDrafts[$countryId][$categoryName] =
+            $this->screenshotUrls;
     }
 
     public function confirmDeleteScreenshotCategory()
@@ -1449,32 +1936,93 @@ public function saveImages()
     {
         $business = Business::findOrFail($this->selectedBusinessId);
 
-        // Remove empty URLs
-        $cleanUrls = array_values(array_filter($this->screenshotUrls, function ($url) {
-            return !empty(trim($url));
-        }));
+        // Country is required
+        if (empty($this->selectedScreenshotCountry)) {
+            $this->addError(
+                'selectedScreenshotCountry',
+                'Please select a country / region.'
+            );
 
-        // If a category is selected, save URLs inside that category
-        if (!empty($this->selectedScreenshotCategory)) {
+            return;
+        }
 
-            foreach ($this->screenshotCategories as $index => $category) {
+        // Remove empty URL fields
+        $cleanUrls = array_values(
+            array_filter($this->screenshotUrls, function ($url) {
+                return !empty(trim($url));
+            })
+        );
 
-                if (($category['name'] ?? '') === $this->selectedScreenshotCategory) {
+        $countryId = (int) $this->selectedScreenshotCountry;
+        $categoryName = trim($this->selectedScreenshotCategory ?? '');
 
-                    $this->screenshotCategories[$index]['urls'] = $cleanUrls;
+        // Get existing categories from DB
+        $categories = $business->screenshot_categories ?? [];
 
+        /*
+     * ---------------------------------------------------------
+     * CATEGORY SELECTED
+     * ---------------------------------------------------------
+     */
+        if (!empty($categoryName)) {
+
+            $categoryIndex = null;
+
+            foreach ($categories as $index => $category) {
+
+                if (
+                    (int) ($category['country_id'] ?? 0) === $countryId
+                    &&
+                    strcasecmp(
+                        trim($category['name'] ?? ''),
+                        $categoryName
+                    ) === 0
+                ) {
+                    $categoryIndex = $index;
                     break;
                 }
             }
 
-            // Save all categories back to database
+            // Category was not found
+            if ($categoryIndex === null) {
+                $this->addError(
+                    'selectedScreenshotCategory',
+                    'Selected screenshot category was not found for this country / region.'
+                );
+
+                return;
+            }
+
+            // Save URLs inside the selected category
+            $categories[$categoryIndex]['urls'] = $cleanUrls;
+
+            // Save complete category array to DB
             $business->update([
-                'screenshot_categories' => $this->screenshotCategories,
+                'screenshot_categories' => $categories,
             ]);
+
+            // Refresh Livewire state
+            $this->businessScreenshotCategories = $categories;
+
+            $this->screenshotCategories = collect($categories)
+                ->filter(function ($category) use ($countryId) {
+                    return (int) ($category['country_id'] ?? 0) === $countryId;
+                })
+                ->values()
+                ->all();
+
+            // Remove temporary draft after successful save
+            unset(
+                $this->screenshotUrlDrafts[$countryId][$categoryName]
+            );
         } else {
 
-            // No category selected
-            // Keep the existing default screenshot_urls behaviour
+            /*
+         * ---------------------------------------------------------
+         * NO CATEGORY
+         * ---------------------------------------------------------
+         * Keep existing legacy screenshot_urls behaviour.
+         */
             $business->update([
                 'screenshot_urls' => $cleanUrls,
             ]);

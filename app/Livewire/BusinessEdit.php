@@ -276,15 +276,12 @@ class BusinessEdit extends Component
         $this->selectedFeatures = [];
         $this->ai_reference_url = '';
         $this->loadInitialData();
-
         if ($id) {
             $business = Business::with(['countries', 'websites', 'pricingOptions', 'features'])->findOrFail($id);
 
             $this->selectedPricingOptions = $business->pricingOptions->pluck('id')->toArray();
             $this->selectedFeatures = $business->features->pluck('id')->toArray();
             $this->selectedCountries = $business->countries->pluck('id')->toArray();
-
-            $this->screenshotCategories = $business->screenshot_categories ?? [];
 
             $this->countryWebsiteUrls = [];
 
@@ -300,10 +297,9 @@ class BusinessEdit extends Component
                 $this->business_images = $business->business_images;
             }
 
-
-            $this->screenshotCategories = $business->screenshot_categories ?? [];
-
-            $this->selectedScreenshotCategory = $business->screenshot_display_category ?? null;
+            $this->loadScreenshotCategoriesForLanguage(
+                $business->languages_supported
+            );
         }
 
         $this->countries = Country::with('language')->get();
@@ -331,6 +327,21 @@ class BusinessEdit extends Component
     public function updateTopicDescription($topicId, $value)
     {
         $this->topicDescriptions[$topicId] = $value;
+    }
+
+    public function updatedSelectedScreenshotCategory($categoryName)
+    {
+        $categoryName = trim($categoryName ?? '');
+
+        foreach ($this->screenshotCategories as $index => $category) {
+            $this->screenshotCategories[$index]['is_selected'] =
+                $categoryName !== ''
+                &&
+                strcasecmp(
+                    trim($category['name'] ?? ''),
+                    $categoryName
+                ) === 0;
+        }
     }
 
     public function translateBusiness($id)
@@ -1160,6 +1171,14 @@ class BusinessEdit extends Component
         $this->headquaters = $translation->headquarters ?? '';
         $this->year_found = $business->year_found;
         $this->languages_supported = $business->languages_supported;
+
+        session()->put(
+            'business_active_language_' . $this->businessId,
+            (int) $this->languages_supported
+        );
+        $this->loadScreenshotCategoriesForLanguage(
+            $this->languages_supported
+        );
         $this->support_options = $translation->support_options ?? '';
         $this->description_title = $translation->description_title ?? '';
         $this->business_description = $translation->description ?? '';
@@ -1366,7 +1385,25 @@ class BusinessEdit extends Component
 
             $this->updateBusinessData($business);
 
-            $business->screenshot_display_category = $this->selectedScreenshotCategory ?: null;
+            $categories = $business->screenshot_categories ?? [];
+
+            $selectedCategoryName = trim($this->selectedScreenshotCategory ?? '');
+
+            foreach ($categories as $index => $category) {
+
+                if ($selectedCategoryName === '') {
+                    $categories[$index]['is_selected'] = false;
+                    continue;
+                }
+
+                $categories[$index]['is_selected'] =
+                    strcasecmp(
+                        trim($category['name'] ?? ''),
+                        $selectedCategoryName
+                    ) === 0;
+            }
+
+            $business->screenshot_categories = $categories;
             $business->save();
 
             $this->updateBusinessTranslation($business);
@@ -1552,6 +1589,15 @@ class BusinessEdit extends Component
             return;
         }
 
+        session()->put(
+            'business_active_language_' . $this->businessId,
+            (int) $value
+        );
+
+        Business::where('id', $this->businessId)->update([
+            'languages_supported' => (int) $value,
+        ]);
+
         $business = Business::with('translations')->find($this->businessId);
 
         if (!$business) {
@@ -1603,8 +1649,65 @@ class BusinessEdit extends Component
                 'type' => 'info'
             ]);
         }
+
+        $this->loadScreenshotCategoriesForLanguage($value);
     }
 
+    protected function loadScreenshotCategoriesForLanguage($languageId)
+    {
+        if (!$this->businessId || empty($languageId)) {
+            $this->screenshotCategories = [];
+            $this->selectedScreenshotCategory = null;
+            return;
+        }
+
+        $business = Business::find($this->businessId);
+
+        if (!$business) {
+            $this->screenshotCategories = [];
+            $this->selectedScreenshotCategory = null;
+            return;
+        }
+
+        $allCategories = $business->screenshot_categories ?? [];
+
+        $language = Language::find($languageId);
+        $countryId = $language?->country_id;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Only show categories belonging to current country
+    |--------------------------------------------------------------------------
+    */
+        $countryCategories = collect($allCategories)
+            ->filter(function ($category) use ($countryId) {
+                return !empty($countryId)
+                    && (int) ($category['country_id'] ?? 0) === (int) $countryId;
+            })
+            ->values()
+            ->all();
+
+        /*
+    |--------------------------------------------------------------------------
+    | If current country has no categories,
+    | show NO categories.
+    |--------------------------------------------------------------------------
+    */
+        $this->screenshotCategories = $countryCategories;
+
+        /*
+    |--------------------------------------------------------------------------
+    | Find selected category ONLY inside current country
+    |--------------------------------------------------------------------------
+    */
+        $assignedCategory = collect($countryCategories)
+            ->first(function ($category) {
+                return !empty($category['is_selected']);
+            });
+
+        $this->selectedScreenshotCategory =
+            $assignedCategory['name'] ?? null;
+    }
     protected function getValidationRules()
     {
         return [

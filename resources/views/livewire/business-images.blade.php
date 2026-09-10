@@ -108,7 +108,7 @@
                         </td>
 
                         {{-- Right Column: 3 Dots Action Menu --}}
-                        <td class="nk-tb-col nk-tb-col-tools text-end">
+                        <td class="nk-tb-col nk-tb-col-tools text">
                             <ul class="nk-tb-actions gx-1 float-end">
                                 <li>
                                     <div class="dropdown">
@@ -265,16 +265,29 @@
     {{-- ========================================================================= --}}
     {{-- MODAL 2: SCREENSHOT URLS CONFIGURATION MODAL --}}
     {{-- ========================================================================= --}}
-    <div wire:ignore.self class="modal fade" id="screenshotUrlsModal" tabindex="-1" aria-labelledby="screenshotUrlsModalLabel" aria-hidden="true">
+    <div wire:ignore.self
+        class="modal fade"
+        id="screenshotUrlsModal"
+        tabindex="-1"
+        aria-labelledby="screenshotUrlsModalLabel"
+        aria-hidden="true">
 
         <div class="modal-dialog modal-lg modal-dialog-centered">
 
             <div class="modal-content shadow-lg border-0">
 
+                {{-- ============================================================= --}}
+                {{-- MODAL HEADER                                                   --}}
+                {{-- ============================================================= --}}
                 <div class="modal-header bg-light">
-                    <h5 class="modal-title fw-bold" id="screenshotUrlsModalLabel">
+
+                    <h5 class="modal-title fw-bold"
+                        id="screenshotUrlsModalLabel">
+
                         <em class="icon ni ni-link me-1 text-info"></em>
+
                         Configure Screenshot URLs - {{ $selectedBusinessName }}
+
                     </h5>
 
                     <button type="button"
@@ -284,54 +297,107 @@
                         aria-label="Close"
                         wire:click="closeModals">
                     </button>
+
                 </div>
 
 
+                {{-- ============================================================= --}}
+                {{-- MODAL BODY                                                     --}}
+                {{-- ============================================================= --}}
                 <div class="modal-body p-4">
 
-                    {{-- Screenshot Category --}}
+
+                    {{-- ========================================================= --}}
+                    {{-- COUNTRY / REGION                                           --}}
+                    {{-- ========================================================= --}}
                     <div class="mb-4">
 
                         <div class="d-flex align-items-center justify-content-between mb-2">
 
-                            <label for="screenshotCategory"
+                            <label for="screenshotCountry"
                                 class="form-label fw-semibold mb-0">
-                                Select Category <span class="text-danger">*</span>
+
+                                Country / Region
+                                <span class="text-danger">*</span>
+
                             </label>
 
+
+                            {{-- Manage Categories --}}
                             <button type="button"
-                                class="btn btn-outline-primary"
+                                class="btn btn-outline-primary btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#manageCategoriesModal">
 
                                 <em class="icon ni ni-setting me-1"></em>
+
                                 Manage Categories
 
                             </button>
 
                         </div>
 
+
+                        <select id="screenshotCountry"
+                            class="form-select"
+                            wire:key="screenshot-country-{{ $selectedBusinessId }}-{{ $selectedScreenshotCountry }}"
+                            wire:model.live="selectedScreenshotCountry">
+
+                            @foreach ($screenshotCountries as $country)
+                            <option value="{{ $country->id }}">
+                                {{ $country->name }}
+                            </option>
+                            @endforeach
+
+                        </select>
+
+                        <div class="form-text">
+                            Select the country or region for which the screenshot
+                            category and URLs should be configured.
+                        </div>
+
+                    </div>
+
+
+                    {{-- ========================================================= --}}
+                    {{-- SCREENSHOT CATEGORY                                         --}}
+                    {{-- ========================================================= --}}
+                    <div class="mb-4">
+
+                        <label for="screenshotCategory"
+                            class="form-label fw-semibold mb-2">
+
+                            Screenshot Category
+                            <span class="text-danger">*</span>
+
+                        </label>
+
+
                         <select id="screenshotCategory"
                             class="form-select"
+                            wire:key="screenshot-category-{{ $selectedBusinessId }}-{{ $selectedScreenshotCountry }}"
                             wire:model.live="selectedScreenshotCategory">
 
-                            <option value="">
-                                Default (No Category)
-                            </option>
+                            <option value="">Default URLs</option>
 
+                            @if (!empty($screenshotCategories))
                             @foreach ($screenshotCategories as $category)
-
                             <option value="{{ $category['name'] }}">
                                 {{ $category['name'] }}
-
                                 @if (!empty($category['is_default']))
                                 (Default)
                                 @endif
                             </option>
-
                             @endforeach
+                            @endif
 
                         </select>
+
+
+                        <div class="form-text">
+                            Select a screenshot category assigned to the selected
+                            country or region.
+                        </div>
 
                     </div>
 
@@ -343,41 +409,57 @@
                     </p>
 
 
-                    {{-- Existing URL Fields --}}
-                    @foreach ($screenshotUrls as $index => $url)
+                    {{-- ========================================================= --}}
+                    {{-- EXISTING URL FIELDS                                         --}}
+                    {{-- ========================================================= --}}
+                    <div class="mb-3">
 
-                    <div class="d-flex align-items-center gap-2 mb-2">
+                        @foreach ($screenshotUrls as $index => $url)
 
-                        <span class="badge bg-outline-primary px-2 py-1"
-                            style="min-width: 30px;">
-                            #{{ $index + 1 }}
-                        </span>
+                        <div class="d-flex align-items-center gap-2 mb-2">
 
-                        <input type="url"
-                            class="form-control"
-                            wire:model="screenshotUrls.{{ $index }}"
-                            placeholder="https://example.com/page-{{ $index + 1 }}">
+                            {{-- URL Number --}}
+                            <span class="badge bg-outline-primary px-2 py-1"
+                                style="min-width: 38px;">
 
-                        <button type="button"
-                            class="btn btn-sm btn-icon btn-danger"
-                            wire:click="removeUrlSlot({{ $index }})"
-                            title="Remove URL">
+                                #{{ $index + 1 }}
 
-                            <em class="icon ni ni-trash"></em>
+                            </span>
 
-                        </button>
+
+                            {{-- URL Input --}}
+                            <input type="url"
+                                class="form-control"
+                                wire:model.live="screenshotUrls.{{ $index }}"
+                                placeholder="https://example.com/page-{{ $index + 1 }}">
+
+
+                            {{-- Delete URL --}}
+                            <button type="button"
+                                class="btn btn-sm btn-icon btn-danger"
+                                wire:click="removeUrlSlot({{ $index }})"
+                                title="Remove URL">
+
+                                <em class="icon ni ni-trash"></em>
+
+                            </button>
+
+                        </div>
+
+                        @endforeach
 
                     </div>
 
-                    @endforeach
 
-
-                    {{-- Add URL --}}
+                    {{-- ========================================================= --}}
+                    {{-- ADD URL FIELD                                               --}}
+                    {{-- ========================================================= --}}
                     <button type="button"
-                        class="btn btn-sm btn-outline-primary mt-2"
+                        class="btn btn-sm btn-outline-primary"
                         wire:click="addUrlSlot">
 
                         <em class="icon ni ni-plus me-1"></em>
+
                         Add URL Field
 
                     </button>
@@ -385,6 +467,9 @@
                 </div>
 
 
+                {{-- ============================================================= --}}
+                {{-- MODAL FOOTER                                                   --}}
+                {{-- ============================================================= --}}
                 <div class="modal-footer bg-light">
 
                     <button type="button"
@@ -397,19 +482,27 @@
 
                     </button>
 
+
                     <button type="button"
                         class="btn btn-success"
                         wire:click="saveScreenshotUrls"
                         wire:loading.attr="disabled">
 
                         <span wire:loading.remove wire:target="saveScreenshotUrls">
+
                             <em class="icon ni ni-check me-1"></em>
+
                             Save URLs
+
                         </span>
 
+
                         <span wire:loading wire:target="saveScreenshotUrls">
+
                             <span class="spinner-border spinner-border-sm me-1"></span>
+
                             Saving...
+
                         </span>
 
                     </button>
@@ -421,7 +514,6 @@
         </div>
 
     </div>
-
 
 
 
@@ -447,8 +539,16 @@
                         id="manageCategoriesModalLabel">
 
                         <em class="icon ni ni-folder me-1 text-info"></em>
-
                         Manage Screenshot Categories
+
+                        @if (!empty($selectedScreenshotCountry))
+                        -
+                        {{
+            collect($screenshotCountries)
+                ->firstWhere('id', (int) $selectedScreenshotCountry)
+                ?->name
+        }}
+                        @endif
 
                     </h5>
 
@@ -464,6 +564,31 @@
 
                 <!-- Modal Body -->
                 <div class="modal-body p-4">
+
+                    {{-- Country / Region --}}
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold mb-2">
+                            Country / Region
+                        </label>
+
+                        <select
+                            class="form-select"
+                            wire:model.live="selectedScreenshotCountry">
+
+                            <option value="">
+                                Select Country / Region
+                            </option>
+
+                            @foreach ($screenshotCountries as $country)
+                            <option value="{{ $country->id }}">
+                                {{ $country->name }}
+                            </option>
+                            @endforeach
+
+                        </select>
+
+                    </div>
 
                     <!-- Categories Table -->
                     <div class="table-responsive">
@@ -486,6 +611,8 @@
                         true
                         );
                         @endphp
+
+
                         <table class="table table-bordered align-middle mb-3">
 
                             <thead class="table-light">
@@ -533,7 +660,11 @@
 
                                         @if (!empty($category['is_default']))
 
-                                        <span class="badge bg-success">
+                                        <span
+                                            class="badge bg-success"
+                                            style="cursor: pointer;"
+                                            wire:click="setDefaultScreenshotCategory('{{ $category['name'] }}')"
+                                            title="Click to remove default">
                                             DEFAULT
                                         </span>
 
@@ -650,8 +781,7 @@
 
                     </div>
 
-                    <!-- Add New Category -->
-                    <!-- Add New Category -->
+                    {{-- Add New Category --}}
                     <div class="mb-4">
 
                         <label class="form-label fw-bold mb-2">
@@ -700,6 +830,7 @@
                         @enderror
 
                     </div>
+
 
                     <!-- Information Note -->
                     <!-- <div class="alert alert-warning mt-3 mb-0">
