@@ -536,6 +536,9 @@
                                 <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
+
+                                 <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
+                                style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                             </div>
                         </div>
                     </div>
@@ -924,6 +927,7 @@
                             </div>
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
+                                
                                 <!-- Product Count and Sort -->
                                 @if(!empty($selectedFeatures) && count($selectedFeatures) > 0)
                                     <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
@@ -1256,19 +1260,33 @@
 
                                                     <!-- Price -->
                                                     @if ($startingPrice && !empty($item->is_affiliate))
-                                                    <div class="text-center mt-4 w-100"
-                                                        style="  padding: 15px 25px; border-radius: 8px;">
-                                                        <h6
-                                                            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-                                                            Starting price</h6>
-                                                        <h3
-                                                            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-                                                            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-                                                        </h3>
-                                                        <p style="font-size: 11px; margin-bottom: 0;">
-                                                            Flat Rate, Per One_time</p>
-                                                    </div>
-                                                    @endif
+    <div class="text-center mt-4 w-100"
+        style="padding: 15px 25px; border-radius: 8px;">
+
+        <h6
+            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+            Starting price
+        </h6>
+
+        <h3
+            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+        </h3>
+
+        @if (
+            !empty($startingPrice->additional_info) &&
+            !in_array(
+                strtoupper(trim((string) $startingPrice->additional_info)),
+                ['NA', 'N/A', 'NULL']
+            )
+        )
+            <p style="font-size: 11px; margin-bottom: 0;">
+                {{ $startingPrice->additional_info }}
+            </p>
+        @endif
+
+    </div>
+@endif
                                                 </div>
                                             </div>
                                         </div>

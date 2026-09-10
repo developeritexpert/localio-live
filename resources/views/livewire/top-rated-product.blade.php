@@ -956,26 +956,40 @@
                                                 }
                                                 @endphp
 
-                                                <!-- Price -->
-                                                @if ($startingPrice && !empty($item->is_affiliate))
-                                                <div class="text-center mt-4 w-100"
-                                                    style="  padding: 15px 25px; border-radius: 8px;">
-                                                    <h6
-                                                        style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-                                                        Starting price</h6>
-                                                    <h3
-                                                        style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-                                                        {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-                                                    </h3>
-                                                    <p style="font-size: 11px; margin-bottom: 0;">Flat
-                                                        Rate, Per One_time</p>
-                                                </div>
-                                                @endif
+                                               @if ($startingPrice && !empty($item->is_affiliate))
+    <div class="text-center mt-4 w-100"
+        style="padding: 15px 25px; border-radius: 8px;">
+
+        <h6
+            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+            Starting price
+        </h6>
+
+        <h3
+            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+        </h3>
+
+        @if (
+            !empty($startingPrice->additional_info) &&
+            !in_array(
+                strtoupper(trim((string) $startingPrice->additional_info)),
+                ['NA', 'N/A', 'NULL']
+            )
+        )
+            <p style="font-size: 11px; margin-bottom: 0;">
+                {{ $startingPrice->additional_info }}
+            </p>
+        @endif
+
+    </div>
+@endif
                                             </div>
                                         </div>
                                     </div>
                                     <div style="width: 100%;">
                                         <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
+                                        
                                     </div>
                                 </div>
                             </div>
