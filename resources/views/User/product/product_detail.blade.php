@@ -270,7 +270,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
                             @endif
                             <li class="breadcrumb-item active" aria-current="page">
-                                <span>{{ $business->translations->first()->name ?? '' }}</span>
+                                <span>{{  $business->translations->first()->name ?? '' }}</span>
                             </li>
                         </ol>
                     </nav>
@@ -2468,7 +2468,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
                                         <!-- Left side: Dropdown for current section -->
                                         <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
-                                            <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; border: 1px solid #e2e8f0; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
+                                            <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
                                                 <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
                                             </button>
                                             <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
@@ -2512,7 +2512,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             height: 7svh;
                                             background-color: #ffffff;
                                             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
-                                            z-index: 9999;
+                                            z-index: 9;
                                             padding-bottom: calc(10px + env(safe-area-inset-bottom));
                                             /* iOS safe area */
                                             padding-top: 10px;

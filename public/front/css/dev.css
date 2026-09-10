@@ -666,7 +666,6 @@
 
 .preview-thumb-item:hover {
     border-color: #94a3b8;
-    transform: translateY(-1px);
 }
 
 .preview-thumb-item.active {
@@ -720,7 +719,6 @@
 .slider-nav .slick-slide:hover {
     border-color: #007bff !important;
     box-shadow: 0 0 0 1px #007bff !important;
-    transform: translateY(-1px);
 }
 
 .asan-slider.asan-slider-btm .slick-track .slick-slide.active,

@@ -348,7 +348,6 @@
         background: #f8fafc !important;
         border-color: #94a3b8 !important;
         color: #002347 !important;
-        transform: translateY(-1px);
         box-shadow: 0 3px 8px rgba(0,0,0,0.07) !important;
     }
     .active-feat-chip:hover i {
