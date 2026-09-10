@@ -702,10 +702,34 @@ class ViewController extends Controller
             }
 
             if ($featureExists) {
+                $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
+                    ? $category->translations->first()
+                    : ($category->translations ?? $category->translation);
+
+                if (!$catTrans) {
+                    $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id)->first()
+                        ?? $category->categoryTranslations()->where('lang_id', 1)->first()
+                        ?? $category->categoryTranslations()->first();
+                }
+
+                $metaTitle = !empty($catTrans?->meta_title)
+                    ? $catTrans->meta_title
+                    : ($catTrans?->name ?? 'Category Page');
+                $metaDescription = !empty($catTrans?->meta_description)
+                    ? $catTrans->meta_description
+                    : strip_tags($catTrans?->description ?? '');
+
+                if (function_exists('format_meta_text')) {
+                    $metaTitle = format_meta_text($metaTitle, 'Category Page');
+                    $metaDescription = format_meta_text($metaDescription);
+                }
+
                 return view('User.category.category_detail', [
-                    'slug' => $category->translations->slug ?? $business_slug,
+                    'slug' => $catTrans?->slug ?? $business_slug,
                     'feature_slug' => $second_segment,
-                    'page' => 1
+                    'page' => 1,
+                    'metaTitle' => $metaTitle,
+                    'metaDescription' => $metaDescription,
                 ]);
             }
         }

@@ -80,13 +80,22 @@ class CategoryController extends Controller
            abort(404);
        }
 
-       $catTrans = $category->translations->first();
-       $metaTitle = !empty($catTrans->meta_title)
+       $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
+           ? $category->translations->first()
+           : ($category->translations ?? $category->translation);
+
+       if (!$catTrans) {
+           $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id)->first()
+               ?? $category->categoryTranslations()->where('lang_id', 1)->first()
+               ?? $category->categoryTranslations()->first();
+       }
+
+       $metaTitle = !empty($catTrans?->meta_title)
            ? $catTrans->meta_title
-           : ($catTrans->name ?? 'Category Page');
-       $metaDescription = !empty($catTrans->meta_description)
+           : ($catTrans?->name ?? 'Category Page');
+       $metaDescription = !empty($catTrans?->meta_description)
            ? $catTrans->meta_description
-           : strip_tags($catTrans->description ?? '');
+           : strip_tags($catTrans?->description ?? '');
 
        if (function_exists('format_meta_text')) {
            $metaTitle = format_meta_text($metaTitle, 'Category Page');
@@ -101,10 +110,49 @@ class CategoryController extends Controller
            return redirect()->to('/' . $lang_code . '/' . $category_slug . '/' . $feature_slug, 301);
        }
 
+       $lang_id = getCurrentLanguageID();
+       $category = Category::whereHas('translations', function ($query) use ($subcategory_slug, $lang_id) {
+           $query->where('slug', $subcategory_slug)->where('lang_id', $lang_id);
+       })->orWhereHas('translations', function ($query) use ($subcategory_slug) {
+           $query->where('slug', $subcategory_slug);
+       })->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])->first();
+
+       $metaTitle = null;
+       $metaDescription = null;
+
+
+       if ($category) {
+           $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
+               ? $category->translations->first()
+               : ($category->translations ?? $category->translation);
+
+           if (!$catTrans) {
+               $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id)->first()
+                   ?? $category->categoryTranslations()->where('lang_id', 1)->first()
+                   ?? $category->categoryTranslations()->first();
+           }
+
+           if ($catTrans) {
+               $metaTitle = !empty($catTrans->meta_title)
+                   ? $catTrans->meta_title
+                   : ($catTrans->name ?? 'Category Page');
+               $metaDescription = !empty($catTrans->meta_description)
+                   ? $catTrans->meta_description
+                   : strip_tags($catTrans->description ?? '');
+
+               if (function_exists('format_meta_text')) {
+                   $metaTitle = format_meta_text($metaTitle, 'Category Page');
+                   $metaDescription = format_meta_text($metaDescription);
+               }
+           }
+       }
+
        return view('User.category.category_detail', [
            'slug' => $subcategory_slug,
            'feature_slug' => $feature_slug,
-           'page' => 1
+           'page' => 1,
+           'metaTitle' => $metaTitle,
+           'metaDescription' => $metaDescription,
        ]);
      }
 

@@ -973,3 +973,102 @@ section.community-feedback-sec {
 .inner_part_boxx .part_1_boxs img {
     max-height: 100% !important;
 }
+
+/* ==========================================================
+   Review Card User Rating Breakdown Dropdown Box
+   (Matches Filter by rating & Sidebar detailed rating design)
+   ========================================================== */
+.user-rating-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    /* justify-content: center; */
+    padding: 0;
+    margin-left: 2px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    color: #475569;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+/* .user-rating-dropdown-btn:hover,
+.user-rating-dropdown-btn[aria-expanded=true] {
+    color: #002347;
+} */
+
+.user-rating-dropdown-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.user-rating-dropdown-btn[aria-expanded=true] svg {
+    transform: rotate(180deg);
+}
+
+.user-rating-breakdown-menu {
+    min-width: 270px;
+    max-width: 320px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 35, 71, 0.08);
+    padding: 16px;
+    z-index: 1050;
+    margin-top: 6px !important;
+}
+
+.user-rating-breakdown-menu .user-rating-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: #002655;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.user-rating-breakdown-menu .user-rating-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.user-rating-breakdown-menu .user-rating-row:last-child {
+    margin-bottom: 0;
+}
+
+.user-rating-breakdown-menu .user-rating-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #002347;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.user-rating-breakdown-menu .user-rating-progress-box {
+    flex-grow: 1;
+    max-width: 110px;
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.user-rating-breakdown-menu .user-rating-progress-fill {
+    height: 100%;
+    background-color: #2563eb;
+    border-radius: 999px;
+    transition: width 0.3s ease-in-out;
+}
+
+.user-rating-breakdown-menu .user-rating-score {
+    font-size: 13px;
+    font-weight: 600;
+    color: #002347;
+    min-width: 26px;
+    text-align: right;
+    flex-shrink: 0;
+}

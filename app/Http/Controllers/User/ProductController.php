@@ -157,6 +157,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
 
         $allReviewsQuery = Review::with([
             'user',
+            'ratings.criteria',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
         ])
             ->where('business_id', $business->id)
@@ -165,6 +166,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
 
         $ourReviewsQuery = Review::with([
             'user',
+            'ratings.criteria',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
         ])
             ->where('business_id', $business->id)
@@ -175,6 +177,7 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         $trustpilotReviewsQuery = Review::with([
             'user',
             'business',
+            'ratings.criteria',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
         ])
             ->where('business_id', $business->id)
@@ -185,6 +188,8 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
 
         $default_image = WebSetting::where('key','user_default_image')->value('value');
 
+        $criteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+
         if ($request->ajax()) {
             return view('User.product.partials.reviews_list', compact(
                 'business',
@@ -193,7 +198,8 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
                 'trustpilotReviews',
                 'default_image',
                 'averageRating',
-                'ratingCount'
+                'ratingCount',
+                'criteria'
             ))->render();
         }
 
