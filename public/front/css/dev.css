@@ -1174,3 +1174,136 @@ html[lang*="el"] body {
         margin-top: 135px !important;
     }
 }
+
+/* ==========================================================
+   Product Detail Preview Image Slider: Full Width & Amazon-Style Mobile Dots
+   ========================================================== */
+
+/* 1. Slider-for container: display block with 100% width so image fills the column */
+.slider-for,
+.asan-slider.slider-for,
+.business-main-preview {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+}
+
+.slider-for .slick-list {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.slider-for .preview-main-display {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+}
+
+/* 2. By default (website/desktop view), dots are hidden so desktop view is untouched */
+.slider-for .slick-dots {
+    display: none !important;
+}
+
+/* 3. Mobile View: Hide thumbnails, full width edge-to-edge image, dots below image */
+@media (max-width: 991px) {
+    /* Hide the thumbnail preview images row on mobile */
+    .asan-slider.asan-slider-btm,
+    .asan-slider.asan-slider-btm.slider-nav,
+    .business-preview-thumbnails {
+        display: none !important;
+    }
+
+    /* Reset left/right padding on mobile so preview image covers full width cleanly */
+    .asan-slider.slider-for,
+    .slider-for.business-main-preview {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .slider-for .slick-list {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .slider-for .preview-main-display {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+
+    /* Amazon-style clean pagination dots placed directly BELOW the image */
+    .slider-for .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        margin: 14px auto 0 auto !important;
+        list-style: none !important;
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        z-index: 10 !important;
+    }
+
+    .slider-for .slick-dots li {
+        position: relative !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 8px !important;
+        height: 8px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+    }
+
+    .slider-for .slick-dots li button {
+        display: block !important;
+        width: 8px !important;
+        height: 8px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 50% !important;
+        background-color: #cbd5e1 !important;
+        border: none !important;
+        outline: none !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        color: transparent !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    /* Remove default slick pseudo-element font bullet */
+    .slider-for .slick-dots li button:before {
+        display: none !important;
+        content: "" !important;
+    }
+
+    /* Active dot indicator: dark and highlighted */
+    .slider-for .slick-dots li.slick-active button {
+        background-color: #002347 !important;
+        transform: scale(1.25) !important;
+    }
+
+    /* Hide dots container if only 1 dot exists */
+    .slider-for .slick-dots:has(li:only-child),
+    .slider-for .slick-dots li:only-child {
+        display: none !important;
+    }
+}

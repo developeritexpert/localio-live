@@ -668,7 +668,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <div class="is-asana-rgt">
                                 <div class="row is-asan-slider">
 
-                                    <div class="col-md-12 asan-slider slider-for business-main-preview mb-3" style="padding-left: 20px !important;">
+                                    <div class="col-md-12 asan-slider slider-for business-main-preview mb-3">
                                         @foreach ($images as $index => $image)
                                         @php
                                         $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
@@ -2879,7 +2879,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             fade: true,
             adaptiveHeight: true,
             accessibility: false,
-            focusOnChange: false
+            focusOnChange: false,
+            dots: true
         });
 
         // Initialize thumbnail slider (small images)
