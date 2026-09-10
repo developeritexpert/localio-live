@@ -50,6 +50,8 @@ class CategoryTranslation extends Model
         'faq_subtext',
         'faq_about_headline',
         'faq_about_description',
+        'faq_explore_headline',
+        'faq_explore_subtext',
         'faq_meta_title',
         'faq_meta_description'
     ];

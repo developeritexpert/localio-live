@@ -841,10 +841,6 @@ div#howRankingsWorkModal .circle_11 {
     border-color: var(--color-orange-hover);
 }
 
-.review_card {
-    transition: none;
-}
-
 .xclusve-pack {
     transition: none;
 }
@@ -4113,9 +4109,6 @@ textarea#message {
         right: -10px;
     }
 
-    .most-popular-wrp h3 {
-        margin-bottom: 20px;
-    }
 
     .ms_dv .mst_wrp {
         padding: 25px;
@@ -7514,7 +7507,8 @@ textarea#message {
     .top-rated-heading-sec .breadcrumb-item a,
     .breadcrumb-item + .breadcrumb-item::before,
     .breadcrumb-item + .breadcrumb-item {
-        padding: 0 2px !important;
+        padding: 0 !important;
+        margin-right: 3px;
     }
 
     .sorting {
@@ -8891,7 +8885,7 @@ textarea#message {
         gap: 10px;
     }
 
-    .ask-community-banner div h3 {
+    .ask-community-banner div h2 {
         font-size: 18px !important;
     }
 

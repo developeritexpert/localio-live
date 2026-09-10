@@ -17,15 +17,14 @@
     }
     .table-business-link:hover {
         background-color: #e9edf5 !important;
+        text-decoration: none !important;
+
     }
-    .comparison-box {
-        transition: all 0.2s ease-in-out;
-    }
+  
     .comparison-box:hover {
         background-color: #ffffff !important;
         border-color: #cbd5e1 !important;
         box-shadow: 0 6px 18px rgba(0, 35, 71, 0.08) !important;
-        transform: translateY(-2px);
     }
     .cat-compare-item {
         padding: 10px 16px;
@@ -350,7 +349,6 @@
         background: #f8fafc !important;
         border-color: #94a3b8 !important;
         color: #002347 !important;
-        transform: translateY(-1px);
         box-shadow: 0 3px 8px rgba(0,0,0,0.07) !important;
     }
     .active-feat-chip:hover i {
@@ -366,6 +364,18 @@
         transition: color 0.15s ease !important;
     }
     .clear-features-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline !important;
+    }
+    .view-all-category-link {
+        color: #007bff !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-decoration: underline !important;
+        cursor: pointer !important;
+        transition: color 0.15s ease !important;
+    }
+    .view-all-category-link:hover {
         color: #0056b3 !important;
         text-decoration: underline !important;
     }
@@ -548,7 +558,7 @@
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
                                     <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
-                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
+                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
@@ -952,55 +962,78 @@
                             </div>
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
-                                <!-- Selected Features with Locked Chip & Category Redirect Link (Image 1) -->
-                                <div class="active-feature-chips-container mb-3">
-                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2">
-                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+                                <!-- Browsing Fixed Feature & Selected Secondary Features (Image 2) -->
+                                @php
+                                    $currentLocale = request()->segment(1) ?? app()->getLocale() ?? 'en-us';
+                                    $catTrans = $category->translations ?? $category->translation;
+                                    if (!$catTrans && method_exists($category, 'categoryTranslations')) {
+                                        $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id ?? getCurrentLanguageID())->first();
+                                    }
+                                    $rawCatName = $catTrans->name ?? ($category->name ?? 'Category');
+                                    $catSlug = $catTrans->slug ?? ($category->slug ?? request()->segment(2));
 
-                                        {{-- Locked Feature Chip (Cannot be removed) --}}
-                                        @if($lockedFeatureId)
-                                            <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="Locked primary feature">
-                                                <span style="font-size: 13px;">🔒</span>
-                                                <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
-                                            </span>
-                                        @endif
-
-                                        {{-- Secondary Selected Features --}}
-                                        @php $extraFeaturesCount = 0; @endphp
-                                        @foreach($availableFeatures ?? [] as $fItem)
-                                            @if((int)$fItem->id !== (int)$lockedFeatureId && in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? [])))
-                                                @php
-                                                    $extraFeaturesCount++;
-                                                    $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
-                                                    $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
-                                                @endphp
-                                                <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
-                                                    <span>{{ $fName }}</span>
-                                                    <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
-                                                </button>
-                                            @endif
-                                        @endforeach
-
-                                        @if($extraFeaturesCount > 0)
-                                            <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
-                                        @endif
-                                    </div>
-
-                                    {{-- Navigation Link: Remove "[Feature Name]" and view all --}}
-                                    @php
-                                        $catSlug = $category->translations?->slug ?? ($category->slug ?? request()->segment(2));
-                                        if ($category->parent && $category->parent_id) {
-                                            $parentSlug = $category->parent->translations?->slug ?? ($category->parent->slug ?? request()->segment(2));
-                                            $baseCatUrl = url('/' . (request()->segment(1) ?? 'en-us') . '/' . $parentSlug . '/' . $catSlug);
+                                    if ($category->parent && $category->parent_id) {
+                                        $parentTrans = $category->parent->translations ?? $category->parent->translation;
+                                        $parentSlug = $parentTrans->slug ?? ($category->parent->slug ?? '');
+                                        if (!empty($parentSlug)) {
+                                            $baseCatUrl = url('/' . $currentLocale . '/' . $parentSlug . '/' . $catSlug);
                                         } else {
-                                            $baseCatUrl = url('/' . (request()->segment(1) ?? 'en-us') . '/' . $catSlug);
+                                            $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
                                         }
-                                    @endphp
-                                    <div class="mt-2 text-start">
-                                        <a href="{{ $baseCatUrl }}" class="remove-view-all-link d-inline-flex align-items-center gap-1" style="color: #007bff; font-size: 13px; text-decoration: underline; font-weight: 500;">
-                                            Remove “{{ $lockedFeatureName }}” and view all
+                                    } else {
+                                        $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+                                    }
+
+                                    $firstWord = explode(' ', trim($rawCatName))[0] ?? '';
+                                    if (strlen($firstWord) <= 4 && strtoupper($firstWord) === $firstWord && ctype_alpha($firstWord)) {
+                                        $formattedCatName = $rawCatName;
+                                    } else {
+                                        $formattedCatName = mb_strtolower($rawCatName);
+                                    }
+
+                                    $secondarySelectedFeatures = [];
+                                    foreach($availableFeatures ?? [] as $fItem) {
+                                        if((int)$fItem->id !== (int)$lockedFeatureId && in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? []))) {
+                                            $secondarySelectedFeatures[] = $fItem;
+                                        }
+                                    }
+                                @endphp
+
+                                <div class="active-feature-chips-container mb-3">
+                                    {{-- Row 1: Browsing: [Fixed Feature Chip] [View all {category}] --}}
+                                    @if($lockedFeatureName)
+                                    <div class="browsing-feature-row d-flex align-items-center flex-wrap gap-2 mb-2">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Browsing:</span>
+
+                                        <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="{{ $lockedFeatureName }}">
+                                            <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
+                                        </span>
+
+                                        <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style="color: #007bff; font-size: 13px; text-decoration: underline; font-weight: 500; margin-left: 4px;">
+                                            View all {{ $formattedCatName }}
                                         </a>
                                     </div>
+                                    @endif
+
+                                    {{-- Row 2: Selected features: [Secondary Feature Chips] Clear features --}}
+                                    @if(count($secondarySelectedFeatures) > 0)
+                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mt-1">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+
+                                        @foreach($secondarySelectedFeatures as $fItem)
+                                            @php
+                                                $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
+                                            @endphp
+                                            <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                                <span>{{ $fName }}</span>
+                                                <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
+                                            </button>
+                                        @endforeach
+
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
+                                    </div>
+                                    @endif
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1397,6 +1430,44 @@
                             @else
 
                             <div class="auto-choice-rgt">
+                                <!-- Browsing & Selected Features Chips (Image 2) -->
+                                <div class="active-feature-chips-container mb-3">
+                                    {{-- Row 1: Browsing: [Fixed Feature Chip] [View all {category}] --}}
+                                    @if($lockedFeatureName)
+                                    <div class="browsing-feature-row d-flex align-items-center flex-wrap gap-2 mb-2">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Browsing:</span>
+
+                                        <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="{{ $lockedFeatureName }}">
+                                            <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
+                                        </span>
+
+                                        <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style="color: #007bff; font-size: 13px; text-decoration: underline; font-weight: 500; margin-left: 4px;">
+                                            View all {{ $formattedCatName }}
+                                        </a>
+                                    </div>
+                                    @endif
+
+                                    {{-- Row 2: Selected features: [Secondary Feature Chips] Clear features --}}
+                                    @if(count($secondarySelectedFeatures) > 0)
+                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mt-1">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+
+                                        @foreach($secondarySelectedFeatures as $fItem)
+                                            @php
+                                                $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
+                                            @endphp
+                                            <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                                <span>{{ $fName }}</span>
+                                                <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
+                                            </button>
+                                        @endforeach
+
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
+                                    </div>
+                                    @endif
+                                </div>
+
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
@@ -1536,7 +1607,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1555,7 +1626,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1747,7 +1818,7 @@
                 </div>
             </section>
             <!-- community section -->
-            <section class="community-feedback-sec">
+            <section class="community-feedback-sec border_bt">
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section">
@@ -1953,9 +2024,9 @@
                 @endphp
                 <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
-                        <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
                             {{ $compToolHeadline }}
-                        </h3>
+                        </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #64748b; font-size: 14px; margin: 0;">
                                 {!! $compToolSubtext !!}
@@ -2355,13 +2426,13 @@
 
         <!-- Dynamic Content Sections (H2 & H3 from Category Feature Content) -->
         @if(!empty($textSections) && is_array($textSections) && count($textSections) > 0)
-        <section class="category-text-sections-sec py-5" style="background: #ffffff;">
+        <section class="category-text-sections-sec py-5" style="background: #fdfdfd;">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-10 col-xl-9 mx-auto">
+                    <div class="">
                         @foreach($textSections as $section)
                             @if(!empty($section['h2_title']) || !empty($section['h2_text']))
-                            <div class="content-section-block mb-5 p-4 rounded-3 border bg-white shadow-sm" style="border-color: #e2e8f0 !important;">
+                            <div class="content-section-block mb-5 " style="border-color: #e2e8f0 !important;">
                                 @if(!empty($section['h2_title']))
                                 <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 14px;">
                                     {{ $section['h2_title'] }}
@@ -2375,7 +2446,7 @@
                                 @endif
 
                                 @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
-                                    <div class="sub-sections-wrapper mt-3 ps-3 border-start border-3 border-primary">
+                                    <div class="sub-sections-wrapper mt-3">
                                         @foreach($section['sub_sections'] as $sub)
                                             <div class="sub-section-item mb-4">
                                                 @if(!empty($sub['h3_title']))
@@ -2433,13 +2504,13 @@
                         <div class="accordion" id="categoryFaqAccordion">
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                <p class="accordion-header" id="headingFaq{{ $fIndex }}">
+                                <h3 class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                         {{ $faq['question'] }}
                                     </button>
-                                </p>
+                                </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>

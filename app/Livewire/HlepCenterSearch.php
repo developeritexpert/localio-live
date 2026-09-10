@@ -15,7 +15,7 @@ class HlepCenterSearch extends Component
     public $results = [];
     public $placeholder;
 
-    public function mount($placeholder = 'Search for brands, products or services ')
+    public function mount($placeholder = 'Search digital products & services')
     {
         $this->placeholder = $placeholder;
     }

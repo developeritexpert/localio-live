@@ -81,7 +81,7 @@
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec business_reviews_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" style="background-color: #f7f9fb;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4" style="background-color: #f7f9fb;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     @if($parentCatName)
@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Pros</p>
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important; color: #1e3050;">Pros</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -224,7 +224,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 18px !important; color: #1e3050;">Cons</p>
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important; color: #1e3050;">Cons</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
                                                 @foreach($aggregatedCons as $con)
@@ -282,7 +282,7 @@
                                                 @php $translation = $faq->translations->first(); @endphp
                                                 @if ($translation)
                                                     <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                        <p class="accordion-header" id="faqHeading{{ $index }}">
+                                                        <h3 class="accordion-header" id="faqHeading{{ $index }}">
                                                             <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
                                                                 type="button" data-bs-toggle="collapse"
                                                                 data-bs-target="#faqCollapse{{ $index }}"
@@ -291,7 +291,7 @@
                                                                 style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                                 <span>{{ $translation->question }}</span>
                                                             </button>
-                                                        </p>
+                                                        </h3>
                                                         <div id="faqCollapse{{ $index }}"
                                                             class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                             aria-labelledby="faqHeading{{ $index }}"

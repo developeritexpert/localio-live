@@ -124,6 +124,9 @@
     @endif
     @livewireStyles
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
     <!-- Custom Developer CSS -->
     <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?{{ time() }}">
@@ -1108,6 +1111,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const mobileSearch = document.getElementById('mobile-search-container');
+        const mobileCatNav = document.getElementById('mobile-cat-nav-bar');
         if (mobileSearch && mobileSearch.classList.contains('home-mobile-search')) {
             window.addEventListener('scroll', function() {
                 const heroSection = document.querySelector('.banner_sec') || document.querySelector('.hero_area');
@@ -1115,8 +1119,10 @@
                 
                 if (window.scrollY > threshold) {
                     mobileSearch.classList.add('show-search');
+                    if (mobileCatNav) mobileCatNav.classList.add('show-search');
                 } else {
                     mobileSearch.classList.remove('show-search');
+                    if (mobileCatNav) mobileCatNav.classList.remove('show-search');
                 }
             });
         }
@@ -2519,6 +2525,7 @@
         color: #111 !important;
         font-weight: 700 !important;
         margin-bottom: 12px !important;
+        margin-top: 8px;
         letter-spacing: 0.5px !important;
     }
 
@@ -2532,7 +2539,6 @@
 
     .sidebar-section-title a:hover {
         color: #f26522 !important;
-        text-decoration: underline !important;
     }
 
     .sidebar-menu-list {
@@ -3081,7 +3087,6 @@
     }
 
     .country-modal-header {
-        border-bottom: 1px solid #edf2f7;
         padding-bottom: 12px;
         margin-bottom: 18px;
     }
@@ -3166,7 +3171,6 @@
             background: #ffffff !important;
             z-index: 10 !important;
             padding-top: 6px !important;
-            padding-bottom: 12px !important;
         }
 
         .ft-btm-rgt .select-menu .options li {

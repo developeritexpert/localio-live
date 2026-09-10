@@ -8,7 +8,7 @@
 }
 
 .top-rated-heading-block h1 {
-    font-size: 28px !important;
+    font-size: 34px !important;
     font-weight: 700;
     padding: 0 !important;
     margin-bottom: 4px !important;
@@ -16,18 +16,12 @@
 }
 
 .top-rated-heading-block {
-    /* border-bottom: 2px solid #e8eef6; */
     margin-bottom: 15px;
 }
 
-/* section.top-automotive-sec.top_rate_pg.light {
-           margin-top: 120px !important;
-        } */
-/* View details button – match height of Visit website */
 .auto-choice-btn .cta_outline {
     padding: 8px 16px !important;
     height: auto !important;
-    /* min-height: 44px !important; */
     box-sizing: border-box !important;
     line-height: 1.5 !important;
 }
@@ -48,21 +42,6 @@
 }
 
 @media (max-width: 768px) {
-
-    /* .automotive-card {
-                padding-bottom: 20px !important;
-            } */
-    /* .automotive-card .blue-chkbox {
-                position: relative !important;
-                bottom: auto !important;
-                right: auto !important;
-                border-radius: 8px !important;
-                display: block !important;
-                width: 100% !important;
-                text-align: center !important;
-                margin-top: 15px !important;
-                padding: 12px 15px !important;
-            } */
     .automotive-card .blue-chkbox label {
         display: inline-flex !important;
         align-items: center !important;
@@ -92,9 +71,6 @@
         display: block !important;
     }
 
-    /* .top-automotive-sec.top_rate_pg {
-            padding-top: 160px !important;
-        } */
     .top-rated-heading-block {
         /* margin-left: 27%; */
         margin-bottom: 24px;
@@ -103,12 +79,6 @@
     }
 
     .top-rated-heading-block h1 {
-        /* font-size: 34px;
-            font-weight: 800;
-            color: #002347;
-            margin: 0 0 5px 0;
-            letter-spacing: -0.5px;
-            line-height: 1.2; */
         font-size: 28px !important;
         font-weight: 700;
         padding: 0 !important;
@@ -125,10 +95,6 @@
 }
 
 @media (max-width: 768px) {
-
-    /* .top-automotive-sec.top_rate_pg {
-                padding-top: 110px !important;
-            } */
     .top-rated-heading-block h1 {
         font-size: 24px;
     }
@@ -234,7 +200,7 @@
     color: #002347;
 }
 
-.your-comp-pill>* {
+.your-comp-pill > * {
     pointer-events: none;
 }
 
@@ -666,7 +632,6 @@
 
 .preview-thumb-item:hover {
     border-color: #94a3b8;
-    transform: translateY(-1px);
 }
 
 .preview-thumb-item.active {
@@ -720,7 +685,6 @@
 .slider-nav .slick-slide:hover {
     border-color: #007bff !important;
     box-shadow: 0 0 0 1px #007bff !important;
-    transform: translateY(-1px);
 }
 
 .asan-slider.asan-slider-btm .slick-track .slick-slide.active,
@@ -804,19 +768,6 @@
     color: #06498b !important;
 }
 
-/* Business Table Links */
-.table-business-link:hover .table-business-name {
-    text-decoration: underline;
-}
-
-.table-business-link svg {
-    transition: transform 0.15s ease;
-}
-
-.table-business-link:hover svg {
-    transform: translate(1px, -1px);
-}
-
 .business_faq_sec,
 .business_reviews_sec,
 .cat_main_page_sec {
@@ -897,8 +848,16 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide,
-.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide.slick-current,
+.is-asan-slider
+    .slider-for
+    .slick-list.draggable
+    .slick-track
+    .asan-slider-inr.slick-slide,
+.is-asan-slider
+    .slider-for
+    .slick-list.draggable
+    .slick-track
+    .asan-slider-inr.slick-slide.slick-current,
 .slider-for .slick-slide,
 .slider-for .slick-current,
 .slider-for .asan-slider-inr,
@@ -935,7 +894,6 @@ section.community-feedback-sec {
 
 .cat-faq-sec {
     background: #fdfdfd;
-    border-top: 1px solid #e2e8f0;
 }
 
 /* Country / Region Selection Modal Close Button */
@@ -958,7 +916,9 @@ section.community-feedback-sec {
     line-height: 1 !important;
     outline: none !important;
     box-shadow: none !important;
-    transition: background 0.2s ease, color 0.2s ease !important;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease !important;
 }
 
 .close-country-menu:hover {
@@ -966,10 +926,379 @@ section.community-feedback-sec {
     color: #374151 !important;
 }
 
-.inner_part_boxx .part_2_boxs h3.big-bld {
-    color: #fdfdfd !important;
-}
-
 .inner_part_boxx .part_1_boxs img {
     max-height: 100% !important;
+}
+
+/* ==========================================================
+   Review Card User Rating Breakdown Dropdown Box
+   (Matches Filter by rating & Sidebar detailed rating design)
+   ========================================================== */
+.user-rating-dropdown-btn {
+    display: inline-flex;
+    align-items: center;
+    /* justify-content: center; */
+    padding: 0;
+    margin-left: 2px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    color: #475569;
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+/* .user-rating-dropdown-btn:hover,
+.user-rating-dropdown-btn[aria-expanded=true] {
+    color: #002347;
+} */
+
+.user-rating-dropdown-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.user-rating-dropdown-btn[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+}
+
+.user-rating-breakdown-menu {
+    min-width: 270px;
+    max-width: 320px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 35, 71, 0.08);
+    padding: 16px;
+    z-index: 1050;
+    margin-top: 6px !important;
+}
+
+.user-rating-breakdown-menu .user-rating-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: #002655;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.user-rating-breakdown-menu .user-rating-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.user-rating-breakdown-menu .user-rating-row:last-child {
+    margin-bottom: 0;
+}
+
+.user-rating-breakdown-menu .user-rating-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #002347;
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.user-rating-breakdown-menu .user-rating-progress-box {
+    flex-grow: 1;
+    max-width: 110px;
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.user-rating-breakdown-menu .user-rating-progress-fill {
+    height: 100%;
+    background-color: #2563eb;
+    border-radius: 999px;
+    transition: width 0.3s ease-in-out;
+}
+
+.user-rating-breakdown-menu .user-rating-score {
+    font-size: 13px;
+    font-weight: 600;
+    color: #002347;
+    min-width: 26px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* Explore Category Card Hover Shadow & Transitions */
+.explore-cat-card {
+    transition: all 0.25s ease !important;
+}
+
+.explore-cat-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    /* transform: translateY(-2px); */
+    border-color: #cbd5e1 !important;
+}
+
+/* Feature Page Browsing & View All Link */
+.view-all-category-link {
+    color: #007bff !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+    transition: color 0.15s ease !important;
+}
+.view-all-category-link:hover {
+    color: #0056b3 !important;
+    text-decoration: underline !important;
+}
+
+/* Greek & Global Fallback Font Alignment */
+body,
+.footer-langs-container a,
+.ft-btm-rgt .select-menu .options li a {
+    font-family:
+        "Montserrat",
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+}
+
+/* Specific Greek Language Font Balancing */
+.footer-langs-container a[href*="/el-gr"],
+.footer-langs-container a[href*="el-gr"],
+.ft-btm-rgt .select-menu .options li a[href*="el-gr"],
+html[lang*="el"] body {
+    font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif !important;
+    font-weight: 300 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================
+   Mobile Quick Category Navigation Bar (Below Search Bar)
+   ========================================================== */
+@media (min-width: 992px) {
+    .mobile-cat-nav-bar {
+        display: none !important;
+    }
+}
+
+@media (max-width: 991px) {
+    .mobile-search-container {
+        padding: 0 15px 10px 15px !important;
+    }
+
+    .mobile-cat-nav-bar {
+        width: 100%;
+        padding: 0 15px 14px 15px;
+        background-color: transparent;
+        display: block;
+        box-sizing: border-box;
+    }
+
+    .mobile-cat-nav-bar.home-mobile-cat-nav {
+        display: none !important;
+    }
+
+    .mobile-cat-nav-bar.home-mobile-cat-nav.show-search {
+        display: block !important;
+        animation: slideDownFade 0.3s ease forwards;
+    }
+
+    .mobile-cat-nav-scroll {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding-bottom: 2px;
+    }
+
+    .mobile-cat-nav-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mobile-cat-nav-link {
+        color: #ffffff !important;
+        font-size: 14.5px;
+        font-weight: 500;
+        text-decoration: none !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        display: inline-block;
+        transition:
+            opacity 0.2s ease,
+            color 0.2s ease;
+        line-height: 1.3;
+    }
+
+    .mobile-cat-nav-link:hover,
+    .mobile-cat-nav-link:focus {
+        color: #ffffff !important;
+        opacity: 0.85;
+        text-decoration: none !important;
+    }
+
+    .mobile-cat-nav-link.active {
+        font-weight: 700;
+        color: #ffffff !important;
+        opacity: 1;
+    }
+
+    /* Mobile clearance for the taller header with search + quick nav bar */
+    .business_faq_sec,
+    .business_reviews_sec,
+    .cat_main_page_sec,
+    .top-rated-heading-sec {
+        margin-top: 135px !important;
+    }
+}
+
+/* ==========================================================
+   Product Detail Preview Image Slider: Full Width & Amazon-Style Mobile Dots
+   ========================================================== */
+
+/* 1. Slider-for container: display block with 100% width so image fills the column */
+.slider-for,
+.asan-slider.slider-for,
+.business-main-preview {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+}
+
+.slider-for .slick-list {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.slider-for .preview-main-display {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+}
+
+/* 2. By default (website/desktop view), dots are hidden so desktop view is untouched */
+.slider-for .slick-dots {
+    display: none !important;
+}
+
+/* 3. Mobile View: Hide thumbnails, full width edge-to-edge image, dots below image */
+@media (max-width: 991px) {
+    /* Hide the thumbnail preview images row on mobile */
+    .asan-slider.asan-slider-btm,
+    .asan-slider.asan-slider-btm.slider-nav,
+    .business-preview-thumbnails {
+        display: none !important;
+    }
+
+    /* Reset left/right padding on mobile so preview image covers full width cleanly */
+    .asan-slider.slider-for,
+    .slider-for.business-main-preview {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .slider-for .slick-list {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .slider-for .preview-main-display {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+    }
+
+    /* Amazon-style clean pagination dots placed directly BELOW the image */
+    .slider-for .slick-dots {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        margin: 14px auto 0 auto !important;
+        list-style: none !important;
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        z-index: 10 !important;
+    }
+
+    .slider-for .slick-dots li {
+        position: relative !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 8px !important;
+        height: 8px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+    }
+
+    .slider-for .slick-dots li button {
+        display: block !important;
+        width: 8px !important;
+        height: 8px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 50% !important;
+        background-color: #cbd5e1 !important;
+        border: none !important;
+        outline: none !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+        color: transparent !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        box-shadow: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+
+    /* Remove default slick pseudo-element font bullet */
+    .slider-for .slick-dots li button:before {
+        display: none !important;
+        content: "" !important;
+    }
+
+    /* Active dot indicator: dark and highlighted */
+    .slider-for .slick-dots li.slick-active button {
+        background-color: #002347 !important;
+        transform: scale(1.25) !important;
+    }
+
+    /* Hide dots container if only 1 dot exists */
+    .slider-for .slick-dots:has(li:only-child),
+    .slider-for .slick-dots li:only-child {
+        display: none !important;
+    }
 }

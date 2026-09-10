@@ -1257,9 +1257,6 @@ textarea:focus-visible {
 	gap: 5px;
 }
 
-.most-popular-wrp h3 {
-	margin-bottom: 30px;
-}
 
 /* today */
 
@@ -1824,7 +1821,7 @@ global classes */
 .review_sec .review_detl {
 	padding: 40px;
 	border: 1px solid #06498b1a;
-	border-radius: 25px;
+	border-radius: 16px;
 	margin-bottom: 30px;
 }
 

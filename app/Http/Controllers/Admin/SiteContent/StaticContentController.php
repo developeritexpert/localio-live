@@ -197,6 +197,7 @@ class StaticContentController extends Controller
                 'title' => 'Common Page Text',
                 'keys' => [
                     'compare_with_alternative',
+                    'compare_search_placeholder',
                     'top_reviews',
                     'latest_reviews',
                     'suggested_products',

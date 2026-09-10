@@ -99,7 +99,7 @@
 
 @if($selectedPros->isNotEmpty())
     <div style="margin-top: 18px;">
-        <div style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+        <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
             Pros
         </div>
 
@@ -117,7 +117,7 @@
 
 @if($selectedCons->isNotEmpty())
     <div style="margin-top: 14px;">
-        <div style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+        <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
             Cons
         </div>
 

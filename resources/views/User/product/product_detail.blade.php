@@ -270,7 +270,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             @endif
                             @endif
                             <li class="breadcrumb-item active" aria-current="page">
-                                <span>{{ $business->translations->first()->name ?? '' }}</span>
+                                <span>{{  $business->translations->first()->name ?? '' }}</span>
                             </li>
                         </ol>
                     </nav>
@@ -516,7 +516,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
+                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedPros as $pro)
                                                 <li class="d-flex align-items-start mb-2">
@@ -533,7 +533,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
+                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedCons as $con)
                                                 <li class="d-flex align-items-start mb-2">
@@ -569,7 +569,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedPros as $pro)
                                                     <li class="d-flex align-items-start mb-2">
@@ -588,7 +588,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
+                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedCons as $con)
                                                     <li class="d-flex align-items-start mb-2">
@@ -668,7 +668,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             <div class="is-asana-rgt">
                                 <div class="row is-asan-slider">
 
-                                    <div class="col-md-12 asan-slider slider-for business-main-preview mb-3" style="padding-left: 20px !important;">
+                                    <div class="col-md-12 asan-slider slider-for business-main-preview mb-3">
                                         @foreach ($images as $index => $image)
                                         @php
                                         $imgSrc = Str::startsWith($image, ['http://', 'https://']) ? $image : asset($image);
@@ -1205,7 +1205,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                             @php $translation = $faq->translations->first(); @endphp
                                                             @if ($translation)
                                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                                <p class="accordion-header" id="faqHeading{{ $index }}">
+                                                                <h3 class="accordion-header" id="faqHeading{{ $index }}">
                                                                     <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
                                                                         type="button" data-bs-toggle="collapse"
                                                                         data-bs-target="#faqCollapse{{ $index }}"
@@ -1214,7 +1214,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                         style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                                         <span>{{ $translation->question }}</span>
                                                                     </button>
-                                                                </p>
+                                                                </h3>
                                                                 <div id="faqCollapse{{ $index }}"
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                                     aria-labelledby="faqHeading{{ $index }}"
@@ -1472,7 +1472,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     .review_sec .review_detl {
                                                         border: 1px solid rgba(0, 0, 0, 0.08) !important;
                                                         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
-                                                        border-radius: 20px !important;
+                                                        border-radius: 16px !important;
 
                                                     }
 
@@ -1499,7 +1499,6 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     @media (max-width: 575px) {
                                                         .review_sec .review_detl {
                                                             padding: 20px 15px !important;
-                                                            border-radius: 15px !important;
                                                         }
 
                                                         .review_sec .review_detl .reviw_hd {
@@ -2469,7 +2468,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="mobile-sticky-bottom-nav d-lg-none d-flex align-items-center p-2" style="gap: 10px;">
                                         <!-- Left side: Dropdown for current section -->
                                         <div class="msbn-left dropup" style="flex: 1; min-width: 0;">
-                                            <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; border: 1px solid #e2e8f0; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
+                                            <button class="btn btn-light dropdown-toggle msbn-dropdown-toggle d-flex align-items-center justify-content-between shadow-sm" type="button" id="msbnCurrentSection" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%; text-align: left; background: #fdfdfd; color: #1e3050; font-weight: 600; font-size: 14px; border-radius: 8px;">
                                                 <span id="msbn-active-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Description</span>
                                             </button>
                                             <ul class="dropdown-menu msbn-dropdown-menu w-100" aria-labelledby="msbnCurrentSection" style="border-radius: 8px; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; margin-bottom: 10px; min-width: 100%;">
@@ -2513,7 +2512,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             height: 7svh;
                                             background-color: #ffffff;
                                             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
-                                            z-index: 9999;
+                                            z-index: 9;
                                             padding-bottom: calc(10px + env(safe-area-inset-bottom));
                                             /* iOS safe area */
                                             padding-top: 10px;
@@ -2880,7 +2879,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
             fade: true,
             adaptiveHeight: true,
             accessibility: false,
-            focusOnChange: false
+            focusOnChange: false,
+            dots: true
         });
 
         // Initialize thumbnail slider (small images)

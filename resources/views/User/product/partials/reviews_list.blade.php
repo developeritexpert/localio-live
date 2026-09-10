@@ -81,25 +81,77 @@
                         </h3>
                         
                         <!-- Ratings below headline -->
-                        <div class="rating light" style="display: flex; align-items: center; gap: 8px; ">
-                            <div class="inn_ul">
-                                <div class="rating-stars" style="display: flex; gap: 2px;">
-                                    @for ($i = 1; $i <= 5; $i++)
-                                        @if ($i <= floor($review->rating))
-                                            <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
-                                        @elseif ($i - 0.5 <= $review->rating)
-                                            <i class="fas fa-star-half-alt text-warning"></i>
-                                        @else
-                                            <i class="far fa-star text-warning"></i>
-                                        @endif
-                                    @endfor
-                                </div>
+                    <div class="rating light" style="display: flex; align-items: center; gap: 6px; ">
+                        <div class="inn_ul">
+                            <div class="rating-stars" style="display: flex; gap: 2px;">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($i <= floor($review->rating))
+                                        <i class="fas fa-star text-warning" style="font-size: 14px;"></i>
+                                    @elseif ($i - 0.5 <= $review->rating)
+                                        <i class="fas fa-star-half-alt text-warning"></i>
+                                    @else
+                                        <i class="far fa-star text-warning"></i>
+                                    @endif
+                                @endfor
                             </div>
-                            <!-- <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
-                                {{ number_format($review->rating, 1) }}
-                            </div> -->
                         </div>
 
+                        @if(isset($criteria) && count($criteria) > 0)
+                        <div class="dropdown d-inline-block">
+                            <button class=" user-rating-dropdown-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" aria-label="User rating">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9" />
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu shadow-sm user-rating-breakdown-menu">
+                                <div class="user-rating-header">User rating</div>
+                                <div class="user-rating-body">
+                                    @foreach ($criteria as $criterion)
+                                    @php
+                                        $scoreVal = null;
+                                        if ($review->ratings && $review->ratings->isNotEmpty()) {
+                                            $match = $review->ratings->firstWhere('criteria_id', $criterion->id);
+                                            if (!$match && $criterion->default_key) {
+                                                $match = $review->ratings->first(fn($r) => optional($r->criteria)->default_key === $criterion->default_key);
+                                            }
+                                            if (!$match) {
+                                                $match = $review->ratings->first(fn($r) => strtolower(optional($r->criteria)->name) === strtolower($criterion->name));
+                                            }
+                                            if ($match && !is_null($match->rating)) {
+                                                $scoreVal = (float) $match->rating;
+                                            }
+                                        }
+                                        if (is_null($scoreVal)) {
+                                            $cName = strtolower($criterion->name);
+                                            $cKey = $criterion->default_key;
+                                            if ($cKey === 'ease_of_use' || $cName === 'ease of use') {
+                                                $scoreVal = $review->ease_of_use_rating;
+                                            } elseif ($cKey === 'features' || $cName === 'features') {
+                                                $scoreVal = $review->exclusive_service_rating;
+                                            } elseif ($cKey === 'value_for_money' || $cName === 'value for money') {
+                                                $scoreVal = $review->value_for_money_rating;
+                                            } elseif ($cKey === 'customer_service' || $cName === 'customer service' || $cName === 'support') {
+                                                $scoreVal = $review->customer_service_rating;
+                                            }
+                                        }
+                                        if (is_null($scoreVal) || $scoreVal <= 0) {
+                                            $scoreVal = ((float)$review->rating > 0) ? (float)$review->rating : 4.0;
+                                        }
+                                         $percent = min(100, max(0, ((float)$scoreVal / 5) * 100));
+                                    @endphp
+                                    <div class="user-rating-row">
+                                        <span class="user-rating-label">{{ $criterion->name }}</span>
+                                        <div class="user-rating-progress-box">
+                                            <div class="user-rating-progress-fill" style="width: {{ $percent }}%;"></div>
+                                        </div>
+                                        <span class="user-rating-score">{{ number_format($scoreVal, 1) }}</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
                         <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                             {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                         </div>
@@ -110,7 +162,7 @@
 
 @if($selectedPros->isNotEmpty())
     <div style="margin-top: 18px;">
-        <div style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+        <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
             Pros
         </div>
 
@@ -126,7 +178,7 @@
 
 @if($selectedCons->isNotEmpty())
     <div style="margin-top: 14px;">
-        <div style="font-size: 15px; font-weight: 700; color: #1e3050; margin-bottom: 8px;">
+        <div style="font-size: 15px; font-weight: 500; color: #1e3050; margin-bottom: 8px;">
             Cons
         </div>
 
@@ -241,25 +293,80 @@
                             </h3>
                             
                             <!-- Ratings below headline -->
-                            <div class="rating light" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-                                <div class="inn_ul">
-                                    <div class="rating-stars" style="display: flex; gap: 2px;">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= floor($review->rating))
-                                                <i class="fas fa-star text-warning"></i>
-                                            @elseif ($i - 0.5 <= $review->rating)
-                                                <i class="fas fa-star-half-alt text-warning"></i>
-                                            @else
-                                                <i class="far fa-star text-warning"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                </div>
-                                <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
-                                    {{ number_format($review->rating, 1) }}
+                        <div class="rating light" style="display: flex; align-items: center; gap: 6px; margin-bottom: 16px;">
+                            <div class="inn_ul">
+                                <div class="rating-stars" style="display: flex; gap: 2px;">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= floor($review->rating))
+                                            <i class="fas fa-star text-warning"></i>
+                                        @elseif ($i - 0.5 <= $review->rating)
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        @else
+                                            <i class="far fa-star text-warning"></i>
+                                        @endif
+                                    @endfor
                                 </div>
                             </div>
 
+                            @if(isset($criteria) && count($criteria) > 0)
+                            <div class="dropdown d-inline-block">
+                                <button class=" user-rating-dropdown-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false" aria-label="User rating">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9" />
+                                    </svg>
+                                </button>
+                                <div class="dropdown-menu shadow-sm user-rating-breakdown-menu">
+                                    <div class="user-rating-header">User rating</div>
+                                    <div class="user-rating-body">
+                                        @foreach ($criteria as $criterion)
+                                        @php
+                                            $scoreVal = null;
+                                            if ($review->ratings && $review->ratings->isNotEmpty()) {
+                                                $match = $review->ratings->firstWhere('criteria_id', $criterion->id);
+                                                if (!$match && $criterion->default_key) {
+                                                    $match = $review->ratings->first(fn($r) => optional($r->criteria)->default_key === $criterion->default_key);
+                                                }
+                                               if (!$match) {
+                                                    $match = $review->ratings->first(fn($r) => strtolower(optional($r->criteria)->name) === strtolower($criterion->name));
+                                                }
+                                                if ($match && !is_null($match->rating)) {
+                                                    $scoreVal = (float) $match->rating;
+                                                }
+                                            }
+                                            if (is_null($scoreVal)) {
+                                                $cName = strtolower($criterion->name);
+                                                $cKey = $criterion->default_key;
+                                                if ($cKey === 'ease_of_use' || $cName === 'ease of use') {
+                                                    $scoreVal = $review->ease_of_use_rating;
+                                                } elseif ($cKey === 'features' || $cName === 'features') {
+                                                    $scoreVal = $review->exclusive_service_rating;
+                                                } elseif ($cKey === 'value_for_money' || $cName === 'value for money') {
+                                                    $scoreVal = $review->value_for_money_rating;
+                                                } elseif ($cKey === 'customer_service' || $cName === 'customer service' || $cName === 'support') {
+                                                    $scoreVal = $review->customer_service_rating;
+                                                }
+                                            }
+                                            if (is_null($scoreVal) || $scoreVal <= 0) {
+                                                $scoreVal = ((float)$review->rating > 0) ? (float)$review->rating : 4.0;
+                                            }
+                                         $percent = min(100, max(0, ((float)$scoreVal / 5) * 100));
+                                        @endphp
+                                        <div class="user-rating-row">
+                                            <span class="user-rating-label">{{ $criterion->name }}</span>
+                                            <div class="user-rating-progress-box">
+                                            <div class="user-rating-progress-fill" style="width: {{ $percent }}%;"></div>
+                                            </div>
+                                            <span class="user-rating-score">{{ number_format($scoreVal, 1) }}</span>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            <div class="rate_box" style="margin: 0; font-size: 14px; font-weight: 600; color: #555;">
+                                {{ number_format($review->rating, 1) }}
+                            </div>
+                        </div>
                             <div style="color: #444; line-height: 1.6; font-size: 15px; margin-bottom: 0;">
                                 {!! nl2br(e(strip_tags($review->translations->first()->description ?? 'No Description Available'))) !!}
                             </div>

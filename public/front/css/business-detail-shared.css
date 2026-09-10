@@ -778,7 +778,6 @@ div[data-business-id],
 @media (max-width: 575px) {
     .review_sec .review_detl {
         padding: 20px 15px !important;
-        border-radius: 15px !important;
     }
 
     .review_sec .review_detl .reviw_hd {

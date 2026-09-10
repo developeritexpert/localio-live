@@ -190,7 +190,7 @@
 <section class="top-rated-heading-sec help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style=" background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
@@ -224,7 +224,7 @@
                                 {{ !empty($categoryTranslation->faq_h1_title) ? $categoryTranslation->faq_h1_title : ($catName . ' FAQs') }}
                             </h1>
                         </div>
-                        <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400;">
+                        <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400; max-width: 840px;">
                             @if(!empty($categoryTranslation->faq_subtext))
                                 {!! $categoryTranslation->faq_subtext !!}
                             @else
@@ -277,9 +277,9 @@
 
                 <!-- Section 2: Search Option -->
                 <div class="faq-search-wrapper">
-                    <h3 style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
+                    <p style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
                         Search {{ $catName }} FAQs
-                    </h3>
+                    </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" id="faqSearchInput" placeholder="Search questions..." autocomplete="off">
@@ -378,11 +378,11 @@
                                             @endphp
                                             @if(!empty($question))
                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
-                                                <p class="accordion-header" id="headingFaq{{ $uniqueId }}">
+                                                <h3 class="accordion-header" id="headingFaq{{ $uniqueId }}">
                                                     <button class="accordion-button {{ $openThisFaq ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $uniqueId }}" aria-expanded="{{ $openThisFaq ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $uniqueId }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
                                                         {{ $question }}
                                                     </button>
-                                                </p>
+                                                </h3>
                                                 <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">
@@ -428,9 +428,9 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner">
                     <div>
-                        <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">
+                        <h2 >
                             Still have a question about {{ $catName }}?
-                        </h3>
+                        </h2>
                         <p style="font-size: 15px; color: #e2e8f0; margin-bottom: 0;">
                             Ask the Localio community
                         </p>
@@ -666,6 +666,76 @@
         </div>
     </div>
 </section>
+
+
+<!-- Explore Subcategories Section -->
+@if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+@php
+    $exploreHeadline = !empty($categoryTranslation->faq_explore_headline) 
+        ? $categoryTranslation->faq_explore_headline 
+        : ($exploreSubcategories['title'] ?? ('Explore ' . $catName . ' categories'));
+    $exploreSubtext = $categoryTranslation->faq_explore_subtext ?? null;
+    $currentFaqSlug = $faqSlug ?? 'faqs';
+@endphp
+<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container">
+        <div class="text-start mb-4">
+            <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
+                {{ $exploreHeadline }}
+            </h2>
+            @if(!empty($exploreSubtext))
+                <div class="explore-cat-subtext" style="color: #475569; margin: 0; font-size: 15px;">
+                    {!! $exploreSubtext !!}
+                </div>
+            @else
+                <p style="color: #475569; margin: 0; font-size: 15px;">
+                    Browse specialized categories to find the exact tools and solutions for your requirements.
+                </p>
+            @endif
+        </div>
+
+        <div class="row g-3">
+            @foreach($exploreSubcategories['items'] as $subcatItem)
+            @php
+                $subTrans = null;
+                if (isset($subcatItem->translations)) {
+                    if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                        $subTrans = $subcatItem->translations;
+                    } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
+                        $subTrans = $subcatItem->translations->first();
+                    }
+                }
+                $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
+                $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
+                $subFaqUrl = url('/' . app()->getLocale() . '/' . $subSlug . '/' . $currentFaqSlug);
+                $listingCount = $subcatItem->businesses_count ?? ($subcatItem->businesses ? $subcatItem->businesses()->where('status', 1)->count() : 0);
+            @endphp
+            <div class="col-lg-4 col-md-6 col-6">
+                <a href="{{ $subFaqUrl }}" class="text-decoration-none d-block h-100">
+                    <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
+                        <div class="mb-3 w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                            @if(isset($subcatItem->topRatedImageMedia))
+                                <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
+                            @else
+                                <!-- Placeholder if no SVG is uploaded -->
+                                <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
+                            @endif
+                        </div>
+                        
+                        <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
+                            <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
+                            <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
+                                {{ $listingCount }} listings
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
 
 @endsection
 

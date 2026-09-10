@@ -949,10 +949,17 @@ if ($this->isParentCategory) {
         }
 
         if ($featId && $this->category) {
-            return \App\Models\CategoryFeatureContent::where('category_id', $this->category->id)
+            $record = \App\Models\CategoryFeatureContent::where('category_id', $this->category->id)
                 ->where('feature_id', $featId)
                 ->where('lang_id', $this->lang_id)
                 ->first();
+            if (!$record && $this->category->parent_id) {
+                $record = \App\Models\CategoryFeatureContent::where('category_id', $this->category->parent_id)
+                    ->where('feature_id', $featId)
+                    ->where('lang_id', $this->lang_id)
+                    ->first();
+            }
+            return $record;
         }
 
         return null;
@@ -979,6 +986,13 @@ public function getFeatureDescriptionProperty()
                     ->where('lang_id', $this->lang_id)
                     ->first();
 
+                if (!$featContent && $this->category->parent_id) {
+                    $featContent = \App\Models\CategoryFeatureContent::where('category_id', $this->category->parent_id)
+                        ->where('feature_id', $activeFeatId)
+                        ->where('lang_id', $this->lang_id)
+                        ->first();
+                }
+
                 if ($featContent && !empty($featContent->description)) {
                     return $featContent->description;
                 }
@@ -990,32 +1004,13 @@ public function getFeatureDescriptionProperty()
 
     public function getTextSectionsProperty()
     {
-        // 1. If feature_slug is present, check CategoryFeatureContent for this category + feature + language
-        if (!empty($this->feature_slug) && $this->category) {
-            $activeFeatId = null;
-            if (!empty($this->selectedFeatures)) {
-                $activeFeatId = reset($this->selectedFeatures);
-            } else {
-                $slugToMatch = $this->feature_slug;
-                $matched = \App\Models\Feature::whereHas('translations', function($q) use ($slugToMatch) {
-                    $q->where('name', 'LIKE', str_replace('-', ' ', $slugToMatch))
-                      ->orWhere('name', 'LIKE', $slugToMatch);
-                })->first();
-                $activeFeatId = $matched?->id;
-            }
-
-            if ($activeFeatId) {
-                $featContent = \App\Models\CategoryFeatureContent::where('category_id', $this->category->id)
-                    ->where('feature_id', $activeFeatId)
-                    ->where('lang_id', $this->lang_id)
-                    ->first();
-
-                if ($featContent && !empty($featContent->text_sections)) {
-                    $decoded = is_array($featContent->text_sections) ? $featContent->text_sections : json_decode($featContent->text_sections, true);
-                    if (is_array($decoded) && count($decoded) > 0) {
-                        return $decoded;
-                    }
-                }
+        // 1. If featureContent is present for this category + feature + language
+        if ($this->featureContent && !empty($this->featureContent->text_sections)) {
+            $decoded = is_array($this->featureContent->text_sections) 
+                ? $this->featureContent->text_sections 
+                : json_decode($this->featureContent->text_sections, true);
+            if (is_array($decoded) && count($decoded) > 0) {
+                return $decoded;
             }
         }
 

@@ -9,7 +9,6 @@
         margin: -6px -12px;
         border-radius: 10px;
         background-color: transparent;
-        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         text-decoration: none !important;
         color: inherit;
         width: fit-content;
@@ -17,10 +16,10 @@
     }
     .table-business-link:hover {
         background-color: #e9edf5 !important;
+        text-decoration: none !important;
+
     }
-    .comparison-box {
-        transition: all 0.2s ease-in-out;
-    }
+  
     .comparison-box:hover {
         background-color: #ffffff !important;
         border-color: #cbd5e1 !important;
@@ -349,7 +348,6 @@
         background: #f8fafc !important;
         border-color: #94a3b8 !important;
         color: #002347 !important;
-        transform: translateY(-1px);
         box-shadow: 0 3px 8px rgba(0,0,0,0.07) !important;
     }
     .active-feat-chip:hover i {
@@ -531,11 +529,14 @@
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
                                     <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
-                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
+                                    <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
+
+                                 <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
+                                style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                             </div>
                         </div>
                     </div>
@@ -924,6 +925,7 @@
                             </div>
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
+                                
                                 <!-- Product Count and Sort -->
                                 @if(!empty($selectedFeatures) && count($selectedFeatures) > 0)
                                     <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mb-3">
@@ -1256,19 +1258,33 @@
 
                                                     <!-- Price -->
                                                     @if ($startingPrice && !empty($item->is_affiliate))
-                                                    <div class="text-center mt-4 w-100"
-                                                        style="  padding: 15px 25px; border-radius: 8px;">
-                                                        <h6
-                                                            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-                                                            Starting price</h6>
-                                                        <h3
-                                                            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-                                                            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-                                                        </h3>
-                                                        <p style="font-size: 11px; margin-bottom: 0;">
-                                                            Flat Rate, Per One_time</p>
-                                                    </div>
-                                                    @endif
+    <div class="text-center mt-4 w-100"
+        style="padding: 15px 25px; border-radius: 8px;">
+
+        <h6
+            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+            Starting price
+        </h6>
+
+        <h3
+            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+        </h3>
+
+        @if (
+            !empty($startingPrice->additional_info) &&
+            !in_array(
+                strtoupper(trim((string) $startingPrice->additional_info)),
+                ['NA', 'N/A', 'NULL']
+            )
+        )
+            <p style="font-size: 11px; margin-bottom: 0;">
+                {{ $startingPrice->additional_info }}
+            </p>
+        @endif
+
+    </div>
+@endif
                                                 </div>
                                             </div>
                                         </div>
@@ -1477,7 +1493,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1496,7 +1512,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:18px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1682,7 +1698,7 @@
                 </div>
             </section>
             <!-- community section -->
-            <section class="community-feedback-sec">
+            <section class="community-feedback-sec border_bt">
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section">
@@ -1881,9 +1897,9 @@
                 @endphp
                 <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
-                        <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
                             {{ $compToolHeadline }}
-                        </h3>
+                        </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #64748b; font-size: 14px; margin: 0;">
                                 {!! $compToolSubtext !!}
@@ -1903,7 +1919,7 @@
                                 <!-- Search Input Wrapper -->
                                 <div id="catCompareLeftInputWrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
                                     <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none; z-index: 2;"></i>
-                                    <input type="text" id="catCompareLeftInput" class="form-control" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
+                                    <input type="text" id="catCompareLeftInput" class="form-control" placeholder="{{ static_text("compare_search_placeholder") ?: "Search by name..." }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
                                 </div>
                                 <!-- Dropdown -->
                                 <div id="catCompareLeftDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; width: 100%; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 999999;"></div>
@@ -1928,7 +1944,7 @@
                                 <!-- Search Input Wrapper -->
                                 <div id="catCompareRightInputWrapper" style="position: relative; display: flex; align-items: center; width: 100%;">
                                     <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none; z-index: 2;"></i>
-                                    <input type="text" id="catCompareRightInput" class="form-control" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
+                                    <input type="text" id="catCompareRightInput" class="form-control" placeholder="{{ static_text("compare_search_placeholder") ?: "Search by name..." }}" style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px; width: 100%; border-radius: 10px; background-color: #ffffff;" autocomplete="off">
                                 </div>
                                 <!-- Dropdown -->
                                 <div id="catCompareRightDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; width: 100%; max-height: 280px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 999999;"></div>
@@ -2312,13 +2328,13 @@
                         <div class="accordion" id="categoryFaqAccordion">
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                <p class="accordion-header" id="headingFaq{{ $fIndex }}">
+                                <h3 class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                         {{ $faq['question'] }}
                                     </button>
-                                </p>
+                                </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
@@ -2328,7 +2344,7 @@
 
                         <div class="text-center mt-4">
                             <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
-                                View more FAQs
+                                View all FAQs
                             </a>
                         </div>
                     </div>

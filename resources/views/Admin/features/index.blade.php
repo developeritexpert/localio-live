@@ -126,6 +126,21 @@
                                                                     <span>Edit</span>
                                                                 </a>
                                                             </li>
+                                                            @if($feature->category_id)
+                                                            <li>
+                                                                <a href="{{ route('admin.category-feature-content.create', ['category_id' => $feature->category_id, 'feature_id' => $feature->id]) }}">
+                                                                    <em class="icon ni ni-file-text-fill"></em>
+                                                                    <span>Feature Category Content</span>
+                                                                </a>
+                                                            </li>
+                                                            @else
+                                                            <li>
+                                                                <a href="{{ route('admin.category-feature-content.create', ['feature_id' => $feature->id]) }}">
+                                                                    <em class="icon ni ni-file-text-fill"></em>
+                                                                    <span>Feature Category Content</span>
+                                                                </a>
+                                                            </li>
+                                                            @endif
                                                             <li class="removeConfermation"
                                                                 data-url="{{ route('features.delete', $feature->id) }}">
                                                                 <a class="delete" href="{{ route('features.delete', $feature->id) }}">

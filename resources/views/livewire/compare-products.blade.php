@@ -7,7 +7,9 @@
     </div>
 
 
-    <div class="blue-heart" wire:key="wishlist-container-{{ $item->id }}">
+   <div class="blue-heart"
+    wire:key="wishlist-container-{{ $item->id }}"
+    wire:click.stop>
         @livewire('wishlist', ['productId' => $item->id], key('wishlist-' . $item->id))
     </div>
     @script

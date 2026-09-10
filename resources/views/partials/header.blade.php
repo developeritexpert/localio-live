@@ -241,10 +241,17 @@
         font-size: 24px;
         cursor: pointer;
         transition: color .2s ease;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .mobile-sidebar-close:hover {
         color: #F9633B !important;
+        background: #90909050;
     }
 
     @media(min-width:992px) {
@@ -1045,10 +1052,11 @@
                                 font-size: 12px;
                                 transition: transform 0.25s ease;
                                 color: rgba(255, 255, 255, 0.6);
+                                transform: rotate(268deg);
                             }
 
                             .mobile-cat-toggle.active .mobile-cat-arrow {
-                                transform: rotate(180deg);
+                                transform: rotate(90deg);
                                 color: #F9633B;
                             }
 
@@ -1345,8 +1353,37 @@
                     </nav>
                     
                     @if (!in_array(Route::currentRouteName(), ['login', 'register']))
-                    <div id="mobile-search-container" class="mobile-search-container d-block d-lg-none {{ (request()->is('/') || request()->is(app()->getLocale()) || Route::currentRouteName() === 'home' || (isset($pageClass) && $pageClass === 'page-home')) ? 'home-mobile-search' : '' }}">
+                    @php
+                        $isHomePage = (request()->is('/') || request()->is(app()->getLocale()) || Route::currentRouteName() === 'home' || (isset($pageClass) && $pageClass === 'page-home'));
+                    @endphp
+                    <div id="mobile-search-container" class="mobile-search-container d-block d-lg-none {{ $isHomePage ? 'home-mobile-search' : '' }}">
                         <livewire:header-search-bar />
+                    </div>
+
+                    <!-- Mobile Quick Category Nav Bar (Below Search Bar) -->
+                    <div id="mobile-cat-nav-bar" class="mobile-cat-nav-bar d-block d-lg-none {{ $isHomePage ? 'home-mobile-cat-nav' : '' }}">
+                        <div class="mobile-cat-nav-scroll">
+                            <a href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}"
+                               class="mobile-cat-nav-link {{ request()->is('*top-rated*') ? 'active' : '' }}">
+                                {{ $headerContent['top_rated'] ?? 'Top rated' }}
+                            </a>
+                            @if(isset($categories) && count($categories) > 0)
+                                @foreach($categories as $cat)
+                                @php
+                                    $catSlug = $cat->translation->slug ?? $cat->slug ?? '';
+                                    $catName = $cat->translation->name ?? $cat->name ?? '';
+                                    $isCatActive = request()->is('*' . $catSlug . '*') || (request()->segment(2) === $catSlug) || (request()->segment(3) === $catSlug);
+                                @endphp
+                                <a href="{{ route('category.detail', [
+                                            'locale' => app()->getLocale(),
+                                            'slug' => $catSlug
+                                        ]) }}"
+                                   class="mobile-cat-nav-link {{ $isCatActive ? 'active' : '' }}">
+                                    {{ $catName }}
+                                </a>
+                                @endforeach
+                            @endif
+                        </div>
                     </div>
                     @endif
                 </div>

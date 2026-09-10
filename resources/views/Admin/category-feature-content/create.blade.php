@@ -19,6 +19,38 @@
 
     <div class="card card-bordered">
         <div class="card-inner">
+            <!-- Quick Fill from JSON Box -->
+            <div class="card card-bordered bg-light mb-4" id="jsonPasteBox" style="border: 1.5px dashed #002347 !important; border-radius: 10px; background-color: #f8fafc !important;">
+                <div class="card-inner py-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-dim bg-primary" style="font-size: 13px;"><em class="icon ni ni-code"></em> Quick JSON Auto-Fill</span>
+                            <span class="text-muted small">Paste JSON text below to auto-fill all headlines, descriptions, meta tags, and dynamic sections</span>
+                        </div>
+                        <button type="button" class="btn btn-xs btn-outline-secondary" id="btnToggleJsonCollapse">
+                            <em class="icon ni ni-eye" id="toggleJsonIcon"></em> <span id="toggleJsonText">Hide</span>
+                        </button>
+                    </div>
+
+                    <div id="jsonBodySection">
+                        <div id="jsonAlertMessage" style="display: none;" class="mb-2"></div>
+                        <div class="form-group mb-2">
+                            <textarea id="jsonTextInput" class="form-control font-monospace" rows="7" style="font-size: 12.5px; background: #ffffff; line-height: 1.5;" placeholder='{\n  "page_title": "Best Web Hosting Services with Free Domain ([year])",\n  "description": "<p>Compare leading web hosting providers that include a free domain name...</p>",\n  "top_rated_listing_headline": "Top-Rated Web Hosting Providers",\n  "top_rated_listing_subtext": "<p>Verified user ratings and independent review scores.</p>",\n  "compare_alternatives_headline": "Compare Web Hosting Alternatives",\n  "compare_alternatives_subtext": "<p>See how providers compare side-by-side.</p>",\n  "community_says_headline": "What the Community Says",\n  "community_says_subtext": "<p>Real pros and cons from verified users.</p>",\n  "popular_comparisons_headline": "Popular Web Hosting Comparisons",\n  "popular_comparisons_subtext": "<p>Compare key specs and hosting tiers.</p>",\n  "explore_subcategories_headline": "Explore Related Categories",\n  "explore_subcategories_subtext": "<p>Browse specialized hosting types.</p>",\n  "meta_title": "Best Web Hosting with Free Domain ([year]) - Localio",\n  "meta_description": "Find top web hosting providers offering free domain registration.",\n  "text_sections": [\n    {\n      "h2_title": "Why Choose Hosting with a Free Domain?",\n      "h2_text": "<p>Saving on domain registration fees simplifies setup...</p>",\n      "sub_sections": [\n        {\n          "h3_title": "Domain Renewal Costs",\n          "h3_text": "<p>Ensure renewal rates remain affordable after the first year.</p>"\n        }\n      ]\n    }\n  ]\n}'></textarea>
+                        </div>
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm btn-primary" id="btnApplyJson" style="background: #002347; border-color: #002347;">
+                                <em class="icon ni ni-check-circle me-1"></em> Auto-Fill Form from JSON
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="btnLoadSampleJson">
+                                <em class="icon ni ni-copy me-1"></em> Insert Sample JSON
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-light text-muted" id="btnClearJson">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <form action="{{ route('admin.category-feature-content.store') }}" method="POST" class="form-validate">
                 @csrf
                 <div class="row g-4">
@@ -261,6 +293,229 @@
         initAllEditors();
 
         let sectionCounter = 0;
+
+        // Toggle JSON box collapse
+        $('#btnToggleJsonCollapse').on('click', function() {
+            let body = $('#jsonBodySection');
+            if (body.is(':visible')) {
+                body.slideUp(200);
+                $('#toggleJsonText').text('Show');
+                $('#toggleJsonIcon').removeClass('ni-eye').addClass('ni-eye-off');
+            } else {
+                body.slideDown(200);
+                $('#toggleJsonText').text('Hide');
+                $('#toggleJsonIcon').removeClass('ni-eye-off').addClass('ni-eye');
+            }
+        });
+
+        // Clear JSON button
+        $('#btnClearJson').on('click', function() {
+            $('#jsonTextInput').val('');
+            $('#jsonAlertMessage').slideUp(200);
+        });
+
+        // Load sample JSON button
+        $('#btnLoadSampleJson').on('click', function() {
+            let sample = {
+                "page_title": "Best Web Hosting with Free Domain ([year])",
+                "description": "<p>Compare top web hosting services offering free domain names on annual signup plans.</p>",
+                "top_rated_listing_headline": "Top-Rated Web Hosting Services",
+                "top_rated_listing_subtext": "<p>Verified provider ratings compiled by our research team.</p>",
+                "compare_alternatives_headline": "Compare Alternatives",
+                "compare_alternatives_subtext": "<p>Detailed comparison of pricing, storage, and customer support.</p>",
+                "community_says_headline": "What the Community Says",
+                "community_says_subtext": "<p>Most mentioned strengths and weaknesses reported by real users.</p>",
+                "explore_subcategories_headline": "Explore Hosting Categories",
+                "explore_subcategories_subtext": "<p>Find tailored solutions across specific categories.</p>",
+                "popular_comparisons_headline": "Popular Hosting Comparisons",
+                "popular_comparisons_subtext": "<p>Side-by-side benchmarks of leading providers.</p>",
+                "meta_title": "Best Web Hosting with Free Domain ([year]) - Localio",
+                "meta_description": "Compare top web hosts that bundle a free domain. Read user ratings, pros & cons, and pricing.",
+                "text_sections": [
+                    {
+                        "h2_title": "Why Choose Hosting with a Free Domain?",
+                        "h2_text": "<p>Bundling a free domain reduces initial setup friction and expense.</p>",
+                        "sub_sections": [
+                            {
+                                "h3_title": "First-year Savings",
+                                "h3_text": "<p>Get your online presence up and running without immediate registrar fees.</p>"
+                            }
+                        ]
+                    }
+                ]
+            };
+            $('#jsonTextInput').val(JSON.stringify(sample, null, 2));
+            showJsonAlert('Sample JSON inserted. Click "Auto-Fill Form from JSON" to test populating all fields.', 'info');
+        });
+
+        function showJsonAlert(msg, type) {
+            let icon = type === 'success' ? 'ni-check-circle' : (type === 'danger' ? 'ni-cross-circle' : (type === 'info' ? 'ni-info' : 'ni-alert-circle'));
+            $('#jsonAlertMessage').html(`
+                <div class="alert alert-${type} alert-icon alert-dismissible fade show p-2 mb-2" style="font-size: 13px;">
+                    <em class="icon ni ${icon}"></em>
+                    <span>${msg}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `).slideDown(200);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Apply JSON to Form
+        $('#btnApplyJson').on('click', function() {
+            let raw = $('#jsonTextInput').val().trim();
+            if (!raw) {
+                showJsonAlert('Please paste JSON text into the box above before applying.', 'warning');
+                return;
+            }
+
+            let data;
+            try {
+                data = JSON.parse(raw);
+            } catch (e) {
+                showJsonAlert('Invalid JSON Syntax: ' + e.message, 'danger');
+                return;
+            }
+
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    showJsonAlert('JSON array is empty.', 'warning');
+                    return;
+                }
+                data = data[0];
+            }
+
+            if (typeof data !== 'object' || data === null) {
+                showJsonAlert('Invalid format: Expected a JSON object with key-value properties.', 'danger');
+                return;
+            }
+
+            let filledCount = 0;
+
+            function setVal(selector, val) {
+                if (val !== undefined && val !== null && val !== '') {
+                    $(selector).val(val);
+                    filledCount++;
+                }
+            }
+
+            function setEditorVal(fieldName, val) {
+                if (val !== undefined && val !== null && val !== '') {
+                    let $textarea = $(`textarea[name="${fieldName}"]`);
+                    if ($textarea.length) {
+                        $textarea.val(val);
+                    }
+                    if (activeEditors && activeEditors[fieldName]) {
+                        activeEditors[fieldName].setData(val);
+                    }
+                    filledCount++;
+                }
+            }
+
+            // Category, Feature, Language (if provided)
+            if (data.category_id) {
+                $('#category_id').val(data.category_id).trigger('change');
+                filledCount++;
+            }
+            if (data.feature_id) {
+                $('#feature_id').val(data.feature_id).trigger('change');
+                filledCount++;
+            }
+            if (data.lang_id) {
+                $('#lang_id').val(data.lang_id).trigger('change');
+                filledCount++;
+            }
+
+            // Page Title & Description
+            setVal('#page_title', data.page_title || data.title);
+            setEditorVal('description', data.description || data.desc);
+
+            // Headlines & Subtexts
+            setVal('#top_rated_listing_headline', data.top_rated_listing_headline);
+            setEditorVal('top_rated_listing_subtext', data.top_rated_listing_subtext);
+
+            setVal('#compare_alternatives_headline', data.compare_alternatives_headline);
+            setEditorVal('compare_alternatives_subtext', data.compare_alternatives_subtext);
+
+            setVal('#community_says_headline', data.community_says_headline);
+            setEditorVal('community_says_subtext', data.community_says_subtext);
+
+            setVal('#explore_subcategories_headline', data.explore_subcategories_headline);
+            setEditorVal('explore_subcategories_subtext', data.explore_subcategories_subtext);
+
+            setVal('#popular_comparisons_headline', data.popular_comparisons_headline);
+            setEditorVal('popular_comparisons_subtext', data.popular_comparisons_subtext);
+
+            // SEO Meta
+            setVal('#meta_title', data.meta_title || data.metaTitle);
+            setVal('#meta_description', data.meta_description || data.metaDescription);
+
+            // Dynamic Text Sections
+            let sections = data.text_sections;
+            if (typeof sections === 'string') {
+                try { sections = JSON.parse(sections); } catch(e){}
+            }
+
+            if (Array.isArray(sections) && sections.length > 0) {
+                $('#textSectionsContainer').empty();
+                sectionCounter = 0;
+
+                sections.forEach((sec) => {
+                    let sIdx = sectionCounter++;
+                    let secHtml = `
+                    <div class="section-card border rounded p-3 mb-3 bg-white" data-section-index="${sIdx}">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <h6 class="fw-bold mb-0 text-dark">Section ${sIdx + 1}</h6>
+                            <button type="button" class="btn btn-sm btn-danger remove-section-btn">Delete Section</button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Headline (H2)</label>
+                                <input type="text" class="form-control" name="text_sections[${sIdx}][h2_title]" value="${escapeHtml(sec.h2_title || '')}" placeholder="e.g. Why choose shared hosting with noise cancellation?">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Headline Content (Rich Editor)</label>
+                                <textarea class="form-control rich-editor" rows="4" name="text_sections[${sIdx}][h2_text]" placeholder="Enter main content for this H2 section...">${sec.h2_text || ''}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-bold text-secondary mb-0">Sub-sections (H3 Sub-headlines)</label>
+                                    <button type="button" class="btn btn-xs btn-outline-primary add-sub-section-btn" data-section-index="${sIdx}">+ Add Sub-headline (H3)</button>
+                                </div>
+                                <div class="sub-sections-container ps-3 border-start" id="subSectionsContainer_${sIdx}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                    $('#textSectionsContainer').append(secHtml);
+
+                    if (Array.isArray(sec.sub_sections)) {
+                        let container = $(`#subSectionsContainer_${sIdx}`);
+                        sec.sub_sections.forEach((sub, subIdx) => {
+                            let subHtml = `
+                            <div class="sub-section-item border rounded p-2 mb-2 bg-light" data-sub-index="${subIdx}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-bold text-muted">Sub-headline (H3)</span>
+                                    <button type="button" class="btn btn-xs btn-outline-danger remove-sub-btn">Remove</button>
+                                </div>
+                                <input type="text" class="form-control form-control-sm mb-2" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_title]" value="${escapeHtml(sub.h3_title || '')}" placeholder="e.g. Key Features & Highlights">
+                                <textarea class="form-control rich-editor" rows="3" name="text_sections[${sIdx}][sub_sections][${subIdx}][h3_text]" placeholder="Enter sub-headline content...">${sub.h3_text || ''}</textarea>
+                            </div>`;
+                            container.append(subHtml);
+                        });
+                    }
+                });
+
+                initAllEditors();
+                filledCount += sections.length;
+            }
+
+            showJsonAlert(`Successfully populated ${filledCount} field(s) & dynamic section(s) from JSON! Please review below and click "Save Content".`, 'success');
+        });
 
         $('#addTextSectionBtn').on('click', function() {
             let sIdx = sectionCounter++;

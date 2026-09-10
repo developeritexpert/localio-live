@@ -21,14 +21,6 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
 
-    .top-rated-heading-block h1 {
-        font-size: 28px !important;
-        font-weight: 700;
-        padding: 0 !important;
-        margin-bottom: 4px !important;
-        color: #002347 !important;
-
-    }
 
     section.top-automotive-sec.top_rate_pg.light {
         margin-top: 0 !important;
@@ -276,7 +268,7 @@
                                     style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
                                     Top rated on Localio
                                 </a> -->
-                                <span style=" color: #002347 !important; text-decoration:none; font-weight: 500;">Top rated on Localio</span>
+                                <span style=" color: #002347 !important; text-decoration:none; font-weight: 500; margin-left:2px;">Top rated on Localio</span>
                                 
                             </li>
 
@@ -303,7 +295,7 @@
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
                                 <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
-                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
+                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
@@ -956,26 +948,40 @@
                                                 }
                                                 @endphp
 
-                                                <!-- Price -->
-                                                @if ($startingPrice && !empty($item->is_affiliate))
-                                                <div class="text-center mt-4 w-100"
-                                                    style="  padding: 15px 25px; border-radius: 8px;">
-                                                    <h6
-                                                        style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-                                                        Starting price</h6>
-                                                    <h3
-                                                        style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-                                                        {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-                                                    </h3>
-                                                    <p style="font-size: 11px; margin-bottom: 0;">Flat
-                                                        Rate, Per One_time</p>
-                                                </div>
-                                                @endif
+                                               @if ($startingPrice && !empty($item->is_affiliate))
+    <div class="text-center mt-4 w-100"
+        style="padding: 15px 25px; border-radius: 8px;">
+
+        <h6
+            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+            Starting price
+        </h6>
+
+        <h3
+            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+        </h3>
+
+        @if (
+            !empty($startingPrice->additional_info) &&
+            !in_array(
+                strtoupper(trim((string) $startingPrice->additional_info)),
+                ['NA', 'N/A', 'NULL']
+            )
+        )
+            <p style="font-size: 11px; margin-bottom: 0;">
+                {{ $startingPrice->additional_info }}
+            </p>
+        @endif
+
+    </div>
+@endif
                                             </div>
                                         </div>
                                     </div>
                                     <div style="width: 100%;">
                                         <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -1250,11 +1256,11 @@
                         @foreach($faqs as $fIndex => $faq)
                         @if($loop->iteration > 10) @break @endif
                         <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                            <p class="accordion-header" id="faqHeading{{ $fIndex }}">
+                            <h3 class="accordion-header" id="faqHeading{{ $fIndex }}">
                                 <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                     {{ $faq['question'] }}
                                 </button>
-                            </p>
+                            </h3>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
                                 <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fff;">
                                     {!! $faq['answer'] !!}

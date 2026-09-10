@@ -31,7 +31,11 @@
         <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.27/dist/sweetalert2.min.css" rel="stylesheet">
 
         <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('front/css/style.css') }}?{{ time() }}">
+        <link rel="stylesheet" href="{{ asset('front/css/dev.css') }}?{{ time() }}">
         <link rel="stylesheet" href="{{ asset('front/css/responsive.css') }}?{{ time() }}">
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/custom1.css') }}?{{ time() }}" />
         <link rel="stylesheet" href="{{ asset('user-dashboard-theme/css/responsive1.css') }}?{{ time() }}" />

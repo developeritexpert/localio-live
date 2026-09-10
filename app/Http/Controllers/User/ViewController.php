@@ -638,10 +638,39 @@ class ViewController extends Controller
                 ->toArray();
         }
 
+        // Explore subcategories of category or parent category
+        $catForExplore = $business->category ? ($business->category->parent ?? $business->category) : null;
+        $exploreSubcategories = ['title' => '', 'items' => collect(), 'category' => $catForExplore];
+        if ($catForExplore) {
+            $catForTrans = $catForExplore->translations->firstWhere('lang_id', $lang_id) ?? $catForExplore->translations->first();
+            $catForName = $catForTrans->name ?? $catForExplore->name ?? '';
+            $subcats = \App\Models\Category::where('parent_id', $catForExplore->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with([
+                    'translations' => function ($q) use ($lang_id) {
+                        $q->where('lang_id', $lang_id);
+                    },
+                    'topRatedImageMedia'
+                ])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            $exploreSubcategories = [
+                'title' => 'Explore ' . (!empty($catForName) ? $catForName : ($business->category->translations->firstWhere('lang_id', $lang_id)->name ?? '')) . ' categories',
+                'items' => $subcats,
+                'category' => $catForExplore,
+            ];
+        }
+
         return view('User.product.business_faqs', compact(
             'business', 'averageRating', 'totalReviews', 'recommendPercent', 
             'criteria', 'startingPrice', 'currency', 'timeUnit', 'additional_info', 
-            'topReviews', 'expectedSlug', 'faqCategories', 'uncategorizedFaqs', 'allFaqs', 'userVotes'
+            'topReviews', 'expectedSlug', 'faqCategories', 'uncategorizedFaqs', 'allFaqs', 'userVotes',
+            'exploreSubcategories'
         ));
     }
 
@@ -702,10 +731,57 @@ class ViewController extends Controller
             }
 
             if ($featureExists) {
+                $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
+                    ? $category->translations->first()
+                    : ($category->translations ?? $category->translation);
+
+                if (!$catTrans) {
+                    $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id)->first()
+                        ?? $category->categoryTranslations()->where('lang_id', 1)->first()
+                        ?? $category->categoryTranslations()->first();
+                }
+
+                $metaTitle = !empty($catTrans?->meta_title)
+                    ? $catTrans->meta_title
+                    : ($catTrans?->name ?? 'Category Page');
+                $metaDescription = !empty($catTrans?->meta_description)
+                    ? $catTrans->meta_description
+                    : strip_tags($catTrans?->description ?? '');
+
+                // Check CategoryFeatureContent for feature-specific meta tags
+                if (!empty($second_segment) && $category) {
+                    $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
+                        $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
+                          ->orWhere('name', 'LIKE', $second_segment);
+                    })->first();
+
+                    if ($matchedFeat) {
+                        $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
+                            ->where('feature_id', $matchedFeat->id)
+                            ->where('lang_id', $lang_id)
+                            ->first();
+                        if ($featContent) {
+                            if (!empty($featContent->meta_title)) {
+                                $metaTitle = $featContent->meta_title;
+                            }
+                            if (!empty($featContent->meta_description)) {
+                                $metaDescription = $featContent->meta_description;
+                            }
+                        }
+                    }
+                }
+
+                if (function_exists('format_meta_text')) {
+                    $metaTitle = format_meta_text($metaTitle, 'Category Page');
+                    $metaDescription = format_meta_text($metaDescription);
+                }
+
                 return view('User.category.category_detail', [
-                    'slug' => $category->translations->slug ?? $business_slug,
+                    'slug' => $catTrans?->slug ?? $business_slug,
                     'feature_slug' => $second_segment,
-                    'page' => 1
+                    'page' => 1,
+                    'metaTitle' => $metaTitle,
+                    'metaDescription' => $metaDescription,
                 ]);
             }
         }
