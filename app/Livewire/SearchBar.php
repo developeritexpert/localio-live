@@ -14,7 +14,7 @@ class SearchBar extends Component
     public $results = [];     // Holds live search results
     public $placeholder;      // Custom placeholder text
 
-    public function mount($placeholder = 'Search for brands, products or services ')
+    public function mount($placeholder = 'Search digital products & services')
     {
         $this->placeholder = $placeholder;
     }
