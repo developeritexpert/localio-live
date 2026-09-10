@@ -715,7 +715,7 @@
                     <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
                         <div class="mb-3 w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
                             @if(isset($subcatItem->topRatedImageMedia))
-                                <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style="max-height: 100px; object-fit: contain;">
+                                <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style=" object-fit: contain;">
                             @else
                                 <!-- Placeholder if no SVG is uploaded -->
                                 <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>

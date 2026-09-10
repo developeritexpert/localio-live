@@ -922,6 +922,82 @@
     </div>
 </section>
 
+
+<!-- Explore Subcategories Section -->
+@if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
+@php
+    $exploreCat = $exploreSubcategories['category'] ?? ($business->category->parent ?? $business->category ?? null);
+    $exploreCatTrans = $exploreCat ? ($exploreCat->translations->firstWhere('lang_id', $lang_id) ?? $exploreCat->translations->first()) : null;
+    $exploreHeadline = !empty($exploreCatTrans->faq_explore_headline) 
+        ? $exploreCatTrans->faq_explore_headline 
+        : (!empty($exploreCatTrans->explore_subcategories_headline) 
+            ? $exploreCatTrans->explore_subcategories_headline 
+            : ($exploreSubcategories['title'] ?? 'Explore categories'));
+    $exploreSubtext = !empty($exploreCatTrans->faq_explore_subtext) 
+        ? $exploreCatTrans->faq_explore_subtext 
+        : ($exploreCatTrans->explore_subcategories_subtext ?? null);
+    $currentFaqSlug = $expectedSlug ?? 'faqs';
+@endphp
+<section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+    <div class="container">
+        <div class="text-start mb-4">
+            <h2 class="explore-cat-h2" style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 4px; text-transform: math-auto;">
+                {{ $exploreHeadline }}
+            </h2>
+            @if(!empty($exploreSubtext))
+                <div class="explore-cat-subtext" style="color: #475569; margin: 0; font-size: 15px;">
+                    {!! $exploreSubtext !!}
+                </div>
+            @else
+                <p style="color: #475569; margin: 0; font-size: 15px;">
+                    Browse specialized categories to find the exact tools and solutions for your requirements.
+                </p>
+            @endif
+        </div>
+
+        <div class="row g-3">
+            @foreach($exploreSubcategories['items'] as $subcatItem)
+            @php
+                $subTrans = null;
+                if (isset($subcatItem->translations)) {
+                    if (is_object($subcatItem->translations) && !($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
+                        $subTrans = $subcatItem->translations;
+                    } elseif ($subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcatItem->translations->isNotEmpty()) {
+                        $subTrans = $subcatItem->translations->first();
+                    }
+                }
+                $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
+                $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
+                $subFaqUrl = url('/' . app()->getLocale() . '/' . $subSlug . '/' . $currentFaqSlug);
+                $listingCount = $subcatItem->businesses_count ?? ($subcatItem->businesses ? $subcatItem->businesses()->where('status', 1)->count() : 0);
+            @endphp
+            <div class="col-lg-4 col-md-6 col-6">
+                <a href="{{ $subFaqUrl }}" class="text-decoration-none d-block h-100">
+                    <div class="explore-cat-card p-3 border rounded-3 bg-white h-100 d-flex flex-column align-items-center justify-content-between">
+                        <div class="mb-3 w-100 d-flex align-items-center justify-content-center" style="min-height: 100px;">
+                            @if(isset($subcatItem->topRatedImageMedia))
+                                <img src="{{ asset($subcatItem->topRatedImageMedia->dir_path . '/' . $subcatItem->topRatedImageMedia->file_name) }}" alt="{{ $subName }}" style="object-fit: contain;">
+                            @else
+                                <!-- Placeholder if no SVG is uploaded -->
+                                <div style="width: 100%; height: 100px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;"></div>
+                            @endif
+                        </div>
+                        
+                        <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
+                            <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
+                            <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
+                                {{ $listingCount }} listings
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- Report Issue Modal -->
 <div class="modal fade" id="reportIssueModal" tabindex="-1" aria-labelledby="reportIssueModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">

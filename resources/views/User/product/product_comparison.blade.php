@@ -463,7 +463,7 @@
                                             <div class="mb-3">
                                                 <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
                                                     <span style="color: rgb(33, 172, 33);" class="me-2">
-                                                        <i class="fas fa-plus-circle"></i>
+                                                        <!-- <i class="fas fa-plus-circle"></i> -->
                                                     </span>
                                                     Pros
                                                 </div>
@@ -494,7 +494,7 @@
                                             <div class="mb-1">
                                                 <div class="d-flex align-items-center mb-2" style="font-weight: 700; font-size: 14px; color: #1e3050;">
                                                     <span style="color: rgb(247, 40, 60);" class="me-2">
-                                                        <i class="fas fa-minus-circle"></i>
+                                                        <!-- <i class="fas fa-minus-circle"></i> -->
                                                     </span>
                                                     Cons
                                                 </div>

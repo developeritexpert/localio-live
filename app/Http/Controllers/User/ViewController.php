@@ -638,10 +638,39 @@ class ViewController extends Controller
                 ->toArray();
         }
 
+        // Explore subcategories of category or parent category
+        $catForExplore = $business->category ? ($business->category->parent ?? $business->category) : null;
+        $exploreSubcategories = ['title' => '', 'items' => collect(), 'category' => $catForExplore];
+        if ($catForExplore) {
+            $catForTrans = $catForExplore->translations->firstWhere('lang_id', $lang_id) ?? $catForExplore->translations->first();
+            $catForName = $catForTrans->name ?? $catForExplore->name ?? '';
+            $subcats = \App\Models\Category::where('parent_id', $catForExplore->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with([
+                    'translations' => function ($q) use ($lang_id) {
+                        $q->where('lang_id', $lang_id);
+                    },
+                    'topRatedImageMedia'
+                ])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            $exploreSubcategories = [
+                'title' => 'Explore ' . (!empty($catForName) ? $catForName : ($business->category->translations->firstWhere('lang_id', $lang_id)->name ?? '')) . ' categories',
+                'items' => $subcats,
+                'category' => $catForExplore,
+            ];
+        }
+
         return view('User.product.business_faqs', compact(
             'business', 'averageRating', 'totalReviews', 'recommendPercent', 
             'criteria', 'startingPrice', 'currency', 'timeUnit', 'additional_info', 
-            'topReviews', 'expectedSlug', 'faqCategories', 'uncategorizedFaqs', 'allFaqs', 'userVotes'
+            'topReviews', 'expectedSlug', 'faqCategories', 'uncategorizedFaqs', 'allFaqs', 'userVotes',
+            'exploreSubcategories'
         ));
     }
 
