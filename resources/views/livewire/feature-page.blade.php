@@ -2427,13 +2427,13 @@
 
         <!-- Dynamic Content Sections (H2 & H3 from Category Feature Content) -->
         @if(!empty($textSections) && is_array($textSections) && count($textSections) > 0)
-        <section class="category-text-sections-sec py-5" style="background: #ffffff;">
+        <section class="category-text-sections-sec py-5" style="background: #fdfdfd;">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-10 col-xl-9 mx-auto">
+                    <div class="">
                         @foreach($textSections as $section)
                             @if(!empty($section['h2_title']) || !empty($section['h2_text']))
-                            <div class="content-section-block mb-5 p-4 rounded-3 border bg-white shadow-sm" style="border-color: #e2e8f0 !important;">
+                            <div class="content-section-block mb-5 " style="border-color: #e2e8f0 !important;">
                                 @if(!empty($section['h2_title']))
                                 <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 14px;">
                                     {{ $section['h2_title'] }}
@@ -2447,7 +2447,7 @@
                                 @endif
 
                                 @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
-                                    <div class="sub-sections-wrapper mt-3 ps-3 border-start border-3 border-primary">
+                                    <div class="sub-sections-wrapper mt-3">
                                         @foreach($section['sub_sections'] as $sub)
                                             <div class="sub-section-item mb-4">
                                                 @if(!empty($sub['h3_title']))

@@ -140,6 +140,35 @@ class CategoryController extends Controller
                    ? $catTrans->meta_description
                    : strip_tags($catTrans->description ?? '');
 
+               // Check CategoryFeatureContent for feature-specific meta tags
+               if (!empty($feature_slug)) {
+                   $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
+                       $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
+                         ->orWhere('name', 'LIKE', $feature_slug);
+                   })->first();
+
+                   if ($matchedFeat) {
+                       $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
+                           ->where('feature_id', $matchedFeat->id)
+                           ->where('lang_id', $lang_id)
+                           ->first();
+                       if (!$featContent && $category->parent_id) {
+                           $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->parent_id)
+                               ->where('feature_id', $matchedFeat->id)
+                               ->where('lang_id', $lang_id)
+                               ->first();
+                       }
+                       if ($featContent) {
+                           if (!empty($featContent->meta_title)) {
+                               $metaTitle = $featContent->meta_title;
+                           }
+                           if (!empty($featContent->meta_description)) {
+                               $metaDescription = $featContent->meta_description;
+                           }
+                       }
+                   }
+               }
+
                if (function_exists('format_meta_text')) {
                    $metaTitle = format_meta_text($metaTitle, 'Category Page');
                    $metaDescription = format_meta_text($metaDescription);

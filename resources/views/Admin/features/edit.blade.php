@@ -5,6 +5,18 @@
             <div class="nk-block-head-content">
                 <h4 class="title nk-block-title">Edit Feature</h4>
             </div>
+            <div class="nk-block-head-content">
+                @if($feature->category_id)
+                <a href="{{ route('admin.category-feature-content.create', ['category_id' => $feature->category_id, 'feature_id' => $feature->id]) }}" class="btn btn-outline-primary btn-sm">
+                    <em class="icon ni ni-file-text"></em>
+                    <span>Feature Category Content</span>
+                </a>
+                @endif
+                <a href="{{ route('features') }}" class="btn btn-outline-light btn-sm ms-2">
+                    <em class="icon ni ni-arrow-left"></em>
+                    <span>Back</span>
+                </a>
+            </div>
         </div>
         <div class="card card-bordered">
             <div class="card-inner">

@@ -748,6 +748,29 @@ class ViewController extends Controller
                     ? $catTrans->meta_description
                     : strip_tags($catTrans?->description ?? '');
 
+                // Check CategoryFeatureContent for feature-specific meta tags
+                if (!empty($second_segment) && $category) {
+                    $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
+                        $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
+                          ->orWhere('name', 'LIKE', $second_segment);
+                    })->first();
+
+                    if ($matchedFeat) {
+                        $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
+                            ->where('feature_id', $matchedFeat->id)
+                            ->where('lang_id', $lang_id)
+                            ->first();
+                        if ($featContent) {
+                            if (!empty($featContent->meta_title)) {
+                                $metaTitle = $featContent->meta_title;
+                            }
+                            if (!empty($featContent->meta_description)) {
+                                $metaDescription = $featContent->meta_description;
+                            }
+                        }
+                    }
+                }
+
                 if (function_exists('format_meta_text')) {
                     $metaTitle = format_meta_text($metaTitle, 'Category Page');
                     $metaDescription = format_meta_text($metaDescription);
