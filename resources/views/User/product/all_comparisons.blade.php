@@ -117,9 +117,7 @@
         background: #f1f5f9;
         color: #002347;
     }
-    a.comparison-box {
-        transition: all 0.2s ease;
-    }
+  
     a.comparison-box:hover {
         border-color: #06498b !important;
         box-shadow: 0 6px 18px rgba(6, 73, 139, 0.09) !important;

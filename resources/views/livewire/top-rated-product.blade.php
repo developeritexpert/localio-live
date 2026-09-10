@@ -21,14 +21,6 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
 
-    .top-rated-heading-block h1 {
-        font-size: 28px !important;
-        font-weight: 700;
-        padding: 0 !important;
-        margin-bottom: 4px !important;
-        color: #002347 !important;
-
-    }
 
     section.top-automotive-sec.top_rate_pg.light {
         margin-top: 0 !important;
@@ -303,7 +295,7 @@
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
                                 <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
-                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 35px; width: auto; object-fit: contain;">
+                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
