@@ -16,18 +16,12 @@
 }
 
 .top-rated-heading-block {
-    /* border-bottom: 2px solid #e8eef6; */
     margin-bottom: 15px;
 }
 
-/* section.top-automotive-sec.top_rate_pg.light {
-           margin-top: 120px !important;
-        } */
-/* View details button – match height of Visit website */
 .auto-choice-btn .cta_outline {
     padding: 8px 16px !important;
     height: auto !important;
-    /* min-height: 44px !important; */
     box-sizing: border-box !important;
     line-height: 1.5 !important;
 }
@@ -48,21 +42,6 @@
 }
 
 @media (max-width: 768px) {
-
-    /* .automotive-card {
-                padding-bottom: 20px !important;
-            } */
-    /* .automotive-card .blue-chkbox {
-                position: relative !important;
-                bottom: auto !important;
-                right: auto !important;
-                border-radius: 8px !important;
-                display: block !important;
-                width: 100% !important;
-                text-align: center !important;
-                margin-top: 15px !important;
-                padding: 12px 15px !important;
-            } */
     .automotive-card .blue-chkbox label {
         display: inline-flex !important;
         align-items: center !important;
@@ -92,9 +71,6 @@
         display: block !important;
     }
 
-    /* .top-automotive-sec.top_rate_pg {
-            padding-top: 160px !important;
-        } */
     .top-rated-heading-block {
         /* margin-left: 27%; */
         margin-bottom: 24px;
@@ -103,12 +79,6 @@
     }
 
     .top-rated-heading-block h1 {
-        /* font-size: 34px;
-            font-weight: 800;
-            color: #002347;
-            margin: 0 0 5px 0;
-            letter-spacing: -0.5px;
-            line-height: 1.2; */
         font-size: 28px !important;
         font-weight: 700;
         padding: 0 !important;
@@ -125,10 +95,6 @@
 }
 
 @media (max-width: 768px) {
-
-    /* .top-automotive-sec.top_rate_pg {
-                padding-top: 110px !important;
-            } */
     .top-rated-heading-block h1 {
         font-size: 24px;
     }
@@ -234,7 +200,7 @@
     color: #002347;
 }
 
-.your-comp-pill>* {
+.your-comp-pill > * {
     pointer-events: none;
 }
 
@@ -882,8 +848,16 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide,
-.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide.slick-current,
+.is-asan-slider
+    .slider-for
+    .slick-list.draggable
+    .slick-track
+    .asan-slider-inr.slick-slide,
+.is-asan-slider
+    .slider-for
+    .slick-list.draggable
+    .slick-track
+    .asan-slider-inr.slick-slide.slick-current,
 .slider-for .slick-slide,
 .slider-for .slick-current,
 .slider-for .asan-slider-inr,
@@ -942,7 +916,9 @@ section.community-feedback-sec {
     line-height: 1 !important;
     outline: none !important;
     box-shadow: none !important;
-    transition: background 0.2s ease, color 0.2s ease !important;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease !important;
 }
 
 .close-country-menu:hover {
@@ -969,7 +945,9 @@ section.community-feedback-sec {
     cursor: pointer;
     line-height: 1;
     color: #475569;
-    transition: color 0.15s ease, transform 0.15s ease;
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
 }
 
 /* .user-rating-dropdown-btn:hover,
@@ -981,7 +959,7 @@ section.community-feedback-sec {
     transition: transform 0.2s ease;
 }
 
-.user-rating-dropdown-btn[aria-expanded=true] svg {
+.user-rating-dropdown-btn[aria-expanded="true"] svg {
     transform: rotate(180deg);
 }
 
@@ -1079,8 +1057,17 @@ section.community-feedback-sec {
 }
 
 /* Greek & Global Fallback Font Alignment */
-body, .footer-langs-container a, .ft-btm-rgt .select-menu .options li a {
-    font-family: "Montserrat", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+body,
+.footer-langs-container a,
+.ft-btm-rgt .select-menu .options li a {
+    font-family:
+        "Montserrat",
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
 }
 
 /* Specific Greek Language Font Balancing */
@@ -1088,7 +1075,13 @@ body, .footer-langs-container a, .ft-btm-rgt .select-menu .options li a {
 .footer-langs-container a[href*="el-gr"],
 .ft-btm-rgt .select-menu .options li a[href*="el-gr"],
 html[lang*="el"] body {
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-family:
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif !important;
     font-weight: 300 !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -1149,7 +1142,9 @@ html[lang*="el"] body {
         white-space: nowrap;
         flex-shrink: 0;
         display: inline-block;
-        transition: opacity 0.2s ease, color 0.2s ease;
+        transition:
+            opacity 0.2s ease,
+            color 0.2s ease;
         line-height: 1.3;
     }
 
