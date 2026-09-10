@@ -1111,6 +1111,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const mobileSearch = document.getElementById('mobile-search-container');
+        const mobileCatNav = document.getElementById('mobile-cat-nav-bar');
         if (mobileSearch && mobileSearch.classList.contains('home-mobile-search')) {
             window.addEventListener('scroll', function() {
                 const heroSection = document.querySelector('.banner_sec') || document.querySelector('.hero_area');
@@ -1118,8 +1119,10 @@
                 
                 if (window.scrollY > threshold) {
                     mobileSearch.classList.add('show-search');
+                    if (mobileCatNav) mobileCatNav.classList.add('show-search');
                 } else {
                     mobileSearch.classList.remove('show-search');
+                    if (mobileCatNav) mobileCatNav.classList.remove('show-search');
                 }
             });
         }
