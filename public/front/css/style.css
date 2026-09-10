@@ -9988,6 +9988,7 @@ button.btn-vote-faq i.far:hover {
 
 .alt-add-to-comp-btn i {
     color: var(--color-dark-blue-text);
+    line-height: 0;
 }
 
 .auto-choice-hd .auto-choice-btn .cta_orange {
@@ -10004,6 +10005,9 @@ button.btn-vote-faq i.far:hover {
     border-radius: 50%;
     width: 35px;
     height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .comparison-box:hover {

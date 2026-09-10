@@ -241,10 +241,17 @@
         font-size: 24px;
         cursor: pointer;
         transition: color .2s ease;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .mobile-sidebar-close:hover {
         color: #F9633B !important;
+        background: #90909050;
     }
 
     @media(min-width:992px) {
@@ -1045,10 +1052,11 @@
                                 font-size: 12px;
                                 transition: transform 0.25s ease;
                                 color: rgba(255, 255, 255, 0.6);
+                                transform: rotate(268deg);
                             }
 
                             .mobile-cat-toggle.active .mobile-cat-arrow {
-                                transform: rotate(180deg);
+                                transform: rotate(90deg);
                                 color: #F9633B;
                             }
 

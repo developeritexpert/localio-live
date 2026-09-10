@@ -180,7 +180,7 @@
                         <a href="{{ url('/' . app()->getLocale()) }}" style="color: #64748b; text-decoration: none;">All</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" style="color: #64748b; text-decoration: none;">Top rated</a>
+                        <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" style="color: #64748b; text-decoration: none; ">Top rated</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page" style="color: #002347; font-weight: 500;">
                         FAQs

@@ -7511,7 +7511,8 @@ textarea#message {
     .top-rated-heading-sec .breadcrumb-item a,
     .breadcrumb-item + .breadcrumb-item::before,
     .breadcrumb-item + .breadcrumb-item {
-        padding: 0 2px !important;
+        padding: 0 !important;
+        margin-right: 3px;
     }
 
     .sorting {
