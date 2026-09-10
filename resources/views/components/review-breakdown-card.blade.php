@@ -32,7 +32,7 @@
                 <x-business-logo :business="$business" :name="$bName" />
             </div>
             <div>
-                <h3 style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</h3>
+                <p style="font-size: 16px !important; font-weight: 600 !important; margin: 0 0 4px 0; line-height: 1 !important;">{{ $bName }}</p>
                 <div class="rating-group" style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
                     <span style="">{{ formatRating($bizAvgRating) }}</span>
                     <div class="rating-stars" style="display: flex; gap: 0px;">

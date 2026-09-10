@@ -17,6 +17,8 @@
     }
     .table-business-link:hover {
         background-color: #e9edf5 !important;
+        text-decoration: none !important;
+
     }
   
     .comparison-box:hover {
@@ -1533,7 +1535,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1552,7 +1554,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:20px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1744,7 +1746,7 @@
                 </div>
             </section>
             <!-- community section -->
-            <section class="community-feedback-sec">
+            <section class="community-feedback-sec border_bt">
                 <!-- Comparison Tables -->
                 <div class="container">
                     <div class="comparison-table-section">
@@ -1950,9 +1952,9 @@
                 @endphp
                 <div class="d-block category-compare-tool-card mt-4 p-4 rounded-4 bg-white border" style="margin-top: 60px !important;" data-aos="fade-up" data-aos-duration="1000" style="border-radius: 16px !important; border: 1px solid #e2e8f0 !important; box-shadow: 0 4px 16px rgba(0, 35, 71, 0.04); overflow: visible !important;">
                     <div class="mb-3">
-                        <h3 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px;">
+                        <p style="font-size: 20px; font-weight: 600; color: #002347; margin-bottom: 6px;">
                             {{ $compToolHeadline }}
-                        </h3>
+                        </p>
                         @if(!empty($compToolSubtext))
                             <div class="compare-tool-subtext" style="color: #64748b; font-size: 14px; margin: 0;">
                                 {!! $compToolSubtext !!}
@@ -2430,13 +2432,13 @@
                         <div class="accordion" id="categoryFaqAccordion">
                             @foreach($faqs as $fIndex => $faq)
                             <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                                <p class="accordion-header" id="headingFaq{{ $fIndex }}">
+                                <h3 class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fdfdfd;">
                                         {{ $faq['question'] }}
                                     </button>
-                                </p>
+                                </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fdfdfd;">
+                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
