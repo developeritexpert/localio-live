@@ -136,7 +136,7 @@
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
@@ -182,9 +182,9 @@
                 
                 <!-- Search Option -->
                 <div class="faq-search-wrapper">
-                    <h3 style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
+                    <p style="font-size: 20px; font-weight: 600 !important; color: #002347; margin-bottom: 14px;">
                         Search FAQs
-                    </h3>
+                    </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" id="faqSearchInput" placeholder="Search questions..." autocomplete="off">
@@ -250,11 +250,11 @@
                                             @endphp
                                             @if(!empty($question))
                                             <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden; background: #ffffff;">
-                                                <p class="accordion-header" id="faqHeading{{ $itemGlobalIndex }}">
+                                                <h3 class="accordion-header" id="faqHeading{{ $itemGlobalIndex }}">
                                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $itemGlobalIndex }}" aria-expanded="false" aria-controls="faqCollapse{{ $itemGlobalIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #ffffff;">
                                                         {{ $question }}
                                                     </button>
-                                                </p>
+                                                </h3>
                                                 <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
                                                         <div class="faq-answer-text">

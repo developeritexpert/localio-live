@@ -1837,6 +1837,7 @@ body .inner_banner_sec .inner_banr_content .breadcrumb .breadcrumb-item {
     margin-bottom: 20px;
     color: var(--color-primary-blue);
 }
+
 /* 
 .review_sec .review_detl {
     padding: 25px 40px;
@@ -7148,7 +7149,7 @@ input:checked ~ .toggle-dot {
 }
 
 .asn_main_sec .an_lkd h1 {
-    font-size: 28px !important;
+    font-size: 34px !important;
     font-weight: 700;
     padding: 0 !important;
     margin-bottom: 2px !important;
@@ -8449,7 +8450,7 @@ body .product_sec li.breadcrumb-item.active {
 }
 
 .revie_left_rgt_sec .review_detl {
-    background-color: var(--color-bg-default);
+    background-color: #fff;
 }
 
 .revie_left_rgt_sec .review-star-box .progress-box {
@@ -9418,9 +9419,11 @@ a.more-about-link-item:hover {
     border: 1.5px solid #e2e8f0;
 }
 
-.ask-community-banner div h3 {
+.ask-community-banner div h2 {
     color: var(--color-dark-blue-text) !important;
     font-weight: 600 !important;
+    font-size: 22px     !important;
+    margin-bottom: 6px;
 }
 
 .ask-community-banner p {
@@ -9647,8 +9650,9 @@ section.write-review-hero .container h1 {
     cursor: pointer;
 }
 
-.asn_dv.d-flex.align-items-center.justify-content-between.flex-wrap.gap-2.mb-3 {
+.asn_dv {
     padding-top: 8px;
+    padding-bottom: 10px;
 }
 
 .main_dhdr {
@@ -9983,10 +9987,7 @@ button.btn-vote-faq i.far:hover {
 }
 
 .alt-add-to-comp-btn i {
-    position: relative;
-    top: 1px;
     color: var(--color-dark-blue-text);
-    margin-top: 1px;
 }
 
 .auto-choice-hd .auto-choice-btn .cta_orange {

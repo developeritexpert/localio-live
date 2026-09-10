@@ -277,7 +277,7 @@
 <section class="help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec business_faq_sec" style=" background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     @if($parentCatName)
@@ -369,9 +369,9 @@
 
                 <!-- Section 2: Search Option (Replacing 2nd text section) -->
                 <div class="faq-search-wrapper" id="section-search-faq">
-                    <h3 style="margin-bottom: 14px;">
+                    <p style="margin-bottom: 14px;">
                         Search {{ $bName }} FAQs
-                    </h3>
+                    </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" id="faqSearchInput" placeholder="Search questions..." autocomplete="off">
@@ -427,11 +427,11 @@
                                             @endphp
                                             @if($trans)
                                             <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="{{ $cat->id }}" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                                <p class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                                <h3 class="accordion-header" id="faqHeading{{ $faq->id }}">
                                                     <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                         {{ $trans->question }}
                                                     </button>
-                                                </p>
+                                                </h3>
                                                 <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
                                                     <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
                                                         <div class="faq-answer-text mb-3">
@@ -486,11 +486,11 @@
                                         @endphp
                                         @if($trans)
                                         <div class="accordion-item mb-3" data-faq-id="{{ $faq->id }}" data-category="general" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                                            <p class="accordion-header" id="faqHeading{{ $faq->id }}">
+                                            <h3 class="accordion-header" id="faqHeading{{ $faq->id }}">
                                                 <button class="accordion-button {{ $totalFaqCount > 1 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $faq->id }}" aria-expanded="{{ $totalFaqCount === 1 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $faq->id }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                                     {{ $trans->question }}
                                                 </button>
-                                            </p>
+                                            </h3>
                                             <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
                                                 <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fff;">
                                                     <div class="faq-answer-text mb-3">
@@ -542,9 +542,9 @@
                 <!-- Section 4: Ask Community Bottom Banner -->
                 <div class="ask-community-banner" id="section-ask-community">
                     <div>
-                        <h3 style="margin-bottom: 6px;">
+                        <h2>
                             Still have a question about {{ $bName }}?
-                        </h3>
+                        </h2>
                         <p style="margin-bottom: 0;">
                             Ask the Localio community
                         </p>

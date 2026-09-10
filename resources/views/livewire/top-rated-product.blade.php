@@ -1242,11 +1242,11 @@
                         @foreach($faqs as $fIndex => $faq)
                         @if($loop->iteration > 10) @break @endif
                         <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
-                            <p class="accordion-header" id="faqHeading{{ $fIndex }}">
+                            <h3 class="accordion-header" id="faqHeading{{ $fIndex }}">
                                 <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                     {{ $faq['question'] }}
                                 </button>
-                            </p>
+                            </h3>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
                                 <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fff;">
                                     {!! $faq['answer'] !!}

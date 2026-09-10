@@ -1564,7 +1564,7 @@
 
                                                         <!-- FAQ 1 -->
                                                         <div class="accordion-item"  data-aos-duration="1000">
-                                                            <p class="accordion-header" id="headingOne1">
+                                                            <h3 class="accordion-header" id="headingOne1">
                                                                 <button class="accordion-button" type="button"
                                                                     data-bs-toggle="collapse"
                                                                     data-bs-target="#collapseOne1"
@@ -1572,7 +1572,7 @@
                                                                     aria-controls="collapseOne1">
                                                                     <span>What is Thread Theory Atelier?</span>
                                                                 </button>
-                                                            </p>
+                                                            </h3>
                                                             <div id="collapseOne1" class="accordion-collapse collapse show"
                                                                 aria-labelledby="headingOne1"
                                                                 data-bs-parent="#accordionExample">
@@ -1584,7 +1584,7 @@
 
                                                         <!-- FAQ 2 -->
                                                         <div class="accordion-item"  data-aos-duration="1000">
-                                                            <p class="accordion-header" id="headingOne2">
+                                                            <h3 class="accordion-header" id="headingOne2">
                                                                 <button class="accordion-button collapsed" type="button"
                                                                     data-bs-toggle="collapse"
                                                                     data-bs-target="#collapseOne2"
@@ -1592,7 +1592,7 @@
                                                                     aria-controls="collapseOne2">
                                                                     <span>Do I need an appointment for a fitting?</span>
                                                                 </button>
-                                                            </p>
+                                                            </h3>
                                                             <div id="collapseOne2" class="accordion-collapse collapse"
                                                                 aria-labelledby="headingOne2"
                                                                 data-bs-parent="#accordionExample">
@@ -1604,7 +1604,7 @@
 
                                                         <!-- FAQ 3 -->
                                                         <div class="accordion-item"  data-aos-duration="1000">
-                                                            <p class="accordion-header" id="headingOne3">
+                                                            <h3 class="accordion-header" id="headingOne3">
                                                                 <button class="accordion-button collapsed" type="button"
                                                                     data-bs-toggle="collapse"
                                                                     data-bs-target="#collapseOne3"
@@ -1612,7 +1612,7 @@
                                                                     aria-controls="collapseOne3">
                                                                     <span>What types of garments do you offer?</span>
                                                                 </button>
-                                                            </p>
+                                                            </h3>
                                                             <div id="collapseOne3" class="accordion-collapse collapse"
                                                                 aria-labelledby="headingOne3"
                                                                 data-bs-parent="#accordionExample">
