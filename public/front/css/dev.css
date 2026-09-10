@@ -1065,3 +1065,17 @@ section.community-feedback-sec {
     /* transform: translateY(-2px); */
     border-color: #cbd5e1 !important;
 }
+
+/* Feature Page Browsing & View All Link */
+.view-all-category-link {
+    color: #007bff !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+    transition: color 0.15s ease !important;
+}
+.view-all-category-link:hover {
+    color: #0056b3 !important;
+    text-decoration: underline !important;
+}

@@ -368,6 +368,18 @@
         color: #0056b3 !important;
         text-decoration: underline !important;
     }
+    .view-all-category-link {
+        color: #007bff !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-decoration: underline !important;
+        cursor: pointer !important;
+        transition: color 0.15s ease !important;
+    }
+    .view-all-category-link:hover {
+        color: #0056b3 !important;
+        text-decoration: underline !important;
+    }
     .explore-subcat-card:hover h6 {
         color: #e56b46 !important;
     }
@@ -951,55 +963,78 @@
                             </div>
                             @if ($products->count())
                             <div class="auto-choice-rgt ">
-                                <!-- Selected Features with Locked Chip & Category Redirect Link (Image 1) -->
-                                <div class="active-feature-chips-container mb-3">
-                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2">
-                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+                                <!-- Browsing Fixed Feature & Selected Secondary Features (Image 2) -->
+                                @php
+                                    $currentLocale = request()->segment(1) ?? app()->getLocale() ?? 'en-us';
+                                    $catTrans = $category->translations ?? $category->translation;
+                                    if (!$catTrans && method_exists($category, 'categoryTranslations')) {
+                                        $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id ?? getCurrentLanguageID())->first();
+                                    }
+                                    $rawCatName = $catTrans->name ?? ($category->name ?? 'Category');
+                                    $catSlug = $catTrans->slug ?? ($category->slug ?? request()->segment(2));
 
-                                        {{-- Locked Feature Chip (Cannot be removed) --}}
-                                        @if($lockedFeatureId)
-                                            <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="Locked primary feature">
-                                                <span style="font-size: 13px;">🔒</span>
-                                                <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
-                                            </span>
-                                        @endif
-
-                                        {{-- Secondary Selected Features --}}
-                                        @php $extraFeaturesCount = 0; @endphp
-                                        @foreach($availableFeatures ?? [] as $fItem)
-                                            @if((int)$fItem->id !== (int)$lockedFeatureId && in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? [])))
-                                                @php
-                                                    $extraFeaturesCount++;
-                                                    $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
-                                                    $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
-                                                @endphp
-                                                <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
-                                                    <span>{{ $fName }}</span>
-                                                    <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
-                                                </button>
-                                            @endif
-                                        @endforeach
-
-                                        @if($extraFeaturesCount > 0)
-                                            <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
-                                        @endif
-                                    </div>
-
-                                    {{-- Navigation Link: Remove "[Feature Name]" and view all --}}
-                                    @php
-                                        $catSlug = $category->translations?->slug ?? ($category->slug ?? request()->segment(2));
-                                        if ($category->parent && $category->parent_id) {
-                                            $parentSlug = $category->parent->translations?->slug ?? ($category->parent->slug ?? request()->segment(2));
-                                            $baseCatUrl = url('/' . (request()->segment(1) ?? 'en-us') . '/' . $parentSlug . '/' . $catSlug);
+                                    if ($category->parent && $category->parent_id) {
+                                        $parentTrans = $category->parent->translations ?? $category->parent->translation;
+                                        $parentSlug = $parentTrans->slug ?? ($category->parent->slug ?? '');
+                                        if (!empty($parentSlug)) {
+                                            $baseCatUrl = url('/' . $currentLocale . '/' . $parentSlug . '/' . $catSlug);
                                         } else {
-                                            $baseCatUrl = url('/' . (request()->segment(1) ?? 'en-us') . '/' . $catSlug);
+                                            $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
                                         }
-                                    @endphp
-                                    <div class="mt-2 text-start">
-                                        <a href="{{ $baseCatUrl }}" class="remove-view-all-link d-inline-flex align-items-center gap-1" style="color: #007bff; font-size: 13px; text-decoration: underline; font-weight: 500;">
-                                            Remove “{{ $lockedFeatureName }}” and view all
+                                    } else {
+                                        $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+                                    }
+
+                                    $firstWord = explode(' ', trim($rawCatName))[0] ?? '';
+                                    if (strlen($firstWord) <= 4 && strtoupper($firstWord) === $firstWord && ctype_alpha($firstWord)) {
+                                        $formattedCatName = $rawCatName;
+                                    } else {
+                                        $formattedCatName = mb_strtolower($rawCatName);
+                                    }
+
+                                    $secondarySelectedFeatures = [];
+                                    foreach($availableFeatures ?? [] as $fItem) {
+                                        if((int)$fItem->id !== (int)$lockedFeatureId && in_array((string)$fItem->id, array_map('strval', $selectedFeatures ?? []))) {
+                                            $secondarySelectedFeatures[] = $fItem;
+                                        }
+                                    }
+                                @endphp
+
+                                <div class="active-feature-chips-container mb-3">
+                                    {{-- Row 1: Browsing: [Fixed Feature Chip] [View all {category}] --}}
+                                    @if($lockedFeatureName)
+                                    <div class="browsing-feature-row d-flex align-items-center flex-wrap gap-2 mb-2">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Browsing:</span>
+
+                                        <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="{{ $lockedFeatureName }}">
+                                            <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
+                                        </span>
+
+                                        <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style="color: #007bff; font-size: 13px; text-decoration: underline; font-weight: 500; margin-left: 4px;">
+                                            View all {{ $formattedCatName }}
                                         </a>
                                     </div>
+                                    @endif
+
+                                    {{-- Row 2: Selected features: [Secondary Feature Chips] Clear features --}}
+                                    @if(count($secondarySelectedFeatures) > 0)
+                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mt-1">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+
+                                        @foreach($secondarySelectedFeatures as $fItem)
+                                            @php
+                                                $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
+                                            @endphp
+                                            <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                                <span>{{ $fName }}</span>
+                                                <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
+                                            </button>
+                                        @endforeach
+
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
+                                    </div>
+                                    @endif
                                 </div>
 
                                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1396,6 +1431,44 @@
                             @else
 
                             <div class="auto-choice-rgt">
+                                <!-- Browsing & Selected Features Chips (Image 2) -->
+                                <div class="active-feature-chips-container mb-3">
+                                    {{-- Row 1: Browsing: [Fixed Feature Chip] [View all {category}] --}}
+                                    @if($lockedFeatureName)
+                                    <div class="browsing-feature-row d-flex align-items-center flex-wrap gap-2 mb-2">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Browsing:</span>
+
+                                        <span class="active-feat-chip" style="cursor: default !important; background: #ffffff !important; border: 1px solid #cbd5e1 !important;" title="{{ $lockedFeatureName }}">
+                                            <span style="font-weight: 600; color: #002347;">{{ $lockedFeatureName }}</span>
+                                        </span>
+
+                                        <a href="{{ $baseCatUrl }}" class="view-all-category-link d-inline-flex align-items-center" style="color: #007bff; font-size: 13px; text-decoration: underline; font-weight: 500; margin-left: 4px;">
+                                            View all {{ $formattedCatName }}
+                                        </a>
+                                    </div>
+                                    @endif
+
+                                    {{-- Row 2: Selected features: [Secondary Feature Chips] Clear features --}}
+                                    @if(count($secondarySelectedFeatures) > 0)
+                                    <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mt-1">
+                                        <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
+
+                                        @foreach($secondarySelectedFeatures as $fItem)
+                                            @php
+                                                $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
+                                                $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
+                                            @endphp
+                                            <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                                <span>{{ $fName }}</span>
+                                                <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
+                                            </button>
+                                        @endforeach
+
+                                        <a href="javascript:void(0)" wire:click="clearAllFeatures" class="clear-features-link">Clear features</a>
+                                    </div>
+                                    @endif
+                                </div>
+
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
