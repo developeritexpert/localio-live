@@ -1079,3 +1079,19 @@ section.community-feedback-sec {
     color: #0056b3 !important;
     text-decoration: underline !important;
 }
+
+/* Greek & Global Fallback Font Alignment */
+body, .footer-langs-container a, .ft-btm-rgt .select-menu .options li a {
+    font-family: "Montserrat", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Specific Greek Language Font Balancing */
+.footer-langs-container a[href*="/el-gr"],
+.footer-langs-container a[href*="el-gr"],
+.ft-btm-rgt .select-menu .options li a[href*="el-gr"],
+html[lang*="el"] body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-weight: 300 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
