@@ -694,6 +694,36 @@
                                                 @enderror
                                             </div>
                                         </div>
+
+                                        <!-- FAQ Page Explore Subcategories Headline -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_explore_headline">FAQ Explore Categories Headline (H2)</label>
+                                                <div class="form-control-wrap">
+                                                    <input type="text" class="form-control" id="faq_explore_headline" name="faq_explore_headline"
+                                                        value="{{ isset($category_data) ? ($category_data['faq_explore_headline'] ?? '') : old('faq_explore_headline') }}"
+                                                        placeholder="e.g. Explore Web hosting categories">
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Headline displayed above the explore subcategories section on the FAQ page. Defaults to "Explore [Category Name] categories".</small>
+                                                @error('faq_explore_headline')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- FAQ Page Explore Subcategories Subtext -->
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="form-label fw-bold" for="faq_explore_subtext">FAQ Explore Categories Subtext</label>
+                                                <div class="form-control-wrap">
+                                                    <textarea class="form-control rich-editor" id="faq_explore_subtext" name="faq_explore_subtext" rows="3" placeholder="Browse specialized categories to find the exact tools and solutions for your requirements.">{!! isset($category_data) ? ($category_data['faq_explore_subtext'] ?? '') : old('faq_explore_subtext') !!}</textarea>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Rich-text description placed below the Explore Categories headline on the FAQ page. Defaults to standard subtext if left empty.</small>
+                                                @error('faq_explore_subtext')
+                                                    <div class="error text-danger">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -1068,3 +1068,14 @@ section.community-feedback-sec {
     text-align: right;
     flex-shrink: 0;
 }
+
+/* Explore Category Card Hover Shadow & Transitions */
+.explore-cat-card {
+    transition: all 0.25s ease !important;
+}
+
+.explore-cat-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-2px);
+    border-color: #cbd5e1 !important;
+}

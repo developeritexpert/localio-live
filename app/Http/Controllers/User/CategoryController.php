@@ -507,9 +507,60 @@ class CategoryController extends Controller
                 ->get();
         }
 
+        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $faqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
+
+        $exploreSubcategories = ['title' => '', 'items' => collect()];
+        if ($category->parent_id === null) {
+            $subcats = Category::where('parent_id', $category->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with([
+                    'translations' => function ($q) use ($lang_id) {
+                        $q->where('lang_id', $lang_id);
+                    },
+                    'topRatedImageMedia'
+                ])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            $exploreSubcategories = [
+                'title' => 'Explore ' . $catName . ' categories',
+                'items' => $subcats
+            ];
+        } else {
+            $parent = $category->parent;
+            $parentTransObj = $parent ? (CategoryTranslation::where('category_id', $parent->id)->where('lang_id', $lang_id)->first() ?? CategoryTranslation::where('category_id', $parent->id)->first()) : null;
+            $parentName = $parentTransObj->name ?? $parent->name ?? '';
+            $subcats = Category::where('parent_id', $category->parent_id)
+                ->where('id', '!=', $category->id)
+                ->where('status', 1)
+                ->whereHas('translations', function ($q) use ($lang_id) {
+                    $q->where('lang_id', $lang_id)->whereNotNull('name')->where('name', '!=', '');
+                })
+                ->with([
+                    'translations' => function ($q) use ($lang_id) {
+                        $q->where('lang_id', $lang_id);
+                    },
+                    'topRatedImageMedia'
+                ])
+                ->withCount(['businesses' => function ($q) {
+                    $q->where('status', 1);
+                }])
+                ->get();
+            $exploreSubcategories = [
+                'title' => 'Explore other ' . (!empty($parentName) ? $parentName : $catName) . ' categories',
+                'items' => $subcats
+            ];
+        }
+
         return view('User.category.category_faqs', compact(
             'category', 'categoryTranslation', 'parentCategory', 'parentTrans', 
-            'catName', 'faqs', 'recentReviews', 'topBusinesses', 'lang_id'
+            'catName', 'faqs', 'recentReviews', 'topBusinesses', 'lang_id',
+            'exploreSubcategories', 'faqSlug'
         ));
     }
 
