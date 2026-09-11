@@ -26,6 +26,7 @@ class BusinessImages extends Component
     public $currentImages = []; // Draft copy of existing images
     public $newUploads = []; // Temporary uploaded files
     public $isTakingScreenshots = false;
+    
 
 
     public $screenshotCategories = [];
@@ -187,6 +188,97 @@ class BusinessImages extends Component
     }
     public function closeManageCategoriesModal()
     {
+        /*
+    |--------------------------------------------------------------------------
+    | Reload Screenshot URLs modal using fresh DB state
+    |--------------------------------------------------------------------------
+    */
+        $business = Business::findOrFail($this->selectedBusinessId);
+
+        $categories = $business->screenshot_categories ?? [];
+
+        /*
+    | Current country
+    */
+        $activeLanguage = \App\Models\Language::find(
+            $business->languages_supported
+        );
+
+        $activeCountryId = (int) ($activeLanguage?->country_id ?? 0);
+
+        /*
+    | Only current country's categories
+    */
+        $this->screenshotCategories = collect($categories)
+            ->filter(function ($category) use ($activeCountryId) {
+                return
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId;
+            })
+            ->values()
+            ->all();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Restore SELECTED category
+    |--------------------------------------------------------------------------
+    */
+        $selectedCategory = collect($this->screenshotCategories)
+            ->first(function ($category) {
+                return !empty($category['is_selected']);
+            });
+
+        /*
+    |--------------------------------------------------------------------------
+    | If no selected category → use current country's default
+    |--------------------------------------------------------------------------
+    */
+        if (!$selectedCategory) {
+            $selectedCategory = collect($this->screenshotCategories)
+                ->first(function ($category) {
+                    return !empty($category['is_default']);
+                });
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Set selected category + URLs
+    |--------------------------------------------------------------------------
+    */
+        if ($selectedCategory) {
+
+            $this->selectedScreenshotCategory =
+                $selectedCategory['name'] ?? '';
+
+            $this->screenshotUrls = array_values(
+                array_filter(
+                    $selectedCategory['urls'] ?? [],
+                    function ($url) {
+                        return !empty(trim($url));
+                    }
+                )
+            );
+        } else {
+
+            /*
+        | No selected/default category
+        | → Global Default URLs
+        */
+            $this->selectedScreenshotCategory = '';
+
+            $this->screenshotUrls = array_values(
+                array_filter(
+                    $business->screenshot_urls ?? [],
+                    function ($url) {
+                        return !empty(trim($url));
+                    }
+                )
+            );
+        }
+
+        while (count($this->screenshotUrls) < 5) {
+            $this->screenshotUrls[] = '';
+        }
+
         $this->dispatch('return-to-screenshot-url-modal');
     }
 
@@ -747,58 +839,85 @@ class BusinessImages extends Component
             message: $message
         );
     }
-
     public function getDisplayImages($business)
     {
-        $selectedCategoryName = trim(
-            $business->screenshot_display_category ?? ''
-        );
+        /*
+    |--------------------------------------------------------------------------
+    | Load screenshot categories for THIS business
+    |--------------------------------------------------------------------------
+    */
+        $categories = $business->screenshot_categories ?? [];
 
         /*
     |--------------------------------------------------------------------------
-    | 1. Specific category selected in Business Edit
+    | Get THIS business's current active country
     |--------------------------------------------------------------------------
     */
-        if (!empty($selectedCategoryName)) {
+        $activeLanguageId = $business->languages_supported;
 
-            $selectedCategory = collect(
-                $business->screenshot_categories ?? []
-            )->first(function ($category) use ($selectedCategoryName) {
+        $activeLanguage = $activeLanguageId
+            ? \App\Models\Language::find($activeLanguageId)
+            : null;
 
-                return strcasecmp(
-                    trim($category['name'] ?? ''),
-                    $selectedCategoryName
-                ) === 0;
+        $activeCountryId = (int) ($activeLanguage?->country_id ?? 0);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Find selected category for current country
+    |--------------------------------------------------------------------------
+    */
+        $activeCategory = collect($categories)
+            ->first(function ($category) use ($activeCountryId) {
+                return
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId
+                    &&
+                    !empty($category['is_selected']);
             });
 
-            return $selectedCategory['images'] ?? [];
+        /*
+    |--------------------------------------------------------------------------
+    | If no selected category,
+    | find default category for current country
+    |--------------------------------------------------------------------------
+    */
+        if (!$activeCategory) {
+
+            $activeCategory = collect($categories)
+                ->first(function ($category) use ($activeCountryId) {
+                    return
+                        (int) ($category['country_id'] ?? 0) === $activeCountryId
+                        &&
+                        !empty($category['is_default']);
+                });
         }
 
         /*
     |--------------------------------------------------------------------------
-    | 2. Business uses DEFAULT
+    | If selected/default category exists,
+    | show its images
     |--------------------------------------------------------------------------
     */
-        $defaultCategory = collect(
-            $business->screenshot_categories ?? []
-        )->first(function ($category) {
+        if ($activeCategory) {
 
-            return !empty($category['is_default']);
-        });
-
-        if ($defaultCategory) {
-            return $defaultCategory['images'] ?? [];
+            return array_slice(
+                $activeCategory['images'] ?? [],
+                0,
+                5
+            );
         }
 
         /*
     |--------------------------------------------------------------------------
-    | 3. No default category
+    | If no category is available for current country,
+    | use the same fallback as Manage Images modal.
     |--------------------------------------------------------------------------
     */
-        return $business->business_images ?? [];
+        return array_slice(
+            $business->business_images ?? [],
+            0,
+            5
+        );
     }
-
-
     public function openEditCategory($index)
     {
         if (!isset($this->screenshotCategories[$index])) {
@@ -1544,101 +1663,183 @@ class BusinessImages extends Component
 
         $this->selectedBusinessId = $businessId;
 
+        /*
+    |--------------------------------------------------------------------------
+    | Current active language of THIS business
+    |--------------------------------------------------------------------------
+    */
         $activeLanguageId = $business->languages_supported;
 
-        $activeLanguage = \App\Models\Language::find($activeLanguageId);
+        $activeLanguage = $activeLanguageId
+            ? \App\Models\Language::find($activeLanguageId)
+            : null;
 
+        $activeCountryId = (int) ($activeLanguage?->country_id ?? 0);
+
+        /*
+    |--------------------------------------------------------------------------
+    | Business name
+    |--------------------------------------------------------------------------
+    */
         $this->selectedBusinessName =
-            $business->translations->firstWhere('lang_id', $this->lang_id)?->name
+            $business->translations->firstWhere(
+                'lang_id',
+                $this->lang_id
+            )?->name
             ?? $business->translations->first()?->name
             ?? 'Business #' . $businessId;
 
         /*
-|--------------------------------------------------------------------------
-| Load countries first
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | Load countries
+    |--------------------------------------------------------------------------
+    */
         $this->screenshotCountries = Country::orderBy('name')->get();
 
         /*
-|--------------------------------------------------------------------------
-| Set active country
-|--------------------------------------------------------------------------
-*/
-        $this->selectedScreenshotCountry = $activeLanguage?->country_id
-            ? (int) $activeLanguage->country_id
-            : null;
-
-        // Reset modal state
-
+    |--------------------------------------------------------------------------
+    | Reset modal state completely
+    |--------------------------------------------------------------------------
+    */
+        $this->selectedScreenshotCountry = $activeCountryId ?: null;
         $this->selectedScreenshotCategory = null;
         $this->screenshotCategories = [];
-        $this->screenshotUrls = ['', '', '', '', ''];
+        $this->screenshotUrls = [
+            '',
+            '',
+            '',
+            '',
+            ''
+        ];
 
-        // All categories
+        /*
+    |--------------------------------------------------------------------------
+    | Load all screenshot categories of THIS business
+    |--------------------------------------------------------------------------
+    */
         $this->businessScreenshotCategories =
             $business->screenshot_categories ?? [];
 
-        // Only categories of active country
-        if ($this->selectedScreenshotCountry) {
+        /*
+    |--------------------------------------------------------------------------
+    | ONLY current country's categories
+    |--------------------------------------------------------------------------
+    */
+        $countryCategories = collect(
+            $this->businessScreenshotCategories
+        )
+            ->filter(function ($category) use ($activeCountryId) {
+                return
+                    $activeCountryId > 0
+                    &&
+                    (int) ($category['country_id'] ?? 0)
+                    === $activeCountryId;
+            })
+            ->values()
+            ->all();
 
-            $countryId = (int) $this->selectedScreenshotCountry;
+        $this->screenshotCategories = $countryCategories;
 
-            $this->screenshotCategories = collect(
-                $this->businessScreenshotCategories
-            )
-                ->filter(function ($category) use ($countryId) {
-                    return (int) ($category['country_id'] ?? 0) === $countryId;
-                })
-                ->values()
-                ->all();
-        }
+        /*
+|--------------------------------------------------------------------------
+| Category / Global Default priority
+|
+| 1. Business Edit selected category
+| 2. Current country's default category
+| 3. Global Default URLs
+|--------------------------------------------------------------------------
+*/
 
-        // Category priority:
-        // 1. Assigned category
-        // 2. Default category
-        // 3. First category
+        /*
+|--------------------------------------------------------------------------
+| 1. Selected category
+|--------------------------------------------------------------------------
+*/
         $selectedCategory = collect($this->screenshotCategories)
             ->first(function ($category) {
                 return !empty($category['is_selected']);
             });
 
+        /*
+|--------------------------------------------------------------------------
+| 2. Current country's default category
+|--------------------------------------------------------------------------
+*/
         if (!$selectedCategory) {
+
             $selectedCategory = collect($this->screenshotCategories)
                 ->first(function ($category) {
                     return !empty($category['is_default']);
                 });
         }
 
-        if (!$selectedCategory && !empty($this->screenshotCategories)) {
-            $selectedCategory = $this->screenshotCategories[0];
+        /*
+|--------------------------------------------------------------------------
+| 3. If no selected/default category,
+|    check Global Default URLs
+|--------------------------------------------------------------------------
+*/
+        if (!$selectedCategory) {
+
+            $defaultUrls = $business->screenshot_urls ?? [];
+
+            if (
+                is_array($defaultUrls)
+                &&
+                !empty(array_filter($defaultUrls, function ($url) {
+                    return !empty(trim($url));
+                }))
+            ) {
+
+                $this->selectedScreenshotCategory = '';
+
+                $this->screenshotUrls = array_values(
+                    array_filter($defaultUrls, function ($url) {
+                        return !empty(trim($url));
+                    })
+                );
+            }
         }
 
-        // Load selected category URLs
+        /*
+|--------------------------------------------------------------------------
+| Load selected category URLs
+|--------------------------------------------------------------------------
+*/
         if ($selectedCategory) {
 
             $this->selectedScreenshotCategory =
-                $selectedCategory['name'] ?? null;
-
-            $urls = $selectedCategory['urls'] ?? [];
+                $selectedCategory['name'] ?? '';
 
             $this->screenshotUrls = array_values(
-                array_filter($urls, function ($url) {
-                    return !empty(trim($url));
-                })
+                array_filter(
+                    $selectedCategory['urls'] ?? [],
+                    function ($url) {
+                        return !empty(trim($url));
+                    }
+                )
             );
         }
 
-        // Always keep 5 URL inputs
+        /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT:
+    | Never load old category/global URLs here.
+    |--------------------------------------------------------------------------
+    */
         while (count($this->screenshotUrls) < 5) {
             $this->screenshotUrls[] = '';
         }
 
+        /*
+    |--------------------------------------------------------------------------
+    | Open modal
+    |--------------------------------------------------------------------------
+    */
         $this->showUrlModal = true;
 
         $this->dispatch('show-url-modal');
     }
-
 
 
 
@@ -1653,6 +1854,8 @@ class BusinessImages extends Component
 
         $categoryName = trim($this->newScreenshotCategory);
         $countryId = (int) $this->selectedScreenshotCountry;
+
+        $previouslySelectedCategory = $this->selectedScreenshotCategory;
 
         $country = collect($this->screenshotCountries)
             ->firstWhere('id', $countryId);
@@ -1725,6 +1928,49 @@ class BusinessImages extends Component
         $this->categoryPage = 1;
         $this->newScreenshotCategory = '';
 
+        /*
+|--------------------------------------------------------------------------
+| IMPORTANT:
+| Newly created category has no URLs yet.
+| Clear previous category URL state so old URLs
+| are not shown when returning to the new category.
+|--------------------------------------------------------------------------
+*/
+        $this->selectedScreenshotCategory = $previouslySelectedCategory;
+
+        if (!empty($previouslySelectedCategory)) {
+            $selectedCategory = collect($this->screenshotCategories)
+                ->first(function ($category) use ($previouslySelectedCategory) {
+                    return strcasecmp(
+                        trim($category['name'] ?? ''),
+                        trim($previouslySelectedCategory)
+                    ) === 0;
+                });
+
+            if ($selectedCategory) {
+                $this->screenshotUrls = array_values(
+                    array_filter(
+                        $selectedCategory['urls'] ?? [],
+                        function ($url) {
+                            return !empty(trim($url));
+                        }
+                    )
+                );
+            } else {
+                $this->screenshotUrls = ['', '', '', '', ''];
+            }
+        } else {
+            $this->screenshotUrls = ['', '', '', '', ''];
+        }
+
+        while (count($this->screenshotUrls) < 5) {
+            $this->screenshotUrls[] = '';
+        }
+
+        unset(
+            $this->screenshotUrlDrafts[$countryId][$categoryName]
+        );
+
         $this->resetErrorBag('newScreenshotCategory');
 
         $this->dispatch(
@@ -1790,19 +2036,53 @@ class BusinessImages extends Component
     public function updatedSelectedScreenshotCategory($categoryName)
     {
         $countryId = (int) $this->selectedScreenshotCountry;
-        $categoryName = trim($categoryName);
+        $categoryName = trim($categoryName ?? '');
 
-        // No country or No Category
-        if (empty($countryId) || empty($categoryName)) {
+        /*
+    |--------------------------------------------------------------------------
+    | No country
+    |--------------------------------------------------------------------------
+    */
+        if (empty($countryId)) {
             $this->screenshotUrls = ['', '', '', '', ''];
             return;
         }
 
         /*
-     * First priority:
-     * Load temporary URLs entered by the user
-     * for this country + category.
-     */
+    |--------------------------------------------------------------------------
+    | DEFAULT URLs
+    |
+    | Empty category name means "Default URLs"
+    |--------------------------------------------------------------------------
+    */
+        if ($categoryName === '') {
+
+            $defaultUrls = [];
+
+            $business = Business::find($this->selectedBusinessId);
+
+            if ($business) {
+                $defaultUrls = $business->screenshot_urls ?? [];
+            }
+
+            $this->screenshotUrls = array_values(
+                array_filter($defaultUrls, function ($url) {
+                    return !empty(trim($url));
+                })
+            );
+
+            while (count($this->screenshotUrls) < 5) {
+                $this->screenshotUrls[] = '';
+            }
+
+            return;
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Temporary draft URLs for current country + category
+    |--------------------------------------------------------------------------
+    */
         if (
             isset($this->screenshotUrlDrafts[$countryId][$categoryName])
         ) {
@@ -1813,8 +2093,10 @@ class BusinessImages extends Component
         }
 
         /*
-     * Otherwise load saved URLs from the category.
-     */
+    |--------------------------------------------------------------------------
+    | Load saved URLs from selected category
+    |--------------------------------------------------------------------------
+    */
         $category = collect($this->screenshotCategories)
             ->first(function ($item) use ($categoryName, $countryId) {
 
@@ -1834,13 +2116,11 @@ class BusinessImages extends Component
 
         $urls = $category['urls'] ?? [];
 
-        $this->screenshotUrls = [];
-
-        foreach ($urls as $url) {
-            if (!empty(trim($url))) {
-                $this->screenshotUrls[] = $url;
-            }
-        }
+        $this->screenshotUrls = array_values(
+            array_filter($urls, function ($url) {
+                return !empty(trim($url));
+            })
+        );
 
         while (count($this->screenshotUrls) < 5) {
             $this->screenshotUrls[] = '';

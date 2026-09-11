@@ -314,47 +314,119 @@
 
                         <div class="d-flex align-items-center justify-content-between mb-2">
 
-                            <label for="screenshotCountry"
-                                class="form-label fw-semibold mb-0">
-
+                            <label class="form-label fw-semibold mb-0">
                                 Country / Region
                                 <span class="text-danger">*</span>
-
                             </label>
-
 
                             {{-- Manage Categories --}}
                             <button type="button"
                                 class="btn btn-outline-primary btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#manageCategoriesModal">
-
                                 <em class="icon ni ni-setting me-1"></em>
-
                                 Manage Categories
-
                             </button>
 
                         </div>
 
 
-                        <select id="screenshotCountry"
-                            class="form-select"
-                            wire:key="screenshot-country-{{ $selectedBusinessId }}-{{ $selectedScreenshotCountry }}"
-                            wire:model.live="selectedScreenshotCountry">
+                        {{-- Selection Mode --}}
+                        <div class="d-flex gap-4 mb-3">
 
-                            @foreach ($screenshotCountries as $country)
-                            <option value="{{ $country->id }}">
-                                {{ $country->name }}
-                            </option>
-                            @endforeach
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                    type="radio"
+                                    name="countrySelectionMode"
+                                    id="countryModeAll"
+                                    value="all"
+                                    wire:model.live="countrySelectionMode">
+                                <label class="form-check-label" for="countryModeAll">
+                                    All
+                                </label>
+                            </div>
 
-                        </select>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                    type="radio"
+                                    name="countrySelectionMode"
+                                    id="countryModeSpecific"
+                                    value="specific"
+                                    wire:model.live="countrySelectionMode">
+                                <label class="form-check-label" for="countryModeSpecific">
+                                    Specific Countries/Regions
+                                </label>
+                            </div>
+
+                        </div>
+
+
+                        @if ($countrySelectionMode === 'specific')
+
+                        {{-- Search + Select All / Clear All --}}
+                        <div class="d-flex align-items-center gap-2 mb-2">
+
+                            <input type="text"
+                                class="form-control"
+                                placeholder="Search countries..."
+                                wire:model.live.debounce.300ms="countrySearch">
+
+                            <button type="button"
+                                class="btn btn-primary btn-sm text-nowrap"
+                                wire:click="selectAllCountries">
+                                Select All
+                            </button>
+
+                            <button type="button"
+                                class="btn btn-outline-danger btn-sm text-nowrap"
+                                wire:click="clearAllCountries">
+                                Clear All
+                            </button>
+
+                        </div>
+
+
+                        {{-- Country Checkbox List --}}
+                        <div class="border rounded p-2"
+                            style="max-height: 220px; overflow-y: auto;">
+
+                            @forelse ($screenshotCountries as $country)
+                            @if (!$countrySearch || str_contains(strtolower($country->name), strtolower($countrySearch)))
+                            <div class="form-check py-1 border-bottom"
+                                wire:key="country-check-{{ $country->id }}">
+
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    id="country-{{ $country->id }}"
+                                    value="{{ $country->id }}"
+                                    wire:model.live="selectedScreenshotCountries">
+
+                                <label class="form-check-label d-block"
+                                    for="country-{{ $country->id }}">
+                                    {{ $country->name }}
+                                </label>
+
+                            </div>
+                            @endif
+                            @empty
+                            <div class="text-muted small text-center py-2">
+                                No countries found.
+                            </div>
+                            @endforelse
+
+                        </div>
 
                         <div class="form-text">
-                            Select the country or region for which the screenshot
-                            category and URLs should be configured.
+                            Select one or more countries/regions to configure the screenshot category and URLs.
                         </div>
+
+                        @else
+
+                        <div class="form-text">
+                            The screenshot configuration will apply to all countries/regions.
+                        </div>
+
+                        @endif
 
                     </div>
 
