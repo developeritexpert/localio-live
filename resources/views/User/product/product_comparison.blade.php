@@ -27,6 +27,65 @@
 
     $hasAffiliated = $businesses->contains(fn($b) => !empty($b->is_affiliate));
 @endphp
+@if(isset($businesses) && count($businesses) > 0)
+<!-- Sticky Comparison Top Banner (Shows on scroll below fixed header) -->
+<div id="sticky-comparison-bar" class="sticky-comparison-bar items-count-{{ count($businesses) }}">
+    <div class="container">
+        <div class="sticky-comp-row">
+            @foreach($businesses as $index => $business)
+                @php
+                    $bTrans = $business->translations->first();
+                    $bName = $bTrans?->name ?? $business->name ?? 'Business';
+                    $bSlug = $bTrans?->slug ?? $business->slug;
+                    $rating = round($business->reviews->avg('rating'), 1);
+                    $ratingCount = $business->reviews->count();
+                @endphp
+                <div class="sticky-comp-col">
+                    <div class="sticky-comp-info">
+                        <div class="sticky-comp-logo">
+                            <x-business-logo :business="$business" />
+                        </div>
+                        <div class="sticky-comp-meta">
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}" class="sticky-comp-name" title="{{ $bName }}">
+                                {{ $bName }}
+                            </a>
+                            <div class="sticky-comp-rating rating-group">
+                                <span class="">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                <div class="d-inline-flex align-items-center">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($rating >= $i)
+                                            <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                        @elseif ($rating >= $i - 0.5)
+                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 10px;"></i>
+                                        @else
+                                            <i class="far fa-star text-warning" style="font-size: 10px;"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="">({{ $ratingCount }})</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sticky-comp-actions">
+                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
+                            class="sticky-comp-btn-outline">
+                            {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
+                        </a>
+                        @if(!empty($business->is_affiliate))
+                            <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                target="_blank"
+                                class="sticky-comp-btn-orange">
+                                {{ static_text('visit_website') ?: 'Visit website' }}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
 <section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
@@ -1562,6 +1621,37 @@ document.addEventListener('DOMContentLoaded', function () {
             adjustRatingMenuPosition(wrapper);
         }
     });
+
+    
+    // Sticky Comparison Top Banner on Scroll
+    const stickyCompBar = document.getElementById('sticky-comparison-bar');
+    if (stickyCompBar) {
+        const headerEl = document.querySelector('header .sec_head');
+        const triggerEl = document.querySelector('.asn_tprw') || document.querySelector('.pdc_box') || document.querySelector('.your-comparison-wrapper');
+
+        function updateStickyCompBar() {
+            const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
+            stickyCompBar.style.top = Math.max(0, headerBottom) + 'px';
+
+            let show = false;
+            if (triggerEl) {
+                const rect = triggerEl.getBoundingClientRect();
+                show = rect.bottom < headerBottom + 40;
+            } else {
+                show = window.scrollY > 350;
+            }
+
+            if (show) {
+                stickyCompBar.classList.add('is-visible');
+            } else {
+                stickyCompBar.classList.remove('is-visible');
+            }
+        }
+
+        window.addEventListener('scroll', updateStickyCompBar, { passive: true });
+        window.addEventListener('resize', updateStickyCompBar, { passive: true });
+        updateStickyCompBar();
+    }
 
     function adjustRatingMenuPosition(wrapper) {
         const menu = wrapper.querySelector('.user-rating-breakdown-menu');

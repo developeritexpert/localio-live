@@ -1715,3 +1715,291 @@ button.post-action-btn.toggle-reply-btn {
     text-decoration: none !important;
     color: #06498b !important;
 }
+
+/* ==========================================================
+   STICKY COMPARISON BANNER (X vs Y PAGE)
+   ========================================================== */
+.sticky-comparison-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 35, 71, 0.08);
+    border-bottom: 1px solid #e2e8f0;
+    z-index: 95;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+.sticky-comparison-bar.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sticky-comp-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+.sticky-comp-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    position: relative;
+    gap: 16px;
+}
+
+.sticky-comp-col:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 15%;
+    height: 70%;
+    border-right: 1px dotted #94a3b8;
+}
+
+.sticky-comp-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.sticky-comp-logo {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f1f5f9;
+}
+
+.sticky-comp-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.sticky-comp-logo .business-initial-logo {
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    font-weight: 700;
+    background-color: #e2e8f0;
+    color: #1e3050;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sticky-comp-meta {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sticky-comp-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #002347;
+    text-decoration: none;
+    line-height: 1.25;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+}
+
+.sticky-comp-name:hover {
+    color: #ff5b24;
+    text-decoration: none;
+}
+
+.sticky-comp-rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.sticky-comp-score {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.sticky-comp-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5px;
+    font-size: 11px;
+}
+
+.sticky-comp-stars i {
+    font-size: 11px;
+}
+
+.sticky-comp-stars i.text-warning,
+.sticky-comp-stars i.fas,
+.sticky-comp-stars i.fa-star-half-alt {
+    color: #f59e0b !important;
+}
+
+.sticky-comp-stars i.far {
+    color: #cbd5e1 !important;
+}
+
+.sticky-comp-count {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 400;
+}
+
+.sticky-comp-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.sticky-comp-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #002347;
+    background: #ffffff;
+    border: 1.5px solid #002347;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.sticky-comp-btn-outline:hover {
+    background: #002347;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.sticky-comp-btn-orange {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #ff5b24;
+    border: 1.5px solid #ff5b24;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.sticky-comp-btn-orange:hover {
+    background: #e04a18;
+    border-color: #e04a18;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* Adjustments for 3 items */
+.sticky-comparison-bar.items-count-3 .sticky-comp-col {
+    padding: 8px 16px;
+    gap: 10px;
+}
+.sticky-comparison-bar.items-count-3 .sticky-comp-logo {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+}
+.sticky-comparison-bar.items-count-3 .sticky-comp-name {
+    font-size: 14px;
+}
+.sticky-comparison-bar.items-count-3 .sticky-comp-btn-outline,
+.sticky-comparison-bar.items-count-3 .sticky-comp-btn-orange {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Adjustments for 4 items */
+.sticky-comparison-bar.items-count-4 .sticky-comp-col {
+    padding: 8px 10px;
+    gap: 8px;
+}
+.sticky-comparison-bar.items-count-4 .sticky-comp-logo {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+}
+.sticky-comparison-bar.items-count-4 .sticky-comp-name {
+    font-size: 13px;
+}
+.sticky-comparison-bar.items-count-4 .sticky-comp-btn-outline,
+.sticky-comparison-bar.items-count-4 .sticky-comp-btn-orange {
+    padding: 5px 8px;
+    font-size: 11.5px;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+    .sticky-comp-row {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .sticky-comp-row::-webkit-scrollbar {
+        display: none;
+    }
+    .sticky-comp-col {
+        min-width: 290px;
+        flex: 0 0 auto;
+        padding: 8px 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sticky-comp-col {
+        min-width: 250px;
+        padding: 6px 10px;
+    }
+    .sticky-comp-logo {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+    .sticky-comp-name {
+        font-size: 13px;
+    }
+    .sticky-comp-actions {
+        gap: 4px;
+    }
+    .sticky-comp-btn-outline,
+    .sticky-comp-btn-orange {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
