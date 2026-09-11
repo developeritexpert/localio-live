@@ -256,7 +256,7 @@
                                                     </button>
                                                 </h3>
                                                 <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
+                                                    <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
                                                         </div>

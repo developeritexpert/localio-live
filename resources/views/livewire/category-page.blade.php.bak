@@ -1915,7 +1915,7 @@
 
                         <div class="text-center mt-4">
                             <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
-                                View more FAQs
+                                View all FAQs 
                             </a>
                         </div>
                     </div>

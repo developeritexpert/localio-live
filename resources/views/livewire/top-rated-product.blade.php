@@ -294,14 +294,13 @@
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                             </p>
-                            <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
-                                style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
+                            <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                         </div>
                     </div>
                 </div>
@@ -340,7 +339,7 @@
                                     <p style=" margin-bottom: 8px; ">
                                         Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                     </p>
-                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
+                                    <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn">Learn more</a>
                                 </div>
                             </div>
                         </div>
@@ -1262,7 +1261,7 @@
                                 </button>
                             </h3>
                             <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
-                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  background-color: #fff;">
+                                <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                     {!! $faq['answer'] !!}
                                 </div>
                             </div>
@@ -1272,7 +1271,7 @@
 
                     <div class="text-center mt-4">
                         <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link" >
-                            View more FAQs
+                            View all FAQs 
                         </a>
                     </div>
                 </div>

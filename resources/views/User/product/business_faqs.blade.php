@@ -433,7 +433,7 @@
                                                     </button>
                                                 </h3>
                                                 <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
+                                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                         <div class="faq-answer-text mb-3">
                                                             {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                         </div>
@@ -492,7 +492,7 @@
                                                 </button>
                                             </h3>
                                             <div id="faqCollapse{{ $faq->id }}" class="accordion-collapse collapse {{ $totalFaqCount === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $faq->id }}" data-bs-parent="#businessFaqAccordion">
-                                                <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #fff;">
+                                                <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                     <div class="faq-answer-text mb-3">
                                                         {!! nl2br(e(strip_tags($trans->answer))) !!}
                                                     </div>

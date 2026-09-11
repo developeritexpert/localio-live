@@ -2520,13 +2520,20 @@
         padding: 0 20px;
     }
 
-    .sidebar-section-title {
+      .sidebar-section-title {
         font-size: 14px !important;
         color: #111 !important;
         font-weight: 700 !important;
-        margin-bottom: 12px !important;
-        margin-top: 8px;
+        margin-left: -12px;
+        margin-bottom: 0;
+        padding: 8px;
+        padding-left: 12px;
         letter-spacing: 0.5px !important;
+        border-radius: 4px;
+    }
+
+    .sidebar-section-title:hover {
+        background: #eaeded;
     }
 
     .sidebar-section-title a {
@@ -2534,10 +2541,9 @@
         font-weight: 700 !important;
         text-decoration: none !important;
         display: inline-block;
-        transition: color 0.15s ease;
     }
 
-    .sidebar-section-title a:hover {
+    .sidebar-section-title:hover a{
         color: #f26522 !important;
     }
 
@@ -2560,7 +2566,6 @@
         font-weight: 500;
         text-decoration: none;
         border-radius: 4px;
-        transition: background 0.15s ease, color 0.15s ease;
     }
 
     .sidebar-menu-list li a:hover {
