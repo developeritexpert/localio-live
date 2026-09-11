@@ -118,7 +118,7 @@
   
     a.comparison-box:hover {
         border-color: #06498b !important;
-        box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
     }
 </style>
 @endpush
@@ -269,7 +269,7 @@
 
                     <div class="d-flex align-items-center gap-3 flex-wrap flex-md-nowrap p-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: visible !important;">
                         <!-- Business A (Fixed) -->
-                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill-10 border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
+                        <div class="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded-pill-8 border" style="min-width: 170px; border-color: #cbd5e1 !important; flex-shrink: 0; height: 48px;">
                             <div class="top-product-small-logo" >
                                 <x-business-logo :business="$business" :name="$bName" />
                             </div>
@@ -283,14 +283,14 @@
                         <div id="compareSearchInputWrapper" class="position-relative flex-grow-1" style="min-width: 220px; overflow: visible !important;">
                             <div style="position: relative; display: flex; align-items: center;">
                                 <i class="fas fa-search" style="position: absolute; left: 16px; color: #94a3b8; font-size: 14px; pointer-events: none;"></i>
-                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-10" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
+                                <input type="text" id="compareSearchInput" class="form-control rounded-pill-8" placeholder="Search business to compare..." style="font-size: 14px; border: 1.5px solid #cbd5e1; outline: none; padding-left: 42px; padding-right: 16px; height: 48px;" autocomplete="off">
                             </div>
                             <!-- Custom Auto-complete Container -->
                             <div id="compareSearchDropdown" class="custom-search-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; width: 100%; max-height: 260px; overflow-y: auto; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,0.12); z-index: 99999; margin-top: 6px;"></div>
                         </div>
 
                         <!-- Business B Selected Pill (Shown when business selected, same style as left with cross) -->
-                        <div id="selectedBusinessPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white rounded-pill border flex-grow-1" style="display: none !important; border-color: #cbd5e1 !important; min-width: 170px; height: 48px;">
+                        <div id="selectedBusinessPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white rounded-pill-8 border flex-grow-1" style="display: none !important; border-color: #cbd5e1 !important; min-width: 170px; height: 48px;">
 
                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
 

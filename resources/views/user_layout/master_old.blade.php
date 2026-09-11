@@ -1860,7 +1860,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             </div>
                             <ul class="options">
                                 <div class="container">
-                                    <h3 style="color: black;">Choose your Country/region </h3>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h3 style="color: black; margin: 0;">Choose your Country/Region</h3>
+                                        <button type="button" onclick="event.stopPropagation(); this.closest('.select-menu').classList.remove('active');" aria-label="Close" style="background: none; border: none; font-size: 22px; color: #333; cursor: pointer; padding: 0; line-height: 1;">✕</button>
+                                    </div>
                                 <div class="footer-langs-container">
                                     @foreach ($languages as $language)
                                     <li>
@@ -2877,7 +2880,7 @@ document.addEventListener('DOMContentLoaded', function () {
             font-size: 14px !important;
             color: #111  !important;
             font-weight: 700  !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 8px !important;
             letter-spacing: 0.5px !important;
         }
         .sidebar-menu-list {
@@ -2896,7 +2899,6 @@ document.addEventListener('DOMContentLoaded', function () {
             font-weight: 500;
             text-decoration: none;
             border-radius: 4px;
-            transition: background 0.15s ease, color 0.15s ease;
         }
         .sidebar-menu-list li a:hover {
             background: #eaeded;

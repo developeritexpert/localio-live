@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\SiteContent\SiteContentController;
 use App\Http\Controllers\Admin\SiteContent\StaticContentController;
 use App\Http\Controllers\Admin\BaseLanguageController;
 use App\Http\Controllers\Admin\Bcp47LanguageController;
-use App\Http\Controllers\Admin\{ContentGenerationController,AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
+use App\Http\Controllers\Admin\{ContentGenerationController,AiConfigurationController,AiPromptController,MailTemplateController,AdminBusinessController,AdminDashController,FeatureController, CategoriesController, SiteLanguagesController, FilterController, ArticleController, SitePagesController, AdminProductController, AdminSettingsController, ContributorBadgeController, DBrefreshController, ExpertGuideController, HomeContentController, ProductFetureController, ReviewController, UserManegementController, usinessController};
 use App\Http\Controllers\Admin\QueryController;
 use App\Http\Controllers\Admin\CategoryFeatureContentController;
 
@@ -270,12 +270,12 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/update-filter-order', [FilterController::class, 'updateFilterOrder'])->name('update-filter-order');
 
     // Contributor Badges
-    Route::get('/admin-dashboard/contributor-badges', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'index'])->name('admin.contributor.badges');
-    Route::get('/admin-dashboard/contributor-badges/create', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'create'])->name('admin.contributor.badges.create');
-    Route::post('/admin-dashboard/contributor-badges/store', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'store'])->name('admin.contributor.badges.store');
-    Route::get('/admin-dashboard/contributor-badges/edit/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'edit'])->name('admin.contributor.badges.edit');
-    Route::post('/admin-dashboard/contributor-badges/update/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'update'])->name('admin.contributor.badges.update');
-    Route::get('/admin-dashboard/contributor-badges/delete/{id}', [App\Http\Controllers\Admin\ContributorBadgeController::class, 'destroy'])->name('admin.contributor.badges.delete');
+    Route::get('/admin-dashboard/contributor-badges', [ContributorBadgeController::class, 'index'])->name('admin.contributor.badges');
+    Route::get('/admin-dashboard/contributor-badges/create', [ContributorBadgeController::class, 'create'])->name('admin.contributor.badges.create');
+    Route::post('/admin-dashboard/contributor-badges/store', [ContributorBadgeController::class, 'store'])->name('admin.contributor.badges.store');
+    Route::get('/admin-dashboard/contributor-badges/edit/{id}', [ContributorBadgeController::class, 'edit'])->name('admin.contributor.badges.edit');
+    Route::post('/admin-dashboard/contributor-badges/update/{id}', [ContributorBadgeController::class, 'update'])->name('admin.contributor.badges.update');
+    Route::get('/admin-dashboard/contributor-badges/delete/{id}', [ContributorBadgeController::class, 'destroy'])->name('admin.contributor.badges.delete');
 
     // Features Controller :
     Route::get('/admin-dashboard/features', [FeatureController::class, 'index'])->name('features');
@@ -712,7 +712,7 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
         ->name('category.detail.page');
 
     // Dynamic 2-Segment Wildcard Routes (Must be AFTER fixed 2-segment routes)
-    Route::get('/{comparison_slug}/{comparison_businesses}', [\App\Http\Controllers\User\ProductController::class, 'productComparisonSeo'])
+    Route::get('/{comparison_slug}/{comparison_businesses}', [ProductController::class, 'productComparisonSeo'])
         ->where('comparison_businesses', '.*-.*-.*')
         ->name('product-comparison.seo');
 
@@ -720,6 +720,8 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     Route::get('/{business_slug}/{faq_slug}', [ViewController::class, 'businessFaqs'])->name('business.all_faqs');
     Route::get('/{business_slug}/{alternatives_slug}', [ViewController::class, 'businessAlternatives'])->name('business.alternatives');
     Route::get('/{slug}/{reviews_slug}', [ViewController::class, 'allReview'])->name('ReviewShow');
+    Route::get('/{business_slug}/discussions', [ViewController::class, 'businessDiscussions'])->name('business.discussions');
+    Route::get('/{business_slug}/{discussions_slug}', [ViewController::class, 'businessDiscussions'])->name('business.discussions_slug');
     Route::get('/{business_slug}/comparisons', [ProductController::class, 'allBusinessComparisons'])->name('business.all_comparisons');
 
     // Dynamic 1-Segment Catch-all Routes (Categories, Subcategories, and Businesses)
@@ -732,9 +734,17 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
 Route::get('/set-site-active-language/{lang_id}', [SiteLanguagesController::class, 'setActiveSiteLanguage'])->name('set-site-languages');
 Route::get('/set-admin-active-language/{lang_id}', [SiteLanguagesController::class, 'setActiveAdminLanguage'])->name('set-admin-languages');
 // Business FAQ Vote and Report routes
-Route::post('/business-faq/vote', [\App\Http\Controllers\User\ViewController::class, 'voteBusinessFaq'])->name('business.faq.vote');
-Route::post('/business-faq/report', [\App\Http\Controllers\User\ViewController::class, 'reportBusinessFaq'])->name('business.faq.report');
-Route::post('/review/report', [\App\Http\Controllers\User\ViewController::class, 'reportReview'])->name('review.report');
+Route::post('/business-faq/vote', [ViewController::class, 'voteBusinessFaq'])->name('business.faq.vote');
+Route::post('/business-faq/report', [ViewController::class, 'reportBusinessFaq'])->name('business.faq.report');
+Route::post('/review/report', [ViewController::class, 'reportReview'])->name('review.report');
+// Business Discussion Action routes
+Route::post('/business-discussion/store', [ViewController::class, 'storeDiscussion'])->name('business.discussion.store');
+Route::post('/business-discussion/comment', [ViewController::class, 'storeDiscussionComment'])->name('business.discussion.comment');
+Route::post('/business-discussion/vote', [ViewController::class, 'voteDiscussion'])->name('business.discussion.vote');
+Route::post('/business-discussion/pin', [ViewController::class, 'pinDiscussionOrComment'])->name('business.discussion.pin');
+Route::delete('/business-discussion/{id}', [ViewController::class, 'destroyDiscussion'])->name('business.discussion.destroy');
+Route::delete('/business-discussion/comment/{id}', [ViewController::class, 'destroyDiscussionComment'])->name('business.discussion.comment.destroy');
+
 
 Route::get('/refresh-csrf', function () {
     return response()->json(['token' => csrf_token()]);
@@ -742,7 +752,7 @@ Route::get('/refresh-csrf', function () {
 
 
 // Ad tracking handling
-Route::post('/postback', [App\Http\Controllers\PostbackController::class, 'handle']);
+Route::post('/postback', [PostbackController::class, 'handle']);
 
 Route::post('/clear-register-session', function () {
     session()->forget(['register_profile_needed', 'register_email', 'register_first_name', 'register_last_name']);

@@ -30,7 +30,6 @@
             font-size: 15px;
             color: #1e293b;
             outline: none;
-            transition: all 0.2s ease;
         }
         .faq-search-input-group input:focus {
             border-color: #06498b;
@@ -41,7 +40,7 @@
         .faq-category-nav {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap:0 25px;
             flex-wrap: wrap;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 0;
@@ -56,7 +55,6 @@
             background: transparent;
             border: none;
             border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -103,13 +101,11 @@
             font-size: 13px;
             font-weight: 600;
             outline: none;
-            transition: all 0.15s ease;
         }
         .btn-vote-faq i {
             font-size: 15px;
             color: #64748b;
             font-weight: 400;
-            transition: all 0.15s ease;
         }
         .btn-vote-faq:hover, .btn-vote-faq:hover i {
             color: #1e3050;
@@ -298,7 +294,7 @@
                                                     </button>
                                                 </h3>
                                                 <div id="faqCollapse{{ $itemGlobalIndex }}" class="accordion-collapse collapse {{ $itemGlobalIndex === 1 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $itemGlobalIndex }}" data-bs-parent="#topRatedFaqAccordion_{{ $catSlug }}">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px;  line-height: 1.7; background-color: #ffffff;">
+                                                    <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
                                                         </div>
@@ -368,7 +364,7 @@
                     <!-- 1. Recent Reviews Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent reviews</h5>
+                            <h2 class="m-0 card-h-title">Recent reviews</h2>
                             <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link">
                                 View all
                             </a>
@@ -427,9 +423,9 @@
                                         </div>
                                         <small class="text-muted" style="font-size: 11px;">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
                                     </div>
-                                    <h6 style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                    <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
                                         {{ $revTrans->title ?? 'Review' }}
-                                    </h6>
+                                    </p>
                                     <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                         @for($s=1; $s<=5; $s++)
                                             @if($s<=floor($rev->rating))
@@ -460,9 +456,9 @@
                                     </div>
                                     <small class="text-muted" style="font-size: 11px;">1 week ago</small>
                                 </div>
-                                <h6 style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
                                     Rem sint adipisicin
-                                </h6>
+                                </p>
                                 <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                     <i class="fas fa-star text-warning"></i>
                                     <i class="fas fa-star text-warning"></i>
@@ -478,7 +474,7 @@
                     <!-- 2. Recent Discussions Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent discussions</h5>
+                            <h2 class="m-0 card-h-title">Recent discussions</h2>
                             <a href="{{ url('/' . app()->getLocale() . '/top-rated') }}" class="view-review-link">
                                 View all
                             </a>
@@ -497,9 +493,9 @@
                                 </div>
                                 <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
                             </div>
-                            <h6 style="margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                            <p style="margin-top: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                 Is there a free tier for API access or is it trial only?
-                            </h6>
+                            </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                 We are looking to integrate this into our workflow and want to test latency...
                             </p>
@@ -518,9 +514,9 @@
                                 </div>
                                 <small class="text-muted" style="font-size: 11px;">1 day ago</small>
                             </div>
-                            <h6 style="margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                            <p style="margin-top: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                 How does the performance compare to alternatives in large datasets?
-                            </h6>
+                            </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                 We noticed some latency spikes during queries with more than 10k items...
                             </p>

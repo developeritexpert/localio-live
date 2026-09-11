@@ -1212,7 +1212,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                                     aria-labelledby="faqHeading{{ $index }}"
                                                                     data-bs-parent="#businessFaqAccordion">
-                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
+                                                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                                         {!! $translation->answer !!}
                                                                     </div>
                                                                 </div>
@@ -1229,7 +1229,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div class="text-center mt-4">
                                                             <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $bizSlugVal, 'faq_slug' => $faqSlugVal]) }}"
                                                                 class="btn-g-link">
-                                                                View more FAQs
+                                                                View all FAQs 
                                                             </a>
                                                         </div>
                                                     </div>
@@ -1276,7 +1276,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 <div class="col-lg-6 col-md-6 col-12">
     <a href="{{ $seoUrl }}" class="comparison-box-link text-decoration-none d-block h-100">
         <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between"
-            style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
+            style="background-color: #fff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
 
             <div class="d-flex align-items-center justify-content-between gap-2">
 
@@ -1905,8 +1905,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                         </div>
 
-                        <div id="sectionDiscussions">
-
+                        <div id="sectionDiscussions" class="mt-5 pt-4">
+                            <x-community-discussion :business="$business" />
                         </div>
                         <div class="mt-5">
                             <section class="subs_sec light p_50 d-none" id="section16">
@@ -2011,7 +2011,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         @if ($hasUserReviews)
                                         <a href="#section14" class="view-review-link" style="">
-                                            View all reviews
+                                           Go to reviews 
                                         </a>
                                         @endif
                                     </div>
@@ -2076,41 +2076,51 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             }
                             $hasStartingPrice = !empty($startingPrice) && is_numeric($startingPrice) && $startingPrice > 0;
                             @endphp
+@if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
+    <div class="innr_price_trail">
 
-                            @if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
-                            <div class="innr_price_trail">
+        @if($hasStartingPrice)
+            <div class="main_feature_sm">
+                <div class="feture_box str_prc_box">
 
-                                @if($hasStartingPrice)
-                                <div class="main_feature_sm">
-                                    <div class="feture_box str_prc_box">
+                    <p class="starting-price-title">
+                        Starting price
+                    </p>
 
-                                        <p class="starting-price-title">
-                                            Starting price
-                                        </p>
+                    <p class="starting-price-value">
+                        {{ $currency }}{{ $startingPrice }}
+                    </p>
 
-                                        <p class="starting-price-value">
-                                            {{ $currency }}{{ $startingPrice }}
-                                        </p>
+    @if (
+    !empty($additional_info) &&
+    !in_array(
+        strtoupper(trim((string) $additional_info)),
+        ['NA', 'N/A', 'NULL']
+    )
+)
+    <p class="starting-price-text">
+        {{ $additional_info }}
+    </p>
+@endif
 
-                                        <p class="starting-price-text">
-                                            Flat Rate, Per {{ ucfirst($timeUnit) }}
-                                        </p>
+                    <a href="{{ $business->getTrackedUrl() }}"
+                        data-track="{{ json_encode([
+                            'type' => 'click',
+                            'business_id' => $business->id,
+                            'action' => 'view_pricing',
+                            'label' => 'View pricing',
+                        ]) }}"
+                        target="_blank"
+                        class="starting-price-link">
+                        View pricing
+                    </a>
 
-                                        <a href="{{ $business->getTrackedUrl() }}"
-                                            data-track="{{ json_encode([
-                                                            'type' => 'click',
-                                                            'business_id' => $business->id,
-                                                            'action' => 'view_pricing',
-                                                            'label' => 'View pricing',
-                                                        ]) }}"
-                                            target="_blank"
-                                            class="starting-price-link">
-                                            View pricing
-                                        </a>
+                </div>
+            </div>
+        @endif
 
-                                    </div>
-                                </div>
-                                @endif
+    </div>
+
 
                                 @if($hasFreeTrial)
                                 <div class="main_feature_sm">
@@ -2209,7 +2219,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
                                                 <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
                                                 <a href="#section14" class="view-review-link">
-                                                    View all reviews
+                                                    Go to reviews 
                                                 </a>
                                             </div>
 
@@ -2289,68 +2299,88 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         </div>
                                     </div>
+                                    @php
+                                        $sidebarDiscussions = $business->discussions()->with(['user'])->latest()->take(2)->get();
+                                    @endphp
+                                    @if($sidebarDiscussions->isNotEmpty())
                                     <div class="main_feature_lg">
                                         <div class="feture_box review-breakdown-box">
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                                 <h2 class="size22 big-bld m-0">Recent discussions</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">
-                                                    View all discussions
+                                                     Go to discussions 
                                                 </a>
                                             </div>
 
-                                            <div class="sidebar-review-card" style="margin-bottom: 20px;">
+                                            @foreach($sidebarDiscussions as $pDisc)
+                                            <div class="sidebar-review-card" style="margin-bottom: {{ $loop->last ? '0' : '20px' }};">
                                                 <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                                                     <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
+                                                        @if($pDisc->user && $pDisc->user->profile_image && $pDisc->user->profile_image !== 'front/img/default.png')
+                                                        <img src="{{ asset($pDisc->user->profile_image) }}"
+                                                            class="rounded-circle"
+                                                            width="45"
+                                                            height="45"
+                                                            style="object-fit: cover;">
+                                                        @elseif($pDisc->author_avatar)
+                                                        <img src="{{ asset($pDisc->author_avatar) }}"
+                                                            class="rounded-circle"
+                                                            width="45"
+                                                            height="45"
+                                                            style="object-fit: cover;">
+                                                        @else
                                                         <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                            <span style="color: white; font-weight: bold; font-size: 20px;">M</span>
+                                                            <span style="color: white; font-weight: bold; font-size: 20px;">{{ $pDisc->author_initial ?: 'A' }}</span>
                                                         </div>
+                                                        @endif
                                                         <div>
-                                                            <p style="line-height:1">Marc L.</p>
+                                                            <p style="line-height:1">
+                                                                @if($pDisc->user)
+                                                                <a href="{{ route('user.profile', ['id' => $pDisc->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                                    {{ $pDisc->author_display_name }}
+                                                                </a>
+                                                                @else
+                                                                {{ $pDisc->author_display_name }}
+                                                                @endif
+                                                            </p>
                                                             <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
-                                                                Product Manager • Small Business (1-50 emp.)
+                                                                @php
+                                                                    $metaParts = [];
+                                                                    if ($pDisc->user && $pDisc->user->job_title) {
+                                                                        $metaParts[] = $pDisc->user->job_title;
+                                                                    } elseif ($pDisc->author_title) {
+                                                                        $metaParts[] = $pDisc->author_title;
+                                                                    }
+                                                                    if ($pDisc->user && $pDisc->user->company_size) {
+                                                                        $cSizeMap = [
+                                                                            '2' => 'Small Business (1-50 emp.)',
+                                                                            '3' => 'Mid-Market (51-1000 emp.)',
+                                                                            '4' => 'Enterprise (>1000 emp.)',
+                                                                        ];
+                                                                        $cSize = $pDisc->user->company_size;
+                                                                        $metaParts[] = $cSizeMap[$cSize] ?? (function_exists('static_text') ? (static_text('company_size_' . $cSize) ?: $cSize) : $cSize);
+                                                                    }
+                                                                @endphp
+                                                                {{ !empty($metaParts) ? implode(' • ', $metaParts) : ($pDisc->author_title ?: '') }}
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
-                                                        <small class="text-muted" style="font-size: 11px; white-space: nowrap;">2 hours ago</small>
+                                                        <small class="text-muted" style="font-size: 11px; white-space: nowrap;">{{ $pDisc->created_at->diffForHumans() }}</small>
                                                     </div>
                                                 </div>
 
                                                 <p class="sidebar-review-card-p" style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
-                                                    Is there a free tier for API access or is it trial only?
+                                                    {{ $pDisc->title }}
                                                 </p>
                                                 <p>
-                                                    We are looking to integrate this into our workflow and want to test the latency over a few weeks...
+                                                    {{ Str::limit(strip_tags($pDisc->content), 120) }}
                                                 </p>
                                             </div>
-
-                                            <div class="sidebar-review-card" style="margin-bottom: 0;">
-                                                <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                                                    <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
-                                                        <div style="width: 45px; height: 45px; border-radius: 50%; background-color: #002347; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                                            <span style="color: white; font-weight: bold; font-size: 20px;">S</span>
-                                                        </div>
-                                                        <div>
-                                                            <p style="line-height:1">Sarah J.</p>
-                                                            <div style="font-size: 12px; color: #5b6b7a; line-height:1;">
-                                                                CTO • Mid-Market (51-1000 emp.)
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0;">
-                                                        <small class="text-muted" style="font-size: 11px; white-space: nowrap;">1 day ago</small>
-                                                    </div>
-                                                </div>
-
-                                                <p class="sidebar-review-card-p" style="cursor: pointer;" onclick="document.getElementById('sectionDiscussions')?.scrollIntoView({behavior: 'smooth'})">
-                                                    How does the performance compare to alternatives in large datasets?
-                                                </p>
-                                                <p>
-                                                    We noticed some latency spikes during queries with more than 10k items. Anyone else facing this?
-                                                </p>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
+                                    @endif
 
 
                                     <!-- here we start sticky part -->
@@ -2434,6 +2464,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <a href="#section14" class="sticky-nav-item" data-target="section14">
                                                     <span>Reviews</span>
                                                 </a>
+                                                <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
+                                                    <span>Community</span>
+                                                </a>
                                             </div>
 
 
@@ -2476,6 +2509,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
                                                 @endif
                                                 <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">Community</a></li>
                                             </ul>
                                         </div>
 
@@ -3516,8 +3550,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
-                <button type="button" class="btn btn-light rounded-pill-10 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
-                <button type="button" class="blue-btn btn rounded-pill-10 px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
+                <button type="button" class="btn btn-light rounded-pill-8 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="blue-btn btn rounded-pill-8 px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
             </div>
         </div>
     </div>

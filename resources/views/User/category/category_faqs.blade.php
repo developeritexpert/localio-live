@@ -42,7 +42,7 @@
         .faq-category-nav {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap:0 25px;
             flex-wrap: wrap;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 0;
@@ -214,17 +214,18 @@
             </div>
         </div>
 
-        <!-- Category Header Row -->
-        <div class="row align-items-center justify-content-between">
-            <div class="col-md-8 col-12">
-                <div class="top_head d-flex align-items-center gap-3">
-                    <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
                                 {{ !empty($categoryTranslation->faq_h1_title) ? $categoryTranslation->faq_h1_title : ($catName . ' FAQs') }}
                             </h1>
                         </div>
-                        <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400; max-width: 840px;">
+        <!-- Category Header Row -->
+        <div class="faq-header-sec row  justify-content-between">
+            <div class="col-md-6 col-12">
+                <div class="top_head d-flex align-items-center gap-3 mt-2">
+                    <div>
+                        
+                        <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400;">
                             @if(!empty($categoryTranslation->faq_subtext))
                                 {!! $categoryTranslation->faq_subtext !!}
                             @else
@@ -236,7 +237,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
+            <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
                 @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                     <div class="cat-hero-img-wrap position-relative d-inline-block">
                         <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
@@ -384,7 +385,7 @@
                                                     </button>
                                                 </h3>
                                                 <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
+                                                    <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
                                                         </div>
@@ -452,7 +453,7 @@
                     <!-- 1. Recent Reviews Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent reviews</h5>
+                            <h2 class="m-0 card-h-title">Recent reviews</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" >
                                 View all
                             </a>
@@ -511,9 +512,9 @@
                                         </div>
                                         <small class="text-muted" style="font-size: 11px;">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
                                     </div>
-                                    <h6 style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                    <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
                                         {{ $revTrans->title ?? 'Review' }}
-                                    </h6>
+                                    </p>
                                     <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                         @for($s=1; $s<=5; $s++)
                                             @if($s<=floor($rev->rating))
@@ -544,9 +545,9 @@
                                     </div>
                                     <small class="text-muted" style="font-size: 11px;">1 week ago</small>
                                 </div>
-                                <h6 style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
                                     Rem sint adipisicin
-                                </h6>
+                                </p>
                                 <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                     <i class="fas fa-star text-warning"></i>
                                     <i class="fas fa-star text-warning"></i>
@@ -562,7 +563,7 @@
                     <!-- 2. Recent Discussions Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent discussions</h5>
+                            <h2 class="m-0 card-h-title">Recent discussions</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>
@@ -581,9 +582,9 @@
                                 </div>
                                 <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
                             </div>
-                            <h6 style="margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                            <p style="margin-top: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                 Is there a free tier for API access or is it trial only?
-                            </h6>
+                            </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                 We are looking to integrate this into our workflow and want to test latency...
                             </p>
@@ -602,9 +603,9 @@
                                 </div>
                                 <small class="text-muted" style="font-size: 11px;">1 day ago</small>
                             </div>
-                            <h6 style="margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                            <p style="margin-top: 8px; margin-bottom: 0; font-size: 13.5px; font-weight: 600;">
                                 How does the performance compare to alternatives in large datasets?
-                            </h6>
+                            </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                 We noticed some latency spikes during queries with more than 10k items...
                             </p>
@@ -615,7 +616,7 @@
                     @if(isset($topBusinesses) && $topBusinesses->count() > 0)
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Web hosting top 3 </h5>
+                            <h2 class="m-0 card-h-title">Web hosting top 3 </h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>
@@ -635,7 +636,7 @@
                                             <x-business-logo :business="$topBiz" :name="$topBizName" />
                                         </div>
                                         <div>
-                                            <h6 class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</h6>
+                                            <p class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</p>
                                             <div class="d-flex align-items-center gap-1 mt-1">
                                                 <div class="d-flex align-items-center" style="color: #ff5722; font-size: 11px;">
                                                     @for ($i = 1; $i <= 5; $i++)
@@ -708,7 +709,47 @@
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                 $subFaqUrl = url('/' . app()->getLocale() . '/' . $subSlug . '/' . $currentFaqSlug);
-                $listingCount = $subcatItem->businesses_count ?? ($subcatItem->businesses ? $subcatItem->businesses()->where('status', 1)->count() : 0);
+
+                // Count FAQ entries / answers for this subcategory
+                $faqCount = 0;
+                if (!empty($subTrans->faqs)) {
+                    $decodedFaqs = is_array($subTrans->faqs) ? $subTrans->faqs : json_decode($subTrans->faqs, true);
+                    if (is_array($decodedFaqs)) {
+                        $faqCount = count($decodedFaqs);
+                    }
+                }
+                if ($faqCount === 0 && isset($subcatItem->translations) && $subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection) {
+                    foreach ($subcatItem->translations as $transItem) {
+                        if (!empty($transItem->faqs)) {
+                            $decodedFaqs = is_array($transItem->faqs) ? $transItem->faqs : json_decode($transItem->faqs, true);
+                            if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
+                                $faqCount = count($decodedFaqs);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if ($faqCount === 0) {
+                    $catFaqsJson = \App\Models\CategoryTranslation::where('category_id', $subcatItem->id)
+                        ->whereNotNull('faqs')
+                        ->where('faqs', '!=', '')
+                        ->where('faqs', '!=', '[]')
+                        ->value('faqs');
+                    if (!empty($catFaqsJson)) {
+                        $decodedFaqs = is_array($catFaqsJson) ? $catFaqsJson : json_decode($catFaqsJson, true);
+                        if (is_array($decodedFaqs)) {
+                            $faqCount = count($decodedFaqs);
+                        }
+                    }
+                }
+                if ($faqCount === 0) {
+                    $faqCount = \App\Models\BusinessFaq::whereHas('business', function ($q) use ($subcatItem) {
+                        $q->where('status', 1)->where(function ($bQ) use ($subcatItem) {
+                            $bQ->where('category_id', $subcatItem->id)
+                              ->orWhereHas('subCategories', fn($sq) => $sq->where('categories.id', $subcatItem->id));
+                        });
+                    })->where('status', 1)->count();
+                }
             @endphp
             <div class="col-lg-4 col-md-6 col-6">
                 <a href="{{ $subFaqUrl }}" class="text-decoration-none d-block h-100">
@@ -725,7 +766,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $listingCount }} listings
+                                {{ $faqCount }} {{ $faqCount == 1 ? 'answer' : 'answers' }}
                             </span>
                         </div>
                     </div>

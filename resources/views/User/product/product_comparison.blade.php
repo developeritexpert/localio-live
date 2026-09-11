@@ -27,6 +27,65 @@
 
     $hasAffiliated = $businesses->contains(fn($b) => !empty($b->is_affiliate));
 @endphp
+@if(isset($businesses) && count($businesses) > 0)
+<!-- Sticky Comparison Top Banner (Shows on scroll below fixed header) -->
+<div id="sticky-comparison-bar" class="sticky-comparison-bar items-count-{{ count($businesses) }}">
+    <div class="container">
+        <div class="sticky-comp-row">
+            @foreach($businesses as $index => $business)
+                @php
+                    $bTrans = $business->translations->first();
+                    $bName = $bTrans?->name ?? $business->name ?? 'Business';
+                    $bSlug = $bTrans?->slug ?? $business->slug;
+                    $rating = round($business->reviews->avg('rating'), 1);
+                    $ratingCount = $business->reviews->count();
+                @endphp
+                <div class="sticky-comp-col">
+                    <div class="sticky-comp-info">
+                        <div class="sticky-comp-logo">
+                            <x-business-logo :business="$business" />
+                        </div>
+                        <div class="sticky-comp-meta">
+                            <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}" class="sticky-comp-name" title="{{ $bName }}">
+                                {{ $bName }}
+                            </a>
+                            <div class="sticky-comp-rating rating-group">
+                                <span class="">{{ $ratingCount > 0 ? number_format($rating, 1) : '0.0' }}</span>
+                                <div class="d-inline-flex align-items-center">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($rating >= $i)
+                                            <i class="fas fa-star text-warning" style="font-size: 10px;"></i>
+                                        @elseif ($rating >= $i - 0.5)
+                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 10px;"></i>
+                                        @else
+                                            <i class="far fa-star text-warning" style="font-size: 10px;"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="">({{ $ratingCount }})</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sticky-comp-actions">
+                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bSlug]) }}"
+                            class="sticky-comp-btn-outline">
+                            {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
+                        </a>
+                        @if(!empty($business->is_affiliate))
+                            <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
+                                target="_blank"
+                                class="sticky-comp-btn-orange">
+                                {{ static_text('visit_website') ?: 'Visit website' }}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
 <section class=" help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 comparsn_bnr_sec" style="background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb & Social Share Row -->
@@ -744,6 +803,10 @@
                             $lObj = \App\Models\Language::where('lang_code', $curLang)->first();
                             $revSlug = !empty($lObj->reviews_slug) ? $lObj->reviews_slug : 'reviews';
                             $bizSlug = $business->translations->where('lang_id', getCurrentLanguageID())->first()?->slug ?? $business->translations->first()?->slug ?? $business->slug;
+                            $bizCriteria = $business->category ? $business->category->getEffectiveRatingCriteria() : collect();
+                            if ($bizCriteria->isEmpty()) {
+                                $bizCriteria = \App\Models\DefaultRatingCriteria::orderBy('sort_order')->get();
+                            }
                         @endphp
                         <div class="col-lg-{{ count($businesses) == 4 ? 3 : (count($businesses) == 3 ? 4 : 6) }} col-md-6 col-12 comp-biz-reviews-col" data-biz-id="{{ $business->id }}">
                             <div class="d-flex flex-column" style="gap: 16px;">
@@ -759,7 +822,7 @@
                                          id="review-{{ $rev->id }}"
                                          data-rating="{{ round($rev->rating) }}" 
                                          data-date="{{ $rev->created_at->timestamp }}"
-                                         style="background-color: #f9fafb; border-radius: 12px; padding: 22px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; margin-bottom: 0;">
+                                         style="background-color: #fff; border-radius: 12px; padding: 22px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; margin-bottom: 0;">
                                         
                                         <!-- Top right actions (Date) -->
                                         <div class="review-actions-top-right" style="position: absolute; top: 22px; right: 22px; display: flex; align-items: center; gap: 12px;">
@@ -811,24 +874,118 @@
                                                 </h5>
                                             @endif
 
-                                            <!-- Stars below headline -->
+                                            <!-- Stars below headline + Arrow + Detailed User Ratings Breakdown Popup -->
                                             <div class="rating light mb-2" style="display: flex; align-items: center; gap: 6px;">
-                                                <div class="rating-stars" style="display: flex; gap: 2px;">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        @if ($i <= floor($rev->rating))
-                                                            <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
-                                                        @elseif ($i - 0.5 <= $rev->rating)
-                                                            <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
-                                                        @else
-                                                            <i class="far fa-star text-warning" style="font-size: 13px;"></i>
-                                                        @endif
-                                                    @endfor
+                                                <div class="user-rating-breakdown-wrapper position-relative d-inline-block">
+                                                    <div class="user-rating-trigger d-inline-flex align-items-center" style="cursor: pointer; gap: 4px;" title="Detailed user ratings">
+                                                        <div class="rating-stars" style="display: flex; gap: 2px;">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= floor($rev->rating))
+                                                                    <i class="fas fa-star text-warning" style="font-size: 13px;"></i>
+                                                                @elseif ($i - 0.5 <= $rev->rating)
+                                                                    <i class="fas fa-star-half-alt text-warning" style="font-size: 13px;"></i>
+                                                                @else
+                                                                    <i class="far fa-star text-warning" style="font-size: 13px;"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </div>
+                                                        <span class="user-rating-dropdown-btn">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                                <polyline points="6 9 12 15 18 9" />
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+
+                                                    @if(isset($bizCriteria) && count($bizCriteria) > 0)
+                                                    <div class="dropdown-menu shadow-sm user-rating-breakdown-menu" style="display: none;">
+                                                        <div class="user-rating-header">Detailed user ratings</div>
+                                                        <div class="user-rating-body">
+                                                            @foreach ($bizCriteria as $criterion)
+                                                            @php
+                                                                $scoreVal = null;
+                                                                if ($rev->ratings && $rev->ratings->isNotEmpty()) {
+                                                                    $match = $rev->ratings->firstWhere('criteria_id', $criterion->id);
+                                                                    if (!$match && $criterion->default_key) {
+                                                                        $match = $rev->ratings->first(fn($r) => optional($r->criteria)->default_key === $criterion->default_key);
+                                                                    }
+                                                                    if (!$match) {
+                                                                        $match = $rev->ratings->first(fn($r) => strtolower(optional($r->criteria)->name) === strtolower($criterion->name));
+                                                                    }
+                                                                    if ($match && !is_null($match->rating)) {
+                                                                        $scoreVal = (float) $match->rating;
+                                                                    }
+                                                                }
+                                                                if (is_null($scoreVal)) {
+                                                                    $cName = strtolower($criterion->name);
+                                                                    $cKey = $criterion->default_key;
+                                                                    if ($cKey === 'ease_of_use' || $cName === 'ease of use') {
+                                                                        $scoreVal = $rev->ease_of_use_rating;
+                                                                    } elseif ($cKey === 'features' || $cName === 'features') {
+                                                                        $scoreVal = $rev->exclusive_service_rating;
+                                                                    } elseif ($cKey === 'value_for_money' || $cName === 'value for money') {
+                                                                        $scoreVal = $rev->value_for_money_rating;
+                                                                    } elseif ($cKey === 'customer_service' || $cName === 'customer service' || $cName === 'support') {
+                                                                        $scoreVal = $rev->customer_service_rating;
+                                                                    }
+                                                                }
+                                                                if (is_null($scoreVal) || $scoreVal <= 0) {
+                                                                    $scoreVal = ((float)$rev->rating > 0) ? (float)$rev->rating : 4.0;
+                                                                }
+                                                                $percent = min(100, max(0, ((float)$scoreVal / 5) * 100));
+                                                            @endphp
+                                                            <div class="user-rating-row">
+                                                                <span class="user-rating-label">{{ $criterion->name }}</span>
+                                                                <div class="user-rating-progress-box">
+                                                                    <div class="user-rating-progress-fill" style="width: {{ $percent }}%;"></div>
+                                                                </div>
+                                                                <span class="user-rating-score">{{ number_format($scoreVal, 1) }}</span>
+                                                            </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                    @endif
                                                 </div>
                                             </div>
 
                                             @if(!empty($revDesc))
                                                 <div style="color: #444; line-height: 1.6; font-size: 13.5px; margin-bottom: 12px;">
                                                     {!! nl2br(e(\Illuminate\Support\Str::limit($revDesc, 160))) !!}
+                                                </div>
+                                            @endif
+
+                                            <!-- Review Pros and Cons -->
+                                            @php
+                                                $selectedPros = $rev->selectedProCons ? $rev->selectedProCons->where('type', 'pro') : collect();
+                                                $selectedCons = $rev->selectedProCons ? $rev->selectedProCons->where('type', 'con') : collect();
+                                            @endphp
+
+                                            @if($selectedPros->isNotEmpty())
+                                                <div class="comp-rev-pros mb-2" style="margin-top: 10px;">
+                                                    <div style="font-size: 13px; font-weight: 600; color: #1e3050; margin-bottom: 5px;">
+                                                        Pros
+                                                    </div>
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                                        @foreach($selectedPros as $pro)
+                                                            <span style="display: inline-flex; align-items: center; padding: 4px 10px; background: #f0fdf4; color: #166534; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                                                                {{ $pro->text }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @if($selectedCons->isNotEmpty())
+                                                <div class="comp-rev-cons mb-2" style="margin-top: 8px;">
+                                                    <div style="font-size: 13px; font-weight: 600; color: #1e3050; margin-bottom: 5px;">
+                                                        Cons
+                                                    </div>
+                                                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                                        @foreach($selectedCons as $con)
+                                                            <span style="display: inline-flex; align-items: center; padding: 4px 10px; background: #fef2f2; color: #991b1b; border-radius: 6px; font-size: 12px; font-weight: 500;">
+                                                                {{ $con->text }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>
@@ -1428,6 +1585,86 @@ function submitReviewReport() {
         submitBtn.textContent = 'Submit report';
     });
 }
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Handle click to toggle detailed user rating breakdown on stars/arrow
+    document.addEventListener('click', function (e) {
+        const trigger = e.target.closest('.user-rating-trigger');
+        if (trigger) {
+            e.preventDefault();
+            e.stopPropagation();
+            const wrapper = trigger.closest('.user-rating-breakdown-wrapper');
+            if (wrapper) {
+                const isShown = wrapper.classList.contains('show');
+                document.querySelectorAll('.user-rating-breakdown-wrapper.show').forEach(function (el) {
+                    el.classList.remove('show');
+                });
+                if (!isShown) {
+                    wrapper.classList.add('show');
+                    adjustRatingMenuPosition(wrapper);
+                }
+            }
+        } else if (!e.target.closest('.user-rating-breakdown-menu')) {
+            document.querySelectorAll('.user-rating-breakdown-wrapper.show').forEach(function (el) {
+                el.classList.remove('show');
+            });
+        }
+    });
+
+    // Handle mouseover to adjust menu position so it doesn't overflow the viewport
+    document.addEventListener('mouseover', function (e) {
+        const wrapper = e.target.closest('.user-rating-breakdown-wrapper');
+        if (wrapper) {
+            adjustRatingMenuPosition(wrapper);
+        }
+    });
+
+    
+    // Sticky Comparison Top Banner on Scroll
+    const stickyCompBar = document.getElementById('sticky-comparison-bar');
+    if (stickyCompBar) {
+        const headerEl = document.querySelector('header .sec_head');
+        const triggerEl = document.querySelector('.asn_tprw') || document.querySelector('.pdc_box') || document.querySelector('.your-comparison-wrapper');
+
+        function updateStickyCompBar() {
+            const headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom : 0;
+            stickyCompBar.style.top = Math.max(0, headerBottom) + 'px';
+
+            let show = false;
+            if (triggerEl) {
+                const rect = triggerEl.getBoundingClientRect();
+                show = rect.bottom < headerBottom + 40;
+            } else {
+                show = window.scrollY > 350;
+            }
+
+            if (show) {
+                stickyCompBar.classList.add('is-visible');
+            } else {
+                stickyCompBar.classList.remove('is-visible');
+            }
+        }
+
+        window.addEventListener('scroll', updateStickyCompBar, { passive: true });
+        window.addEventListener('resize', updateStickyCompBar, { passive: true });
+        updateStickyCompBar();
+    }
+
+    function adjustRatingMenuPosition(wrapper) {
+        const menu = wrapper.querySelector('.user-rating-breakdown-menu');
+        if (!menu) return;
+        menu.style.left = '0';
+        menu.style.right = 'auto';
+        const rect = menu.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 15) {
+            menu.style.left = 'auto';
+            menu.style.right = '0';
+        }
+    }
+});
 </script>
 
 @endsection

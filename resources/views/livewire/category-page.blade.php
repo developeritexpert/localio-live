@@ -23,7 +23,7 @@
     .comparison-box:hover {
         background-color: #ffffff !important;
         border-color: #cbd5e1 !important;
-        box-shadow: 0 6px 18px rgba(0, 35, 71, 0.08) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
     }
     .cat-compare-item {
         padding: 10px 16px;
@@ -34,7 +34,6 @@
         font-size: 14px;
         font-weight: 600;
         color: #1e3050;
-        transition: background 0.15s ease;
     }
     .cat-compare-item:hover {
         background: #f1f5f9;
@@ -484,13 +483,13 @@
                             <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
                     <div class="host-parra row align-items-start">
-                        <div class="col-md-8 text-start">
+                        <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
                                 {!! $category->translations->description ?? 'Browse and compare the best options' !!}
                             </div>
                         </div>
-                        <div class="col-md-4 mt-4 mt-md-0 text-end cat_img_header">
+                        <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                                 <div class="cat-hero-img-wrap position-relative d-inline-block">
                                     <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
@@ -510,7 +509,7 @@
             <div class="top-auto-btm">
                 <div class="container">
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
-                        <div class="host-pro flex-grow-1" style="max-width: 65%;">
+                        <div class="host-pro flex-grow-1" style="max-width: 50%;">
                             <h2 style="margin-bottom: 8px;">
                                {{ $applyDynamicVars(($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '')) }}
                             </h2>
@@ -525,18 +524,17 @@
                             @endif
                         </div>
                         
-                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 466px;">
+                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 500px;">
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
-                                    <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                    <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
                                     {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                                 </p>
 
-                                 <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn"
-                                style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
+                                 <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                             </div>
                         </div>
                     </div>
@@ -559,7 +557,7 @@
                                             <p>
                                                 Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                             </p>
-                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
+                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn">Learn more</a>
                                         </div>
                                     </div>
                                 </div>
@@ -1901,11 +1899,11 @@
                             {{ $compToolHeadline }}
                         </p>
                         @if(!empty($compToolSubtext))
-                            <div class="compare-tool-subtext" style="color: #64748b; font-size: 14px; margin: 0;">
+                            <div class="compare-tool-subtext" style="color: #5b6b7a;margin: 0;">
                                 {!! $compToolSubtext !!}
                             </div>
                         @else
-                            <p style="color: #64748b; font-size: 14px; margin: 0;">
+                            <p style="color: #5b6b7a;  margin: 0;">
                                 Select another provider from the search box below to generate an instant side-by-side comparison.
                             </p>
                         @endif
@@ -2334,7 +2332,7 @@
                                     </button>
                                 </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
+                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>

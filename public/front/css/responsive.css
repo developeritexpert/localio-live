@@ -4109,7 +4109,6 @@ textarea#message {
         right: -10px;
     }
 
-
     .ms_dv .mst_wrp {
         padding: 25px;
     }
@@ -4818,7 +4817,7 @@ textarea#message {
     }
 
     .product_sec .inner_banner_sec {
-        padding-top: 54px !important;
+        padding-top: 70px !important;
     }
 
     #section1 .asn_dv .asn_dv_contnt .asn-img {
@@ -9079,6 +9078,7 @@ textarea#message {
     .cat_img_header {
         height: 170px;
         margin-top: 0 !important;
+        justify-content: center;
     }
 
     .exp-cating h6 {
@@ -9104,6 +9104,14 @@ textarea#message {
 
     #myID input[type="text"]::placeholder {
         font-size: 12px !important;
+    }
+
+    .faq-header-sec {
+        flex-direction: column-reverse;
+    }
+
+    .faq-subtext-container.ck-content {
+        padding-bottom: 15px;
     }
 }
 

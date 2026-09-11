@@ -442,7 +442,7 @@
     font-size: 14px !important;
     color: #111  !important;
     font-weight: 700  !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 8px !important;
     letter-spacing: 0.5px !important;
 }
 .sidebar-menu-list {
@@ -461,7 +461,6 @@
     font-weight: 500;
     text-decoration: none;
     border-radius: 4px;
-    transition: background 0.15s ease, color 0.15s ease;
 }
 .sidebar-menu-list li a:hover {
     background: #eaeded;
@@ -661,17 +660,18 @@
                 </div>
                 <div class="ft-btm-rgt">
                     <div class="select-menu ">
-                        <div class="select-btn">
+                        <div class="select-btn" onclick="event.preventDefault(); event.stopPropagation(); toggleCountryModal();">
                             <span class="sBtn-text">
                                 {{ session('lang_code') && session('lang_name') ? ucfirst(session('lang_name')) : 'United States - English' }}
                             </span>
                             <i class="fa-solid fa-chevron-down" style="color: #ffffff;"></i>
                         </div>
-                        <ul class="options" style="height: auto !important; bottom: 100% !important; max-height: 400px; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);">
+                        <div class="country-modal-backdrop" id="countryModalBackdrop" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();"></div>
+                        <ul class="options" style="height: auto !important; bottom: 100% !important; max-height: 400px; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); border-top: 2px solid #fb5c28;">
                             <div class="container">
                                 <div class="country-modal-header d-flex align-items-center justify-content-between mb-2">
                                     <h3 style="color: black; margin: 0;">Choose your Country or region</h3>
-                                    <button type="button" class="close-country-menu" aria-label="Close modal" title="Close" style="background:none;border:none;font-size:16px;color:#9ca3af;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;">
+                                    <button type="button" class="close-country-menu" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();" aria-label="Close modal" title="Close" style="background:none;border:none;font-size:16px;color:#9ca3af;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;">
                                         ✕
                                     </button>
                                 </div>
@@ -972,6 +972,72 @@
             icon.querySelector('i').classList.add('fa-eye-slash');
         }
 }
+</script>
+
+
+<script>
+function toggleCountryModal() {
+    var menu = document.querySelector('.select-menu');
+    if (!menu) return;
+    if (menu.classList.contains('active') || menu.classList.contains('open')) {
+        closeCountryModal();
+    } else {
+        openCountryModal();
+    }
+}
+
+function openCountryModal() {
+    var menu = document.querySelector('.select-menu');
+    if (menu) {
+        menu.classList.add('open', 'active');
+    }
+    document.body.classList.add('country-modal-open');
+}
+
+function closeCountryModal() {
+    var menu = document.querySelector('.select-menu');
+    if (menu) {
+        menu.classList.remove('open', 'active');
+    }
+    document.body.classList.remove('country-modal-open');
+}
+
+window.toggleCountryModal = toggleCountryModal;
+window.openCountryModal = openCountryModal;
+window.closeCountryModal = closeCountryModal;
+
+$(document).on('click', '.select-btn', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    toggleCountryModal();
+});
+
+$(document).on('click', '.close-country-menu', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    closeCountryModal();
+});
+
+$(document).on('click', '.country-modal-backdrop', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    closeCountryModal();
+});
+
+$(document).on('click', function(event) {
+    var menu = document.querySelector('.select-menu');
+    if (menu && (menu.classList.contains('active') || menu.classList.contains('open'))) {
+        if (!event.target.closest('.options') && !event.target.closest('.select-btn')) {
+            closeCountryModal();
+        }
+    }
+});
+
+$(document).on('keydown', function(event) {
+    if (event.key === 'Escape' || event.keyCode === 27) {
+        closeCountryModal();
+    }
+});
 </script>
 
 </body>

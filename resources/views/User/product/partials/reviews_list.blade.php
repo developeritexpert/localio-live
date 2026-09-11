@@ -1,3 +1,7 @@
+
+
+
+
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade active show" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
         @if($allReviews->isEmpty())
@@ -79,7 +83,18 @@
                             {{ $review->translations->first()->title ?? '' }}
                             
                         </h3>
-                        
+                    <style>
+    .rating-stars {
+        cursor: pointer !important;
+    }
+
+    .user-rating-dropdown-btn {
+        cursor: pointer;
+    }
+    .rating {
+    cursor: pointer;
+}
+</style>  
                         <!-- Ratings below headline -->
                     <div class="rating light" style="display: flex; align-items: center; gap: 6px; ">
                         <div class="inn_ul">
@@ -104,7 +119,7 @@
                                 </svg>
                             </button>
                             <div class="dropdown-menu shadow-sm user-rating-breakdown-menu">
-                                <div class="user-rating-header">User rating</div>
+                                <div class="user-rating-header">Detailed user rating </div>
                                 <div class="user-rating-body">
                                     @foreach ($criteria as $criterion)
                                     @php
@@ -220,7 +235,7 @@
         @endphp
         <div class="btm-bttn light" >
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
-                >View more reviews</a>
+                > View all reviews</a>
         </div>
     </div>
     
@@ -316,7 +331,7 @@
                                     </svg>
                                 </button>
                                 <div class="dropdown-menu shadow-sm user-rating-breakdown-menu">
-                                    <div class="user-rating-header">User rating</div>
+                                    <div class="user-rating-header">Detailed user rating </div>
                                     <div class="user-rating-body">
                                         @foreach ($criteria as $criterion)
                                         @php
@@ -511,4 +526,54 @@
             document.body.removeChild(textArea);
         }
     }
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.rating.light').forEach(function (ratingWrapper) {
+
+        const stars = ratingWrapper.querySelector('.rating-stars');
+        const dropdown = ratingWrapper.querySelector('.dropdown');
+        const dropdownButton = ratingWrapper.querySelector('.user-rating-dropdown-btn');
+        const dropdownMenu = ratingWrapper.querySelector('.user-rating-breakdown-menu');
+
+        if (!stars || !dropdown || !dropdownButton || !dropdownMenu) {
+            return;
+        }
+
+        let closeTimer;
+
+        function showRating() {
+            clearTimeout(closeTimer);
+
+            dropdown.classList.add('show');
+            dropdownMenu.classList.add('show');
+            dropdownButton.setAttribute('aria-expanded', 'true');
+        }
+
+        function hideRating() {
+            closeTimer = setTimeout(function () {
+                dropdown.classList.remove('show');
+                dropdownMenu.classList.remove('show');
+                dropdownButton.setAttribute('aria-expanded', 'false');
+            }, 100);
+        }
+
+        // Stars hover
+        stars.addEventListener('mouseenter', showRating);
+        stars.addEventListener('mouseleave', hideRating);
+
+        // Arrow hover
+        dropdownButton.addEventListener('mouseenter', showRating);
+        dropdownButton.addEventListener('mouseleave', hideRating);
+
+        // Rating box hover
+        dropdownMenu.addEventListener('mouseenter', showRating);
+        dropdownMenu.addEventListener('mouseleave', hideRating);
+    });
+
+});
+
+
+    
 </script>

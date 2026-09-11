@@ -141,7 +141,7 @@
         </a>
 
         {{-- Discussions --}}
-        <a href="{{ route('user.product_detail', ['locale' => $currentLocale, 'id' => $bSlug]) }}#sectionDiscussions"
+        <a href="{{ route('business.discussions', ['locale' => $currentLocale, 'business_slug' => $bSlug]) }}"
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">

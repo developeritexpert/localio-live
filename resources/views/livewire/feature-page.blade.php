@@ -24,7 +24,7 @@
     .comparison-box:hover {
         background-color: #ffffff !important;
         border-color: #cbd5e1 !important;
-        box-shadow: 0 6px 18px rgba(0, 35, 71, 0.08) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
     }
     .cat-compare-item {
         padding: 10px 16px;
@@ -35,7 +35,6 @@
         font-size: 14px;
         font-weight: 600;
         color: #1e3050;
-        transition: background 0.15s ease;
     }
     .cat-compare-item:hover {
         background: #f1f5f9;
@@ -508,13 +507,13 @@
                             <p class="text-meta">Last updated on
                                 {{ now()->format('F j, Y') }}</p>
                     <div class="host-parra row align-items-start">
-                        <div class="col-md-8 text-start">
+                        <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
                                 {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options')) !!}
                             </div>
                         </div>
-                        <div class="col-md-4 mt-4 mt-md-0 text-end cat_img_header">
+                        <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
                             @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                                 <div class="cat-hero-img-wrap position-relative d-inline-block">
                                     <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
@@ -534,7 +533,7 @@
             <div class="top-auto-btm">
                 <div class="container">
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
-                        <div class="host-pro flex-grow-1" style="max-width: 65%;">
+                        <div class="host-pro flex-grow-1" style="max-width: 50%;">
                             @php
                                 $defaultTopRatedH2 = ($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '');
                                 $topRatedHeadline = !empty($featureContent->top_rated_listing_headline) ? $featureContent->top_rated_listing_headline : $defaultTopRatedH2;
@@ -554,10 +553,10 @@
                             @endif
                         </div>
                         
-                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 466px;">
+                        <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 500px;">
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
-                                    <p style="margin: 0; font-weight: 700; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                    <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
@@ -585,7 +584,7 @@
                                             <p>
                                                 Provider data verified by our Software Research team and reviews moderated by our Reviews Verification team.
                                             </p>
-                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn" style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none;">Learn more</a>
+                                            <a href="javascript:void(0)" onclick="openModal()" class="learn_mre_btn">Learn more</a>
                                         </div>
                                     </div>
                                 </div>
@@ -923,7 +922,7 @@
                                                 @if($lockedFeatureId)
                                                     <div class="d-flex align-items-center mb-2 locked-feature-item" style="padding: 2px 0;">
                                                         <span class="me-2" style="font-size: 15px; line-height: 1;" title="Fixed feature filter">🔒</span>
-                                                        <span style="font-size: 14px; font-weight: 700; color: #002347;">{{ $lockedFeatureName }}</span>
+                                                        <span style="font-size: 14px; font-weight: 500; color: #002347;">{{ $lockedFeatureName }}</span>
                                                     </div>
                                                 @endif
 
@@ -1025,7 +1024,14 @@
                                                 $fTrans = $fItem->translations->firstWhere('language_id', $lang_id) ?? $fItem->translations->first();
                                                 $fName = $fTrans->name ?? $fItem->name ?? 'Feature';
                                             @endphp
-                                            <button type="button" class="active-feat-chip" wire:click="toggleFeature({{ $fItem->id }})" title="Click to remove {{ $fName }}">
+                                           
+                                                <button
+    type="button"
+    wire:key="active-feature-chip-{{ $fItem->id }}"
+    class="active-feat-chip"
+    wire:click="toggleFeature({{ $fItem->id }})"
+    title="Click to remove {{ $fName }}"
+>
                                                 <span>{{ $fName }}</span>
                                                 <i class="fas fa-times text-muted" style="font-size: 11px;"></i>
                                             </button>
@@ -1347,20 +1353,34 @@
                                                     @endphp
 
                                                     <!-- Price -->
-                                                    @if ($startingPrice && !empty($item->is_affiliate))
-                                                    <div class="text-center mt-4 w-100"
-                                                        style="  padding: 15px 25px; border-radius: 8px;">
-                                                        <h6
-                                                            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-                                                            Starting price</h6>
-                                                        <h3
-                                                            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-                                                            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-                                                        </h3>
-                                                        <p style="font-size: 11px; margin-bottom: 0;">
-                                                            Flat Rate, Per One_time</p>
-                                                    </div>
-                                                    @endif
+                                     @if ($startingPrice && !empty($item->is_affiliate))
+    <div class="text-center mt-4 w-100"
+        style="padding: 15px 25px; border-radius: 8px;">
+
+        <h6
+            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+            Starting price
+        </h6>
+
+        <h3
+            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+        </h3>
+
+        @if (
+            !empty($startingPrice->additional_info) &&
+            !in_array(
+                strtoupper(trim((string) $startingPrice->additional_info)),
+                ['NA', 'N/A', 'NULL']
+            )
+        )
+            <p style="font-size: 11px; margin-bottom: 0;">
+                {{ $startingPrice->additional_info }}
+            </p>
+        @endif
+
+    </div>
+@endif
                                                 </div>
                                             </div>
                                         </div>
@@ -1448,7 +1468,7 @@
                                     @endif
 
                                     {{-- Row 2: Selected features: [Secondary Feature Chips] Clear features --}}
-                                    @if(count($secondarySelectedFeatures) > 0)
+                                      @if(!empty($secondarySelectedFeatures))
                                     <div class="active-feature-chips d-flex align-items-center flex-wrap gap-2 mt-1">
                                         <span class="text-muted small fw-semibold" style="font-size: 13px;">Selected features:</span>
 
@@ -2028,11 +2048,11 @@
                             {{ $compToolHeadline }}
                         </p>
                         @if(!empty($compToolSubtext))
-                            <div class="compare-tool-subtext" style="color: #64748b; font-size: 14px; margin: 0;">
+                            <div class="compare-tool-subtext" style="color: #5b6b7a; margin: 0;">
                                 {!! $compToolSubtext !!}
                             </div>
                         @else
-                            <p style="color: #64748b; font-size: 14px; margin: 0;">
+                            <p style="color: #5b6b7a; margin: 0;">
                                 Select another provider from the search box below to generate an instant side-by-side comparison.
                             </p>
                         @endif
@@ -2425,7 +2445,8 @@
         
 
         <!-- Dynamic Content Sections (H2 & H3 from Category Feature Content) -->
-        @if(!empty($textSections) && is_array($textSections) && count($textSections) > 0)
+      {{-- 
+      @if(!empty($textSections) && is_array($textSections) && count($textSections) > 0)
         <section class="category-text-sections-sec py-5" style="background: #fdfdfd;">
             <div class="container">
                 <div class="row">
@@ -2470,7 +2491,8 @@
                 </div>
             </div>
         </section>
-        @endif
+        @endif 
+        --}}
 
         <!-- 5. Category Specific FAQ Section -->
         @if(isset($faqs) && is_array($faqs) && count($faqs) > 0)
@@ -2510,7 +2532,7 @@
                                     </button>
                                 </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
+                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
@@ -2520,7 +2542,7 @@
 
                         <div class="text-center mt-4">
                             <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
-                                View more FAQs
+                                View all FAQs 
                             </a>
                         </div>
                     </div>
