@@ -1627,3 +1627,60 @@ button.post-action-btn.toggle-reply-btn {
         font-size: 13px;
     }
 }
+
+/* Discussions Section on Product Detail */
+.preview-vote-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-right: 16px;
+    margin-right: 16px;
+    border-right: 1px solid #f1f5f9;
+    min-width: 44px;
+    flex-shrink: 0;
+}
+
+.view-discussion-link {
+    color: var(--color-dark-blue-text, #002347);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.view-discussion-link:hover {
+    text-decoration: underline !important;
+    color: var(--color-dark-blue-text, #002347);
+}
+
+.see-all-discussions-link {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-dark-blue-text, #002347);
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.see-all-discussions-link:hover {
+    text-decoration: underline !important;
+    color: var(--color-dark-blue-text, #002347);
+}
+
+.discussion-title-link {
+    transition: color 0.2s ease;
+}
+
+.discussion-title-link:hover {
+    text-decoration: underline !important;
+    color: #214787 !important;
+}
+
+.discussion-comment-count-link {
+    transition: color 0.2s ease;
+}
+
+.discussion-comment-count-link:hover {
+    text-decoration: underline !important;
+    color: #214787 !important;
+}
