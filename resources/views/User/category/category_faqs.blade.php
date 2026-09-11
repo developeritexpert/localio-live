@@ -214,16 +214,17 @@
             </div>
         </div>
 
-        <!-- Category Header Row -->
-        <div class="row align-items-center justify-content-between">
-            <div class="col-md-6 col-12">
-                <div class="top_head d-flex align-items-center gap-3">
-                    <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
                                 {{ !empty($categoryTranslation->faq_h1_title) ? $categoryTranslation->faq_h1_title : ($catName . ' FAQs') }}
                             </h1>
                         </div>
+        <!-- Category Header Row -->
+        <div class="faq-header-sec row  justify-content-between">
+            <div class="col-md-6 col-12">
+                <div class="top_head d-flex align-items-center gap-3 mt-2">
+                    <div>
+                        
                         <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400;">
                             @if(!empty($categoryTranslation->faq_subtext))
                                 {!! $categoryTranslation->faq_subtext !!}
