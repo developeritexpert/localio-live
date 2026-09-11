@@ -1,6 +1,8 @@
 <?php
 namespace App\Livewire;
 
+use App\Models\Business;
+use App\Models\Category;
 use Livewire\Component;
 use App\Services\CompareService;
 
@@ -25,24 +27,25 @@ class CompareBar extends Component
         
         // If we have products and a categoryId is provided, validate they belong to this category family
         if (!empty($productIds) && !empty($productIds[0]) && $this->categoryId) {
-            $firstProduct = \App\Models\Business::find($productIds[0]);
+            $firstProduct = Business::find($productIds[0]);
             if ($firstProduct) {
-                $pCategory = \App\Models\Category::find($firstProduct->category_id);
-$currentCategory = \App\Models\Category::find($this->categoryId);
+                $pCategory = Category::find($firstProduct->category_id);
+                $currentCategory = Category::find($this->categoryId);
 
-$isValidCategory = false;
-
-if ($pCategory && $currentCategory) {
-    $isValidCategory =
-        // Same category
-        $firstProduct->category_id == $this->categoryId
-
-        // Product is assigned to child, current page is parent
-        || $pCategory->parent_id == $this->categoryId
-
-        // Product is assigned to parent, current page is child
-        || $currentCategory->parent_id == $firstProduct->category_id;
-}
+                $isValidCategory = false;
+                if ($pCategory && $currentCategory) {
+                    $isValidCategory =
+                        // Same category
+                        $firstProduct->category_id == $this->categoryId
+                        // Product is assigned to child, current page is parent
+                        || $pCategory->parent_id == $this->categoryId
+                        // Product is assigned to parent, current page is child
+                        || $currentCategory->parent_id == $firstProduct->category_id
+                        // Both share the same parent category
+                        || ($pCategory->parent_id && $pCategory->parent_id == $currentCategory->parent_id)
+                        // Product is attached via subCategories
+                        || $firstProduct->subCategories()->where('categories.id', $this->categoryId)->exists();
+                }
 
 if (!$isValidCategory) {
     session()->forget('compared_products');

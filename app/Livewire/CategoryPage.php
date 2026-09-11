@@ -260,11 +260,27 @@ class CategoryPage extends Component
             } else {
                 $targetCategoryIds = $allCategoryIds;
             }
+            $targetCategoryIds = array_unique(array_merge($targetCategoryIds, [$this->category->id]));
             $businesses = Business::select('id')
-                ->whereIn('category_id', $targetCategoryIds);
+                ->where(function ($q) use ($targetCategoryIds) {
+                    $q->whereIn('category_id', $targetCategoryIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($targetCategoryIds) {
+                          $subQ->whereIn('categories.id', $targetCategoryIds);
+                      });
+                });
         } else {
+            $subcatId = $this->category->id;
+            $parentId = $this->category->parent_id;
             $businesses = Business::select('id')
-                ->where('category_id', $this->category->id);
+                ->where(function ($q) use ($subcatId, $parentId) {
+                    $q->where('category_id', $subcatId);
+                    if ($parentId) {
+                        $q->orWhere('category_id', $parentId);
+                    }
+                    $q->orWhereHas('subCategories', function ($subQ) use ($subcatId) {
+                        $subQ->where('categories.id', $subcatId);
+                    });
+                });
         }
 
         $businesses = $businesses->where('status', 1)
@@ -305,9 +321,24 @@ class CategoryPage extends Component
         if ($this->isParentCategory) {
             $allSubcatIds = Category::where('parent_id', $this->category->id)->pluck('id')->toArray();
             $targetCategoryIds = array_merge([$this->category->id], $allSubcatIds);
-            $query = Business::whereIn('category_id', $targetCategoryIds);
+            $query = Business::where(function ($q) use ($targetCategoryIds) {
+                $q->whereIn('category_id', $targetCategoryIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($targetCategoryIds) {
+                      $subQ->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
         } else {
-            $query = Business::where('category_id', $this->category->id);
+            $subcatId = $this->category->id;
+            $parentId = $this->category->parent_id;
+            $query = Business::where(function ($q) use ($subcatId, $parentId) {
+                $q->where('category_id', $subcatId);
+                if ($parentId) {
+                    $q->orWhere('category_id', $parentId);
+                }
+                $q->orWhereHas('subCategories', function ($subQ) use ($subcatId) {
+                    $subQ->where('categories.id', $subcatId);
+                });
+            });
         }
 
         return $query->where('status', 1)
@@ -332,48 +363,59 @@ class CategoryPage extends Component
     public function getProductsProperty()
     {
         // Start with businesses in this category or its subcategories if parent category
-       // Include parent category businesses in all child/subcategory pages
-if ($this->isParentCategory) {
-    $childIds = Category::where('parent_id', $this->category->id)
-        ->pluck('id')
-        ->map(fn ($id) => (int) $id)
-        ->toArray();
+        // Include parent category businesses in all child/subcategory pages
+        if ($this->isParentCategory) {
+            $childIds = Category::where('parent_id', $this->category->id)
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->toArray();
 
-    if (!empty($this->selectedSubCategories)) {
-        $selectedIds = array_map(
-            'intval',
-            (array) $this->selectedSubCategories
-        );
+            if (!empty($this->selectedSubCategories)) {
+                $selectedIds = array_map(
+                    'intval',
+                    (array) $this->selectedSubCategories
+                );
 
-        $selectedIds = array_values(
-            array_intersect($childIds, $selectedIds)
-        );
+                $selectedIds = array_values(
+                    array_intersect($childIds, $selectedIds)
+                );
 
-        // Keep parent category businesses even when a subcategory is selected
-        $targetCategoryIds = array_merge(
-            [(int) $this->category->id],
-            $selectedIds
-        );
-    } else {
-        // Parent + all child categories
-        $targetCategoryIds = array_merge(
-            [(int) $this->category->id],
-            $childIds
-        );
-    }
+                // Keep parent category businesses even when a subcategory is selected
+                $targetCategoryIds = array_merge(
+                    [(int) $this->category->id],
+                    $selectedIds
+                );
+            } else {
+                // Parent + all child categories
+                $targetCategoryIds = array_merge(
+                    [(int) $this->category->id],
+                    $childIds
+                );
+            }
 
-    $query = Business::whereIn('category_id', $targetCategoryIds);
-} else {
-    // Child category page:
-    // Include businesses assigned to this child OR directly to its parent
-    $targetCategoryIds = [(int) $this->category->id];
+            $targetCategoryIds = array_values(array_unique($targetCategoryIds));
+            $query = Business::where(function ($q) use ($targetCategoryIds) {
+                $q->whereIn('category_id', $targetCategoryIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($targetCategoryIds) {
+                      $subQ->whereIn('categories.id', $targetCategoryIds);
+                  });
+            });
+        } else {
+            // Child category page:
+            // Include businesses assigned to this child OR directly to its parent
+            $subcatId = (int) $this->category->id;
+            $parentId = !empty($this->category->parent_id) ? (int) $this->category->parent_id : null;
 
-    if (!empty($this->category->parent_id)) {
-        $targetCategoryIds[] = (int) $this->category->parent_id;
-    }
-
-    $query = Business::whereIn('category_id', array_unique($targetCategoryIds));
-}
+            $query = Business::where(function ($q) use ($subcatId, $parentId) {
+                $q->where('category_id', $subcatId);
+                if ($parentId) {
+                    $q->orWhere('category_id', $parentId);
+                }
+                $q->orWhereHas('subCategories', function ($subQ) use ($subcatId) {
+                    $subQ->where('categories.id', $subcatId);
+                });
+            });
+        }
 
         if (!empty($this->selectedFeatures)) {
             $featIds = array_filter($this->selectedFeatures);

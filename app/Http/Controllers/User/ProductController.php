@@ -242,10 +242,20 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
         });
 
         // dd($ratingBreakdown);
-        $bizCategoryIds = array_filter(array_merge([$business->category_id], $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []));
+        $parentCatId = $business->category ? $business->category->parent_id : null;
+        $bizCategoryIds = array_filter(array_unique(array_merge(
+            [$business->category_id],
+            $parentCatId ? [$parentCatId] : [],
+            $business->subCategories ? $business->subCategories->pluck('id')->toArray() : []
+        )));
 
         $alternativeBusiness = !empty($bizCategoryIds)
-            ? Business::whereIn('category_id', $bizCategoryIds)
+            ? Business::where(function ($q) use ($bizCategoryIds) {
+                    $q->whereIn('category_id', $bizCategoryIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($bizCategoryIds) {
+                          $subQ->whereIn('categories.id', $bizCategoryIds);
+                      });
+                })
                 ->where('id', '!=', $business->id)
                 ->where('is_affiliate', 1)
                 ->where('status', 1)
@@ -274,7 +284,12 @@ $reviews = $applyFiltersAndSort($reviewsQuery)->get();
             : collect();
 
         $peerComparisons = !empty($bizCategoryIds)
-            ? Business::whereIn('category_id', $bizCategoryIds)
+            ? Business::where(function ($q) use ($bizCategoryIds) {
+                    $q->whereIn('category_id', $bizCategoryIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($bizCategoryIds) {
+                          $subQ->whereIn('categories.id', $bizCategoryIds);
+                      });
+                })
                 ->where('id', '!=', $business->id)
                 ->where('status', 1)
                 ->where(function ($query) {
@@ -543,7 +558,26 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         $catId = $firstBiz ? $firstBiz->category_id : null;
         $availableCategoryBusinesses = collect();
         if ($catId) {
-            $availableCategoryBusinesses = Business::where('category_id', $catId)
+            $catObj = \App\Models\Category::find($catId);
+            $catIds = [$catId];
+            if ($catObj) {
+                if ($catObj->parent_id === null) {
+                    $childIds = \App\Models\Category::where('parent_id', $catObj->id)->pluck('id')->toArray();
+                    $catIds = array_merge($catIds, $childIds);
+                } else {
+                    $catIds[] = $catObj->parent_id;
+                    $siblingIds = \App\Models\Category::where('parent_id', $catObj->parent_id)->pluck('id')->toArray();
+                    $catIds = array_merge($catIds, $siblingIds);
+                }
+            }
+            $catIds = array_unique(array_filter($catIds));
+
+            $availableCategoryBusinesses = Business::where(function ($q) use ($catIds) {
+                    $q->whereIn('category_id', $catIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                          $subQ->whereIn('categories.id', $catIds);
+                      });
+                })
                 ->where('status', 1)
                 ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])
                 ->get()
@@ -650,7 +684,26 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
         $catId = $firstBiz ? $firstBiz->category_id : ($categoryTranslation ? $categoryTranslation->category_id : null);
         $availableCategoryBusinesses = collect();
         if ($catId) {
-            $availableCategoryBusinesses = Business::where('category_id', $catId)
+            $catObj = \App\Models\Category::find($catId);
+            $catIds = [$catId];
+            if ($catObj) {
+                if ($catObj->parent_id === null) {
+                    $childIds = \App\Models\Category::where('parent_id', $catObj->id)->pluck('id')->toArray();
+                    $catIds = array_merge($catIds, $childIds);
+                } else {
+                    $catIds[] = $catObj->parent_id;
+                    $siblingIds = \App\Models\Category::where('parent_id', $catObj->parent_id)->pluck('id')->toArray();
+                    $catIds = array_merge($catIds, $siblingIds);
+                }
+            }
+            $catIds = array_unique(array_filter($catIds));
+
+            $availableCategoryBusinesses = Business::where(function ($q) use ($catIds) {
+                    $q->whereIn('category_id', $catIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($catIds) {
+                          $subQ->whereIn('categories.id', $catIds);
+                      });
+                })
                 ->where('status', 1)
                 ->with(['translations' => fn($q) => $q->where('lang_id', $lang_id)])
                 ->get()
@@ -1059,9 +1112,10 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             $criterion->average_rating = $count > 0 ? round($totalScore / $count, 1) : 0;
         }
 
-        $parentCat = $business->category->parent ?? $business->category;
+        $parentCat = $business->category ? ($business->category->parent ?? $business->category) : null;
         $subCatIds = $parentCat ? $parentCat->children->pluck('id')->toArray() : [];
-        $bizCategoryIds = array_filter(array_unique(array_merge([$business->category_id], $subCatIds, $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [])));
+        $parentCatId = $parentCat ? $parentCat->id : $business->category_id;
+        $bizCategoryIds = array_filter(array_unique(array_merge([$business->category_id, $parentCatId], $subCatIds, $business->subCategories ? $business->subCategories->pluck('id')->toArray() : [])));
 
         // Base peer query
         $basePeerQuery = Business::where('id', '!=', $business->id)
@@ -1077,7 +1131,12 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             });
 
         if (!empty($bizCategoryIds)) {
-            $basePeerQuery->whereIn('category_id', $bizCategoryIds);
+            $basePeerQuery->where(function ($q) use ($bizCategoryIds) {
+                $q->whereIn('category_id', $bizCategoryIds)
+                  ->orWhereHas('subCategories', function ($subQ) use ($bizCategoryIds) {
+                      $subQ->whereIn('categories.id', $bizCategoryIds);
+                  });
+            });
         }
 
         // Popular comparisons (6 items)
@@ -1115,7 +1174,13 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
                 $q->where('slug', $selectedSubcatSlug);
             })->first();
             if ($subcatObj) {
-                $filteredPeerQuery->where('category_id', $subcatObj->id);
+                $targetCatIds = array_filter([$subcatObj->id, $subcatObj->parent_id]);
+                $filteredPeerQuery->where(function ($q) use ($targetCatIds, $subcatObj) {
+                    $q->whereIn('category_id', $targetCatIds)
+                      ->orWhereHas('subCategories', function ($subQ) use ($subcatObj) {
+                          $subQ->where('categories.id', $subcatObj->id);
+                      });
+                });
             }
         }
 

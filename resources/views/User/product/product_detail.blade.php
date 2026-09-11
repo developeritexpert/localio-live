@@ -1905,8 +1905,186 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                         </div>
 
-                        <div id="sectionDiscussions">
+                        <div id="sectionDiscussions" class="mt-5 pt-4">
+                            @php
+                                $discList = $business->discussions()->take(4)->get();
+                                $totalDiscs = $business->discussions()->count();
+                                $discIds = $business->discussions()->pluck('id');
+                                $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+                                $activeTodayDiscs = \App\Models\BusinessDiscussion::where('business_id', $business->id)->where('updated_at', '>=', now()->startOfDay())->count();
+                                $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+                                $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+                            @endphp
 
+                            <div class="card p-4" style="border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+                                <div class="d-flex flex-wrap align-items-center justify-content-between pb-3 mb-3" style="border-bottom: 1px solid #f1f5f9;">
+                                    <div>
+                                        <h2 class="m-0" style="font-size: 24px; font-weight: 700; color: #002347;">Community</h2>
+                                        <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 13.5px; color: #475569; font-weight: 500;">
+                                            <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
+                                            <span>•</span>
+                                            <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
+                                            <span>•</span>
+                                            <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+                                        <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="btn btn-outline-primary btn-sm px-3" style="border-radius: 8px; font-weight: 600;">
+                                            <!-- View all {{ number_format($totalDiscs) }} discussions <i class="fas fa-arrow-right ms-1"></i> -->
+                                        </a>
+                                    </div>
+                                </div>
+                                @if($discList->isEmpty())
+                                    <div class="text-center py-4 text-muted">
+                                        <p class="m-0">No active discussions yet for {{ $bName }}.</p>
+                                    </div>
+                                @else
+                                    <style>
+                                        .vote-sidebar {
+                                            display: flex;
+                                            flex-direction: column;
+                                            align-items: center;
+                                            justify-content: flex-start;
+                                            padding-right: 16px;
+                                            margin-right: 16px;
+                                            border-right: 1px solid #f1f5f9;
+                                            min-width: 48px;
+                                        }
+                                        .vote-btn {
+                                            background: #ffffff !important;
+                                            border: 1px solid #cbd5e1 !important;
+                                            color: #64748b !important;
+                                            width: 34px !important;
+                                            height: 34px !important;
+                                            border-radius: 8px !important;
+                                            display: inline-flex !important;
+                                            align-items: center !important;
+                                            justify-content: center !important;
+                                            font-size: 13px !important;
+                                            cursor: pointer !important;
+                                            transition: all 0.15s ease !important;
+                                            padding: 0 !important;
+                                            box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+                                            outline: none !important;
+                                        }
+                                        .vote-btn:hover {
+                                            background: #06498b !important;
+                                            border-color: #06498b !important;
+                                            color: #ffffff !important;
+                                        }
+                                        .vote-btn.active-up {
+                                            background: #ff4500 !important;
+                                            border-color: #ff4500 !important;
+                                            color: #ffffff !important;
+                                        }
+                                        .vote-btn.active-down {
+                                            background: #7193ff !important;
+                                            border-color: #7193ff !important;
+                                            color: #ffffff !important;
+                                        }
+                                        .vote-score {
+                                            font-size: 14px !important;
+                                            font-weight: 700 !important;
+                                            color: #1e293b !important;
+                                            margin: 4px 0 !important;
+                                        }
+                                    </style>
+                                    <script>
+                                        document.addEventListener('click', function(e) {
+                                            const btn = e.target.closest('.vote-trigger');
+                                            if (!btn) return;
+                                            e.preventDefault();
+
+                                            const type = btn.dataset.type;
+                                            const id = btn.dataset.id;
+                                            const vote = btn.dataset.vote;
+
+                                            fetch("{{ route('business.discussion.vote') }}", {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                    'Accept': 'application/json'
+                                                },
+                                                body: JSON.stringify({ type, id, vote })
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    const scoreEl = document.querySelector(`.vote-score-${id}`);
+                                                    if (scoreEl) scoreEl.textContent = data.score;
+
+                                                    const parent = btn.closest('.vote-sidebar') || btn.closest('.comment-vote-pill');
+                                                    if (parent) {
+                                                        const upBtn = parent.querySelector('[data-vote="up"]');
+                                                        const downBtn = parent.querySelector('[data-vote="down"]');
+                                                        if (upBtn) upBtn.classList.remove('active-up');
+                                                        if (downBtn) downBtn.classList.remove('active-down');
+
+                                                        if (data.voted === 'up' && upBtn) upBtn.classList.add('active-up');
+                                                        if (data.voted === 'down' && downBtn) downBtn.classList.add('active-down');
+                                                    }
+                                                }
+                                            })
+                                            .catch(err => console.error('Vote error:', err));
+                                        });
+                                    </script>
+                                    <div class="discussions-preview-list">
+                                        @foreach($discList as $pDisc)
+                                            <div class="p-3 {{ $loop->last ? 'mb-0' : 'mb-3' }}" style="background: #fafafa; border: 1px solid #e2e8f0; border-radius: 12px;">
+                                                <div class="d-flex align-items-start">
+                                                    <div class="vote-sidebar">
+                                                        <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" title="Upvote">
+                                                            <i class="fas fa-chevron-up"></i>
+                                                        </button>
+                                                        <span class="vote-score vote-score-{{ $pDisc->id }}">{{ $pDisc->upvotes_count - $pDisc->downvotes_count }}</span>
+                                                        <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="down" title="Downvote">
+                                                            <i class="fas fa-chevron-down"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <div class="flex-grow-1">
+                                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                                            <div class="d-flex align-items-center gap-2">
+                                                                <!-- <span class="badge bg-secondary" style="font-weight: 500; font-size: 11px;">{{ $pDisc->category }}</span> -->
+                                                                <span 
+                                                                class="text-muted" style="font-size: 12px;">
+                                                                <!-- by  -->
+                                                                <strong>
+                                                                {{ $pDisc->author_display_name }}</strong>  {{ $pDisc->created_at->diffForHumans() }}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <h4 style="font-size: 16px; font-weight: 700; color: #0f172a;" class="mb-1">
+                                                            <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}#discussion-{{ $pDisc->id }}" style="color: inherit; text-decoration: none;">
+                                                                {{ $pDisc->title }}
+                                                            </a>
+                                                        </h4>
+
+                                                        <p class="text-secondary m-0" style="font-size: 13.5px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                                            {{ Str::limit(strip_tags($pDisc->content), 180) }}
+                                                        </p>
+
+                                                        <div class="mt-2 d-flex align-items-center gap-3" style="font-size: 12px; color: #64748b; font-weight: 600;">
+                                                            <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}#discussion-{{ $pDisc->id }}" class="text-decoration-none text-muted">
+                                                                💬 {{ $pDisc->comments_count }} {{ $pDisc->comments_count == 1 ? 'comment' : 'comments' }}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Footer Link -->
+                            <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
+                                <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" style="font-size: 14px; font-weight: 600; color: #002347; text-decoration: none;">
+                                    See all discussions about {{ $bName }}
+                                </a>
+                            </div>
                         </div>
                         <div class="mt-5">
                             <section class="subs_sec light p_50 d-none" id="section16">
@@ -2434,6 +2612,9 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <a href="#section14" class="sticky-nav-item" data-target="section14">
                                                     <span>Reviews</span>
                                                 </a>
+                                                <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
+                                                    <span>Community</span>
+                                                </a>
                                             </div>
 
 
@@ -2476,6 +2657,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 <li><a class="dropdown-item msbn-item" href="#section-compare" data-target="section-compare">Compare</a></li>
                                                 @endif
                                                 <li><a class="dropdown-item msbn-item" href="#section14" data-target="section14">Reviews</a></li>
+                                                <li><a class="dropdown-item msbn-item" href="#sectionDiscussions" data-target="sectionDiscussions">Community</a></li>
                                             </ul>
                                         </div>
 

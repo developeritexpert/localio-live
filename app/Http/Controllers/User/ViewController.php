@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Cookie;
 use App;
-use App\Models\{Business, Category, SiteLanguages, CategoryTranslation, ExpertGuideArticle, Product, WebSetting, BusinessFaq, BusinessFaqCategory, BusinessFaqFeedback};
+use App\Models\{Business, BusinessDiscussion, BusinessDiscussionComment, BusinessDiscussionVote, Category, SiteLanguages, CategoryTranslation, ExpertGuideArticle, Product, WebSetting, BusinessFaq, BusinessFaqCategory, BusinessFaqFeedback, BusinessTranslation, CategoryFeatureContent, CategoryRatingCriteria, Feature, ReviewRating, ReviewReport};
 use Illuminate\Support\Facades\Redirect;
 use App\Models\User;
 use App\Models\Country;
@@ -22,6 +22,7 @@ use App\Models\ContactContent;
 use App\Models\ExpertGuideCategory;
 use App\Models\PageTile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ViewController extends Controller
@@ -38,19 +39,7 @@ class ViewController extends Controller
                 $homeContents = HomeContent::where('lang_id', 1)->pluck('meta_value', 'meta_key');
             }
 
-        $homepageCategories = Category::where('show_on_homepage', 1)
-            ->with([
-                'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                'businesses.translations' => function ($query) use ($lang_id) {
-                    $query->where('lang_id', $lang_id);
-                },
-                'businesses.reviews'
-            ])
-            ->orderBy('homepage_order', 'asc')
-            ->get();
-
-        if ($homepageCategories->isEmpty()) {
-            $categories = Category::whereHas('businesses.reviews') // fallback: only include categories with reviewed businesses
+            $homepageCategories = Category::where('show_on_homepage', 1)
                 ->with([
                     'translations' => fn($q) => $q->where('lang_id', $lang_id),
                     'businesses.translations' => function ($query) use ($lang_id) {
@@ -58,198 +47,210 @@ class ViewController extends Controller
                     },
                     'businesses.reviews'
                 ])
-                ->get()
-                ->map(function ($category) {
-                    // Combine all ratings across all businesses
-                    $ratings = $category->businesses->flatMap->reviews->pluck('rating');
-                    $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
-                    return $category;
-                })
-                ->sortByDesc('average_rating') // sort by calculated average
-                ->values()
-                ->take(10);
-        } else {
-            $categories = $homepageCategories;
-        }
+                ->orderBy('homepage_order', 'asc')
+                ->get();
+
+            if ($homepageCategories->isEmpty()) {
+                $categories = Category::whereHas('businesses.reviews') // fallback: only include categories with reviewed businesses
+                    ->with([
+                        'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                        'businesses.translations' => function ($query) use ($lang_id) {
+                            $query->where('lang_id', $lang_id);
+                        },
+                        'businesses.reviews'
+                    ])
+                    ->get()
+                    ->map(function ($category) {
+                        // Combine all ratings across all businesses
+                        $ratings = $category->businesses->flatMap->reviews->pluck('rating');
+                        $category->average_rating = $ratings->isNotEmpty() ? $ratings->avg() : 0;
+                        return $category;
+                    })
+                    ->sortByDesc('average_rating') // sort by calculated average
+                    ->values()
+                    ->take(10);
+            } else {
+                $categories = $homepageCategories;
+            }
 
 
-        $categories->each(function ($category) use ($lang_id) {
-            $limit = $category->homepage_product_limit ?? 6;
-            if ($limit <= 0) $limit = 6;
+            $categories->each(function ($category) use ($lang_id) {
+                $limit = $category->homepage_product_limit ?? 6;
+                if ($limit <= 0) $limit = 6;
 
-            $subCategoryIds = $category->subCategories ? $category->subCategories->pluck('id')->toArray() : [];
+                $subCategoryIds = $category->subCategories ? $category->subCategories->pluck('id')->toArray() : [];
 
-            $businesses = Business::where(function ($query) use ($category, $subCategoryIds) {
+                $businesses = Business::where(function ($query) use ($category, $subCategoryIds) {
                     $query->where('category_id', $category->id);
                     if (!empty($subCategoryIds)) {
                         $query->orWhereIn('category_id', $subCategoryIds)
-                              ->orWhereHas('subCategories', function ($subQ) use ($subCategoryIds) {
-                                  $subQ->whereIn('categories.id', $subCategoryIds);
-                              });
+                            ->orWhereHas('subCategories', function ($subQ) use ($subCategoryIds) {
+                                $subQ->whereIn('categories.id', $subCategoryIds);
+                            });
                     }
                     $query->orWhereHas('subCategories', function ($subQ) use ($category) {
                         $subQ->where('categories.id', $category->id);
                     });
                 })
-                ->where('is_affiliate', 1)
-                ->where(function ($query) {
-                    $query->where('active_all_countries', 1)
-                        ->orWhereHas('countries', function ($q) {
-                            $q->where('country_id', getCurrentCountry());
-                        });
+                    ->where('is_affiliate', 1)
+                    ->where(function ($query) {
+                        $query->where('active_all_countries', 1)
+                            ->orWhereHas('countries', function ($q) {
+                                $q->where('country_id', getCurrentCountry());
+                            });
+                    })
+                    ->whereHas('languages', function ($query) use ($lang_id) {
+                        $query->where('language_id', $lang_id);
+                    })
+                    ->withAvg('reviews', 'rating')
+                    ->with([
+                        'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                        'reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
+                        'usps',
+                    ])
+                    ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC')
+                    ->take($limit)
+                    ->get();
+
+                $category->setRelation('businesses', $businesses);
+            });
+
+
+
+            // dd($categories);
+            $latestReviews = Review::with([
+                'user',
+                'business.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'business.reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
+                'translations' => fn($q) => $q->where('language_id', $lang_id),
+            ])->where('status', 'active')
+                ->whereHas('user', function ($q) {
+                    $q->where('user_type', '!=', 'admin');
                 })
-                ->whereHas('languages', function ($query) use ($lang_id) {
-                    $query->where('language_id', $lang_id);
-                })
-                ->withAvg('reviews', 'rating')
-                ->with([
-                    'translations' => fn($q) => $q->where('lang_id', $lang_id),
-                    'reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
-                    'usps',
-                ])
-                ->orderByRaw('COALESCE(reviews_avg_rating, 0) DESC')
-                ->take($limit)
+                ->latest()
+                ->take(3)
                 ->get();
 
-            $category->setRelation('businesses', $businesses);
-        });
-
-
-
-        // dd($categories);
-        $latestReviews = Review::with([
-            'user',
-            'business.translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'business.reviews.translations' => fn($q) => $q->where('language_id', $lang_id),
-            'translations' => fn($q) => $q->where('language_id', $lang_id),
-        ])->where('status','active')
-            ->whereHas('user', function ($q) {
-                $q->where('user_type', '!=', 'admin');
-            })
-            ->latest()
-            ->take(3)
-            ->get();
-
-        $articles = ExpertGuideArticle::with([
-            'category.translations' => function ($query) use ($lang_id) {
-                $query->where('lang_id', $lang_id);
-            },
-            'translationForCurrentLang',  // This will load the article translations for the current language
-        ])
-            ->latest() // Get the latest articles
-            ->take(3)  // Limit to 3 articles
-            ->get();
-        // dd($articles);
-        $homeContantImages = HomeContent::where('lang_id', 1)
-            ->whereIn('meta_key', [
-                'header_background_img',
-                'header_img',
-                'trusted_brands_img',
-                'ai_section_left_img',
-                'ai_section_right_img',
-                'ai_send_img',
-                'review_section_right_img',
-                'review_section_left_img',
-                'find_tool_left_img',
-                'find_tool_right_img',
-                'user_reviews_img',
-                'price_compare_img',
-                'independent_img',
+            $articles = ExpertGuideArticle::with([
+                'category.translations' => function ($query) use ($lang_id) {
+                    $query->where('lang_id', $lang_id);
+                },
+                'translationForCurrentLang',  // This will load the article translations for the current language
             ])
-            ->get()
-            ->keyBy('meta_key');
-        $reviews = Review::with([
-            'user',
-            'translations' => fn($q) => $q->where('language_id', $lang_id),
-            'business.translations' => fn($q) => $q->where('lang_id', $lang_id),
-            'business.reviews',
-            'business.category',
-        ])
-            ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
-            ->whereHas('business')
-            ->whereHas('business.category')
-            ->orderByDesc('rating')
-            ->where('status','active')
-            ->latest()
-            ->get()
-            ->groupBy(fn($review) => $review->business->category->id);
+                ->latest() // Get the latest articles
+                ->take(3)  // Limit to 3 articles
+                ->get();
+            // dd($articles);
+            $homeContantImages = HomeContent::where('lang_id', 1)
+                ->whereIn('meta_key', [
+                    'header_background_img',
+                    'header_img',
+                    'trusted_brands_img',
+                    'ai_section_left_img',
+                    'ai_section_right_img',
+                    'ai_send_img',
+                    'review_section_right_img',
+                    'review_section_left_img',
+                    'find_tool_left_img',
+                    'find_tool_right_img',
+                    'user_reviews_img',
+                    'price_compare_img',
+                    'independent_img',
+                ])
+                ->get()
+                ->keyBy('meta_key');
+            $reviews = Review::with([
+                'user',
+                'translations' => fn($q) => $q->where('language_id', $lang_id),
+                'business.translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'business.reviews',
+                'business.category',
+            ])
+                ->whereHas('translations', fn($q) => $q->where('language_id', $lang_id))
+                ->whereHas('business')
+                ->whereHas('business.category')
+                ->orderByDesc('rating')
+                ->where('status', 'active')
+                ->latest()
+                ->get()
+                ->groupBy(fn($review) => $review->business->category->id);
 
-        $expertGuide = ExpertGuides::where('lang_id', $lang_id)->first()  ?? ExpertGuides::where('lang_id', 1)->first();
-        $pageTileTranslationEducation = PageTile::where('source', 'educationItem')
-            ->with('translations')->where('lang_id', $lang_id)
-            ->get();
-        $pageTileTranslationRightTools = PageTile::where('source', 'righttools')
-            ->with('translations')->where('lang_id', $lang_id)
-            ->get();
+            $expertGuide = ExpertGuides::where('lang_id', $lang_id)->first()  ?? ExpertGuides::where('lang_id', 1)->first();
+            $pageTileTranslationEducation = PageTile::where('source', 'educationItem')
+                ->with('translations')->where('lang_id', $lang_id)
+                ->get();
+            $pageTileTranslationRightTools = PageTile::where('source', 'righttools')
+                ->with('translations')->where('lang_id', $lang_id)
+                ->get();
 
-        $articles = ExpertGuideArticle::with(['translationForCurrentLang'])
-            ->latest() // orders by `created_at` descending by default
-            ->take(3)
-            ->get();
-        //  dd($categories);
-            $country_id=getCurrentCountry();
+            $articles = ExpertGuideArticle::with(['translationForCurrentLang'])
+                ->latest() // orders by `created_at` descending by default
+                ->take(3)
+                ->get();
+            //  dd($categories);
+            $country_id = getCurrentCountry();
             $exclusive_products = Product::whereHas('prices', function ($query) {
                 $query->whereNotNull('discount_price')
-                      ->whereDate('discount_expiration_date', '>=', now());
+                    ->whereDate('discount_expiration_date', '>=', now());
             })
-            ->whereHas('translations', function ($query) use ($lang_id) {
-                $query->where('lang_id', $lang_id)
-                      ->where('product_translations.status', 'active');
-            })
-            ->whereHas('businesses', function ($query) use ($lang_id, $country_id) {
-                $query->where(function ($q) use ($country_id) {
+                ->whereHas('translations', function ($query) use ($lang_id) {
+                    $query->where('lang_id', $lang_id)
+                        ->where('product_translations.status', 'active');
+                })
+                ->whereHas('businesses', function ($query) use ($lang_id, $country_id) {
+                    $query->where(function ($q) use ($country_id) {
                         $q->where('active_all_countries', 1)
-                          ->orWhereHas('countries', function ($q2) use ($country_id) {
-                              $q2->where('country_id', $country_id);
-                          });
+                            ->orWhereHas('countries', function ($q2) use ($country_id) {
+                                $q2->where('country_id', $country_id);
+                            });
                     })
-                    ->whereHas('translations', function ($q) use ($lang_id) {
-                        $q->where('lang_id', $lang_id);
-                    });
-            })
-            ->where(function ($query) use ($country_id) {
-                $query->where('active_all_countries', 1)
-                      ->orWhereHas('countries', function ($countryQuery) use ($country_id) {
-                          $countryQuery->where('country_id', $country_id);
-                      });
-            })
-            ->where('products.status', 'public')
-            ->with([
-                'translations' => function ($query) use ($lang_id) {
-                    $query->where('lang_id', $lang_id);
-                },
-                'prices' => function ($query) {
-                    $query->whereNotNull('discount_price')
-                          ->whereDate('discount_expiration_date', '>=', now())
-                          ->orderBy('price');
-                },
-                'businesses.translations' => function ($query) use ($lang_id) {
-                    $query->where('lang_id', $lang_id);
-                }
-            ])
-            ->limit(10)
-            ->get()
-            ->map(function ($product) {
-                $price = $product->prices->first();
-                if ($price && $price->price > 0) {
-                    $discount_percentage = round((($price->price - $price->discount_price) / $price->price) * 100);
-                    $product->discount_percentage = $discount_percentage;
-                } else {
-                    $product->discount_percentage = 0;
-                }
-                return $product;
-            });
-                $default_image=WebSetting::where('key','user_default_image')->value('value');
-                return view('User.home.index', compact('default_image','exclusive_products','homeContents', 'latestReviews', 'categories', 'homeContantImages', 'reviews', 'expertGuide', 'pageTileTranslationEducation', 'pageTileTranslationRightTools', 'articles'));
-            } catch (\Throwable $e) {
-                return view('welcome');
-            }
+                        ->whereHas('translations', function ($q) use ($lang_id) {
+                            $q->where('lang_id', $lang_id);
+                        });
+                })
+                ->where(function ($query) use ($country_id) {
+                    $query->where('active_all_countries', 1)
+                        ->orWhereHas('countries', function ($countryQuery) use ($country_id) {
+                            $countryQuery->where('country_id', $country_id);
+                        });
+                })
+                ->where('products.status', 'public')
+                ->with([
+                    'translations' => function ($query) use ($lang_id) {
+                        $query->where('lang_id', $lang_id);
+                    },
+                    'prices' => function ($query) {
+                        $query->whereNotNull('discount_price')
+                            ->whereDate('discount_expiration_date', '>=', now())
+                            ->orderBy('price');
+                    },
+                    'businesses.translations' => function ($query) use ($lang_id) {
+                        $query->where('lang_id', $lang_id);
+                    }
+                ])
+                ->limit(10)
+                ->get()
+                ->map(function ($product) {
+                    $price = $product->prices->first();
+                    if ($price && $price->price > 0) {
+                        $discount_percentage = round((($price->price - $price->discount_price) / $price->price) * 100);
+                        $product->discount_percentage = $discount_percentage;
+                    } else {
+                        $product->discount_percentage = 0;
+                    }
+                    return $product;
+                });
+            $default_image = WebSetting::where('key', 'user_default_image')->value('value');
+            return view('User.home.index', compact('default_image', 'exclusive_products', 'homeContents', 'latestReviews', 'categories', 'homeContantImages', 'reviews', 'expertGuide', 'pageTileTranslationEducation', 'pageTileTranslationRightTools', 'articles'));
+        } catch (\Throwable $e) {
+            return view('welcome');
+        }
     }
 
 
     public function changeLanguage(Request $request, $lang_code)
     {
-        
+
         $cacheKey = "userDetails";
         $languages = getLanguages();
         $languageRecord = $languages->firstWhere('lang_code', $lang_code);
@@ -280,8 +281,8 @@ class ViewController extends Controller
             },
             'faqs' => function ($query) {
                 $query->where('type', 'user')
-                      ->where('status', 'active')
-                      ->orderBy('position', 'asc'); // ✅ Order by position
+                    ->where('status', 'active')
+                    ->orderBy('position', 'asc'); // ✅ Order by position
             },
             'faqs.translations' => function ($query) use ($lang_id) {
                 $query->where('lang_id', $lang_id);
@@ -299,24 +300,25 @@ class ViewController extends Controller
         $activeCategory ??= $faqCategories->first();
 
         return view('User.faq.faq', compact('faqCategories', 'activeCategory'));
-    }    public function allReview(Request $request, $locale, $slug)
+    }
+    public function allReview(Request $request, $locale, $slug)
     {
         $lang_id = getCurrentLanguageID();
 
         // Get the business from the business_translations table using the slug
-        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $slug)
+        $businessTranslation = BusinessTranslation::where('slug', $slug)
             ->where('lang_id', $lang_id)
             ->first();
 
         if (!$businessTranslation) {
-            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $slug)->first();
+            $businessTranslation = BusinessTranslation::where('slug', $slug)->first();
         }
 
         if (!$businessTranslation) {
             abort(404, 'Business not found');
         }
 
-        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+        $business = Business::where('id', $businessTranslation->business_id)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -337,7 +339,7 @@ class ViewController extends Controller
             $totalScore = 0;
             $count = 0;
 
-            $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where('id', $criterion->id)
+            $matchingCriteriaIds = CategoryRatingCriteria::where('id', $criterion->id)
                 ->orWhere(function ($q) use ($criterion) {
                     if ($criterion->default_key) {
                         $q->where('default_key', $criterion->default_key);
@@ -347,7 +349,7 @@ class ViewController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $ratingRecords = \App\Models\ReviewRating::whereIn('review_id', $activeReviewIds)
+            $ratingRecords = ReviewRating::whereIn('review_id', $activeReviewIds)
                 ->whereIn('criteria_id', $matchingCriteriaIds)
                 ->get();
 
@@ -409,11 +411,11 @@ class ViewController extends Controller
         $selectedStars = array_filter(array_map('intval', (array) $selectedStars));
 
         if (!empty($selectedStars)) {
-            $reviewsQuery->where(function($q) use ($selectedStars) {
+            $reviewsQuery->where(function ($q) use ($selectedStars) {
                 foreach ($selectedStars as $star) {
                     $min = $star - 0.5;
                     $max = $star + 0.5;
-                    $q->orWhere(function($sub) use ($min, $max) {
+                    $q->orWhere(function ($sub) use ($min, $max) {
                         $sub->where('rating', '>=', $min)
                             ->where('rating', '<', $max);
                     });
@@ -484,7 +486,7 @@ class ViewController extends Controller
             return response()->json(['error' => 'Review not found'], 404);
         }
 
-        if($request->type == 'original') {
+        if ($request->type == 'original') {
             $translation = $review->original;
         } else {
             $translation = $review->translation($request->language_id);
@@ -499,22 +501,22 @@ class ViewController extends Controller
     {
         $lang_id = getCurrentLanguageID();
 
-        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $languageObj = Language::where('lang_code', $locale)->first();
         $expectedSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
 
-        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)
+        $businessTranslation = BusinessTranslation::where('slug', $business_slug)
             ->where('lang_id', $lang_id)
             ->first();
 
         if (!$businessTranslation) {
-            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
+            $businessTranslation = BusinessTranslation::where('slug', $business_slug)->first();
         }
 
         if (!$businessTranslation) {
             abort(404, 'Business not found');
         }
 
-        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+        $business = Business::where('id', $businessTranslation->business_id)
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'reviews' => fn($q) => $q->where('status', 'active'),
@@ -541,7 +543,7 @@ class ViewController extends Controller
             $totalScore = 0;
             $count = 0;
 
-            $matchingCriteriaIds = \App\Models\CategoryRatingCriteria::where('id', $criterion->id)
+            $matchingCriteriaIds = CategoryRatingCriteria::where('id', $criterion->id)
                 ->orWhere(function ($q) use ($criterion) {
                     if ($criterion->default_key) {
                         $q->where('default_key', $criterion->default_key);
@@ -551,7 +553,7 @@ class ViewController extends Controller
                 ->pluck('id')
                 ->toArray();
 
-            $ratingRecords = \App\Models\ReviewRating::whereIn('review_id', $activeReviewIds)
+            $ratingRecords = ReviewRating::whereIn('review_id', $activeReviewIds)
                 ->whereIn('criteria_id', $matchingCriteriaIds)
                 ->get();
 
@@ -594,7 +596,6 @@ class ViewController extends Controller
             $additional_info = $bPrice['additional_info'] ?? 'NA';
         }
 
-        // Top Highlighted Reviews
         $topReviews = Review::with([
             'user',
             'translations' => fn($q) => $q->where('language_id', $lang_id)
@@ -607,24 +608,24 @@ class ViewController extends Controller
             ->get();
 
         // FAQ Categories & Grouped FAQs
-        $faqCategories = \App\Models\BusinessFaqCategory::where('business_id', $business->id)
+        $faqCategories = BusinessFaqCategory::where('business_id', $business->id)
             ->where('status', 1)
             ->ordered()
-            ->with(['faqs' => function($q) use ($lang_id) {
+            ->with(['faqs' => function ($q) use ($lang_id) {
                 $q->where('status', 1)
-                  ->orderedByHelpful()
-                  ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
+                    ->orderedByHelpful()
+                    ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
             }])
             ->get();
 
-        $uncategorizedFaqs = \App\Models\BusinessFaq::where('business_id', $business->id)
+        $uncategorizedFaqs = BusinessFaq::where('business_id', $business->id)
             ->whereNull('business_faq_category_id')
             ->where('status', 1)
             ->orderedByHelpful()
             ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)])
             ->get();
 
-        $allFaqs = \App\Models\BusinessFaq::where('business_id', $business->id)
+        $allFaqs = BusinessFaq::where('business_id', $business->id)
             ->where('status', 1)
             ->orderedByHelpful()
             ->with(['translations' => fn($t) => $t->where('lang_id', $lang_id), 'category'])
@@ -632,7 +633,7 @@ class ViewController extends Controller
 
         $userVotes = [];
         if (auth()->check()) {
-            $userVotes = \App\Models\BusinessFaqFeedback::where('user_id', auth()->id())
+            $userVotes = BusinessFaqFeedback::where('user_id', auth()->id())
                 ->whereNotNull('is_helpful')
                 ->pluck('is_helpful', 'business_faq_id')
                 ->toArray();
@@ -667,9 +668,21 @@ class ViewController extends Controller
         }
 
         return view('User.product.business_faqs', compact(
-            'business', 'averageRating', 'totalReviews', 'recommendPercent', 
-            'criteria', 'startingPrice', 'currency', 'timeUnit', 'additional_info', 
-            'topReviews', 'expectedSlug', 'faqCategories', 'uncategorizedFaqs', 'allFaqs', 'userVotes',
+            'business',
+            'averageRating',
+            'totalReviews',
+            'recommendPercent',
+            'criteria',
+            'startingPrice',
+            'currency',
+            'timeUnit',
+            'additional_info',
+            'topReviews',
+            'expectedSlug',
+            'faqCategories',
+            'uncategorizedFaqs',
+            'allFaqs',
+            'userVotes',
             'exploreSubcategories'
         ));
     }
@@ -677,19 +690,20 @@ class ViewController extends Controller
     public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
     {
         $lang_id = getCurrentLanguageID();
-        $languageObj = \App\Models\Language::where('lang_code', $locale)->first();
+        $languageObj = Language::where('lang_code', $locale)->first();
         $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
         $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
         $expectedComparisonsSlug = !empty($languageObj->comparisons_slug) ? $languageObj->comparisons_slug : 'comparisons';
+        $expectedDiscussionsSlug = !empty($languageObj->discussions_slug) ? $languageObj->discussions_slug : 'discussions';
 
         // 1. Check if slug matches a Category or Subcategory
-        $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug, $lang_id) {
+        $category = Category::whereHas('translations', function ($query) use ($business_slug, $lang_id) {
             $query->where('slug', $business_slug)->where('lang_id', $lang_id);
         })->first();
 
         if (!$category) {
-            $category = \App\Models\Category::whereHas('translations', function ($query) use ($business_slug) {
+            $category = Category::whereHas('translations', function ($query) use ($business_slug) {
                 $query->where('slug', $business_slug);
             })->first();
         }
@@ -703,13 +717,13 @@ class ViewController extends Controller
             }
 
             // Check if second_segment is a child subcategory of this category
-            $subCategory = \App\Models\Category::where('parent_id', $category->id)
+            $subCategory = Category::where('parent_id', $category->id)
                 ->whereHas('translations', function ($query) use ($second_segment, $lang_id) {
                     $query->where('slug', $second_segment)->where('lang_id', $lang_id);
                 })->first();
 
             if (!$subCategory) {
-                $subCategory = \App\Models\Category::where('parent_id', $category->id)
+                $subCategory = Category::where('parent_id', $category->id)
                     ->whereHas('translations', function ($query) use ($second_segment) {
                         $query->where('slug', $second_segment);
                     })->first();
@@ -720,13 +734,13 @@ class ViewController extends Controller
             }
 
             // Check if second_segment is a Feature for this category
-            $featureExists = \App\Models\Feature::whereHas('translations', function ($query) use ($second_segment) {
+            $featureExists = Feature::whereHas('translations', function ($query) use ($second_segment) {
                 $query->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
-                      ->orWhere('name', 'LIKE', $second_segment);
+                    ->orWhere('name', 'LIKE', $second_segment);
             })->exists();
 
             if (!$featureExists) {
-                $featureExists = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
+                $featureExists = CategoryFeatureContent::where('category_id', $category->id)
                     ->exists();
             }
 
@@ -803,6 +817,10 @@ class ViewController extends Controller
             return app(\App\Http\Controllers\User\ProductController::class)->allBusinessComparisons($locale, $business_slug);
         }
 
+        if ($second_segment === $expectedDiscussionsSlug || $second_segment === 'discussions' || $second_segment === 'discussion' || $second_segment === 'community') {
+            return $this->businessDiscussions($request, $locale, $business_slug);
+        }
+
         abort(404);
     }
 
@@ -810,19 +828,19 @@ class ViewController extends Controller
     {
         $lang_id = getCurrentLanguageID();
 
-        $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)
+        $businessTranslation = BusinessTranslation::where('slug', $business_slug)
             ->where('lang_id', $lang_id)
             ->first();
 
         if (!$businessTranslation) {
-            $businessTranslation = \App\Models\BusinessTranslation::where('slug', $business_slug)->first();
+            $businessTranslation = BusinessTranslation::where('slug', $business_slug)->first();
         }
 
         if (!$businessTranslation) {
             abort(404, 'Business not found');
         }
 
-        $business = \App\Models\Business::where('id', $businessTranslation->business_id)
+        $business = Business::where('id', $businessTranslation->business_id)
             ->with([
                 'translations',
             ])->firstOrFail();
@@ -835,15 +853,15 @@ class ViewController extends Controller
         $lang_id = getCurrentLanguageID();
 
         // 1. Trending Businesses: top 8 businesses by active reviews count and average rating
-        $trendingBusinesses = \App\Models\Business::where('status', 1)
+        $trendingBusinesses = Business::where('status', 1)
             ->whereHas('languages', function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
-                      ->orWhereHas('countries', function ($q) {
-                          $q->where('country_id', getCurrentCountry());
-                      });
+                    ->orWhereHas('countries', function ($q) {
+                        $q->where('country_id', getCurrentCountry());
+                    });
             })
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -861,23 +879,23 @@ class ViewController extends Controller
             ->get();
 
         // 2. Recently Reviewed: 8 businesses that have active reviews, ordered by review date
-        $recentBusinessIds = \App\Models\Review::where('status', 'active')
+        $recentBusinessIds = Review::where('status', 'active')
             ->orderByDesc('created_at')
             ->pluck('business_id')
             ->unique()
             ->take(8)
             ->toArray();
 
-        $recentlyReviewed = \App\Models\Business::whereIn('id', $recentBusinessIds)
+        $recentlyReviewed = Business::whereIn('id', $recentBusinessIds)
             ->where('status', 1)
             ->whereHas('languages', function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
-                      ->orWhereHas('countries', function ($q) {
-                          $q->where('country_id', getCurrentCountry());
-                      });
+                    ->orWhereHas('countries', function ($q) {
+                        $q->where('country_id', getCurrentCountry());
+                    });
             })
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
@@ -896,15 +914,15 @@ class ViewController extends Controller
             ->values();
 
         // 3. Unreviewed Businesses: 8 businesses with 0 active reviews (chosen randomly)
-        $unreviewedBusinesses = \App\Models\Business::where('status', 1)
+        $unreviewedBusinesses = Business::where('status', 1)
             ->whereHas('languages', function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
             })
             ->where(function ($query) {
                 $query->where('active_all_countries', 1)
-                      ->orWhereHas('countries', function ($q) {
-                          $q->where('country_id', getCurrentCountry());
-                      });
+                    ->orWhereHas('countries', function ($q) {
+                        $q->where('country_id', getCurrentCountry());
+                    });
             })
             ->whereDoesntHave('reviews', function ($query) {
                 $query->where('status', 'active');
@@ -924,12 +942,12 @@ class ViewController extends Controller
         $lang_id = getCurrentLanguageID();
 
         // 1. Check if slug matches a Category or Subcategory
-        $category = \App\Models\Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
+        $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);
         })->first();
 
         if (!$category) {
-            $category = \App\Models\Category::whereHas('translations', function ($query) use ($slug) {
+            $category = Category::whereHas('translations', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })->first();
         }
@@ -939,12 +957,12 @@ class ViewController extends Controller
         }
 
         // 2. Check if slug matches a Business / Product
-        $business = \App\Models\Business::whereHas('translations', function ($query) use ($slug, $lang_id) {
+        $business = Business::whereHas('translations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);
         })->first();
 
         if (!$business) {
-            $business = \App\Models\Business::whereHas('translations', function ($query) use ($slug) {
+            $business = Business::whereHas('translations', function ($query) use ($slug) {
                 $query->where('slug', $slug);
             })->first();
         }
@@ -1073,7 +1091,7 @@ class ViewController extends Controller
             'report_details' => 'nullable|string|max:1000'
         ]);
 
-        \App\Models\ReviewReport::create([
+        ReviewReport::create([
             'review_id' => $request->input('review_id'),
             'user_id' => auth()->id(),
             'report_reason' => $request->input('report_reason'),
@@ -1091,13 +1109,13 @@ class ViewController extends Controller
     public function goBusiness($locale, $slug)
     {
         // Find business translation by slug
-        $translation = \App\Models\BusinessTranslation::where('slug', $slug)->first();
+        $translation = BusinessTranslation::where('slug', $slug)->first();
         if ($translation) {
             $business = $translation->business;
         } else {
-            $business = \App\Models\Business::where('id', $slug)->first();
+            $business = Business::where('id', $slug)->first();
             if (!$business) {
-                $business = \App\Models\Business::whereHas('translations', function($q) use ($slug) {
+                $business = Business::whereHas('translations', function ($q) use ($slug) {
                     $q->where('slug', $slug);
                 })->first();
             }
@@ -1116,5 +1134,383 @@ class ViewController extends Controller
 
         // 301 Permanent Redirect directly to the clean business website URL
         return redirect()->away($targetUrl, 301);
+    }
+    public function businessDiscussions(Request $request, $locale, $business_slug)
+    {
+        $lang_id = getCurrentLanguageID();
+        $businessTranslation = BusinessTranslation::where('slug', $business_slug)
+            ->where('lang_id', $lang_id)
+            ->first();
+
+        if (!$businessTranslation) {
+            $businessTranslation = BusinessTranslation::where('slug', $business_slug)->first();
+        }
+
+        if (!$businessTranslation) {
+            abort(404, 'Business not found');
+        }
+
+        $business = Business::where('id', $businessTranslation->business_id)
+            ->with([
+                'category.translation',
+                'category.parent.translation',
+                'translations',
+                'reviews' => fn($q) => $q->where('status', 'active'),
+                'usps',
+            ])->firstOrFail();
+
+        // Calculate Ratings & Reviews info
+        $activeReviews = $business->reviews;
+        $totalReviews = $activeReviews->count();
+        $hasUserReviews = $totalReviews > 0;
+        $averageRating = $hasUserReviews ? $activeReviews->avg('rating') : ($business->admin_rating ?? null);
+
+        $recommendPercent = 0;
+        if ($totalReviews > 0) {
+            $recommendCount = $activeReviews->where('recommend', 1)->count();
+            $recommendPercent = round(($recommendCount / $totalReviews) * 100);
+        } else {
+            $recommendPercent = 94;
+        }
+
+        $criteria = DB::table('review_ratings')
+            ->join('reviews', 'review_ratings.review_id', '=', 'reviews.id')
+            ->join('category_rating_criteria', 'review_ratings.criteria_id', '=', 'category_rating_criteria.id')
+            ->where('reviews.business_id', $business->id)
+            ->where('reviews.status', 'active')
+            ->select('category_rating_criteria.name', DB::raw('AVG(review_ratings.rating) as average_rating'))
+            ->groupBy('category_rating_criteria.id', 'category_rating_criteria.name')
+            ->get();
+
+        if ($criteria->isEmpty()) {
+            $criteria = collect([
+                (object)['name' => 'Ease of Use', 'average_rating' => 4.8],
+                (object)['name' => 'Customer Support', 'average_rating' => 4.6],
+                (object)['name' => 'Value for Money', 'average_rating' => 4.7],
+                (object)['name' => 'Functionality', 'average_rating' => 4.9],
+            ]);
+        }
+
+        // Starting price logic
+        $startingPrice = null;
+        $currency = '$';
+        $timeUnit = 'Month';
+        $price = getBusinessesWithStartingPrice($business);
+        if (!empty($price) && isset($price[0]['starting_price'])) {
+            $bPrice = $price[0]['starting_price'];
+            $startingPrice = $bPrice['amount'];
+            $currency = $bPrice['currency'] ?? '$';
+            $timeUnit = ucfirst($bPrice['time_unit'] ?? 'month');
+        }
+
+        $topReviews = Review::with([
+            'user',
+            'translations' => fn($q) => $q->where('language_id', $lang_id)
+        ])
+            ->where('business_id', $business->id)
+            ->where('status', 'active')
+            ->orderByDesc('rating')
+            ->orderByDesc('created_at')
+            ->take(2)
+            ->get();
+
+        // Discussions for this business
+        $query = BusinessDiscussion::where('business_id', $business->id)
+            ->where('status', 'active')
+            ->with(['user', 'comments' => fn($q) => $q->with('user', 'replies.user')]);
+
+        // Category filter if passed
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
+        // Search query
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        // Sort
+        $userPinnedDiscIds = session()->get('user_pinned_discussions', []);
+        $userPinnedDiscIds = is_array($userPinnedDiscIds) ? array_filter(array_map('intval', $userPinnedDiscIds)) : [];
+
+        if (!empty($userPinnedDiscIds)) {
+            $idsStr = implode(',', $userPinnedDiscIds);
+            $query->orderByRaw("CASE WHEN is_pinned = 1 OR id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
+        } else {
+            $query->orderByDesc('is_pinned');
+        }
+
+        $sort = $request->get('sort', 'popular');
+        if ($sort === 'recent') {
+            $query->latest();
+        } elseif ($sort === 'commented') {
+            $query->orderByDesc('comments_count');
+        } else {
+            $query->orderByDesc('upvotes_count')->latest();
+        }
+
+        $discussions = $query->paginate(15);
+        $displayDiscussionsCount = BusinessDiscussion::where('business_id', $business->id)->where('status', 'active')->count();
+        $displayCommentsCount = BusinessDiscussionComment::whereHas('discussion', function ($q) use ($business) {
+            $q->where('business_id', $business->id)->where('status', 'active');
+        })->where('status', 'active')->count();
+
+        $activeDiscussionsToday = BusinessDiscussion::where('business_id', $business->id)
+            ->where('status', 'active')
+            ->where('updated_at', '>=', now()->startOfDay())
+            ->count();
+        $activeCommentsToday = BusinessDiscussionComment::whereHas('discussion', function ($q) use ($business) {
+            $q->where('business_id', $business->id)->where('status', 'active');
+        })->where('status', 'active')
+            ->where('created_at', '>=', now()->startOfDay())
+            ->count();
+
+        $displayActiveToday = $activeDiscussionsToday + $activeCommentsToday;
+        $totalDiscussionsCount = $displayDiscussionsCount;
+        $totalCommentsCount = $displayCommentsCount;
+
+        return view('User.product.business_discussions', compact(
+            'business',
+            'averageRating',
+            'totalReviews',
+            'recommendPercent',
+            'criteria',
+            'startingPrice',
+            'currency',
+            'timeUnit',
+            'topReviews',
+            'discussions',
+            'totalDiscussionsCount',
+            'totalCommentsCount',
+            'displayDiscussionsCount',
+            'displayCommentsCount',
+            'displayActiveToday'
+        ));
+    }
+
+    public function storeDiscussion(Request $request)
+    {
+        if (!auth()->check()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Please sign in to post a discussion.', 'require_login' => true], 401);
+            }
+            return redirect()->back()->with('error', 'Please sign in to post a discussion.');
+        }
+
+        $request->validate([
+            'business_id' => 'required|exists:businesses,id',
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'category' => 'nullable|string|max:50',
+            'author_name' => 'nullable|string|max:100',
+        ]);
+
+        $user = auth()->user();
+
+        $discussion = BusinessDiscussion::create([
+            'business_id' => $request->business_id,
+            'user_id' => $user->id,
+            'author_name' => $user->displayName(),
+            'author_title' => $user->job_title ?: 'Community Member',
+            'category' => $request->category ?: 'General',
+            'title' => $request->title,
+            'content' => $request->content,
+            'status' => 'active',
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Discussion posted successfully!', 'discussion' => $discussion]);
+        }
+
+        return redirect()->back()->with('success', 'Discussion posted successfully!');
+    }
+
+    public function storeDiscussionComment(Request $request)
+    {
+        if (!auth()->check()) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Please sign in to post a comment.', 'require_login' => true], 401);
+            }
+            return redirect()->back()->with('error', 'Please sign in to post a comment.');
+        }
+        $request->validate([
+            'business_discussion_id' => 'required|exists:business_discussions,id',
+            'content' => 'required|string',
+            'parent_id' => 'nullable|exists:business_discussion_comments,id',
+            'author_name' => 'nullable|string|max:100',
+        ]);
+
+        $user = auth()->user();
+        $discussion = BusinessDiscussion::findOrFail($request->business_discussion_id);
+
+        $comment = BusinessDiscussionComment::create([
+            'business_discussion_id' => $discussion->id,
+            'user_id' => $user?->id,
+            'parent_id' => $request->parent_id,
+            'author_name' => $user ? $user->displayName() : ($request->author_name ?: 'Anonymous'),
+            'author_title' => $user?->job_title ?: 'Community Member',
+            'content' => $request->content,
+            'status' => 'active',
+        ]);
+
+        $discussion->increment('comments_count');
+
+        if ($request->expectsJson() || $request->wantsJson() || $request->ajax()) {
+            $comment->load('replies');
+            $html = view('User.product.partials.comment_item', [
+                'comment' => $comment,
+                'disc' => $discussion,
+                'level' => $request->parent_id ? 1 : 0
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'parent_id' => $comment->parent_id,
+                'discussion_id' => $discussion->id,
+                'comments_count' => $discussion->comments_count,
+            ]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function voteDiscussion(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:discussion,comment',
+            'id' => 'required|integer',
+            'vote' => 'required|in:up,down',
+        ]);
+
+        $type = $request->type === 'discussion' ? BusinessDiscussion::class : BusinessDiscussionComment::class;
+        $item = $type::find($request->id);
+
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Item not found'], 404);
+        }
+
+        $userId = auth()->id();
+        $ip = $request->ip();
+
+        $existingVote = BusinessDiscussionVote::where('voteable_type', $type)
+            ->where('voteable_id', $item->id)
+            ->where(function ($q) use ($userId, $ip) {
+                if ($userId) {
+                    $q->where('user_id', $userId);
+                } else {
+                    $q->where('ip_address', $ip);
+                }
+            })->first();
+
+        if ($existingVote) {
+            if ($existingVote->vote_type === $request->vote) {
+                if ($request->vote === 'up') {
+                    $item->decrement('upvotes_count');
+                } else {
+                    $item->decrement('downvotes_count');
+                }
+                $existingVote->delete();
+                $votedState = null;
+            } else {
+                if ($request->vote === 'up') {
+                    $item->increment('upvotes_count');
+                    $item->decrement('downvotes_count');
+                } else {
+                    $item->decrement('upvotes_count');
+                    $item->increment('downvotes_count');
+                }
+                $existingVote->update(['vote_type' => $request->vote]);
+                $votedState = $request->vote;
+            }
+        } else {
+            BusinessDiscussionVote::create([
+                'user_id' => $userId,
+                'ip_address' => $ip,
+                'voteable_type' => $type,
+                'voteable_id' => $item->id,
+                'vote_type' => $request->vote,
+            ]);
+
+            if ($request->vote === 'up') {
+                $item->increment('upvotes_count');
+            } else {
+                $item->increment('downvotes_count');
+            }
+            $votedState = $request->vote;
+        }
+
+        $item->refresh();
+
+        return response()->json([
+            'success' => true,
+            'upvotes' => max(0, $item->upvotes_count),
+            'downvotes' => max(0, $item->downvotes_count),
+            'score' => max(0, $item->upvotes_count - $item->downvotes_count),
+            'voted' => $votedState,
+        ]);
+    }
+
+    public function pinDiscussionOrComment(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:discussion,comment',
+            'id' => 'required|integer',
+        ]);
+
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Kindly login to pin items.'], 401);
+        }
+
+        if ($request->type === 'discussion') {
+            $item = BusinessDiscussion::find($request->id);
+            $businessId = $item?->business_id;
+        } else {
+            $item = BusinessDiscussionComment::find($request->id);
+            $businessId = $item?->discussion?->business_id;
+        }
+
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Item not found'], 404);
+        }
+
+        $user = auth()->user();
+        $isAdminOrOwner = $user && ($user->user_type === 'admin' || ($user->business_id && $user->business_id == $businessId));
+
+        if ($isAdminOrOwner) {
+            $item->is_pinned = !$item->is_pinned;
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'is_pinned' => (bool)$item->is_pinned,
+                'is_global' => true,
+                'message' => $item->is_pinned ? 'Globally pinned!' : 'Globally unpinned!'
+            ]);
+        } else {
+            // Regular User Personal Pin (Session / Account storage)
+            $sessionKey = ($request->type === 'discussion') ? 'user_pinned_discussions' : 'user_pinned_comments';
+            $userPinnedItems = session()->get($sessionKey, []);
+
+            if (in_array($item->id, $userPinnedItems)) {
+                $userPinnedItems = array_diff($userPinnedItems, [$item->id]);
+                $isPinned = false;
+            } else {
+                $userPinnedItems[] = $item->id;
+                $isPinned = true;
+            }
+            session()->put($sessionKey, array_values(array_unique($userPinnedItems)));
+
+            return response()->json([
+                'success' => true,
+                'is_pinned' => $isPinned,
+                'is_global' => false,
+                'message' => $isPinned ? 'Item pinned to your account!' : 'Item unpinned from your account!'
+            ]);
+        }
     }
 }

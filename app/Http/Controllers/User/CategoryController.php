@@ -12,6 +12,10 @@ use App\Models\Language;
 use App\Models\CategoryPageContent;
 use App\Models\Media;
 use App\Models\Review;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+
 
 class CategoryController extends Controller
 {
@@ -185,128 +189,6 @@ class CategoryController extends Controller
        ]);
      }
 
-
-
-    // Business Category Translation
-
-    // public function BusinessCategoryTranslationStore(Request $request)
-    // {
-    //     $request->validate([
-    //         'category_id' => 'required|integer',
-    //         'source_language' => 'required|integer',
-    //         'target_languages' => 'required|array',
-    //     ]);
-
-    //     $categoryId = $request->category_id;
-    //     $sourceLangId = $request->source_language;
-    //     $targetLangIds = $request->target_languages;
-
-    //     foreach ($targetLangIds as $langId) {
-    //         if ($langId == $sourceLangId) continue;
-
-    //         CategoryTranslation::updateOrCreate(
-    //             ['category_id' => $categoryId, 'lang_id' => $langId],
-    //             [
-    //                 'name' => 'Translated name for ' . $langId,
-    //                 'updated_at' => now()
-    //             ]
-    //         );
-    //     }
-
-    //     return response()->json(['success' => true]);
-    // }
-
-
-
-    // public function BusinessCategoryTranslationStore(Request $request)
-    // {
-    //     try {
-    //         $request->validate([
-    //             'category_id' => 'required|integer',
-    //             'source_lang_id' => 'required|integer',
-    //             'target_lang_ids' => 'required|array|min:1',
-    //             'target_lang_ids.*' => 'integer',
-    //         ]);
-
-    //         $categoryId   = $request->category_id;
-    //         $sourceLangId = $request->source_lang_id;
-    //         $targetLangIds = $request->target_lang_ids;
-
-    //         // Fetch original category data
-    //         // $category = Category::with('categoryTranslations')->where('id', '11')->first();
-    //         $category = CategoryTranslation::where('category_id', $categoryId)
-    //         ->where('lang_id', 1)
-    //         ->first();
-    //         // $category=CategoryTranslation::find();
-
-    //         // dd($category);
-
-    //         $targetLangIds = array_map('intval', $request->target_lang_ids);
-
-    //         // dd($targetLangIds[0]); // 2 (int)
-
-    //         $lang_code_current=Language::where('id',$targetLangIds[0])->first();
-    //         // getLanguageCode($targetLangIds[0]);
-
-    //         // dd($lang_code_current->lang_code);
-
-    //         $translatedName = website_translator($category->name, $lang_code_current->lang_code);
-    //         dd($translatedName);
-
-    //         $translatedName = website_translator($category->name, getLanguageCode($targetLangId));
-    //         $translatedDescription = website_translator($category->description, getLanguageCode($targetLangId));
-
-    //         dd($translatedName , $translatedDescription);
-
-
-    //         if (!$category) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Category not found.'
-    //             ]);
-    //         }
-
-    //         foreach ($targetLangIds as $targetLangId) {
-
-    //             // Use helper function to translate name
-    //             $translatedName = website_translator($category->name, getLanguageCode($targetLangId));
-    //             $translatedDescription = website_translator($category->description, getLanguageCode($targetLangId));
-
-    //            dd($translatedName , $translatedDescription);
-    //             // Generate slug (optional: you can use Str::slug)
-    //             $slug = \Str::slug($translatedName) . '-' . $targetLangId;
-
-    //             CategoryTranslation::updateOrCreate(
-    //                 [
-    //                     'category_id' => $categoryId,
-    //                     'lang_id' => $targetLangId
-    //                 ],
-    //                 [
-    //                     'source_lang_id' => $sourceLangId,
-    //                     'name' => $translatedName,
-    //                     'slug' => $slug,
-    //                     'description' => $category->categoryTranslations[0]->description, // You can also translate description similarly
-    //                     'created_at' => now(),
-    //                     'updated_at' => now()
-    //                 ]
-    //             );
-    //         }
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Translations saved successfully.'
-    //         ]);
-
-    //     } catch (\Throwable $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Something went wrong: ' . $e->getMessage()
-    //         ]);
-    //     }
-    // }
-
-
-
     public function BusinessCategoryTranslationStore(Request $request)
     {
         try {
@@ -345,7 +227,7 @@ class CategoryController extends Controller
                 $langCode = getLanguageCode($targetLangId);
 
                 if (!$langCode) {
-                    \Log::error("Missing language code for lang ID: {$targetLangId}");
+                    Log::error("Missing language code for lang ID: {$targetLangId}");
                     continue;
                 }
 
@@ -353,7 +235,7 @@ class CategoryController extends Controller
                 $translatedNameRaw = website_translator($sourceName, $langCode);
                 $translatedDescRaw = website_translator($sourceDescription ?? '', $langCode);
 
-                \Log::info("Translating category {$categoryId} to {$langCode}", [
+                Log::info("Translating category {$categoryId} to {$langCode}", [
                     'name' => $translatedNameRaw,
                     'desc' => $translatedDescRaw,
                 ]);
@@ -370,7 +252,7 @@ class CategoryController extends Controller
                 }
 
                 // Slug
-                $baseSlug = \Str::slug($translatedName);
+                $baseSlug = Str::slug($translatedName);
                 if (empty($baseSlug)) {
                     $baseSlug = 'category';
                 }
@@ -408,7 +290,7 @@ class CategoryController extends Controller
                 'message' => 'Translations saved successfully.'
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Translation Error: ' . $e->getMessage(), [
+            Log::error('Translation Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
 
@@ -484,6 +366,8 @@ class CategoryController extends Controller
         if ($category->parent_id === null) {
             $childIds = Category::where('parent_id', $category->id)->pluck('id')->toArray();
             $catIds = array_merge($catIds, $childIds);
+        } else {
+            $catIds[] = $category->parent_id;
         }
 
         $topBusinesses = \App\Models\Business::where(function ($q) use ($catIds) {
@@ -525,7 +409,7 @@ class CategoryController extends Controller
         ->get();
 
         if ($recentReviews->isEmpty()) {
-            $recentReviews = \App\Models\Review::where('status', 'active')
+            $recentReviews = Review::where('status', 'active')
                 ->with([
                     'user',
                     'translations' => fn($q) => $q->where('language_id', $lang_id),
