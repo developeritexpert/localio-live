@@ -191,9 +191,13 @@
             <!-- Inline Post Prompt Card -->
             <div class="boxshadow_border bg-white p-3 mb-3 discussion-composer-card" style="border-radius: 14px; border: 1px solid #eef2f6;">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="user-avatar-initial" style="width: 36px; height: 36px; border-radius: 50%; background: #214787; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;">
-                        {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
-                    </div>
+                    @if(auth()->check() && auth()->user()->profile_image && auth()->user()->profile_image !== 'front/img/default.png')
+                        <img src="{{ asset(auth()->user()->profile_image) }}" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover; flex-shrink: 0;" alt="{{ auth()->user()->displayName() }}">
+                    @else
+                        <div class="user-avatar-initial" style="width: 36px; height: 36px; border-radius: 50%; background: #003f7d; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;">
+                            {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
+                        </div>
+                    @endif
                     <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or ask a question about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #f8fafc; cursor: pointer; border-color: #e2e8f0; border-radius: 20px; font-size: 13.5px; padding-left: 16px;">
                     <button type="button" class="btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
@@ -259,18 +263,75 @@
                             <!-- Discussion Content Body -->
                             <div class="flex-grow-1 min-w-0">
                                 <!-- Author Header & Options -->
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        <div class="avatar-circle-sm" style="width: 28px; height: 28px; border-radius: 50%; background: #214787; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
-                                            {{ $disc->author_initial }}
+                                <div class="d-flex align-items-start justify-content-between mb-2">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <div class="asn-img" style="flex-shrink: 0;">
+                                            @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
+                                                <a href="{{ route('user.profile', ['id' => $disc->user_id]) }}" style="display: block; text-decoration: none;">
+                                                    <img src="{{ asset($disc->user->profile_image) }}"
+                                                        class="img-fluid profile-circle"
+                                                        style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                        alt="{{ $disc->author_display_name }}">
+                                                </a>
+                                            @elseif ($disc->author_avatar)
+                                                <img src="{{ asset($disc->author_avatar) }}"
+                                                    class="img-fluid profile-circle"
+                                                    style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
+                                                    alt="{{ $disc->author_display_name }}">
+                                            @else
+                                                <div class="profile-circle"
+                                                    style="width: 48px; height: 48px; border-radius: 50%; background-color: #003f7d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                    <span style="color: white; font-weight: bold; font-size: 20px;">
+                                                        {{ $disc->author_initial ?: 'A' }}
+                                                    </span>
+                                                </div>
+                                            @endif
                                         </div>
-                                        <span class="fw-semibold text-dark" style="font-size: 13.5px;">{{ $disc->author_display_name }}</span>
-                                        <span class="text-muted" style="font-size: 12px;">•</span>
-                                        <span class="text-muted" style="font-size: 12px;">{{ $disc->created_at->diffForHumans() }}</span>
 
+                                        <div class="asn-rating" style="display: flex; flex-direction: column;">
+                                            <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050; line-height: 1.2;">
+                                                @if ($disc->user)
+                                                    <a href="{{ route('user.profile', ['id' => $disc->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                        {{ $disc->author_display_name }}
+                                                    </a>
+                                                @else
+                                                    {{ $disc->author_display_name }}
+                                                @endif
+                                            </p>
+                                            @if($disc->user && $disc->user->country)
+                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                    {{ $disc->user->country->code ?? $disc->user->country->name }}
+                                                </p>
+                                            @endif
+                                            @if($disc->user && $disc->user->job_title)
+                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                    {{ $disc->user->job_title }}
+                                                </p>
+                                            @elseif($disc->author_title)
+                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                    {{ $disc->author_title }}
+                                                </p>
+                                            @endif
+                                            @php
+                                                $cSizeMap = [
+                                                    '2' => 'Small Business (1-50 emp.)',
+                                                    '3' => 'Mid-Market (51-1000 emp.)',
+                                                    '4' => 'Enterprise (>1000 emp.)',
+                                                ];
+                                                $compSize = $disc->user ? $disc->user->company_size : null;
+                                                $displayCompSize = $compSize ? ($cSizeMap[$compSize] ?? (function_exists('static_text') ? (static_text('company_size_' . $compSize) ?: $compSize) : $compSize)) : null;
+                                            @endphp
+                                            @if($displayCompSize)
+                                                <p class="asn-rating-p" style="color: #5b6b7a; margin: 0; line-height: 1.2; font-weight: 500; font-size: 12px;">
+                                                    {{ $displayCompSize }}
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
 
-                                    <div class="d-flex align-items-center gap-1">
+                                    <div class="d-flex align-items-center gap-2" style="flex-shrink: 0;">
+                                        <span class="text-muted" style="font-size: 12px;">{{ $disc->created_at->diffForHumans() }}</span>
+
                                         @if($disc->is_pinned)
                                             <span class="badge bg-warning text-dark me-1" style="font-size: 11px;"><i class="fas fa-thumbtack"></i> Pinned</span>
                                         @endif
@@ -293,7 +354,7 @@
                                 </div>
 
                                 <!-- Discussion Title -->
-                                <h2 class="h5 mb-2" style="font-size: 17px; font-weight: 700; color: #002347; line-height: 1.35;">
+                                <h2 class="discussion-title h5 mb-2" style="font-size: 18px; font-weight: 700; color: #1e3050; line-height: 1.35; margin: 12px 0 8px;">
                                     {{ $disc->title }}
                                 </h2>
 

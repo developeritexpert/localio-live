@@ -1162,7 +1162,7 @@ class ViewController extends Controller
         $query = BusinessDiscussion::where('business_id', $business->id)
             ->where('status', 'active')
             ->with([
-                'user',
+                'user.country',
                 'comments' => fn($q) => $q->whereNull('parent_id')
                     ->orderByDesc('is_pinned')
                     ->orderBy('created_at', 'asc')

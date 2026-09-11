@@ -1668,19 +1668,23 @@ button.post-action-btn.toggle-reply-btn {
 }
 
 .discussion-title-link {
+    text-decoration: none !important;
+    color: #1e3050;
     transition: color 0.2s ease;
 }
 
 .discussion-title-link:hover {
-    text-decoration: underline !important;
-    color: #214787 !important;
+    text-decoration: none !important;
+    color: #06498b !important;
 }
 
 .discussion-comment-count-link {
+    text-decoration: none !important;
+    color: #64748b;
     transition: color 0.2s ease;
 }
 
 .discussion-comment-count-link:hover {
-    text-decoration: underline !important;
-    color: #214787 !important;
+    text-decoration: none !important;
+    color: #06498b !important;
 }
