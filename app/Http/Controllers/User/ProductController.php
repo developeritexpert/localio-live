@@ -542,7 +542,8 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             'reviews' => function ($query) {
                 $query->where('status', 'active');
             },
-            'reviews.ratings',
+            'reviews.ratings.criteria',
+            'reviews.selectedProCons',
             'reviews.user',
             'reviews.translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);
@@ -652,7 +653,8 @@ return view('User.product.top_rated_faqs', compact('topProductContents', 'faqs',
             'reviews' => function ($query) {
                 $query->where('status', 'active');
             },
-            'reviews.ratings',
+            'reviews.ratings.criteria',
+            'reviews.selectedProCons',
             'reviews.user',
             'reviews.translations' => function ($query) use ($lang_id) {
                 $query->where('language_id', $lang_id);

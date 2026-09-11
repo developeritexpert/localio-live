@@ -955,6 +955,36 @@ section.community-feedback-sec {
     transform: rotate(180deg);
 }
 
+.user-rating-breakdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.user-rating-breakdown-wrapper .user-rating-trigger {
+    cursor: pointer;
+    user-select: none;
+}
+
+.user-rating-breakdown-wrapper:hover .user-rating-dropdown-btn svg,
+.user-rating-breakdown-wrapper.show .user-rating-dropdown-btn svg,
+.user-rating-breakdown-wrapper .user-rating-dropdown-btn[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+}
+
+.user-rating-breakdown-wrapper .user-rating-breakdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px !important;
+    z-index: 1060;
+    display: none;
+}
+
+.user-rating-breakdown-wrapper:hover > .user-rating-breakdown-menu,
+.user-rating-breakdown-wrapper.show > .user-rating-breakdown-menu {
+    display: block !important;
+}
+
 .user-rating-breakdown-menu {
     min-width: 270px;
     max-width: 320px;
