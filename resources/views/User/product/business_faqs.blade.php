@@ -969,7 +969,47 @@
                 $subName = $subTrans->name ?? $subcatItem->name ?? 'Subcategory';
                 $subSlug = $subTrans->slug ?? $subcatItem->slug ?? (string)$subcatItem->id;
                 $subFaqUrl = url('/' . app()->getLocale() . '/' . $subSlug . '/' . $currentFaqSlug);
-                $listingCount = $subcatItem->businesses_count ?? ($subcatItem->businesses ? $subcatItem->businesses()->where('status', 1)->count() : 0);
+
+                // Count FAQ entries / answers for this subcategory
+                $faqCount = 0;
+                if (!empty($subTrans->faqs)) {
+                    $decodedFaqs = is_array($subTrans->faqs) ? $subTrans->faqs : json_decode($subTrans->faqs, true);
+                    if (is_array($decodedFaqs)) {
+                        $faqCount = count($decodedFaqs);
+                    }
+                }
+                if ($faqCount === 0 && isset($subcatItem->translations) && $subcatItem->translations instanceof \Illuminate\Database\Eloquent\Collection) {
+                    foreach ($subcatItem->translations as $transItem) {
+                        if (!empty($transItem->faqs)) {
+                            $decodedFaqs = is_array($transItem->faqs) ? $transItem->faqs : json_decode($transItem->faqs, true);
+                            if (is_array($decodedFaqs) && count($decodedFaqs) > 0) {
+                                $faqCount = count($decodedFaqs);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if ($faqCount === 0) {
+                    $catFaqsJson = \App\Models\CategoryTranslation::where('category_id', $subcatItem->id)
+                        ->whereNotNull('faqs')
+                        ->where('faqs', '!=', '')
+                        ->where('faqs', '!=', '[]')
+                        ->value('faqs');
+                    if (!empty($catFaqsJson)) {
+                        $decodedFaqs = is_array($catFaqsJson) ? $catFaqsJson : json_decode($catFaqsJson, true);
+                        if (is_array($decodedFaqs)) {
+                            $faqCount = count($decodedFaqs);
+                        }
+                    }
+                }
+                if ($faqCount === 0) {
+                    $faqCount = \App\Models\BusinessFaq::whereHas('business', function ($q) use ($subcatItem) {
+                        $q->where('status', 1)->where(function ($bQ) use ($subcatItem) {
+                            $bQ->where('category_id', $subcatItem->id)
+                              ->orWhereHas('subCategories', fn($sq) => $sq->where('categories.id', $subcatItem->id));
+                        });
+                    })->where('status', 1)->count();
+                }
             @endphp
             <div class="col-lg-4 col-md-6 col-6">
                 <a href="{{ $subFaqUrl }}" class="text-decoration-none d-block h-100">
@@ -986,7 +1026,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $listingCount }} listings
+                                {{ $faqCount }} {{ $faqCount == 1 ? 'answer' : 'answers' }}
                             </span>
                         </div>
                     </div>
