@@ -922,7 +922,7 @@
                                                 @if($lockedFeatureId)
                                                     <div class="d-flex align-items-center mb-2 locked-feature-item" style="padding: 2px 0;">
                                                         <span class="me-2" style="font-size: 15px; line-height: 1;" title="Fixed feature filter">🔒</span>
-                                                        <span style="font-size: 14px; font-weight: 700; color: #002347;">{{ $lockedFeatureName }}</span>
+                                                        <span style="font-size: 14px; font-weight: 500; color: #002347;">{{ $lockedFeatureName }}</span>
                                                     </div>
                                                 @endif
 

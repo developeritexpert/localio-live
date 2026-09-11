@@ -290,7 +290,7 @@
                         </div>
 
                         <!-- Business B Selected Pill (Shown when business selected, same style as left with cross) -->
-                        <div id="selectedBusinessPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white rounded-pill border flex-grow-1" style="display: none !important; border-color: #cbd5e1 !important; min-width: 170px; height: 48px;">
+                        <div id="selectedBusinessPill" class="align-items-center justify-content-between gap-2 px-3 py-2 bg-white rounded-pill-8 border flex-grow-1" style="display: none !important; border-color: #cbd5e1 !important; min-width: 170px; height: 48px;">
 
                             <div class="d-flex align-items-center gap-2" style="min-width: 0;">
 
