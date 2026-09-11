@@ -200,7 +200,7 @@
     color: #002347;
 }
 
-.your-comp-pill > * {
+.your-comp-pill>* {
     pointer-events: none;
 }
 
@@ -848,16 +848,8 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-.is-asan-slider
-    .slider-for
-    .slick-list.draggable
-    .slick-track
-    .asan-slider-inr.slick-slide,
-.is-asan-slider
-    .slider-for
-    .slick-list.draggable
-    .slick-track
-    .asan-slider-inr.slick-slide.slick-current,
+.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide,
+.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide.slick-current,
 .slider-for .slick-slide,
 .slider-for .slick-current,
 .slider-for .asan-slider-inr,
@@ -1051,6 +1043,7 @@ section.community-feedback-sec {
     cursor: pointer !important;
     transition: color 0.15s ease !important;
 }
+
 .view-all-category-link:hover {
     color: #0056b3 !important;
     text-decoration: underline !important;
@@ -1206,6 +1199,7 @@ html[lang*="el"] body {
 
 /* 3. Mobile View: Hide thumbnails, full width edge-to-edge image, dots below image */
 @media (max-width: 991px) {
+
     /* Hide the thumbnail preview images row on mobile */
     .asan-slider.asan-slider-btm,
     .asan-slider.asan-slider-btm.slider-nav,
@@ -1301,4 +1295,32 @@ html[lang*="el"] body {
     .slider-for .slick-dots li:only-child {
         display: none !important;
     }
+}
+
+
+
+
+/* new css for dicussion */
+button.post-action-btn.toggle-comments-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+button.post-action-btn.toggle-comments-btn {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    color: #94a3b8 !important;
+    cursor: pointer !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    transition: background-color 0.2s ease, color 0.2s ease !important;
 }

@@ -387,7 +387,7 @@
             transition: background 0.15s ease;
         }
         .post-action-btn:hover {
-            background: #f1f5f9;
+            /* background: #f1f5f9; */
             color: #0f172a;
         }
 
@@ -579,12 +579,26 @@
                                          {!! nl2br(e($disc->content)) !!}
                                      </p>
 
-                                     <div class="d-flex align-items-center gap-3">
+                                     <div class="d-flex align-items-center gap-2">
+                                        <div class="d-flex align-items-center gap-1">
                                          <button class="post-action-btn toggle-comments-btn" data-target="#comments-{{ $disc->id }}">
-                                             <i class="far fa-comment-alt"></i> {{ $disc->comments_count }} Comments
+                                             <!-- <i class="far fa-comment-alt"></i> {{ $disc->comments_count }} Comments -->
+                                             <svg rpl="" aria-hidden="true" class="icon-comment rpl-rtl-icon " fill="currentColor" height="16" icon-name="comment" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M10 1a9 9 0 00-9 9c0 1.947.79 3.58 1.935 4.957L.231 17.661A.784.784 0 00.785 19H10a9 9 0 009-9 9 9 0 00-9-9Zm0 16.2H6.162c-.994.004-1.907.053-3.045.144l-.076-.188a36.981 36.981 0 002.328-2.087l-1.05-1.263C3.297 12.576 2.8 11.331 2.8 10c0-3.97 3.23-7.2 7.2-7.2s7.2 3.23 7.2 7.2-3.23 7.2-7.2 7.2Z"></path><!--?-->
+                                             </svg>
+                                             
                                          </button>
+                                        <span> {{ $disc->comments_count }}</span>
+                                         </div>
                                           <button type="button" class="post-action-btn share-trigger-btn" onclick="openShareModal('{{ url()->current() }}#discussion-{{ $disc->id }}', '{{ addslashes($disc->title) }}', event)">
-                                              <i class="far fa-share-square"></i> Share
+                                              <!-- <i class="far fa-share-square"></i> Share -->
+                                              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="18" cy="5" r="3"></circle>
+                                                <circle cx="6" cy="12" r="3"></circle>
+                                                <circle cx="18" cy="19" r="3"></circle>
+                                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                            </svg>
                                           </button>
                                          <button type="button" class="post-action-btn pin-trigger {{ $isDiscPinnedForUser ? 'text-primary fw-bold' : '' }}" data-type="discussion" data-id="{{ $disc->id }}" title="{{ $isDiscPinnedForUser ? 'Unpin Discussion' : 'Pin Discussion' }}">
                                               <i class="fas fa-thumbtack"></i> <span class="pin-text">{{ $isDiscPinnedForUser ? 'Pinned' : 'Pin' }}</span>
