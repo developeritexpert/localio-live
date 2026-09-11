@@ -1382,17 +1382,18 @@
                 </div>
                 <div class="ft-btm-rgt">
                     <div class="select-menu ">
-                        <div class="select-btn">
+                        <div class="select-btn" onclick="event.preventDefault(); event.stopPropagation(); toggleCountryModal();" style="cursor: pointer;">
                             <span class="sBtn-text">
                                 {{ session('lang_code') && session('lang_name') ? ucfirst(session('lang_name')) : 'United States - English' }}
                             </span>
                             <i class="fa-solid fa-chevron-down" style="color: #ffffff;"></i>
                         </div>
+                        <div class="country-modal-backdrop" id="countryModalBackdrop" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();"></div>
                         <ul class="options">
                             <div class="container">
                                 <div class="country-modal-header d-flex align-items-center justify-content-between">
                                     <h3 style="color: #1e3050; margin: 0; font-weight: 700; font-size: 17px;">Choose your Country or region</h3>
-                                    <button type="button" class="close-country-menu" aria-label="Close modal" title="Close">
+                                    <button type="button" class="close-country-menu" onclick="event.preventDefault(); event.stopPropagation(); closeCountryModal();" aria-label="Close modal" title="Close">
                                         ✕
                                     </button>
                                 </div>
@@ -2061,9 +2062,11 @@
         const sBtnText = document.querySelector('.sBtn-text');
 
         options.forEach(option => {
-            if (!this.classList.contains('selected')) {
-                const selectedName = this.dataset.langName;
-                sBtnText.textContent = selectedName;
+            if (option && !option.classList.contains('selected')) {
+                const selectedName = option.dataset.langName;
+                if (selectedName && sBtnText) {
+                    sBtnText.textContent = selectedName;
+                }
             }
         });
     });
@@ -2136,38 +2139,77 @@
     });
     </script>
     <script>
-    // When the user clicks on the select button, toggle the dropdown menu
-    $('.select-btn').on('click', function() {
-        $(this).closest('.select-menu').toggleClass('open active');
+    function toggleCountryModal() {
+        var menu = document.querySelector('.select-menu');
+        if (!menu) return;
+        if (menu.classList.contains('active') || menu.classList.contains('open')) {
+            closeCountryModal();
+        } else {
+            openCountryModal();
+        }
+    }
+
+    function openCountryModal() {
+        var menu = document.querySelector('.select-menu');
+        if (menu) {
+            menu.classList.add('open', 'active');
+        }
+        document.body.classList.add('country-modal-open');
+    }
+
+    function closeCountryModal() {
+        var menu = document.querySelector('.select-menu');
+        if (menu) {
+            menu.classList.remove('open', 'active');
+        }
+        document.body.classList.remove('country-modal-open');
+    }
+
+    window.toggleCountryModal = toggleCountryModal;
+    window.openCountryModal = openCountryModal;
+    window.closeCountryModal = closeCountryModal;
+
+    // Delegated click handler on select-btn
+    $(document).on('click', '.select-btn', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        toggleCountryModal();
     });
 
     // Close button click on top right of country selection modal
     $(document).on('click', '.close-country-menu', function(e) {
         e.preventDefault();
-        e.stopPropagation();
-        $('.select-menu').removeClass('open active');
+        e.stopImmediatePropagation();
+        closeCountryModal();
+    });
+
+    // Click on dark upper top backdrop to close
+    $(document).on('click', '.country-modal-backdrop', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        closeCountryModal();
     });
 
     @if(session('show_country_modal'))
         $(document).ready(function() {
-            $('.select-menu').addClass('open active');
-            $('html, body').animate({
-                scrollTop: $('.select-menu').offset().top - 200
-            }, 600);
+            openCountryModal();
         });
     @endif
 
-    // Optional: Close the dropdown if the user clicks outside of it
+    // Close modal if user clicks outside of modal options and outside of select button
     $(document).on('click', function(event) {
-        if (!$(event.target).closest('.select-menu').length) {
-            $('.select-menu').removeClass('open active');
+        var menu = document.querySelector('.select-menu');
+        if (menu && (menu.classList.contains('active') || menu.classList.contains('open'))) {
+            if (!event.target.closest('.options') && !event.target.closest('.select-btn')) {
+                closeCountryModal();
+            }
         }
     });
 
     // Close on Escape key press
     $(document).on('keydown', function(event) {
         if (event.key === 'Escape' || event.keyCode === 27) {
-            $('.select-menu').removeClass('open active');
+            closeCountryModal();
         }
     });
     </script>
@@ -3068,30 +3110,74 @@
 
 <style>
 /* Country / Region Selection Modal Styling */
+    .country-modal-backdrop {
+        display: none;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(0, 0, 0, 0.6) !important;
+        z-index: 99998 !important;
+        cursor: pointer;
+    }
+
+    body.country-modal-open {
+        overflow: hidden !important;
+    }
+
+    body.country-modal-open footer {
+        z-index: 99999 !important;
+    }
+
+    .select-menu.active .country-modal-backdrop,
+    .select-menu.open .country-modal-backdrop,
+    .ft-btm-rgt .select-menu.active .country-modal-backdrop,
+    .ft-btm-rgt .select-menu.open .country-modal-backdrop {
+        display: block !important;
+    }
+
     .ft-btm-rgt .select-menu .options {
+        display: none;
         background-color: #ffffff !important;
         left: 0 !important;
         right: 0 !important;
-        position: absolute !important;
-        bottom: 65px !important;
+        position: fixed !important;
+        bottom: 0 !important;
         margin: 0 !important;
         padding: 24px 30px 32px 30px !important;
         height: auto !important;
         min-height: auto !important;
-        max-height: calc(100vh - 80px) !important;
+        max-height: calc(100vh - 100px) !important;
         width: 100% !important;
-        z-index: 1000 !important;
-        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.12) !important;
-        border-top: 3px solid var(--color-primary-orange, #fb5c28) !important;
+        z-index: 99999 !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25) !important;
+        border-top: 2px solid var(--color-primary-orange, #fb5c28) !important;
         overflow-y: auto !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
     }
 
     .ft-btm-rgt .select-menu.active .options,
     .ft-btm-rgt .select-menu.open .options {
         display: block !important;
+        z-index: 99999 !important;
+        border-top: 2px solid var(--color-primary-orange, #fb5c28) !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    .ft-btm-rgt .select-menu .options::-webkit-scrollbar {
+        width: 0px !important;
+        height: 0px !important;
+        display: none !important;
+        background: transparent !important;
     }
 
     .country-modal-header {
+        border-bottom: 1px solid #edf2f7;
         padding-bottom: 12px;
         margin-bottom: 18px;
     }
@@ -3128,6 +3214,12 @@
         flex-wrap: wrap !important;
         row-gap: 6px !important;
         padding-bottom: 15px !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+
+    .ft-btm-rgt .select-menu .options .footer-langs-container::-webkit-scrollbar {
+        display: none !important;
     }
 
     .ft-btm-rgt .select-menu .options li {
@@ -3165,9 +3257,16 @@
             z-index: 999999 !important;
             margin: 0 !important;
             padding: 20px 20px 40px 20px !important;
-            border-top: 4px solid var(--color-primary-orange, #fb5c28) !important;
+            border-top: 2px solid var(--color-primary-orange, #fb5c28) !important;
             border-radius: 0 !important;
             overflow-y: auto !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+
+        .ft-btm-rgt .select-menu.active .options::-webkit-scrollbar,
+        .ft-btm-rgt .select-menu.open .options::-webkit-scrollbar {
+            display: none !important;
         }
 
         .country-modal-header {
@@ -3176,6 +3275,7 @@
             background: #ffffff !important;
             z-index: 10 !important;
             padding-top: 6px !important;
+            padding-bottom: 12px !important;
         }
 
         .ft-btm-rgt .select-menu .options li {

@@ -203,29 +203,7 @@ $(document).ready(function () {
 });
 
 
-const optionMenu = document.querySelector(".select-menu"),
-   selectBtn = optionMenu.querySelector(".select-btn"),
-   options = optionMenu.querySelectorAll(".option"),
-   sBtn_text = optionMenu.querySelector(".sBtn-text");
-
-selectBtn.addEventListener("click", () =>
-   optionMenu.classList.toggle("active")
-);
-
-options.forEach((option) => {
-   option.addEventListener("click", () => {
-      let selectedOption = option.querySelector(".option-text").innerText;
-      sBtn_text.innerText = selectedOption;
-
-      optionMenu.classList.remove("active");
-   });
-});
-// Close dropdown if clicked outside
-document.addEventListener("click", (e) => {
-   if (!optionMenu.contains(e.target)) {
-      optionMenu.classList.remove("active");
-   }
-});
+// Note: Footer country/region select-menu modal is handled in master.blade.php
 
 $(document).ready(function () {
    $('.reviews_slider').slick({

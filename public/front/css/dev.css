@@ -2003,3 +2003,62 @@ button.post-action-btn.toggle-reply-btn {
         font-size: 11px;
     }
 }
+
+/* ==========================================================
+   Country / Region Selection Modal (Bottom-Sheet Modal)
+   ========================================================== */
+.country-modal-backdrop {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    z-index: 99998 !important;
+    cursor: pointer;
+}
+
+body.country-modal-open {
+    overflow: hidden !important;
+}
+
+body.country-modal-open footer {
+    z-index: 99999 !important;
+}
+
+.ft-btm-rgt .select-menu.active .country-modal-backdrop,
+.ft-btm-rgt .select-menu.open .country-modal-backdrop {
+    display: block !important;
+}
+
+.ft-btm-rgt .select-menu.active .options,
+.ft-btm-rgt .select-menu.open .options {
+    display: block !important;
+    z-index: 99999 !important;
+    border-top: 2px solid var(--color-primary-orange, #fb5c28) !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.ft-btm-rgt .select-menu.active .options::-webkit-scrollbar,
+.ft-btm-rgt .select-menu.open .options::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+    display: none !important;
+    background: transparent !important;
+}
+
+.ft-btm-rgt .select-menu .options {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.ft-btm-rgt .select-menu .options::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+    display: none !important;
+    background: transparent !important;
+}
