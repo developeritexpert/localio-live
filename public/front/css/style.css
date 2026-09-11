@@ -9579,7 +9579,8 @@ section.write-review-hero .container h1 {
 .page-alternatives .search-box,
 .page-who-we-are .search-box,
 .page-product-comparison-seo .search-box,
-.page-terms-condition .search-box {
+.page-terms-condition .search-box,
+.page-top-rated-faqs .search-box {
     display: block !important;
 }
 

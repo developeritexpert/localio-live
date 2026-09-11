@@ -15,9 +15,9 @@
     color: #002347 !important;
 }
 
-.top-rated-heading-block {
+/* .top-rated-heading-block {
     margin-bottom: 15px;
-}
+} */
 
 .auto-choice-btn .cta_outline {
     padding: 8px 16px !important;
@@ -986,8 +986,8 @@ section.community-feedback-sec {
 }
 
 .user-rating-breakdown-menu {
-    min-width: 270px;
-    max-width: 320px;
+    min-width: 250px;
+    max-width: 300px;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -998,11 +998,11 @@ section.community-feedback-sec {
 }
 
 .user-rating-breakdown-menu .user-rating-header {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: #002655;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
     border-bottom: 1px solid #e2e8f0;
 }
 
@@ -1019,7 +1019,7 @@ section.community-feedback-sec {
 }
 
 .user-rating-breakdown-menu .user-rating-label {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: #002347;
     min-width: 100px;
@@ -1045,7 +1045,7 @@ section.community-feedback-sec {
 }
 
 .user-rating-breakdown-menu .user-rating-score {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #002347;
     min-width: 26px;
