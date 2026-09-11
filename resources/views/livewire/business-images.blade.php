@@ -314,119 +314,47 @@
 
                         <div class="d-flex align-items-center justify-content-between mb-2">
 
-                            <label class="form-label fw-semibold mb-0">
+                            <label for="screenshotCountry"
+                                class="form-label fw-semibold mb-0">
+
                                 Country / Region
                                 <span class="text-danger">*</span>
+
                             </label>
+
 
                             {{-- Manage Categories --}}
                             <button type="button"
                                 class="btn btn-outline-primary btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#manageCategoriesModal">
+
                                 <em class="icon ni ni-setting me-1"></em>
+
                                 Manage Categories
+
                             </button>
 
                         </div>
 
 
-                        {{-- Selection Mode --}}
-                        <div class="d-flex gap-4 mb-3">
+                        <select id="screenshotCountry"
+                            class="form-select"
+                            wire:key="screenshot-country-{{ $selectedBusinessId }}-{{ $selectedScreenshotCountry }}"
+                            wire:model.live="selectedScreenshotCountry">
 
-                            <div class="form-check">
-                                <input class="form-check-input"
-                                    type="radio"
-                                    name="countrySelectionMode"
-                                    id="countryModeAll"
-                                    value="all"
-                                    wire:model.live="countrySelectionMode">
-                                <label class="form-check-label" for="countryModeAll">
-                                    All
-                                </label>
-                            </div>
+                            @foreach ($screenshotCountries as $country)
+                            <option value="{{ $country->id }}">
+                                {{ $country->name }}
+                            </option>
+                            @endforeach
 
-                            <div class="form-check">
-                                <input class="form-check-input"
-                                    type="radio"
-                                    name="countrySelectionMode"
-                                    id="countryModeSpecific"
-                                    value="specific"
-                                    wire:model.live="countrySelectionMode">
-                                <label class="form-check-label" for="countryModeSpecific">
-                                    Specific Countries/Regions
-                                </label>
-                            </div>
-
-                        </div>
-
-
-                        @if ($countrySelectionMode === 'specific')
-
-                        {{-- Search + Select All / Clear All --}}
-                        <div class="d-flex align-items-center gap-2 mb-2">
-
-                            <input type="text"
-                                class="form-control"
-                                placeholder="Search countries..."
-                                wire:model.live.debounce.300ms="countrySearch">
-
-                            <button type="button"
-                                class="btn btn-primary btn-sm text-nowrap"
-                                wire:click="selectAllCountries">
-                                Select All
-                            </button>
-
-                            <button type="button"
-                                class="btn btn-outline-danger btn-sm text-nowrap"
-                                wire:click="clearAllCountries">
-                                Clear All
-                            </button>
-
-                        </div>
-
-
-                        {{-- Country Checkbox List --}}
-                        <div class="border rounded p-2"
-                            style="max-height: 220px; overflow-y: auto;">
-
-                            @forelse ($screenshotCountries as $country)
-                            @if (!$countrySearch || str_contains(strtolower($country->name), strtolower($countrySearch)))
-                            <div class="form-check py-1 border-bottom"
-                                wire:key="country-check-{{ $country->id }}">
-
-                                <input class="form-check-input"
-                                    type="checkbox"
-                                    id="country-{{ $country->id }}"
-                                    value="{{ $country->id }}"
-                                    wire:model.live="selectedScreenshotCountries">
-
-                                <label class="form-check-label d-block"
-                                    for="country-{{ $country->id }}">
-                                    {{ $country->name }}
-                                </label>
-
-                            </div>
-                            @endif
-                            @empty
-                            <div class="text-muted small text-center py-2">
-                                No countries found.
-                            </div>
-                            @endforelse
-
-                        </div>
+                        </select>
 
                         <div class="form-text">
-                            Select one or more countries/regions to configure the screenshot category and URLs.
+                            Select the country or region for which the screenshot
+                            category and URLs should be configured.
                         </div>
-
-                        @else
-
-                        <div class="form-text">
-                            The screenshot configuration will apply to all countries/regions.
-                        </div>
-
-                        @endif
 
                     </div>
 
@@ -607,21 +535,21 @@
                 <!-- Modal Header -->
                 <div class="modal-header bg-light">
 
-                    <h5 class="modal-title fw-bold"
-                        id="manageCategoriesModalLabel">
-
+                    <h5 class="modal-title fw-bold" id="manageCategoriesModalLabel">
                         <em class="icon ni ni-folder me-1 text-info"></em>
                         Manage Screenshot Categories
 
-                        @if (!empty($selectedScreenshotCountry))
-                        -
-                        {{
-            collect($screenshotCountries)
-                ->firstWhere('id', (int) $selectedScreenshotCountry)
-                ?->name
-        }}
+                        @if ($screenshotCountryMode === 'all')
+                        - All Countries
+                        @elseif (!empty($selectedScreenshotCountries))
+                        @if (count($selectedScreenshotCountries) === 1)
+                        - {{ collect($screenshotCountries)->firstWhere('id', (int) $selectedScreenshotCountries[0])?->name }}
+                        @else
+                        - {{ count($selectedScreenshotCountries) }} Countries Selected
                         @endif
-
+                        @elseif (!empty($selectedScreenshotCountry))
+                        - {{ collect($screenshotCountries)->firstWhere('id', (int) $selectedScreenshotCountry)?->name }}
+                        @endif
                     </h5>
 
                     <button type="button"
@@ -638,27 +566,118 @@
                 <div class="modal-body p-4">
 
                     {{-- Country / Region --}}
-                    <div class="mb-4">
+                    <div class="mb-4" wire:init="syncSelectedScreenshotCountries">
 
                         <label class="form-label fw-semibold mb-2">
-                            Country / Region
+                            Active Countries / Regions
                         </label>
 
-                        <select
-                            class="form-select"
-                            wire:model.live="selectedScreenshotCountry">
+                        <div class="d-flex gap-4 mb-3">
 
-                            <option value="">
-                                Select Country / Region
-                            </option>
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="screenshotCountryMode"
+                                    id="screenshotCountryModeAll"
+                                    value="all"
+                                    wire:model.live="screenshotCountryMode">
+                                <label class="form-check-label" for="screenshotCountryModeAll">
+                                    All
+                                </label>
+                            </div>
 
-                            @foreach ($screenshotCountries as $country)
-                            <option value="{{ $country->id }}">
-                                {{ $country->name }}
-                            </option>
-                            @endforeach
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="screenshotCountryMode"
+                                    id="screenshotCountryModeSpecific"
+                                    value="specific"
+                                    wire:model.live="screenshotCountryMode">
+                                <label class="form-check-label" for="screenshotCountryModeSpecific">
+                                    Specific Countries/Regions
+                                </label>
+                            </div>
 
-                        </select>
+                        </div>
+
+                        @if ($screenshotCountryMode === 'specific')
+
+                        <div class="d-flex gap-2 mb-2">
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Search countries..."
+                                wire:model.live="screenshotCountrySearch">
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary text-nowrap"
+                                wire:click="selectAllScreenshotCountries">
+                                Select All
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-danger text-nowrap"
+                                wire:click="clearAllScreenshotCountries">
+                                Clear All
+                            </button>
+
+                        </div>
+
+                        <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+
+                            @php
+                            $filteredScreenshotCountries = collect($screenshotCountries)
+                            ->when($screenshotCountrySearch, function ($collection) use ($screenshotCountrySearch) {
+                            return $collection->filter(function ($country) use ($screenshotCountrySearch) {
+                            return stripos($country->name, $screenshotCountrySearch) !== false;
+                            });
+                            })
+                            ->values();
+                            @endphp
+
+                            @forelse ($filteredScreenshotCountries as $country)
+
+                            <div class="form-check py-1">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="screenshotCountry{{ $country->id }}"
+                                    value="{{ $country->id }}"
+                                    wire:model.live="selectedScreenshotCountries">
+
+                                <label class="form-check-label" for="screenshotCountry{{ $country->id }}">
+                                    {{ $country->name }}
+                                </label>
+
+                            </div>
+
+                            @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    @if (empty($categoryTableCountryFilter))
+                                    Please select a country above to view its categories.
+                                    @else
+                                    No screenshot categories found for the selected country.
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforelse
+                        </div>
+
+                        @error('selectedScreenshotCountries')
+                        <div class="text-danger small mt-2">
+                            <em class="icon ni ni-alert-circle me-1"></em>
+                            {{ $message }}
+                        </div>
+                        @enderror
+
+                        @endif
 
                     </div>
 
@@ -667,130 +686,97 @@
 
 
                         @php
-                        $totalCategories = count($screenshotCategories);
+                        if (empty($categoryTableCountryFilter)) {
+                        // Koi country select nahi hui -> table khaali rahegi
+                        $filteredCategories = collect();
+                        } else {
+                        $filteredCategories = collect($screenshotCategories)
+                        ->filter(fn($c) => (int) ($c['country_id'] ?? 0) === (int) $categoryTableCountryFilter)
+                        ->when($categoryTableSearch, function ($collection) use ($categoryTableSearch) {
+                        return $collection->filter(fn($c) => stripos($c['name'] ?? '', $categoryTableSearch) !== false);
+                        })
+                        ->values();
+                        }
 
-                        $totalCategoryPages = max(
-                        1,
-                        (int) ceil($totalCategories / $categoriesPerPage)
-                        );
-
+                        $totalCategories = $filteredCategories->count();
+                        $totalCategoryPages = max(1, (int) ceil($totalCategories / $categoriesPerPage));
                         $categoryOffset = ($categoryPage - 1) * $categoriesPerPage;
-
-                        $paginatedCategories = array_slice(
-                        $screenshotCategories,
-                        $categoryOffset,
-                        $categoriesPerPage,
-                        true
-                        );
+                        $paginatedCategories = $filteredCategories->slice($categoryOffset, $categoriesPerPage)->values();
                         @endphp
 
+                        <div class="d-flex gap-2 mb-3 flex-wrap">
 
+                            <select class="form-select" style="max-width: 240px;" wire:model.live="categoryTableCountryFilter">
+                                <option value="">-- Select Country to View --</option>
+                                @foreach ($screenshotCountries as $country)
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                @endforeach
+                            </select>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                style="max-width: 260px;"
+                                placeholder="Search category name..."
+                                wire:model.live="categoryTableSearch"
+                                @if(empty($categoryTableCountryFilter)) disabled @endif>
+
+                        </div>
                         <table class="table table-bordered align-middle mb-3">
 
                             <thead class="table-light">
-
                                 <tr>
-
-                                    <th style="width: 80px;">
-                                        SR. NO.
-                                    </th>
-
-                                    <th>
-                                        CATEGORY NAME
-                                    </th>
-
-                                    <th style="width: 130px;">
-                                        IS DEFAULT
-                                    </th>
-
-                                    <th style="width: 120px;">
-                                        ACTIONS
-                                    </th>
-
+                                    <th style="width: 80px;">SR. NO.</th>
+                                    <th>CATEGORY NAME</th>
+                                    <th style="width: 150px;">COUNTRY / REGION</th>
+                                    <th style="width: 130px;">IS DEFAULT</th>
+                                    <th style="width: 120px;">ACTIONS</th>
                                 </tr>
-
                             </thead>
 
 
                             <tbody>
 
-                                @forelse ($paginatedCategories as $index => $category)
+                                @forelse ($paginatedCategories as $displayIndex => $category)
+
+                                @php
+                                $realIndex = collect($screenshotCategories)->search(function ($c) use ($category) {
+                                return ($c['name'] ?? null) === ($category['name'] ?? null)
+                                && (int)($c['country_id'] ?? 0) === (int)($category['country_id'] ?? 0);
+                                });
+                                @endphp
 
                                 <tr>
-
+                                    <td>{{ $categoryOffset + $displayIndex + 1 }}</td>
+                                    <td><span class="fw-medium">{{ $category['name'] }}</span></td>
                                     <td>
-                                        {{ $index + 1 }}
-                                    </td>
-
-                                    <td>
-                                        <span class="fw-medium">
-                                            {{ $category['name'] }}
+                                        <span class="badge" style="background-color: #6366f1;">
+                                            {{ $category['country_name'] ?? '-' }}
                                         </span>
                                     </td>
-
                                     <td class="text-center">
-
                                         @if (!empty($category['is_default']))
-
-                                        <span
-                                            class="badge bg-success"
-                                            style="cursor: pointer;"
-                                            wire:click="setDefaultScreenshotCategory('{{ $category['name'] }}')"
-                                            title="Click to remove default">
-                                            DEFAULT
-                                        </span>
-
+                                        <span class="badge bg-success" style="cursor: pointer;" wire:click="setDefaultScreenshotCategory('{{ $category['name'] }}')" title="Click to remove default">DEFAULT</span>
                                         @else
-
-                                        <input
-                                            type="radio"
-                                            name="defaultCategory"
-                                            value="{{ $category['name'] }}"
-                                            wire:click="setDefaultScreenshotCategory('{{ $category['name'] }}')">
-
+                                        <input type="radio" name="defaultCategory" value="{{ $category['name'] }}" wire:click="setDefaultScreenshotCategory('{{ $category['name'] }}')">
                                         @endif
-
                                     </td>
-
                                     <td class="text-center">
-
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm btn-icon btn-primary"
-                                            wire:click="openEditCategory({{ $index }})"
-                                            title="Edit Category"
-                                            style="width: 32px; height: 32px;">
-
+                                        <button type="button" class="btn btn-sm btn-icon btn-primary" wire:click="openEditCategory({{ $realIndex }})" title="Edit Category" style="width: 32px; height: 32px;">
                                             <em class="icon ni ni-edit"></em>
-
                                         </button>
-
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm btn-icon btn-danger ms-1"
-                                            wire:click="openDeleteCategoryModal({{ $index }})"
-                                            title="Delete Category"
-                                            style="width: 32px; height: 32px;">
-
+                                        <button type="button" class="btn btn-sm btn-icon btn-danger ms-1" wire:click="openDeleteCategoryModal({{ $realIndex }})" title="Delete Category" style="width: 32px; height: 32px;">
                                             <em class="icon ni ni-trash"></em>
-
                                         </button>
-
                                     </td>
-
                                 </tr>
 
                                 @empty
-
                                 <tr>
-                                    <td colspan="4"
-                                        class="text-center text-muted py-4">
-
-                                        No screenshot categories added yet.
-
+                                    <td colspan="5" class="text-center text-muted py-4">
+                                        No screenshot categories found.
                                     </td>
                                 </tr>
-
                                 @endforelse
 
                             </tbody>
