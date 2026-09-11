@@ -140,13 +140,14 @@
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>
 
+        {{-- Discussions --}}
         <a href="{{ route('business.discussions', ['locale' => $currentLocale, 'business_slug' => $bSlug]) }}"
            class="more-about-link-item">
             <span class="more-about-link-left">
                 <span class="more-about-link-icon">
-                    <i class="far fa-comments text-primary" style="font-size: 18px;"></i>
+                    <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions">
                 </span>
-                <span class="more-about-link-text">Community / Discussions</span>
+                <span class="more-about-link-text">Discussions</span>
             </span>
             <i class="fa-solid fa-arrow-right more-about-link-arrow"></i>
         </a>

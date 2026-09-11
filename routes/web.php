@@ -742,6 +742,8 @@ Route::post('/business-discussion/store', [ViewController::class, 'storeDiscussi
 Route::post('/business-discussion/comment', [ViewController::class, 'storeDiscussionComment'])->name('business.discussion.comment');
 Route::post('/business-discussion/vote', [ViewController::class, 'voteDiscussion'])->name('business.discussion.vote');
 Route::post('/business-discussion/pin', [ViewController::class, 'pinDiscussionOrComment'])->name('business.discussion.pin');
+Route::delete('/business-discussion/{id}', [ViewController::class, 'destroyDiscussion'])->name('business.discussion.destroy');
+Route::delete('/business-discussion/comment/{id}', [ViewController::class, 'destroyDiscussionComment'])->name('business.discussion.comment.destroy');
 
 
 Route::get('/refresh-csrf', function () {

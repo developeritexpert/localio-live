@@ -1155,74 +1155,19 @@ class ViewController extends Controller
                 'category.translation',
                 'category.parent.translation',
                 'translations',
-                'reviews' => fn($q) => $q->where('status', 'active'),
                 'usps',
             ])->firstOrFail();
-
-        // Calculate Ratings & Reviews info
-        $activeReviews = $business->reviews;
-        $totalReviews = $activeReviews->count();
-        $hasUserReviews = $totalReviews > 0;
-        $averageRating = $hasUserReviews ? $activeReviews->avg('rating') : ($business->admin_rating ?? null);
-
-        $recommendPercent = 0;
-        if ($totalReviews > 0) {
-            $recommendCount = $activeReviews->where('recommend', 1)->count();
-            $recommendPercent = round(($recommendCount / $totalReviews) * 100);
-        } else {
-            $recommendPercent = 94;
-        }
-
-        $criteria = DB::table('review_ratings')
-            ->join('reviews', 'review_ratings.review_id', '=', 'reviews.id')
-            ->join('category_rating_criteria', 'review_ratings.criteria_id', '=', 'category_rating_criteria.id')
-            ->where('reviews.business_id', $business->id)
-            ->where('reviews.status', 'active')
-            ->select('category_rating_criteria.name', DB::raw('AVG(review_ratings.rating) as average_rating'))
-            ->groupBy('category_rating_criteria.id', 'category_rating_criteria.name')
-            ->get();
-
-        if ($criteria->isEmpty()) {
-            $criteria = collect([
-                (object)['name' => 'Ease of Use', 'average_rating' => 4.8],
-                (object)['name' => 'Customer Support', 'average_rating' => 4.6],
-                (object)['name' => 'Value for Money', 'average_rating' => 4.7],
-                (object)['name' => 'Functionality', 'average_rating' => 4.9],
-            ]);
-        }
-
-        // Starting price logic
-        $startingPrice = null;
-        $currency = '$';
-        $timeUnit = 'Month';
-        $price = getBusinessesWithStartingPrice($business);
-        if (!empty($price) && isset($price[0]['starting_price'])) {
-            $bPrice = $price[0]['starting_price'];
-            $startingPrice = $bPrice['amount'];
-            $currency = $bPrice['currency'] ?? '$';
-            $timeUnit = ucfirst($bPrice['time_unit'] ?? 'month');
-        }
-
-        $topReviews = Review::with([
-            'user',
-            'translations' => fn($q) => $q->where('language_id', $lang_id)
-        ])
-            ->where('business_id', $business->id)
-            ->where('status', 'active')
-            ->orderByDesc('rating')
-            ->orderByDesc('created_at')
-            ->take(2)
-            ->get();
 
         // Discussions for this business
         $query = BusinessDiscussion::where('business_id', $business->id)
             ->where('status', 'active')
-            ->with(['user', 'comments' => fn($q) => $q->with('user', 'replies.user')]);
-
-        // Category filter if passed
-        if ($request->filled('category') && $request->category !== 'all') {
-            $query->where('category', $request->category);
-        }
+            ->with([
+                'user',
+                'comments' => fn($q) => $q->whereNull('parent_id')
+                    ->orderByDesc('is_pinned')
+                    ->orderBy('created_at', 'asc')
+                    ->with(['user', 'replies.user', 'replies.replies.user'])
+            ]);
 
         // Search query
         if ($request->filled('q')) {
@@ -1233,17 +1178,10 @@ class ViewController extends Controller
             });
         }
 
+        // Pinned discussions first
+        $query->orderByDesc('is_pinned');
+
         // Sort
-        $userPinnedDiscIds = session()->get('user_pinned_discussions', []);
-        $userPinnedDiscIds = is_array($userPinnedDiscIds) ? array_filter(array_map('intval', $userPinnedDiscIds)) : [];
-
-        if (!empty($userPinnedDiscIds)) {
-            $idsStr = implode(',', $userPinnedDiscIds);
-            $query->orderByRaw("CASE WHEN is_pinned = 1 OR id IN ({$idsStr}) THEN 1 ELSE 0 END DESC");
-        } else {
-            $query->orderByDesc('is_pinned');
-        }
-
         $sort = $request->get('sort', 'popular');
         if ($sort === 'recent') {
             $query->latest();
@@ -1254,41 +1192,12 @@ class ViewController extends Controller
         }
 
         $discussions = $query->paginate(15);
-        $displayDiscussionsCount = BusinessDiscussion::where('business_id', $business->id)->where('status', 'active')->count();
-        $displayCommentsCount = BusinessDiscussionComment::whereHas('discussion', function ($q) use ($business) {
-            $q->where('business_id', $business->id)->where('status', 'active');
-        })->where('status', 'active')->count();
-
-        $activeDiscussionsToday = BusinessDiscussion::where('business_id', $business->id)
-            ->where('status', 'active')
-            ->where('updated_at', '>=', now()->startOfDay())
-            ->count();
-        $activeCommentsToday = BusinessDiscussionComment::whereHas('discussion', function ($q) use ($business) {
-            $q->where('business_id', $business->id)->where('status', 'active');
-        })->where('status', 'active')
-            ->where('created_at', '>=', now()->startOfDay())
-            ->count();
-
-        $displayActiveToday = $activeDiscussionsToday + $activeCommentsToday;
-        $totalDiscussionsCount = $displayDiscussionsCount;
-        $totalCommentsCount = $displayCommentsCount;
+        $totalDiscussionsCount = $discussions->total();
 
         return view('User.product.business_discussions', compact(
             'business',
-            'averageRating',
-            'totalReviews',
-            'recommendPercent',
-            'criteria',
-            'startingPrice',
-            'currency',
-            'timeUnit',
-            'topReviews',
             'discussions',
-            'totalDiscussionsCount',
-            'totalCommentsCount',
-            'displayDiscussionsCount',
-            'displayCommentsCount',
-            'displayActiveToday'
+            'totalDiscussionsCount'
         ));
     }
 
@@ -1513,4 +1422,37 @@ class ViewController extends Controller
             ]);
         }
     }
+    public function destroyDiscussion(Request $request, $id)
+    {
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Please sign in.'], 401);
+        }
+        $discussion = BusinessDiscussion::findOrFail($id);
+        $user = auth()->user();
+        $isAdminOrOwner = ($user->user_type === 'admin') || ($user->business_id && $user->business_id == $discussion->business_id);
+        if ($discussion->user_id !== $user->id && !$isAdminOrOwner) {
+            return response()->json(['success' => false, 'message' => 'Permission denied.'], 403);
+        }
+        $discussion->update(['status' => 'deleted']);
+        return response()->json(['success' => true, 'message' => 'Discussion deleted successfully!']);
+    }
+
+    public function destroyDiscussionComment(Request $request, $id)
+    {
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Please sign in.'], 401);
+        }
+        $comment = BusinessDiscussionComment::findOrFail($id);
+        $user = auth()->user();
+        $isAdminOrOwner = ($user->user_type === 'admin') || ($user->business_id && $comment->discussion && $user->business_id == $comment->discussion->business_id);
+        if ($comment->user_id !== $user->id && !$isAdminOrOwner) {
+            return response()->json(['success' => false, 'message' => 'Permission denied.'], 403);
+        }
+        $comment->update(['status' => 'deleted']);
+        if ($comment->discussion) {
+            $comment->discussion->decrement('comments_count');
+        }
+        return response()->json(['success' => true, 'message' => 'Comment deleted successfully!']);
+    }
+
 }

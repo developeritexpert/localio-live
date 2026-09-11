@@ -1931,7 +1931,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                     <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
                                         <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="btn btn-outline-primary btn-sm px-3" style="border-radius: 8px; font-weight: 600;">
-                                            <!-- View all {{ number_format($totalDiscs) }} discussions <i class="fas fa-arrow-right ms-1"></i> -->
+                                            View all discussions <i class="fas fa-arrow-right ms-1"></i>
                                         </a>
                                     </div>
                                 </div>
