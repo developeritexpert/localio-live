@@ -30,7 +30,6 @@
             font-size: 15px;
             color: #1e293b;
             outline: none;
-            transition: all 0.2s ease;
         }
         .faq-search-input-group input:focus {
             border-color: #06498b;
@@ -41,7 +40,7 @@
         .faq-category-nav {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap:0 25px;
             flex-wrap: wrap;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 0;
@@ -56,7 +55,6 @@
             background: transparent;
             border: none;
             border-bottom: 2px solid transparent;
-            transition: all 0.2s ease;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
@@ -103,13 +101,11 @@
             font-size: 13px;
             font-weight: 600;
             outline: none;
-            transition: all 0.15s ease;
         }
         .btn-vote-faq i {
             font-size: 15px;
             color: #64748b;
             font-weight: 400;
-            transition: all 0.15s ease;
         }
         .btn-vote-faq:hover, .btn-vote-faq:hover i {
             color: #1e3050;

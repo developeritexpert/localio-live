@@ -9546,7 +9546,7 @@ a.sticky-nav-item {
 
 .revie_img_sec .row .col-lg-8 {
     width: 70%;
-    padding: 0px 22px;
+    padding: 0px 10px;
 }
 
 .revie_img_sec .row .col-lg-4 {
@@ -10106,6 +10106,7 @@ button.btn-vote-faq i.far:hover {
     margin-top: 10px;
 }
 
-.category-description-text p:not(:first-of-type) {
+.category-description-text p:not(:first-of-type),
+.faq-subtext-container p:not(:first-of-type) {
     margin-top: 24px;
 }

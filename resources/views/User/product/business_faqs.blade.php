@@ -43,7 +43,7 @@
         .faq-category-nav {
             display: flex;
             align-items: center;
-            gap: 25px;
+            gap:0 25px;
             flex-wrap: wrap;
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 0;
