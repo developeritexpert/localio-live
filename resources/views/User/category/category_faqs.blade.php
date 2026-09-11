@@ -190,7 +190,7 @@
 <section class="top-rated-heading-sec help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style=" background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-0">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
@@ -216,7 +216,7 @@
 
         <!-- Category Header Row -->
         <div class="row align-items-center justify-content-between">
-            <div class="col-md-8 col-12">
+            <div class="col-md-6 col-12">
                 <div class="top_head d-flex align-items-center gap-3">
                     <div>
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
@@ -224,7 +224,7 @@
                                 {{ !empty($categoryTranslation->faq_h1_title) ? $categoryTranslation->faq_h1_title : ($catName . ' FAQs') }}
                             </h1>
                         </div>
-                        <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400; max-width: 840px;">
+                        <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400;">
                             @if(!empty($categoryTranslation->faq_subtext))
                                 {!! $categoryTranslation->faq_subtext !!}
                             @else
@@ -236,7 +236,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
+            <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0 cat_img_header">
                 @if(isset($category) && $category->top_rated_image && $category->topRatedImageMedia)
                     <div class="cat-hero-img-wrap position-relative d-inline-block">
                         <img src="{{ asset($category->topRatedImageMedia->dir_path . '/' . $category->topRatedImageMedia->file_name) }}" alt="{{ $category->name ?? '' }}" class="cat-hero-main-img" style="height: 100%;">
@@ -384,7 +384,7 @@
                                                     </button>
                                                 </h3>
                                                 <div id="collapseFaq{{ $uniqueId }}" class="accordion-collapse collapse {{ $openThisFaq ? 'show' : '' }}" aria-labelledby="headingFaq{{ $uniqueId }}" data-bs-parent="#categoryFaqAccordion_{{ Str::slug($cat) }}">
-                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #ffffff;">
+                                                    <div class="accordion-body rich-text-content" style="background-color: #ffffff;">
                                                         <div class="faq-answer-text">
                                                             {!! $answer !!}
                                                         </div>

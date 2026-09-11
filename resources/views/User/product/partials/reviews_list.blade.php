@@ -104,7 +104,7 @@
                                 </svg>
                             </button>
                             <div class="dropdown-menu shadow-sm user-rating-breakdown-menu">
-                                <div class="user-rating-header">User rating</div>
+                                <div class="user-rating-header">Detailed user rating </div>
                                 <div class="user-rating-body">
                                     @foreach ($criteria as $criterion)
                                     @php
@@ -220,7 +220,7 @@
         @endphp
         <div class="btm-bttn light" >
             <a href="{{ route('ReviewShow', ['locale' => $currentLangCode, 'slug' => $bSlug, 'reviews_slug' => $rSlug]) }}"
-                >View more reviews</a>
+                > View all reviews</a>
         </div>
     </div>
     
@@ -316,7 +316,7 @@
                                     </svg>
                                 </button>
                                 <div class="dropdown-menu shadow-sm user-rating-breakdown-menu">
-                                    <div class="user-rating-header">User rating</div>
+                                    <div class="user-rating-header">Detailed user rating </div>
                                     <div class="user-rating-body">
                                         @foreach ($criteria as $criterion)
                                         @php

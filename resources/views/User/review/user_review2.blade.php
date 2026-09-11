@@ -296,7 +296,7 @@
                                                             class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                             aria-labelledby="faqHeading{{ $index }}"
                                                             data-bs-parent="#businessFaqAccordion">
-                                                            <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
+                                                            <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                                 {!! $translation->answer !!}
                                                             </div>
                                                         </div>
@@ -313,7 +313,7 @@
                                         <div class="text-center mt-4">
                                             <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $bizSlugVal, 'faq_slug' => $faqSlugVal]) }}"
                                                class="btn-g-link">
-                                                View more FAQs
+                                                View all FAQs 
                                             </a>
                                         </div>
                                     </div>
@@ -621,7 +621,7 @@
 
                                     @if ($hasUserReviews)
                                         <a href="#section14" class="view-review-link">
-                                            View all reviews
+                                            Go to reviews 
                                         </a>
                                     @endif
                                 </div>
@@ -688,7 +688,7 @@
                                 <div class="review-header-box top_review_bx" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
                                     <h2 class="size22 big-bld m-0">Highlighted reviews</h2>
                                     <a href="#section14" class="view-review-link">
-                                        View all reviews
+                                        Go to reviews 
                                     </a>
                                 </div>
 
@@ -1370,8 +1370,8 @@ function submitReviewReport() {
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
-                <button type="button" class="btn btn-light rounded-pill-10 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
-                <button type="button" class="blue-btn btn rounded-pill-10 px-4" id="submitReviewReportBtn" disabled style=" color: white; font-size: 14px; " onclick="submitReviewReport()">Submit report</button>
+                <button type="button" class="btn btn-light rounded-pill-8 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="blue-btn btn rounded-pill-8 px-4" id="submitReviewReportBtn" disabled style=" color: white; font-size: 14px; " onclick="submitReviewReport()">Submit report</button>
             </div>
         </div>
     </div>

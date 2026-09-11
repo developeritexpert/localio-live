@@ -2880,7 +2880,7 @@ document.addEventListener('DOMContentLoaded', function () {
             font-size: 14px !important;
             color: #111  !important;
             font-weight: 700  !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 8px !important;
             letter-spacing: 0.5px !important;
         }
         .sidebar-menu-list {
@@ -2899,7 +2899,6 @@ document.addEventListener('DOMContentLoaded', function () {
             font-weight: 500;
             text-decoration: none;
             border-radius: 4px;
-            transition: background 0.15s ease, color 0.15s ease;
         }
         .sidebar-menu-list li a:hover {
             background: #eaeded;

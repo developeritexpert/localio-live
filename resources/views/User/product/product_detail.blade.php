@@ -1212,7 +1212,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                                                     aria-labelledby="faqHeading{{ $index }}"
                                                                     data-bs-parent="#businessFaqAccordion">
-                                                                    <div class="accordion-body rich-text-content" style="font-size: 14.5px; line-height: 1.7; background-color: #fff;">
+                                                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                                                         {!! $translation->answer !!}
                                                                     </div>
                                                                 </div>
@@ -1229,7 +1229,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div class="text-center mt-4">
                                                             <a href="{{ route('business.all_faqs', ['locale' => app()->getLocale(), 'business_slug' => $bizSlugVal, 'faq_slug' => $faqSlugVal]) }}"
                                                                 class="btn-g-link">
-                                                                View more FAQs
+                                                                View all FAQs 
                                                             </a>
                                                         </div>
                                                     </div>
@@ -1276,7 +1276,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 <div class="col-lg-6 col-md-6 col-12">
     <a href="{{ $seoUrl }}" class="comparison-box-link text-decoration-none d-block h-100">
         <div class="comparison-box p-3 rounded-3 border h-100 d-flex flex-column justify-content-between"
-            style="background-color: #f8fafc !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
+            style="background-color: #fff !important; border-radius: 12px !important; border: 1px solid #e2e8f0 !important;">
 
             <div class="d-flex align-items-center justify-content-between gap-2">
 
@@ -2189,7 +2189,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 
                                         @if ($hasUserReviews)
                                         <a href="#section14" class="view-review-link" style="">
-                                            View all reviews
+                                           Go to reviews 
                                         </a>
                                         @endif
                                     </div>
@@ -2387,7 +2387,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
                                                 <h2 class="size22 big-bld m-0">Highlighted reviews </h2>
                                                 <a href="#section14" class="view-review-link">
-                                                    View all reviews
+                                                    Go to reviews 
                                                 </a>
                                             </div>
 
@@ -2472,7 +2472,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                             <div class="review-header-box pb-3" style="border-bottom: 1px solid #f0f0f0; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                                                 <h2 class="size22 big-bld m-0">Recent discussions</h2>
                                                 <a href="#sectionDiscussions" class="view-review-link">
-                                                    View all discussions
+                                                     Go to discussions 
                                                 </a>
                                             </div>
 
@@ -3698,8 +3698,8 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 </div>
             </div>
             <div class="modal-footer" style="border-top: 1px solid #f1f5f9; padding: 16px 24px;">
-                <button type="button" class="btn btn-light rounded-pill-10 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
-                <button type="button" class="blue-btn btn rounded-pill-10 px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
+                <button type="button" class="btn btn-light rounded-pill-8 px-4" data-bs-dismiss="modal" style="font-size: 14px;">Cancel</button>
+                <button type="button" class="blue-btn btn rounded-pill-8 px-4" id="submitReviewReportBtn" disabled style="background: #002347; border-color: #002347; color: white; font-size: 14px; opacity: 0.5; transition: opacity 0.2s;" onclick="submitReviewReport()">Submit report</button>
             </div>
         </div>
     </div>
