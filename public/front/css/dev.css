@@ -1301,12 +1301,14 @@ html[lang*="el"] body {
 
 
 /* new css for dicussion */
-button.post-action-btn.toggle-comments-btn:hover {
+button.post-action-btn.toggle-comments-btn:hover,
+button.post-action-btn.toggle-reply-btn:hover {
     background: #f1f5f9;
     color: #0f172a;
 }
 
-button.post-action-btn.toggle-comments-btn {
+button.post-action-btn.toggle-comments-btn,
+button.post-action-btn.toggle-reply-btn {
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
@@ -1323,4 +1325,16 @@ button.post-action-btn.toggle-comments-btn {
     appearance: none !important;
     -webkit-appearance: none !important;
     transition: background-color 0.2s ease, color 0.2s ease !important;
+}
+
+.comment-action-bar .toggle-reply-text {
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #64748b;
+    transition: color 0.15s ease;
+}
+
+.comment-action-bar .toggle-reply-text:hover {
+    color: #0f172a;
 }
