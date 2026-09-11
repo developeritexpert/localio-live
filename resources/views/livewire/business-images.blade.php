@@ -337,20 +337,9 @@
 
                         </div>
 
-
-                        <select id="screenshotCountry"
-                            class="form-select"
-                            wire:key="screenshot-country-{{ $selectedBusinessId }}-{{ $selectedScreenshotCountry }}"
-                            wire:model.live="selectedScreenshotCountry">
-
-                            @foreach ($screenshotCountries as $country)
-                            <option value="{{ $country->id }}">
-                                {{ $country->name }}
-                            </option>
-                            @endforeach
-
-                        </select>
-
+                        <div class="form-control bg-light">
+                            {{ collect($screenshotCountries)->firstWhere('id', (int) $selectedScreenshotCountry)?->name ?? '-' }}
+                        </div>
                         <div class="form-text">
                             Select the country or region for which the screenshot
                             category and URLs should be configured.
@@ -612,6 +601,8 @@
                                 placeholder="Search countries..."
                                 wire:model.live="screenshotCountrySearch">
 
+
+
                             <button
                                 type="button"
                                 class="btn btn-outline-primary text-nowrap"
@@ -658,15 +649,9 @@
                             </div>
 
                             @empty
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
-                                    @if (empty($categoryTableCountryFilter))
-                                    Please select a country above to view its categories.
-                                    @else
-                                    No screenshot categories found for the selected country.
-                                    @endif
-                                </td>
-                            </tr>
+                            <div class="text-center text-muted py-3">
+                                No countries found.
+                            </div>
                             @endforelse
                         </div>
 
@@ -686,43 +671,117 @@
 
 
                         @php
-                        if (empty($categoryTableCountryFilter)) {
-                        // Koi country select nahi hui -> table khaali rahegi
+                        if (empty($this->categoryTableCountryFilter)) {
+
+                        // Pehli baar modal open hone par koi category show nahi hogi
                         $filteredCategories = collect();
+
                         } else {
-                        $filteredCategories = collect($screenshotCategories)
-                        ->filter(fn($c) => (int) ($c['country_id'] ?? 0) === (int) $categoryTableCountryFilter)
-                        ->when($categoryTableSearch, function ($collection) use ($categoryTableSearch) {
-                        return $collection->filter(fn($c) => stripos($c['name'] ?? '', $categoryTableSearch) !== false);
+
+                        // Sirf selected country ki categories
+                        $filteredCategories = collect($categoryTableCategories)
+                        ->filter(function ($category) {
+
+                        return (int) ($category['country_id'] ?? 0)
+                        === (int) $this->categoryTableCountryFilter;
+
                         })
+
+                        // Selected country ke andar category search
+                        ->when(
+                        trim($this->categoryTableSearch) !== '',
+                        function ($collection) {
+
+                        $search = trim($this->categoryTableSearch);
+
+                        return $collection->filter(function ($category) use ($search) {
+
+                        return stripos(
+                        $category['name'] ?? '',
+                        $search
+                        ) !== false;
+
+                        });
+                        }
+                        )
                         ->values();
                         }
 
                         $totalCategories = $filteredCategories->count();
-                        $totalCategoryPages = max(1, (int) ceil($totalCategories / $categoriesPerPage));
-                        $categoryOffset = ($categoryPage - 1) * $categoriesPerPage;
-                        $paginatedCategories = $filteredCategories->slice($categoryOffset, $categoriesPerPage)->values();
+
+                        $totalCategoryPages = max(
+                        1,
+                        (int) ceil(
+                        $totalCategories / $categoriesPerPage
+                        )
+                        );
+
+                        $categoryOffset =
+                        ($categoryPage - 1) * $categoriesPerPage;
+
+                        $paginatedCategories = $filteredCategories
+                        ->slice($categoryOffset, $categoriesPerPage)
+                        ->values();
                         @endphp
-
-                        <div class="d-flex gap-2 mb-3 flex-wrap">
-
-                            <select class="form-select" style="max-width: 240px;" wire:model.live="categoryTableCountryFilter">
-                                <option value="">-- Select Country to View --</option>
-                                @foreach ($screenshotCountries as $country)
-                                <option value="{{ $country->id }}">{{ $country->name }}</option>
-                                @endforeach
-                            </select>
+                        <div
+                            class="mb-3 position-relative"
+                            x-data
+                            @click.outside="$wire.set('showCategoryCountryDropdown', false)">
 
                             <input
                                 type="text"
                                 class="form-control"
-                                style="max-width: 260px;"
-                                placeholder="Search category name..."
-                                wire:model.live="categoryTableSearch"
-                                @if(empty($categoryTableCountryFilter)) disabled @endif>
+                                placeholder="Search country..."
+                                wire:model.live.debounce.300ms="categoryTableCountrySearch"
+                                wire:focus="$set('showCategoryCountryDropdown', true)"
+                                autocomplete="off">
+
+                            @if ($showCategoryCountryDropdown)
+
+                            <div
+                                class="border rounded bg-white shadow-sm position-absolute w-100 mt-1"
+                                style="max-height: 220px; overflow-y: auto; z-index: 1050;">
+
+                                @php
+                                $search = trim($categoryTableCountrySearch ?? '');
+
+                                $filteredCountries = collect($screenshotCountries);
+
+                                if ($search !== '') {
+                                $filteredCountries = $filteredCountries->filter(function ($country) use ($search) {
+                                return stripos($country->name, $search) !== false;
+                                });
+                                }
+
+                                $filteredCountries = $filteredCountries->values();
+                                @endphp
+
+                                @forelse ($filteredCountries as $country)
+
+                                <button
+                                    type="button"
+                                    class="w-100 text-start border-0 bg-white px-3 py-2"
+                                    style="cursor: pointer;"
+                                    wire:click="selectCategoryTableCountry({{ $country->id }})">
+
+                                    {{ $country->name }}
+
+                                </button>
+
+                                @empty
+
+                                <div class="px-3 py-2 text-muted">
+                                    No country found.
+                                </div>
+
+                                @endforelse
+
+                            </div>
+
+                            @endif
 
                         </div>
-                        <table class="table table-bordered align-middle mb-3">
+                        <table class="table table-bordered align-middle mb-3" style="width: 100%; table-layout: fixed;">
 
                             <thead class="table-light">
                                 <tr>
@@ -740,7 +799,7 @@
                                 @forelse ($paginatedCategories as $displayIndex => $category)
 
                                 @php
-                                $realIndex = collect($screenshotCategories)->search(function ($c) use ($category) {
+                                $realIndex = collect($businessScreenshotCategories)->search(function ($c) use ($category) {
                                 return ($c['name'] ?? null) === ($category['name'] ?? null)
                                 && (int)($c['country_id'] ?? 0) === (int)($category['country_id'] ?? 0);
                                 });
@@ -748,9 +807,11 @@
 
                                 <tr>
                                     <td>{{ $categoryOffset + $displayIndex + 1 }}</td>
-                                    <td><span class="fw-medium">{{ $category['name'] }}</span></td>
-                                    <td>
-                                        <span class="badge" style="background-color: #6366f1;">
+                                    <td style="word-break: break-word;">
+                                        <span class="fw-medium">{{ $category['name'] }}</span>
+                                    </td>
+                                    <td style="word-break: break-word;">
+                                        <span>
                                             {{ $category['country_name'] ?? '-' }}
                                         </span>
                                     </td>

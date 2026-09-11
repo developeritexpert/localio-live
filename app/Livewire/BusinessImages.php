@@ -45,10 +45,13 @@ class BusinessImages extends Component
     public $newScreenshotCategory = '';
 
     public $categoryPage = 1;
-    public $categoriesPerPage = 5;
+    public $categoriesPerPage = 3;
+    public $categoryTableCountrySearch = '';
+    public $showCategoryCountryDropdown = false;
 
     public $categoryTableCountryFilter = '';
     public $categoryTableSearch = '';
+    public $categoryTableCategories = [];
 
     public $editingScreenshotCategoryIndex = null;
     public $editingScreenshotCategoryName = '';
@@ -96,15 +99,94 @@ class BusinessImages extends Component
         }])->get();
     }
 
-
     public function updatedCategoryTableCountryFilter()
     {
         $this->categoryPage = 1;
+
+        $this->refreshCategoryTable();
     }
 
+
+    public function selectCategoryTableCountry($countryId)
+    {
+        $this->categoryTableCountryFilter = $countryId;
+
+        $country = collect($this->screenshotCountries)
+            ->firstWhere('id', (int) $countryId);
+
+        $this->categoryTableCountrySearch = $country?->name ?? '';
+
+        $this->showCategoryCountryDropdown = false;
+
+        $this->categoryPage = 1;
+        $this->refreshCategoryTable();
+    }
     public function updatedCategoryTableSearch()
     {
         $this->categoryPage = 1;
+
+        $this->refreshCategoryTable();
+    }
+
+    private function refreshCategoryTable()
+    {
+        $countryId = (int) $this->categoryTableCountryFilter;
+        $search = trim($this->categoryTableSearch);
+
+        $categories = collect(
+            $this->businessScreenshotCategories
+        );
+
+        /*
+    |--------------------------------------------------------------------------
+    | Country filter
+    |--------------------------------------------------------------------------
+    */
+        if ($countryId > 0) {
+            $categories = $categories->filter(function ($category) use ($countryId) {
+
+                return (int) ($category['country_id'] ?? 0)
+                    === $countryId;
+            });
+        } else {
+            $categories = collect();
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | Category search
+    |--------------------------------------------------------------------------
+    */
+        if ($search !== '') {
+
+            $categories = $categories->filter(function ($category) use ($search) {
+
+                return stripos(
+                    $category['name'] ?? '',
+                    $search
+                ) !== false;
+            });
+        }
+
+        $this->categoryTableCategories =
+            $categories->values()->all();
+
+        /*
+    |--------------------------------------------------------------------------
+    | Reset pagination
+    |--------------------------------------------------------------------------
+    */
+        $totalPages = max(
+            1,
+            (int) ceil(
+                count($this->categoryTableCategories)
+                    / $this->categoriesPerPage
+            )
+        );
+
+        if ($this->categoryPage > $totalPages) {
+            $this->categoryPage = 1;
+        }
     }
 
     public function render()
@@ -769,84 +851,84 @@ class BusinessImages extends Component
         );
     }
 
- public function getDisplayImages($business)
-{
-    /*
+    public function getDisplayImages($business)
+    {
+        /*
     |--------------------------------------------------------------------------
     | Get active country of THIS business
     |--------------------------------------------------------------------------
     */
-    $activeLanguageId = session(
-        'business_active_language_' . $business->id
-    );
+        $activeLanguageId = session(
+            'business_active_language_' . $business->id
+        );
 
-    if (empty($activeLanguageId)) {
-        $activeLanguageId = $business->languages_supported;
-    }
+        if (empty($activeLanguageId)) {
+            $activeLanguageId = $business->languages_supported;
+        }
 
-    $activeLanguage = \App\Models\Language::find(
-        $activeLanguageId
-    );
+        $activeLanguage = \App\Models\Language::find(
+            $activeLanguageId
+        );
 
-    $activeCountryId = (int) (
-        $activeLanguage?->country_id ?? 0
-    );
+        $activeCountryId = (int) (
+            $activeLanguage?->country_id ?? 0
+        );
 
-    $categories = $business->screenshot_categories ?? [];
+        $categories = $business->screenshot_categories ?? [];
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | 1. Selected category of active country
     |--------------------------------------------------------------------------
     */
-    $selectedCategory = collect($categories)
-        ->first(function ($category) use ($activeCountryId) {
-            return
-                (int) ($category['country_id'] ?? 0) === $activeCountryId
-                &&
-                !empty($category['is_selected']);
-        });
+        $selectedCategory = collect($categories)
+            ->first(function ($category) use ($activeCountryId) {
+                return
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId
+                    &&
+                    !empty($category['is_selected']);
+            });
 
-    if ($selectedCategory) {
-        return array_slice(
-            $selectedCategory['images'] ?? [],
-            0,
-            5
-        );
-    }
+        if ($selectedCategory) {
+            return array_slice(
+                $selectedCategory['images'] ?? [],
+                0,
+                5
+            );
+        }
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | 2. Default category of active country
     |--------------------------------------------------------------------------
     */
-    $defaultCategory = collect($categories)
-        ->first(function ($category) use ($activeCountryId) {
-            return
-                (int) ($category['country_id'] ?? 0) === $activeCountryId
-                &&
-                !empty($category['is_default']);
-        });
+        $defaultCategory = collect($categories)
+            ->first(function ($category) use ($activeCountryId) {
+                return
+                    (int) ($category['country_id'] ?? 0) === $activeCountryId
+                    &&
+                    !empty($category['is_default']);
+            });
 
-    if ($defaultCategory) {
-        return array_slice(
-            $defaultCategory['images'] ?? [],
-            0,
-            5
-        );
-    }
+        if ($defaultCategory) {
+            return array_slice(
+                $defaultCategory['images'] ?? [],
+                0,
+                5
+            );
+        }
 
-    /*
+        /*
     |--------------------------------------------------------------------------
     | 3. Global Default Images
     |--------------------------------------------------------------------------
     */
-    return array_slice(
-        $business->business_images ?? [],
-        0,
-        5
-    );
-}
+        return array_slice(
+            $business->business_images ?? [],
+            0,
+            5
+        );
+    }
 
 
     public function openEditCategory($index)
@@ -877,16 +959,7 @@ class BusinessImages extends Component
         /*
      * Load only categories assigned to selected country.
      */
-        $this->screenshotCategories = collect(
-            $this->businessScreenshotCategories
-        )
-            ->filter(function ($category) use ($countryId) {
-                return (int) ($category['country_id'] ?? 0)
-                    === (int) $countryId;
-            })
-            ->values()
-            ->all();
-
+        $this->loadScreenshotCategoriesForSelectedCountry();
         /*
      * No category for this country.
      */
@@ -1345,7 +1418,7 @@ class BusinessImages extends Component
             5
         );
 
-        
+
 
         /*
     |--------------------------------------------------------------------------
@@ -1595,8 +1668,13 @@ class BusinessImages extends Component
         $business = Business::with('translations')->findOrFail($businessId);
 
         $this->selectedBusinessId = $businessId;
+        $activeLanguageId = session(
+            'business_active_language_' . $businessId
+        );
 
-        $activeLanguageId = $business->languages_supported;
+        if (empty($activeLanguageId)) {
+            $activeLanguageId = $business->languages_supported;
+        }
 
         $activeLanguage = \App\Models\Language::find($activeLanguageId);
 
@@ -1625,26 +1703,31 @@ class BusinessImages extends Component
 
         $this->selectedScreenshotCategory = null;
         $this->screenshotCategories = [];
+
+        $countryId = (int) $this->selectedScreenshotCountry;
+
+        $this->screenshotCategories = collect($this->businessScreenshotCategories)
+            ->filter(function ($category) use ($countryId) {
+                return (int) ($category['country_id'] ?? 0) === $countryId;
+            })
+            ->values()
+            ->all();
         $this->screenshotUrls = ['', '', '', '', ''];
 
         // All categories
         $this->businessScreenshotCategories =
             $business->screenshot_categories ?? [];
 
+
+
+        // Category table initially empty
+        $this->categoryTableCountryFilter = '';
+        $this->categoryTableSearch = '';
+        $this->categoryPage = 1;
+
+        $this->refreshCategoryTable();
         // Only categories of active country
-        if ($this->selectedScreenshotCountry) {
-
-            $countryId = (int) $this->selectedScreenshotCountry;
-
-            $this->screenshotCategories = collect(
-                $this->businessScreenshotCategories
-            )
-                ->filter(function ($category) use ($countryId) {
-                    return (int) ($category['country_id'] ?? 0) === $countryId;
-                })
-                ->values()
-                ->all();
-        }
+        $this->loadScreenshotCategoriesForSelectedCountry();
 
         // Category priority:
         // 1. Assigned category
@@ -1691,6 +1774,23 @@ class BusinessImages extends Component
         $this->dispatch('show-url-modal');
     }
 
+
+    private function loadScreenshotCategoriesForSelectedCountry()
+    {
+        $countryId = (int) $this->selectedScreenshotCountry;
+
+        if (!$countryId) {
+            $this->screenshotCategories = [];
+            return;
+        }
+
+        $this->screenshotCategories = collect($this->businessScreenshotCategories)
+            ->filter(function ($category) use ($countryId) {
+                return (int) ($category['country_id'] ?? 0) === $countryId;
+            })
+            ->values()
+            ->all();
+    }
 
 
     public function addScreenshotCategory()
