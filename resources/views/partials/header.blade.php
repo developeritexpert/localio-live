@@ -1218,7 +1218,6 @@
                                             class="section_heading_link">
                                             <h4 class="section_heading">
                                                 {{ $headerContent['Categories'] ?? 'Categories ' }}
-                                                <i class="fa-solid fa-chevron-right ms-2"></i>
                                             </h4>
                                         </a>
                                         <hr class="section_divider">

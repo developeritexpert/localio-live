@@ -190,7 +190,7 @@
 <section class="top-rated-heading-sec help-cntr-bnr inr-bnr dark asn_main_sec asn_main_sec_2 user_revew_sec" style=" background-color: #f7f9fb; color: #1e3050; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
         <!-- Breadcrumb Row -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-0">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="background: transparent; padding: 0; font-size: 13px; margin-bottom:0;">
                     <li class="breadcrumb-item">
@@ -452,7 +452,7 @@
                     <!-- 1. Recent Reviews Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent reviews</h5>
+                            <h2 class="m-0 card-h-title">Recent reviews</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link" >
                                 View all
                             </a>
@@ -511,9 +511,9 @@
                                         </div>
                                         <small class="text-muted" style="font-size: 11px;">{{ $rev->created_at ? $rev->created_at->diffForHumans() : '' }}</small>
                                     </div>
-                                    <h6 style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                    <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
                                         {{ $revTrans->title ?? 'Review' }}
-                                    </h6>
+                                    </p>
                                     <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                         @for($s=1; $s<=5; $s++)
                                             @if($s<=floor($rev->rating))
@@ -544,9 +544,9 @@
                                     </div>
                                     <small class="text-muted" style="font-size: 11px;">1 week ago</small>
                                 </div>
-                                <h6 style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600; color: #1e3050;">
+                                <p style="margin-top: 8px; margin-bottom: 3px; font-size: 14px; font-weight: 600;">
                                     Rem sint adipisicin
-                                </h6>
+                                </p>
                                 <div class="rating-stars mb-1" style="font-size: 11px; color: #ff5722;">
                                     <i class="fas fa-star text-warning"></i>
                                     <i class="fas fa-star text-warning"></i>
@@ -562,7 +562,7 @@
                     <!-- 2. Recent Discussions Box -->
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Recent discussions</h5>
+                            <h2 class="m-0 card-h-title">Recent discussions</h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>
@@ -581,9 +581,9 @@
                                 </div>
                                 <small class="text-muted" style="font-size: 11px;">2 hours ago</small>
                             </div>
-                            <h6 style="margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                            <p style="margin-top: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                 Is there a free tier for API access or is it trial only?
-                            </h6>
+                            </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                 We are looking to integrate this into our workflow and want to test latency...
                             </p>
@@ -602,9 +602,9 @@
                                 </div>
                                 <small class="text-muted" style="font-size: 11px;">1 day ago</small>
                             </div>
-                            <h6 style="margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #1e3050;">
+                            <p style="margin-top: 8px; margin-bottom: 0; font-size: 13.5px; font-weight: 600;">
                                 How does the performance compare to alternatives in large datasets?
-                            </h6>
+                            </p>
                             <p style="font-size: 12.5px; line-height: 1.4; color: #4a5568; margin-bottom: 0;">
                                 We noticed some latency spikes during queries with more than 10k items...
                             </p>
@@ -615,7 +615,7 @@
                     @if(isset($topBusinesses) && $topBusinesses->count() > 0)
                     <div class="boxshadow_border bg-white p-4" style="border-radius: 16px !important; border: 1px solid #e2e8f0;">
                         <div class="review-header-box pb-3 mb-3" style="border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
-                            <h5 class="m-0 card-h-title" style="font-size: 16px; font-weight: 700; color: #002347;">Web hosting top 3 </h5>
+                            <h2 class="m-0 card-h-title">Web hosting top 3 </h2>
                             <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catSlug]) }}" class="view-review-link">
                                 View all
                             </a>
@@ -635,7 +635,7 @@
                                             <x-business-logo :business="$topBiz" :name="$topBizName" />
                                         </div>
                                         <div>
-                                            <h6 class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</h6>
+                                            <p class="m-0" style="font-size: 13.5px; font-weight: 600; color: #1e3050;">{{ $topBizName }}</p>
                                             <div class="d-flex align-items-center gap-1 mt-1">
                                                 <div class="d-flex align-items-center" style="color: #ff5722; font-size: 11px;">
                                                     @for ($i = 1; $i <= 5; $i++)

@@ -7826,17 +7826,15 @@ header .menu li.menu-item a {
     background: var(--color-white);
 }
 
-.revie_img_sec .review-header-box h5,
-.revie_img_sec .feture_box .starting-price-title {
+.revie_img_sec .feture_box .starting-price-title,
+.starting-price-title {
     font-size: 16px;
     font-weight: 600;
-}
-
-.revie_img_sec .feture_box .starting-price-title {
     margin-bottom: 35px;
 }
 
-.revie_img_sec .feture_box .starting-price-value {
+.revie_img_sec .feture_box .starting-price-value,
+.starting-price-value {
     font-size: 26px !important;
     font-weight: 700 !important;
     margin-bottom: 8px;

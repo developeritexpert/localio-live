@@ -759,7 +759,7 @@
                                          id="review-{{ $rev->id }}"
                                          data-rating="{{ round($rev->rating) }}" 
                                          data-date="{{ $rev->created_at->timestamp }}"
-                                         style="background-color: #f9fafb; border-radius: 12px; padding: 22px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; margin-bottom: 0;">
+                                         style="background-color: #fff; border-radius: 12px; padding: 22px; border: 1px solid #e2e8f0; position: relative; display: flex; flex-direction: column; margin-bottom: 0;">
                                         
                                         <!-- Top right actions (Date) -->
                                         <div class="review-actions-top-right" style="position: absolute; top: 22px; right: 22px; display: flex; align-items: center; gap: 12px;">
