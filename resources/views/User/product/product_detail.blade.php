@@ -2254,41 +2254,51 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             }
                             $hasStartingPrice = !empty($startingPrice) && is_numeric($startingPrice) && $startingPrice > 0;
                             @endphp
+@if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
+    <div class="innr_price_trail">
 
-                            @if($business->is_affiliate && ($hasStartingPrice || $hasFreeTrial))
-                            <div class="innr_price_trail">
+        @if($hasStartingPrice)
+            <div class="main_feature_sm">
+                <div class="feture_box str_prc_box">
 
-                                @if($hasStartingPrice)
-                                <div class="main_feature_sm">
-                                    <div class="feture_box str_prc_box">
+                    <p class="starting-price-title">
+                        Starting price
+                    </p>
 
-                                        <p class="starting-price-title">
-                                            Starting price
-                                        </p>
+                    <p class="starting-price-value">
+                        {{ $currency }}{{ $startingPrice }}
+                    </p>
 
-                                        <p class="starting-price-value">
-                                            {{ $currency }}{{ $startingPrice }}
-                                        </p>
+    @if (
+    !empty($additional_info) &&
+    !in_array(
+        strtoupper(trim((string) $additional_info)),
+        ['NA', 'N/A', 'NULL']
+    )
+)
+    <p class="starting-price-text">
+        {{ $additional_info }}
+    </p>
+@endif
 
-                                        <p class="starting-price-text">
-                                            Flat Rate, Per {{ ucfirst($timeUnit) }}
-                                        </p>
+                    <a href="{{ $business->getTrackedUrl() }}"
+                        data-track="{{ json_encode([
+                            'type' => 'click',
+                            'business_id' => $business->id,
+                            'action' => 'view_pricing',
+                            'label' => 'View pricing',
+                        ]) }}"
+                        target="_blank"
+                        class="starting-price-link">
+                        View pricing
+                    </a>
 
-                                        <a href="{{ $business->getTrackedUrl() }}"
-                                            data-track="{{ json_encode([
-                                                            'type' => 'click',
-                                                            'business_id' => $business->id,
-                                                            'action' => 'view_pricing',
-                                                            'label' => 'View pricing',
-                                                        ]) }}"
-                                            target="_blank"
-                                            class="starting-price-link">
-                                            View pricing
-                                        </a>
+                </div>
+            </div>
+        @endif
 
-                                    </div>
-                                </div>
-                                @endif
+    </div>
+
 
                                 @if($hasFreeTrial)
                                 <div class="main_feature_sm">
