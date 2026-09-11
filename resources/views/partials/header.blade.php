@@ -522,15 +522,17 @@
                                 position: fixed;
                                 top: 0;
                                 right: 0;
-                                width: 300px;
+                                width: 320px;
                                 max-width: 85%;
                                 height: 100%;
                                 background-color: #002347;
                                 color: #ffffff;
                                 z-index: 1050;
                                 transform: translateX(100%);
-                                transition: transform 0.3s ease;
-                                overflow-y: auto;
+                                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                display: flex;
+                                flex-direction: column;
+                                overflow: hidden;
                                 text-align: left;
                             }
 
@@ -545,6 +547,7 @@
                                 justify-content: space-between;
                                 padding: 16px 20px;
                                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                flex-shrink: 0;
                             }
 
                             .msp_brand img {
@@ -565,123 +568,226 @@
                                 fill: #ffffff;
                             }
 
+                            /* Sliding Views Container */
+                            .msp_views_wrapper {
+                                position: relative;
+                                width: 100%;
+                                flex: 1;
+                                display: flex;
+                                overflow: hidden;
+                            }
 
-                            .msp_panel_body {
-                                padding: 20px 0;
+                            .msp_view {
+                                min-width: 100%;
+                                width: 100%;
+                                height: 100%;
+                                display: flex;
+                                flex-direction: column;
+                                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                                overflow-y: auto;
+                                -webkit-overflow-scrolling: touch;
+                            }
+
+                            .msp_view_main {
+                                transform: translateX(0);
+                                justify-content: space-between;
+                            }
+
+                            .msp_view_sub {
+                                transform: translateX(0);
+                            }
+
+                            .msp_views_wrapper.msp_show_sub .msp_view_main {
+                                transform: translateX(-100%);
+                            }
+
+                            .msp_views_wrapper.msp_show_sub .msp_view_sub {
+                                transform: translateX(-100%);
+                            }
+
+                            /* View 1: Centered Intro & Buttons */
+                            .msp_intro_section {
+                                flex: 1;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                padding: 24px 24px 20px;
                             }
 
                             .msp_intro {
-                                padding: 0 25px 20px;
+                                padding: 0;
+                                text-align: left;
                             }
 
                             .msp_title {
                                 color: #fff !important;
-                                font-size: 20px !important;
+                                font-size: 22px !important;
                                 font-weight: 700 !important;
-                                margin: 0 0 8px !important;
+                                margin: 0 0 10px !important;
                             }
 
                             .msp_subtitle {
-                                color: rgba(255, 255, 255, 0.7) !important;
-                                font-size: 13px;
-                                margin: 0 0 40px !important;
-                                line-height: 1.4;
+                                color: rgba(255, 255, 255, 0.75) !important;
+                                font-size: 13.5px;
+                                margin: 0 0 28px !important;
+                                line-height: 1.45;
                             }
 
                             .msp_buttons {
                                 display: flex;
                                 flex-direction: column;
-                                gap: 10px;
+                                gap: 12px;
                             }
 
-
                             .msp_btn {
-                                flex: 1;
+                                display: block;
                                 text-align: center;
-                                padding: 10px 12px;
+                                padding: 12px 14px;
                                 border-radius: 8px;
-                                font-size: 14px;
+                                font-size: 15px;
                                 font-weight: 600;
                                 text-decoration: none;
                                 transition: all 0.2s ease;
                             }
 
                             .msp_btn_outline {
-                                border: 1px solid #fff;
+                                border: 1px solid rgba(255, 255, 255, 0.85);
                                 color: #fff !important;
                                 background: transparent;
                             }
 
                             .msp_btn_outline:hover {
-                                border-color: #Fff;
-                                color: #003f7d !important;
+                                border-color: #fff;
+                                color: #002347 !important;
                                 background-color: #fff;
                             }
 
-                            .msp_btn_solid {
-                                background-color: #fff;
-                                color: #003f7d !important;
-                                border: 1px solid #fff;
-                            }
-
-                            .msp_btn_solid:hover {
-                                background-color: #ff5722;
-                                border-color: #ff5722;
-                                color: #fff !important;
-                            }
-
-                            .msp_divider {
-                                margin: 10px !important;
-                                border-color: rgb(255 255 255 / 18%) !important;
-                            }
-
-                            .msp_links_section {
-                                padding: 0 25px;
-                                margin-bottom: 25px;
-                            }
-
-                            .msp_links_section:last-child {
-                                margin-bottom: 0;
-                            }
-
-                            .msp_links_heading {
-                                color: #fff !important;
-                                margin: 0 0 10px !important;
+                            .msp_btn_signin {
+                                display: block !important;
+                                text-align: center !important;
+                                border-radius: 8px !important;
                                 font-size: 15px !important;
-                                font-weight: 700 !important;
-                                letter-spacing: 0.5px;
-                                text-transform: uppercase;
+                                font-weight: 600 !important;
+                                padding: 12px 14px !important;
+                                line-height: 1.5 !important;
                             }
 
-                            .msp_link_list {
-                                padding: 0;
-                                margin: 0;
-                                list-style: none;
+                            /* View 1: Bottom Navigation Links */
+                            .msp_bottom_nav {
+                                flex-shrink: 0;
+                                border-top: 1px solid rgba(255, 255, 255, 0.12);
+                                background: rgba(0, 0, 0, 0.18);
+                                padding-bottom: 16px;
                             }
 
-                            .msp_link_list li {
-                                padding: 8px 0 !important;
-                                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                            .msp_nav_item {
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                padding: 16px 24px;
+                                color: #ffffff !important;
+                                text-decoration: none !important;
+                                font-size: 16px;
+                                font-weight: 600;
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                                transition: background-color 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+                                cursor: pointer;
                             }
 
-                            .msp_link_list li:last-child {
+                            .msp_nav_item:last-child {
                                 border-bottom: none;
                             }
 
-                            .msp_link_list li a {
-                                color: #fff !important;
-                                text-decoration: none;
-                                font-size: 15px;
-                                font-weight: 500 !important;
-                                transition: all 0.2s ease;
-                                display: block;
-                            }
-
-                            .msp_link_list li a:hover {
+                            .msp_nav_item:hover,
+                            .msp_nav_item:active {
+                                background-color: rgba(255, 255, 255, 0.08);
                                 color: #F9633B !important;
-                                padding-left: 5px;
+                                padding-left: 28px;
                             }
 
+                            .msp_nav_arrow {
+                                font-size: 14px;
+                                color: rgba(255, 255, 255, 0.6);
+                                transition: transform 0.2s ease, color 0.2s ease;
+                            }
+
+                            .msp_nav_item:hover .msp_nav_arrow {
+                                transform: translateX(4px);
+                                color: #F9633B;
+                            }
+
+                            /* View 2: Sub-Links View */
+                            .msp_sub_top {
+                                padding: 14px 20px;
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                background: rgba(0, 0, 0, 0.2);
+                                flex-shrink: 0;
+                            }
+
+                            .msp_back_btn {
+                                background: none;
+                                border: none;
+                                color: #ffffff;
+                                font-size: 16px;
+                                font-weight: 600;
+                                display: flex;
+                                align-items: center;
+                                gap: 12px;
+                                cursor: pointer;
+                                padding: 4px 0;
+                                transition: color 0.2s ease;
+                            }
+
+                            .msp_back_btn i {
+                                font-size: 14px;
+                                color: #F9633B;
+                                transition: transform 0.2s ease;
+                            }
+
+                            .msp_back_btn:hover i {
+                                transform: translateX(-3px);
+                            }
+
+                            .msp_back_btn:hover {
+                                color: #F9633B;
+                            }
+
+                            .msp_sub_content {
+                                flex: 1;
+                                overflow-y: auto;
+                                padding: 8px 0 20px;
+                            }
+
+                            .msp_sub_list {
+                                list-style: none;
+                                padding: 0;
+                                margin: 0;
+                            }
+
+                            .msp_sub_list li {
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                            }
+
+                            .msp_sub_list li:last-child {
+                                border-bottom: none;
+                            }
+
+                            .msp_sub_list li a {
+                                display: block;
+                                padding: 15px 24px;
+                                color: #ffffff !important;
+                                text-decoration: none !important;
+                                font-size: 15px;
+                                font-weight: 500;
+                                transition: all 0.2s ease;
+                            }
+
+                            .msp_sub_list li a:hover,
+                            .msp_sub_list li a:active {
+                                background-color: rgba(255, 255, 255, 0.06);
+                                color: #F9633B !important;
+                                padding-left: 30px;
+                            }
                         }
                         </style>
 
@@ -838,56 +944,124 @@
                                     </button>
                                 </div>
 
-                                <div class="msp_panel_body">
+                                <div class="msp_views_wrapper" id="mspViewsWrapper">
 
-                                    <div class="msp_intro">
-                                        <h2 class="msp_title">Get Started!</h2>
-                                        <p class="msp_subtitle">Create an Account and Secure Your Exclusive Logo Today.
-                                        </p>
+                                    <!-- VIEW 1: MAIN VIEW -->
+                                    <div class="msp_view msp_view_main" id="mspViewMain">
+                                        <div class="msp_intro_section">
+                                            <div class="msp_intro">
+                                                <h2 class="msp_title">Get Started!</h2>
+                                                <p class="msp_subtitle">Create an Account and Secure Your Exclusive Logo Today.</p>
 
-                                        <div class="msp_buttons">
-                                            <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
-                                                class="msp_btn msp_btn_outline">Write a review</a>
-                                            <a href="javascript:void(0);" onclick="openLoginModal()"
-                                                class="cta cta_orange wht-t-org-btn">
-                                                Sign in
+                                                <div class="msp_buttons">
+                                                    <a href="{{ route('write-review', ['locale' => app()->getLocale()]) }}"
+                                                        class="msp_btn msp_btn_outline">Write a review</a>
+                                                    <a href="javascript:void(0);" onclick="msp_closePanel(); openLoginModal();"
+                                                        class="cta cta_orange wht-t-org-btn msp_btn_signin">
+                                                        Sign in
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="msp_bottom_nav">
+                                            <a href="javascript:void(0);" class="msp_nav_item" onclick="msp_showSubView('discover')">
+                                                <span>{{ $footerContents['discover'] ?? 'Discover' }}</span>
+                                                <i class="fa-solid fa-chevron-right msp_nav_arrow"></i>
                                             </a>
-
+                                            <a href="javascript:void(0);" class="msp_nav_item" onclick="msp_showSubView('legal')">
+                                                <span>{{ $footerContents['company'] ?? 'Legal' }}</span>
+                                                <i class="fa-solid fa-chevron-right msp_nav_arrow"></i>
+                                            </a>
+                                            <a href="javascript:void(0);" class="msp_nav_item" onclick="msp_showSubView('localio')">
+                                                <span>Localio</span>
+                                                <i class="fa-solid fa-chevron-right msp_nav_arrow"></i>
+                                            </a>
                                         </div>
                                     </div>
-                                    <hr class="msp_divider">
 
+                                    <!-- VIEW 2: SUB-LINKS VIEW -->
+                                    <div class="msp_view msp_view_sub" id="mspViewSub">
+                                        <div class="msp_sub_top">
+                                            <button type="button" class="msp_back_btn" onclick="msp_backToMain()" aria-label="Back">
+                                                <i class="fa-solid fa-chevron-left"></i>
+                                                <span id="mspSubTitle">Discover</span>
+                                            </button>
+                                        </div>
 
-                                    <div class="msp_links_section">
-                                        <h4 class="msp_links_heading">Company</h4>
-                                        <hr class="msp_divider">
+                                        <div class="msp_sub_content">
+                                            <!-- Discover Sublinks -->
+                                            <ul class="msp_sub_list" id="mspListDiscover">
+                                                <li>
+                                                    <a href="{{ route('category', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['categories'] ?? 'All categories' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('top-rated-product', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['top_ratedt'] ?? 'Top rated' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('write-review', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        Write review
+                                                    </a>
+                                                </li>
+                                            </ul>
 
-                                        <ul class="msp_link_list">
-                                            <li><a
-                                                    href="{{ route('who-we-are', ['locale' => session('lang_code', 'en-us')]) }}">Who
-                                                    we are</a></li>
-                                            <li><a
-                                                    href="{{ route('privacy-policy', ['locale' => session('lang_code', 'en-us')]) }}">Privacy
-                                                    policy</a></li>
-                                            <li><a
-                                                    href="{{ route('terms-condition', ['locale' => session('lang_code', 'en-us')]) }}">Terms
-                                                    & conditions</a></li>
-                                        </ul>
-                                    </div>
+                                            <!-- Legal Sublinks -->
+                                            <ul class="msp_sub_list" id="mspListLegal" style="display: none;">
+                                                <li>
+                                                    <a href="{{ route('terms-condition', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['terms_&_conditions'] ?? 'Terms of service' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('privacy-policy', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['privacy_policy'] ?? 'Privacy policy' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('cookie-policy', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['cookie_policy'] ?? 'Cookie policy' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('community-guidelines', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['community_guidelines'] ?? 'Community guidelines' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('affiliate-disclosure', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['affiliate_disclosure'] ?? 'Affiliate disclosure' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('copyright-dmca-policy', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['copyright_dmca_policy'] ?? 'Copyright & DMCA policy' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('legal-notice', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['legal_notice'] ?? 'Legal notice' }}
+                                                    </a>
+                                                </li>
+                                            </ul>
 
-
-
-                                    <div class="msp_links_section">
-                                        <h4 class="msp_links_heading">Help</h4>
-                                        <hr class="msp_divider">
-                                        <ul class="msp_link_list">
-                                            <li><a
-                                                    href="{{ route('contact', ['locale' => session('lang_code', 'en-us')]) }}">Contact</a>
-                                            </li>
-                                            <li><a
-                                                    href="{{ route('FaqsShow', ['locale' => session('lang_code', 'en-us')]) }}">FAQs</a>
-                                            </li>
-                                        </ul>
+                                            <!-- Localio Sublinks -->
+                                            <ul class="msp_sub_list" id="mspListLocalio" style="display: none;">
+                                                <li>
+                                                    <a href="{{ route('who-we-are', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['about-localio'] ?? 'About Localio' }}
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('contact', ['locale' => session('lang_code', app()->getLocale())]) }}">
+                                                        {{ $footerContents['contact'] ?? 'Contact' }}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -896,15 +1070,55 @@
 
                         <script>
                         function msp_openPanel() {
-                            document.getElementById('mspPanel').classList.add('msp_active');
-                            document.getElementById('mspBackdrop').classList.add('msp_active');
+                            var panel = document.getElementById('mspPanel');
+                            var backdrop = document.getElementById('mspBackdrop');
+                            if (panel) panel.classList.add('msp_active');
+                            if (backdrop) backdrop.classList.add('msp_active');
                             document.body.style.overflow = 'hidden';
                         }
 
                         function msp_closePanel() {
-                            document.getElementById('mspPanel').classList.remove('msp_active');
-                            document.getElementById('mspBackdrop').classList.remove('msp_active');
+                            var panel = document.getElementById('mspPanel');
+                            var backdrop = document.getElementById('mspBackdrop');
+                            if (panel) panel.classList.remove('msp_active');
+                            if (backdrop) backdrop.classList.remove('msp_active');
                             document.body.style.overflow = '';
+                            msp_backToMain();
+                        }
+
+                        function msp_showSubView(catKey) {
+                            var titles = {
+                                'discover': "{{ $footerContents['discover'] ?? 'Discover' }}",
+                                'legal': "{{ $footerContents['company'] ?? 'Legal' }}",
+                                'localio': 'Localio'
+                            };
+                            var titleEl = document.getElementById('mspSubTitle');
+                            if (titleEl && titles[catKey]) {
+                                titleEl.textContent = titles[catKey];
+                            }
+
+                            var lists = document.querySelectorAll('.msp_sub_list');
+                            lists.forEach(function(list) {
+                                list.style.display = 'none';
+                            });
+
+                            var targetId = 'mspList' + catKey.charAt(0).toUpperCase() + catKey.slice(1);
+                            var targetList = document.getElementById(targetId);
+                            if (targetList) {
+                                targetList.style.display = 'block';
+                            }
+
+                            var wrapper = document.getElementById('mspViewsWrapper');
+                            if (wrapper) {
+                                wrapper.classList.add('msp_show_sub');
+                            }
+                        }
+
+                        function msp_backToMain() {
+                            var wrapper = document.getElementById('mspViewsWrapper');
+                            if (wrapper) {
+                                wrapper.classList.remove('msp_show_sub');
+                            }
                         }
                         </script>
 
