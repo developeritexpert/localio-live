@@ -13,17 +13,18 @@
     $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
 @endphp
 
+<h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
+    Discussions ({{ number_format($totalDiscs) }})
+</h2>
+
 <div class="card p-4" style="border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
     <div class="d-flex flex-wrap align-items-center justify-content-between pb-3 mb-3" style="border-bottom: 1px solid #f1f5f9;">
-        <div>
-            <h2 class="m-0" style="font-size: 24px; font-weight: 700; color: #002347;">Community</h2>
-            <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 13.5px; color: #475569; font-weight: 500;">
-                <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
-                <span>•</span>
-                <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
-                <span>•</span>
-                <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
-            </div>
+        <div class="d-flex align-items-center gap-2" style="font-size: 13.5px; color: #475569; font-weight: 500;">
+            <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
+            <span>&bull;</span>
+            <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
+            <span>&bull;</span>
+            <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
         </div>
 
         <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0 d-none">
