@@ -124,20 +124,6 @@
             font-weight: 900 !important;
         }
 
-        /* Ask Community Banner */
-        .ask-community-banner {
-            background: linear-gradient(135deg, #002347 0%, #174889 100%);
-            border-radius: 16px;
-            padding: 36px 32px;
-            color: #ffffff;
-            margin-top: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-            box-shadow: 0 6px 20px rgba(0, 35, 71, 0.12);
-        }
         .ask-community-btn {
             background: #ff5722;
             color: #ffffff !important;

@@ -3446,10 +3446,6 @@ header.drk_header {
     border-bottom: 1px solid #06498b1a;
 }
 
-/* .populr-alternative {
-    padding: 26px 0;
-} */
-
 .altr-mid-div {
     background-color: var(--color-white);
     padding: 35px;
@@ -8845,7 +8841,6 @@ section.most-populr-sec.ms_dv.light.p_120 {
 }
 
 .rating-group div {
-    /* margin-bottom: 1px !important; */
     font-size: 10px !important;
 }
 
@@ -9228,12 +9223,6 @@ a.cta.btn_blue:hover,
     margin-top: 0 !important;
 }
 
-/* .recommended-per {
-    position: absolute;
-    right: 30px;
-    top: 20px;
-} */
-
 .form-check-label i.fas.fa-star.text-warning,
 .top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
 .top-automotive-sec.cat_pg .auto-choice-lft .fa-star,
@@ -9429,6 +9418,16 @@ a.more-about-link-item:hover {
 .ask-community-banner {
     background: #f7fafc !important;
     border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 36px 32px;
+    color: #ffffff;
+    margin-top: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    box-shadow: 0 6px 20px rgba(0, 35, 71, 0.12);
 }
 
 .ask-community-banner div h2 {
@@ -9468,10 +9467,6 @@ a.sticky-nav-item {
 .rgt_sde {
     flex-direction: row-reverse;
 }
-
-/* .top-rated-heading-sec .row {
-    align-items: center !important;
-} */
 
 .more-about-business-card .card-h-title {
     padding-bottom: 8px;
@@ -9761,11 +9756,6 @@ section#section15 .container .row > div {
     border-radius: 16px;
 }
 
-/* .asn-rating h6 a:hover,
-.asn-rating h6 .asn-rating-p:last-child:hover {
-    text-decoration: underline;
-} */
-
 .card-body ul li span:first-child {
     line-height: 1;
 }
@@ -9962,7 +9952,7 @@ button.btn-vote-faq i.far:hover {
 }
 
 .text-meta {
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 0;
     color: var(--color-primary-grey-text);
 }
@@ -10079,15 +10069,6 @@ button.btn-vote-faq i.far:hover {
     justify-content: center;
     flex-shrink: 0;
 }
-
-/* .category-description-text,
-.top-rated-subtext-container.ck-content {
-    max-width: 850px;
-}
-
-.is_text.rich-text-content {
-    max-width: 850px;
-} */
 
 /* ====style.css updated by-Kashish(11-sep-26)===== */
 

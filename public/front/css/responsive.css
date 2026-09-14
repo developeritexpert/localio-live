@@ -8225,8 +8225,8 @@ textarea#message {
     }
 
     .top-product-logo {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
     }
 
     .top_header .navbar-collapse.show {
@@ -8360,10 +8360,6 @@ textarea#message {
 
     #pvc_section h5 {
         font-size: 20px;
-    }
-
-    #pvc_section {
-        padding: 60px 0px 0px !important;
     }
 
     img.image-pattern2 {
@@ -8649,7 +8645,7 @@ textarea#message {
     }
 
     .write-review-hero {
-        margin-top: 70px;
+        margin-top: 140px;
         padding: 30px 0px;
     }
 
@@ -8683,8 +8679,8 @@ textarea#message {
         font-size: 12px !important;
     }
 
-    section.write-review-lists.write_revw_sec.py-5.bg-light {
-        padding: 10px !important;
+    .write-review-lists.write_revw_sec {
+        padding: 0 !important;
         padding-bottom: 40px !important;
     }
 
@@ -8728,9 +8724,15 @@ textarea#message {
 
     .user_revew_sec .top_head,
     .comparsn_bnr_sec .top_head {
-        flex-wrap: wrap;
-        flex-direction: column;
         align-items: start !important;
+    }
+
+    .text-meta {
+        font-size: 14px;
+    }
+
+    .common_detail_sec .row .col-lg-8 {
+        padding: 0 10px;
     }
 
     .all_comparisons_sec .cmpr_bx {
@@ -8761,7 +8763,7 @@ textarea#message {
 
     .business-initial-logo,
     .business-logo-initial {
-        font-size: 20px;
+        font-size: 25px;
     }
 
     .community-rating {
@@ -8845,7 +8847,7 @@ textarea#message {
 
     .user_revew_sec,
     .comparsn_bnr_sec {
-        padding: 0px;
+        padding: 25px 0 10px 0;
     }
 
     .faq-search-wrapper h3 {
