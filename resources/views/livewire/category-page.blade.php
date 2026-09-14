@@ -2307,36 +2307,55 @@
             $catFaqName = $catTrans->name ?? $category->name ?? 'Category';
             $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
             $faqSubtext = $catTrans->category_faqs_subtext ?? null;
+            $catFaqSlug = $catTrans->slug ?? $category->slug ?? '';
+            $categoryFaqsUrl = url('/' . app()->getLocale() . '/' . $catFaqSlug . '/faqs');
         @endphp
         <section class="category-faqs-sec cat-faq-sec py-5" style="">
             <div class="container">
-                <div class="row ">
-                    <div class="">
-                        <div class="text-start mb-4">
-                            <h2 style="margin-bottom: 8px;">
-                                {{ $faqHeadline }}
-                            </h2>
-                            @if(!empty($faqSubtext))
-                                <div class="category-faqs-subtext" style="color: #002347; margin: 0;">
-                                    {!! $faqSubtext !!}
-                                </div>
-                            @else
-                                <p style="color: #002347; margin: 0;">
-                                    Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
-                                </p>
-                            @endif
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row align-items-center mb-4">
+                            <div class="col-lg-7 col-md-6 col-12 text-start mb-3 mb-md-0">
+                                <h2 style="margin-bottom: 8px; font-size: 24px; font-weight: 700; color: #002347;">
+                                    {{ $faqHeadline }}
+                                </h2>
+                                @if(!empty($faqSubtext))
+                                    <div class="category-faqs-subtext" style="color: #475569; margin: 0; font-size: 15px;">
+                                        {!! $faqSubtext !!}
+                                    </div>
+                                @else
+                                    <p style="color: #475569; margin: 0; font-size: 15px;">
+                                        Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
+                                    </p>
+                                @endif
+                            </div>
+
+                            <div class="col-lg-5 col-md-6 col-12">
+                                <form action="{{ $categoryFaqsUrl }}" method="GET" class="category-faq-search-form" id="categoryFaqSearchForm">
+                                    <div class="input-group" style="border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
+                                        <span class="input-group-text bg-white border-0 ps-3 pe-2" style="color: #94a3b8;">
+                                            <i class="fas fa-search" style="font-size: 15px;"></i>
+                                        </span>
+                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none ps-1 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
+                                        <button type="submit" class="btn px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #002347; color: #ffffff; font-size: 13.5px; border-radius: 0; height: 46px;" title="Search FAQs">
+                                            <span>Search</span>
+                                            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <div class="accordion" id="categoryFaqAccordion">
                             @foreach($faqs as $fIndex => $faq)
-                            <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                            <div class="accordion-item mb-3 category-faq-item" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                                 <h3 class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                         {{ $faq['question'] }}
                                     </button>
                                 </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
+                                    <div class="accordion-body rich-text-content category-faq-answer" style="background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
@@ -2344,8 +2363,17 @@
                             @endforeach
                         </div>
 
+                        <div id="categoryFaqNoResults" class="text-center py-4 px-3 mb-3 bg-white rounded-3 shadow-sm d-none" style="border: 1px dashed #cbd5e1;">
+                            <p class="text-muted mb-2" style="font-size: 14.5px;">
+                                No preview FAQs match "<span id="categoryFaqSearchTerm" class="fw-semibold text-dark"></span>".
+                            </p>
+                            <a id="categoryFaqSearchAllLink" href="{{ $categoryFaqsUrl }}" class="btn btn-sm btn-primary px-3 py-2" style="background-color: #002347; border-color: #002347; font-size: 13px; border-radius: 6px;">
+                                Search all FAQs on the FAQs page <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
+                            </a>
+                        </div>
+
                         <div class="text-center mt-4">
-                            <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
+                            <a href="{{ $categoryFaqsUrl }}" class="btn-g-link">
                                 View all FAQs
                             </a>
                         </div>
@@ -2353,6 +2381,47 @@
                 </div>
             </div>
         </section>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const catFaqInput = document.getElementById('categoryFaqSearchInput');
+            const catFaqItems = document.querySelectorAll('#categoryFaqAccordion .category-faq-item');
+            const catFaqNoResults = document.getElementById('categoryFaqNoResults');
+            const catFaqSearchTerm = document.getElementById('categoryFaqSearchTerm');
+            const catFaqSearchAllLink = document.getElementById('categoryFaqSearchAllLink');
+            const baseFaqUrl = "{{ $categoryFaqsUrl }}";
+
+            if (catFaqInput && catFaqItems.length > 0) {
+                catFaqInput.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    catFaqItems.forEach(item => {
+                        const qText = item.querySelector('.accordion-button')?.textContent.toLowerCase() || '';
+                        const aText = item.querySelector('.category-faq-answer')?.textContent.toLowerCase() || '';
+                        if (query === '' || qText.includes(query) || aText.includes(query)) {
+                            item.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    if (catFaqNoResults) {
+                        if (visibleCount === 0 && query !== '') {
+                            catFaqNoResults.classList.remove('d-none');
+                            if (catFaqSearchTerm) catFaqSearchTerm.textContent = catFaqInput.value.trim();
+                            if (catFaqSearchAllLink) {
+                                catFaqSearchAllLink.href = baseFaqUrl + '?q=' + encodeURIComponent(catFaqInput.value.trim());
+                            }
+                        } else {
+                            catFaqNoResults.classList.add('d-none');
+                        }
+                    }
+                });
+            }
+        });
+        </script>
         @endif
 
         <section class="subs_sec light ">

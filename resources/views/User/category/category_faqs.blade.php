@@ -283,7 +283,7 @@
                     </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="faqSearchInput" placeholder="Search questions..." autocomplete="off">
+                        <input type="text" id="faqSearchInput" placeholder="Search questions..." value="{{ request('q') }}" autocomplete="off">
                     </div>
                 </div>
 
@@ -783,7 +783,8 @@
 @push('scripts')
 <script>
     // 1. Real-Time Search Filter
-    document.getElementById('faqSearchInput')?.addEventListener('input', function() {
+    const mainFaqSearchInput = document.getElementById('faqSearchInput');
+    mainFaqSearchInput?.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const items = document.querySelectorAll('#faqAccordionContainer .accordion-item');
         const groups = document.querySelectorAll('.faq-category-group');
@@ -817,6 +818,11 @@
             noResults.style.display = (totalVisible === 0 && query !== '') ? 'block' : 'none';
         }
     });
+
+    // Auto-trigger search filter if pre-filled via query parameter ?q=
+    if (mainFaqSearchInput && mainFaqSearchInput.value && mainFaqSearchInput.value.trim() !== '') {
+        mainFaqSearchInput.dispatchEvent(new Event('input'));
+    }
 
     // 2. In-Page Category Tab Filter
     document.querySelectorAll('.faq-cat-tab').forEach(tab => {
