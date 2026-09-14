@@ -1,4 +1,18 @@
 <section class="sfwr_sec cat_page_secs light p_120" style="background: #fdfdfd !important;">
+<style>
+    .top-products-grid .top-product-card {
+        cursor: pointer !important;
+        text-decoration: none !important;
+        color: inherit !important;
+        transition: all 0.2s ease !important;
+    }
+    .top-products-grid .top-product-card:hover {
+        box-shadow: 0px 4px 14px 0px rgba(0, 0, 0, 0.08) !important;
+        border-color: #cbd5e1 !important;
+        text-decoration: none !important;
+    }
+</style>
+
     <div class="container">
         <h1 class="popular-categories-title" style="font-size: 28px !important;">Browse all categories</h1>
         <div class="sfwr_content">
@@ -100,53 +114,35 @@
                                 @foreach($subcat->top_businesses ?? [] as $business)
                                 @php
                                     $bizName = $business->translations->first()->name ?? $business->name ?? null;
+                                    $bizSlug = $business->translations->first()->slug ?? $business->slug ?? null;
                                 @endphp
                                 @if(!empty($bizName))
-                                <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background:#fdfdfd !important;">
-                                    <div class="d-flex align-items-center gap-2 mb-3">
-                                        <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                                            <x-business-logo :business="$business" :name="$bizName" />
-                                        </div>
-                                        <div class="top-product-info min-w-0">
-                                            <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px;">
-                                                {{ $bizName }}
-                                                <!-- <span style="font-size: 12px; color: #64748b; cursor: pointer;">♡</span> -->
-                                            </h6>
-                                            <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
-                                                <span class="fw-medium text-dark">{{ number_format($business->average_rating, 1) }}</span>
-                                                <div class="d-flex" style="color: #ffc107;">
-                                                    @php $rating = round($business->average_rating); @endphp
-                                                    @for($i = 1; $i <= 5; $i++)
-                                                        @if($i <= $rating)
-                                                            <i class="fas fa-star" style="margin-right:1px;"></i>
-                                                        @else
-                                                            <i class="far fa-star" style="margin-right:1px; color:#ffe896;"></i>
-                                                        @endif
-                                                    @endfor
-                                                </div>
-                                                <!-- <span class="fw-semibold text-dark">{{ number_format($business->average_rating, 1) }}</span> -->
-                                                <!-- <span>|</span> -->
-                                                <span class="fw-medium text-dark">({{ $business->active_reviews_count }})</span>
-                                                <!-- <span>{{ $business->active_reviews_count }} {{ $business->active_reviews_count == 1 ? 'review' : 'reviews' }}</span> -->
+                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bizSlug]) }}"
+                                   class="top-product-card d-flex align-items-center gap-2 p-3 text-decoration-none"
+                                   style="background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; text-decoration: none !important; transition: all 0.2s ease;">
+                                    <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                        <x-business-logo :business="$business" :name="$bizName" />
+                                    </div>
+                                    <div class="top-product-info min-w-0 flex-grow-1">
+                                        <h6 class="m-0 fw-bold d-flex align-items-center gap-1" style="font-size: 14px; color: #002347; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            {{ $bizName }}
+                                        </h6>
+                                        <div class="d-flex align-items-center gap-1 mt-1" style="font-size: 11px; color: #777;">
+                                            <span class="fw-medium text-dark">{{ number_format($business->average_rating, 1) }}</span>
+                                            <div class="d-flex" style="color: #ffc107;">
+                                                @php $rating = round($business->average_rating); @endphp
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    @if($i <= $rating)
+                                                        <i class="fas fa-star" style="margin-right:1px;"></i>
+                                                    @else
+                                                        <i class="far fa-star" style="margin-right:1px; color:#ffe896;"></i>
+                                                    @endif
+                                                @endfor
                                             </div>
+                                            <span class="fw-medium text-dark">({{ $business->active_reviews_count }})</span>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-2 w-100 mt-auto">
-                                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
-                                        class="btn-view-details btn py-1 px-2 fw-medium {{ !empty($business->is_affiliate) ? 'w-50' : 'w-100' }}">
-                                            {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
-                                        </a>
-                                        @if(!empty($business->is_affiliate))
-                                        <a href="{{ $business->getTrackedUrl() }}"
-                                           target="_blank"
-                                           rel="sponsored"
-                                           class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
-                                           style="border-radius: 30px; font-size: 11px; text-align: center; transition:unset !important;">
-                                            {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
-                                        </a>
-                                        @endif
-                                    </div>
-                                </div>
+                                </a>
                                 @endif
                                 @endforeach
                             </div>
