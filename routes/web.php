@@ -432,6 +432,20 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/learn-more-modal/store-update', [StaticContentController::class, 'modalstoreOrUpdate'])->name('modalstoreOrUpdate');
     Route::get('/admin-dashboard/learn-more-modal/delete/{id}', [StaticContentController::class, 'modaldestroy'])->name('modaldestroy');
 
+        // Meta Tags Management Routes
+    Route::prefix('admin-dashboard/meta-tags')->group(function () {
+        Route::get('/categories', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categories'])->name('admin.meta-tags.categories');
+        Route::post('/rules/update', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateRules'])->name('admin.meta-tags.rules.update');
+        Route::post('/categories/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryMeta'])->name('admin.meta-tags.categories.update-single');
+        Route::post('/categories/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryMeta'])->name('admin.meta-tags.categories.reset-single');
+        Route::post('/categories/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesMeta'])->name('admin.meta-tags.categories.update-bulk');
+
+        // Subcategory placeholders
+        Route::get('/businesses', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businesses'])->name('admin.meta-tags.businesses');
+        Route::get('/categories-faqs', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categoriesFaqs'])->name('admin.meta-tags.categories-faqs');
+        Route::get('/features', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'features'])->name('admin.meta-tags.features');
+    });
+
     // All Categories Page Content Route
     Route::get('/admin-dashboard/categories-page', [SiteContentController::class, 'categoriesPage'])->name('admin.categories-page');
     Route::post('/admin-dashboard/category-page-update', [SiteContentController::class, 'categoryPageContentUpdate'])->name('category-page-update');

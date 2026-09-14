@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Services\MetaTagService;
 use Illuminate\Support\Facades\Session;
 use App\Models\CategoryTranslation;
 use App\Models\SiteLanguages;
@@ -73,7 +74,8 @@ class CategoryController extends Controller
         ));
     }
      public function categoryDetail($lang_code, $slug, $page = null){
-       $lang_id = getCurrentLanguageID();
+       $matchedLang = Language::where('lang_code', $lang_code)->first();
+       $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
        $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
            $query->where('slug', $slug)->where('lang_id', $lang_id);
        })->orWhereHas('translations', function ($query) use ($slug) {
@@ -94,17 +96,9 @@ class CategoryController extends Controller
                ?? $category->categoryTranslations()->first();
        }
 
-       $metaTitle = !empty($catTrans?->meta_title)
-           ? $catTrans->meta_title
-           : ($catTrans?->name ?? 'Category Page');
-       $metaDescription = !empty($catTrans?->meta_description)
-           ? $catTrans->meta_description
-           : strip_tags($catTrans?->description ?? '');
-
-       if (function_exists('format_meta_text')) {
-           $metaTitle = format_meta_text($metaTitle, 'Category Page');
-           $metaDescription = format_meta_text($metaDescription);
-       }
+       $resolvedMeta = MetaTagService::resolveCategoryMeta($category, $lang_id);
+       $metaTitle = $resolvedMeta['title'];
+       $metaDescription = $resolvedMeta['description'];
 
        return view('User.category.category_detail', compact('slug', 'page', 'metaTitle', 'metaDescription'));
      }
@@ -114,7 +108,8 @@ class CategoryController extends Controller
            return redirect()->to('/' . $lang_code . '/' . $category_slug . '/' . $feature_slug, 301);
        }
 
-       $lang_id = getCurrentLanguageID();
+       $matchedLang = Language::where('lang_code', $lang_code)->first();
+       $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
        $category = Category::whereHas('translations', function ($query) use ($subcategory_slug, $lang_id) {
            $query->where('slug', $subcategory_slug)->where('lang_id', $lang_id);
        })->orWhereHas('translations', function ($query) use ($subcategory_slug) {
@@ -307,7 +302,8 @@ class CategoryController extends Controller
 
     public function categoryFaqs($locale, $slug)
     {
-        $lang_id = getCurrentLanguageID();
+        $matchedLang = Language::where('lang_code', $locale)->first();
+        $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
 
         $category = Category::with(['imageMedia', 'topRatedImageMedia', 'faqOverlayMedia'])->whereHas('categoryTranslations', function ($query) use ($slug, $lang_id) {
             $query->where('slug', $slug)->where('lang_id', $lang_id);

@@ -519,29 +519,14 @@
 
 
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="meta_title">Meta Title (Category Page)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="meta_title" name="meta_title"
-                                        value="{{ isset($category_data) ? ($category_data['meta_title'] ?? '') : old('meta_title') }}" 
-                                        placeholder="Enter SEO meta title for this category/subcategory page" />
+                            <div class="alert alert-primary bg-primary-dim border-0 d-flex align-items-center justify-content-between p-3">
+                                <div>
+                                    <strong class="d-block text-primary"><em class="icon ni ni-tags me-1"></em>SEO Meta Tags (Title & Description)</strong>
+                                    <span class="small text-muted">Category meta tags and automated character-limit fallbacks are now centrally managed in the <strong>Meta Tags &gt; Categories</strong> section.</span>
                                 </div>
-                                @error('meta_title')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="meta_description">Meta Description (Category Page)</label>
-                                <div class="form-control-wrap">
-                                    <textarea class="form-control" id="meta_description" name="meta_description" rows="3" 
-                                        placeholder="Enter SEO meta description for this category/subcategory page">{{ isset($category_data) ? ($category_data['meta_description'] ?? '') : old('meta_description') }}</textarea>
-                                </div>
-                                @error('meta_description')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
+                                <a href="{{ route('admin.meta-tags.categories') }}" target="_blank" class="btn btn-sm btn-primary ms-3 text-nowrap">
+                                    <em class="icon ni ni-external me-1"></em> Manage Meta Tags
+                                </a>
                             </div>
                         </div>
 

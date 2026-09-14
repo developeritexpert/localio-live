@@ -942,7 +942,8 @@ class ViewController extends Controller
 
     public function resolveSlug(Request $request, $locale, $slug)
     {
-        $lang_id = getCurrentLanguageID();
+        $matchedLang = Language::where('lang_code', $locale)->first();
+        $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
 
         // 1. Check if slug matches a Category or Subcategory
         $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
