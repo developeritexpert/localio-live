@@ -9,7 +9,6 @@
         margin: -6px -12px;
         border-radius: 10px;
         background-color: transparent;
-        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         text-decoration: none !important;
         color: inherit;
         width: fit-content;
@@ -207,7 +206,6 @@
         } */
     .automotive-card .blue-chkbox {
         bottom: 0 !important;
-        transition: all 0.3s ease;
         right: unset;
         left: -30px
     }
@@ -316,7 +314,6 @@
         border-radius: 10px;
         padding: 16px 20px;
         text-decoration: none;
-        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -337,7 +334,6 @@
         color: #1e293b !important;
         text-decoration: none !important;
         cursor: pointer !important;
-        transition: all 0.18s ease-in-out !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -360,24 +356,12 @@
         text-decoration: none !important;
         margin-left: 8px !important;
         cursor: pointer !important;
-        transition: color 0.15s ease !important;
     }
     .clear-features-link:hover {
         color: #0056b3 !important;
         text-decoration: underline !important;
     }
-    .view-all-category-link {
-        color: #007bff !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        text-decoration: underline !important;
-        cursor: pointer !important;
-        transition: color 0.15s ease !important;
-    }
-    .view-all-category-link:hover {
-        color: #0056b3 !important;
-        text-decoration: underline !important;
-    }
+
     .explore-subcat-card:hover h6 {
         color: #e56b46 !important;
     }
@@ -389,7 +373,6 @@
         font-size: 11px !important;
         font-weight: 500 !important;
         text-decoration: none !important;
-        transition: all 0.2s ease !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -410,7 +393,6 @@
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        transition: opacity 0.2s ease !important;
     }
     .btn-orng-pill:hover {
         opacity: 0.9 !important;
@@ -1635,7 +1617,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1654,7 +1636,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">

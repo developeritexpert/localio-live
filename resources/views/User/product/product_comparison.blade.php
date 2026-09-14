@@ -673,7 +673,7 @@
                 </div>
 
                 {{-- 1. TOP BUSINESS SUMMARY CARDS (Logo, Name, Stars, Count, and Visit Website button ONLY if affiliated) --}}
-                <div class="row g-4 mb-4">
+                <div class="row g-4 mb-4 d-none">
                     @foreach($businesses as $business)
                         @php
                             $activeReviews = $business->reviews->where('status', 'active');

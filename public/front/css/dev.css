@@ -1,4 +1,3 @@
-/* Developer specific CSS file (dev.css) */
 .grey_dark_bg {
     background: #f8fafc;
 }
@@ -14,10 +13,6 @@
     margin-bottom: 4px !important;
     color: #002347 !important;
 }
-
-/* .top-rated-heading-block {
-    margin-bottom: 15px;
-} */
 
 .auto-choice-btn .cta_outline {
     padding: 8px 16px !important;
@@ -72,10 +67,8 @@
     }
 
     .top-rated-heading-block {
-        /* margin-left: 27%; */
         margin-bottom: 24px;
         padding-bottom: 16px;
-        /* border-bottom: 2px solid #e8eef6; */
     }
 
     .top-rated-heading-block h1 {
@@ -113,11 +106,6 @@
     padding-bottom: 30px;
 }
 
-/* ==========================================================================
-   Product Comparison Page Styles (Header, Top Bar, Dynamic 2-4 Products Grid)
-   ========================================================================== */
-
-/* 1. Header Layout */
 .comparison-header-left {
     max-width: 74%;
     flex: 0 0 74%;
@@ -151,7 +139,6 @@
     border-radius: 8px;
 }
 
-/* 2. "Your Comparison" Top Bar */
 .your-comparison-wrapper {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -200,7 +187,7 @@
     color: #002347;
 }
 
-.your-comp-pill>* {
+.your-comp-pill > * {
     pointer-events: none;
 }
 
@@ -262,7 +249,8 @@
 }
 
 .add-products-btn:hover {
-    background-color: #033b74;
+    background-color: #287ae6;
+    border: 1px solid #287ae6;
     color: #ffffff;
 }
 
@@ -270,7 +258,6 @@
     color: #ffffff;
 }
 
-/* Add More Dropdown */
 .add-comp-dropdown {
     position: absolute;
     top: calc(100% + 8px);
@@ -400,7 +387,6 @@
     color: #ffffff;
 }
 
-/* 3. Main Product Comparison Matrix Layout: Adaptive for 2, 3, and 4 products */
 .pdc_box {
     display: flex !important;
     flex-direction: row !important;
@@ -412,7 +398,6 @@
     overflow: visible !important;
 }
 
-/* When 2 businesses */
 .pdc_box_count_2 .pdc_choice,
 .pdc_box:not(.pdc_box_count_3):not(.pdc_box_count_4) .pdc_choice {
     flex: 0 0 42% !important;
@@ -429,7 +414,6 @@
     justify-content: center !important;
 }
 
-/* When 3 businesses */
 .pdc_box_count_3 .pdc_choice {
     flex: 0 0 29% !important;
     max-width: 29% !important;
@@ -450,7 +434,6 @@
     font-size: 16px !important;
 }
 
-/* When 4 businesses */
 .pdc_box_count_4 .pdc_choice {
     flex: 0 0 22.5% !important;
     max-width: 22.5% !important;
@@ -471,7 +454,6 @@
     font-size: 14px !important;
 }
 
-/* Rating progress bars & labels inside pdc_choice for 3 or 4 products */
 .pdc_box_count_3 .pdc_choice .progress,
 .pdc_box_count_4 .pdc_choice .progress {
     max-width: 85px !important;
@@ -487,7 +469,6 @@
     font-size: 13px !important;
 }
 
-/* Mobile & Tablet responsiveness for pdc_box */
 @media (max-width: 991px) {
     .pdc_box {
         flex-direction: column !important;
@@ -514,7 +495,6 @@
     }
 }
 
-/* Alignment for Review Breakdown and "Recommended by users" row */
 .pdc_choice {
     display: flex !important;
     flex-direction: column !important;
@@ -537,7 +517,6 @@
 
 .review-criteria-list {
     flex: 1 1 auto !important;
-    /* max-height: 150px; */
 }
 
 .recommended-users-row {
@@ -573,10 +552,6 @@
     border-color: #cbd5e1 !important;
 }
 
-/* ==========================================================
-   Preview Images & Thumbnails (Amazon Style: Fixed Size, Never Stretched, Left Aligned)
-   ========================================================== */
-
 .business-preview-images {
     width: 100%;
 }
@@ -600,7 +575,6 @@
     border-radius: 8px;
 }
 
-/* Thumbnails row: fixed size like Amazon, aligned to left side */
 .business-preview-thumbnails {
     display: flex !important;
     flex-wrap: wrap !important;
@@ -656,7 +630,6 @@
     }
 }
 
-/* Business page (product_detail) thumbnail slider: fixed size, left-aligned, never stretched */
 .asan-slider.asan-slider-btm .slick-list.draggable .slick-track,
 .asan-slider.asan-slider-btm.slider-nav .slick-track {
     display: flex !important;
@@ -726,7 +699,6 @@
     background-color: #f8fafc !important;
 }
 
-/* Category Hero Overlay Images */
 .cat-hero-img-wrap {
     position: relative;
     display: inline-block;
@@ -774,9 +746,6 @@
     margin-top: 91px !important;
 }
 
-/* ==========================================================
-   Product Detail Main Image Slider & Preview (Identical to Category Page)
-   ========================================================== */
 .slider-for,
 .slider-for .slick-list,
 .slider-for .slick-track,
@@ -848,8 +817,16 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide,
-.is-asan-slider .slider-for .slick-list.draggable .slick-track .asan-slider-inr.slick-slide.slick-current,
+.is-asan-slider
+    .slider-for
+    .slick-list.draggable
+    .slick-track
+    .asan-slider-inr.slick-slide,
+.is-asan-slider
+    .slider-for
+    .slick-list.draggable
+    .slick-track
+    .asan-slider-inr.slick-slide.slick-current,
 .slider-for .slick-slide,
 .slider-for .slick-current,
 .slider-for .asan-slider-inr,
@@ -888,7 +865,6 @@ section.community-feedback-sec {
     background: #fdfdfd;
 }
 
-/* Country / Region Selection Modal Close Button */
 .close-country-menu {
     position: relative !important;
     background: none !important;
@@ -922,14 +898,9 @@ section.community-feedback-sec {
     max-height: 100% !important;
 }
 
-/* ==========================================================
-   Review Card User Rating Breakdown Dropdown Box
-   (Matches Filter by rating & Sidebar detailed rating design)
-   ========================================================== */
 .user-rating-dropdown-btn {
     display: inline-flex;
     align-items: center;
-    /* justify-content: center; */
     padding: 0;
     margin-left: 2px;
     background: transparent;
@@ -941,11 +912,6 @@ section.community-feedback-sec {
         color 0.15s ease,
         transform 0.15s ease;
 }
-
-/* .user-rating-dropdown-btn:hover,
-.user-rating-dropdown-btn[aria-expanded=true] {
-    color: #002347;
-} */
 
 .user-rating-dropdown-btn svg {
     transition: transform 0.2s ease;
@@ -967,7 +933,9 @@ section.community-feedback-sec {
 
 .user-rating-breakdown-wrapper:hover .user-rating-dropdown-btn svg,
 .user-rating-breakdown-wrapper.show .user-rating-dropdown-btn svg,
-.user-rating-breakdown-wrapper .user-rating-dropdown-btn[aria-expanded="true"] svg {
+.user-rating-breakdown-wrapper
+    .user-rating-dropdown-btn[aria-expanded="true"]
+    svg {
     transform: rotate(180deg);
 }
 
@@ -1053,25 +1021,21 @@ section.community-feedback-sec {
     flex-shrink: 0;
 }
 
-/* Explore Category Card Hover Shadow & Transitions */
 .explore-cat-card {
     transition: all 0.25s ease !important;
 }
 
 .explore-cat-card:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-    /* transform: translateY(-2px); */
     border-color: #cbd5e1 !important;
 }
 
-/* Feature Page Browsing & View All Link */
 .view-all-category-link {
     color: #002655 !important;
     font-size: 13px !important;
     font-weight: 500 !important;
-    text-decoration: underline !important;
+    text-decoration: none !important;
     cursor: pointer !important;
-    transition: color 0.15s ease !important;
 }
 
 .view-all-category-link:hover {
@@ -1079,7 +1043,6 @@ section.community-feedback-sec {
     text-decoration: underline !important;
 }
 
-/* Greek & Global Fallback Font Alignment */
 body,
 .footer-langs-container a,
 .ft-btm-rgt .select-menu .options li a {
@@ -1093,7 +1056,6 @@ body,
         sans-serif;
 }
 
-/* Specific Greek Language Font Balancing */
 .footer-langs-container a[href*="/el-gr"],
 .footer-langs-container a[href*="el-gr"],
 .ft-btm-rgt .select-menu .options li a[href*="el-gr"],
@@ -1110,9 +1072,6 @@ html[lang*="el"] body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ==========================================================
-   Mobile Quick Category Navigation Bar (Below Search Bar)
-   ========================================================== */
 @media (min-width: 992px) {
     .mobile-cat-nav-bar {
         display: none !important;
@@ -1181,7 +1140,6 @@ html[lang*="el"] body {
         opacity: 1;
     }
 
-    /* Mobile clearance for the taller header with search + quick nav bar */
     .business_faq_sec,
     .business_reviews_sec,
     .cat_main_page_sec,
@@ -1190,11 +1148,6 @@ html[lang*="el"] body {
     }
 }
 
-/* ==========================================================
-   Product Detail Preview Image Slider: Full Width & Amazon-Style Mobile Dots
-   ========================================================== */
-
-/* 1. Slider-for container: display block with 100% width so image fills the column */
 .slider-for,
 .asan-slider.slider-for,
 .business-main-preview {
@@ -1219,22 +1172,17 @@ html[lang*="el"] body {
     display: block !important;
 }
 
-/* 2. By default (website/desktop view), dots are hidden so desktop view is untouched */
 .slider-for .slick-dots {
     display: none !important;
 }
 
-/* 3. Mobile View: Hide thumbnails, full width edge-to-edge image, dots below image */
 @media (max-width: 991px) {
-
-    /* Hide the thumbnail preview images row on mobile */
     .asan-slider.asan-slider-btm,
     .asan-slider.asan-slider-btm.slider-nav,
     .business-preview-thumbnails {
         display: none !important;
     }
 
-    /* Reset left/right padding on mobile so preview image covers full width cleanly */
     .asan-slider.slider-for,
     .slider-for.business-main-preview {
         padding-left: 0 !important;
@@ -1258,7 +1206,6 @@ html[lang*="el"] body {
         display: block !important;
     }
 
-    /* Amazon-style clean pagination dots placed directly BELOW the image */
     .slider-for .slick-dots {
         display: flex !important;
         justify-content: center !important;
@@ -1305,29 +1252,22 @@ html[lang*="el"] body {
         -webkit-tap-highlight-color: transparent !important;
     }
 
-    /* Remove default slick pseudo-element font bullet */
     .slider-for .slick-dots li button:before {
         display: none !important;
         content: "" !important;
     }
 
-    /* Active dot indicator: dark and highlighted */
     .slider-for .slick-dots li.slick-active button {
         background-color: #002347 !important;
         transform: scale(1.25) !important;
     }
 
-    /* Hide dots container if only 1 dot exists */
     .slider-for .slick-dots:has(li:only-child),
     .slider-for .slick-dots li:only-child {
         display: none !important;
     }
 }
 
-
-
-
-/* new css for dicussion */
 button.post-action-btn.toggle-comments-btn:hover,
 button.post-action-btn.toggle-reply-btn:hover {
     background: #f1f5f9;
@@ -1353,7 +1293,9 @@ button.post-action-btn.toggle-reply-btn {
     cursor: pointer !important;
     appearance: none !important;
     -webkit-appearance: none !important;
-    transition: background-color 0.2s ease, color 0.2s ease !important;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease !important;
 }
 
 .comment-action-bar .toggle-reply-text {
@@ -1368,13 +1310,10 @@ button.post-action-btn.toggle-reply-btn {
     color: #0f172a;
 }
 
-/* ==========================================================================
-   COMMUNITY DISCUSSIONS & THREADED COMMENTS (NATIVE DESIGN SYSTEM INTEGRATION)
-   ========================================================================== */
-
-/* Discussion Composer & Cards */
 .discussion-item-card {
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    transition:
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .discussion-item-card:hover {
@@ -1390,8 +1329,6 @@ button.post-action-btn.toggle-reply-btn {
     border-color: #cbd5e1 !important;
 }
 
-
-/* Vote Sidebar (Desktop / Tablet) */
 .vote-sidebar {
     display: flex;
     flex-direction: column;
@@ -1411,7 +1348,10 @@ button.post-action-btn.toggle-reply-btn {
     justify-content: center;
     font-size: 12px;
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
     padding: 0;
     outline: none;
 }
@@ -1434,7 +1374,6 @@ button.post-action-btn.toggle-reply-btn {
     color: #ffffff !important;
 }
 
-/* Comment Vote Pill */
 .comment-vote-pill {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -1483,7 +1422,6 @@ button.post-action-btn.toggle-reply-btn {
     padding: 0 3px;
 }
 
-/* Comments Thread Container */
 .comments-thread-container {
     padding-top: 14px;
     border-top: 1px solid #f1f5f9;
@@ -1569,7 +1507,6 @@ button.post-action-btn.toggle-reply-btn {
     min-width: 0;
 }
 
-/* Comment Header & Typography */
 .comment-author-name {
     font-weight: 600;
     font-size: 13.5px;
@@ -1593,7 +1530,6 @@ button.post-action-btn.toggle-reply-btn {
     word-break: break-word;
 }
 
-/* Collapse Toggle Button */
 .comment-collapse-toggle-btn {
     background: transparent;
     border: none;
@@ -1605,7 +1541,9 @@ button.post-action-btn.toggle-reply-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.15s ease, background 0.15s ease;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
 }
 
 .comment-collapse-toggle-btn:hover {
@@ -1613,8 +1551,7 @@ button.post-action-btn.toggle-reply-btn {
     background: #e2e8f0;
 }
 
-/* Collapsed State */
-.reddit-comment-item.is-collapsed>.comment-thread-left .comment-thread-line {
+.reddit-comment-item.is-collapsed > .comment-thread-left .comment-thread-line {
     display: none;
 }
 
@@ -1632,19 +1569,24 @@ button.post-action-btn.toggle-reply-btn {
     background: #f1f5f9;
 }
 
-.reddit-comment-item.is-collapsed>.comment-content-body>.comment-collapsed-summary {
+.reddit-comment-item.is-collapsed
+    > .comment-content-body
+    > .comment-collapsed-summary {
     display: inline-flex !important;
 }
 
-.reddit-comment-item.is-collapsed>.comment-content-body>.comment-header,
-.reddit-comment-item.is-collapsed>.comment-content-body>.comment-text-content,
-.reddit-comment-item.is-collapsed>.comment-content-body>.comment-action-bar,
-.reddit-comment-item.is-collapsed>.comment-content-body>.reply-form-box,
-.reddit-comment-item.is-collapsed>.comment-content-body>.comment-replies-container {
+.reddit-comment-item.is-collapsed > .comment-content-body > .comment-header,
+.reddit-comment-item.is-collapsed
+    > .comment-content-body
+    > .comment-text-content,
+.reddit-comment-item.is-collapsed > .comment-content-body > .comment-action-bar,
+.reddit-comment-item.is-collapsed > .comment-content-body > .reply-form-box,
+.reddit-comment-item.is-collapsed
+    > .comment-content-body
+    > .comment-replies-container {
     display: none !important;
 }
 
-/* Mobile Responsiveness for Discussions */
 @media (max-width: 576px) {
     .reddit-comment-item.nested-comment-item {
         margin-left: -10px;
@@ -1655,7 +1597,6 @@ button.post-action-btn.toggle-reply-btn {
     }
 }
 
-/* Discussions Section on Product Detail */
 .preview-vote-sidebar {
     display: flex;
     flex-direction: column;
@@ -1673,7 +1614,9 @@ button.post-action-btn.toggle-reply-btn {
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    transition: color 0.2s ease, text-decoration 0.2s ease;
+    transition:
+        color 0.2s ease,
+        text-decoration 0.2s ease;
 }
 
 .view-discussion-link:hover {
@@ -1686,7 +1629,9 @@ button.post-action-btn.toggle-reply-btn {
     font-weight: 600;
     color: var(--color-dark-blue-text, #002347);
     text-decoration: none;
-    transition: color 0.2s ease, text-decoration 0.2s ease;
+    transition:
+        color 0.2s ease,
+        text-decoration 0.2s ease;
 }
 
 .see-all-discussions-link:hover {
@@ -1716,9 +1661,6 @@ button.post-action-btn.toggle-reply-btn {
     color: #06498b !important;
 }
 
-/* ==========================================================
-   STICKY COMPARISON BANNER (X vs Y PAGE)
-   ========================================================== */
 .sticky-comparison-bar {
     position: fixed;
     top: 0;
@@ -1732,7 +1674,9 @@ button.post-action-btn.toggle-reply-btn {
     transform: translateY(-100%);
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    transition:
+        transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.2s ease;
 }
 
 .sticky-comparison-bar.is-visible {
@@ -1925,7 +1869,6 @@ button.post-action-btn.toggle-reply-btn {
     text-decoration: none;
 }
 
-/* Adjustments for 3 items */
 .sticky-comparison-bar.items-count-3 .sticky-comp-col {
     padding: 8px 16px;
     gap: 10px;
@@ -1944,7 +1887,6 @@ button.post-action-btn.toggle-reply-btn {
     font-size: 12px;
 }
 
-/* Adjustments for 4 items */
 .sticky-comparison-bar.items-count-4 .sticky-comp-col {
     padding: 8px 10px;
     gap: 8px;
@@ -1963,7 +1905,6 @@ button.post-action-btn.toggle-reply-btn {
     font-size: 11.5px;
 }
 
-/* Responsive styles */
 @media (max-width: 991px) {
     .sticky-comp-row {
         overflow-x: auto;
@@ -2002,11 +1943,13 @@ button.post-action-btn.toggle-reply-btn {
         padding: 4px 8px;
         font-size: 11px;
     }
+    .business_faq_sec,
+    .business_reviews_sec,
+    .cat_main_page_sec {
+        margin-top: 110px !important;
+    }
 }
 
-/* ==========================================================
-   Country / Region Selection Modal (Bottom-Sheet Modal)
-   ========================================================== */
 .country-modal-backdrop {
     display: none;
     position: fixed !important;
