@@ -239,7 +239,7 @@
                     <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                         <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 28px; height: 28px;">
                     </div>
-                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions about {{ $bName }}</h3>
+                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions about {{ $bName }}.</h3>
                     <p class="text-muted mb-3 d-none" style="font-size: 14px;">Be the first to start a conversation or ask a question about {{ $bName }}!</p>
                     <button type="button" class="blue-btn btn btn-primary px-4 py-2 fw-semibold" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 8px; font-size: 13.5px;">
                         <i class="fas fa-plus me-1"></i> Start a discussion 
