@@ -2158,7 +2158,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     </div>
                                 </div>
                                 @endif
-                            </div>
+                            <!-- </div> -->
                             @endif
                             @php
                             $pros = collect();
