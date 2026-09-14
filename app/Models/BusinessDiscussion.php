@@ -13,6 +13,7 @@ class BusinessDiscussion extends Model
 
     protected $fillable = [
         'business_id',
+        'category_id',
         'user_id',
         'author_name',
         'author_title',
@@ -39,6 +40,11 @@ class BusinessDiscussion extends Model
     public function business()
     {
         return $this->belongsTo(Business::class, 'business_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function user()

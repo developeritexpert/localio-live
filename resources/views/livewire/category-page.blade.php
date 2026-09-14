@@ -2424,6 +2424,19 @@
         </script>
         @endif
 
+        <!-- 6. Category Community Discussions Section -->
+        @php
+            $catTransForDisc = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catDiscName = $catTransForDisc->name ?? $category->name ?? 'Category';
+        @endphp
+        <section class="category-discussions-sec py-5" id="categoryDiscussionsSection" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <x-community-discussion :category="$category" :bName="$catDiscName" />
+            </div>
+        </section>
+
         <section class="subs_sec light ">
             {{-- <div class="container">
                 <div class="subs_content">

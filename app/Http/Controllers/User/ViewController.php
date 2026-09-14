@@ -712,6 +712,9 @@ class ViewController extends Controller
             if ($second_segment === $expectedFaqSlug || $second_segment === 'faqs' || $second_segment === 'faq') {
                 return app(\App\Http\Controllers\User\CategoryController::class)->categoryFaqs($locale, $business_slug);
             }
+            if ($second_segment === $expectedDiscussionsSlug || $second_segment === 'discussions') {
+                return $this->categoryDiscussions($request, $locale, $business_slug, $category);
+            }
             if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
                 abort(404);
             }
@@ -1201,6 +1204,72 @@ class ViewController extends Controller
         ));
     }
 
+    public function categoryDiscussions(Request $request, $locale, $category_slug, $category = null)
+    {
+        $lang_id = getCurrentLanguageID();
+        if (!$category) {
+            $category = Category::whereHas('translations', function ($query) use ($category_slug, $lang_id) {
+                $query->where('slug', $category_slug)->where('lang_id', $lang_id);
+            })->first();
+
+            if (!$category) {
+                $category = Category::whereHas('translations', function ($query) use ($category_slug) {
+                    $query->where('slug', $category_slug);
+                })->first();
+            }
+        }
+
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+
+        $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+            ? $category->translations->first() 
+            : ($category->translations ?? $category->translation);
+        $catName = $catTrans->name ?? $category->name ?? 'Category';
+
+        $query = BusinessDiscussion::where('category_id', $category->id)
+            ->where('status', 'active')
+            ->with([
+                'user.country',
+                'comments' => fn($q) => $q->whereNull('parent_id')
+                    ->orderByDesc('is_pinned')
+                    ->orderBy('created_at', 'asc')
+                    ->with(['user', 'replies.user', 'replies.replies.user'])
+            ]);
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        $query->orderByDesc('is_pinned');
+
+        $sort = $request->get('sort', 'popular');
+        if ($sort === 'recent') {
+            $query->latest();
+        } elseif ($sort === 'commented') {
+            $query->orderByDesc('comments_count')->latest();
+        } else {
+            $query->orderByRaw('(upvotes_count - downvotes_count) DESC')->latest();
+        }
+
+        $totalDiscussionsCount = (clone $query)->count();
+        $discussions = $query->paginate(10);
+
+        return view('User.category.category_discussions', compact(
+            'category',
+            'catTrans',
+            'catName',
+            'discussions',
+            'totalDiscussionsCount',
+            'sort'
+        ));
+    }
+
     public function storeDiscussion(Request $request)
     {
         if (!auth()->check()) {
@@ -1211,7 +1280,8 @@ class ViewController extends Controller
         }
 
         $request->validate([
-            'business_id' => 'required|exists:businesses,id',
+            'business_id' => 'nullable|required_without:category_id|exists:businesses,id',
+            'category_id' => 'nullable|required_without:business_id|exists:categories,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'category' => 'nullable|string|max:50',
@@ -1222,6 +1292,7 @@ class ViewController extends Controller
 
         $discussion = BusinessDiscussion::create([
             'business_id' => $request->business_id,
+            'category_id' => $request->category_id,
             'user_id' => $user->id,
             'author_name' => $user->displayName(),
             'author_title' => $user->job_title ?: 'Community Member',

@@ -1,16 +1,34 @@
-@props(['business', 'bName' => null, 'bTranslation' => null])
+@props(['business' => null, 'category' => null, 'bName' => null, 'bTranslation' => null])
 
 @php
-    $bTranslation = $bTranslation ?? ($business->translations->firstWhere('language_id', getCurrentLanguageID()) ?? $business->translations->first());
-    $bName = $bName ?? ($bTranslation->title ?? $business->business_name ?? '');
-    $bName = $bTranslation->name ?? 'Business';
-    $discList = $business->discussions()->with(['user.country'])->take(4)->get();
-    $totalDiscs = $business->discussions()->count();
-    $discIds = $business->discussions()->pluck('id');
-    $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
-    $activeTodayDiscs = \App\Models\BusinessDiscussion::where('business_id', $business->id)->where('updated_at', '>=', now()->startOfDay())->count();
-    $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
-    $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+    if ($category) {
+        $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection
+            ? $category->translations->first()
+            : ($category->translations ?? $category->translation);
+        $bName = $bName ?? ($catTrans->name ?? $category->name ?? 'Category');
+        $allDiscsQuery = $category->discussions()->with(['user.country']);
+        $discList = (clone $allDiscsQuery)->take(4)->get();
+        $totalDiscs = (clone $allDiscsQuery)->count();
+        $discIds = (clone $allDiscsQuery)->pluck('id');
+        $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('category_id', $category->id)->where('updated_at', '>=', now()->startOfDay())->count();
+        $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+        $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+        $seeAllUrl = url('/' . app()->getLocale() . '/' . ($catTrans->slug ?? $category->slug ?? '') . '/discussions');
+    } else {
+        $bTranslation = $bTranslation ?? ($business->translations->firstWhere('language_id', getCurrentLanguageID()) ?? $business->translations->first());
+        $bName = $bName ?? ($bTranslation->title ?? $business->business_name ?? '');
+        $bName = $bTranslation->name ?? 'Business';
+        $allDiscsQuery = $business->discussions()->with(['user.country']);
+        $discList = (clone $allDiscsQuery)->take(4)->get();
+        $totalDiscs = (clone $allDiscsQuery)->count();
+        $discIds = (clone $allDiscsQuery)->pluck('id');
+        $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+        $activeTodayDiscs = \App\Models\BusinessDiscussion::where('business_id', $business->id)->where('updated_at', '>=', now()->startOfDay())->count();
+        $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+        $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
+        $seeAllUrl = route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]);
+    }
 @endphp
 
 <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px; color: #1e3050; line-height: 1.3;">
@@ -69,7 +87,7 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0 d-none">
-            <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="view-discussion-link">
+            <a href="{{ $seeAllUrl }}" class="view-discussion-link">
                 View all discussions
             </a>
         </div>
@@ -176,7 +194,7 @@
 
                             <!-- Discussion Title matching review headline style -->
                             <h3 class="discussion-title" style="font-size: 18px; font-weight: 700; color: #1e3050; margin: 12px 0 8px; line-height: 1.35;">
-                                <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}#discussion-{{ $pDisc->id }}" class="discussion-title-link" style="color: inherit; text-decoration: none;">
+                                <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="discussion-title-link" style="color: inherit; text-decoration: none;">
                                     {{ $pDisc->title }}
                                 </a>
                             </h3>
@@ -187,7 +205,7 @@
 
                             <!-- Comments Count with discussion svg icon (no underline) -->
                             <div class="mt-2 d-flex align-items-center gap-3" style="font-size: 12.5px; color: #64748b; font-weight: 600;">
-                                <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}#discussion-{{ $pDisc->id }}" class="text-decoration-none d-inline-flex align-items-center text-muted discussion-comment-count-link" style="text-decoration: none !important;">
+                                <a href="{{ $seeAllUrl }}#discussion-{{ $pDisc->id }}" class="text-decoration-none d-inline-flex align-items-center text-muted discussion-comment-count-link" style="text-decoration: none !important;">
                                     <svg viewBox="0 0 39 36" width="15" height="15" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="vertical-align: -2px; margin-right: 5px;">
                                         <path d="M5.01672 2.63798H33.965C35.2962 2.63798 36.3352 3.66561 36.3352 4.99009V24.0121C36.3352 25.3366 35.2962 26.3665 33.965 26.3665H7.55691C7.24307 26.3665 6.94339 26.5024 6.74002 26.7415L2.64931 31.5245V4.98953C2.64874 3.66561 3.68771 2.63798 5.01672 2.63798ZM5.01672 0.500567C2.53714 0.500567 0.5 2.52071 0.5 4.99066V34.4289C0.5 35.4237 1.74347 35.8786 2.39212 35.1218L8.05034 28.5028H33.9644C36.4474 28.5028 38.4805 26.4837 38.4805 24.0127V4.99009C38.4805 2.52071 36.4474 0.5 33.9644 0.5H5.01672V0.500567Z"/>
                                         <path d="M7.43411 10.6329C6.83305 10.625 6.34473 11.1042 6.34473 11.6996C6.34473 12.2973 6.83362 12.7771 7.43411 12.7686H31.5478C32.1455 12.7777 32.6372 12.2973 32.6372 11.6996C32.6372 11.1042 32.1455 10.6255 31.5478 10.6329H7.43411Z"/>
@@ -354,7 +372,7 @@
 
 <!-- Footer Link -->
 <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
-    <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="see-all-discussions-link">
+    <a href="{{ $seeAllUrl }}" class="see-all-discussions-link">
         View all discussions  {{ $bName }}
     </a>
 </div>
@@ -371,7 +389,11 @@
             </div>
             <form action="{{ route('business.discussion.store') }}" method="POST">
                 @csrf
-                <input type="hidden" name="business_id" value="{{ $business->id }}">
+                @if($category)
+                    <input type="hidden" name="category_id" value="{{ $category->id }}">
+                @elseif($business)
+                    <input type="hidden" name="business_id" value="{{ $business->id }}">
+                @endif
                 <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">Title / Question <span class="text-danger">*</span></label>
