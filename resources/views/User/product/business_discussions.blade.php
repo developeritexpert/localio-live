@@ -11,6 +11,13 @@
     $parentCatName = $parentCatTrans->name ?? '';
     $parentCatSlug = $parentCatTrans->slug ?? $business->category->parent->slug ?? null;
     $subHeadline = 'Ask questions, share experiences, exchange tips, and discuss ' . $bName . ' with other users.';
+
+    $totalDiscs = $totalDiscussionsCount ?? $business->discussions()->count();
+    $discIds = $business->discussions()->pluck('id');
+    $totalComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->count();
+    $activeTodayDiscs = \App\Models\BusinessDiscussion::where('business_id', $business->id)->where('updated_at', '>=', now()->startOfDay())->count();
+    $activeTodayComments = \App\Models\BusinessDiscussionComment::whereIn('business_discussion_id', $discIds)->where('created_at', '>=', now()->startOfDay())->count();
+    $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
 @endphp
 
 @section('meta_title', format_meta_text($bName . ' Community Discussions & Q&A'))
@@ -96,85 +103,40 @@
         </div>
 
 
-        <!-- Main Heading -->
+        <!-- Main Heading (with Business Logo and Visit Website Button) -->
         <div class="top-rated-heading-block">
-            <div class="row align-items-start">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-md-8 col-12 text-start">
+                    <div class="top_head d-flex align-items-center gap-3">
+                        <!-- Business Logo -->
+                        <div class="top-product-logo">
+                            <x-business-logo :business="$business" :name="$bName" />
+                        </div>
+                        <div>
+                            <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1e3050; line-height: 1.2;">
+                                    {{ $bName }} Community Discussions
+                                </h1>
+                            </div>
 
-                <div class="col-md-8 text-start">
-
-                    <h1>
-                        {{ $bName }} Community Discussions
-                    </h1>
-
-                    <p class="text-meta d-none">
-                        Last updated {{ now()->subDay()->format('F j, Y') }}
-                    </p>
-
-                    <p style="margin-bottom: 0;">
-                        {!! $subHeadline !!}
-                    </p>
-
-                </div>
-
-
-                <!-- Right Side Card -->
-                <div class="col-md-4 mt-4 mt-md-0 text-start">
-
-                    <div class="verified-insights-card"
-                         style="
-                            background-color: #f8fafc;
-                            border-radius: 8px;
-                            padding: 16px;
-                            border: 1px solid #e2e8f0;
-                            text-align: left;
-                         ">
-
-                        <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-
-                            <p style="
-                                margin: 0;
-                                font-weight: 600;
-                                color:#002347;
-                                font-size: 16px;
-                            ">
-                                 Join the conversation 
+                            <p class="text-meta d-none">
+                                Last updated {{ now()->subDay()->format('F j, Y') }}
                             </p>
 
-                            <img src="{{ asset('front/img/top_rated_img.png') }}"
-                                 alt="Community Discussions"
-                                 style="
-                                    height: 30px;
-                                    width: auto;
-                                    object-fit: contain;
-                                 ">
-
+                            <p style="margin-bottom: 0; font-size: 16px; color: #475569; margin-top: 4px;">
+                                {!! $subHeadline !!}
+                            </p>
                         </div>
-
-                        <p style="margin-bottom: 8px;">
-                           Connect with other Crimson Leaf Café users to ask questions, share experiences, and exchange useful tips. 
-                        </p>
-
-                        <a 
-                                class="learn_mre_btn"
-                                style="font-size: 13px; color: #002347; font-weight: 600; text-decoration: none; cursor:pointer"
-                                @if(auth()->check())
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#newDiscussionModal"
-                                @else
-                                    onclick="openLoginModal()"
-                                @endif
-                                style="
-                                    border-radius: 8px;
-                                    font-size: 13px;
-                                ">
-                            <i class="fas fa-plus me-1"></i>
-                            Start Discussion
-                                </a>
-
                     </div>
-
                 </div>
 
+                @if($business->getTrackedUrl())
+                <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
+                    <a href="{{ $business->getTrackedUrl() }}" target="_blank" rel="sponsored" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border-radius: 8px;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                        {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
+                    </a>
+                </div>
+                @endif
             </div>
         </div>
 
@@ -227,6 +189,23 @@
                         </select>
                     </div>
                 </form>
+            </div>
+
+            <!-- Join the Conversation Header Block -->
+            <div class="mb-3 pt-2">
+                <h2 style="font-size: 20px; font-weight: 700; color: #002347; margin-bottom: 6px; line-height: 1.3;">
+                    Join the conversation
+                </h2>
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 8px;">
+                    Connect with other {{ $bName }} users to ask questions, share experiences, and exchange useful tips.
+                </p>
+                <div class="d-flex align-items-center gap-2" style="font-size: 13.5px; color: #475569; font-weight: 500;">
+                    <span><strong>{{ number_format($totalDiscs) }}</strong> {{ $totalDiscs == 1 ? 'discussion' : 'discussions' }}</span>
+                    <span>&bull;</span>
+                    <span><strong>{{ number_format($totalComments) }}</strong> {{ $totalComments == 1 ? 'comment' : 'comments' }}</span>
+                    <span>&bull;</span>
+                    <span><strong>{{ number_format($totalActiveToday) }}</strong> active today</span>
+                </div>
             </div>
 
             <!-- Discussions List Container -->
@@ -461,6 +440,49 @@
                         <i class="fas fa-plus me-1"></i> Start New Discussion
                     </button>
                 </div> -->
+
+                <!-- Join the Conversation White Box -->
+                <div class="boxshadow_border bg-white p-4 mb-4"
+                     style="
+                        border-radius: 16px;
+                        border: 1px solid #eef2f6;
+                        text-align: left;
+                     ">
+                    <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
+                        <p style="
+                            margin: 0;
+                            font-weight: 700;
+                            color:#002347;
+                            font-size: 17px;
+                        ">
+                            Join the conversation 
+                        </p>
+
+                        <img src="{{ asset('front/img/top_rated_img.png') }}"
+                             alt="Community Discussions"
+                             style="
+                                height: 32px;
+                                width: auto;
+                                object-fit: contain;
+                             ">
+                    </div>
+
+                    <p style="margin-bottom: 14px; font-size: 13.5px; color: #64748b; line-height: 1.55;">
+                        Connect with other {{ $bName }} users to ask questions, share experiences, and exchange useful tips. 
+                    </p>
+
+                    <a class="learn_mre_btn"
+                       style="font-size: 13.5px; color: #002347; font-weight: 700; text-decoration: none; cursor:pointer; display: inline-flex; align-items: center; gap: 6px;"
+                       @if(auth()->check())
+                           data-bs-toggle="modal"
+                           data-bs-target="#newDiscussionModal"
+                       @else
+                           onclick="openLoginModal()"
+                       @endif>
+                        <i class="fas fa-plus" style="font-size: 12px;"></i>
+                        Start Discussion
+                    </a>
+                </div>
 
                 <!-- More About Business Component -->
                 <x-more-about-business :business="$business" />
