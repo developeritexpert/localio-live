@@ -1136,13 +1136,22 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                                    <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
-                                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
-                                                                        <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
-                                                                    </h3>
-                                                                    <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
-                                                                </div>
+                                                                @php
+                                                                    $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
+                                                                @endphp
+                                                                @if ($hasAltPrice)
+                                                                    <div class="start-from p_top_btm_sftwre pt-3 pb-3">
+                                                                        <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                                        <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
+                                                                            <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
+                                                                        </h3>
+                                                                        @if(!empty($altAdditionalInfo) && !in_array(strtoupper(trim((string)$altAdditionalInfo)), ['NA', 'N/A', 'NULL']))
+                                                                            <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
+                                                                        @elseif(!empty($altBusinessPrice['time_unit']) && !in_array(strtolower($altBusinessPrice['time_unit']), ['one_time', 'na', 'n/a', 'null']))
+                                                                            <small class="text-muted" style="font-size: 12px;">per {{ strtolower($altBusinessPrice['time_unit']) }}</small>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
 
                                                                 <div class="sftwre-alt-btn pt-2">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
@@ -2100,6 +2109,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
 )
     <p class="starting-price-text">
         {{ $additional_info }}
+    </p>
+@elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
+    <p class="starting-price-text">
+        per {{ strtolower($timeUnit) }}
     </p>
 @endif
 

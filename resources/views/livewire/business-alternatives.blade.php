@@ -274,7 +274,7 @@ foreach ($altCriteria as $criterion) {
 </div>
 
                                                                 @php
-                                                                    $hasAltPrice = !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
+                                                                    $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
                                                                 @endphp
                                                                 @if ($hasAltPrice)
                                                                     <div class="start-from p_top_btm_sftwre pt-3 pb-3">
@@ -284,6 +284,8 @@ foreach ($altCriteria as $criterion) {
                                                                         </h3>
                                                                         @if(!empty($altAdditionalInfo) && !in_array(strtoupper(trim((string)$altAdditionalInfo)), ['NA', 'N/A', 'NULL']))
                                                                             <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
+                                                                        @elseif(!empty($altBusinessPrice['time_unit']) && !in_array(strtolower($altBusinessPrice['time_unit']), ['one_time', 'na', 'n/a', 'null']))
+                                                                            <small class="text-muted" style="font-size: 12px;">per {{ strtolower($altBusinessPrice['time_unit']) }}</small>
                                                                         @endif
                                                                     </div>
                                                                 @endif
@@ -1165,6 +1167,10 @@ foreach ($altCriteria as $criterion) {
         )
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
+            </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
             </p>
         @endif
 

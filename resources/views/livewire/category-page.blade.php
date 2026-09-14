@@ -1278,6 +1278,10 @@
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
             </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
+            </p>
         @endif
 
     </div>
@@ -1682,9 +1686,11 @@
                                             {{ $recommendPercent }}%
                                         </td>
                                         <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
-                                            @if($bizStartingPrice && $bizAmount !== null)
+                                            @if($bizStartingPrice && $bizAmount !== null && !empty($biz->is_affiliate))
                                                 <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
-                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                @if(!empty($bizStartingPrice['additional_info']) && !in_array(strtoupper(trim((string)$bizStartingPrice['additional_info'])), ['NA', 'N/A', 'NULL']))
+                                                    <span style="font-size: 12px; color: #5b6b7a;"> {{ $bizStartingPrice['additional_info'] }}</span>
+                                                @elseif(!empty($bizTimeUnit) && !in_array($bizTimeUnit, ['one_time', 'na', 'n/a', 'null']))
                                                     <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
                                                 @endif
                                             @else

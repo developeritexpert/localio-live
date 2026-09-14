@@ -970,6 +970,10 @@
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
             </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
+            </p>
         @endif
 
     </div>

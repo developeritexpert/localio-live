@@ -758,7 +758,11 @@
                             <div class="feture_box str_prc_box p-4 bg-white boxshadow_border" style="border-radius: 16px; border: 1px solid #e2e8f0;">
                                 <p class="starting-price-title">Starting price</p>
                                 <p class="starting-price-value">{{ $currency }}{{ $startingPrice }}</p>
-                                <p class="starting-price-text">Flat Rate, Per {{ ucfirst($timeUnit) }}</p>
+                                @if(!empty($additional_info) && !in_array(strtoupper(trim((string)$additional_info)), ['NA', 'N/A', 'NULL']))
+                                    <p class="starting-price-text">{{ $additional_info }}</p>
+                                @elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
+                                    <p class="starting-price-text">per {{ strtolower($timeUnit) }}</p>
+                                @endif
                                 <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $bTranslation->slug ?? '']) }}#section6" class="starting-price-link" >
                                     View pricing
                                 </a>

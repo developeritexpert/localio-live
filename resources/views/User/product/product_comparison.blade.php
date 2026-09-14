@@ -620,7 +620,11 @@
                                                     <p class="starting-price-title">Starting price</p>
                                                     @if($startingPrice)
                                                         <p class="starting-price-value">{{ $currency }}{{ $amountStr ?? 'Free' }}</p>
-                                                        <p class="starting-price-text">Flat Rate, Per {{ $timeUnit }}</p>
+                                                        @if(!empty($startingPrice['additional_info']) && !in_array(strtoupper(trim((string)$startingPrice['additional_info'])), ['NA', 'N/A', 'NULL']))
+                                                            <p class="starting-price-text">{{ $startingPrice['additional_info'] }}</p>
+                                                        @elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
+                                                            <p class="starting-price-text">per {{ strtolower($timeUnit) }}</p>
+                                                        @endif
                                                     @else
                                                         <p class="starting-price-value">Contact</p>
                                                         <p class="starting-price-text">Custom subscription</p>
