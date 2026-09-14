@@ -291,11 +291,11 @@
                                                 <span class="nk-menu-text">Contact</span>
                                             </a>
                                         </li>
-                                        {{-- <li class="nk-menu-item">
-                                            <a href="{{ url('/admin-dashboard/categories-page') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Categories</span>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.categories-page') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.categories-page') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">All Categories Page</span>
                                             </a>
-                                        </li> --}}
+                                        </li>
                                         <li class="nk-menu-item">
                                             <a href="{{ route('admin.page-help-center') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Help Center</span>

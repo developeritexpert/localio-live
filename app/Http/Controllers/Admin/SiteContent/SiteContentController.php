@@ -10,9 +10,11 @@ use App\Models\FooterContent;
 use App\Models\HomeContent;
 use App\Models\HomeContentMedia;
 use App\Models\CategoryPageContent;
+use App\Models\Category;
+use App\Models\CategoryTranslation;
+use App\Models\Language;
 use App\Models\TopProductContent;
 use App\Models\SiteLanguages;
-use App\Models\Language;
 use Illuminate\Support\Facades\Redis;
 use Session;
 
@@ -612,13 +614,50 @@ if (!$headerLogo) {
         }
     }
 
-    public function categoriesPage()
+    public function updateSingleCategoryAllDesc(Request $request)
     {
-        $lang = getCurrentLocale();
-        $lang_id = getCurrentLanguageID();
-        if (session()->has('lang_code')) {
-            $lang = session()->get('lang_code');
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'lang_id' => 'required|integer',
+            'description' => 'nullable|string',
+        ]);
+
+        $catId = $request->input('category_id');
+        $langId = $request->input('lang_id');
+        $desc = $request->input('description');
+
+        $catTrans = CategoryTranslation::where('category_id', $catId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($catTrans) {
+            $catTrans->update([
+                'all_categories_description' => $desc,
+            ]);
+        } else {
+            $engTrans = CategoryTranslation::where('category_id', $catId)->where('lang_id', 1)->first();
+            CategoryTranslation::create([
+                'category_id' => $catId,
+                'lang_id' => $langId,
+                'name' => $engTrans->name ?? ('Category ' . $catId),
+                'slug' => $engTrans->slug ?? ('category-' . $catId),
+                'all_categories_description' => $desc,
+            ]);
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Description updated successfully.'
+        ]);
+    }
+
+    public function categoriesPage(Request $request)
+    {
+        $lang_id = $request->get('lang_id', getCurrentLanguageID());
+        $lang = Language::where('id', $lang_id)->value('lang_code') ?? getCurrentLocale();
+        session()->put('lang_id', $lang_id);
+        session()->put('lang_code', $lang);
+
         $categoryPageContents = CategoryPageContent::where('lang_id', $lang_id)->get();
         if ($categoryPageContents->isEmpty()) {
             $englishCategoryPageContents = CategoryPageContent::where('lang_id', 1)->get();
@@ -634,7 +673,25 @@ if (!$headerLogo) {
             }
             $categoryPageContents = CategoryPageContent::where('lang_id', $lang_id)->get();
         }
-        return view('Admin.site-content.categories_page', compact('categoryPageContents'));
+
+        // Fetch parent categories with subcategories and translations for active language
+        $parentCategories = Category::onlyParents()
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'subCategories' => function($q) use ($lang_id) {
+                    $q->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
+                }
+            ])
+            ->get();
+
+        $languages = Language::all();
+
+        return view('Admin.site-content.categories_page', compact(
+            'categoryPageContents',
+            'parentCategories',
+            'lang_id',
+            'languages'
+        ));
     }
     public function categoryPageContentUpdate(Request $request)
     {
@@ -649,6 +706,8 @@ if (!$headerLogo) {
             'country1',
             'country2'
         ];
+
+        $lang_id = $request->lang_id ?? getCurrentLanguageID();
 
         foreach ($textFields as $field) {
             if ($request->has($field)) {
@@ -665,14 +724,39 @@ if (!$headerLogo) {
                         CategoryPageContent::create([
                             'meta_key' => $field,
                             'meta_value' => $val ?? '',
-                            'lang_id' => $request->lang_id ?? getCurrentLanguageID(),
+                            'lang_id' => $lang_id,
                             'type' => 'text'
                         ]);
                     }
                 }
             }
         }
-        return redirect()->back()->with('success', 'Category content updated successfully.');
+
+        // Update all_categories_description for each category
+        if ($request->has('all_categories_description')) {
+            foreach ($request->input('all_categories_description') as $catId => $desc) {
+                $catTrans = CategoryTranslation::where('category_id', $catId)
+                    ->where('lang_id', $lang_id)
+                    ->first();
+
+                if ($catTrans) {
+                    $catTrans->update([
+                        'all_categories_description' => $desc,
+                    ]);
+                } else {
+                    $engTrans = CategoryTranslation::where('category_id', $catId)->where('lang_id', 1)->first();
+                    CategoryTranslation::create([
+                        'category_id' => $catId,
+                        'lang_id' => $lang_id,
+                        'name' => $engTrans->name ?? ('Category ' . $catId),
+                        'slug' => $engTrans->slug ?? ('category-' . $catId),
+                        'all_categories_description' => $desc,
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'All Categories page content updated successfully.');
     }
     private function uploadImagesCategoryPage(Request $request, $imageField)
     {

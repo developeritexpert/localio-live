@@ -432,6 +432,11 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/learn-more-modal/store-update', [StaticContentController::class, 'modalstoreOrUpdate'])->name('modalstoreOrUpdate');
     Route::get('/admin-dashboard/learn-more-modal/delete/{id}', [StaticContentController::class, 'modaldestroy'])->name('modaldestroy');
 
+    // All Categories Page Content Route
+    Route::get('/admin-dashboard/categories-page', [SiteContentController::class, 'categoriesPage'])->name('admin.categories-page');
+    Route::post('/admin-dashboard/category-page-update', [SiteContentController::class, 'categoryPageContentUpdate'])->name('category-page-update');
+    Route::post('/admin-dashboard/category-all-categories-desc-update', [SiteContentController::class, 'updateSingleCategoryAllDesc'])->name('admin.category-all-desc.update');
+
     // Top Product Page Content Route
     Route::get('/admin-dashboard/top-product-page', [SiteContentController::class, 'topProductPageContent'])->name('top-product-page-content');
     Route::post('/admin-dashboard/product-page-update', [SiteContentController::class, 'topProductPageUpdate'])->name('product-page-update');

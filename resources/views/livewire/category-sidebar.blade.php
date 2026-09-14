@@ -89,7 +89,13 @@
                             }
 
                             $descText = '';
-                            if (isset($subcat->translations) && is_object($subcat->translations) && !empty($subcat->translations->description)) {
+                            if (isset($subcat->translations) && is_object($subcat->translations) && !empty($subcat->translations->all_categories_description)) {
+                                $descText = $subcat->translations->all_categories_description;
+                            } elseif (isset($subcat->translations) && $subcat->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcat->translations->isNotEmpty() && !empty($subcat->translations->first()->all_categories_description)) {
+                                $descText = $subcat->translations->first()->all_categories_description;
+                            } elseif (method_exists($subcat, 'translation') && $subcat->translation && !empty($subcat->translation->all_categories_description)) {
+                                $descText = $subcat->translation->all_categories_description;
+                            } elseif (isset($subcat->translations) && is_object($subcat->translations) && !empty($subcat->translations->description)) {
                                 $descText = $subcat->translations->description;
                             } elseif (isset($subcat->translations) && $subcat->translations instanceof \Illuminate\Database\Eloquent\Collection && $subcat->translations->isNotEmpty()) {
                                 $descText = $subcat->translations->first()->description ?? '';
