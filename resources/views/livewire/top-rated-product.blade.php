@@ -294,7 +294,7 @@
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                <p style="margin: 0; font-weight: 600; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">

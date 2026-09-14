@@ -306,7 +306,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 {{ $business->translations->first()->name }} <span class="hide-on-sticky">review {{ date('Y') }}</span>
                                             </h1>
                                         </div>
-                                        <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
+                                        <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 18px;  margin-bottom: 0;">Real reviews, user discussions & alternatives </p>
                                         @if ($averageRating !== null)
                                         <div class="main-view-rating-hide">
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
@@ -2466,7 +2466,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <span>Reviews</span>
                                                 </a>
                                                 <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
-                                                    <span>Community</span>
+                                                    <span>Discussions</span>
                                                 </a>
                                             </div>
 

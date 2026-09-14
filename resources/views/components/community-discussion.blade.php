@@ -3,6 +3,7 @@
 @php
     $bTranslation = $bTranslation ?? ($business->translations->firstWhere('language_id', getCurrentLanguageID()) ?? $business->translations->first());
     $bName = $bName ?? ($bTranslation->title ?? $business->business_name ?? '');
+    $bName = $bTranslation->name ?? 'Business';
     $discList = $business->discussions()->with(['user.country'])->take(4)->get();
     $totalDiscs = $business->discussions()->count();
     $discIds = $business->discussions()->pluck('id');
@@ -25,7 +26,7 @@
             </div>
         </div>
 
-        <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+        <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0 d-none">
             <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="view-discussion-link">
                 View all discussions
             </a>
@@ -34,7 +35,7 @@
 
     @if($discList->isEmpty())
         <div class="text-center py-4 text-muted">
-            <p class="m-0">No active discussions yet for {{ $bName }}.</p>
+            <p class="m-0">No discussions about {{ $bName }}.</p>
         </div>
     @else
         <div class="discussions-preview-list">
@@ -198,6 +199,6 @@
 <!-- Footer Link -->
 <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
     <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="see-all-discussions-link">
-        See all discussions about {{ $bName }}
+        View all discussions  {{ $bName }}
     </a>
 </div>

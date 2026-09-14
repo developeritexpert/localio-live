@@ -3,7 +3,7 @@
 :root {
     /* Primary Colors */
     --color-primary-blue: #214787;
-    --color-blue-hover: #033b74;
+    --color-blue-hover: #287ae6;
     --color-primary-orange: #fb5c28;
     --color-orange-hover: #e64a19;
     --color-black: #000;
@@ -8431,7 +8431,8 @@ body .product_sec li.breadcrumb-item.active {
     content: "/";
 }
 
-.user_revew_sec .breadcrumb .breadcrumb-item a:hover {
+.user_revew_sec .breadcrumb .breadcrumb-item a:hover,
+.breadcrumb .breadcrumb-item a:hover {
     text-decoration: underline !important;
 }
 
@@ -9580,7 +9581,8 @@ section.write-review-hero .container h1 {
 .page-who-we-are .search-box,
 .page-product-comparison-seo .search-box,
 .page-terms-condition .search-box,
-.page-top-rated-faqs .search-box {
+.page-top-rated-faqs .search-box,
+.page-category .search-box {
     display: block !important;
 }
 

@@ -10,7 +10,7 @@
     $catSlug = $catTrans->slug ?? $business->category->slug ?? null;
     $parentCatName = $parentCatTrans->name ?? '';
     $parentCatSlug = $parentCatTrans->slug ?? $business->category->parent->slug ?? null;
-    $subHeadline = 'Ask questions, exchange tips, and discuss features with active ' . $bName . ' users.';
+    $subHeadline = 'Ask questions, share experiences, exchange tips, and discuss ' . $bName . ' with other users.';
 @endphp
 
 @section('meta_title', format_meta_text($bName . ' Community Discussions & Q&A'))
@@ -20,6 +20,7 @@
     .top-rated-heading-sec {
         margin-top: 115px;
         padding-top: 30px;
+        padding-bottom: 20px;
         background-color: #f7f9fb;
         border-bottom: 1px solid #e2e8f0;
     }
@@ -82,7 +83,7 @@
                         <li class="breadcrumb-item active"
                             aria-current="page"
                             style="color: #002347 !important; text-decoration: none; font-weight: 500; margin-left: 2px;">
-                            Community Discussions
+                            Discussions
                         </li>
 
                     </ol>
@@ -105,7 +106,7 @@
                         {{ $bName }} Community Discussions
                     </h1>
 
-                    <p class="text-meta">
+                    <p class="text-meta d-none">
                         Last updated on {{ now()->format('F j, Y') }}
                     </p>
 
@@ -132,11 +133,11 @@
 
                             <p style="
                                 margin: 0;
-                                font-weight: 700;
-                                color: #002347;
+                                font-weight: 600;
+                                color:#002347;
                                 font-size: 16px;
                             ">
-                                Community Discussions
+                                 Join the conversation 
                             </p>
 
                             <img src="{{ asset('front/img/top_rated_img.png') }}"
@@ -150,13 +151,12 @@
                         </div>
 
                         <p style="margin-bottom: 8px;">
-                            Join the community, ask questions, share your experience,
-                            and discuss {{ $bName }} with other users.
+                           Connect with other Crimson Leaf Café users to ask questions, share experiences, and exchange useful tips. 
                         </p>
 
                         <a 
                                 class="learn_mre_btn"
-                                style="font-size: 13px; color: #007bff; font-weight: 600; text-decoration: none; cursor:pointer"
+                                style="font-size: 13px; color: #002347; font-weight: 600; text-decoration: none; cursor:pointer"
                                 @if(auth()->check())
                                     data-bs-toggle="modal"
                                     data-bs-target="#newDiscussionModal"
@@ -198,8 +198,8 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or ask a question about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #f8fafc; cursor: pointer; border-color: #e2e8f0; border-radius: 20px; font-size: 13.5px; padding-left: 16px;">
-                    <button type="button" class="btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #f8fafc; cursor: pointer; border-color: #e2e8f0; border-radius: 8px; font-size: 13.5px; padding-left: 16px;">
+                    <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
                 </div>
@@ -236,13 +236,13 @@
             <!-- Discussions List Container -->
             @if($discussions->isEmpty())
                 <div class="boxshadow_border bg-white text-center py-5 px-3" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
-                    <div style="width: 56px; height: 56px; margin: 0 auto 16px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                    <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
                         <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 28px; height: 28px;">
                     </div>
-                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-1">No discussions found</h3>
-                    <p class="text-muted mb-3" style="font-size: 14px;">Be the first to start a conversation or ask a question about {{ $bName }}!</p>
-                    <button type="button" class="btn btn-primary px-4 py-2 fw-semibold" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 8px; font-size: 13.5px;">
-                        <i class="fas fa-plus me-1"></i> Start a Discussion
+                    <h3 style="font-weight: 700; color: #002347; font-size: 18px;" class="mb-2">No discussions about {{ $bName }}</h3>
+                    <p class="text-muted mb-3 d-none" style="font-size: 14px;">Be the first to start a conversation or ask a question about {{ $bName }}!</p>
+                    <button type="button" class="blue-btn btn btn-primary px-4 py-2 fw-semibold" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 8px; font-size: 13.5px;">
+                        <i class="fas fa-plus me-1"></i> Start a discussion 
                     </button>
                 </div>
             @else
