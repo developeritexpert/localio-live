@@ -17,6 +17,47 @@
     Discussions ({{ number_format($totalDiscs) }})
 </h2>
 
+<!-- Inline Post Prompt Card -->
+<div class="boxshadow_border bg-white p-3 mb-3 discussion-composer-card" style="border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+    <div class="d-flex align-items-center gap-2">
+        @if(auth()->check() && auth()->user()->profile_image && auth()->user()->profile_image !== 'front/img/default.png')
+            <img src="{{ asset(auth()->user()->profile_image) }}" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover; flex-shrink: 0;" alt="{{ auth()->user()->displayName() }}">
+        @else
+            <div class="user-avatar-initial" style="width: 36px; height: 36px; border-radius: 50%; background: #003f7d; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;">
+                {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
+            </div>
+        @endif
+        <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or ask a question about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
+        <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 30px; font-size: 13px; font-weight: 600; line-height: 1.3; height: 40px; padding: 0 18px; background: #002347; border-color: #002347;">
+            <i class="fas fa-pen" style="font-size: 12px;"></i> Post
+        </button>
+    </div>
+</div>
+
+<!-- Search & Sort Filter Card (Live Lag-free Filter) -->
+<div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+    <form class="row g-2 align-items-center" id="previewDiscussionFilterForm" onsubmit="return false;">
+        <div class="col-sm-8 col-12">
+            <div class="input-group position-relative">
+                <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="previewDiscussionSearchInput" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" autocomplete="off" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 0 8px 8px 0; height: 40px; box-shadow: none;">
+                <button type="button" id="previewDiscussionClearBtn" class="btn position-absolute text-muted d-none" title="Clear search" style="right: 8px; top: 50%; transform: translateY(-50%); z-index: 10; padding: 4px 8px; font-size: 13px; background: transparent; border: none;">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-4 col-12">
+            <select id="previewDiscussionSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
+                <option value="popular">Top / Popular</option>
+                <option value="recent">Most Recent</option>
+                <option value="commented">Most Active</option>
+            </select>
+        </div>
+    </form>
+</div>
+
 <div class="card p-4" style="border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
     <div class="d-flex flex-wrap align-items-center justify-content-between pb-3 mb-3" style="border-bottom: 1px solid #f1f5f9;">
         <div class="d-flex align-items-center gap-2" style="font-size: 13.5px; color: #475569; font-weight: 500;">
@@ -39,9 +80,16 @@
             <p class="m-0">No discussions about {{ $bName }}.</p>
         </div>
     @else
-        <div class="discussions-preview-list">
+        <div class="discussions-preview-list" id="previewDiscussionsList">
             @foreach($discList as $pDisc)
-                <div class="p-3 {{ $loop->last ? 'mb-0' : 'mb-3' }}" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px;">
+                <div class="p-3 mb-3 preview-discussion-item"
+                     data-title="{{ strtolower($pDisc->title) }}"
+                     data-content="{{ strtolower(strip_tags($pDisc->content)) }}"
+                     data-author="{{ strtolower($pDisc->author_display_name) }}"
+                     data-score="{{ (int)($pDisc->upvotes_count - $pDisc->downvotes_count) }}"
+                     data-created="{{ $pDisc->created_at ? $pDisc->created_at->timestamp : 0 }}"
+                     data-comments="{{ (int)$pDisc->comments_count }}"
+                     style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; transition: opacity 0.2s ease;">
                     <div class="d-flex align-items-start">
                         <div class="preview-vote-sidebar">
                             <button type="button" class="vote-btn vote-trigger" data-type="discussion" data-id="{{ $pDisc->id }}" data-vote="up" title="Upvote">
@@ -154,6 +202,14 @@
             @endforeach
         </div>
 
+        <!-- No Matching Search Results State -->
+        <div id="previewDiscussionsNoMatches" class="text-center py-4 text-muted d-none" style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; margin-top: 10px;">
+            <p class="m-0" style="font-size: 14px; color: #475569;">No discussions match "<strong id="previewDiscussionsQueryText" style="color: #002347;"></strong>".</p>
+            <button type="button" class="btn btn-sm btn-link text-decoration-none mt-2" id="previewDiscussionsResetBtn" style="color: #003f7d; font-weight: 600; font-size: 13px;">
+                <i class="fas fa-undo me-1"></i> Clear search
+            </button>
+        </div>
+
         <script>
             document.addEventListener('click', function(e) {
                 const btn = e.target.closest('.vote-trigger');
@@ -194,6 +250,105 @@
                 .catch(err => console.error('Vote error:', err));
             });
         </script>
+    
+        <script>
+            (function() {
+                const searchInput = document.getElementById('previewDiscussionSearchInput');
+                const clearBtn = document.getElementById('previewDiscussionClearBtn');
+                const sortSelect = document.getElementById('previewDiscussionSortSelect');
+                const listContainer = document.getElementById('previewDiscussionsList');
+                const noMatchesEl = document.getElementById('previewDiscussionsNoMatches');
+                const queryTextEl = document.getElementById('previewDiscussionsQueryText');
+                const resetBtn = document.getElementById('previewDiscussionsResetBtn');
+
+                if (!listContainer) return;
+
+                let debounceTimer = null;
+
+                function applyFilterAndSort() {
+                    const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+                    const sortVal = sortSelect ? sortSelect.value : 'popular';
+
+                    if (clearBtn) {
+                        clearBtn.classList.toggle('d-none', !query);
+                    }
+
+                    const items = Array.from(listContainer.querySelectorAll('.preview-discussion-item'));
+                    let visibleCount = 0;
+
+                    items.forEach(item => {
+                        const title = item.dataset.title || '';
+                        const content = item.dataset.content || '';
+                        const author = item.dataset.author || '';
+
+                        const isMatch = !query || title.includes(query) || content.includes(query) || author.includes(query);
+                        if (isMatch) {
+                            item.style.display = '';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    // Sort items in DOM
+                    items.sort((a, b) => {
+                        if (sortVal === 'recent') {
+                            return (parseInt(b.dataset.created) || 0) - (parseInt(a.dataset.created) || 0);
+                        } else if (sortVal === 'commented') {
+                            return (parseInt(b.dataset.comments) || 0) - (parseInt(a.dataset.comments) || 0);
+                        } else {
+                            return (parseInt(b.dataset.score) || 0) - (parseInt(a.dataset.score) || 0);
+                        }
+                    });
+
+                    items.forEach(item => listContainer.appendChild(item));
+
+                    if (noMatchesEl) {
+                        if (visibleCount === 0 && query) {
+                            noMatchesEl.classList.remove('d-none');
+                            if (queryTextEl) queryTextEl.textContent = searchInput.value.trim();
+                        } else {
+                            noMatchesEl.classList.add('d-none');
+                        }
+                    }
+                }
+
+                searchInput?.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(applyFilterAndSort, 120);
+                });
+
+                searchInput?.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        clearTimeout(debounceTimer);
+                        applyFilterAndSort();
+                    }
+                });
+
+                clearBtn?.addEventListener('click', function() {
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.focus();
+                    }
+                    clearTimeout(debounceTimer);
+                    applyFilterAndSort();
+                });
+
+                resetBtn?.addEventListener('click', function() {
+                    if (searchInput) {
+                        searchInput.value = '';
+                        searchInput.focus();
+                    }
+                    clearTimeout(debounceTimer);
+                    applyFilterAndSort();
+                });
+
+                sortSelect?.addEventListener('change', function() {
+                    applyFilterAndSort();
+                });
+            })();
+        </script>
     @endif
 </div>
 
@@ -202,4 +357,39 @@
     <a href="{{ route('business.discussions', ['locale' => session('lang_code', 'en-us'), 'business_slug' => $bTranslation->slug ?? $business->id]) }}" class="see-all-discussions-link">
         View all discussions  {{ $bName }}
     </a>
+</div>
+
+<!-- New Discussion Modal -->
+<div class="modal fade" id="newDiscussionModal" tabindex="-1" aria-labelledby="newDiscussionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 16px; border: 1px solid #eef2f6; overflow: hidden;">
+            <div class="modal-header px-4 py-3" style="border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
+                <h5 class="modal-title fw-bold" id="newDiscussionModalLabel" style="color: #002347; font-size: 17px;">
+                    <img src="{{ asset('front/img/discussions.svg') }}" alt="Discussions" style="width: 22px; height: 22px; margin-right: 8px; vertical-align: -3px;"> Start a Discussion about {{ $bName }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('business.discussion.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="business_id" value="{{ $business->id }}">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">Title / Question <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" placeholder="What would you like to ask or share?" required style="border-color: #cbd5e1; border-radius: 8px; font-size: 14px;">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color: #002347; font-size: 13.5px;">Details & Context <span class="text-danger">*</span></label>
+                        <textarea name="content" class="form-control" rows="5" placeholder="Provide background context, specific questions, or personal experience..." required style="border-color: #cbd5e1; border-radius: 8px; font-size: 14px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer px-4 py-3" style="border-top: 1px solid #f1f5f9;">
+                    <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 13.5px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold" style="border-radius: 8px; font-size: 13.5px; background: #002347; border-color: #002347;">
+                        Post Discussion
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

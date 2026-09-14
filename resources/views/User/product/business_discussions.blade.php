@@ -198,42 +198,39 @@
                             {{ auth()->check() ? strtoupper(substr(auth()->user()->displayName(), 0, 1)) : '?' }}
                         </div>
                     @endif
-                    <input type="text" class="form-control discussion-prompt-input" placeholder="Ask a question or share something about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #f8fafc; cursor: pointer; border-color: #e2e8f0; border-radius: 8px; font-size: 13.5px; padding-left: 16px;">
+                    <input type="text" class="form-control discussion-prompt-input" placeholder="Start a discussion or ask a question about {{ $bName }}..." readonly @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="background: #ffffff; cursor: pointer; border-color: #cbd5e1; border-radius: 30px; font-size: 13.5px; padding-left: 16px; height: 42px;">
                     <button type="button" class="blue-btn btn btn-primary px-3 text-nowrap d-none d-sm-inline-flex align-items-center gap-1" @if(auth()->check()) data-bs-toggle="modal" data-bs-target="#newDiscussionModal" @else onclick="openLoginModal()" @endif style="border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;">
                         <i class="fas fa-pen" style="font-size: 12px;"></i> Post
                     </button>
                 </div>
             </div>
 
-            <!-- Search & Sort Filter Card -->
+            <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
             <div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border: 1px solid #eef2f6;">
-                <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center" id="discussionFilterForm">
+                <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-center" id="discussionFilterForm" onsubmit="return false;">
                     <div class="col-sm-8 col-12">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8;">
+                        <div class="input-group position-relative">
+                            <span class="input-group-text bg-white border-end-0" style="border-color: #cbd5e1; color: #94a3b8; border-radius: 8px 0 0 8px; height: 40px;">
                                 <i class="fas fa-search"></i>
                             </span>
-                            <input type="text" name="q" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" style="border-color: #cbd5e1; font-size: 13.5px;">
-                            @if(request('q'))
-                                <a href="{{ url()->current() }}" class="input-group-text bg-white border-start-0 text-muted" title="Clear search">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            @endif
+                            <input type="text" name="q" id="discussionLiveSearchInput" value="{{ request('q') }}" class="form-control border-start-0 ps-0" placeholder="Search discussions..." aria-label="Search discussions" autocomplete="off" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 0 8px 8px 0; height: 40px; box-shadow: none;">
+                            <button type="button" id="discussionLiveClearBtn" class="btn position-absolute text-muted {{ request('q') ? '' : 'd-none' }}" title="Clear search" style="right: 8px; top: 50%; transform: translateY(-50%); z-index: 10; padding: 4px 8px; font-size: 13px; background: transparent; border: none;">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="col-sm-4 col-12">
-                        <select name="sort" class="form-select" onchange="this.form.submit()" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px;">
+                        <select name="sort" id="discussionLiveSortSelect" class="form-select" aria-label="Sort discussions" style="border-color: #cbd5e1; font-size: 13.5px; border-radius: 8px; height: 40px;">
                             <option value="popular" {{ request('sort') == 'popular' || !request('sort') ? 'selected' : '' }}>Top / Popular</option>
                             <option value="recent" {{ request('sort') == 'recent' ? 'selected' : '' }}>Most Recent</option>
                             <option value="commented" {{ request('sort') == 'commented' ? 'selected' : '' }}>Most Active</option>
                         </select>
                     </div>
                 </form>
-
-
             </div>
 
             <!-- Discussions List Container -->
+            <div id="discussionsFeedContainer" style="transition: opacity 0.2s ease;">
             @if($discussions->isEmpty())
                 <div class="boxshadow_border bg-white text-center py-5 px-3" style="border-radius: 16px; border: 1px dashed #cbd5e1;">
                     <div style="width: 56px; height: 56px; margin: 0 auto 10px; border-radius: 50%; background: #f0f7ff; color: #214787; display: flex; align-items: center; justify-content: center; font-size: 24px;">
@@ -448,6 +445,7 @@
                     {{ $discussions->withQueryString()->links() }}
                 </div>
             @endif
+            </div>
         </div>
 
         <!-- Right Column: Sidebar -->
@@ -786,5 +784,85 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+let searchDebounceTimer = null;
+const liveSearchInput = document.getElementById('discussionLiveSearchInput');
+const liveSortSelect = document.getElementById('discussionLiveSortSelect');
+const liveClearBtn = document.getElementById('discussionLiveClearBtn');
+const feedContainer = document.getElementById('discussionsFeedContainer');
+
+function performDiscussionsLiveSearch() {
+    const q = (liveSearchInput ? liveSearchInput.value : '').trim();
+    const sortVal = liveSortSelect ? liveSortSelect.value : 'popular';
+
+    if (liveClearBtn) {
+        liveClearBtn.classList.toggle('d-none', !q);
+    }
+
+    if (feedContainer) {
+        feedContainer.style.opacity = '0.4';
+        feedContainer.style.pointerEvents = 'none';
+    }
+
+    const currentUrl = new URL(window.location.href);
+    if (q) {
+        currentUrl.searchParams.set('q', q);
+    } else {
+        currentUrl.searchParams.delete('q');
+    }
+    currentUrl.searchParams.set('sort', sortVal);
+    currentUrl.searchParams.delete('page');
+
+    fetch(currentUrl.toString(), {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newFeed = doc.getElementById('discussionsFeedContainer');
+        if (newFeed && feedContainer) {
+            feedContainer.innerHTML = newFeed.innerHTML;
+        }
+        window.history.replaceState(null, '', currentUrl.toString());
+    })
+    .catch(err => console.error('Discussions live search error:', err))
+    .finally(() => {
+        if (feedContainer) {
+            feedContainer.style.opacity = '1';
+            feedContainer.style.pointerEvents = 'auto';
+        }
+    });
+}
+
+liveSearchInput?.addEventListener('input', function() {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(performDiscussionsLiveSearch, 220);
+});
+
+liveSearchInput?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(searchDebounceTimer);
+        performDiscussionsLiveSearch();
+    }
+});
+
+liveSortSelect?.addEventListener('change', function() {
+    clearTimeout(searchDebounceTimer);
+    performDiscussionsLiveSearch();
+});
+
+liveClearBtn?.addEventListener('click', function() {
+    if (liveSearchInput) {
+        liveSearchInput.value = '';
+        liveSearchInput.focus();
+    }
+    clearTimeout(searchDebounceTimer);
+    performDiscussionsLiveSearch();
+});
+
 </script>
 @endpush
