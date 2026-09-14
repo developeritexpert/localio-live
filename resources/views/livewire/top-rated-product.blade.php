@@ -284,8 +284,7 @@
                 <div class="row align-items-start">
                     <div class="col-md-8 text-start">
                         <h1 >{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
-                        <p class="text-meta">Last updated on
-                            {{ now()->format('F j, Y') }}</p>
+                        <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                         <p style=" margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
@@ -325,7 +324,7 @@
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
-                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>

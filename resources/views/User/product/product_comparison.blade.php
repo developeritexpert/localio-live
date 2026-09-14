@@ -140,7 +140,7 @@
                             Businesses Comparison
                         @endif
                     </h1>
-                    <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
+                    <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                     <p style="margin-bottom: 0; ">
                         @if(!empty($catName))
                             Learn more from our team about {{ $catName }} pricing, features, and user ratings in our side-by-side comparison guide.

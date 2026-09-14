@@ -107,7 +107,7 @@
                     </h1>
 
                     <p class="text-meta d-none">
-                        Last updated on {{ now()->format('F j, Y') }}
+                        Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
 
                     <p style="margin-bottom: 0;">

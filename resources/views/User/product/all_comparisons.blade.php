@@ -214,7 +214,7 @@
                         </h1>
                     </div>
                     <p class="text-meta">
-                        Last updated on {{ now()->format('F j, Y') }}
+                        Last updated {{ now()->subDay()->format('F j, Y') }}
                     </p>
                     <p style="margin: 0;">
                         {{ $subHeadline }}

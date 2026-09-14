@@ -480,8 +480,7 @@
                                 {{ $applyDynamicVars($baseTitle) }}
                             </h1>
 
-                            <p class="text-meta">Last updated on
-                                {{ now()->format('F j, Y') }}</p>
+                            <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                     <div class="host-parra row align-items-start">
                         <div class="col-md-6 text-start">
                             
@@ -543,7 +542,7 @@
                                 <div class="row align-items-start">
                                     <div class="col-md-6 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
-                                        <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
+                                        <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                             {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
                                         </p>
