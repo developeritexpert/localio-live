@@ -531,29 +531,14 @@
                         </div>
 
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="faq_meta_title">Meta Title (Category FAQs Page)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="faq_meta_title" name="faq_meta_title"
-                                        value="{{ isset($category_data) ? ($category_data['faq_meta_title'] ?? '') : old('faq_meta_title') }}" 
-                                        placeholder="Enter SEO meta title for this category's FAQ page" />
+                            <div class="alert alert-info bg-info-dim border-0 d-flex align-items-center justify-content-between p-3">
+                                <div>
+                                    <strong class="d-block text-info"><em class="icon ni ni-help me-1"></em>SEO Meta Tags (Category FAQs Page)</strong>
+                                    <span class="small text-muted">Category FAQ meta titles, descriptions, and dynamic 3-tier cascade fallbacks are now centrally managed in <strong>Meta Tags &gt; Categories FAQs</strong>.</span>
                                 </div>
-                                @error('faq_meta_title')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="faq_meta_description">Meta Description (Category FAQs Page)</label>
-                                <div class="form-control-wrap">
-                                    <textarea class="form-control" id="faq_meta_description" name="faq_meta_description" rows="3" 
-                                        placeholder="Enter SEO meta description for this category's FAQ page">{{ isset($category_data) ? ($category_data['faq_meta_description'] ?? '') : old('faq_meta_description') }}</textarea>
-                                </div>
-                                @error('faq_meta_description')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
+                                <a href="{{ route('admin.meta-tags.categories-faqs') }}" target="_blank" class="btn btn-sm btn-info ms-3 text-nowrap">
+                                    <em class="icon ni ni-external me-1"></em> Manage FAQ Meta Tags
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">

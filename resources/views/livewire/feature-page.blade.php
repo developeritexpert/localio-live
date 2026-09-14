@@ -1,5 +1,28 @@
 <div>
     @include('User.partials.business_detail_styles')
+    @php
+        $currentLocale = request()->segment(1) ?? app()->getLocale() ?? 'en-us';
+        $catTrans = $category->translations ?? $category->translation;
+        if (!$catTrans && method_exists($category, 'categoryTranslations')) {
+            $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id ?? getCurrentLanguageID())->first();
+        }
+        $rawCatName = $catTrans->name ?? ($category->name ?? 'Category');
+        $catSlug = $catTrans->slug ?? ($category->slug ?? (request()->segment(2) ?? 'category'));
+
+        if ($category->parent && $category->parent_id) {
+            $parentTrans = $category->parent->translations ?? $category->parent->translation;
+            $parentSlug = $parentTrans->slug ?? ($category->parent->slug ?? '');
+            if (!empty($parentSlug)) {
+                $baseCatUrl = url('/' . $currentLocale . '/' . $parentSlug . '/' . $catSlug);
+            } else {
+                $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+            }
+        } else {
+            $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+        }
+
+        $formattedCatName = $rawCatName;
+    @endphp
     <style>
     [x-cloak] { display: none !important; }
     .table-business-link {
@@ -427,18 +450,28 @@
                                         onmouseout="this.style.color=''">All</a>
                                 </li>
                                 @if($category->parent)
+                                @php
+                                    $pTrans = $category->parent->translations ?? $category->parent->translation;
+                                    $pSlug = $pTrans->slug ?? ($category->parent->slug ?? ('category-' . $category->parent->id));
+                                    $pName = $pTrans->name ?? ($category->parent->name ?? 'Main Category');
+                                @endphp
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/' . $pSlug) }}"
                                         style="color: inherit; text-decoration: none; font-size: 13px;"
                                         onmouseout="this.style.color=''">
-                                        {{ $category->parent->translations->name ?? 'Main Category' }}
+                                        {{ $pName }}
                                     </a>
                                 </li>
                                 @endif
+                                @php
+                                    $cTrans = $category->translations ?? $category->translation;
+                                    $cSlug = $cTrans->slug ?? ($category->slug ?? ('category-' . $category->id));
+                                    $cName = $cTrans->name ?? ($category->name ?? 'Category');
+                                @endphp
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->translations->slug ?? $category->slug]) }}"
+                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/' . $cSlug) }}"
                                         style="color: inherit; text-decoration: none; font-size: 13px;">
-                                        {{ $category->translations->name ?? 'Category' }}
+                                        {{ $cName }}
                                     </a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page"

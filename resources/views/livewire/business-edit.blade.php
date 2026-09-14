@@ -2147,22 +2147,14 @@
 
 
                                 </div>
-                                <div class="form-group mt-3">
-                                    <label class="form-label">Main meta title</label>
-                                    <input type="text" class="form-control"
-                                        @error('meta_title') is-invalid @enderror" wire:model.live="meta_title" />
-                                    @error('meta_title')
-                                    <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group mt-3">
-                                    <label class="form-label">Main meta description</label>
-                                    <textarea class="form-control @error('meta_description') is-invalid @enderror" wire:model.live="meta_description"
-                                        rows="4"></textarea>
-                                    @error('meta_description')
-                                    <div class="text-danger">{{ $message }}</div>
-                                    @enderror
+                                <div class="alert alert-primary bg-primary-dim border-0 d-flex align-items-center justify-content-between p-3 mt-3">
+                                    <div>
+                                        <strong class="d-block text-primary"><em class="icon ni ni-building me-1"></em>Main Business SEO Meta Tags</strong>
+                                        <span class="small text-muted">Business profile meta titles, descriptions, and dynamic 3-tier cascade fallbacks are now centrally managed in <strong>Meta Tags &gt; Businesses</strong>.</span>
+                                    </div>
+                                    <a href="{{ route('admin.meta-tags.businesses') }}" target="_blank" class="btn btn-sm btn-primary ms-3 text-nowrap">
+                                        <em class="icon ni ni-external me-1"></em> Manage Meta Tags
+                                    </a>
                                 </div>
 
                                 <hr class="preview-hr my-3">

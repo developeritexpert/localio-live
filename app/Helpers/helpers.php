@@ -62,6 +62,16 @@ function getLanguageRole()
 }
 function getCurrentLanguageID()
 {
+    try {
+        $routeLocale = request()->segment(1);
+        if (!empty($routeLocale) && strlen($routeLocale) >= 2 && strlen($routeLocale) <= 10) {
+            $routeLang = Language::where('lang_code', $routeLocale)->first();
+            if ($routeLang) {
+                return $routeLang->id;
+            }
+        }
+    } catch (\Throwable $e) {}
+
     if (Cookie::get('lang_code_v2')) {
         $langcode = Cookie::get('lang_code_v2');
     } elseif (Session::get('lang_code')) {
@@ -72,29 +82,13 @@ function getCurrentLanguageID()
 
     try {
         $siteLanguage = Language::where('lang_code', $langcode)->first();
+        if ($siteLanguage) {
+            return $siteLanguage->id;
+        }
     } catch (\Throwable $e) {
         return 1;
     }
 
-    if ($siteLanguage) {
-        // If US-English (ID 1) or has active translation, return its ID
-        if ($siteLanguage->id == 1 || $siteLanguage->is_active_translation == 1) {
-            return $siteLanguage->id;
-        }
-
-        // Check if base_language_id is set and points to an active language
-        if ($siteLanguage->base_language_id) {
-            $baseLang = Language::find($siteLanguage->base_language_id);
-            if ($baseLang && ($baseLang->id == 1 || $baseLang->is_active_translation == 1)) {
-                return $baseLang->id;
-            }
-        }
-
-        // UNTRANSLATED LANGUAGE FALLBACK: return 1 (US-English ID)
-        return 1;
-    }
-
-    // Default fallback ID
     return 1;
 }
 function getCurrentSiteLanguage()

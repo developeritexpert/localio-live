@@ -689,8 +689,8 @@ class ViewController extends Controller
 
     public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
     {
-        $lang_id = getCurrentLanguageID();
         $languageObj = Language::where('lang_code', $locale)->first();
+        $lang_id = $languageObj ? $languageObj->id : getCurrentLanguageID();
         $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
         $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
@@ -765,7 +765,7 @@ class ViewController extends Controller
                     ? $catTrans->meta_description
                     : strip_tags($catTrans?->description ?? '');
 
-                // Check CategoryFeatureContent for feature-specific meta tags
+                // Check Feature Meta Tags (Cascade or Custom Override)
                 if (!empty($second_segment) && $category) {
                     $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
                         $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
@@ -773,18 +773,13 @@ class ViewController extends Controller
                     })->first();
 
                     if ($matchedFeat) {
-                        $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
-                            ->where('feature_id', $matchedFeat->id)
-                            ->where('lang_id', $lang_id)
-                            ->first();
-                        if ($featContent) {
-                            if (!empty($featContent->meta_title)) {
-                                $metaTitle = $featContent->meta_title;
-                            }
-                            if (!empty($featContent->meta_description)) {
-                                $metaDescription = $featContent->meta_description;
-                            }
-                        }
+                        $resolvedFeatMeta = \App\Services\MetaTagService::resolveFeatureMeta($matchedFeat, $category, $lang_id);
+                        $metaTitle = $resolvedFeatMeta['title'];
+                        $metaDescription = $resolvedFeatMeta['description'];
+                    } else {
+                        $resolvedCatMeta = \App\Services\MetaTagService::resolveCategoryMeta($category, $lang_id);
+                        $metaTitle = $resolvedCatMeta['title'];
+                        $metaDescription = $resolvedCatMeta['description'];
                     }
                 }
 

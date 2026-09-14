@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Admin\MetaTags;
 
 use App\Http\Controllers\Controller;
+use App\Models\Business;
+use App\Models\BusinessTranslation;
 use App\Models\Category;
 use App\Models\CategoryTranslation;
+use App\Models\CategoryFeatureContent;
+use App\Models\Feature;
+use App\Models\FeatureTransalte;
 use App\Models\Language;
 use App\Models\MetaTagRule;
 use App\Services\MetaTagService;
@@ -17,7 +22,6 @@ class MetaTagController extends Controller
      */
     public function categories(Request $request)
     {
-        // Accept lang_id from query string or session, fallback to 1 (English)
         $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
 
         $selectedLanguage = Language::find($lang_id);
@@ -27,7 +31,6 @@ class MetaTagController extends Controller
         }
 
         $lang = $selectedLanguage ? $selectedLanguage->lang_code : 'en-us';
-
         session()->put('lang_id', $lang_id);
         session()->put('lang_code', $lang);
 
@@ -38,7 +41,7 @@ class MetaTagController extends Controller
 
         $rule = MetaTagRule::getRuleFor('categories', $lang_id);
 
-        $parentCategories = Category::onlyParents()
+        $parentCategories = Category::whereNull('parent_id')
             ->with([
                 'translations' => fn($q) => $q->where('lang_id', $lang_id),
                 'subCategories' => function($q) use ($lang_id) {
@@ -47,7 +50,6 @@ class MetaTagController extends Controller
             ])
             ->get();
 
-        // Pre-resolve metadata for every parent and subcategory
         foreach ($parentCategories as $parent) {
             $parent->metaData = MetaTagService::resolveCategoryMeta($parent, $lang_id, $rule);
             foreach ($parent->subCategories as $sub) {
@@ -57,6 +59,179 @@ class MetaTagController extends Controller
 
         return view('Admin.meta-tags.categories', compact(
             'parentCategories',
+            'rule',
+            'languages',
+            'lang_id',
+            'selectedLanguage'
+        ));
+    }
+
+    /**
+     * Businesses Meta Tags management page.
+     */
+    public function businesses(Request $request)
+    {
+        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+
+        $selectedLanguage = Language::find($lang_id);
+        if (!$selectedLanguage) {
+            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
+            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+        }
+
+        $lang = $selectedLanguage ? $selectedLanguage->lang_code : 'en-us';
+        session()->put('lang_id', $lang_id);
+        session()->put('lang_code', $lang);
+
+        $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
+        if ($languages->isEmpty()) {
+            $languages = Language::all();
+        }
+
+        $rule = MetaTagRule::getRuleFor('businesses', $lang_id);
+
+        $businesses = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+        ])->orderBy('id', 'asc')->get();
+
+        foreach ($businesses as $business) {
+            $business->metaData = MetaTagService::resolveBusinessMeta($business, $lang_id, $rule);
+        }
+
+        return view('Admin.meta-tags.businesses', compact(
+            'businesses',
+            'rule',
+            'languages',
+            'lang_id',
+            'selectedLanguage'
+        ));
+    }
+
+    /**
+     * Categories FAQs Meta Tags management page.
+     */
+    public function categoriesFaqs(Request $request)
+    {
+        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+
+        $selectedLanguage = Language::find($lang_id);
+        if (!$selectedLanguage) {
+            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
+            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+        }
+
+        $lang = $selectedLanguage ? $selectedLanguage->lang_code : 'en-us';
+        session()->put('lang_id', $lang_id);
+        session()->put('lang_code', $lang);
+
+        $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
+        if ($languages->isEmpty()) {
+            $languages = Language::all();
+        }
+
+        $rule = MetaTagRule::getRuleFor('category_faqs', $lang_id);
+
+        $parentCategories = Category::whereNull('parent_id')
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'subCategories' => function($q) use ($lang_id) {
+                    $q->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
+                }
+            ])
+            ->get();
+
+        foreach ($parentCategories as $parent) {
+            $parent->metaData = MetaTagService::resolveCategoryFaqMeta($parent, $lang_id, $rule);
+            foreach ($parent->subCategories as $sub) {
+                $sub->metaData = MetaTagService::resolveCategoryFaqMeta($sub, $lang_id, $rule);
+            }
+        }
+
+        return view('Admin.meta-tags.categories-faqs', compact(
+            'parentCategories',
+            'rule',
+            'languages',
+            'lang_id',
+            'selectedLanguage'
+        ));
+    }
+
+    /**
+     * Features Meta Tags management page.
+     */
+    public function features(Request $request)
+    {
+        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+
+        $selectedLanguage = Language::find($lang_id);
+        if (!$selectedLanguage) {
+            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
+            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+        }
+
+        $lang = $selectedLanguage ? $selectedLanguage->lang_code : 'en-us';
+        session()->put('lang_id', $lang_id);
+        session()->put('lang_code', $lang);
+
+        $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
+        if ($languages->isEmpty()) {
+            $languages = Language::all();
+        }
+
+        $rule = MetaTagRule::getRuleFor('features', $lang_id);
+
+        // Load all parent categories and their subcategories with translations
+        $allCategories = Category::whereNull('parent_id')
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'subCategories' => function($q) use ($lang_id) {
+                    $q->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
+                }
+            ])
+            ->orderBy('id', 'asc')
+            ->get();
+
+        foreach ($allCategories as $parent) {
+            $pTrans = MetaTagService::getCategoryTranslation($parent, $lang_id);
+            $parent->displayName = $pTrans?->name ?? $parent->name ?? ('Category #' . $parent->id);
+            foreach ($parent->subCategories as $sub) {
+                $sTrans = MetaTagService::getCategoryTranslation($sub, $lang_id);
+                $sub->displayName = $sTrans?->name ?? $sub->name ?? ('Category #' . $sub->id);
+            }
+        }
+
+        $query = Feature::with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+        ]);
+
+        if ($categoryId = $request->get('category_id')) {
+            $selectedCat = Category::find($categoryId);
+            if ($selectedCat && $selectedCat->parent_id === null) {
+                // If a parent category is selected, include all its subcategories too
+                $subIds = $selectedCat->subCategories()->pluck('id')->push((int)$categoryId)->toArray();
+                $query->whereIn('category_id', $subIds);
+            } else {
+                $query->where('category_id', $categoryId);
+            }
+        }
+
+        if ($search = $request->get('search')) {
+            $query->whereHas('translations', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        $features = $query->paginate(50)->withQueryString();
+
+        foreach ($features as $feature) {
+            $feature->metaData = MetaTagService::resolveFeatureMeta($feature, $feature->category, $lang_id, $rule);
+        }
+
+        return view('Admin.meta-tags.features', compact(
+            'features',
+            'allCategories',
             'rule',
             'languages',
             'lang_id',
@@ -113,12 +288,21 @@ class MetaTagController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.meta-tags.categories', ['lang_id' => $langId])
+        $routeMap = [
+            'categories' => 'admin.meta-tags.categories',
+            'businesses' => 'admin.meta-tags.businesses',
+            'category_faqs' => 'admin.meta-tags.categories-faqs',
+            'features' => 'admin.meta-tags.features',
+        ];
+
+        $redirectRoute = $routeMap[$entityType] ?? 'admin.meta-tags.categories';
+
+        return redirect()->route($redirectRoute, ['lang_id' => $langId])
             ->with('success', 'Default meta tag rules updated successfully!');
     }
 
     /**
-     * Update single category manual override via AJAX.
+     * Categories single AJAX update.
      */
     public function updateSingleCategoryMeta(Request $request)
     {
@@ -206,7 +390,271 @@ class MetaTagController extends Controller
     }
 
     /**
-     * Helper to update or create CategoryTranslation with a collision-free slug.
+     * Categories FAQs single AJAX update.
+     */
+    public function updateSingleCategoryFaqMeta(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'lang_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $catId = (int) $request->input('category_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $metaTitle = $request->input('meta_title', $request->input('title'));
+        $metaDesc = $request->input('meta_description', $request->input('description'));
+
+        $this->saveCategoryTranslationFaqMeta($catId, $langId, $metaTitle, $metaDesc);
+
+        $category = Category::find($catId);
+        $resolved = MetaTagService::resolveCategoryFaqMeta($category, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category FAQ meta tags updated successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    /**
+     * Reset category FAQ meta tags to dynamic auto-defaults.
+     */
+    public function resetCategoryFaqMeta(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'lang_id' => 'nullable|integer',
+        ]);
+
+        $catId = (int) $request->input('category_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+
+        $catTrans = CategoryTranslation::where('category_id', $catId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($catTrans) {
+            $catTrans->faq_meta_title = null;
+            $catTrans->faq_meta_description = null;
+            $catTrans->save();
+        }
+
+        $category = Category::find($catId);
+        $resolved = MetaTagService::resolveCategoryFaqMeta($category, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category FAQ reset to auto dynamic default successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    /**
+     * Bulk save all categories FAQs manual meta overrides.
+     */
+    public function updateBulkCategoriesFaqsMeta(Request $request)
+    {
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $titles = $request->input('meta_title', []);
+        $descriptions = $request->input('meta_description', []);
+
+        $allCatIds = array_unique(array_merge(array_keys($titles), array_keys($descriptions)));
+
+        foreach ($allCatIds as $catId) {
+            if (!is_numeric($catId)) continue;
+
+            $metaTitle = $titles[$catId] ?? null;
+            $metaDesc = $descriptions[$catId] ?? null;
+
+            $this->saveCategoryTranslationFaqMeta((int) $catId, $langId, $metaTitle, $metaDesc);
+        }
+
+        return redirect()->route('admin.meta-tags.categories-faqs', ['lang_id' => $langId])
+            ->with('success', 'All category FAQ meta tags updated successfully.');
+    }
+
+    /**
+     * Businesses single AJAX update.
+     */
+    public function updateSingleBusinessMeta(Request $request)
+    {
+        $request->validate([
+            'business_id' => 'required|exists:businesses,id',
+            'lang_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $bizId = (int) $request->input('business_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $metaTitle = $request->input('meta_title', $request->input('title'));
+        $metaDesc = $request->input('meta_description', $request->input('description'));
+
+        $this->saveBusinessTranslationMeta($bizId, $langId, $metaTitle, $metaDesc);
+
+        $business = Business::find($bizId);
+        $resolved = MetaTagService::resolveBusinessMeta($business, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Business meta tags updated successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    /**
+     * Reset business meta tags to dynamic auto-defaults.
+     */
+    public function resetBusinessMeta(Request $request)
+    {
+        $request->validate([
+            'business_id' => 'required|exists:businesses,id',
+            'lang_id' => 'nullable|integer',
+        ]);
+
+        $bizId = (int) $request->input('business_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+
+        $bizTrans = BusinessTranslation::where('business_id', $bizId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($bizTrans) {
+            $bizTrans->meta_title = null;
+            $bizTrans->meta_description = null;
+            $bizTrans->save();
+        }
+
+        $business = Business::find($bizId);
+        $resolved = MetaTagService::resolveBusinessMeta($business, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Business reset to auto dynamic default successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    /**
+     * Bulk save all businesses manual meta overrides.
+     */
+    public function updateBulkBusinessesMeta(Request $request)
+    {
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $titles = $request->input('meta_title', []);
+        $descriptions = $request->input('meta_description', []);
+
+        $allBizIds = array_unique(array_merge(array_keys($titles), array_keys($descriptions)));
+
+        foreach ($allBizIds as $bizId) {
+            if (!is_numeric($bizId)) continue;
+
+            $metaTitle = $titles[$bizId] ?? null;
+            $metaDesc = $descriptions[$bizId] ?? null;
+
+            $this->saveBusinessTranslationMeta((int) $bizId, $langId, $metaTitle, $metaDesc);
+        }
+
+        return redirect()->route('admin.meta-tags.businesses', ['lang_id' => $langId])
+            ->with('success', 'All business meta tags updated successfully.');
+    }
+
+    /**
+     * Features single AJAX update.
+     */
+    public function updateSingleFeatureMeta(Request $request)
+    {
+        $request->validate([
+            'feature_id' => 'required|exists:features,id',
+            'lang_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $featId = (int) $request->input('feature_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $metaTitle = $request->input('meta_title', $request->input('title'));
+        $metaDesc = $request->input('meta_description', $request->input('description'));
+
+        $this->saveFeatureTranslationMeta($featId, $langId, $metaTitle, $metaDesc);
+
+        $feature = Feature::find($featId);
+        $resolved = MetaTagService::resolveFeatureMeta($feature, $feature?->category, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Feature meta tags updated successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    /**
+     * Reset feature meta tags to dynamic auto-defaults.
+     */
+    public function resetFeatureMeta(Request $request)
+    {
+        $request->validate([
+            'feature_id' => 'required|exists:features,id',
+            'lang_id' => 'nullable|integer',
+        ]);
+
+        $featId = (int) $request->input('feature_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+
+        $featTrans = FeatureTransalte::where('feature_id', $featId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($featTrans) {
+            $featTrans->meta_title = null;
+            $featTrans->meta_description = null;
+            $featTrans->save();
+        }
+
+        $feature = Feature::find($featId);
+        $resolved = MetaTagService::resolveFeatureMeta($feature, $feature?->category, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Feature reset to auto dynamic default successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    /**
+     * Bulk save features manual meta overrides.
+     */
+    public function updateBulkFeaturesMeta(Request $request)
+    {
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $titles = $request->input('meta_title', []);
+        $descriptions = $request->input('meta_description', []);
+
+        $allFeatIds = array_unique(array_merge(array_keys($titles), array_keys($descriptions)));
+
+        foreach ($allFeatIds as $featId) {
+            if (!is_numeric($featId)) continue;
+
+            $metaTitle = $titles[$featId] ?? null;
+            $metaDesc = $descriptions[$featId] ?? null;
+
+            $this->saveFeatureTranslationMeta((int) $featId, $langId, $metaTitle, $metaDesc);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Feature meta tags updated successfully.');
+    }
+
+    /**
+     * Helper to update or create CategoryTranslation.
      */
     protected function saveCategoryTranslationMeta(int $catId, int $langId, ?string $metaTitle, ?string $metaDesc)
     {
@@ -242,20 +690,102 @@ class MetaTagController extends Controller
     }
 
     /**
-     * Placeholders for subsequent subcategories requested by user.
+     * Helper to update or create CategoryTranslation FAQ meta fields.
      */
-    public function businesses()
+    protected function saveCategoryTranslationFaqMeta(int $catId, int $langId, ?string $metaTitle, ?string $metaDesc)
     {
-        return redirect()->route('admin.meta-tags.categories')->with('info', 'Businesses Meta Tags module will be available next.');
+        $catTrans = CategoryTranslation::where('category_id', $catId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($catTrans) {
+            $catTrans->faq_meta_title = $metaTitle;
+            $catTrans->faq_meta_description = $metaDesc;
+            $catTrans->save();
+            return $catTrans;
+        }
+
+        $engTrans = CategoryTranslation::where('category_id', $catId)->where('lang_id', 1)->first();
+        $baseSlug = $engTrans?->slug ?: ('category-' . $catId);
+        $targetSlug = $baseSlug . '-' . $langId;
+
+        $counter = 1;
+        while (CategoryTranslation::where('slug', $targetSlug)->exists()) {
+            $targetSlug = $baseSlug . '-' . $langId . '-' . $counter++;
+        }
+
+        return CategoryTranslation::create([
+            'category_id' => $catId,
+            'lang_id' => $langId,
+            'status' => 1,
+            'name' => $engTrans?->name ?? ('Category #' . $catId),
+            'slug' => $targetSlug,
+            'faq_meta_title' => $metaTitle,
+            'faq_meta_description' => $metaDesc,
+        ]);
     }
 
-    public function categoriesFaqs()
+    /**
+     * Helper to update or create BusinessTranslation meta fields.
+     */
+    protected function saveBusinessTranslationMeta(int $bizId, int $langId, ?string $metaTitle, ?string $metaDesc)
     {
-        return redirect()->route('admin.meta-tags.categories')->with('info', 'Categories FAQs Meta Tags module will be available next.');
+        $bizTrans = BusinessTranslation::where('business_id', $bizId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($bizTrans) {
+            $bizTrans->meta_title = $metaTitle;
+            $bizTrans->meta_description = $metaDesc;
+            $bizTrans->save();
+            return $bizTrans;
+        }
+
+        $engTrans = BusinessTranslation::where('business_id', $bizId)->where('lang_id', 1)->first();
+        $baseSlug = $engTrans?->slug ?: ('business-' . $bizId);
+        $targetSlug = $baseSlug . '-' . $langId;
+
+        $counter = 1;
+        while (BusinessTranslation::where('slug', $targetSlug)->exists()) {
+            $targetSlug = $baseSlug . '-' . $langId . '-' . $counter++;
+        }
+
+        return BusinessTranslation::create([
+            'business_id' => $bizId,
+            'lang_id' => $langId,
+            'status' => 1,
+            'name' => $engTrans?->name ?? ('Business #' . $bizId),
+            'slug' => $targetSlug,
+            'meta_title' => $metaTitle,
+            'meta_description' => $metaDesc,
+        ]);
     }
 
-    public function features()
+    /**
+     * Helper to update or create FeatureTransalte meta fields.
+     */
+    protected function saveFeatureTranslationMeta(int $featId, int $langId, ?string $metaTitle, ?string $metaDesc)
     {
-        return redirect()->route('admin.meta-tags.categories')->with('info', 'Features Meta Tags module will be available next.');
+        $featTrans = FeatureTransalte::where('feature_id', $featId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($featTrans) {
+            $featTrans->meta_title = $metaTitle;
+            $featTrans->meta_description = $metaDesc;
+            $featTrans->save();
+            return $featTrans;
+        }
+
+        $engTrans = FeatureTransalte::where('feature_id', $featId)->where('lang_id', 1)->first();
+
+        return FeatureTransalte::create([
+            'feature_id' => $featId,
+            'lang_id' => $langId,
+            'name' => $engTrans?->name ?? ('Feature #' . $featId),
+            'description' => $engTrans?->description ?? '',
+            'meta_title' => $metaTitle,
+            'meta_description' => $metaDesc,
+        ]);
     }
 }

@@ -434,16 +434,31 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
         // Meta Tags Management Routes
     Route::prefix('admin-dashboard/meta-tags')->group(function () {
-        Route::get('/categories', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categories'])->name('admin.meta-tags.categories');
         Route::post('/rules/update', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateRules'])->name('admin.meta-tags.rules.update');
+
+        // Categories
+        Route::get('/categories', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categories'])->name('admin.meta-tags.categories');
         Route::post('/categories/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryMeta'])->name('admin.meta-tags.categories.update-single');
         Route::post('/categories/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryMeta'])->name('admin.meta-tags.categories.reset-single');
         Route::post('/categories/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesMeta'])->name('admin.meta-tags.categories.update-bulk');
 
-        // Subcategory placeholders
+        // Businesses
         Route::get('/businesses', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businesses'])->name('admin.meta-tags.businesses');
+        Route::post('/businesses/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessMeta'])->name('admin.meta-tags.businesses.update-single');
+        Route::post('/businesses/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessMeta'])->name('admin.meta-tags.businesses.reset-single');
+        Route::post('/businesses/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessesMeta'])->name('admin.meta-tags.businesses.update-bulk');
+
+        // Categories FAQs
         Route::get('/categories-faqs', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categoriesFaqs'])->name('admin.meta-tags.categories-faqs');
+        Route::post('/categories-faqs/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.update-single');
+        Route::post('/categories-faqs/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.reset-single');
+        Route::post('/categories-faqs/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesFaqsMeta'])->name('admin.meta-tags.categories-faqs.update-bulk');
+
+        // Features
         Route::get('/features', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'features'])->name('admin.meta-tags.features');
+        Route::post('/features/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleFeatureMeta'])->name('admin.meta-tags.features.update-single');
+        Route::post('/features/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetFeatureMeta'])->name('admin.meta-tags.features.reset-single');
+        Route::post('/features/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkFeaturesMeta'])->name('admin.meta-tags.features.update-bulk');
     });
 
     // All Categories Page Content Route

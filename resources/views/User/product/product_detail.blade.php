@@ -18,14 +18,14 @@
 @section('body_class', 'product-page-body')
 
 @php
-$lang_id = getCurrentLanguageID();
-$bTranslation = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
-$bName = $bTranslation->name ?? 'Product';
-$pageMetaTitle = !empty($bTranslation->meta_title) ? $bTranslation->meta_title : (!empty($business->meta_title) ? $business->meta_title : $bName);
-$pageMetaDescription = !empty($bTranslation->meta_description) ? $bTranslation->meta_description : (!empty($business->meta_description) ? $business->meta_description : ($bTranslation->short_description ?? ''));
+$matchedLang = \App\Models\Language::where('lang_code', request()->segment(1))->first();
+$currentLangId = isset($lang_id) && $lang_id ? $lang_id : ($matchedLang ? $matchedLang->id : getCurrentLanguageID());
+$resolvedBizMeta = \App\Services\MetaTagService::resolveBusinessMeta($business, $currentLangId);
+$pageMetaTitle = !empty($metaTitle) ? $metaTitle : $resolvedBizMeta['title'];
+$pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBizMeta['description'];
 @endphp
 
-@section('meta_title', format_meta_text($pageMetaTitle, $bName))
+@section('meta_title', format_meta_text($pageMetaTitle))
 @if(!empty($pageMetaDescription))
 @section('meta_description', format_meta_text($pageMetaDescription))
 @endif

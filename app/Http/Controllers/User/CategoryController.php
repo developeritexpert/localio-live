@@ -139,7 +139,7 @@ class CategoryController extends Controller
                    ? $catTrans->meta_description
                    : strip_tags($catTrans->description ?? '');
 
-               // Check CategoryFeatureContent for feature-specific meta tags
+               // Check Feature Meta Tags (Cascade or Custom Override)
                if (!empty($feature_slug)) {
                    $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($feature_slug) {
                        $q->where('name', 'LIKE', str_replace('-', ' ', $feature_slug))
@@ -147,24 +147,9 @@ class CategoryController extends Controller
                    })->first();
 
                    if ($matchedFeat) {
-                       $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
-                           ->where('feature_id', $matchedFeat->id)
-                           ->where('lang_id', $lang_id)
-                           ->first();
-                       if (!$featContent && $category->parent_id) {
-                           $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->parent_id)
-                               ->where('feature_id', $matchedFeat->id)
-                               ->where('lang_id', $lang_id)
-                               ->first();
-                       }
-                       if ($featContent) {
-                           if (!empty($featContent->meta_title)) {
-                               $metaTitle = $featContent->meta_title;
-                           }
-                           if (!empty($featContent->meta_description)) {
-                               $metaDescription = $featContent->meta_description;
-                           }
-                       }
+                       $resolvedFeatMeta = \App\Services\MetaTagService::resolveFeatureMeta($matchedFeat, $category, $lang_id);
+                       $metaTitle = $resolvedFeatMeta['title'];
+                       $metaDescription = $resolvedFeatMeta['description'];
                    }
                }
 
@@ -466,10 +451,15 @@ class CategoryController extends Controller
             ];
         }
 
+        $resolvedFaqMeta = \App\Services\MetaTagService::resolveCategoryFaqMeta($category, $lang_id);
+        $faqMetaTitle = $resolvedFaqMeta['title'];
+        $faqMetaDesc = $resolvedFaqMeta['description'];
+
         return view('User.category.category_faqs', compact(
             'category', 'categoryTranslation', 'parentCategory', 'parentTrans', 
             'catName', 'faqs', 'recentReviews', 'topBusinesses', 'lang_id',
-            'exploreSubcategories', 'faqSlug'
+            'exploreSubcategories', 'faqSlug', 'locale',
+            'faqMetaTitle', 'faqMetaDesc'
         ));
     }
 

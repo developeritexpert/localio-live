@@ -157,17 +157,16 @@
     $parentCatName = $parentTrans->name ?? ($parentCategory->name ?? null);
     $parentCatSlug = $parentTrans->slug ?? ($parentCategory->slug ?? null);
     $catDesc = strip_tags($categoryTranslation->description ?? '');
-    $faqMetaTitle = !empty($categoryTranslation->faq_meta_title) 
-        ? $categoryTranslation->faq_meta_title 
-        : "{$catName} FAQs & Questions Answered | Localio";
-    $faqMetaDesc = !empty($categoryTranslation->faq_meta_description) 
-        ? $categoryTranslation->faq_meta_description 
-        : (!empty($catDesc) ? "Find answers to frequently asked questions about {$catName} providers, features, pricing, and reviews on Localio." : null);
+    $matchedLang = \App\Models\Language::where('lang_code', request()->segment(1))->first();
+    $currentLangId = isset($lang_id) && $lang_id ? $lang_id : ($matchedLang ? $matchedLang->id : getCurrentLanguageID());
+    $resolvedFaqMeta = \App\Services\MetaTagService::resolveCategoryFaqMeta($category, $currentLangId);
+    $pageFaqTitle = !empty($faqMetaTitle) ? $faqMetaTitle : $resolvedFaqMeta['title'];
+    $pageFaqDesc = !empty($faqMetaDesc) ? $faqMetaDesc : $resolvedFaqMeta['description'];
 @endphp
 
-@section('meta_title', format_meta_text($faqMetaTitle))
+@section('meta_title', format_meta_text($pageFaqTitle))
 @if(!empty($faqMetaDesc))
-@section('meta_description', format_meta_text($faqMetaDesc))
+@section('meta_description', format_meta_text($pageFaqDesc))
 @endif
 
 @section('content')
