@@ -780,9 +780,11 @@ class TopRatedProduct extends Component
     public function hasActiveFilters()
     {
         return !empty($this->selectedOptions)
-            || !empty($this->searchTerm)
+            || !empty(trim($this->searchTerm ?? ''))
             || !empty($this->selectedRatings)
-            || $this->isPriceFilterActive;
+            || $this->isPriceFilterActive
+            || ($this->minPrice > 0)
+            || ($this->maxPrice < $this->maxPriceValue);
     }
 
     public function removeFilter($optionId)

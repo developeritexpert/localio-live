@@ -1055,7 +1055,7 @@
                                         <p class="m-0 showing-p">
                                             Showing {{$from}}-{{$to}} of {{$total}}
                                         </p>
-                                        @else
+                                        @elseif($products->count() > 0)
                                         <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
@@ -1488,16 +1488,21 @@
                                     @endif
                                 </div>
 
+                                @if($products->count() > 0)
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
-
                                 </div>
+                                @endif
 
-                                <div class="alert alert-info" style="background-color:#f7f9fb;">
-                                    <p class="mb-2 text-center fs-4 text-secondary">Sorry, we don't have any Products
-                                        that match your filters. Try adjusting them to see more options.</p>
+                                <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    @if ($this->hasActiveFilters())
+                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                        <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
+                                    @else
+                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                    @endif
                                 </div>
                             </div>
                             {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">
