@@ -27,7 +27,7 @@
     $reviewsWord = static_text('reviews_word') !== 'reviews_word' ? static_text('reviews_word') : 'reviews';
     $subHeadline = static_text('business_reviews_subheadline') !== 'business_reviews_subheadline' 
         ? static_text('business_reviews_subheadline') 
-        : 'Real reviews, community discussions & alternatives';
+        : 'Real reviews, user discussions & alternatives ';
 
     $reviewsTitle1 = !empty($bTranslation->reviews_title) ? $bTranslation->reviews_title : "What is {$bName}";
     $reviewsDesc1 = $bTranslation->reviews_description ?? '';
