@@ -1,4 +1,5 @@
 @extends('user_layout.master')
+@section('meta_robots', 'noindex')
 @section('content')
 <style>
     body { background-color: #f9f9f9; }

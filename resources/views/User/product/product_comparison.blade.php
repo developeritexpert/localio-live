@@ -74,6 +74,7 @@
                         @if(!empty($business->is_affiliate))
                             <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
                                 target="_blank"
+                                rel="sponsored"
                                 class="sticky-comp-btn-orange">
                                 {{ static_text('visit_website') ?: 'Visit website' }}
                                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
@@ -297,6 +298,7 @@
                                                 @if(!empty($business->is_affiliate))
                                                 <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}"
                                                     target="_blank"
+                                                    rel="sponsored"
                                                     class="btn-orng  cta cta_orange  d-flex align-items-center justify-content-center"
                                                     style="white-space: nowrap;">
                                                     {{ static_text('visit_website') ?: 'Visit website' }}
@@ -625,7 +627,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="mt-3">
-                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" style="font-size: 13px; font-weight: 600; color: #06498b; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">View pricing</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -640,7 +642,7 @@
                                                     <h6 class="blue-text big-bld mt-2">Free Trial<br>Available</h6>
                                                 </div>
                                                 <div class="mt-3">
-                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" class="blue-btn blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
+                                                    <a href="{{ $business->getTrackedUrl() ?? $business->affiliate_link ?? $business->permanent_url ?? 'javascript:void(0)' }}" target="_blank" rel="sponsored" class="blue-btn blue_t_org_btn btn text-white w-100 fw-semibold" style=" border-radius: 50px; font-size: 13px; padding: 8px 16px; text-decoration: none;">Claim Now</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -711,7 +713,7 @@
 
                                 {{-- Show Visit website button ONLY if affiliated --}}
                                 @if(!empty($business->is_affiliate))
-                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center ms-2 flex-shrink-0" target="_blank" style="display: inline-flex !important; align-items: center;  padding: 8px 18px; font-size: 12px;  white-space: nowrap; text-decoration: none;">
+                                    <a href="{{ $business->getTrackedUrl() }}" class="cta btn-orng justify-content-center ms-2 flex-shrink-0" target="_blank" rel="sponsored" style="display: inline-flex !important; align-items: center;  padding: 8px 18px; font-size: 12px;  white-space: nowrap; text-decoration: none;">
                                         {{ static_text('visit_website') ?: 'Visit website' }}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 5px; flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                     </a>
@@ -849,7 +851,7 @@
                                                 <div class="asn-rating" style="display: flex; flex-direction: column; padding-right: 75px;">
                                                     <h6 style="font-size: 14.5px; font-weight: 600; margin: 0; color: #1e3050;">
                                                         @if ($revUser)
-                                                            <a href="{{ route('user.profile', ['id' => $revUser->id]) }}" style="color: inherit; ">
+                                                            <a href="{{ $revUser->profileUrl() }}" style="color: inherit; ">
                                                                 {{ $revUser->displayName() }}
                                                             </a>
                                                         @else

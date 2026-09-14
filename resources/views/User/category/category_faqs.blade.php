@@ -486,7 +486,7 @@
                                             <div>
                                                 <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                                 @if(isset($rev) && $rev->user_id)
-                                                    <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                    <a href="{{ optional($rev->user ?? ($u ?? null))->profileUrl() ?? route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
                                                         {{ $displayName }}
                                                     </a>
                                                 @else

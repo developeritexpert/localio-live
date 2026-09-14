@@ -78,6 +78,9 @@
     @else
     <meta name="description" content="{{ $metaDescription }}">
     @endif
+    @hasSection('meta_robots')
+    <meta name="robots" content="@yield('meta_robots')">
+    @endif
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">

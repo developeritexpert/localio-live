@@ -336,7 +336,7 @@
             </div>
             @if(!empty($business->is_affiliate))
             <div class="col-md-4 col-12 text-md-end text-start mt-md-0 mt-3">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" rel="sponsored" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
@@ -600,7 +600,7 @@
 
                                 @if ($business->is_affiliate)
                                     <a href="{{ $business->getTrackedUrl() }}"
-                                        target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
+                                        target="_blank" rel="sponsored" class="btn-orng cta cta_orange w-100 mb-3"
                                         style="font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
                                         {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 11px;"></i>
                                     </a>
@@ -771,7 +771,7 @@
                                 </div>
                                 <h6 class="blue-text big-bld" style="font-size: 16px; font-weight: 700; color: #002347;">Free trial available</h6>
                                 <div class="accor-btn mt-2">
-                                    <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="blue-btn cta" style="text-transform:none !important; padding: 6px 20px;">Claim now</a>
+                                    <a href="{{ $business->getTrackedUrl() }}" target="_blank" rel="sponsored" class="blue-btn cta" style="text-transform:none !important; padding: 6px 20px;">Claim now</a>
                                 </div>
                             </div>
                             @endif
@@ -813,7 +813,7 @@
                                             <div>
                                                 <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
         @if(isset($rev) && $rev->user_id)
-            <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ optional($rev->user ?? ($u ?? null))->profileUrl() ?? route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
                 {{ $displayName }}
             </a>
         @else

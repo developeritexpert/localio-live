@@ -11,7 +11,7 @@
                 <div class="reviw_hd" style="margin-bottom: 20px; border-bottom: none; padding-bottom: 0;">
                     <div class="ans_lft" style="display: flex; gap: 12px; align-items: flex-start;">
                         <div class="asn-img" style="flex-shrink: 0;">
-                            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
+                            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
 @if ($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                 <img src="{{ asset($review->user->profile_image) }}"
                                     class="img-fluid profile-circle"
@@ -37,7 +37,7 @@
                                 @else
                                     
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ method_exists($review->user, 'displayName') ? $review->user->displayName() : ($review->user->first_name ?? 'Anonymous') }}
             </a>
         @else

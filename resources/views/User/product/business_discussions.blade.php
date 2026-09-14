@@ -267,7 +267,7 @@
                                     <div class="d-flex align-items-start gap-2">
                                         <div class="asn-img" style="flex-shrink: 0;">
                                             @if ($disc->user && $disc->user->profile_image && $disc->user->profile_image !== 'front/img/default.png')
-                                                <a href="{{ route('user.profile', ['id' => $disc->user_id]) }}" style="display: block; text-decoration: none;">
+                                                <a href="{{ $disc->user->profileUrl() }}" style="display: block; text-decoration: none;">
                                                     <img src="{{ asset($disc->user->profile_image) }}"
                                                         class="img-fluid profile-circle"
                                                         style="width: 48px; height: 48px; object-fit: cover; border-radius: 50%;"
@@ -291,7 +291,7 @@
                                         <div class="asn-rating" style="display: flex; flex-direction: column;">
                                             <p style="font-size: 15px; font-weight: 600; margin: 0; color: #1e3050; line-height: 1.2;">
                                                 @if ($disc->user)
-                                                    <a href="{{ route('user.profile', ['id' => $disc->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                    <a href="{{ $disc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
                                                         {{ $disc->author_display_name }}
                                                     </a>
                                                 @else

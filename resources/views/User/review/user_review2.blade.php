@@ -137,7 +137,7 @@
             </div>
             @if(!empty($business->is_affiliate))
             <div class="col-md-4 col-12 text-md-end text-start is_affiliate_btn">
-                <a href="{{ $business->getTrackedUrl() }}" target="_blank" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
+                <a href="{{ $business->getTrackedUrl() }}" target="_blank" rel="sponsored" class="btn" style="background-color: #ff5722; color: #ffffff; font-weight: 600; font-size: 15px; padding: 12px 28px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition:unset;" onmouseover="this.style.backgroundColor='#e64a19';" onmouseout="this.style.backgroundColor='#ff5722';">
                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 13px;"></i>
                 </a>
             </div>
@@ -696,7 +696,7 @@
                                     <div class="sidebar-review-card {{ !$loop->last ? 'pb-4 mb-4' : '' }}" style="{{ !$loop->last ? 'border-bottom: 1px solid #f0f0f0;' : '' }}">
                                         <div class="review-header" style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                                             <div class="review-user" style="display: flex; align-items: center; gap: 12px;">
-                                                <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
+                                                <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="text-decoration: none;">
 @if($review->user && $review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
                                                     <img src="{{ asset($review->user->profile_image) }}"
                                                         class="rounded-circle"
@@ -722,7 +722,7 @@
                                                         @else
                                                             
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit; text-decoration: none;">
                 {{ $review->user->displayName() }}
             </a>
         @else
@@ -820,7 +820,7 @@
                                                 'action' => 'visit_website',
                                                 'label' => 'Visit Website',
                                             ]) }}"
-                                            target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
+                                            target="_blank" rel="sponsored" class="btn-orng cta cta_orange w-100 mb-3"
                                             style="font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
                                             {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 11px;"></i>
                                         </a>

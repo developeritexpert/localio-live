@@ -1444,7 +1444,7 @@
                                             $firstImg = Str::startsWith($sliderImages[0], ['http://', 'https://']) ? $sliderImages[0] : asset($sliderImages[0]);
                                         @endphp
                                         <div class="business-main-preview mb-3">
-                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                                                 <img src="{{ $firstImg }}" alt="{{ $bName }}" id="main-preview-img-{{ $biz->id }}" class="img-fluid w-100 preview-main-display" >
                                             </a>
                                         </div>
@@ -1650,7 +1650,7 @@
                                         @endphp
                                     <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                         <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                 <div class="top-product-small-logo">
                                                     <x-business-logo :business="$biz" :name="$bName" />
                                                 </div>
@@ -1761,7 +1761,7 @@
                                             @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                             <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
+                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                     <div class="top-product-small-logo">
                                                         <x-business-logo :business="$biz" :name="$bName" />
                                                     </div>

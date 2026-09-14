@@ -107,6 +107,30 @@ class User extends Authenticatable
          return $firstName;
      }
 
+     public function getFormattedIdAttribute()
+     {
+         return str_pad((string)$this->id, 6, '0', STR_PAD_LEFT);
+     }
+
+     public function getProfileSlugAttribute()
+     {
+         $firstName = trim($this->first_name ?? '');
+         $lastName = trim($this->last_name ?? '');
+         $name = trim($firstName . ' ' . $lastName);
+         $slug = \Illuminate\Support\Str::slug($name ?: 'reviewer', '_');
+         return $slug ?: 'reviewer';
+     }
+
+     public function profileUrl($locale = null)
+     {
+         $loc = $locale ?: (session('lang_code') ?: (request()->route('locale') ?: 'en-us'));
+         return route('user.profile', [
+             'locale' => strtolower($loc),
+             'id' => $this->formatted_id,
+             'slug' => $this->profile_slug,
+         ]);
+     }
+
     public function getContributorBadge()
     {
         // Cache per request instance to avoid multiple DB calls for the same user in a loop

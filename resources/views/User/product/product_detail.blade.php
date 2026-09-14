@@ -349,7 +349,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         'action' => 'visit_website',
                                                         'label' => 'Visit Website',
                                                     ]) }}"
-                                                class="btn-orng cta cta_orange d-flex align-items-center" target="_blank"
+                                                class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored"
                                                 tabindex="0">
                                                 {{ static_text('visit_website') ?: 'Visit website' }}
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;">
@@ -674,7 +674,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             'action' => 'visit_website',
                                                                             'label' => 'Visit Website',
                                                                         ]) }}"
-                                                target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
+                                                target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
                                                 <img src="{{ $imgSrc }}"
                                                     alt="Business Image {{ $index + 1 }}" class="img-fluid w-100 preview-main-display"
                                                     style="width: 100%; max-height: 650px; min-height: 250px; object-fit: cover; border-radius: 8px;">
@@ -2111,6 +2111,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             'label' => 'View pricing',
                         ]) }}"
                         target="_blank"
+                        rel="sponsored"
                         class="starting-price-link">
                         View pricing
                     </a>
@@ -2244,7 +2245,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div>
                                                             <p style="line-height:1">
                                                                 @if($review->user)
-                                                                <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+                                                                <a href="{{ $review->user->profileUrl() }}" style="color: inherit;">
                                                                     {{ $review->user->displayName() }}
                                                                 </a>
                                                                 @else
@@ -2336,7 +2337,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div>
                                                             <p style="line-height:1">
                                                                 @if($pDisc->user)
-                                                                <a href="{{ route('user.profile', ['id' => $pDisc->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                                <a href="{{ $pDisc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
                                                                     {{ $pDisc->author_display_name }}
                                                                 </a>
                                                                 @else
@@ -2433,7 +2434,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 'action' => 'visit_website',
                                                                 'label' => 'Visit Website',
                                                             ]) }}"
-                                                    target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
+                                                    target="_blank" rel="sponsored" class="btn-orng cta cta_orange w-100 mb-3"
                                                     style="font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
                                                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2"
                                                         style="font-size: 11px;"></i>
@@ -2523,7 +2524,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                     'action' => 'visit_website',
                     'label' => 'Visit Website',
                 ]) }}"
-                                                target="_blank" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
+                                                target="_blank" rel="sponsored" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
                                                 {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
                                             </a>
                                             @endif
@@ -3272,6 +3273,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 <div class="gallery-header-cta">
                     <a href="{{ $business->affiliate_link ?? $business->permanent_url }}"
                         target="_blank"
+                        rel="sponsored"
                         class="cta cta_orange"
                         style="padding: 12px 24px; font-weight: 600; border-radius: 30px; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                         {{ static_text('visit_website') ?: 'Visit website' }}

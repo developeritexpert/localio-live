@@ -570,6 +570,10 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     // All Categories page
     Route::get('/categories', [CategoryController::class, 'index'])->name('category');
 
+    // User Profile Routes (Must be above 3-segment generic routes)
+    Route::get('/user/{id}/{slug?}', [UserController::class, 'profile'])->name('user.profile');
+    Route::get('/reviewer/{id}', [UserController::class, 'legacyProfileRedirect'])->name('user.profile.legacy');
+
     // 3-Segment Subcategory Feature Detail Route
     Route::get('/{category_slug}/{subcategory_slug}/{feature_slug}', [CategoryController::class, 'subCategoryFeatureDetail'])->name('category.subcategory.feature');
     
@@ -577,7 +581,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
 
     // Product Controller
     // Top-Rated FAQs
-    Route::get('/reviewer/{id}', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/top-rated/faq', [ProductController::class, 'topRatedFaq'])->name('top-rated.faq');
     Route::get('/top-rated/faqs', [ProductController::class, 'topRatedFaq'])->name('top-rated.faqs');
     Route::get('/top-rated/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');

@@ -139,6 +139,7 @@
                                         @if(!empty($business->is_affiliate))
                                         <a href="{{ $business->getTrackedUrl() }}"
                                            target="_blank"
+                                           rel="sponsored"
                                            class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
                                            style="border-radius: 30px; font-size: 11px; text-align: center; transition:unset !important;">
                                             {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>

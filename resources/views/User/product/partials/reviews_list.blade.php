@@ -25,7 +25,7 @@
                             
 <div class="asn-img" style="flex-shrink: 0;">
     @if ($review->user)
-        <a href="{{ route('user.profile', ['id' => $review->user_id]) }}"
+        <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}"
             style="display: block; text-decoration: none;">
 
             @if ($review->user->profile_image && $review->user->profile_image !== 'front/img/default.png')
@@ -60,7 +60,7 @@
                                     @else
                                         
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else
@@ -284,7 +284,7 @@
                                         @else
                                             
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else
@@ -447,7 +447,7 @@
                                     @else
                                         
         @if($review->user)
-            <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+            <a href="{{ optional($review->user)->profileUrl() ?? route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
                 {{ $review->user->displayName() }}
             </a>
         @else
