@@ -334,7 +334,7 @@
                                                                 if ($criterion->default_key) {
                                                                     $q->where('default_key', $criterion->default_key);
                                                                 }
-                                                                $q->orWhereRaw('LOWER(name) = ?', [strtolower($criterion->name)]);
+                                                                $q->orWhereRaw('LOWER(name) = ?', [strtolower((string) $criterion->name)]);
                                                             })
                                                             ->pluck('id')
                                                             ->toArray();
@@ -351,7 +351,7 @@
                                                         } else {
                                                             foreach ($activeReviews as $review) {
                                                                 $legacyVal = null;
-                                                                $cName = strtolower($criterion->name);
+                                                                $cName = strtolower((string) $criterion->name);
                                                                 if ($cName === 'ease of use') {
                                                                     $legacyVal = $review->ease_of_use_rating;
                                                                 } elseif ($cName === 'customer service') {
@@ -909,14 +909,14 @@
                                                                         $match = $rev->ratings->first(fn($r) => optional($r->criteria)->default_key === $criterion->default_key);
                                                                     }
                                                                     if (!$match) {
-                                                                        $match = $rev->ratings->first(fn($r) => strtolower(optional($r->criteria)->name) === strtolower($criterion->name));
+                                                                        $match = $rev->ratings->first(fn($r) => strtolower((string) optional($r->criteria)->name) === strtolower((string) $criterion->name));
                                                                     }
                                                                     if ($match && !is_null($match->rating)) {
                                                                         $scoreVal = (float) $match->rating;
                                                                     }
                                                                 }
                                                                 if (is_null($scoreVal)) {
-                                                                    $cName = strtolower($criterion->name);
+                                                                    $cName = strtolower((string) $criterion->name);
                                                                     $cKey = $criterion->default_key;
                                                                     if ($cKey === 'ease_of_use' || $cName === 'ease of use') {
                                                                         $scoreVal = $rev->ease_of_use_rating;

@@ -130,14 +130,14 @@
                                                 $match = $review->ratings->first(fn($r) => optional($r->criteria)->default_key === $criterion->default_key);
                                             }
                                             if (!$match) {
-                                                $match = $review->ratings->first(fn($r) => strtolower(optional($r->criteria)->name) === strtolower($criterion->name));
+                                                $match = $review->ratings->first(fn($r) => strtolower((string) optional($r->criteria)->name) === strtolower((string) $criterion->name));
                                             }
                                             if ($match && !is_null($match->rating)) {
                                                 $scoreVal = (float) $match->rating;
                                             }
                                         }
                                         if (is_null($scoreVal)) {
-                                            $cName = strtolower($criterion->name);
+                                            $cName = strtolower((string) $criterion->name);
                                             $cKey = $criterion->default_key;
                                             if ($cKey === 'ease_of_use' || $cName === 'ease of use') {
                                                 $scoreVal = $review->ease_of_use_rating;
@@ -342,14 +342,14 @@
                                                     $match = $review->ratings->first(fn($r) => optional($r->criteria)->default_key === $criterion->default_key);
                                                 }
                                                if (!$match) {
-                                                    $match = $review->ratings->first(fn($r) => strtolower(optional($r->criteria)->name) === strtolower($criterion->name));
+                                                    $match = $review->ratings->first(fn($r) => strtolower((string) optional($r->criteria)->name) === strtolower((string) $criterion->name));
                                                 }
                                                 if ($match && !is_null($match->rating)) {
                                                     $scoreVal = (float) $match->rating;
                                                 }
                                             }
                                             if (is_null($scoreVal)) {
-                                                $cName = strtolower($criterion->name);
+                                                $cName = strtolower((string) $criterion->name);
                                                 $cKey = $criterion->default_key;
                                                 if ($cKey === 'ease_of_use' || $cName === 'ease of use') {
                                                     $scoreVal = $review->ease_of_use_rating;
