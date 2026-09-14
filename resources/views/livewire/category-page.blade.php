@@ -480,8 +480,7 @@
                                 {{ $applyDynamicVars($baseTitle) }}
                             </h1>
 
-                            <p class="text-meta">Last updated on
-                                {{ now()->format('F j, Y') }}</p>
+                            <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                     <div class="host-parra row align-items-start">
                         <div class="col-md-6 text-start">
                             
@@ -527,7 +526,7 @@
                         <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 500px;">
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
-                                    <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                    <p style="margin: 0; font-weight: 600; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
@@ -543,7 +542,7 @@
                                 <div class="row align-items-start">
                                     <div class="col-md-6 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
-                                        <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
+                                        <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                             {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
                                         </p>
@@ -957,7 +956,7 @@
                                         <p class="m-0 showing-p">
                                             Showing {{$from}}-{{$to}} of {{$total}}
                                         </p>
-                                        @else
+                                        @elseif($products->count() > 0)
                                         <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
@@ -1279,6 +1278,10 @@
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
             </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
+            </p>
         @endif
 
     </div>
@@ -1352,16 +1355,21 @@
                             @else
 
                             <div class="auto-choice-rgt">
+                                @if($products->count() > 0)
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
-
                                 </div>
+                                @endif
 
-                                <div class="alert alert-info" style="background-color:#f7f9fb;">
-                                    <p class="mb-2 text-center fs-4 text-secondary">Sorry, we don't have any Products
-                                        that match your filters. Try adjusting them to see more options.</p>
+                                <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    @if ($this->hasActiveFilters())
+                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                        <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
+                                    @else
+                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                    @endif
                                 </div>
                             </div>
                             {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">
@@ -1444,7 +1452,7 @@
                                             $firstImg = Str::startsWith($sliderImages[0], ['http://', 'https://']) ? $sliderImages[0] : asset($sliderImages[0]);
                                         @endphp
                                         <div class="business-main-preview mb-3">
-                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                                                 <img src="{{ $firstImg }}" alt="{{ $bName }}" id="main-preview-img-{{ $biz->id }}" class="img-fluid w-100 preview-main-display" >
                                             </a>
                                         </div>
@@ -1491,7 +1499,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1510,7 +1518,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1650,7 +1658,7 @@
                                         @endphp
                                     <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                         <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                 <div class="top-product-small-logo">
                                                     <x-business-logo :business="$biz" :name="$bName" />
                                                 </div>
@@ -1678,9 +1686,11 @@
                                             {{ $recommendPercent }}%
                                         </td>
                                         <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
-                                            @if($bizStartingPrice && $bizAmount !== null)
+                                            @if($bizStartingPrice && $bizAmount !== null && !empty($biz->is_affiliate))
                                                 <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
-                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                @if(!empty($bizStartingPrice['additional_info']) && !in_array(strtoupper(trim((string)$bizStartingPrice['additional_info'])), ['NA', 'N/A', 'NULL']))
+                                                    <span style="font-size: 12px; color: #5b6b7a;"> {{ $bizStartingPrice['additional_info'] }}</span>
+                                                @elseif(!empty($bizTimeUnit) && !in_array($bizTimeUnit, ['one_time', 'na', 'n/a', 'null']))
                                                     <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
                                                 @endif
                                             @else
@@ -1761,7 +1771,7 @@
                                             @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                             <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
+                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                     <div class="top-product-small-logo">
                                                         <x-business-logo :business="$biz" :name="$bName" />
                                                     </div>
@@ -2303,36 +2313,55 @@
             $catFaqName = $catTrans->name ?? $category->name ?? 'Category';
             $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
             $faqSubtext = $catTrans->category_faqs_subtext ?? null;
+            $catFaqSlug = $catTrans->slug ?? $category->slug ?? '';
+            $categoryFaqsUrl = url('/' . app()->getLocale() . '/' . $catFaqSlug . '/faqs');
         @endphp
         <section class="category-faqs-sec cat-faq-sec py-5" style="">
             <div class="container">
-                <div class="row ">
-                    <div class="">
-                        <div class="text-start mb-4">
-                            <h2 style="margin-bottom: 8px;">
-                                {{ $faqHeadline }}
-                            </h2>
-                            @if(!empty($faqSubtext))
-                                <div class="category-faqs-subtext" style="color: #002347; margin: 0;">
-                                    {!! $faqSubtext !!}
-                                </div>
-                            @else
-                                <p style="color: #002347; margin: 0;">
-                                    Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
-                                </p>
-                            @endif
+                <div class="row">
+                    <div class="col-12">
+                        <div class="row align-items-center mb-4">
+                            <div class="col-lg-7 col-md-6 col-12 text-start mb-3 mb-md-0">
+                                <h2 style="margin-bottom: 8px; font-size: 24px; font-weight: 700; color: #002347;">
+                                    {{ $faqHeadline }}
+                                </h2>
+                                @if(!empty($faqSubtext))
+                                    <div class="category-faqs-subtext" style="color: #475569; margin: 0; font-size: 15px;">
+                                        {!! $faqSubtext !!}
+                                    </div>
+                                @else
+                                    <p style="color: #475569; margin: 0; font-size: 15px;">
+                                        Common questions and answers about {{ strtolower($catFaqName) }} solutions and comparison criteria.
+                                    </p>
+                                @endif
+                            </div>
+
+                            <div class="col-lg-5 col-md-6 col-12">
+                                <form action="{{ $categoryFaqsUrl }}" method="GET" class="category-faq-search-form" id="categoryFaqSearchForm">
+                                    <div class="input-group" style="border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
+                                        <span class="input-group-text bg-white border-0 ps-3 pe-2" style="color: #94a3b8;">
+                                            <i class="fas fa-search" style="font-size: 15px;"></i>
+                                        </span>
+                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none ps-1 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
+                                        <button type="submit" class="btn px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #002347; color: #ffffff; font-size: 13.5px; border-radius: 0; height: 46px;" title="Search FAQs">
+                                            <span>Search</span>
+                                            <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <div class="accordion" id="categoryFaqAccordion">
                             @foreach($faqs as $fIndex => $faq)
-                            <div class="accordion-item mb-3" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                            <div class="accordion-item mb-3 category-faq-item" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                                 <h3 class="accordion-header" id="headingFaq{{ $fIndex }}">
                                     <button class="accordion-button {{ $fIndex !== 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="collapseFaq{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                         {{ $faq['question'] }}
                                     </button>
                                 </h3>
                                 <div id="collapseFaq{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="headingFaq{{ $fIndex }}" data-bs-parent="#categoryFaqAccordion">
-                                    <div class="accordion-body rich-text-content" style="background-color: #fff;">
+                                    <div class="accordion-body rich-text-content category-faq-answer" style="background-color: #fff;">
                                         {!! $faq['answer'] !!}
                                     </div>
                                 </div>
@@ -2340,8 +2369,17 @@
                             @endforeach
                         </div>
 
+                        <div id="categoryFaqNoResults" class="text-center py-4 px-3 mb-3 bg-white rounded-3 shadow-sm d-none" style="border: 1px dashed #cbd5e1;">
+                            <p class="text-muted mb-2" style="font-size: 14.5px;">
+                                No preview FAQs match "<span id="categoryFaqSearchTerm" class="fw-semibold text-dark"></span>".
+                            </p>
+                            <a id="categoryFaqSearchAllLink" href="{{ $categoryFaqsUrl }}" class="btn btn-sm btn-primary px-3 py-2" style="background-color: #002347; border-color: #002347; font-size: 13px; border-radius: 6px;">
+                                Search all FAQs on the FAQs page <i class="fas fa-arrow-right ms-1" style="font-size: 11px;"></i>
+                            </a>
+                        </div>
+
                         <div class="text-center mt-4">
-                            <a href="{{ url('/' . app()->getLocale() . '/' . ($category->translations->slug ?? $category->slug) . '/faqs') }}" class="btn-g-link">
+                            <a href="{{ $categoryFaqsUrl }}" class="btn-g-link">
                                 View all FAQs
                             </a>
                         </div>
@@ -2349,7 +2387,61 @@
                 </div>
             </div>
         </section>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const catFaqInput = document.getElementById('categoryFaqSearchInput');
+            const catFaqItems = document.querySelectorAll('#categoryFaqAccordion .category-faq-item');
+            const catFaqNoResults = document.getElementById('categoryFaqNoResults');
+            const catFaqSearchTerm = document.getElementById('categoryFaqSearchTerm');
+            const catFaqSearchAllLink = document.getElementById('categoryFaqSearchAllLink');
+            const baseFaqUrl = "{{ $categoryFaqsUrl }}";
+
+            if (catFaqInput && catFaqItems.length > 0) {
+                catFaqInput.addEventListener('input', function() {
+                    const query = this.value.toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    catFaqItems.forEach(item => {
+                        const qText = item.querySelector('.accordion-button')?.textContent.toLowerCase() || '';
+                        const aText = item.querySelector('.category-faq-answer')?.textContent.toLowerCase() || '';
+                        if (query === '' || qText.includes(query) || aText.includes(query)) {
+                            item.style.display = 'block';
+                            visibleCount++;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    if (catFaqNoResults) {
+                        if (visibleCount === 0 && query !== '') {
+                            catFaqNoResults.classList.remove('d-none');
+                            if (catFaqSearchTerm) catFaqSearchTerm.textContent = catFaqInput.value.trim();
+                            if (catFaqSearchAllLink) {
+                                catFaqSearchAllLink.href = baseFaqUrl + '?q=' + encodeURIComponent(catFaqInput.value.trim());
+                            }
+                        } else {
+                            catFaqNoResults.classList.add('d-none');
+                        }
+                    }
+                });
+            }
+        });
+        </script>
         @endif
+
+        <!-- 6. Category Community Discussions Section -->
+        @php
+            $catTransForDisc = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+                ? $category->translations->first() 
+                : ($category->translations ?? $category->translation);
+            $catDiscName = $catTransForDisc->name ?? $category->name ?? 'Category';
+        @endphp
+        <section class="category-discussions-sec py-5" id="categoryDiscussionsSection" style="background: #ffffff; border-top: 1px solid #e2e8f0;">
+            <div class="container">
+                <x-community-discussion :category="$category" :bName="$catDiscName" />
+            </div>
+        </section>
 
         <section class="subs_sec light ">
             {{-- <div class="container">

@@ -199,11 +199,12 @@
         top: 0;
         left: -320px;
         width: 320px;
+        max-width: 85%;
         height: 100vh;
         background: #002347;
         z-index: 99999;
-        transition: .3s;
-        overflow-y: auto;
+        transition: left .3s ease;
+        overflow: hidden;
         box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
     }
 
@@ -1124,189 +1125,152 @@
 
 
                         <style>
-                        /* Explicitly hide on desktop, same pattern as .mobile-sidebar */
                         @media (min-width: 992px) {
-
-                            .mobile-cat-panel,
-                            .mobile-cat-overlay {
+                            .mobile-sidebar,
+                            .mobile-sidebar-overlay {
                                 display: none !important;
                             }
                         }
 
                         @media (max-width: 991px) {
-
-                            .section_heading_link {
-                                display: block;
-                                text-decoration: none;
-                            }
-
-                            .section_heading_link .section_heading {
+                            /* Mobile Sidebar Track: Holds View 1 & View 2 side by side */
+                            .mobile-sidebar-track {
                                 display: flex;
-                                align-items: center;
-                                justify-content: space-between;
-                                cursor: pointer;
+                                width: 200%;
+                                height: 100%;
+                                transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
                             }
 
-                            .section_heading_link .fa-chevron-right {
-                                font-size: 13px;
-                                color: rgba(255, 255, 255, 0.6);
+                            .mobile-sidebar-track.slide-subcat {
+                                transform: translateX(-50%);
                             }
 
-                            /* Overlay */
-                            .mobile-cat-overlay {
-                                position: fixed;
-                                inset: 0;
-                                background: rgba(0, 0, 0, 0.5);
-                                opacity: 0;
-                                visibility: hidden;
-                                transition: 0.3s;
-                                z-index: 100001;
-                            }
-
-                            .mobile-cat-overlay.active {
-                                opacity: 1;
-                                visibility: visible;
-                            }
-
-                            /* Panel: now slides in from the LEFT — same edge as .mobile-sidebar */
-                            .mobile-cat-panel {
-                                position: fixed;
-                                top: 0;
-                                left: -320px;
-                                width: 320px;
-                                max-width: 85%;
-                                height: 100vh;
-                                background: #002347;
-                                z-index: 100002;
-                                /* higher than .mobile-sidebar so it sits above it */
-                                transition: left 0.3s ease;
+                            .mobile-sidebar-view {
+                                width: 50%;
+                                height: 100%;
+                                display: flex;
+                                flex-direction: column;
                                 overflow-y: auto;
-                                box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
+                                -webkit-overflow-scrolling: touch;
                             }
 
-                            .mobile-cat-panel.active {
-                                left: 0;
-                            }
-
-                            .mobile-cat-panel-header {
+                            /* View 2: Subcategory Header */
+                            .mobile-subcat-header {
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
                                 padding: 20px;
                                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                flex-shrink: 0;
+                                background: #002347;
                             }
 
-                            .mobile-cat-panel-title {
-                                color: #fff !important;
-                                font-size: 16px !important;
-                                font-weight: 700 !important;
-                                margin: 0 !important;
-                                text-transform: uppercase;
-                            }
-
-                            .mobile-cat-back {
+                            .mobile-subcat-back-btn {
                                 border: none;
                                 background: none;
                                 color: #fff !important;
                                 font-size: 15px;
-                                font-weight: 600;
+                                font-weight: 700;
                                 cursor: pointer;
-                                display: flex;
+                                display: inline-flex;
                                 align-items: center;
                                 gap: 8px;
-                            }
-
-                            .mobile-cat-back:hover {
-                                color: #F9633B !important;
-                            }
-
-                            .mobile-cat-close {
-                                border: none;
-                                background: none;
-                                color: #fff !important;
-                                font-size: 22px;
-                                cursor: pointer;
-                            }
-
-                            .mobile-cat-close:hover {
-                                color: #F9633B !important;
-                            }
-
-                            .mobile-cat-panel-body {
-                                padding: 10px 0;
-                            }
-
-                            .mobile-cat-list {
-                                list-style: none;
-                                margin: 0;
                                 padding: 0;
+                                transition: color 0.2s ease;
+                                line-height: 1;
                             }
 
-                            .mobile-cat-item {
-                                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                            .mobile-subcat-back-btn i {
+                                font-size: 14px;
                             }
 
-                            .mobile-cat-toggle {
-                                display: flex;
-                                align-items: center;
-                                justify-content: space-between;
-                                padding: 14px 20px;
-                                color: #fff !important;
-                                font-size: 15px;
-                                font-weight: 600 !important;
-                                text-decoration: none;
-                                cursor: pointer;
-                            }
-
-                            .mobile-cat-toggle:hover {
+                            .mobile-subcat-back-btn:hover {
                                 color: #F9633B !important;
                             }
 
-                            .mobile-cat-arrow {
+                            /* View 1: Main Categories List items */
+                            .mobile-cat-nav-btn {
+                                display: flex !important;
+                                align-items: center !important;
+                                justify-content: space-between !important;
+                                width: 100%;
+                                color: #fff !important;
+                                text-decoration: none !important;
+                                font-size: 15px;
+                                font-weight: 500 !important;
+                                padding: 8px 0 !important;
+                                transition: all 0.2s ease;
+                                cursor: pointer;
+                            }
+
+                            .mobile-cat-nav-btn:hover {
+                                color: #F9633B !important;
+                            }
+
+                            .mobile-cat-right-arrow {
                                 font-size: 12px;
-                                transition: transform 0.25s ease;
                                 color: rgba(255, 255, 255, 0.6);
-                                transform: rotate(268deg);
+                                transition: transform 0.2s ease, color 0.2s ease;
                             }
 
-                            .mobile-cat-toggle.active .mobile-cat-arrow {
-                                transform: rotate(90deg);
-                                color: #F9633B;
+                            .mobile-cat-nav-btn:hover .mobile-cat-right-arrow {
+                                color: #F9633B !important;
+                                transform: translateX(3px);
                             }
 
-                            .mobile-cat-sublist {
+                            /* View 2: Subcategories View Body */
+                            .mobile-subcat-body {
+                                padding: 10px 0 25px;
+                                flex: 1;
+                            }
+
+                            .mobile-subcat-parent-heading {
+                                padding: 14px 20px 14px;
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                            }
+
+                            .mobile-subcat-parent-link {
+                                color: #F9633B !important;
+                                font-size: 16px;
+                                font-weight: 700 !important;
+                                text-decoration: none !important;
+                                display: block;
+                                transition: opacity 0.2s ease;
+                            }
+
+                            .mobile-subcat-parent-link:hover {
+                                opacity: 0.85;
+                            }
+
+                            .mobile-subcat-items-list {
                                 list-style: none;
                                 margin: 0;
                                 padding: 0 20px;
-                                max-height: 0;
-                                overflow: hidden;
-                                transition: max-height 0.3s ease;
-                                background: rgba(255, 255, 255, 0.03);
                             }
 
-                            .mobile-cat-sublist li {
+                            .mobile-subcat-items-list li {
                                 border-bottom: 1px solid rgba(255, 255, 255, 0.05);
                             }
 
-                            .mobile-cat-sublist li:last-child {
+                            .mobile-subcat-items-list li:last-child {
                                 border-bottom: none;
                             }
 
-                            .mobile-cat-sublist li a {
+                            .mobile-subcat-items-list li a {
                                 display: block;
-                                padding: 10px 0;
-                                color: rgba(255, 255, 255, 0.85) !important;
-                                font-size: 14px;
+                                padding: 12px 0;
+                                color: rgba(255, 255, 255, 0.9) !important;
+                                font-size: 15px;
                                 font-weight: 500 !important;
-                                text-decoration: none;
-                                transition: color 0.2s ease;
+                                text-decoration: none !important;
+                                transition: color 0.2s ease, padding-left 0.2s ease;
                             }
 
-                            .mobile-cat-sublist li a:hover {
+                            .mobile-subcat-items-list li a:hover {
                                 color: #F9633B !important;
-                                padding-left: 5px;
+                                padding-left: 4px;
                             }
-                            
+
                             /* Mobile sidebar dashboard overrides */
                             .mobile-sidebar-body .left-text {
                                 margin-top: 10px;
@@ -1334,233 +1298,244 @@
                         }
                         </style>
 
-
                         <!-- mobile nav -->
+                        <div class="mobile-sidebar" id="mobile-sidebar">
+                            <div class="mobile-sidebar-track" id="mobile-sidebar-track">
 
-                        <div class="mobile-sidebar">
+                                {{-- VIEW 1: Main Mobile Menu View --}}
+                                <div class="mobile-sidebar-view mobile-view-main" id="mobile-view-main">
+                                    <div class="mobile-sidebar-header">
+                                        <div class="mobile-sidebar-logo">
+                                            @if (isset($headerLogo) && $headerLogo)
+                                            <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
+                                                <img src="{{ asset($headerLogo->meta_value) }}"
+                                                    alt="{{ $headerLogo->meta_key }}">
+                                            </a>
+                                            @else
+                                            <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
+                                                <img src="{{ asset('front/img/logo.svg') }}">
+                                            </a>
+                                            @endif
+                                        </div>
 
-                            {{-- Header: Logo on left, Close button on right --}}
-                            <div class="mobile-sidebar-header">
-                                <div class="mobile-sidebar-logo">
-                                    @if (isset($headerLogo) && $headerLogo)
-                                    <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
-                                        <img src="{{ asset($headerLogo->meta_value) }}"
-                                            alt="{{ $headerLogo->meta_key }}">
-                                    </a>
-                                    @else
-                                    <a href="{{ route('home', ['locale' => app()->getLocale()]) }}" class="brand">
-                                        <img src="{{ asset('front/img/logo.svg') }}">
-                                    </a>
-                                    @endif
+                                        <button type="button" class="mobile-sidebar-close" aria-label="Close menu">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="mobile-sidebar-body">
+                                        @if (request()->is('*user-dashboard*') || request()->routeIs('user-*') || request()->is('*user-*'))
+                                            {{-- User Dashboard Mobile Navigation (matching desktop sidebar) --}}
+                                            <div class="left-text">
+                                                <ul class="list-unstyled dash-tab mb-0" id="menu">
+                                                    <li class="nav-links" style="margin-bottom: 20px;">
+                                                        <a href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}"
+                                                            class="nav-link nav_sv {{ request()->routeIs('user-dashboard') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
+                                                            <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
+                                                                <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
+                                                                    <img src="{{ asset('user-dashboard-theme/img/my_account.svg') }}" alt="" style="width: 20px;">
+                                                                </span>
+                                                                <span class="icons-text">My account</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="nav-links" style="margin-bottom: 20px;">
+                                                        <a href="{{ route('user-deal', ['locale' => app()->getLocale()]) }}"
+                                                            class="nav-link {{ request()->routeIs('user-deal') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
+                                                            <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
+                                                                <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
+                                                                    <img src="{{ asset('user-dashboard-theme/img/my_profile.svg') }}" alt="" style="width: 20px;">
+                                                                </span>
+                                                                <span class="icons-text">My deals</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="nav-links" style="margin-bottom: 20px;">
+                                                        <a href="{{ route('user-product', ['locale' => app()->getLocale()]) }}"
+                                                            class="nav-link nav_sv {{ request()->routeIs('user-product') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
+                                                            <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
+                                                                <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
+                                                                    <img src="{{ asset('user-dashboard-theme/img/saved_product.svg') }}" alt="" style="width: 20px;">
+                                                                </span>
+                                                                <span class="icons-text">My favorites</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="nav-links" style="margin-bottom: 20px;">
+                                                        <a href="{{ route('user-review', ['locale' => app()->getLocale()]) }}"
+                                                            class="nav-link nav_sv {{ request()->routeIs('user-review') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
+                                                            <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
+                                                                <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
+                                                                    <img src="{{ asset('user-dashboard-theme/img/my_review.svg') }}" alt="" style="width: 20px;">
+                                                                </span>
+                                                                <span class="icons-text">My reviews</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="nav-links" style="margin-bottom: 20px;">
+                                                        <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"
+                                                            class="nav-link {{ request()->routeIs('user-profile') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
+                                                            <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
+                                                                <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
+                                                                    <img src="{{ asset('user-dashboard-theme/img/my_profile_per.svg') }}" alt="" style="width: 20px;">
+                                                                </span>
+                                                                <span class="icons-text">My discussions</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        @else
+                                            {{-- "Categories" heading is NOT a link --}}
+                                            <div class="menu_section">
+                                                <h4 class="section_heading">
+                                                    {{ $headerContent['Categories'] ?? 'Categories' }}
+                                                </h4>
+                                                <hr class="section_divider">
+
+                                                <ul class="flat_list">
+                                                    <li>
+                                                        <a href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">
+                                                            <span>{{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}</span>
+                                                        </a>
+                                                    </li>
+                                                    @foreach($sidebarCategories as $cat)
+                                                        @if($cat->translation)
+                                                        <li>
+                                                            <a href="javascript:void(0);" class="mobile-cat-nav-btn" data-target="mobile-subcat-pane-{{ $cat->id }}">
+                                                                <span>{{ $cat->translation->name }}</span>
+                                                                <i class="fa-solid fa-chevron-right mobile-cat-right-arrow"></i>
+                                                            </a>
+                                                        </li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
 
-                                <button class="mobile-sidebar-close">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-
-                            <div class="mobile-sidebar-body">
-                                @if (request()->is('*user-dashboard*') || request()->routeIs('user-*') || request()->is('*user-*'))
-                                    {{-- User Dashboard Mobile Navigation (matching desktop sidebar) --}}
-                                    <div class="left-text">
-                                        <ul class="list-unstyled dash-tab mb-0" id="menu">
-                                            <li class="nav-links" style="margin-bottom: 20px;">
-                                                <a href="{{ route('user-dashboard', ['locale' => app()->getLocale()]) }}"
-                                                    class="nav-link nav_sv {{ request()->routeIs('user-dashboard') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
-                                                    <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
-                                                        <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
-                                                            <img src="{{ asset('user-dashboard-theme/img/my_account.svg') }}" alt="" style="width: 20px;">
-                                                        </span>
-                                                        <span class="icons-text">My account</span>
-                                                    </div>
-                                                </a>
-                                            </li>
-
-                                            <li class="nav-links" style="margin-bottom: 20px;">
-                                                <a href="{{ route('user-deal', ['locale' => app()->getLocale()]) }}"
-                                                    class="nav-link {{ request()->routeIs('user-deal') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
-                                                    <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
-                                                        <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
-                                                            <img src="{{ asset('user-dashboard-theme/img/my_profile.svg') }}" alt="" style="width: 20px;">
-                                                        </span>
-                                                        <span class="icons-text">My deals</span>
-                                                    </div>
-                                                </a>
-                                            </li>
-
-                                            <li class="nav-links" style="margin-bottom: 20px;">
-                                                <a href="{{ route('user-product', ['locale' => app()->getLocale()]) }}"
-                                                    class="nav-link nav_sv {{ request()->routeIs('user-product') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
-                                                    <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
-                                                        <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
-                                                            <img src="{{ asset('user-dashboard-theme/img/saved_product.svg') }}" alt="" style="width: 20px;">
-                                                        </span>
-                                                        <span class="icons-text">My favorites</span>
-                                                    </div>
-                                                </a>
-                                            </li>
-
-                                            <li class="nav-links" style="margin-bottom: 20px;">
-                                                <a href="{{ route('user-review', ['locale' => app()->getLocale()]) }}"
-                                                    class="nav-link nav_sv {{ request()->routeIs('user-review') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
-                                                    <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
-                                                        <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
-                                                            <img src="{{ asset('user-dashboard-theme/img/my_review.svg') }}" alt="" style="width: 20px;">
-                                                        </span>
-                                                        <span class="icons-text">My reviews</span>
-                                                    </div>
-                                                </a>
-                                            </li>
-
-                                            <li class="nav-links" style="margin-bottom: 20px;">
-                                                <a href="{{ route('user-profile', ['locale' => app()->getLocale()]) }}"
-                                                    class="nav-link {{ request()->routeIs('user-profile') ? 'active' : '' }}" style="font-size: 18px; font-weight: 600; color: #fff; padding: 10px 14px; display: block; text-decoration: none;">
-                                                    <div class="side-links" style="display: flex; gap: 15px; align-items: center;">
-                                                        <span class="icons-links" style="border: 1px solid #ffffff; width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 100%;">
-                                                            <img src="{{ asset('user-dashboard-theme/img/my_profile_per.svg') }}" alt="" style="width: 20px;">
-                                                        </span>
-                                                        <span class="icons-text">My discussions</span>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        </ul>
+                                {{-- VIEW 2: Category & Subcategories View --}}
+                                <div class="mobile-sidebar-view mobile-view-subcats" id="mobile-view-subcats">
+                                    <div class="mobile-subcat-header">
+                                        <button type="button" class="mobile-subcat-back-btn" id="mobile-subcat-back-btn">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                            <span>All Categories</span>
+                                        </button>
+                                        <button type="button" class="mobile-sidebar-close" aria-label="Close menu">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
                                     </div>
-                                @else
-                                    {{-- Categories heading is now clickable -> opens right-side panel --}}
-                                    <div class="menu_section">
-                                        <a href="javascript:void(0);" id="open-mobile-cat-panel"
-                                            class="section_heading_link">
-                                            <h4 class="section_heading">
-                                                {{ $headerContent['Categories'] ?? 'Categories ' }}
-                                            </h4>
-                                        </a>
-                                        <hr class="section_divider">
 
-                                        <ul class="flat_list">
-                                            <li>
-                                                <a
-                                                    href="{{ route('top-rated-product', ['locale' => session('lang_code', 'en-us')]) }}">
-                                                    {{ $headerContent['top_rated_product'] ?? 'Top Rated Products' }}
-                                                </a>
-                                            </li>
-                                            @foreach($categories as $category)
-                                            <li>
-                                                <a href="{{ route('category.detail', [
-                                                        'locale' => app()->getLocale(),
-                                                        'slug' => $category->translation->slug
-                                                    ]) }}">
-                                                    {{ $category->translation->name }}
-                                                </a>
-                                            </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                @endif
-                            </div>
+                                    <div class="mobile-subcat-body">
+                                        @foreach($sidebarCategories as $cat)
+                                            @if($cat->translation)
+                                                <div class="mobile-subcat-pane" id="mobile-subcat-pane-{{ $cat->id }}" style="display: none;">
+                                                    {{-- Category Title (clickable to category page, orange text, WITHOUT arrow to top/bottom) --}}
+                                                    <div class="mobile-subcat-parent-heading">
+                                                        <a href="{{ route('category.detail', [
+                                                                'locale' => app()->getLocale(),
+                                                                'slug' => $cat->translation->slug
+                                                            ]) }}" class="mobile-subcat-parent-link">
+                                                            {{ $cat->translation->name }}
+                                                        </a>
+                                                    </div>
 
-                        </div>
-
-                        <div class="mobile-sidebar-overlay"></div>
-                        <div class="mobile-cat-overlay" id="mobile-cat-overlay"></div>
-                        <div class="mobile-cat-panel" id="mobile-cat-panel">
-
-                            <div class="mobile-cat-panel-header">
-                                <button class="mobile-cat-back" id="mobile-cat-back">
-                                    <i class="fa-solid fa-chevron-left"></i>
-                                    {{ $headerContent['Categories'] ?? 'Categories' }}
-                                </button>
-                                <button class="mobile-cat-close" id="mobile-cat-close">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-
-                            <div class="mobile-cat-panel-body">
-                                <ul class="mobile-cat-list">
-                                    @foreach($sidebarCategories as $cat)
-                                    @if($cat->translation)
-                                    <li class="mobile-cat-item">
-                                        <a href="javascript:void(0);" class="mobile-cat-toggle"
-                                            data-target="mobile-cat-sub-{{ $cat->id }}">
-                                            {{ $cat->translation->name }}
-                                            <i class="fa-solid fa-chevron-down mobile-cat-arrow"></i>
-                                        </a>
-
-                                        <ul class="mobile-cat-sublist" id="mobile-cat-sub-{{ $cat->id }}">
-                                            @foreach($cat->subCategories as $subCat)
-                                            @if($subCat->translation)
-                                            <li>
-                                                <a href="{{ route('category.detail', [
+                                                    {{-- Subcategories List (each clickable to its subcategory page) --}}
+                                                    <ul class="mobile-subcat-items-list">
+                                                        @foreach($cat->subCategories as $subCat)
+                                                            @if($subCat->translation)
+                                                            <li>
+                                                                <a href="{{ route('category.detail', [
                                                                         'locale' => app()->getLocale(),
                                                                         'slug' => $subCat->translation->slug
                                                                     ]) }}">
-                                                    {{ $subCat->translation->name }}
-                                                </a>
-                                            </li>
+                                                                    {{ $subCat->translation->name }}
+                                                                </a>
+                                                            </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
                                             @endif
-                                            @endforeach
-                                        </ul>
-                                    </li>
-                                    @endif
-                                    @endforeach
-                                </ul>
-                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
 
+                            </div>
                         </div>
+
+                        <div class="mobile-sidebar-overlay"></div>
+
                         <script>
                         document.addEventListener('DOMContentLoaded', function() {
+                            const sidebar = document.getElementById('mobile-sidebar');
+                            const track = document.getElementById('mobile-sidebar-track');
+                            const overlay = document.querySelector('.mobile-sidebar-overlay');
+                            const subcatView = document.getElementById('mobile-view-subcats');
+                            const backBtn = document.getElementById('mobile-subcat-back-btn');
+                            const catTriggers = document.querySelectorAll('.mobile-cat-nav-btn');
+                            const subcatPanes = document.querySelectorAll('.mobile-subcat-pane');
 
-                            const openBtn = document.getElementById('open-mobile-cat-panel');
-                            const closeBtn = document.getElementById('mobile-cat-close');
-                            const backBtn = document.getElementById('mobile-cat-back');
-                            const overlay = document.getElementById('mobile-cat-overlay');
-                            const panel = document.getElementById('mobile-cat-panel');
-                            const toggles = document.querySelectorAll('.mobile-cat-toggle');
-
-                            if (openBtn) {
-                                openBtn.addEventListener('click', function() {
-                                    panel.classList.add('active');
-                                    overlay.classList.add('active');
-                                    document.body.style.overflow = 'hidden';
-                                });
+                            function openSidebar() {
+                                if (sidebar) sidebar.classList.add('active');
+                                if (overlay) overlay.classList.add('active');
+                                document.body.style.overflow = 'hidden';
                             }
 
-                            function closeCatPanel() {
-                                panel.classList.remove('active');
-                                overlay.classList.remove('active');
+                            function closeSidebar() {
+                                if (sidebar) sidebar.classList.remove('active');
+                                if (overlay) overlay.classList.remove('active');
                                 document.body.style.overflow = '';
+                                setTimeout(function() {
+                                    if (track) track.classList.remove('slide-subcat');
+                                }, 300);
                             }
 
-                            if (closeBtn) closeBtn.addEventListener('click', closeCatPanel);
-                            if (backBtn) backBtn.addEventListener('click', closeCatPanel);
-                            if (overlay) overlay.addEventListener('click', closeCatPanel);
+                            // Open mobile sidebar from hamburger button
+                            jQuery(document).on('click', '.mobile-sidebar-btn', function(e) {
+                                e.preventDefault();
+                                openSidebar();
+                            });
 
-                            toggles.forEach(function(toggle) {
-                                toggle.addEventListener('click', function() {
+                            // Close mobile sidebar
+                            jQuery(document).on('click', '.mobile-sidebar-close, .mobile-sidebar-overlay', function(e) {
+                                e.preventDefault();
+                                closeSidebar();
+                            });
+
+                            // Clicking a category in View 1 -> switch to View 2
+                            catTriggers.forEach(function(trigger) {
+                                trigger.addEventListener('click', function(e) {
+                                    e.preventDefault();
                                     const targetId = this.getAttribute('data-target');
-                                    const sublist = document.getElementById(targetId);
-                                    const isActive = this.classList.contains('active');
 
-                                    toggles.forEach(function(t) {
-                                        if (t !== toggle) {
-                                            t.classList.remove('active');
-                                            const otherSublist = document
-                                                .getElementById(t.getAttribute(
-                                                    'data-target'));
-                                            if (otherSublist) otherSublist.style
-                                                .maxHeight = null;
-                                        }
+                                    // Hide all panes and show selected pane
+                                    subcatPanes.forEach(function(pane) {
+                                        pane.style.display = 'none';
                                     });
 
-                                    if (isActive) {
-                                        toggle.classList.remove('active');
-                                        sublist.style.maxHeight = null;
-                                    } else {
-                                        toggle.classList.add('active');
-                                        sublist.style.maxHeight = sublist.scrollHeight + 'px';
+                                    const activePane = document.getElementById(targetId);
+                                    if (activePane) {
+                                        activePane.style.display = 'block';
                                     }
+
+                                    if (subcatView) subcatView.scrollTop = 0;
+                                    if (track) track.classList.add('slide-subcat');
                                 });
                             });
 
+                            // Clicking "< All Categories" -> switch back to View 1
+                            if (backBtn) {
+                                backBtn.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    if (track) track.classList.remove('slide-subcat');
+                                });
+                            }
                         });
                         </script>
                     </nav>

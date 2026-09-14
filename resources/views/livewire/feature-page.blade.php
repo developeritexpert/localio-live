@@ -1,5 +1,28 @@
 <div>
     @include('User.partials.business_detail_styles')
+    @php
+        $currentLocale = request()->segment(1) ?? app()->getLocale() ?? 'en-us';
+        $catTrans = $category->translations ?? $category->translation;
+        if (!$catTrans && method_exists($category, 'categoryTranslations')) {
+            $catTrans = $category->categoryTranslations()->where('lang_id', $lang_id ?? getCurrentLanguageID())->first();
+        }
+        $rawCatName = $catTrans->name ?? ($category->name ?? 'Category');
+        $catSlug = $catTrans->slug ?? ($category->slug ?? (request()->segment(2) ?? 'category'));
+
+        if ($category->parent && $category->parent_id) {
+            $parentTrans = $category->parent->translations ?? $category->parent->translation;
+            $parentSlug = $parentTrans->slug ?? ($category->parent->slug ?? '');
+            if (!empty($parentSlug)) {
+                $baseCatUrl = url('/' . $currentLocale . '/' . $parentSlug . '/' . $catSlug);
+            } else {
+                $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+            }
+        } else {
+            $baseCatUrl = url('/' . $currentLocale . '/' . $catSlug);
+        }
+
+        $formattedCatName = $rawCatName;
+    @endphp
     <style>
     [x-cloak] { display: none !important; }
     .table-business-link {
@@ -9,7 +32,6 @@
         margin: -6px -12px;
         border-radius: 10px;
         background-color: transparent;
-        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         text-decoration: none !important;
         color: inherit;
         width: fit-content;
@@ -207,7 +229,6 @@
         } */
     .automotive-card .blue-chkbox {
         bottom: 0 !important;
-        transition: all 0.3s ease;
         right: unset;
         left: -30px
     }
@@ -316,7 +337,6 @@
         border-radius: 10px;
         padding: 16px 20px;
         text-decoration: none;
-        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -337,7 +357,6 @@
         color: #1e293b !important;
         text-decoration: none !important;
         cursor: pointer !important;
-        transition: all 0.18s ease-in-out !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -360,24 +379,12 @@
         text-decoration: none !important;
         margin-left: 8px !important;
         cursor: pointer !important;
-        transition: color 0.15s ease !important;
     }
     .clear-features-link:hover {
         color: #0056b3 !important;
         text-decoration: underline !important;
     }
-    .view-all-category-link {
-        color: #007bff !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-        text-decoration: underline !important;
-        cursor: pointer !important;
-        transition: color 0.15s ease !important;
-    }
-    .view-all-category-link:hover {
-        color: #0056b3 !important;
-        text-decoration: underline !important;
-    }
+
     .explore-subcat-card:hover h6 {
         color: #e56b46 !important;
     }
@@ -389,7 +396,6 @@
         font-size: 11px !important;
         font-weight: 500 !important;
         text-decoration: none !important;
-        transition: all 0.2s ease !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -410,7 +416,6 @@
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-        transition: opacity 0.2s ease !important;
     }
     .btn-orng-pill:hover {
         opacity: 0.9 !important;
@@ -445,18 +450,28 @@
                                         onmouseout="this.style.color=''">All</a>
                                 </li>
                                 @if($category->parent)
+                                @php
+                                    $pTrans = $category->parent->translations ?? $category->parent->translation;
+                                    $pSlug = $pTrans->slug ?? ($category->parent->slug ?? ('category-' . $category->parent->id));
+                                    $pName = $pTrans->name ?? ($category->parent->name ?? 'Main Category');
+                                @endphp
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->parent->translations->slug ?? '']) }}"
+                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/' . $pSlug) }}"
                                         style="color: inherit; text-decoration: none; font-size: 13px;"
                                         onmouseout="this.style.color=''">
-                                        {{ $category->parent->translations->name ?? 'Main Category' }}
+                                        {{ $pName }}
                                     </a>
                                 </li>
                                 @endif
+                                @php
+                                    $cTrans = $category->translations ?? $category->translation;
+                                    $cSlug = $cTrans->slug ?? ($category->slug ?? ('category-' . $category->id));
+                                    $cName = $cTrans->name ?? ($category->name ?? 'Category');
+                                @endphp
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('category.detail', ['locale' => request()->segment(1) ?? 'en-us', 'slug' => $category->translations->slug ?? $category->slug]) }}"
+                                    <a href="{{ url('/' . (request()->segment(1) ?? 'en-us') . '/' . $cSlug) }}"
                                         style="color: inherit; text-decoration: none; font-size: 13px;">
-                                        {{ $category->translations->name ?? 'Category' }}
+                                        {{ $cName }}
                                     </a>
                                 </li>
                                 <li class="breadcrumb-item active" aria-current="page"
@@ -504,8 +519,7 @@
                                 {{ $applyDynamicVars($activeTitle) }}
                             </h1>
 
-                            <p class="text-meta">Last updated on
-                                {{ now()->format('F j, Y') }}</p>
+                            <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                     <div class="host-parra row align-items-start">
                         <div class="col-md-6 text-start">
                             
@@ -556,7 +570,7 @@
                         <div class="flex-shrink-0 mt-3 mt-md-0" style="width: 100%; max-width: 500px;">
                             <div class="verified-insights-card">
                                 <div class="d-flex align-items-center justify-content-between mb-1 gap-2">
-                                    <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                    <p style="margin: 0; font-weight: 600; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                     <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                                 </div>
                                 <p>
@@ -570,7 +584,7 @@
                                 <div class="row align-items-start">
                                     <div class="col-md-6 text-start">
                                         <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px; font-size: 24px !important;">{{ $category->translations->name ?? 'Products' }}</h1>
-                                        <p class="text-meta">Last updated on {{ now()->format('F j, Y') }}</p>
+                                        <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                         <p style="font-size: 15px; color: #444; margin-bottom: 0;">
                                             {{ strip_tags($category->translations->description ?? 'Browse and compare the best options') }}
                                         </p>
@@ -1055,7 +1069,7 @@
                                         <p class="m-0 showing-p">
                                             Showing {{$from}}-{{$to}} of {{$total}}
                                         </p>
-                                        @else
+                                        @elseif($products->count() > 0)
                                         <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
@@ -1377,6 +1391,10 @@
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
             </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
+            </p>
         @endif
 
     </div>
@@ -1488,16 +1506,21 @@
                                     @endif
                                 </div>
 
+                                @if($products->count() > 0)
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
-
                                 </div>
+                                @endif
 
-                                <div class="alert alert-info" style="background-color:#f7f9fb;">
-                                    <p class="mb-2 text-center fs-4 text-secondary">Sorry, we don't have any Products
-                                        that match your filters. Try adjusting them to see more options.</p>
+                                <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    @if ($this->hasActiveFilters())
+                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                        <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
+                                    @else
+                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                    @endif
                                 </div>
                             </div>
                             {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">
@@ -1580,7 +1603,7 @@
                                             $firstImg = Str::startsWith($sliderImages[0], ['http://', 'https://']) ? $sliderImages[0] : asset($sliderImages[0]);
                                         @endphp
                                         <div class="business-main-preview mb-3">
-                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                                                 <img src="{{ $firstImg }}" alt="{{ $bName }}" id="main-preview-img-{{ $biz->id }}" class="img-fluid w-100 preview-main-display" >
                                             </a>
                                         </div>
@@ -1627,7 +1650,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1646,7 +1669,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1792,7 +1815,7 @@
                                         @endphp
                                     <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                         <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
+                                            <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                 <div class="top-product-small-logo">
                                                     <x-business-logo :business="$biz" :name="$bName" />
                                                 </div>
@@ -1820,9 +1843,11 @@
                                             {{ $recommendPercent }}%
                                         </td>
                                         <td class="text-center" style="padding: 14px; color: #002347; font-weight: 500; white-space: nowrap;">
-                                            @if($bizStartingPrice && $bizAmount !== null)
+                                            @if($bizStartingPrice && $bizAmount !== null && !empty($biz->is_affiliate))
                                                 <span style="font-weight: 600;">{{ $bizCurrency }}{{ $bizAmount }}</span>
-                                                @if(!empty($bizTimeUnit) && $bizTimeUnit !== 'one_time')
+                                                @if(!empty($bizStartingPrice['additional_info']) && !in_array(strtoupper(trim((string)$bizStartingPrice['additional_info'])), ['NA', 'N/A', 'NULL']))
+                                                    <span style="font-size: 12px; color: #5b6b7a;"> {{ $bizStartingPrice['additional_info'] }}</span>
+                                                @elseif(!empty($bizTimeUnit) && !in_array($bizTimeUnit, ['one_time', 'na', 'n/a', 'null']))
                                                     <span style="font-size: 12px; color: #5b6b7a;">/{{ $bizTimeUnit === 'month' ? 'mo' : ($bizTimeUnit === 'year' ? 'yr' : $bizTimeUnit) }}</span>
                                                 @endif
                                             @else
@@ -1909,7 +1934,7 @@
                                             @endphp
                                         <tr style="border-bottom: 1px solid #f1f5f9; {{ $loop->first ? 'background-color: #f8fafc;' : '' }}">
                                             <td style="padding: 14px 18px; font-weight: 500; color: #002347;">
-                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="nofollow noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
+                                                <a href="{{ $affiliateUrl }}" target="_blank" rel="sponsored noopener" class="table-business-link d-flex align-items-center gap-2 text-decoration-none" style="color: inherit;">
                                                     <div class="top-product-small-logo">
                                                         <x-business-logo :business="$biz" :name="$bName" />
                                                     </div>

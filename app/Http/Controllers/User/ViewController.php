@@ -689,8 +689,8 @@ class ViewController extends Controller
 
     public function handleBusinessSubPage(Request $request, $locale, $business_slug, $second_segment)
     {
-        $lang_id = getCurrentLanguageID();
         $languageObj = Language::where('lang_code', $locale)->first();
+        $lang_id = $languageObj ? $languageObj->id : getCurrentLanguageID();
         $expectedFaqSlug = !empty($languageObj->faq_slug) ? $languageObj->faq_slug : 'faqs';
         $expectedAlternativesSlug = !empty($languageObj->alternatives_slug) ? $languageObj->alternatives_slug : 'alternatives';
         $expectedReviewsSlug = !empty($languageObj->reviews_slug) ? $languageObj->reviews_slug : 'reviews';
@@ -711,6 +711,9 @@ class ViewController extends Controller
         if ($category) {
             if ($second_segment === $expectedFaqSlug || $second_segment === 'faqs' || $second_segment === 'faq') {
                 return app(\App\Http\Controllers\User\CategoryController::class)->categoryFaqs($locale, $business_slug);
+            }
+            if ($second_segment === $expectedDiscussionsSlug || $second_segment === 'discussions') {
+                return $this->categoryDiscussions($request, $locale, $business_slug, $category);
             }
             if ($second_segment === $expectedComparisonsSlug || $second_segment === 'comparisons') {
                 abort(404);
@@ -762,7 +765,7 @@ class ViewController extends Controller
                     ? $catTrans->meta_description
                     : strip_tags($catTrans?->description ?? '');
 
-                // Check CategoryFeatureContent for feature-specific meta tags
+                // Check Feature Meta Tags (Cascade or Custom Override)
                 if (!empty($second_segment) && $category) {
                     $matchedFeat = \App\Models\Feature::whereHas('translations', function($q) use ($second_segment) {
                         $q->where('name', 'LIKE', str_replace('-', ' ', $second_segment))
@@ -770,18 +773,13 @@ class ViewController extends Controller
                     })->first();
 
                     if ($matchedFeat) {
-                        $featContent = \App\Models\CategoryFeatureContent::where('category_id', $category->id)
-                            ->where('feature_id', $matchedFeat->id)
-                            ->where('lang_id', $lang_id)
-                            ->first();
-                        if ($featContent) {
-                            if (!empty($featContent->meta_title)) {
-                                $metaTitle = $featContent->meta_title;
-                            }
-                            if (!empty($featContent->meta_description)) {
-                                $metaDescription = $featContent->meta_description;
-                            }
-                        }
+                        $resolvedFeatMeta = \App\Services\MetaTagService::resolveFeatureMeta($matchedFeat, $category, $lang_id);
+                        $metaTitle = $resolvedFeatMeta['title'];
+                        $metaDescription = $resolvedFeatMeta['description'];
+                    } else {
+                        $resolvedCatMeta = \App\Services\MetaTagService::resolveCategoryMeta($category, $lang_id);
+                        $metaTitle = $resolvedCatMeta['title'];
+                        $metaDescription = $resolvedCatMeta['description'];
                     }
                 }
 
@@ -939,7 +937,8 @@ class ViewController extends Controller
 
     public function resolveSlug(Request $request, $locale, $slug)
     {
-        $lang_id = getCurrentLanguageID();
+        $matchedLang = Language::where('lang_code', $locale)->first();
+        $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
 
         // 1. Check if slug matches a Category or Subcategory
         $category = Category::whereHas('translations', function ($query) use ($slug, $lang_id) {
@@ -1201,6 +1200,72 @@ class ViewController extends Controller
         ));
     }
 
+    public function categoryDiscussions(Request $request, $locale, $category_slug, $category = null)
+    {
+        $lang_id = getCurrentLanguageID();
+        if (!$category) {
+            $category = Category::whereHas('translations', function ($query) use ($category_slug, $lang_id) {
+                $query->where('slug', $category_slug)->where('lang_id', $lang_id);
+            })->first();
+
+            if (!$category) {
+                $category = Category::whereHas('translations', function ($query) use ($category_slug) {
+                    $query->where('slug', $category_slug);
+                })->first();
+            }
+        }
+
+        if (!$category) {
+            abort(404, 'Category not found');
+        }
+
+        $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
+            ? $category->translations->first() 
+            : ($category->translations ?? $category->translation);
+        $catName = $catTrans->name ?? $category->name ?? 'Category';
+
+        $query = BusinessDiscussion::where('category_id', $category->id)
+            ->where('status', 'active')
+            ->with([
+                'user.country',
+                'comments' => fn($q) => $q->whereNull('parent_id')
+                    ->orderByDesc('is_pinned')
+                    ->orderBy('created_at', 'asc')
+                    ->with(['user', 'replies.user', 'replies.replies.user'])
+            ]);
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        $query->orderByDesc('is_pinned');
+
+        $sort = $request->get('sort', 'popular');
+        if ($sort === 'recent') {
+            $query->latest();
+        } elseif ($sort === 'commented') {
+            $query->orderByDesc('comments_count')->latest();
+        } else {
+            $query->orderByRaw('(upvotes_count - downvotes_count) DESC')->latest();
+        }
+
+        $totalDiscussionsCount = (clone $query)->count();
+        $discussions = $query->paginate(10);
+
+        return view('User.category.category_discussions', compact(
+            'category',
+            'catTrans',
+            'catName',
+            'discussions',
+            'totalDiscussionsCount',
+            'sort'
+        ));
+    }
+
     public function storeDiscussion(Request $request)
     {
         if (!auth()->check()) {
@@ -1211,7 +1276,8 @@ class ViewController extends Controller
         }
 
         $request->validate([
-            'business_id' => 'required|exists:businesses,id',
+            'business_id' => 'nullable|required_without:category_id|exists:businesses,id',
+            'category_id' => 'nullable|required_without:business_id|exists:categories,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'category' => 'nullable|string|max:50',
@@ -1222,6 +1288,7 @@ class ViewController extends Controller
 
         $discussion = BusinessDiscussion::create([
             'business_id' => $request->business_id,
+            'category_id' => $request->category_id,
             'user_id' => $user->id,
             'author_name' => $user->displayName(),
             'author_title' => $user->job_title ?: 'Community Member',

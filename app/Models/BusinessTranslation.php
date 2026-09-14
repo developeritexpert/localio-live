@@ -16,6 +16,8 @@ class BusinessTranslation extends Model
         'description',
         'long_preview_description',
         'short_description',
+        'meta_title',
+        'meta_description',
         'after_image_description',
         'business_id',
         'headquarters',

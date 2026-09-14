@@ -1387,6 +1387,18 @@ public function getFeatureDescriptionProperty()
         ->toArray();
     }
 
+        public function hasActiveFilters()
+    {
+        return !empty($this->selectedOptions)
+            || !empty(trim($this->searchTerm ?? ''))
+            || !empty($this->selectedRatings)
+            || !empty($this->selectedCriteriaRatings)
+            || !empty($this->selectedSubCategories)
+            || $this->isPriceFilterActive
+            || ($this->minPrice > 0)
+            || ($this->maxPrice < $this->maxPriceValue);
+    }
+
     public function render()
     {
         $topAffiliatedBusinesses = \App\Models\Business::with(['reviews', 'category.ratingCriteria'])

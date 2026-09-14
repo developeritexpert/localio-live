@@ -124,20 +124,6 @@
             font-weight: 900 !important;
         }
 
-        /* Ask Community Banner */
-        .ask-community-banner {
-            background: linear-gradient(135deg, #002347 0%, #174889 100%);
-            border-radius: 16px;
-            padding: 36px 32px;
-            color: #ffffff;
-            margin-top: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-            box-shadow: 0 6px 20px rgba(0, 35, 71, 0.12);
-        }
         .ask-community-btn {
             background: #ff5722;
             color: #ffffff !important;
@@ -171,17 +157,16 @@
     $parentCatName = $parentTrans->name ?? ($parentCategory->name ?? null);
     $parentCatSlug = $parentTrans->slug ?? ($parentCategory->slug ?? null);
     $catDesc = strip_tags($categoryTranslation->description ?? '');
-    $faqMetaTitle = !empty($categoryTranslation->faq_meta_title) 
-        ? $categoryTranslation->faq_meta_title 
-        : "{$catName} FAQs & Questions Answered | Localio";
-    $faqMetaDesc = !empty($categoryTranslation->faq_meta_description) 
-        ? $categoryTranslation->faq_meta_description 
-        : (!empty($catDesc) ? "Find answers to frequently asked questions about {$catName} providers, features, pricing, and reviews on Localio." : null);
+    $matchedLang = \App\Models\Language::where('lang_code', request()->segment(1))->first();
+    $currentLangId = isset($lang_id) && $lang_id ? $lang_id : ($matchedLang ? $matchedLang->id : getCurrentLanguageID());
+    $resolvedFaqMeta = \App\Services\MetaTagService::resolveCategoryFaqMeta($category, $currentLangId);
+    $pageFaqTitle = !empty($faqMetaTitle) ? $faqMetaTitle : $resolvedFaqMeta['title'];
+    $pageFaqDesc = !empty($faqMetaDesc) ? $faqMetaDesc : $resolvedFaqMeta['description'];
 @endphp
 
-@section('meta_title', format_meta_text($faqMetaTitle))
+@section('meta_title', format_meta_text($pageFaqTitle))
 @if(!empty($faqMetaDesc))
-@section('meta_description', format_meta_text($faqMetaDesc))
+@section('meta_description', format_meta_text($pageFaqDesc))
 @endif
 
 @section('content')
@@ -283,7 +268,7 @@
                     </p>
                     <div class="faq-search-input-group">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="faqSearchInput" placeholder="Search questions..." autocomplete="off">
+                        <input type="text" id="faqSearchInput" placeholder="Search questions..." value="{{ request('q') }}" autocomplete="off">
                     </div>
                 </div>
 
@@ -486,7 +471,7 @@
                                             <div>
                                                 <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
                                                 @if(isset($rev) && $rev->user_id)
-                                                    <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                    <a href="{{ optional($rev->user ?? ($u ?? null))->profileUrl() ?? route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
                                                         {{ $displayName }}
                                                     </a>
                                                 @else
@@ -766,7 +751,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $faqCount }} {{ $faqCount == 1 ? 'answer' : 'answers' }}
+                                {{ $faqCount }} {{ $faqCount == 1 ? 'FAQ' : 'FAQs' }}
                             </span>
                         </div>
                     </div>
@@ -783,7 +768,8 @@
 @push('scripts')
 <script>
     // 1. Real-Time Search Filter
-    document.getElementById('faqSearchInput')?.addEventListener('input', function() {
+    const mainFaqSearchInput = document.getElementById('faqSearchInput');
+    mainFaqSearchInput?.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         const items = document.querySelectorAll('#faqAccordionContainer .accordion-item');
         const groups = document.querySelectorAll('.faq-category-group');
@@ -817,6 +803,11 @@
             noResults.style.display = (totalVisible === 0 && query !== '') ? 'block' : 'none';
         }
     });
+
+    // Auto-trigger search filter if pre-filled via query parameter ?q=
+    if (mainFaqSearchInput && mainFaqSearchInput.value && mainFaqSearchInput.value.trim() !== '') {
+        mainFaqSearchInput.dispatchEvent(new Event('input'));
+    }
 
     // 2. In-Page Category Tab Filter
     document.querySelectorAll('.faq-cat-tab').forEach(tab => {

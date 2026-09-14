@@ -284,8 +284,7 @@
                 <div class="row align-items-start">
                     <div class="col-md-8 text-start">
                         <h1 >{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
-                        <p class="text-meta">Last updated on
-                            {{ now()->format('F j, Y') }}</p>
+                        <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                         <p style=" margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
@@ -294,7 +293,7 @@
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <p style="margin: 0; font-weight: 700; color: #007bff; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                <p style="margin: 0; font-weight: 600; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
                                 <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
@@ -325,7 +324,7 @@
                         <div class="row align-items-start">
                             <div class="col-md-8 text-start">
                                 <h1 style="color: #1e3050; font-weight: 700; margin-bottom: 8px;">Top-rated products</h1>
-                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated on {{ now()->format('F j, Y') }}</p>
+                                <p class="text-muted" style="font-size: 13px; margin-bottom: 16px;">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                                 <p style="font-size: 15px; margin-bottom: 0;">
                             {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
@@ -654,7 +653,7 @@
                                     <p class="m-0 showing-p">
                                         Showing {{$from}}-{{$to}} of {{$total}}
                                     </p>
-                                    @else
+                                    @elseif($products->count() > 0)
                                     <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                     @endif
                                 </div>
@@ -971,6 +970,10 @@
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
             </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
+            </p>
         @endif
 
     </div>
@@ -1051,6 +1054,7 @@
 
                         <div class="auto-choice-rgt">
                            
+                            @if($products->count() > 0)
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="showing_tabs">
                                     <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
@@ -1059,10 +1063,15 @@
                                     <x-social-icon />
                                 </div>
                             </div>
+                            @endif
 
-                            <div class="alert alert-info">
-                                <p class="mb-2 text-center fs-4 text-secondary">Sorry, we don't have any Products that
-                                    match your filters. Try adjusting them to see more options.</p>
+                            <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                @if ($this->hasActiveFilters())
+                                    <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                    <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
+                                @else
+                                    <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                @endif
                             </div>
                         </div>
                         {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">
@@ -1169,6 +1178,7 @@
                                 @if($hasTrackedUrl)
                                 <a href="{{ $business->getTrackedUrl() }}"
                                    target="_blank"
+                                   rel="sponsored"
                                    class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
                                    style="font-size: 11px; text-align: center; transition:unset !important;">
                                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>

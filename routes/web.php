@@ -432,6 +432,40 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/learn-more-modal/store-update', [StaticContentController::class, 'modalstoreOrUpdate'])->name('modalstoreOrUpdate');
     Route::get('/admin-dashboard/learn-more-modal/delete/{id}', [StaticContentController::class, 'modaldestroy'])->name('modaldestroy');
 
+        // Meta Tags Management Routes
+    Route::prefix('admin-dashboard/meta-tags')->group(function () {
+        Route::post('/rules/update', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateRules'])->name('admin.meta-tags.rules.update');
+
+        // Categories
+        Route::get('/categories', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categories'])->name('admin.meta-tags.categories');
+        Route::post('/categories/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryMeta'])->name('admin.meta-tags.categories.update-single');
+        Route::post('/categories/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryMeta'])->name('admin.meta-tags.categories.reset-single');
+        Route::post('/categories/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesMeta'])->name('admin.meta-tags.categories.update-bulk');
+
+        // Businesses
+        Route::get('/businesses', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'businesses'])->name('admin.meta-tags.businesses');
+        Route::post('/businesses/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleBusinessMeta'])->name('admin.meta-tags.businesses.update-single');
+        Route::post('/businesses/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetBusinessMeta'])->name('admin.meta-tags.businesses.reset-single');
+        Route::post('/businesses/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkBusinessesMeta'])->name('admin.meta-tags.businesses.update-bulk');
+
+        // Categories FAQs
+        Route::get('/categories-faqs', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'categoriesFaqs'])->name('admin.meta-tags.categories-faqs');
+        Route::post('/categories-faqs/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.update-single');
+        Route::post('/categories-faqs/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetCategoryFaqMeta'])->name('admin.meta-tags.categories-faqs.reset-single');
+        Route::post('/categories-faqs/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkCategoriesFaqsMeta'])->name('admin.meta-tags.categories-faqs.update-bulk');
+
+        // Features
+        Route::get('/features', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'features'])->name('admin.meta-tags.features');
+        Route::post('/features/update-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateSingleFeatureMeta'])->name('admin.meta-tags.features.update-single');
+        Route::post('/features/reset-single', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'resetFeatureMeta'])->name('admin.meta-tags.features.reset-single');
+        Route::post('/features/update-bulk', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateBulkFeaturesMeta'])->name('admin.meta-tags.features.update-bulk');
+    });
+
+    // All Categories Page Content Route
+    Route::get('/admin-dashboard/categories-page', [SiteContentController::class, 'categoriesPage'])->name('admin.categories-page');
+    Route::post('/admin-dashboard/category-page-update', [SiteContentController::class, 'categoryPageContentUpdate'])->name('category-page-update');
+    Route::post('/admin-dashboard/category-all-categories-desc-update', [SiteContentController::class, 'updateSingleCategoryAllDesc'])->name('admin.category-all-desc.update');
+
     // Top Product Page Content Route
     Route::get('/admin-dashboard/top-product-page', [SiteContentController::class, 'topProductPageContent'])->name('top-product-page-content');
     Route::post('/admin-dashboard/product-page-update', [SiteContentController::class, 'topProductPageUpdate'])->name('product-page-update');
@@ -570,6 +604,10 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
     // All Categories page
     Route::get('/categories', [CategoryController::class, 'index'])->name('category');
 
+    // User Profile Routes (Must be above 3-segment generic routes)
+    Route::get('/user/{id}/{slug?}', [UserController::class, 'profile'])->name('user.profile');
+    Route::get('/reviewer/{id}', [UserController::class, 'legacyProfileRedirect'])->name('user.profile.legacy');
+
     // 3-Segment Subcategory Feature Detail Route
     Route::get('/{category_slug}/{subcategory_slug}/{feature_slug}', [CategoryController::class, 'subCategoryFeatureDetail'])->name('category.subcategory.feature');
     
@@ -577,7 +615,6 @@ Route::group(['prefix' => '{locale?}', 'middleware' => ['AddLocaleAutomatically'
 
     // Product Controller
     // Top-Rated FAQs
-    Route::get('/reviewer/{id}', [UserController::class, 'profile'])->name('user.profile');
     Route::get('/top-rated/faq', [ProductController::class, 'topRatedFaq'])->name('top-rated.faq');
     Route::get('/top-rated/faqs', [ProductController::class, 'topRatedFaq'])->name('top-rated.faqs');
     Route::get('/top-rated/{page}', [ProductController::class, 'topRatedProduct'])->where('page', '[0-9]+')->name('top-rated-product.page-only');

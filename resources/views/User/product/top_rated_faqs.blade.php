@@ -119,20 +119,6 @@
             font-weight: 900 !important;
         }
 
-        /* Ask Community Banner */
-        .ask-community-banner {
-            background: linear-gradient(135deg, #002347 0%, #174889 100%);
-            border-radius: 16px;
-            padding: 36px 32px;
-            color: #ffffff;
-            margin-top: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-            box-shadow: 0 6px 20px rgba(0, 35, 71, 0.12);
-        }
         .ask-community-btn {
             background: #ff5722;
             color: #ffffff !important;
@@ -397,7 +383,7 @@
                                             <div>
                                                 <p style="line-height:1; margin: 0; font-size: 13.5px; font-weight: 600; color: #1e3050;">
         @if(isset($rev) && $rev->user_id)
-            <a href="{{ route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
+            <a href="{{ optional($rev->user ?? ($u ?? null))->profileUrl() ?? route('user.profile', ['id' => $rev->user_id]) }}" style="color: inherit; text-decoration: none;">
                 {{ $displayName }}
             </a>
         @else

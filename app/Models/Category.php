@@ -286,7 +286,12 @@ public function imageMedia()
         ->where('status', 1)
         ->limit(3);
 }
-    
 
-
+    public function discussions()
+    {
+        return $this->hasMany(BusinessDiscussion::class, 'category_id')
+            ->where('status', 'active')
+            ->orderBy('is_pinned', 'desc')
+            ->latest();
+    }
 }

@@ -18,14 +18,14 @@
 @section('body_class', 'product-page-body')
 
 @php
-$lang_id = getCurrentLanguageID();
-$bTranslation = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
-$bName = $bTranslation->name ?? 'Product';
-$pageMetaTitle = !empty($bTranslation->meta_title) ? $bTranslation->meta_title : (!empty($business->meta_title) ? $business->meta_title : $bName);
-$pageMetaDescription = !empty($bTranslation->meta_description) ? $bTranslation->meta_description : (!empty($business->meta_description) ? $business->meta_description : ($bTranslation->short_description ?? ''));
+$matchedLang = \App\Models\Language::where('lang_code', request()->segment(1))->first();
+$currentLangId = isset($lang_id) && $lang_id ? $lang_id : ($matchedLang ? $matchedLang->id : getCurrentLanguageID());
+$resolvedBizMeta = \App\Services\MetaTagService::resolveBusinessMeta($business, $currentLangId);
+$pageMetaTitle = !empty($metaTitle) ? $metaTitle : $resolvedBizMeta['title'];
+$pageMetaDescription = !empty($metaDescription) ? $metaDescription : $resolvedBizMeta['description'];
 @endphp
 
-@section('meta_title', format_meta_text($pageMetaTitle, $bName))
+@section('meta_title', format_meta_text($pageMetaTitle))
 @if(!empty($pageMetaDescription))
 @section('meta_description', format_meta_text($pageMetaDescription))
 @endif
@@ -306,7 +306,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                 {{ $business->translations->first()->name }} <span class="hide-on-sticky">review {{ date('Y') }}</span>
                                             </h1>
                                         </div>
-                                        <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 16px;  margin-bottom: 0;">Real reviews, community discussions & alternatives</p>
+                                        <p class="text-muted size16  hide-on-sticky" style="color: #666; font-size: 18px;  margin-bottom: 0;">Real reviews, user discussions & alternatives </p>
                                         @if ($averageRating !== null)
                                         <div class="main-view-rating-hide">
                                             <span style="font-size: 14px; font-weight: 500; color: #555;">
@@ -349,7 +349,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         'action' => 'visit_website',
                                                         'label' => 'Visit Website',
                                                     ]) }}"
-                                                class="btn-orng cta cta_orange d-flex align-items-center" target="_blank"
+                                                class="btn-orng cta cta_orange d-flex align-items-center" target="_blank" rel="sponsored"
                                                 tabindex="0">
                                                 {{ static_text('visit_website') ?: 'Visit website' }}
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;">
@@ -509,7 +509,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedPros as $pro)
                                                 <li class="d-flex align-items-start mb-2">
@@ -526,7 +526,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                 <div class="col-md-6">
                                     <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                         <div class="card-body">
-                                            <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                            <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
                                             <ul class="list-unstyled mb-0">
                                                 @foreach($aggregatedCons as $con)
                                                 <li class="d-flex align-items-start mb-2">
@@ -562,7 +562,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade show active" id="pros-content" role="tabpanel" aria-labelledby="pros-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
+                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedPros as $pro)
                                                     <li class="d-flex align-items-start mb-2">
@@ -581,7 +581,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     <div class="tab-pane fade" id="cons-content" role="tabpanel" aria-labelledby="cons-tab">
                                         <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                             <div class="card-body">
-                                                <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
+                                                <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
                                                 <ul class="list-unstyled mb-0">
                                                     @foreach($aggregatedCons as $con)
                                                     <li class="d-flex align-items-start mb-2">
@@ -674,7 +674,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                             'action' => 'visit_website',
                                                                             'label' => 'Visit Website',
                                                                         ]) }}"
-                                                target="_blank" rel="nofollow" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
+                                                target="_blank" rel="sponsored" class="d-block border rounded-3 overflow-hidden" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); outline: none;">
                                                 <img src="{{ $imgSrc }}"
                                                     alt="Business Image {{ $index + 1 }}" class="img-fluid w-100 preview-main-display"
                                                     style="width: 100%; max-height: 650px; min-height: 250px; object-fit: cover; border-radius: 8px;">
@@ -1136,13 +1136,22 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="start-from p_top_btm_sftwre pt-3 pb-3">
-                                                                    <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
-                                                                    <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
-                                                                        <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
-                                                                    </h3>
-                                                                    <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
-                                                                </div>
+                                                                @php
+                                                                    $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
+                                                                @endphp
+                                                                @if ($hasAltPrice)
+                                                                    <div class="start-from p_top_btm_sftwre pt-3 pb-3">
+                                                                        <h6 style="font-size: 12px; color: #666; font-weight: 600; margin-bottom: 14px;">Starting price</h6>
+                                                                        <h3 class="m-0 mt-1" style="font-weight: 700; color: #333; font-size: 24px; line-height:1!important; ">
+                                                                            <span>{{ $altCurrency }}{{ $altStartingPrice }}</span>
+                                                                        </h3>
+                                                                        @if(!empty($altAdditionalInfo) && !in_array(strtoupper(trim((string)$altAdditionalInfo)), ['NA', 'N/A', 'NULL']))
+                                                                            <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
+                                                                        @elseif(!empty($altBusinessPrice['time_unit']) && !in_array(strtolower($altBusinessPrice['time_unit']), ['one_time', 'na', 'n/a', 'null']))
+                                                                            <small class="text-muted" style="font-size: 12px;">per {{ strtolower($altBusinessPrice['time_unit']) }}</small>
+                                                                        @endif
+                                                                    </div>
+                                                                @endif
 
                                                                 <div class="sftwre-alt-btn pt-2">
                                                                     <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $altbusiness->translations->first()->slug]) }}"
@@ -2101,6 +2110,10 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
     <p class="starting-price-text">
         {{ $additional_info }}
     </p>
+@elseif(!empty($timeUnit) && !in_array(strtolower($timeUnit), ['one_time', 'na', 'n/a', 'null']))
+    <p class="starting-price-text">
+        per {{ strtolower($timeUnit) }}
+    </p>
 @endif
 
                     <a href="{{ $business->getTrackedUrl() }}"
@@ -2111,6 +2124,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                             'label' => 'View pricing',
                         ]) }}"
                         target="_blank"
+                        rel="sponsored"
                         class="starting-price-link">
                         View pricing
                     </a>
@@ -2144,7 +2158,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                     </div>
                                 </div>
                                 @endif
-                            </div>
+                            <!-- </div> -->
                             @endif
                             @php
                             $pros = collect();
@@ -2244,7 +2258,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div>
                                                             <p style="line-height:1">
                                                                 @if($review->user)
-                                                                <a href="{{ route('user.profile', ['id' => $review->user_id]) }}" style="color: inherit;">
+                                                                <a href="{{ $review->user->profileUrl() }}" style="color: inherit;">
                                                                     {{ $review->user->displayName() }}
                                                                 </a>
                                                                 @else
@@ -2336,7 +2350,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                         <div>
                                                             <p style="line-height:1">
                                                                 @if($pDisc->user)
-                                                                <a href="{{ route('user.profile', ['id' => $pDisc->user_id]) }}" style="color: inherit; text-decoration: none;">
+                                                                <a href="{{ $pDisc->user->profileUrl() }}" style="color: inherit; text-decoration: none;">
                                                                     {{ $pDisc->author_display_name }}
                                                                 </a>
                                                                 @else
@@ -2433,7 +2447,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                                 'action' => 'visit_website',
                                                                 'label' => 'Visit Website',
                                                             ]) }}"
-                                                    target="_blank" class="btn-orng cta cta_orange w-100 mb-3"
+                                                    target="_blank" rel="sponsored" class="btn-orng cta cta_orange w-100 mb-3"
                                                     style="font-size: 14px; font-weight: 600; padding: 9px 18px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
                                                     {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2"
                                                         style="font-size: 11px;"></i>
@@ -2465,7 +2479,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                                                     <span>Reviews</span>
                                                 </a>
                                                 <a href="#sectionDiscussions" class="sticky-nav-item" data-target="sectionDiscussions">
-                                                    <span>Community</span>
+                                                    <span>Discussions</span>
                                                 </a>
                                             </div>
 
@@ -2523,7 +2537,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                     'action' => 'visit_website',
                     'label' => 'Visit Website',
                 ]) }}"
-                                                target="_blank" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
+                                                target="_blank" rel="sponsored" class="btn btn-orng cta cta_orange w-100 shadow-sm" style="border-radius: 8px; font-weight: 600; font-size: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; text-decoration: none;     color: #fdfdfd;">
                                                 {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt ms-2" style="font-size: 12px;"></i>
                                             </a>
                                             @endif
@@ -3272,6 +3286,7 @@ session()->forget(['pending_review_business_id', 'pending_review_recommend']);
                 <div class="gallery-header-cta">
                     <a href="{{ $business->affiliate_link ?? $business->permanent_url }}"
                         target="_blank"
+                        rel="sponsored"
                         class="cta cta_orange"
                         style="padding: 12px 24px; font-weight: 600; border-radius: 30px; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                         {{ static_text('visit_website') ?: 'Visit website' }}

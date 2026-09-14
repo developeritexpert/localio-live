@@ -31,11 +31,14 @@ class ProductController extends Controller
 {
     public function productDetail($locale, $slug, Request $request)
     {
-        $lang_id = getCurrentLanguageID();
+        $matchedLang = \App\Models\Language::where('lang_code', $locale)->first();
+        $lang_id = $matchedLang ? $matchedLang->id : getCurrentLanguageID();
         $user = auth()->user();
 
         $business = Business::whereHas('translations', function ($q) use ($slug, $lang_id) {
             $q->where('slug', $slug)->where('lang_id', $lang_id);
+        })->orWhereHas('translations', function ($q) use ($slug) {
+            $q->where('slug', $slug);
         })->with([
             'translations' => fn($q) => $q->where('lang_id', $lang_id),
             'reviews' => fn($q) => $q->with('translations')

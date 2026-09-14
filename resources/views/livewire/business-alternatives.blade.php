@@ -274,7 +274,7 @@ foreach ($altCriteria as $criterion) {
 </div>
 
                                                                 @php
-                                                                    $hasAltPrice = !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
+                                                                    $hasAltPrice = !empty($altbusiness->is_affiliate) && !empty($altStartingPrice) && !in_array(strtoupper(trim((string)$altStartingPrice)), ['N/A', 'NA', 'NULL', '0', '0.00', '']);
                                                                 @endphp
                                                                 @if ($hasAltPrice)
                                                                     <div class="start-from p_top_btm_sftwre pt-3 pb-3">
@@ -284,6 +284,8 @@ foreach ($altCriteria as $criterion) {
                                                                         </h3>
                                                                         @if(!empty($altAdditionalInfo) && !in_array(strtoupper(trim((string)$altAdditionalInfo)), ['NA', 'N/A', 'NULL']))
                                                                             <small class="text-muted" style="font-size: 12px;">{{ $altAdditionalInfo }}</small>
+                                                                        @elseif(!empty($altBusinessPrice['time_unit']) && !in_array(strtolower($altBusinessPrice['time_unit']), ['one_time', 'na', 'n/a', 'null']))
+                                                                            <small class="text-muted" style="font-size: 12px;">per {{ strtolower($altBusinessPrice['time_unit']) }}</small>
                                                                         @endif
                                                                     </div>
                                                                 @endif
@@ -385,7 +387,7 @@ foreach ($altCriteria as $criterion) {
                                             </div>
                                         </div>
 
-                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; padding: 8px 11px; white-space: nowrap;">
+                                        <a href="{{ $business->affiliate_link ?? $business->permanent_url }}" class="cta btn-orng justify-content-center" target="_blank" rel="sponsored" style="display: flex !important;  width:fit-content;  height:fit-content; align-items: center; padding: 8px 11px; white-space: nowrap;">
                                             {{ static_text('visit_website') ?: 'Visit website' }}
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                         </a>
@@ -979,7 +981,7 @@ foreach ($altCriteria as $criterion) {
                                             <p class="m-0 showing-p">
                                                 Showing {{$from}}-{{$to}} of {{$total}}
                                             </p>
-                                        @else
+                                        @elseif($products->count() > 0)
                                             <p class="m-0 showing-p">Showing {{ $products->count() }} results</p>
                                         @endif
                                     </div>
@@ -1100,7 +1102,7 @@ foreach ($altCriteria as $criterion) {
                                                             <div class="auto-choice-btn d-flex flex-column gap-2" style="width: 100%; margin: 0;">
                                                                 <a href="{{ $item->affiliate_link ?? $item->permanent_url }}"
                                                                     class="cta cta_orange justify-content-center"
-                                                                    target="_blank" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
+                                                                    target="_blank" rel="sponsored" style="display: flex !important; width: 100%; align-items: center; border-radius: 30px;">
                                                                     {{ static_text('visit_website') ?: 'Visit website' }}
                                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-left:6px;flex-shrink:0;"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                                                                 </a>
@@ -1165,6 +1167,10 @@ foreach ($altCriteria as $criterion) {
         )
             <p style="font-size: 11px; margin-bottom: 0;">
                 {{ $startingPrice->additional_info }}
+            </p>
+        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
+            <p style="font-size: 11px; margin-bottom: 0;">
+                per {{ strtolower($startingPrice->time_unit) }}
             </p>
         @endif
 
@@ -1260,15 +1266,22 @@ foreach ($altCriteria as $criterion) {
                         @else
 
                             <div class="auto-choice-rgt">
+                                @if($products->count() > 0)
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
                                     </div>
                                     <x-social-icon/>
                                 </div>
+                                @endif
 
-                                <div class="alert alert-info">
-                                    <p class="mb-2 text-center fs-4 text-secondary">Sorry, we don't have any Products that match your filters. Try adjusting them to see more options.</p>
+                                <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    @if ($this->hasActiveFilters())
+                                        <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                        <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
+                                    @else
+                                        <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                    @endif
                                 </div>
                             </div>
                             {{-- <div class="auto-choice-rgt" style="position: relative; min-height: 300px;">

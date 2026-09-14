@@ -176,18 +176,16 @@
                         </div>
                     </div>
 
-                    <!-- SEO Meta Tags -->
+                    <!-- SEO Meta Tags Notice -->
                     <div class="col-12">
-                        <div class="card card-bordered p-3 bg-light">
-                            <h6 class="fw-bold text-primary mb-3">SEO Meta Tags</h6>
-                            <div class="form-group mb-3">
-                                <label class="form-label fw-bold" for="meta_title">Meta Title</label>
-                                <input type="text" name="meta_title" id="meta_title" class="form-control" value="{{ old('meta_title', $content->meta_title) }}" placeholder="Enter SEO meta title">
+                        <div class="alert alert-primary bg-primary-dim border-0 d-flex align-items-center justify-content-between p-3">
+                            <div>
+                                <strong class="d-block text-primary"><em class="icon ni ni-cpu me-1"></em>Feature SEO Meta Tags</strong>
+                                <span class="small text-muted">Feature meta titles, descriptions, and dynamic 3-tier cascade fallbacks are now centrally managed in <strong>Meta Tags &gt; Features</strong>.</span>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label fw-bold" for="meta_description">Meta Description</label>
-                                <textarea name="meta_description" id="meta_description" class="form-control" rows="3" placeholder="Enter SEO meta description">{{ old('meta_description', $content->meta_description) }}</textarea>
-                            </div>
+                            <a href="{{ route('admin.meta-tags.features') }}" target="_blank" class="btn btn-sm btn-primary ms-3 text-nowrap">
+                                <em class="icon ni ni-external me-1"></em> Manage Feature Meta Tags
+                            </a>
                         </div>
                     </div>
 

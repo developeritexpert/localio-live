@@ -181,6 +181,36 @@
                                     </a>
                                 </li>
 
+                                                                <!-- Meta Tags -->
+                                <li class="nk-menu-item has-sub {{ request()->is('*admin-dashboard/meta-tags*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon"><em class="icon ni ni-tags"></em></span>
+                                        <span class="nk-menu-text">Meta Tags</span>
+                                    </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.businesses') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.businesses') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Businesses</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.categories') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.categories') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Categories</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.categories-faqs') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.categories-faqs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Categories FAQs</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.meta-tags.features') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.meta-tags.features') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Features</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                                 <!-- Filter -->
                                 <li class="nk-menu-item">
                                     <a href="{{ route('filters') }}" class="nk-menu-link">
@@ -291,11 +321,11 @@
                                                 <span class="nk-menu-text">Contact</span>
                                             </a>
                                         </li>
-                                        {{-- <li class="nk-menu-item">
-                                            <a href="{{ url('/admin-dashboard/categories-page') }}" class="nk-menu-link">
-                                                <span class="nk-menu-text">Categories</span>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.categories-page') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.categories-page') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">All Categories Page</span>
                                             </a>
-                                        </li> --}}
+                                        </li>
                                         <li class="nk-menu-item">
                                             <a href="{{ route('admin.page-help-center') }}" class="nk-menu-link">
                                                 <span class="nk-menu-text">Help Center</span>
