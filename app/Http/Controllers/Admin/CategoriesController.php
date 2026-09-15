@@ -608,7 +608,8 @@ class CategoriesController extends Controller
                     'faq_about_description' => $request->input('faq_about_description'),
                     'faq_explore_headline' => $request->input('faq_explore_headline'),
                     'faq_explore_subtext' => $request->input('faq_explore_subtext'),
-                    'top_rated_description' => $request->input('top_rated_description'),
+                    // 'top_rated_description' is now managed centrally on the Top Rated page
+                    // 'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,
                     'meta_description' => $validate['meta_description'] ?? null,

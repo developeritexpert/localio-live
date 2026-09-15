@@ -852,7 +852,38 @@ if (!$headerLogo) {
             ];
         }
 
-        return view('Admin.site-content.top_product_page', compact('topProductContents', 'productFiles', 'textSections', 'faqs', 'lang_id'));
+                $exploreCategoriesContent = TopProductContent::where('meta_key', 'top_rated_categories')->where('lang_id', $lang_id)->first();
+        if (!$exploreCategoriesContent && $lang_id != 1) {
+            $exploreCategoriesContent = TopProductContent::where('meta_key', 'top_rated_categories')->where('lang_id', 1)->first();
+        }
+        $exploreCategoriesConfig = $exploreCategoriesContent && !empty($exploreCategoriesContent->meta_value)
+            ? json_decode($exploreCategoriesContent->meta_value, true)
+            : null;
+
+        if ($exploreCategoriesConfig === null) {
+            $exploreCategoriesConfig = [
+                [
+                    'category_id' => 11,
+                    'description' => 'Keep your website fast, reliable, and available with the right web hosting. Compare providers users rate most highly for different website needs and narrow the field to the hosting options that fit what you want to run.'
+                ],
+                [
+                    'category_id' => 30,
+                    'description' => 'Create and launch a website with tools that make building and editing easier. Discover standout website builders for different types of sites and find a platform that matches how you want to design, manage, and publish.'
+                ],
+                [
+                    'category_id' => 39,
+                    'description' => 'Register, manage, protect, monitor, and connect your domains with the right services. Browse leading Domains & DNS options and focus on the tools and services that best match the way you manage domains online.'
+                ]
+            ];
+        }
+
+        $allCategories = \App\Models\Category::where('status', 1)
+            ->with(['translations' => function ($q) use ($lang_id) {
+                $q->where('lang_id', $lang_id);
+            }])
+            ->get();
+
+        return view('Admin.site-content.top_product_page', compact('topProductContents', 'productFiles', 'textSections', 'faqs', 'lang_id', 'exploreCategoriesConfig', 'allCategories'));
     }
     public function topProductPageUpdate(Request $request)
     {
@@ -1003,6 +1034,24 @@ if (!$headerLogo) {
             TopProductContent::updateOrCreate(
                 ['meta_key' => 'top_rated_faqs', 'lang_id' => $lang_id],
                 ['meta_value' => json_encode($cleanedFaqs), 'type' => 'json']
+            );
+        }
+
+        if ($request->has('explore_categories') || $request->has('explore_categories_present')) {
+            $exploreData = $request->input('explore_categories', []);
+            $cleanedExplore = [];
+            foreach ($exploreData as $item) {
+                if (!empty($item['category_id'])) {
+                    $cleanedExplore[] = [
+                        'category_id' => (int) $item['category_id'],
+                        'description' => $item['description'] ?? '',
+                    ];
+                }
+            }
+
+            TopProductContent::updateOrCreate(
+                ['meta_key' => 'top_rated_categories', 'lang_id' => $lang_id],
+                ['meta_value' => json_encode($cleanedExplore), 'type' => 'json']
             );
         }
 

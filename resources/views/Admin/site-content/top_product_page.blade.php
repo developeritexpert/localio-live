@@ -216,6 +216,96 @@
                 </div>
             </div>
 
+            {{-- 1.5. Explore Top-Rated Categories Configuration --}}
+            <div class="card card-bordered mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div>
+                        <h6 class="m-0 fw-bold text-primary"><i class="fa fa-th-list me-1"></i> Explore Top-Rated Categories Selection & Ordering</h6>
+                        <small class="text-muted">Configure which categories appear in the "Explore top-rated categories" section on <code>/top-rated</code>, their display order, and their custom short descriptions.</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary" id="addExploreCatBtn">
+                        <em class="icon ni ni-plus"></em> <span>Add Category</span>
+                    </button>
+                </div>
+                <div class="card-inner">
+                    <input type="hidden" name="explore_categories_present" value="1">
+                    <div id="exploreCategoriesContainer">
+                        @if(isset($exploreCategoriesConfig) && is_array($exploreCategoriesConfig) && count($exploreCategoriesConfig) > 0)
+                            @foreach($exploreCategoriesConfig as $cIndex => $catConfig)
+                            @php
+                                $selectedCatId = $catConfig['category_id'] ?? null;
+                                $selectedCat = isset($allCategories) ? $allCategories->firstWhere('id', $selectedCatId) : null;
+                                $catTrans = $selectedCat ? ($selectedCat->translations instanceof \Illuminate\Database\Eloquent\Collection ? $selectedCat->translations->first() : $selectedCat->translations) : null;
+                                $catDisplayName = $catTrans->name ?? ($selectedCat->name ?? 'Category #' . $selectedCatId);
+                            @endphp
+                            <div class="explore-cat-card p-3 mb-3 border rounded bg-white" data-cat-index="{{ $cIndex }}" style="box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-primary cat-order-badge px-2 py-1" style="font-size: 12px;">#{{ $cIndex + 1 }}</span>
+                                        <span class="fw-bold text-dark cat-name-preview">{{ $catDisplayName }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-xs btn-secondary move-cat-up-btn" title="Move Up"><em class="icon ni ni-arrow-up"></em></button>
+                                        <button type="button" class="btn btn-xs btn-secondary move-cat-down-btn" title="Move Down"><em class="icon ni ni-arrow-down"></em></button>
+                                        <button type="button" class="btn btn-xs btn-danger remove-cat-btn ms-2" title="Remove Category"><em class="icon ni ni-trash"></em> Remove</button>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6 col-12">
+                                        <label class="form-label fw-bold mb-1">Select Category</label>
+                                        <div class="form-control-wrap">
+                                            <select class="form-select explore-cat-select" name="explore_categories[{{ $cIndex }}][category_id]" required>
+                                                <option value="">-- Choose Category --</option>
+                                                @if(isset($allCategories))
+                                                    @foreach($allCategories as $categoryOption)
+                                                        @php
+                                                            $optTrans = $categoryOption->translations instanceof \Illuminate\Database\Eloquent\Collection ? $categoryOption->translations->first() : $categoryOption->translations;
+                                                            $optName = $optTrans->name ?? ($categoryOption->name ?? 'ID ' . $categoryOption->id);
+                                                            $isParent = empty($categoryOption->parent_id) || $categoryOption->parent_id == 0;
+                                                        @endphp
+                                                        <option value="{{ $categoryOption->id }}" {{ $selectedCatId == $categoryOption->id ? 'selected' : '' }}>
+                                                            {{ $isParent ? '★ ' : '   — ' }}{{ $optName }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                        </div>
+                                        <small class="text-muted">Parent categories marked with ★.</small>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold mb-1">Short Description (for Top-Rated Page)</label>
+                                        <div class="form-control-wrap">
+                                            <textarea class="form-control rich-editor" rows="3" name="explore_categories[{{ $cIndex }}][description]" placeholder="Enter SEO-optimized short description displayed on the Top Rated page...">{!! $catConfig['description'] ?? '' !!}</textarea>
+                                        </div>
+                                        <small class="text-muted">This description is shown on <code>/top-rated</code> under this category title.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+                    <div id="noExploreCatsPlaceholder" class="p-4 text-center text-muted border rounded bg-light" style="{{ (isset($exploreCategoriesConfig) && count($exploreCategoriesConfig) > 0) ? 'display: none;' : '' }}">
+                        <em class="icon ni ni-layers text-muted mb-2" style="font-size: 2rem; display: block;"></em>
+                        <h6>No Categories Configured Yet</h6>
+                        <p class="small text-muted mb-0">Click "+ Add Category" above to choose categories and add their descriptions.</p>
+                    </div>
+                </div>
+            </div>
+
+            <template id="categoryOptionsTemplate">
+                <option value="">-- Choose Category --</option>
+                @if(isset($allCategories))
+                    @foreach($allCategories as $categoryOption)
+                        @php
+                            $optTrans = $categoryOption->translations instanceof \Illuminate\Database\Eloquent\Collection ? $categoryOption->translations->first() : $categoryOption->translations;
+                            $optName = $optTrans->name ?? ($categoryOption->name ?? 'ID ' . $categoryOption->id);
+                            $isParent = empty($categoryOption->parent_id) || $categoryOption->parent_id == 0;
+                        @endphp
+                        <option value="{{ $categoryOption->id }}">{{ $isParent ? '★ ' : '   — ' }}{{ $optName }}</option>
+                    @endforeach
+                @endif
+            </template>
+
             {{-- 2. Top Rated Dedicated FAQs Page Texts (/top-rated/faqs) --}}
             <div class="card card-bordered mb-4">
                 <div class="card-header bg-light">
@@ -734,9 +824,131 @@
         }
     }
 
+        function updateExploreCatBadges() {
+        const cards = $('#exploreCategoriesContainer .explore-cat-card');
+        const count = cards.length;
+        if (count === 0) {
+            $('#noExploreCatsPlaceholder').show();
+        } else {
+            $('#noExploreCatsPlaceholder').hide();
+        }
+
+        cards.each(function(i) {
+            $(this).find('.cat-order-badge').text('#' + (i + 1));
+            $(this).find('.explore-cat-select').attr('name', `explore_categories[${i}][category_id]`);
+            $(this).find('textarea.rich-editor').attr('name', `explore_categories[${i}][description]`);
+
+            const upBtn = $(this).find('.move-cat-up-btn');
+            const downBtn = $(this).find('.move-cat-down-btn');
+            if (i === 0) {
+                upBtn.prop('disabled', true).addClass('disabled');
+            } else {
+                upBtn.prop('disabled', false).removeClass('disabled');
+            }
+            if (i === count - 1) {
+                downBtn.prop('disabled', true).addClass('disabled');
+            } else {
+                downBtn.prop('disabled', false).removeClass('disabled');
+            }
+        });
+    }
+
     $(document).ready(function() {
         initAllCKEditors();
         renderCategoryManager();
+        updateExploreCatBadges();
+
+        // Add Explore Category
+        $('#addExploreCatBtn').on('click', function() {
+            const idx = Date.now();
+            const optionsHtml = document.getElementById('categoryOptionsTemplate').innerHTML;
+            const cardHtml = `
+            <div class="explore-cat-card p-3 mb-3 border rounded bg-white" data-cat-index="${idx}" style="box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary cat-order-badge px-2 py-1" style="font-size: 12px;">#</span>
+                        <span class="fw-bold text-dark cat-name-preview">New Category</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-1">
+                        <button type="button" class="btn btn-xs btn-outline-secondary move-cat-up-btn" title="Move Up"><em class="icon ni ni-arrow-up"></em></button>
+                        <button type="button" class="btn btn-xs btn-outline-secondary move-cat-down-btn" title="Move Down"><em class="icon ni ni-arrow-down"></em></button>
+                        <button type="button" class="btn btn-xs btn-danger remove-cat-btn ms-2" title="Remove Category"><em class="icon ni ni-trash"></em> Remove</button>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6 col-12">
+                        <label class="form-label fw-bold mb-1">Select Category</label>
+                        <div class="form-control-wrap">
+                            <select class="form-select explore-cat-select" name="explore_categories[${idx}][category_id]" required>
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                        <small class="text-muted">Parent categories marked with ★.</small>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold mb-1">Short Description (for Top-Rated Page)</label>
+                        <div class="form-control-wrap">
+                            <textarea class="form-control rich-editor" rows="3" name="explore_categories[${idx}][description]" placeholder="Enter SEO-optimized short description displayed on the Top Rated page..."></textarea>
+                        </div>
+                        <small class="text-muted">This description is shown on <code>/top-rated</code> under this category title.</small>
+                    </div>
+                </div>
+            </div>`;
+            $('#exploreCategoriesContainer').append(cardHtml);
+            initAllCKEditors();
+            updateExploreCatBadges();
+        });
+
+        // Remove Explore Category
+        $(document).on('click', '.remove-cat-btn', function() {
+            const card = $(this).closest('.explore-cat-card');
+            card.find('textarea.rich-editor').each(function() {
+                if (this.ckeditorInstance) {
+                    this.ckeditorInstance.destroy();
+                }
+            });
+            card.remove();
+            updateExploreCatBadges();
+        });
+
+        // Update category name preview on select
+        $(document).on('change', '.explore-cat-select', function() {
+            const selectedText = $(this).find('option:selected').text().replace(/^[★\s—]+/, '').trim();
+            const card = $(this).closest('.explore-cat-card');
+            card.find('.cat-name-preview').text(selectedText || 'New Category');
+        });
+
+        // Move category Up
+        $(document).on('click', '.move-cat-up-btn', function() {
+            const card = $(this).closest('.explore-cat-card');
+            const prev = card.prev('.explore-cat-card');
+            if (prev.length) {
+                card.find('textarea.rich-editor').each(function() {
+                    if (this.ckeditorInstance) this.value = this.ckeditorInstance.getData();
+                });
+                prev.find('textarea.rich-editor').each(function() {
+                    if (this.ckeditorInstance) this.value = this.ckeditorInstance.getData();
+                });
+                card.insertBefore(prev);
+                updateExploreCatBadges();
+            }
+        });
+
+        // Move category Down
+        $(document).on('click', '.move-cat-down-btn', function() {
+            const card = $(this).closest('.explore-cat-card');
+            const next = card.next('.explore-cat-card');
+            if (next.length) {
+                card.find('textarea.rich-editor').each(function() {
+                    if (this.ckeditorInstance) this.value = this.ckeditorInstance.getData();
+                });
+                next.find('textarea.rich-editor').each(function() {
+                    if (this.ckeditorInstance) this.value = this.ckeditorInstance.getData();
+                });
+                card.insertAfter(next);
+                updateExploreCatBadges();
+            }
+        });
         renderFaqTable();
 
         let sectionCounter = {{ isset($textSections) ? count($textSections) : 0 }};
@@ -1154,6 +1366,7 @@
 
         // Form Submit: Ensure all rich editors sync data
         $('#topProductForm').on('submit', function() {
+            updateExploreCatBadges();
             document.querySelectorAll('textarea.rich-editor').forEach(el => {
                 if (el.ckeditorInstance) {
                     el.value = el.ckeditorInstance.getData();

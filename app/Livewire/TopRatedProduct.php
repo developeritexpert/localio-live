@@ -842,6 +842,47 @@ class TopRatedProduct extends Component
         $lang_id = $this->lang_id ?: getCurrentLanguageID();
         $country_id = getCurrentCountry();
 
+        // 1. Fetch configured top-rated categories from TopProductContent for this language (or fallback to lang_id=1)
+        $configContent = \App\Models\TopProductContent::where('meta_key', 'top_rated_categories')
+            ->where('lang_id', $lang_id)
+            ->first();
+        if (!$configContent && $lang_id != 1) {
+            $configContent = \App\Models\TopProductContent::where('meta_key', 'top_rated_categories')
+                ->where('lang_id', 1)
+                ->first();
+        }
+
+        $configCategories = $configContent && !empty($configContent->meta_value)
+            ? json_decode($configContent->meta_value, true)
+            : null;
+
+        if (!empty($configCategories) && is_array($configCategories)) {
+            $categoryIds = array_filter(array_column($configCategories, 'category_id'));
+            $fetchedCats = Category::whereIn('id', $categoryIds)
+                ->where('status', 1)
+                ->with([
+                    'translations' => function ($q) use ($lang_id) {
+                        $q->where('lang_id', $lang_id);
+                    }
+                ])
+                ->get()
+                ->keyBy('id');
+
+            $categories = collect();
+            foreach ($configCategories as $item) {
+                $cId = $item['category_id'] ?? null;
+                if ($cId && isset($fetchedCats[$cId])) {
+                    $cat = clone $fetchedCats[$cId];
+                    $cat->custom_top_rated_description = $item['description'] ?? '';
+                    $cat->top_businesses = $this->selectTopBusinessesForCategory($cat, $lang_id, $country_id);
+                    $categories->push($cat);
+                }
+            }
+            if ($categories->isNotEmpty()) {
+                return $categories;
+            }
+        }
+
         $categories = Category::onlyParents()
             ->where('status', 1)
             ->where(function ($q) {
