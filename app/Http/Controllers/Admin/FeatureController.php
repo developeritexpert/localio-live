@@ -82,10 +82,17 @@ class FeatureController extends Controller
         $request->merge([
             'status' => $request->status == 1 ? 'active' : 'inactive',
         ]);
+
+        $name = trim($request->category_cap ?: ($request->name ?: ''));
+        $request->merge(['name' => $name]);
+
         $request->validate([
             'category_ids' => 'required',
-            'status' => 'required|in:active,inactive',
-            'name' => 'required|string|unique:feature_translations,name,NULL,id,lang_id,' . $lang_id,
+            'status'       => 'required|in:active,inactive',
+            'name'         => 'required|string|unique:feature_translations,name,NULL,id,lang_id,' . $lang_id,
+            'category_cap' => 'nullable|string',
+            'category_tc'  => 'nullable|string',
+            'category_lc'  => 'nullable|string',
         ]);
         DB::beginTransaction();
 
@@ -93,14 +100,23 @@ class FeatureController extends Controller
             // Create feature
             $feature = Feature::create([
                 'category_id' => $request->category_ids,
-                'status' => $request->status,
-                'keep_capitalized' => $request->has('keep_capitalized') ? 1 : 0,
+                'status'      => $request->status,
             ]);
+
+            $categoryCap = $name;
+            $categoryTc  = trim($request->category_tc ?? '') ?: mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+            $categoryLc  = trim($request->category_lc ?? '') ?: mb_strtolower($name);
 
             // Create translations
             $feature->translations()->create([
-                'lang_id' => $lang_id,
-                'name' => $request->name,
+                'lang_id'      => $lang_id,
+                'name'         => $name,
+                'category_cap' => $categoryCap,
+                'category_tc'  => $categoryTc,
+                'category_lc'  => $categoryLc,
+                'feature_cap'  => $categoryCap,
+                'feature_tc'   => $categoryTc,
+                'feature_lc'   => $categoryLc,
             ]);
             DB::commit();
 
@@ -117,7 +133,7 @@ class FeatureController extends Controller
 
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'json_data' => 'required|string',
+            'json_data'   => 'required|string',
         ]);
 
         $category = Category::findOrFail($request->category_id);
@@ -134,31 +150,63 @@ class FeatureController extends Controller
         try {
             $importedCount = 0;
             foreach ($items as $item) {
-                if (empty($item['name']) && empty($item['feature_name'])) {
+                if (empty($item['name']) && empty($item['feature_name']) && empty($item['category_cap']) && empty($item['feature_cap'])) {
                     continue;
                 }
-                $name = trim($item['name'] ?? $item['feature_name']);
+                $name = trim($item['category_cap'] ?? ($item['feature_cap'] ?? ($item['name'] ?? ($item['feature_name'] ?? ''))));
+                if (empty($name)) {
+                    continue;
+                }
+
+                $categoryCap = trim($item['category_cap'] ?? ($item['feature_cap'] ?? $name));
+                $categoryTc  = trim($item['category_tc'] ?? ($item['feature_tc'] ?? ''));
+                if (empty($categoryTc)) {
+                    $categoryTc = mb_convert_case($categoryCap, MB_CASE_TITLE, 'UTF-8');
+                }
+                $categoryLc  = trim($item['category_lc'] ?? ($item['feature_lc'] ?? ''));
+                if (empty($categoryLc)) {
+                    $categoryLc = mb_strtolower($categoryCap);
+                }
 
                 // Check existing feature translation for language
                 $existingTranslation = DB::table('feature_translations')
                     ->where('lang_id', $lang_id)
-                    ->where('name', $name)
+                    ->where(function ($q) use ($name, $categoryCap) {
+                        $q->where('name', $name)
+                          ->orWhere('category_cap', $categoryCap)
+                          ->orWhere('name', $categoryCap);
+                    })
                     ->first();
 
                 if ($existingTranslation) {
                     $feature = Feature::find($existingTranslation->feature_id);
                     if ($feature) {
                         $feature->update(['category_id' => $request->category_id]);
+                        DB::table('feature_translations')->where('id', $existingTranslation->id)->update([
+                            'name'         => $categoryCap,
+                            'category_cap' => $categoryCap,
+                            'category_tc'  => $categoryTc,
+                            'category_lc'  => $categoryLc,
+                            'feature_cap'  => $categoryCap,
+                            'feature_tc'   => $categoryTc,
+                            'feature_lc'   => $categoryLc,
+                        ]);
                     }
                 } else {
                     $feature = Feature::create([
                         'category_id' => $request->category_id,
-                        'status' => 'active',
+                        'status'      => 'active',
                     ]);
 
                     $feature->translations()->create([
-                        'lang_id' => $lang_id,
-                        'name' => $name,
+                        'lang_id'      => $lang_id,
+                        'name'         => $categoryCap,
+                        'category_cap' => $categoryCap,
+                        'category_tc'  => $categoryTc,
+                        'category_lc'  => $categoryLc,
+                        'feature_cap'  => $categoryCap,
+                        'feature_tc'   => $categoryTc,
+                        'feature_lc'   => $categoryLc,
                     ]);
                 }
                 $importedCount++;
@@ -211,16 +259,22 @@ class FeatureController extends Controller
             'status' => $request->status == 1 ? 'active' : 'inactive',
         ]);
 
+        $name = trim($request->category_cap ?: ($request->name ?: ''));
+        $request->merge(['name' => $name]);
+
         $request->validate([
             'category_ids' => 'required',
-            'status' => 'required|in:active,inactive',
-            'name' => [
+            'status'       => 'required|in:active,inactive',
+            'name'         => [
                 'required',
                 'string',
                 Rule::unique('feature_translations', 'name')
                     ->where('lang_id', $lang_id)
                     ->ignore($id, 'feature_id'),
             ],
+            'category_cap' => 'nullable|string',
+            'category_tc'  => 'nullable|string',
+            'category_lc'  => 'nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -231,15 +285,24 @@ class FeatureController extends Controller
             // Update feature fields
             $feature->update([
                 'category_id' => $request->category_ids,
-                'status' => $request->status,
-                'keep_capitalized' => $request->has('keep_capitalized') ? 1 : 0,
+                'status'      => $request->status,
             ]);
+
+            $categoryCap = $name;
+            $categoryTc  = trim($request->category_tc ?? '') ?: mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+            $categoryLc  = trim($request->category_lc ?? '') ?: mb_strtolower($name);
 
             // Update or create translation for current language
             $feature->translations()->updateOrCreate(
                 ['lang_id' => $lang_id],
                 [
-                    'name' => $request->name,
+                    'name'         => $name,
+                    'category_cap' => $categoryCap,
+                    'category_tc'  => $categoryTc,
+                    'category_lc'  => $categoryLc,
+                    'feature_cap'  => $categoryCap,
+                    'feature_tc'   => $categoryTc,
+                    'feature_lc'   => $categoryLc,
                 ]
             );
             DB::commit();

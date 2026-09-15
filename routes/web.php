@@ -432,6 +432,20 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin-dashboard/learn-more-modal/store-update', [StaticContentController::class, 'modalstoreOrUpdate'])->name('modalstoreOrUpdate');
     Route::get('/admin-dashboard/learn-more-modal/delete/{id}', [StaticContentController::class, 'modaldestroy'])->name('modaldestroy');
 
+    // Content Templates Management Routes
+    Route::prefix('admin-dashboard/content-templates')->group(function () {
+        Route::get('/categories', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categories'])->name('admin.content-templates.categories');
+        Route::get('/categories-faqs', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'categoriesFaqs'])->name('admin.content-templates.categories-faqs');
+        Route::get('/features', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'features'])->name('admin.content-templates.features');
+
+        Route::post('/templates/store', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'storeTemplate'])->name('admin.content-templates.store');
+        Route::post('/templates/update', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'updateTemplate'])->name('admin.content-templates.update');
+        Route::delete('/templates/{id}', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'deleteTemplate'])->name('admin.content-templates.delete');
+
+        Route::post('/assign-missing', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'assignMissing'])->name('admin.content-templates.assign-missing');
+        Route::post('/assign-single', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'assignSingle'])->name('admin.content-templates.assign-single');
+    });
+
         // Meta Tags Management Routes
     Route::prefix('admin-dashboard/meta-tags')->group(function () {
         Route::post('/rules/update', [\App\Http\Controllers\Admin\MetaTags\MetaTagController::class, 'updateRules'])->name('admin.meta-tags.rules.update');

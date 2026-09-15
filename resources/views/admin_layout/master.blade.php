@@ -211,6 +211,31 @@
                                     </ul>
                                 </li>
 
+                                <!-- Content Templates -->
+                                <li class="nk-menu-item has-sub {{ request()->is('*admin-dashboard/content-templates*') ? 'active current-page' : '' }}">
+                                    <a href="#" class="nk-menu-link nk-menu-toggle">
+                                        <span class="nk-menu-icon"><em class="icon ni ni-template"></em></span>
+                                        <span class="nk-menu-text">Content templates</span>
+                                    </a>
+                                    <ul class="nk-menu-sub">
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.categories') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.categories') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Category</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.categories-faqs') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.categories-faqs') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Category FAQs</span>
+                                            </a>
+                                        </li>
+                                        <li class="nk-menu-item {{ request()->routeIs('admin.content-templates.features') ? 'active' : '' }}">
+                                            <a href="{{ route('admin.content-templates.features') }}" class="nk-menu-link">
+                                                <span class="nk-menu-text">Features</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                                 <!-- Filter -->
                                 <li class="nk-menu-item">
                                     <a href="{{ route('filters') }}" class="nk-menu-link">

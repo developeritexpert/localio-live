@@ -3,6 +3,20 @@
 @section('title', 'Content Generation - Category Features')
 
 @section('content')
+<style>
+.pagination {
+    margin-bottom: 0 !important;
+}
+.page-item.active .page-link {
+    background-color: #0971fe !important;
+    border-color: #0971fe !important;
+    color: #fff !important;
+}
+.page-link {
+    color: #526484;
+}
+</style>
+
 <div class="nk-content-inner">
     <div class="nk-content-body">
 
@@ -210,9 +224,7 @@
                                         <td>
                                             <div class="fw-bold text-dark">{{ $fName }}</div>
                                             <span class="small text-muted">ID: {{ $feature->id }}</span>
-                                            @if($feature->keep_capitalized)
-                                                <span class="badge badge-dim bg-outline-info ms-1" style="font-size:10px">Capitalized</span>
-                                            @endif
+
                                         </td>
                                         <td>
                                             <span class="badge badge-dim bg-primary">{{ $catName }}</span>
@@ -336,8 +348,13 @@
                     </div>
                 </div>
                 @if($features->hasPages())
-                    <div class="card-inner py-2 border-top">
-                        {{ $features->links() }}
+                    <div class="card-inner py-5 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="text-muted small">
+                            Showing <strong>{{ $features->firstItem() }}</strong> to <strong>{{ $features->lastItem() }}</strong> of <strong>{{ $features->total() }}</strong> features
+                        </div>
+                        <div>
+                            {{ $features->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
                 @endif
             </div>

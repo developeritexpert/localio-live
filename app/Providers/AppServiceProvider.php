@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(Request $request )
     {
+        \Illuminate\Pagination\Paginator::useBootstrapFour();
         Relation::morphMap([
             'product' => \App\Models\Product::class,
             'category' => \App\Models\Category::class,

@@ -376,13 +376,40 @@ class CategoriesController extends Controller
         $language_id = Language::where('lang_code', getCurrentLocale())->value('id') ?? 1;
         // dd($request->all());
         $isNewCategory = !$request->category_id;
+
+        $categoryName = $request->input('category_cap') ?: $request->input('name');
+        if ($categoryName) {
+            $request->merge([
+                'name' => $categoryName,
+                'category_cap' => $categoryName,
+            ]);
+        }
         
         $rules = [
             'name' => [
                 'required',
-                'min:3',
+                'min:2',
                 'max:255'
             ],
+            'category_cap' => 'nullable|string|max:255',
+            'category_tc' => 'nullable|string|max:255',
+            'category_lc' => 'nullable|string|max:255',
+            'entity1_cap' => 'nullable|string|max:255',
+            'entity1_lc' => 'nullable|string|max:255',
+            'entities1_cap' => 'nullable|string|max:255',
+            'entities1_lc' => 'nullable|string|max:255',
+            'entity1_short_cap' => 'nullable|string|max:255',
+            'entity1_short_lc' => 'nullable|string|max:255',
+            'entities1_short_cap' => 'nullable|string|max:255',
+            'entities1_short_lc' => 'nullable|string|max:255',
+            'entity2_cap' => 'nullable|string|max:255',
+            'entity2_lc' => 'nullable|string|max:255',
+            'entities2_cap' => 'nullable|string|max:255',
+            'entities2_lc' => 'nullable|string|max:255',
+            'entity2_short_cap' => 'nullable|string|max:255',
+            'entity2_short_lc' => 'nullable|string|max:255',
+            'entities2_short_cap' => 'nullable|string|max:255',
+            'entities2_short_lc' => 'nullable|string|max:255',
             'comparison_name' => 'nullable|string|max:255',
             'see_all_text' => 'nullable|string|max:255',
             'page_title' => 'nullable|string|max:255',
@@ -582,7 +609,26 @@ class CategoriesController extends Controller
                 [
                     'category_id'  => $category->id,
                     'lang_id'      => $language_id,
-                    'name'         => $validate['name'],
+                    'name'         => $categoryName ?: ($validate['name'] ?? ''),
+                    'category_cap' => $categoryName ?: ($validate['name'] ?? ''),
+                    'category_tc'  => $request->input('category_tc'),
+                    'category_lc'  => $request->input('category_lc'),
+                    'entity1_cap'  => $request->input('entity1_cap'),
+                    'entity1_lc'   => $request->input('entity1_lc'),
+                    'entities1_cap'=> $request->input('entities1_cap'),
+                    'entities1_lc' => $request->input('entities1_lc'),
+                    'entity1_short_cap' => $request->input('entity1_short_cap'),
+                    'entity1_short_lc'  => $request->input('entity1_short_lc'),
+                    'entities1_short_cap' => $request->input('entities1_short_cap'),
+                    'entities1_short_lc'  => $request->input('entities1_short_lc'),
+                    'entity2_cap'  => $request->input('entity2_cap'),
+                    'entity2_lc'   => $request->input('entity2_lc'),
+                    'entities2_cap'=> $request->input('entities2_cap'),
+                    'entities2_lc' => $request->input('entities2_lc'),
+                    'entity2_short_cap' => $request->input('entity2_short_cap'),
+                    'entity2_short_lc'  => $request->input('entity2_short_lc'),
+                    'entities2_short_cap' => $request->input('entities2_short_cap'),
+                    'entities2_short_lc'  => $request->input('entities2_short_lc'),
                     'comparison_name' => $validate['comparison_name'] ?? null,
                     'see_all_text'    => $validate['see_all_text'] ?? null,
                     'page_title'   => $validate['page_title'] ?? null,
@@ -608,7 +654,8 @@ class CategoriesController extends Controller
                     'faq_about_description' => $request->input('faq_about_description'),
                     'faq_explore_headline' => $request->input('faq_explore_headline'),
                     'faq_explore_subtext' => $request->input('faq_explore_subtext'),
-                    'top_rated_description' => $request->input('top_rated_description'),
+                    // 'top_rated_description' is now managed centrally on the Top Rated page
+                    // 'top_rated_description' => $request->input('top_rated_description'),
                     'text_sections'=> !empty($cleanTextSections) ? json_encode($cleanTextSections) : null,
                     'meta_title'   => $validate['meta_title'] ?? null,
                     'meta_description' => $validate['meta_description'] ?? null,

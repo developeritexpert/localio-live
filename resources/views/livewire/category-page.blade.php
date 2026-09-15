@@ -485,7 +485,7 @@
                         <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
-                                {!! $category->translations->description ?? 'Browse and compare the best options' !!}
+                                {!! \App\Services\ContentTemplateService::resolveCategoryIntro($category, $currentLangId) !!}
                             </div>
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
@@ -508,17 +508,25 @@
             <div class="top-auto-btm">
                 <div class="container">
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
-                        <div class="host-pro flex-grow-1" style="max-width: 50%;">
+                        @php
+    $resolvedTopRated = \App\Services\ContentTemplateService::resolveCategorySection($category, 'compare_top_rated', $currentLangId);
+    $topRatedH2Text = !empty($resolvedTopRated['headline']) ? $resolvedTopRated['headline'] : ($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services'));
+    if (!empty($category->top_rated_listing_headline_addition)) {
+        $topRatedH2Text .= ' ' . $category->top_rated_listing_headline_addition;
+    }
+    $topRatedSubText = !empty($resolvedTopRated['subtext']) ? $resolvedTopRated['subtext'] : ($category->translation->top_rated_listing_subtext ?? '');
+@endphp
+<div class="host-pro flex-grow-1" style="max-width: 50%;">
                             <h2 style="margin-bottom: 8px;">
-                               {{ $applyDynamicVars(($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '')) }}
+                               {{ $applyDynamicVars($topRatedH2Text) }}
                             </h2>
-                            @if(!empty($category->translation->top_rated_listing_subtext))
+                            @if(!empty($topRatedSubText))
                                 <style>
                                     .top-rated-subtext-container p { margin-bottom: 0 !important; }
                                     .top-rated-subtext-container p:not(:last-child) { margin-bottom: 10px !important; }
                                 </style>
                                 <div class="top-rated-subtext-container ck-content">
-                                    {!! $category->translation->top_rated_listing_subtext !!}
+                                    {!! $topRatedSubText !!}
                                 </div>
                             @endif
                         </div>
@@ -1499,7 +1507,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1518,7 +1526,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1590,20 +1598,22 @@
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
                         @php
-                            $compAlternativesHeadline = !empty($category->translations->compare_alternatives_headline) 
+                            $resolvedTop10 = \App\Services\ContentTemplateService::resolveCategorySection($category, 'top_10', $currentLangId);
+                            $compAlternativesHeadline = !empty($resolvedTop10['headline']) ? $resolvedTop10['headline'] : (!empty($category->translations->compare_alternatives_headline) 
                                 ? $category->translations->compare_alternatives_headline 
-                                : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives');
+                                : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives'));
+                            $compAlternativesSubtext = !empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? '');
                         @endphp
                         <h2>
                             {{ $compAlternativesHeadline }}
                         </h2>
-                        @if(!empty($category->translations->compare_alternatives_subtext))
+                        @if(!empty($compAlternativesSubtext))
                             <style>
                                 .compare-alternatives-subtext p { margin-bottom: 0 !important; }
                                 .compare-alternatives-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                             </style>
                             <div class="compare-alternatives-subtext ck-content mb-3">
-                                {!! $category->translations->compare_alternatives_subtext !!}
+                                {!! $compAlternativesSubtext !!}
                             </div>
                         @else
                             <div style="margin-bottom: 16px;"></div>
@@ -1713,18 +1723,20 @@
                         <div class="community-feedback-table-section">
                             <div class="mb-3">
                                 @php
-                                    $commFeedbackHeadline = !empty($category->translations->community_says_headline) 
+                                    $resolvedProsCons = \App\Services\ContentTemplateService::resolveCategorySection($category, 'pros_cons', $currentLangId);
+                                    $commFeedbackHeadline = !empty($resolvedProsCons['headline']) ? $resolvedProsCons['headline'] : (!empty($category->translations->community_says_headline) 
                                         ? $category->translations->community_says_headline 
-                                        : 'What the Localio community says';
+                                        : 'What the Localio community says');
+                                    $commFeedbackSubtext = !empty($resolvedProsCons['subtext']) ? $resolvedProsCons['subtext'] : ($category->translations->community_says_subtext ?? '');
                                 @endphp
                                 <h2 style="margin-bottom: 4px;">{{ $commFeedbackHeadline }}</h2>
-                                @if(!empty($category->translations->community_says_subtext))
+                                @if(!empty($commFeedbackSubtext))
                                     <style>
                                         .community-says-subtext p { margin-bottom: 0 !important; }
                                         .community-says-subtext p:not(:last-child) { margin-bottom: 10px !important; }
                                     </style>
                                     <div style="font-size: 16px; color: #64748b; margin: 0;" class="community-says-subtext ck-content">
-                                        {!! $category->translations->community_says_subtext !!}
+                                        {!! $commFeedbackSubtext !!}
                                     </div>
                                 @else
                                     <p style="font-size: 16px; color: #64748b; margin: 0;">Most mentioned pros and cons shared by real users.</p>
@@ -1825,8 +1837,9 @@
                 ? $category->translations->first() 
                 : ($category->translations ?? $category->translation);
             $catCurrentName = $catTrans->name ?? $category->name ?? 'Category';
-            $popCompHeadline = !empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons';
-            $popCompSubtext = $catTrans->popular_comparisons_subtext ?? null;
+            $resolvedPopComp = \App\Services\ContentTemplateService::resolveCategorySection($category, 'popular_comparisons', $currentLangId);
+            $popCompHeadline = !empty($resolvedPopComp['headline']) ? $resolvedPopComp['headline'] : (!empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons');
+            $popCompSubtext = !empty($resolvedPopComp['subtext']) ? $resolvedPopComp['subtext'] : ($catTrans->popular_comparisons_subtext ?? null);
         @endphp
         <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
             <div class="container">
@@ -1894,10 +1907,11 @@
 
                 <!-- Interactive Compare Tool (Bottom of Section) -->
                 @php
-                    $compToolHeadline = !empty($catTrans->compare_tool_headline)
+                    $resolvedCompTool = \App\Services\ContentTemplateService::resolveCategorySection($category, 'compare_tool', $currentLangId);
+                    $compToolHeadline = !empty($resolvedCompTool['headline']) ? $resolvedCompTool['headline'] : (!empty($catTrans->compare_tool_headline)
                         ? $catTrans->compare_tool_headline
-                        : 'Compare ' . $catCurrentName . ' with any provider';
-                    $compToolSubtext = $catTrans->compare_tool_subtext ?? null;
+                        : ('Compare ' . $catCurrentName . ' with any provider'));
+                    $compToolSubtext = !empty($resolvedCompTool['subtext']) ? $resolvedCompTool['subtext'] : ($catTrans->compare_tool_subtext ?? null);
                     $compSlug = $catTrans->comparison_slug ?? 'compare';
                     $vsKeyword = static_text('vs_keyword') ?: 'vs';
                     if (empty($vsKeyword) || $vsKeyword === 'vs_keyword') $vsKeyword = 'vs';
@@ -2239,8 +2253,9 @@
             $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
                 ? $category->translations->first() 
                 : ($category->translations ?? $category->translation);
-            $exploreHeadline = !empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories');
-            $exploreSubtext = $catTrans->explore_subcategories_subtext ?? null;
+            $resolvedExploreSub = \App\Services\ContentTemplateService::resolveCategorySection($category, 'explore_subcategories', $currentLangId);
+            $exploreHeadline = !empty($resolvedExploreSub['headline']) ? $resolvedExploreSub['headline'] : (!empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories'));
+            $exploreSubtext = !empty($resolvedExploreSub['subtext']) ? $resolvedExploreSub['subtext'] : ($catTrans->explore_subcategories_subtext ?? null);
         @endphp
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">
@@ -2311,8 +2326,9 @@
                 ? $category->translations->first() 
                 : ($category->translations ?? $category->translation);
             $catFaqName = $catTrans->name ?? $category->name ?? 'Category';
-            $faqHeadline = !empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions';
-            $faqSubtext = $catTrans->category_faqs_subtext ?? null;
+            $resolvedCatFaqs = \App\Services\ContentTemplateService::resolveCategorySection($category, 'category_page_faqs', $currentLangId);
+            $faqHeadline = !empty($resolvedCatFaqs['headline']) ? $resolvedCatFaqs['headline'] : (!empty($catTrans->category_faqs_headline) ? $catTrans->category_faqs_headline : 'Frequently asked questions');
+            $faqSubtext = !empty($resolvedCatFaqs['subtext']) ? $resolvedCatFaqs['subtext'] : ($catTrans->category_faqs_subtext ?? null);
             $catFaqSlug = $catTrans->slug ?? $category->slug ?? '';
             $categoryFaqsUrl = url('/' . app()->getLocale() . '/' . $catFaqSlug . '/faqs');
         @endphp
@@ -2338,15 +2354,15 @@
 
                             <div class="col-lg-5 col-md-6 col-12">
                                 <form action="{{ $categoryFaqsUrl }}" method="GET" class="category-faq-search-form" id="categoryFaqSearchForm">
-                                    <div class="input-group" style="border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
-                                        <span class="input-group-text bg-white border-0 ps-3 pe-2" style="color: #94a3b8;">
+                                    <div class="input-group" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
+                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none px-3 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
+                                        <span class="input-group-text bg-white border-0 ps-3 pe-3" style="color: #94a3b8;">
                                             <i class="fas fa-search" style="font-size: 15px;"></i>
                                         </span>
-                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none ps-1 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
-                                        <button type="submit" class="btn px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #002347; color: #ffffff; font-size: 13.5px; border-radius: 0; height: 46px;" title="Search FAQs">
+                                        <!-- <button type="submit" class="btn px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #002347; color: #ffffff; font-size: 13.5px; border-radius: 0; height: 46px;" title="Search FAQs">
                                             <span>Search</span>
                                             <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </form>
                             </div>

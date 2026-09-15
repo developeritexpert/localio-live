@@ -28,7 +28,7 @@
     }
 
     .top-rated-heading-sec {
-        margin-top: 115px;
+        margin-top: 95px;
         padding-top: 30px;
         background-color: #f7f9fb;
         border-bottom: 1px solid #e2e8f0;
@@ -1118,9 +1118,11 @@
                     $catItemName = $trans->name ?? $cat->name ?? '';
                     $catItemSeeAllText = $trans->see_all_text ?? '';
                     $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
-                    $catItemDesc = !empty($trans->top_rated_description)
-                        ? $trans->top_rated_description
-                        : ($trans->description ?? $cat->description ?? '');
+                    $catItemDesc = !empty($cat->custom_top_rated_description)
+                        ? $cat->custom_top_rated_description
+                        : (!empty($trans->top_rated_description)
+                            ? $trans->top_rated_description
+                            : ($trans->description ?? $cat->description ?? ''));
                     if (empty($catItemDesc) && !empty($catItemName)) {
                         $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions. Explore providers using features, starting prices, real user reviews, and community ratings to identify the right match.';
                     }

@@ -100,11 +100,10 @@
         color: unset !important;
         text-decoration: underline !important;
     }
-        .top-rated-heading-sec {
-            padding-top: 30px !important;
-            background-color: #f7f9fb;
-            border-bottom: 1px solid #e8eef6;
-        }
+
+    .top-rated-heading-sec {
+        padding-top: 30px !important;
+    }
 
     .top-rated-heading-sec {
         margin-top: 115px;
@@ -233,7 +232,7 @@
         left: -30px
     }
 
-    /* Both Visit website and View details buttons – same height */
+    /* Both Visit website and View details buttons â€“ same height */
     .auto-choice-btn .cta {
         padding: 10px 16px !important;
         height: auto !important;
@@ -375,7 +374,7 @@
     .clear-features-link {
         color: #007bff !important;
         font-size: 13px !important;
-        font-weight: 400 !important;
+        font-weight: 500 !important;
         text-decoration: none !important;
         margin-left: 8px !important;
         cursor: pointer !important;
@@ -507,13 +506,18 @@
                             @php
                                 $categoryName = $category->translations->name ?? $category->name ?? 'Category';
                                 $rawFeatName = $lockedFeatureName ?: str_replace('-', ' ', $feature_slug ?? '');
-                                $keepCap = $lockedFeatureObj ? (bool)$lockedFeatureObj->keep_capitalized : false;
-                                $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
+                                $featTrans = $lockedFeatureObj?->translations?->where('lang_id', $currentLangId)->first() ?? $lockedFeatureObj?->translations?->first();
+                                $formattedFeatName = $featTrans?->category_lc ?: ($featTrans?->feature_lc ?: mb_strtolower($rawFeatName));
                                 $fallbackTitle = $categoryName . ' with ' . $formattedFeatName;
                                 if (!empty($category->page_title_addition)) {
                                     $fallbackTitle .= ' ' . $category->page_title_addition;
                                 }
-                                $activeTitle = !empty($featureContent->page_title) ? $featureContent->page_title : $fallbackTitle;
+                                $resolvedFeatH1 = null;
+                                if ($lockedFeatureObj) {
+                                    $featH1Data = \App\Services\ContentTemplateService::resolveFeatureH1($lockedFeatureObj, $category, $currentLangId);
+                                    $resolvedFeatH1 = $featH1Data['headline'] ?? null;
+                                }
+                                $activeTitle = !empty($featureContent->page_title) ? $featureContent->page_title : (!empty($resolvedFeatH1) ? $resolvedFeatH1 : $fallbackTitle);
                             @endphp
                             <h1>
                                 {{ $applyDynamicVars($activeTitle) }}
@@ -524,7 +528,7 @@
                         <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
-                                {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options')) !!}
+                                {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : \App\Services\ContentTemplateService::resolveCategoryIntro($category, $currentLangId)) !!}
                             </div>
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
@@ -935,7 +939,7 @@
                                                 {{-- 1. Locked Pre-Selected Feature Always At Top (Image 1) --}}
                                                 @if($lockedFeatureId)
                                                     <div class="d-flex align-items-center mb-2 locked-feature-item" style="padding: 2px 0;">
-                                                        <span class="me-2" style="font-size: 15px; line-height: 1;" title="Fixed feature filter">🔒</span>
+                                                        <span class="me-2" style="font-size: 15px; line-height: 1;" title="Fixed feature filter">ðŸ”’</span>
                                                         <span style="font-size: 14px; font-weight: 500; color: #002347;">{{ $lockedFeatureName }}</span>
                                                     </div>
                                                 @endif
@@ -1080,8 +1084,8 @@
                                     'most_recommended' => 'Most recommended',
                                     'price_low_high' => 'Price: low to high',
                                     'price_high_low' => 'Price: high to low',
-                                    'name_a_z' => 'Name: A–Z',
-                                    'name_z_a' => 'Name: Z–A',
+                                    'name_a_z' => 'Name: Aâ€“Z',
+                                    'name_z_a' => 'Name: Zâ€“A',
                                     ];
                                     $currentSort = $sortBy ?? 'highest_rated';
                                     $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
@@ -1650,7 +1654,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1669,7 +1673,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
