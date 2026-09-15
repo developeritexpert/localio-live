@@ -428,7 +428,8 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label class="form-label" for="description">Header Text</label>
+                                <label class="form-label" for="description">Header Text (First Introductory Paragraph)</label>
+                                <small class="text-muted d-block mb-1">Enter the individual introductory overview sentence(s) for this category (e.g. up to "...need to handle directly."). The closing question sentence and the second overview paragraph are automatically appended from the assigned Content Template.</small>
                                 <div class="form-control-wrap">
                                     <textarea class="form-control rich-editor" id="description" name="description" rows="5" placeholder="Enter category description">{!! isset($category_data) ? $category_data['description'] : old('description') !!}</textarea>
                                 </div>
@@ -588,6 +589,15 @@
 
                         <div class="col-md-12">
                             <div class="form-group">
+                                <div class="alert alert-info d-flex align-items-center justify-content-between p-3 mb-3">
+                                    <div>
+                                        <strong class="d-block text-primary"><em class="icon ni ni-template me-1"></em>Dynamic Content Templates Active</strong>
+                                        <span class="small text-muted">Headlines and subtexts for Top 10, Compare Top-Rated, Pros &amp; Cons, Comparisons, and Category FAQs are now centrally managed and permanently randomized in <strong>Content templates &gt; Category</strong>. Values below serve as optional manual overrides.</span>
+                                    </div>
+                                    <a href="{{ route('admin.content-templates.categories') }}" target="_blank" class="btn btn-sm btn-primary ms-3 text-nowrap">
+                                        <em class="icon ni ni-external me-1"></em> Manage Content Templates
+                                    </a>
+                                </div>
                                 <label class="form-label" for="top_rated_listing_headline">Compare Top-Rated Headline (H2)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="top_rated_listing_headline" name="top_rated_listing_headline"

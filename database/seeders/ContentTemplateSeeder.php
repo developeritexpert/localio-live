@@ -1,0 +1,406 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\ContentTemplate;
+use Illuminate\Database\Seeder;
+
+class ContentTemplateSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $templates = [
+            // CATEGORY: header_intro
+            [
+                'section_group' => 'category',
+                'field_key' => 'header_intro',
+                'option_number' => 1,
+                'headline' => "Which [entity1_cap] actually simplifies the parts of [category_tc] you don't want to manage by hand?",
+                'subtext' => "Localio combines factual [category_cap] information with ratings and reviews from real Localio users, giving you a grounded way to explore the category from everyday options through its highest-rated choices.",
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'header_intro',
+                'option_number' => 2,
+                'headline' => "How do you find the right [entity1_lc] without getting locked into unnecessary features or hidden costs?",
+                'subtext' => "Localio aggregates independently verified user experiences, pricing benchmarks, and feature breakdowns to help you compare leading [entities1_lc] with confidence.",
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'header_intro',
+                'option_number' => 3,
+                'headline' => "Which [entity1_cap] offers the best balance of performance, user-friendliness, and overall value?",
+                'subtext' => "Localio highlights real user feedback and core capabilities across top-tier [entities1_lc], making it straightforward to select the solution that fits your exact needs.",
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'header_intro',
+                'option_number' => 4,
+                'headline' => "What separates standout [entities1_lc] from the rest of the market?",
+                'subtext' => "Localio pairs verified community reviews with head-to-head feature comparisons, guiding you directly to proven [entities1_lc] trusted by businesses worldwide.",
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'header_intro',
+                'option_number' => 5,
+                'headline' => "Looking for a reliable [entity1_lc] tailored to your workflow and budget?",
+                'subtext' => "Explore our comprehensive directory featuring transparent ratings, pros and cons, and real customer sentiment across the [category_lc] landscape.",
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: explore_link
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_link',
+                'option_number' => 1,
+                'headline' => 'Explore all [entities1_lc]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_link',
+                'option_number' => 2,
+                'headline' => 'See all [category_cap]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_link',
+                'option_number' => 3,
+                'headline' => 'View top [entities1_lc]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_link',
+                'option_number' => 4,
+                'headline' => 'Compare all [entities1_short_lc]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_link',
+                'option_number' => 5,
+                'headline' => 'Browse all [category_cap]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: compare_top_rated
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_top_rated',
+                'option_number' => 1,
+                'headline' => 'Best [category_cap] [year]',
+                'subtext' => 'Compare the highest-rated [entities1_lc] based on overall satisfaction, ease of use, and verified customer reviews.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_top_rated',
+                'option_number' => 2,
+                'headline' => 'Top-Rated [category_tc] Solutions [country2] ([year])',
+                'subtext' => 'Discover standout [entities1_lc] evaluated by real users across key performance criteria and reliability metrics.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_top_rated',
+                'option_number' => 3,
+                'headline' => 'Highest-Rated [entities1_cap] for [year]',
+                'subtext' => 'Explore top [entities1_lc] recognized for exceptional user experiences, outstanding features, and value for money.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_top_rated',
+                'option_number' => 4,
+                'headline' => 'Leading [category_tc] Choices [country2]',
+                'subtext' => 'Review the premier [entities1_lc] benchmarked against industry standards and genuine customer feedback.',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: top_10
+            [
+                'section_group' => 'category',
+                'field_key' => 'top_10',
+                'option_number' => 1,
+                'headline' => 'Top 10 [entities2_lc] compared',
+                'subtext' => 'Use the Top 10 table to compare each [entity1_short_lc]’s overall user rating with detailed user ratings for value for money, ease of use, performance, features, and more. The Recommended by users percentage adds another user signal, while a starting price appears when available.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'top_10',
+                'option_number' => 2,
+                'headline' => 'Compare Top 10 [category_tc] Alternatives',
+                'subtext' => 'Evaluate the top 10 [entities1_lc] side by side across user ratings, standout features, and verified pricing to find the best match for your requirements.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'top_10',
+                'option_number' => 3,
+                'headline' => '10 Leading [entities1_cap] Side by Side',
+                'subtext' => 'Browse our ranked comparison of top 10 [entities1_lc], assessing key capabilities, customer recommendations, and cost-effectiveness.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'top_10',
+                'option_number' => 4,
+                'headline' => 'Top 10 [category_cap] Ranked by Users',
+                'subtext' => 'Compare high-performing [entities1_lc] using verified satisfaction metrics, transparent pricing indicators, and detailed feature breakdowns.',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: pros_cons
+            [
+                'section_group' => 'category',
+                'field_key' => 'pros_cons',
+                'option_number' => 1,
+                'headline' => 'What the community says about [category_lc]',
+                'subtext' => 'Balanced perspectives and key takeaways highlighted by verified users and industry practitioners.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'pros_cons',
+                'option_number' => 2,
+                'headline' => 'Pros & Cons of Leading [entities1_cap]',
+                'subtext' => 'Real-world strengths and potential trade-offs shared by experienced users to guide your evaluation.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'pros_cons',
+                'option_number' => 3,
+                'headline' => 'Community Insights: [category_tc] Strengths & Limitations',
+                'subtext' => 'Authentic user feedback identifying what works best and what to watch out for across [entities1_lc].',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: popular_comparisons
+            [
+                'section_group' => 'category',
+                'field_key' => 'popular_comparisons',
+                'option_number' => 1,
+                'headline' => 'Popular comparisons',
+                'subtext' => 'See how top [category_lc] providers compare against each other in head-to-head match-ups.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'popular_comparisons',
+                'option_number' => 2,
+                'headline' => 'Frequently Compared [category_tc] Providers',
+                'subtext' => 'Explore the most common head-to-head matchups and discover how leading [entities1_lc] differ.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'popular_comparisons',
+                'option_number' => 3,
+                'headline' => 'Head-to-Head [category_cap] Matchups',
+                'subtext' => 'Directly compare key differentiators, pricing, and ratings between top [entities1_lc].',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: compare_tool
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_tool',
+                'option_number' => 1,
+                'headline' => 'Compare [category_cap] with any provider',
+                'subtext' => 'Select another provider from the search box below to generate an instant side-by-side comparison.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_tool',
+                'option_number' => 2,
+                'headline' => 'Instant [category_tc] Comparison Tool',
+                'subtext' => 'Choose any two [entities1_lc] to compare their ratings, pros, cons, and features side by side.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'compare_tool',
+                'option_number' => 3,
+                'headline' => 'Side-by-Side [entity1_cap] Comparison',
+                'subtext' => 'Pick your current solution and compare it against top alternatives in real time.',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY: explore_subcategories
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_subcategories',
+                'option_number' => 1,
+                'headline' => 'Explore [category_cap] categories',
+                'subtext' => 'Browse specialized categories to find the exact tools and solutions for your requirements.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_subcategories',
+                'option_number' => 2,
+                'headline' => 'Discover Related [category_tc] Specialties',
+                'subtext' => 'Narrow your search by exploring specialized niches within the [category_lc] ecosystem.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category',
+                'field_key' => 'explore_subcategories',
+                'option_number' => 3,
+                'headline' => 'Browse [category_cap] Subcategories',
+                'subtext' => 'Find purpose-built [entities1_lc] tailored to specific workflows, integrations, and industries.',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY FAQS: category_page_faqs
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'category_page_faqs',
+                'option_number' => 1,
+                'headline' => 'Frequently asked questions',
+                'subtext' => 'Common questions and answers about [category_lc] solutions and comparison criteria.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'category_page_faqs',
+                'option_number' => 2,
+                'headline' => '[category_tc] Frequently Asked Questions',
+                'subtext' => 'Get clear answers to key questions about selecting and using [entities1_lc].',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'category_page_faqs',
+                'option_number' => 3,
+                'headline' => 'Common Questions About [category_cap]',
+                'subtext' => 'Everything you need to know before choosing a [entity1_lc].',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY FAQS: faq_about
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'faq_about',
+                'option_number' => 1,
+                'headline' => 'About [category_cap]',
+                'subtext' => '<p>Explore comprehensive information, user reviews, and comparisons for top [category_lc] solutions. Our guide helps you discover the right options for your specific needs.</p>',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'faq_about',
+                'option_number' => 2,
+                'headline' => 'Understanding [category_tc] in [year]',
+                'subtext' => '<p>Get in-depth insights into how modern [entities1_lc] operate, key capabilities to look for, and how community reviews inform the best decisions.</p>',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'faq_about',
+                'option_number' => 3,
+                'headline' => '[category_cap] Essentials & Buyer Guide',
+                'subtext' => '<p>Learn about fundamental features, typical pricing tiers, and critical evaluation factors across leading [entities1_lc].</p>',
+                'lang_id' => 1,
+            ],
+
+            // CATEGORY FAQS: faq_explore
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'faq_explore',
+                'option_number' => 1,
+                'headline' => 'Explore [category_cap] categories',
+                'subtext' => 'Browse specialized categories to find the exact tools and solutions for your requirements.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'faq_explore',
+                'option_number' => 2,
+                'headline' => 'Related [category_tc] Categories',
+                'subtext' => 'Check out specialized subcategories to pinpoint tools tailored to your operational needs.',
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'category_faqs',
+                'field_key' => 'faq_explore',
+                'option_number' => 3,
+                'headline' => 'Explore More [category_cap] Solutions',
+                'subtext' => 'Dive deeper into related categories to discover specialized [entities1_lc] and tools.',
+                'lang_id' => 1,
+            ],
+
+            // FEATURES: feature_h1
+            [
+                'section_group' => 'features',
+                'field_key' => 'feature_h1',
+                'option_number' => 1,
+                'headline' => 'Best [category_tc] with [feature_tc] [country2] [year]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'features',
+                'field_key' => 'feature_h1',
+                'option_number' => 2,
+                'headline' => '[category_tc] with [feature_tc] in [year]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'features',
+                'field_key' => 'feature_h1',
+                'option_number' => 3,
+                'headline' => 'Top [category_tc] featuring [feature_tc] [country2]',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'features',
+                'field_key' => 'feature_h1',
+                'option_number' => 4,
+                'headline' => 'Compare [category_tc] with [feature_tc] ([year])',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+            [
+                'section_group' => 'features',
+                'field_key' => 'feature_h1',
+                'option_number' => 5,
+                'headline' => 'Best [entities1_cap] with [feature_tc] [country2] ([year])',
+                'subtext' => null,
+                'lang_id' => 1,
+            ],
+        ];
+
+        foreach ($templates as $data) {
+            ContentTemplate::firstOrCreate(
+                [
+                    'section_group' => $data['section_group'],
+                    'field_key' => $data['field_key'],
+                    'option_number' => $data['option_number'],
+                    'lang_id' => $data['lang_id'],
+                ],
+                [
+                    'headline' => $data['headline'],
+                    'subtext' => $data['subtext'],
+                    'is_active' => true,
+                ]
+            );
+        }
+    }
+}

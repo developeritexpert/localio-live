@@ -247,12 +247,17 @@
                 
                 <!-- Section 1: Intro Title & Description -->
                 <div class="faq-top-intro mb-4">
+                    @php
+    $resolvedFaqAbout = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_about', $currentLangId ?? 1);
+    $faqAboutH2 = !empty($resolvedFaqAbout['headline']) ? $resolvedFaqAbout['headline'] : (!empty($categoryTranslation->faq_about_headline) ? $categoryTranslation->faq_about_headline : ('About ' . $catName));
+    $faqAboutDesc = !empty($resolvedFaqAbout['subtext']) ? $resolvedFaqAbout['subtext'] : ($categoryTranslation->faq_about_description ?? '');
+@endphp
                     <h2 style="font-size: 24px; font-weight: 700; color: #002347; margin-bottom: 12px;">
-                        {{ !empty($categoryTranslation->faq_about_headline) ? $categoryTranslation->faq_about_headline : ('About ' . $catName) }}
+                        {{ $faqAboutH2 }}
                     </h2>
                     <div class="is_text rich-text-content" style="font-size: 15px; color: #475569; line-height: 1.7;">
-                        @if(!empty($categoryTranslation->faq_about_description))
-                            {!! $categoryTranslation->faq_about_description !!}
+                        @if(!empty($faqAboutDesc))
+                            {!! $faqAboutDesc !!}
                         @else
                             <p>
                                 Explore comprehensive information, user reviews, and comparisons for top {{ strtolower($catName) }} solutions. Our guide helps you discover the right options for your specific needs.
@@ -657,10 +662,13 @@
 <!-- Explore Subcategories Section -->
 @if(isset($exploreSubcategories) && isset($exploreSubcategories['items']) && count($exploreSubcategories['items']) > 0)
 @php
-    $exploreHeadline = !empty($categoryTranslation->faq_explore_headline) 
-        ? $categoryTranslation->faq_explore_headline 
-        : ($exploreSubcategories['title'] ?? ('Explore ' . $catName . ' categories'));
-    $exploreSubtext = $categoryTranslation->faq_explore_subtext ?? null;
+    $resolvedFaqExplore = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_explore', $currentLangId ?? 1);
+    $exploreHeadline = !empty($resolvedFaqExplore['headline']) 
+        ? $resolvedFaqExplore['headline'] 
+        : (!empty($categoryTranslation->faq_explore_headline) 
+            ? $categoryTranslation->faq_explore_headline 
+            : ($exploreSubcategories['title'] ?? ('Explore ' . $catName . ' categories')));
+    $exploreSubtext = !empty($resolvedFaqExplore['subtext']) ? $resolvedFaqExplore['subtext'] : ($categoryTranslation->faq_explore_subtext ?? null);
     $currentFaqSlug = $faqSlug ?? 'faqs';
 @endphp
 <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">

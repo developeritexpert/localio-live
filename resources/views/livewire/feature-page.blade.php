@@ -513,7 +513,12 @@
                                 if (!empty($category->page_title_addition)) {
                                     $fallbackTitle .= ' ' . $category->page_title_addition;
                                 }
-                                $activeTitle = !empty($featureContent->page_title) ? $featureContent->page_title : $fallbackTitle;
+                                $resolvedFeatH1 = null;
+                                if ($lockedFeatureObj) {
+                                    $featH1Data = \App\Services\ContentTemplateService::resolveFeatureH1($lockedFeatureObj, $category, $currentLangId);
+                                    $resolvedFeatH1 = $featH1Data['headline'] ?? null;
+                                }
+                                $activeTitle = !empty($featureContent->page_title) ? $featureContent->page_title : (!empty($resolvedFeatH1) ? $resolvedFeatH1 : $fallbackTitle);
                             @endphp
                             <h1>
                                 {{ $applyDynamicVars($activeTitle) }}
@@ -524,7 +529,7 @@
                         <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
-                                {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : ($category->translations->description ?? 'Browse and compare the best options')) !!}
+                                {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : \App\Services\ContentTemplateService::resolveCategoryIntro($category, $currentLangId)) !!}
                             </div>
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
