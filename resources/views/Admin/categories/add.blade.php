@@ -385,7 +385,7 @@
                                 <label class="form-label" for="page_title_addition">Page Title (H1 Heading) addition (no translate)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="page_title_addition" name="page_title_addition"
-                                        value="{{ old('page_title_addition', $category->page_title_addition ?? ($category_data['category']['page_title_addition'] ?? '')) }}" 
+                                        value="{{ old('page_title_addition', isset($category) ? ($category->page_title_addition ?? ($category_data['category']['page_title_addition'] ?? '')) : '[country2] ([year])') }}" 
                                         placeholder="e.g. [country2] ([year])" />
                                 </div>
                                 <small class="text-muted d-block mt-1">This text is appended to the H1 title and is never translated. Perfect for dynamic variables like <code>[country2] ([year])</code>.</small>
@@ -617,7 +617,7 @@
                                 <label class="form-label" for="top_rated_listing_headline_addition">Compare Top-Rated Headline (H2) addition (no translate)</label>
                                 <div class="form-control-wrap">
                                     <input type="text" class="form-control" id="top_rated_listing_headline_addition" name="top_rated_listing_headline_addition"
-                                        value="{{ old('top_rated_listing_headline_addition', $category->top_rated_listing_headline_addition ?? ($category_data['category']['top_rated_listing_headline_addition'] ?? '')) }}"
+                                        value="{{ old('top_rated_listing_headline_addition', isset($category) ? ($category->top_rated_listing_headline_addition ?? ($category_data['category']['top_rated_listing_headline_addition'] ?? '')) : '') }}"
                                         placeholder="e.g. [country2] ([year])">
                                 </div>
                                 <small class="text-muted d-block mt-1">This text is appended to the Top-Rated Headline and is never translated.</small>
