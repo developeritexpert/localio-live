@@ -41,18 +41,315 @@
                     @csrf
                     <input type="hidden" name="category_id" value="{{isset($category_data)?$category_data['id']:''}}" />
                     <div class="row g-gs">
-                        <div class="col-md-12">
+                        {{-- 1. Category Name Placeholders --}}
+                        <div class="col-12 mt-2">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-tag me-1"></i> Category Name Placeholders</h6>
+                            <small class="text-muted d-block mb-3">Placeholders used in SEO templates and dynamic content generation.</small>
+                        </div>
+
+                        {{-- Name capitalized [category_cap] --}}
+                        <div class="col-md-4 col-12">
                             <div class="form-group">
-                                <label class="form-label" for="name">Name</label>
+                                <label class="form-label fw-bold" for="category_cap">Name capitalized <code class="text-primary">[category_cap]</code></label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{isset($category_data)?$category_data['name']:old('name') }}" />
+                                    <input type="text" class="form-control" id="category_cap" name="category_cap"
+                                        value="{{ isset($category_data) ? ($category_data['category_cap'] ?? ($category_data['name'] ?? '')) : old('category_cap', old('name')) }}" />
+                                    <input type="hidden" id="name" name="name"
+                                        value="{{ isset($category_data) ? ($category_data['name'] ?? ($category_data['category_cap'] ?? '')) : old('name') }}" />
                                 </div>
+                                <small class="text-muted d-block mt-1">Example: Web hosting</small>
+                                @error('category_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
                                 @error('name')
-                                <div class="error text-danger">{{ $message }}</div>
-                            @enderror
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
+
+                        {{-- Name title case [category_tc] --}}
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_tc">Name title case <code class="text-primary">[category_tc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="category_tc" name="category_tc"
+                                        value="{{ isset($category_data) ? ($category_data['category_tc'] ?? '') : old('category_tc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Web Hosting</small>
+                                @error('category_tc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Name lowercase [category_lc] --}}
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_lc">Name lowercase <code class="text-primary">[category_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="category_lc" name="category_lc"
+                                        value="{{ isset($category_data) ? ($category_data['category_lc'] ?? '') : old('category_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: web hosting</small>
+                                @error('category_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- 2. Entity 1 Placeholders --}}
+                        <div class="col-12 mt-4 pt-3 border-top">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-building-o me-1"></i> Entity 1 Placeholders (e.g. Provider)</h6>
+                            <small class="text-muted d-block mb-3">Primary entity descriptors for this category (e.g. provider, business, platform).</small>
+                        </div>
+
+                        {{-- Entity 1 singular capitalized [entity1_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity1_cap">Entity 1 singular capitalized <code class="text-primary">[entity1_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity1_cap" name="entity1_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entity1_cap'] ?? '') : old('entity1_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Web hosting provider</small>
+                                @error('entity1_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 singular lowercase [entity1_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity1_lc">Entity 1 singular lowercase <code class="text-primary">[entity1_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity1_lc" name="entity1_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entity1_lc'] ?? '') : old('entity1_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: web hosting provider</small>
+                                @error('entity1_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 plural capitalized [entities1_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities1_cap">Entity 1 plural capitalized <code class="text-primary">[entities1_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities1_cap" name="entities1_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entities1_cap'] ?? '') : old('entities1_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Web hosting providers</small>
+                                @error('entities1_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 plural lowercase [entities1_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities1_lc">Entity 1 plural lowercase <code class="text-primary">[entities1_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities1_lc" name="entities1_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entities1_lc'] ?? '') : old('entities1_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: web hosting providers</small>
+                                @error('entities1_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 short singular capitalized [entity1_short_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity1_short_cap">Entity 1 short singular capitalized <code class="text-primary">[entity1_short_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity1_short_cap" name="entity1_short_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entity1_short_cap'] ?? '') : old('entity1_short_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Provider</small>
+                                @error('entity1_short_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 short singular lowercase [entity1_short_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity1_short_lc">Entity 1 short singular lowercase <code class="text-primary">[entity1_short_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity1_short_lc" name="entity1_short_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entity1_short_lc'] ?? '') : old('entity1_short_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: provider</small>
+                                @error('entity1_short_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 short plural capitalized [entities1_short_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities1_short_cap">Entity 1 short plural capitalized <code class="text-primary">[entities1_short_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities1_short_cap" name="entities1_short_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entities1_short_cap'] ?? '') : old('entities1_short_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Providers</small>
+                                @error('entities1_short_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 1 short plural lowercase [entities1_short_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities1_short_lc">Entity 1 short plural lowercase <code class="text-primary">[entities1_short_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities1_short_lc" name="entities1_short_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entities1_short_lc'] ?? '') : old('entities1_short_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: providers</small>
+                                @error('entities1_short_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- 3. Entity 2 Placeholders --}}
+                        <div class="col-12 mt-4 pt-3 border-top">
+                            <h6 class="fw-bold text-primary mb-1"><i class="fa fa-cogs me-1"></i> Entity 2 Placeholders (e.g. Service)</h6>
+                            <small class="text-muted d-block mb-3">Secondary entity descriptors for this category (e.g. service, tool, solution).</small>
+                        </div>
+
+                        {{-- Entity 2 singular capitalized [entity2_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity2_cap">Entity 2 singular capitalized <code class="text-primary">[entity2_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity2_cap" name="entity2_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entity2_cap'] ?? '') : old('entity2_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Web hosting service</small>
+                                @error('entity2_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 singular lowercase [entity2_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity2_lc">Entity 2 singular lowercase <code class="text-primary">[entity2_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity2_lc" name="entity2_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entity2_lc'] ?? '') : old('entity2_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: web hosting service</small>
+                                @error('entity2_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 plural capitalized [entities2_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities2_cap">Entity 2 plural capitalized <code class="text-primary">[entities2_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities2_cap" name="entities2_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entities2_cap'] ?? '') : old('entities2_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Web hosting services</small>
+                                @error('entities2_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 plural lowercase [entities2_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities2_lc">Entity 2 plural lowercase <code class="text-primary">[entities2_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities2_lc" name="entities2_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entities2_lc'] ?? '') : old('entities2_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: web hosting services</small>
+                                @error('entities2_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 short singular capitalized [entity2_short_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity2_short_cap">Entity 2 short singular capitalized <code class="text-primary">[entity2_short_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity2_short_cap" name="entity2_short_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entity2_short_cap'] ?? '') : old('entity2_short_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Service</small>
+                                @error('entity2_short_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 short singular lowercase [entity2_short_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entity2_short_lc">Entity 2 short singular lowercase <code class="text-primary">[entity2_short_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entity2_short_lc" name="entity2_short_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entity2_short_lc'] ?? '') : old('entity2_short_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: service</small>
+                                @error('entity2_short_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 short plural capitalized [entities2_short_cap] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities2_short_cap">Entity 2 short plural capitalized <code class="text-primary">[entities2_short_cap]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities2_short_cap" name="entities2_short_cap"
+                                        value="{{ isset($category_data) ? ($category_data['entities2_short_cap'] ?? '') : old('entities2_short_cap') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Services</small>
+                                @error('entities2_short_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Entity 2 short plural lowercase [entities2_short_lc] --}}
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="entities2_short_lc">Entity 2 short plural lowercase <code class="text-primary">[entities2_short_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="entities2_short_lc" name="entities2_short_lc"
+                                        value="{{ isset($category_data) ? ($category_data['entities2_short_lc'] ?? '') : old('entities2_short_lc') }}" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: services</small>
+                                @error('entities2_short_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4 pt-3 border-top"></div>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="form-label" for="see_all_text">"Explore [business]" Link Text</label>
@@ -924,6 +1221,13 @@
 
             // Comparison Slug Auto-generate & Pencil Edit Toggle
             const nameInput = document.getElementById('name');
+            const catCapInput = document.getElementById('category_cap');
+            if (catCapInput && nameInput) {
+                catCapInput.addEventListener('input', function() {
+                    nameInput.value = this.value;
+                    updateComparisonSlug();
+                });
+            }
             const comparisonSlugInput = document.getElementById('comparison_slug');
             const editComparisonSlugBtn = document.getElementById('edit_comparison_slug_btn');
             let isSlugManuallyEdited = {{ (isset($category_data) && !empty($category_data['comparison_slug'])) || old('comparison_slug') ? 'true' : 'false' }};
