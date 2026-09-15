@@ -29,7 +29,7 @@
 <style>
     
     .top-rated-heading-sec {
-        margin-top: 115px;
+        margin-top: 95px;
         padding-top: 30px;
         padding-bottom: 20px;
         background-color: #f7f9fb;

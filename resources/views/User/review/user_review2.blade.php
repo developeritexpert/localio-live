@@ -198,7 +198,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 16px !important;">Pros</p>
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">Pros</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedPros) && count($aggregatedPros) > 0)
                                                 @foreach($aggregatedPros as $pro)
@@ -224,7 +224,7 @@
                             <div class="col-md-6">
                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                     <div class="card-body p-3 p-md-4">
-                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size: 16px !important;">Cons</p>
+                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size: 16px !important;">Cons</p>
                                         <ul class="list-unstyled mb-0">
                                             @if(isset($aggregatedCons) && count($aggregatedCons) > 0)
                                                 @foreach($aggregatedCons as $con)

@@ -1499,7 +1499,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Pros</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Pros</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topPros as $pro)
                                                             <li class="d-flex align-items-start mb-2">
@@ -1518,7 +1518,7 @@
                                             <div class="col-md-6">
                                                 <div class="card card-bordered h-100" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
                                                     <div class="card-body">
-                                                        <p class="card-titles mb-3" style="font-weight: 600 !important; font-size:16px !important;">Cons</p>
+                                                        <p class="card-titles mb-3" style="font-weight: 500 !important; font-size:16px !important;">Cons</p>
                                                         <ul class="list-unstyled mb-0">
                                                             @forelse($topCons as $con)
                                                             <li class="d-flex align-items-start mb-2">
@@ -2338,15 +2338,15 @@
 
                             <div class="col-lg-5 col-md-6 col-12">
                                 <form action="{{ $categoryFaqsUrl }}" method="GET" class="category-faq-search-form" id="categoryFaqSearchForm">
-                                    <div class="input-group" style="border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
-                                        <span class="input-group-text bg-white border-0 ps-3 pe-2" style="color: #94a3b8;">
+                                    <div class="input-group" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1.5px solid #cbd5e1; background: #ffffff;">
+                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none px-3 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
+                                        <span class="input-group-text bg-white border-0 ps-3 pe-3" style="color: #94a3b8;">
                                             <i class="fas fa-search" style="font-size: 15px;"></i>
                                         </span>
-                                        <input type="text" name="q" id="categoryFaqSearchInput" class="form-control border-0 shadow-none ps-1 py-2" placeholder="Search {{ strtolower($catFaqName) }} FAQs..." aria-label="Search FAQs" autocomplete="off" style="font-size: 14px; color: #1e293b; height: 46px;">
-                                        <button type="submit" class="btn px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #002347; color: #ffffff; font-size: 13.5px; border-radius: 0; height: 46px;" title="Search FAQs">
+                                        <!-- <button type="submit" class="btn px-3 fw-semibold d-flex align-items-center gap-1" style="background-color: #002347; color: #ffffff; font-size: 13.5px; border-radius: 0; height: 46px;" title="Search FAQs">
                                             <span>Search</span>
                                             <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </form>
                             </div>
