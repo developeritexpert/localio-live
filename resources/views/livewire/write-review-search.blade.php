@@ -4,7 +4,7 @@
                wire:model.live.debounce.300ms="query" 
                placeholder="Search digital products & services" 
                class="form-control py-3 px-4 shadow-sm border-0" 
-               style="border-radius: 30px; font-size: 15px; padding-right: 50px; background-color: #fff;" />
+               style="border-radius: 8px; font-size: 15px; padding-right: 50px; background-color: #fff;" />
         <i class="fa fa-search position-absolute" style="right: 20px; top: 50%; transform: translateY(-50%); color: #7a8ea8; font-size: 18px;"></i>
     </div>
 

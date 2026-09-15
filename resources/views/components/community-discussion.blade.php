@@ -53,7 +53,7 @@
 </div>
 
 <!-- Search & Sort Filter Card (Live Lag-free Filter) -->
-<div class="boxshadow_border bg-white p-3 mb-3" style="border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
+<div class="boxshadow_border bg-white p-3 mb-3 d-none" style="border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 4px 14px rgba(0,0,0,0.03);">
     <form class="row g-2 align-items-center" id="previewDiscussionFilterForm" onsubmit="return false;">
         <div class="col-sm-8 col-12">
             <div class="input-group position-relative">
@@ -373,7 +373,7 @@
 <!-- Footer Link -->
 <div class="btm-bttn light" style="display: flex; justify-content: center; margin-top: 25px;">
     <a href="{{ $seeAllUrl }}" class="see-all-discussions-link">
-        View all discussions  {{ $bName }}
+        View all discussions 
     </a>
 </div>
 

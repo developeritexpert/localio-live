@@ -2567,7 +2567,7 @@
 
       .sidebar-section-title {
         font-size: 14px !important;
-        color: #111 !important;
+        color: #002347 !important;
         font-weight: 700 !important;
         margin-left: -12px;
         margin-bottom: 0;
@@ -2578,7 +2578,7 @@
     }
 
     .sidebar-section-title:hover {
-        background: #eaeded;
+        background: #f4f7fb;
     }
 
     .sidebar-section-title a {
@@ -2606,7 +2606,7 @@
         display: block;
         padding: 8px 12px;
         margin: 0 -12px;
-        color: #444;
+        color: #002347;
         font-size: 14px;
         font-weight: 500;
         text-decoration: none;
@@ -2614,8 +2614,8 @@
     }
 
     .sidebar-menu-list li a:hover {
-        background: #eaeded;
-        color: #f26522;
+        background: #f4f7fb;
+        color: #214787;
     }
 
     .sidebar-menu-divider {

@@ -3013,9 +3013,6 @@ textarea#message {
         width: 400px;
     }
 
-    @media only screen and (max-width: 1699px) {
-    }
-
     .brnd-p-txt::after {
         right: -38px;
     }
@@ -3640,6 +3637,10 @@ textarea#message {
 
     .read_sec_outer.expert_sec .read_text {
         font-size: 20px !important;
+    }
+
+    .asn_dv .Tab-outerlnk #table-of-content {
+        padding-inline: 15px !important;
     }
 }
 
@@ -5550,10 +5551,6 @@ textarea#message {
         padding: 20px;
     }
 
-    .review_sec .review_detl .reviw_hd {
-        margin-bottom: 18px;
-    }
-
     .size18 {
         font-size: 15px;
     }
@@ -6372,6 +6369,25 @@ textarea#message {
         max-width: 100%;
         flex: 0 0 100%;
     }
+
+    .review-sidebar-sticky {
+        background: #ffffff;
+        border: 1px solid #f2f4f8;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        top: 0;
+        margin-bottom: 30px;
+        padding: 20px;
+        position: static !important;
+    }
+
+    .crm_sec {
+        background: transparent !important;
+    }
+
+    .review-row-prod-inr {
+        display: block !important;
+    }
 }
 
 @media only screen and (min-width: 992px) {
@@ -6539,10 +6555,6 @@ textarea#message {
     h1 {
         font-size: 38px;
     }
-
-    /* h2 {
-          font-size: 30px;
-        } */
 
     h6 {
         font-size: 20px;
@@ -6964,10 +6976,6 @@ textarea#message {
         justify-content: flex-start;
     }
 
-    .frst_rw {
-        gap: 20px 0;
-    }
-
     .mail_ovr .metl_rw {
         flex-direction: column;
         align-items: flex-start;
@@ -7363,6 +7371,69 @@ textarea#message {
     section.top-automotive-sec.top_rate_pg.light {
         margin-top: 55px !important;
     }
+
+    #imageGalleryModal .modal-dialog {
+        max-width: 98% !important;
+        width: auto !important;
+        margin: 10px auto !important;
+    }
+
+    .gallery-header {
+        padding: 16px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .gallery-header-cta {
+        margin-right: 0 !important;
+        width: 100% !important;
+    }
+
+    .gallery-header-cta a {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .gallery-body {
+        height: 50vh !important;
+        padding: 12px !important;
+    }
+
+    .gallery-image-wrap {
+        padding-inline: 16px !important;
+    }
+
+    #imageGalleryModal .btn-close {
+        right: 16px !important;
+        top: 16px !important;
+    }
+
+    .gallery-thumbnails {
+        padding: 12px !important;
+        gap: 8px !important;
+    }
+
+    .modal-thumb-item {
+        width: 60px !important;
+        height: 40px !important;
+    }
+
+    #modalPrevBtn,
+    #modalNextBtn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+    }
+
+    #modalPrevBtn {
+        left: 12px !important;
+    }
+
+    #modalNextBtn {
+        right: 12px !important;
+        margin-right: 0 !important;
+    }
 }
 
 @media only screen and (max-width: 575px) {
@@ -7744,6 +7815,12 @@ textarea#message {
         margin-right: 3px;
     }
 
+     .breadcrumb-item + .breadcrumb-item::before{
+        padding: 0 !important;
+        margin-right: 3px;
+        margin-left: 2px;
+     }
+
     .sorting {
         border-radius: 8px !important;
         padding: 7px 5px !important;
@@ -7948,7 +8025,7 @@ textarea#message {
     }
 
     .review_sec .review_detl {
-        padding: 15px;
+        padding: 20px 15px !important;
     }
 
     .rating_str span i {
@@ -9386,6 +9463,39 @@ textarea#message {
         max-width: 85px !important;
         min-width: 85px !important;
     }
+
+    .new-visit-anc .cta.cta_orange {
+        font-size: 12px;
+        width: fit-content;
+    }
+
+    .review_sec .review_detl .reviw_hd {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .review_sec .review_detl .reviw_hd p {
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .ans_lft {
+        gap: 0px 12px;
+    }
+
+    .review_text.size18 {
+        font-size: 15px !important;
+    }
+
+    .review_text.size18 .size22.big-bld {
+        font-size: 18px !important;
+        line-height: 1.3;
+    }
+
+    .review-sidebar-sticky h2 {
+        font-size: 22px !important;
+    }
 }
 
 @media only screen and (max-width: 480px) {
@@ -9530,6 +9640,70 @@ textarea#message {
     .reviews_block .wishlist > div a {
         position: static !important;
         transform: none !important;
+    }
+
+    .gallery-header {
+        padding: 12px !important;
+        gap: 8px !important;
+    }
+
+    .gallery-header-left {
+        gap: 12px !important;
+    }
+
+    .gallery-header-left img {
+        width: 44px !important;
+        height: 44px !important;
+    }
+
+    .gallery-header-left h3 {
+        font-size: 18px !important;
+    }
+
+    .gallery-header-left div div {
+        font-size: 12px !important;
+    }
+
+    .gallery-body {
+        height: 40vh !important;
+        padding: 8px !important;
+    }
+
+    .gallery-image-wrap {
+        padding-inline: 8px !important;
+    }
+
+    #modalPrevBtn,
+    #modalNextBtn {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 11px !important;
+    }
+
+    #modalPrevBtn {
+        left: 6px !important;
+    }
+
+    #modalNextBtn {
+        right: 6px !important;
+    }
+
+    #imageGalleryModal .btn-close {
+        font-size: 16px !important;
+        right: 12px !important;
+        top: 12px !important;
+    }
+
+    .sidebar-review-card .review-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+    }
+
+    .sidebar-review-card .review-header small {
+        margin-left: 57px !important;
+        margin-top: -4px !important;
+        color: #888 !important;
     }
 }
 /* ====================================END RESPONSIVE CODE======================================= */

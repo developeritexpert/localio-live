@@ -144,7 +144,7 @@
         .faq-subtext-container p { margin-bottom: 0 !important; }
         .faq-subtext-container p:not(:last-child) { margin-bottom: 8px !important; }
         .top-rated-heading-sec {
-            margin-top: 115px;
+            margin-top: 95px;
             padding-top: 30px;
             background-color: #f7f9fb;
             border-bottom: 1px solid #e2e8f0;
@@ -759,7 +759,7 @@
                         <div class="exp-cating d-flex justify-content-between align-items-center w-100 mt-auto pt-2" style="border-top: 1px solid #f1f5f9;">
                             <p class="m-0 fw-bold text-start" style="font-size: 14px; color: #1e3050;">{{ $subName }}</p>
                             <span class="badge rounded-pill fw-normal" style="color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; font-size: 11px; padding: 5px 10px;">
-                                {{ $faqCount }} {{ $faqCount == 1 ? 'FAQ' : 'FAQs' }}
+                                {{ $faqCount }} {{ $faqCount == 1 ? 'listing' : 'listings' }}
                             </span>
                         </div>
                     </div>
