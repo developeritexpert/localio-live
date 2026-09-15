@@ -5,27 +5,67 @@
             <div class="nk-block-head-content">
                 <h4 class="title nk-block-title">Add Feature</h4>
             </div>
+            <div class="nk-block-head-content">
+                <a href="{{ route('features') }}" class="btn btn-outline-light btn-sm">
+                    <em class="icon ni ni-arrow-left"></em>
+                    <span>Back</span>
+                </a>
+            </div>
         </div>
         <div class="card card-bordered">
             <div class="card-inner">
                 <form action="{{ route('features.store') }}" class="form-validate" method="post">
                     @csrf
                     <div class="row g-gs">
-                        <!-- Feature Name -->
-                        <div class="col-md-6">
+                        <!-- Feature name capitalized [category_cap] -->
+                        <div class="col-md-4 col-12">
                             <div class="form-group">
-                                <label class="form-label" for="name">Feature Name</label>
+                                <label class="form-label fw-bold" for="category_cap">Feature name capitalized <code class="text-primary">[category_cap]</code></label>
                                 <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ old('name') }}">
+                                    <input type="text" class="form-control" id="category_cap" name="category_cap"
+                                        value="{{ old('category_cap', old('name')) }}" placeholder="e.g. Access logs" required />
+                                    <input type="hidden" id="name" name="name"
+                                        value="{{ old('name', old('category_cap')) }}" />
                                 </div>
+                                <small class="text-muted d-block mt-1">Example: Access logs</small>
+                                @error('category_cap')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
                                 @error('name')
                                     <div class="error text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Feature name title case [category_tc] -->
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_tc">Feature name title case <code class="text-primary">[category_tc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="category_tc" name="category_tc"
+                                        value="{{ old('category_tc') }}" placeholder="e.g. Access Logs" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: Access Logs</small>
+                                @error('category_tc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
+                        <!-- Feature name lowercase [category_lc] -->
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label class="form-label fw-bold" for="category_lc">Feature name lowercase <code class="text-primary">[category_lc]</code></label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="category_lc" name="category_lc"
+                                        value="{{ old('category_lc') }}" placeholder="e.g. access logs" />
+                                </div>
+                                <small class="text-muted d-block mt-1">Example: access logs</small>
+                                @error('category_lc')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
                         <!-- Categories -->
                         <div class="col-md-12">
@@ -54,31 +94,16 @@
                                 <div class="form-control-wrap">
                                     <select class="form-select" name="status">
                                         <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Active</option>
-                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Inactive
-                                        </option>
+                                        <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Inactive</option>
                                     </select>
                                 </div>
-                            </div>
-                        </div>
-
-                                                <!-- Keep Capitalized Checkbox -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label d-block">Capitalization Format</label>
-                                <div class="custom-control custom-checkbox mt-2">
-                                    <input type="checkbox" class="custom-control-input" id="keep_capitalized" name="keep_capitalized" value="1"
-                                        {{ old('keep_capitalized') ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="keep_capitalized">Keep capitalized in headlines (e.g. DNS, SSL, API)</label>
-                                </div>
-                                <small class="text-muted d-block mt-1">If checked, the first letter will not be forced to lowercase in automated titles.</small>
                             </div>
                         </div>
 
                         <!-- Submit -->
                         <div class="col-md-12 mt-4">
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary" style="background:#F9633B">Save
-                                    Feature</button>
+                                <button type="submit" class="btn btn-primary" style="background:#F9633B">Save Feature</button>
                             </div>
                         </div>
                     </div>
@@ -87,13 +112,49 @@
         </div>
     </div>
 
-    <!-- JS -->
     <script>
-        $(document).ready(function() {
-            $('#name').on('input', function() {
-                let slug = $(this).val().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-                $('#slug').val(slug);
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            const catCapInput = document.getElementById('category_cap');
+            const catTcInput  = document.getElementById('category_tc');
+            const catLcInput  = document.getElementById('category_lc');
+            const nameInput   = document.getElementById('name');
+
+            let userModifiedTc = false;
+            let userModifiedLc = false;
+
+            if (catTcInput && catTcInput.value.trim() !== '') userModifiedTc = true;
+            if (catLcInput && catLcInput.value.trim() !== '') userModifiedLc = true;
+
+            if (catTcInput) {
+                catTcInput.addEventListener('input', function() {
+                    userModifiedTc = (this.value.trim() !== '');
+                });
+            }
+            if (catLcInput) {
+                catLcInput.addEventListener('input', function() {
+                    userModifiedLc = (this.value.trim() !== '');
+                });
+            }
+
+            function toTitleCase(str) {
+                return str.toLowerCase().replace(/(?:^|\s|\/|-)\w/g, function(match) {
+                    return match.toUpperCase();
+                });
+            }
+
+            if (catCapInput) {
+                catCapInput.addEventListener('input', function() {
+                    const val = this.value.trim();
+                    if (nameInput) nameInput.value = this.value;
+
+                    if (!userModifiedTc && catTcInput) {
+                        catTcInput.value = val ? toTitleCase(val) : '';
+                    }
+                    if (!userModifiedLc && catLcInput) {
+                        catLcInput.value = val ? val.toLowerCase() : '';
+                    }
+                });
+            }
         });
     </script>
 @endsection

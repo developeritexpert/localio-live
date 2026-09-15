@@ -403,7 +403,7 @@
 
 {{-- Modal: View / Override Category Assignments --}}
 <div class="modal fade" id="modalViewAssignments" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header bg-light py-3">
                 <h5 class="modal-title d-flex align-items-center">
@@ -440,7 +440,7 @@
                                             @endforeach
                                         </select>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end" style="width: 10%;">
                                         <button type="button" class="btn btn-sm btn-primary btn-save-single-assign" data-field="{{ $fKey }}">
                                             <em class="icon ni ni-check me-1"></em> Save Lock
                                         </button>

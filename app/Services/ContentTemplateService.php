@@ -390,9 +390,9 @@ class ContentTemplateService
                 $featTrans = $featTrans->where('lang_id', $langId)->first() ?? $featTrans->first();
             }
             $rawFeatName = $featTrans?->name ?? $feature->name ?? '';
-            $featCap = ucfirst(mb_strtolower($rawFeatName));
-            $featTc  = mb_convert_case($rawFeatName, MB_CASE_TITLE, 'UTF-8');
-            $featLc  = mb_strtolower($rawFeatName);
+            $featCap = !empty($featTrans?->category_cap) ? $featTrans->category_cap : (!empty($featTrans?->feature_cap) ? $featTrans->feature_cap : ucfirst(mb_strtolower($rawFeatName)));
+            $featTc  = !empty($featTrans?->category_tc)  ? $featTrans->category_tc  : (!empty($featTrans?->feature_tc)  ? $featTrans->feature_tc  : mb_convert_case($rawFeatName, MB_CASE_TITLE, 'UTF-8'));
+            $featLc  = !empty($featTrans?->category_lc)  ? $featTrans->category_lc  : (!empty($featTrans?->feature_lc)  ? $featTrans->feature_lc  : mb_strtolower($rawFeatName));
 
             $featReplacements = [
                 '[feature_cap]'  => $featCap,
@@ -405,6 +405,13 @@ class ContentTemplateService
                 '{feature}'      => $featLc,
                 '{Feature}'      => $featCap,
             ];
+
+            // If no category was passed, also replace [category_cap], etc. with feature values
+            if (!$category) {
+                $featReplacements['[category_cap]'] = $featCap;
+                $featReplacements['[category_tc]']  = $featTc;
+                $featReplacements['[category_lc]']  = $featLc;
+            }
 
             foreach ($featReplacements as $search => $replace) {
                 $text = str_replace($search, $replace, $text);

@@ -26,20 +26,10 @@ class ContentGenerationController extends Controller
 
     const FEATURE_CONTENT_FIELDS = [
         'header',
-        'top_rated',
-        'top_10',
-        'pros_cons',
-        'explore_comparisons',
-        'metatags',
     ];
 
     public static array $featureFieldLabels = [
-        'header'              => 'Header Text',
-        'top_rated'           => 'Compare Top-Rated',
-        'top_10'              => 'Top 10',
-        'pros_cons'           => 'Pros & Cons',
-        'explore_comparisons' => 'Explore & Comparisons',
-        'metatags'            => 'Meta Tags',
+        'header' => 'Header Text',
     ];
 
 

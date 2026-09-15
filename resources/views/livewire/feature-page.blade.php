@@ -233,7 +233,7 @@
         left: -30px
     }
 
-    /* Both Visit website and View details buttons – same height */
+    /* Both Visit website and View details buttons â€“ same height */
     .auto-choice-btn .cta {
         padding: 10px 16px !important;
         height: auto !important;
@@ -507,8 +507,8 @@
                             @php
                                 $categoryName = $category->translations->name ?? $category->name ?? 'Category';
                                 $rawFeatName = $lockedFeatureName ?: str_replace('-', ' ', $feature_slug ?? '');
-                                $keepCap = $lockedFeatureObj ? (bool)$lockedFeatureObj->keep_capitalized : false;
-                                $formattedFeatName = $keepCap ? $rawFeatName : mb_strtolower($rawFeatName);
+                                $featTrans = $lockedFeatureObj?->translations?->where('lang_id', $currentLangId)->first() ?? $lockedFeatureObj?->translations?->first();
+                                $formattedFeatName = $featTrans?->category_lc ?: ($featTrans?->feature_lc ?: mb_strtolower($rawFeatName));
                                 $fallbackTitle = $categoryName . ' with ' . $formattedFeatName;
                                 if (!empty($category->page_title_addition)) {
                                     $fallbackTitle .= ' ' . $category->page_title_addition;
@@ -940,7 +940,7 @@
                                                 {{-- 1. Locked Pre-Selected Feature Always At Top (Image 1) --}}
                                                 @if($lockedFeatureId)
                                                     <div class="d-flex align-items-center mb-2 locked-feature-item" style="padding: 2px 0;">
-                                                        <span class="me-2" style="font-size: 15px; line-height: 1;" title="Fixed feature filter">🔒</span>
+                                                        <span class="me-2" style="font-size: 15px; line-height: 1;" title="Fixed feature filter">ðŸ”’</span>
                                                         <span style="font-size: 14px; font-weight: 500; color: #002347;">{{ $lockedFeatureName }}</span>
                                                     </div>
                                                 @endif
@@ -1085,8 +1085,8 @@
                                     'most_recommended' => 'Most recommended',
                                     'price_low_high' => 'Price: low to high',
                                     'price_high_low' => 'Price: high to low',
-                                    'name_a_z' => 'Name: A–Z',
-                                    'name_z_a' => 'Name: Z–A',
+                                    'name_a_z' => 'Name: Aâ€“Z',
+                                    'name_z_a' => 'Name: Zâ€“A',
                                     ];
                                     $currentSort = $sortBy ?? 'highest_rated';
                                     $currentLabel = $sortOptionsMap[$currentSort] ?? 'Highest rated';
