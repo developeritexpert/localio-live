@@ -389,33 +389,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="explore_subcategories_headline">Explore Subcategories Headline (H2)</label>
-                                <div class="form-control-wrap">
-                                    <input type="text" class="form-control" id="explore_subcategories_headline" name="explore_subcategories_headline"
-                                        value="{{ isset($category_data) ? ($category_data['explore_subcategories_headline'] ?? '') : old('explore_subcategories_headline') }}"
-                                        placeholder="e.g. Explore [Category] categories">
-                                </div>
-                                <small class="text-muted d-block mt-1">Headline for the explore subcategories/categories section on the category page. Defaults to "Explore [Category] categories" if left empty.</small>
-                                @error('explore_subcategories_headline')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
 
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label" for="explore_subcategories_subtext">Explore Subcategories Subtext</label>
-                                <div class="form-control-wrap">
-                                    <textarea class="form-control rich-editor" id="explore_subcategories_subtext" name="explore_subcategories_subtext" rows="3" placeholder="Enter subtext displayed below the Explore subcategories headline">{{ isset($category_data) ? ($category_data['explore_subcategories_subtext'] ?? '') : old('explore_subcategories_subtext') }}</textarea>
-                                </div>
-                                <small class="text-muted d-block mt-1">Short text placed immediately below the Explore subcategories headline. Defaults to "Browse specialized categories to find the exact tools and solutions for your requirements." if left empty.</small>
-                                @error('explore_subcategories_subtext')
-                                    <div class="error text-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
 
                         <div class="col-md-12">
                             <div class="form-group">
@@ -472,6 +446,36 @@
                                 @enderror
                             </div>
                         </div>
+
+                        <!-- move explore sub categroy section here -->
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="explore_subcategories_headline">Explore Subcategories Headline (H2)</label>
+                                <div class="form-control-wrap">
+                                    <input type="text" class="form-control" id="explore_subcategories_headline" name="explore_subcategories_headline"
+                                        value="{{ isset($category_data) ? ($category_data['explore_subcategories_headline'] ?? '') : old('explore_subcategories_headline') }}"
+                                        placeholder="e.g. Explore [Category] categories">
+                                </div>
+                                <small class="text-muted d-block mt-1">Headline for the explore subcategories/categories section on the category page. Defaults to "Explore [Category] categories" if left empty.</small>
+                                @error('explore_subcategories_headline')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label" for="explore_subcategories_subtext">Explore Subcategories Subtext</label>
+                                <div class="form-control-wrap">
+                                    <textarea class="form-control rich-editor" id="explore_subcategories_subtext" name="explore_subcategories_subtext" rows="3" placeholder="Enter subtext displayed below the Explore subcategories headline">{{ isset($category_data) ? ($category_data['explore_subcategories_subtext'] ?? '') : old('explore_subcategories_subtext') }}</textarea>
+                                </div>
+                                <small class="text-muted d-block mt-1">Short text placed immediately below the Explore subcategories headline. Defaults to "Browse specialized categories to find the exact tools and solutions for your requirements." if left empty.</small>
+                                @error('explore_subcategories_subtext')
+                                    <div class="error text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <!-- move explore sub categroy section end here -->
 
                         <div class="col-md-12">
                             <div class="form-group">
