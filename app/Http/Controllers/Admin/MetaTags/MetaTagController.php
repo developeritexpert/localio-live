@@ -814,4 +814,427 @@ class MetaTagController extends Controller
             'meta_description' => $metaDesc,
         ]);
     }
+
+    // ==========================================
+    // SHARED BUSINESS SUBPAGE HELPERS
+    // ==========================================
+    protected function renderBusinessSubpageView(Request $request, string $entityType, string $viewName, string $resolverMethod)
+    {
+        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+
+        $selectedLanguage = Language::find($lang_id);
+        if (!$selectedLanguage) {
+            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
+            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+        }
+
+        $lang = $selectedLanguage ? $selectedLanguage->lang_code : 'en-us';
+        session()->put('lang_id', $lang_id);
+        session()->put('lang_code', $lang);
+
+        $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
+        if ($languages->isEmpty()) {
+            $languages = Language::all();
+        }
+
+        $rule = MetaTagRule::getRuleFor($entityType, $lang_id);
+
+        $businesses = Business::with([
+            'translations' => fn($q) => $q->where('lang_id', $lang_id),
+            'category.translations' => fn($q) => $q->where('lang_id', $lang_id),
+        ])->orderBy('id', 'asc')->get();
+
+        foreach ($businesses as $business) {
+            $business->metaData = MetaTagService::$resolverMethod($business, $lang_id, $rule);
+        }
+
+        return view($viewName, compact(
+            'businesses',
+            'rule',
+            'languages',
+            'lang_id',
+            'selectedLanguage'
+        ));
+    }
+
+    protected function updateSingleBusinessSubpageMeta(Request $request, string $titleCol, string $descCol, string $resolverMethod)
+    {
+        $request->validate([
+            'business_id' => 'required|exists:businesses,id',
+            'lang_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $bizId = (int) $request->input('business_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $metaTitle = $request->input('meta_title', $request->input('title'));
+        $metaDesc = $request->input('meta_description', $request->input('description'));
+
+        $this->saveBusinessTranslationSubpageMeta($bizId, $langId, $titleCol, $descCol, $metaTitle, $metaDesc);
+
+        $business = Business::find($bizId);
+        $resolved = MetaTagService::$resolverMethod($business, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Meta tags updated successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    protected function resetBusinessSubpageMeta(Request $request, string $titleCol, string $descCol, string $resolverMethod)
+    {
+        $request->validate([
+            'business_id' => 'required|exists:businesses,id',
+            'lang_id' => 'nullable|integer',
+        ]);
+
+        $bizId = (int) $request->input('business_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+
+        $bizTrans = BusinessTranslation::where('business_id', $bizId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($bizTrans) {
+            $bizTrans->{$titleCol} = null;
+            $bizTrans->{$descCol} = null;
+            $bizTrans->save();
+        }
+
+        $business = Business::find($bizId);
+        $resolved = MetaTagService::$resolverMethod($business, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Reset to auto dynamic default successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    protected function updateBulkBusinessSubpageMeta(Request $request, string $titleCol, string $descCol, string $routeName)
+    {
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $titles = $request->input('meta_title', []);
+        $descriptions = $request->input('meta_description', []);
+
+        $allBizIds = array_unique(array_merge(array_keys($titles), array_keys($descriptions)));
+
+        foreach ($allBizIds as $bizId) {
+            if (!is_numeric($bizId)) continue;
+
+            $metaTitle = $titles[$bizId] ?? null;
+            $metaDesc = $descriptions[$bizId] ?? null;
+
+            $this->saveBusinessTranslationSubpageMeta((int) $bizId, $langId, $titleCol, $descCol, $metaTitle, $metaDesc);
+        }
+
+        return redirect()->route($routeName, ['lang_id' => $langId])
+            ->with('success', 'All meta tags updated successfully.');
+    }
+
+    protected function saveBusinessTranslationSubpageMeta(int $bizId, int $langId, string $titleCol, string $descCol, ?string $metaTitle, ?string $metaDesc)
+    {
+        $metaTitle = $metaTitle !== null ? trim($metaTitle) : null;
+        $metaDesc = $metaDesc !== null ? trim($metaDesc) : null;
+
+        $metaTitleVal = ($metaTitle !== '' && $metaTitle !== null) ? $metaTitle : null;
+        $metaDescVal = ($metaDesc !== '' && $metaDesc !== null) ? $metaDesc : null;
+
+        $bizTrans = BusinessTranslation::where('business_id', $bizId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($bizTrans) {
+            $bizTrans->{$titleCol} = $metaTitleVal;
+            $bizTrans->{$descCol} = $metaDescVal;
+            $bizTrans->save();
+        } else {
+            $biz = Business::find($bizId);
+            $defaultName = $biz ? ($biz->name ?? "Business #$bizId") : "Business #$bizId";
+            BusinessTranslation::create([
+                'business_id' => $bizId,
+                'lang_id' => $langId,
+                'name' => $defaultName,
+                'slug' => \Illuminate\Support\Str::slug($defaultName),
+                $titleCol => $metaTitleVal,
+                $descCol => $metaDescVal,
+            ]);
+        }
+    }
+
+    // ==========================================
+    // 1. BUSINESS ALTERNATIVES
+    // ==========================================
+    public function businessAlternatives(Request $request)
+    {
+        return $this->renderBusinessSubpageView($request, 'business_alternatives', 'Admin.meta-tags.business-alternatives', 'resolveBusinessAlternativesMeta');
+    }
+
+    public function updateSingleBusinessAlternativesMeta(Request $request)
+    {
+        return $this->updateSingleBusinessSubpageMeta($request, 'alternatives_meta_title', 'alternatives_meta_description', 'resolveBusinessAlternativesMeta');
+    }
+
+    public function resetBusinessAlternativesMeta(Request $request)
+    {
+        return $this->resetBusinessSubpageMeta($request, 'alternatives_meta_title', 'alternatives_meta_description', 'resolveBusinessAlternativesMeta');
+    }
+
+    public function updateBulkBusinessAlternativesMeta(Request $request)
+    {
+        return $this->updateBulkBusinessSubpageMeta($request, 'alternatives_meta_title', 'alternatives_meta_description', 'admin.meta-tags.business-alternatives');
+    }
+
+    // ==========================================
+    // 2. BUSINESS FAQS
+    // ==========================================
+    public function businessFaqs(Request $request)
+    {
+        return $this->renderBusinessSubpageView($request, 'business_faqs', 'Admin.meta-tags.business-faqs', 'resolveBusinessFaqsMeta');
+    }
+
+    public function updateSingleBusinessFaqsMeta(Request $request)
+    {
+        return $this->updateSingleBusinessSubpageMeta($request, 'faqs_meta_title', 'faqs_meta_description', 'resolveBusinessFaqsMeta');
+    }
+
+    public function resetBusinessFaqsMeta(Request $request)
+    {
+        return $this->resetBusinessSubpageMeta($request, 'faqs_meta_title', 'faqs_meta_description', 'resolveBusinessFaqsMeta');
+    }
+
+    public function updateBulkBusinessFaqsMeta(Request $request)
+    {
+        return $this->updateBulkBusinessSubpageMeta($request, 'faqs_meta_title', 'faqs_meta_description', 'admin.meta-tags.business-faqs');
+    }
+
+    // ==========================================
+    // 3. BUSINESS COMPARE
+    // ==========================================
+    public function businessCompare(Request $request)
+    {
+        return $this->renderBusinessSubpageView($request, 'business_compare', 'Admin.meta-tags.business-compare', 'resolveBusinessCompareMeta');
+    }
+
+    public function updateSingleBusinessCompareMeta(Request $request)
+    {
+        return $this->updateSingleBusinessSubpageMeta($request, 'comparison_meta_title', 'comparison_meta_description', 'resolveBusinessCompareMeta');
+    }
+
+    public function resetBusinessCompareMeta(Request $request)
+    {
+        return $this->resetBusinessSubpageMeta($request, 'comparison_meta_title', 'comparison_meta_description', 'resolveBusinessCompareMeta');
+    }
+
+    public function updateBulkBusinessCompareMeta(Request $request)
+    {
+        return $this->updateBulkBusinessSubpageMeta($request, 'comparison_meta_title', 'comparison_meta_description', 'admin.meta-tags.business-compare');
+    }
+
+    // ==========================================
+    // 4. BUSINESS REVIEWS
+    // ==========================================
+    public function businessReviews(Request $request)
+    {
+        return $this->renderBusinessSubpageView($request, 'business_reviews', 'Admin.meta-tags.business-reviews', 'resolveBusinessReviewsMeta');
+    }
+
+    public function updateSingleBusinessReviewsMeta(Request $request)
+    {
+        return $this->updateSingleBusinessSubpageMeta($request, 'reviews_meta_title', 'reviews_meta_description', 'resolveBusinessReviewsMeta');
+    }
+
+    public function resetBusinessReviewsMeta(Request $request)
+    {
+        return $this->resetBusinessSubpageMeta($request, 'reviews_meta_title', 'reviews_meta_description', 'resolveBusinessReviewsMeta');
+    }
+
+    public function updateBulkBusinessReviewsMeta(Request $request)
+    {
+        return $this->updateBulkBusinessSubpageMeta($request, 'reviews_meta_title', 'reviews_meta_description', 'admin.meta-tags.business-reviews');
+    }
+
+    // ==========================================
+    // 5. BUSINESS DISCUSSIONS
+    // ==========================================
+    public function businessDiscussions(Request $request)
+    {
+        return $this->renderBusinessSubpageView($request, 'business_discussions', 'Admin.meta-tags.business-discussions', 'resolveBusinessDiscussionsMeta');
+    }
+
+    public function updateSingleBusinessDiscussionsMeta(Request $request)
+    {
+        return $this->updateSingleBusinessSubpageMeta($request, 'discussions_meta_title', 'discussions_meta_description', 'resolveBusinessDiscussionsMeta');
+    }
+
+    public function resetBusinessDiscussionsMeta(Request $request)
+    {
+        return $this->resetBusinessSubpageMeta($request, 'discussions_meta_title', 'discussions_meta_description', 'resolveBusinessDiscussionsMeta');
+    }
+
+    public function updateBulkBusinessDiscussionsMeta(Request $request)
+    {
+        return $this->updateBulkBusinessSubpageMeta($request, 'discussions_meta_title', 'discussions_meta_description', 'admin.meta-tags.business-discussions');
+    }
+
+    // ==========================================
+    // 6. CATEGORY DISCUSSIONS
+    // ==========================================
+    public function categoryDiscussions(Request $request)
+    {
+        $lang_id = (int) $request->get('lang_id', session('lang_id', 1));
+
+        $selectedLanguage = Language::find($lang_id);
+        if (!$selectedLanguage) {
+            $selectedLanguage = Language::where('lang_code', 'en-us')->first() ?? Language::first();
+            $lang_id = $selectedLanguage ? $selectedLanguage->id : 1;
+        }
+
+        $lang = $selectedLanguage ? $selectedLanguage->lang_code : 'en-us';
+        session()->put('lang_id', $lang_id);
+        session()->put('lang_code', $lang);
+
+        $languages = Language::where('status', 1)->orderBy('name', 'asc')->get();
+        if ($languages->isEmpty()) {
+            $languages = Language::all();
+        }
+
+        $rule = MetaTagRule::getRuleFor('category_discussions', $lang_id);
+
+        $parentCategories = Category::whereNull('parent_id')
+            ->with([
+                'translations' => fn($q) => $q->where('lang_id', $lang_id),
+                'subCategories' => function($q) use ($lang_id) {
+                    $q->with(['translations' => fn($t) => $t->where('lang_id', $lang_id)]);
+                }
+            ])
+            ->get();
+
+        foreach ($parentCategories as $parent) {
+            $parent->metaData = MetaTagService::resolveCategoryDiscussionsMeta($parent, $lang_id, $rule);
+            foreach ($parent->subCategories as $sub) {
+                $sub->metaData = MetaTagService::resolveCategoryDiscussionsMeta($sub, $lang_id, $rule);
+            }
+        }
+
+        return view('Admin.meta-tags.category-discussions', compact(
+            'parentCategories',
+            'rule',
+            'languages',
+            'lang_id',
+            'selectedLanguage'
+        ));
+    }
+
+    public function updateSingleCategoryDiscussionsMeta(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'lang_id' => 'nullable|integer',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $catId = (int) $request->input('category_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $metaTitle = $request->input('meta_title', $request->input('title'));
+        $metaDesc = $request->input('meta_description', $request->input('description'));
+
+        $this->saveCategoryTranslationDiscussionsMeta($catId, $langId, $metaTitle, $metaDesc);
+
+        $category = Category::find($catId);
+        $resolved = MetaTagService::resolveCategoryDiscussionsMeta($category, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category Discussion meta tags updated successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    public function resetCategoryDiscussionsMeta(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'lang_id' => 'nullable|integer',
+        ]);
+
+        $catId = (int) $request->input('category_id');
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+
+        $catTrans = CategoryTranslation::where('category_id', $catId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($catTrans) {
+            $catTrans->discussions_meta_title = null;
+            $catTrans->discussions_meta_description = null;
+            $catTrans->save();
+        }
+
+        $category = Category::find($catId);
+        $resolved = MetaTagService::resolveCategoryDiscussionsMeta($category, $langId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category Discussion reset to auto dynamic default successfully.',
+            'resolved' => $resolved
+        ]);
+    }
+
+    public function updateBulkCategoryDiscussionsMeta(Request $request)
+    {
+        $langId = (int) ($request->input('lang_id') ?: session()->get('lang_id', 1));
+        $titles = $request->input('meta_title', []);
+        $descriptions = $request->input('meta_description', []);
+
+        $allCatIds = array_unique(array_merge(array_keys($titles), array_keys($descriptions)));
+
+        foreach ($allCatIds as $catId) {
+            if (!is_numeric($catId)) continue;
+
+            $metaTitle = $titles[$catId] ?? null;
+            $metaDesc = $descriptions[$catId] ?? null;
+
+            $this->saveCategoryTranslationDiscussionsMeta((int) $catId, $langId, $metaTitle, $metaDesc);
+        }
+
+        return redirect()->route('admin.meta-tags.category-discussions', ['lang_id' => $langId])
+            ->with('success', 'All category discussion meta tags updated successfully.');
+    }
+
+    protected function saveCategoryTranslationDiscussionsMeta(int $catId, int $langId, ?string $metaTitle, ?string $metaDesc)
+    {
+        $metaTitle = $metaTitle !== null ? trim($metaTitle) : null;
+        $metaDesc = $metaDesc !== null ? trim($metaDesc) : null;
+
+        $catTrans = CategoryTranslation::where('category_id', $catId)
+            ->where('lang_id', $langId)
+            ->first();
+
+        if ($catTrans) {
+            $catTrans->discussions_meta_title = ($metaTitle !== '' && $metaTitle !== null) ? $metaTitle : null;
+            $catTrans->discussions_meta_description = ($metaDesc !== '' && $metaDesc !== null) ? $metaDesc : null;
+            $catTrans->save();
+            return $catTrans;
+        }
+
+        $engTrans = CategoryTranslation::where('category_id', $catId)->where('lang_id', 1)->first()
+            ?? CategoryTranslation::where('category_id', $catId)->first();
+
+        return CategoryTranslation::create([
+            'category_id' => $catId,
+            'lang_id' => $langId,
+            'name' => $engTrans ? $engTrans->name : "Category #$catId",
+            'slug' => $engTrans ? $engTrans->slug : "category-$catId",
+            'discussions_meta_title' => ($metaTitle !== '' && $metaTitle !== null) ? $metaTitle : null,
+            'discussions_meta_description' => ($metaDesc !== '' && $metaDesc !== null) ? $metaDesc : null,
+        ]);
+    }
 }

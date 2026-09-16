@@ -225,10 +225,9 @@
 
 @php
     $lang_id = getCurrentLanguageID();
-    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
-    $bNameTmp = $bTransTmp->name ?? 'Business';
-    $faqsMetaTitle = !empty($bTransTmp->faqs_meta_title) ? $bTransTmp->faqs_meta_title : "{$bNameTmp} FAQs & Questions Answered";
-    $faqsMetaDesc = !empty($bTransTmp->faqs_meta_description) ? $bTransTmp->faqs_meta_description : ($bTransTmp->faqs_description ?? '');
+    $metaResolved = \App\Services\MetaTagService::resolveBusinessFaqsMeta($business, $lang_id);
+    $faqsMetaTitle = $metaResolved['title'];
+    $faqsMetaDesc = $metaResolved['description'];
 @endphp
 
 @section('meta_title', format_meta_text($faqsMetaTitle))

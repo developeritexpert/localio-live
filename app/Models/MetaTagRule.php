@@ -74,6 +74,84 @@ class MetaTagRule extends Model
     public static function getDefaultsFor(string $entityType): array
     {
         switch ($entityType) {
+            case 'business_alternatives':
+                return [
+                    'title_char_limit' => 60,
+                    'title_primary' => 'Best [business] Alternatives & Competitors [year]',
+                    'title_secondary' => 'Top [business] Alternatives [year]',
+                    'title_tertiary' => '[business] Alternatives',
+                    'title_quaternary' => '[business] Alternatives',
+                    'description_char_limit' => 160,
+                    'description_primary' => 'Looking for alternatives to [business]? Compare top competitors, key features, pricing, pros & cons, and authentic verified user reviews on Localio.',
+                    'description_secondary' => 'Discover top alternatives to [business]. Compare features, pricing, and authentic user reviews on Localio.',
+                    'description_tertiary' => 'Compare the best [business] alternatives and competitors on Localio.',
+                    'description_quaternary' => '[business] alternatives on Localio.',
+                ];
+            case 'business_faqs':
+                return [
+                    'title_char_limit' => 60,
+                    'title_primary' => '[business] FAQs & Expert Answers [year]',
+                    'title_secondary' => '[business] FAQs [year]',
+                    'title_tertiary' => '[business] Frequently Asked Questions',
+                    'title_quaternary' => '[business] FAQs',
+                    'description_char_limit' => 160,
+                    'description_primary' => 'Have questions about [business]? Find comprehensive answers to frequently asked questions about pricing, features, integrations, and support on Localio.',
+                    'description_secondary' => 'Frequently asked questions and verified answers about [business] on Localio.',
+                    'description_tertiary' => 'All your questions about [business] answered on Localio.',
+                    'description_quaternary' => '[business] FAQs on Localio.',
+                ];
+            case 'business_compare':
+                return [
+                    'title_char_limit' => 60,
+                    'title_primary' => 'Compare [business] with Top Alternatives [year]',
+                    'title_secondary' => 'Compare [business] [year]',
+                    'title_tertiary' => '[business] Comparisons',
+                    'title_quaternary' => '[business] Compare',
+                    'description_char_limit' => 160,
+                    'description_primary' => 'Compare [business] head-to-head with top competitors. See side-by-side comparisons of features, pricing, ratings, and user feedback on Localio.',
+                    'description_secondary' => 'Side-by-side comparison of [business] and top competitors on Localio.',
+                    'description_tertiary' => 'Compare [business] features, pricing, and ratings on Localio.',
+                    'description_quaternary' => 'Compare [business] on Localio.',
+                ];
+            case 'business_reviews':
+                return [
+                    'title_char_limit' => 60,
+                    'title_primary' => '[business] Reviews, Ratings & Feedback [year]',
+                    'title_secondary' => '[business] Reviews [year]',
+                    'title_tertiary' => '[business] Verified Reviews',
+                    'title_quaternary' => '[business] Reviews',
+                    'description_char_limit' => 160,
+                    'description_primary' => 'Read authentic, verified user reviews and ratings for [business]. Learn about real customer experiences, pros, cons, and performance on Localio.',
+                    'description_secondary' => 'Read authentic customer reviews, ratings, and feedback for [business] on Localio.',
+                    'description_tertiary' => 'Verified reviews and user ratings for [business] on Localio.',
+                    'description_quaternary' => '[business] reviews on Localio.',
+                ];
+            case 'business_discussions':
+                return [
+                    'title_char_limit' => 60,
+                    'title_primary' => '[business] Community Discussions & Q&A [year]',
+                    'title_secondary' => '[business] Discussions [year]',
+                    'title_tertiary' => '[business] Community',
+                    'title_quaternary' => '[business] Discussions',
+                    'description_char_limit' => 160,
+                    'description_primary' => 'Join the [business] community discussion on Localio. Ask questions, share experiences, get peer advice, and discuss tips with active users.',
+                    'description_secondary' => 'Community discussions, tips, and peer advice for [business] on Localio.',
+                    'description_tertiary' => 'Discuss [business] questions and insights on Localio.',
+                    'description_quaternary' => '[business] discussions on Localio.',
+                ];
+            case 'category_discussions':
+                return [
+                    'title_char_limit' => 60,
+                    'title_primary' => '[category_cap] Discussions, Advice & Q&A [year]',
+                    'title_secondary' => '[category_cap] Discussions [year]',
+                    'title_tertiary' => '[category_cap] Community',
+                    'title_quaternary' => '[category_cap] Discussions',
+                    'description_char_limit' => 160,
+                    'description_primary' => 'Join the [category_cap] community discussions on Localio. Ask questions, exchange recommendations, and get peer advice from verified professionals.',
+                    'description_secondary' => 'Community discussions, tips, and recommendations for [category_cap] on Localio.',
+                    'description_tertiary' => 'Discuss [category_cap] tips and questions on Localio.',
+                    'description_quaternary' => '[category_cap] discussions on Localio.',
+                ];
             case 'categories':
                 return [
                     'title_char_limit' => 60,

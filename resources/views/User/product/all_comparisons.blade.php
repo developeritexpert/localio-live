@@ -128,8 +128,9 @@
     $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
     $bNameTmp = $bTransTmp->name ?? 'Business';
     $bSlug = $bTransTmp->slug ?? $business->slug;
-    $compMetaTitle = !empty($bTransTmp->comparison_meta_title) ? $bTransTmp->comparison_meta_title : "Compare {$bNameTmp} with Top Competitors";
-    $compMetaDesc = !empty($bTransTmp->comparison_meta_description) ? $bTransTmp->comparison_meta_description : ($bTransTmp->comparison_description ?? '');
+    $metaResolved = \App\Services\MetaTagService::resolveBusinessCompareMeta($business, $lang_id);
+    $compMetaTitle = $metaResolved['title'];
+    $compMetaDesc = $metaResolved['description'];
 @endphp
 
 @section('meta_title', format_meta_text($compMetaTitle))

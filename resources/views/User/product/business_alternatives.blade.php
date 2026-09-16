@@ -2,10 +2,9 @@
 
 @php
     $lang_id = getCurrentLanguageID();
-    $bTransTmp = $business->translations->firstWhere('lang_id', $lang_id) ?? $business->translations->first();
-    $bNameTmp = $bTransTmp?->name ?? 'Business';
-    $alternativesMetaTitle = !empty($bTransTmp->alternatives_meta_title) ? $bTransTmp->alternatives_meta_title : "Best {$bNameTmp} Alternatives";
-    $alternativesMetaDesc = !empty($bTransTmp->alternatives_meta_description) ? $bTransTmp->alternatives_meta_description : ($bTransTmp->alternatives_description ?? '');
+    $metaResolved = \App\Services\MetaTagService::resolveBusinessAlternativesMeta($business, $lang_id);
+    $alternativesMetaTitle = $metaResolved['title'];
+    $alternativesMetaDesc = $metaResolved['description'];
 @endphp
 
 @section('meta_title', format_meta_text($alternativesMetaTitle))

@@ -501,6 +501,253 @@ class MetaTagService
     /**
      * Resolve full meta tags for a Feature / Subcategory Feature page.
      */
+    /**
+     * Helper to resolve meta tags for business subpages (Alternatives, FAQs, Compare, Reviews, Discussions).
+     */
+    public static function resolveBusinessSubpageMeta($business, string $entityType, string $titleCol, string $descCol, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        if (!$rule) {
+            $rule = MetaTagRule::getRuleFor($entityType, $langId);
+        }
+
+        $targetTrans = null;
+        if ($business->relationLoaded('translations')) {
+            $targetTrans = $business->translations instanceof \Illuminate\Database\Eloquent\Collection
+                ? $business->translations->firstWhere('lang_id', $langId)
+                : $business->translations;
+        }
+
+        if (!$targetTrans) {
+            $targetTrans = BusinessTranslation::where('business_id', $business->id)
+                ->where('lang_id', $langId)
+                ->first();
+        }
+
+        $fallbackTrans = null;
+        if ((!$targetTrans || empty($targetTrans->name)) && $langId !== 1) {
+            $fallbackTrans = BusinessTranslation::where('business_id', $business->id)
+                ->where('lang_id', 1)
+                ->first();
+        }
+
+        $bizName = !empty($targetTrans?->name) 
+            ? $targetTrans->name 
+            : (!empty($fallbackTrans?->name) ? $fallbackTrans->name : ('Business #' . $business->id));
+
+        $catName = '';
+        if ($business->relationLoaded('category') && $business->category) {
+            $catTrans = self::getCategoryTranslation($business->category, $langId);
+            $catName = $catTrans?->name ?? $business->category->name ?? '';
+        } elseif ($business->category_id) {
+            $cat = Category::find($business->category_id);
+            if ($cat) {
+                $catTrans = self::getCategoryTranslation($cat, $langId);
+                $catName = $catTrans?->name ?? $cat->name ?? '';
+            }
+        }
+
+        $manualTitle = trim($targetTrans?->{$titleCol} ?? '');
+        $manualDescription = trim($targetTrans?->{$descCol} ?? '');
+
+        $categoryObj = null;
+        if ($business->relationLoaded('category') && $business->category) {
+            $categoryObj = $business->category;
+        } elseif ($business->category_id) {
+            $categoryObj = Category::find($business->category_id);
+        }
+
+        $context = array_merge(
+            self::getGlobalContext($langId),
+            self::getCategoryContext($categoryObj, $langId),
+            [
+                'business_name' => $bizName,
+                'business' => $bizName,
+                'name' => $bizName,
+                'category_name' => $catName,
+                'category' => $catName,
+            ]
+        );
+
+        list($autoTitle, $autoTitleSource) = self::evaluateCascade(
+            $rule->title_primary,
+            $rule->title_secondary,
+            $rule->title_tertiary,
+            $rule->title_quaternary ?? null,
+            $rule->title_char_limit,
+            $context
+        );
+
+        list($autoDesc, $autoDescSource) = self::evaluateCascade(
+            $rule->description_primary,
+            $rule->description_secondary,
+            $rule->description_tertiary,
+            $rule->description_quaternary ?? null,
+            $rule->description_char_limit,
+            $context
+        );
+
+        if (!empty($manualTitle)) {
+            $finalTitle = self::replacePlaceholders($manualTitle, $context);
+            $titleSource = 'manual';
+        } else {
+            $finalTitle = $autoTitle;
+            $titleSource = $autoTitleSource;
+        }
+
+        if (!empty($manualDescription)) {
+            $finalDesc = self::replacePlaceholders($manualDescription, $context);
+            $descSource = 'manual';
+        } else {
+            $finalDesc = $autoDesc;
+            $descSource = $autoDescSource;
+        }
+
+        return [
+            'name' => $bizName,
+            'business_name' => $bizName,
+            'category_name' => $catName,
+            'title' => $finalTitle,
+            'title_source' => $titleSource,
+            'title_length' => mb_strlen($finalTitle),
+            'title_len' => mb_strlen($finalTitle),
+            'title_tier' => $titleSource,
+            'title_limit' => $rule->title_char_limit,
+            'auto_title' => $autoTitle,
+            'auto_title_source' => $autoTitleSource,
+            'manual_title' => $manualTitle,
+            'has_custom_title' => !empty($manualTitle),
+
+            'description' => $finalDesc,
+            'description_source' => $descSource,
+            'description_length' => mb_strlen($finalDesc),
+            'description_len' => mb_strlen($finalDesc),
+            'description_tier' => $descSource,
+            'description_limit' => $rule->description_char_limit,
+            'auto_description' => $autoDesc,
+            'auto_description_source' => $autoDescSource,
+            'manual_description' => $manualDescription,
+            'has_custom_description' => !empty($manualDescription),
+        ];
+    }
+
+    public static function resolveBusinessAlternativesMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        return self::resolveBusinessSubpageMeta($business, 'business_alternatives', 'alternatives_meta_title', 'alternatives_meta_description', $langId, $rule);
+    }
+
+    public static function resolveBusinessFaqsMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        return self::resolveBusinessSubpageMeta($business, 'business_faqs', 'faqs_meta_title', 'faqs_meta_description', $langId, $rule);
+    }
+
+    public static function resolveBusinessCompareMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        return self::resolveBusinessSubpageMeta($business, 'business_compare', 'comparison_meta_title', 'comparison_meta_description', $langId, $rule);
+    }
+
+    public static function resolveBusinessReviewsMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        return self::resolveBusinessSubpageMeta($business, 'business_reviews', 'reviews_meta_title', 'reviews_meta_description', $langId, $rule);
+    }
+
+    public static function resolveBusinessDiscussionsMeta($business, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        return self::resolveBusinessSubpageMeta($business, 'business_discussions', 'discussions_meta_title', 'discussions_meta_description', $langId, $rule);
+    }
+
+    public static function resolveCategoryDiscussionsMeta($category, int $langId = 1, ?MetaTagRule $rule = null): array
+    {
+        if (!$rule) {
+            $rule = MetaTagRule::getRuleFor('category_discussions', $langId);
+        }
+
+        $targetTrans = self::getCategoryTranslation($category, $langId);
+
+        $fallbackTrans = null;
+        if ((!$targetTrans || empty($targetTrans->name)) && $langId !== 1) {
+            $fallbackTrans = CategoryTranslation::where('category_id', $category->id)
+                ->where('lang_id', 1)
+                ->first();
+        }
+
+        $catName = !empty($targetTrans?->name) 
+            ? $targetTrans->name 
+            : (!empty($fallbackTrans?->name) ? $fallbackTrans->name : ('Category #' . $category->id));
+
+        $manualTitle = trim($targetTrans?->discussions_meta_title ?? '');
+        $manualDescription = trim($targetTrans?->discussions_meta_description ?? '');
+
+        $context = array_merge(
+            self::getGlobalContext($langId),
+            self::getCategoryContext($category, $langId),
+            [
+                'category_name' => $catName,
+                'category' => $catName,
+                'name' => $catName,
+            ]
+        );
+
+        list($autoTitle, $autoTitleSource) = self::evaluateCascade(
+            $rule->title_primary,
+            $rule->title_secondary,
+            $rule->title_tertiary,
+            $rule->title_quaternary ?? null,
+            $rule->title_char_limit,
+            $context
+        );
+
+        list($autoDesc, $autoDescSource) = self::evaluateCascade(
+            $rule->description_primary,
+            $rule->description_secondary,
+            $rule->description_tertiary,
+            $rule->description_quaternary ?? null,
+            $rule->description_char_limit,
+            $context
+        );
+
+        if (!empty($manualTitle)) {
+            $finalTitle = self::replacePlaceholders($manualTitle, $context);
+            $titleSource = 'manual';
+        } else {
+            $finalTitle = $autoTitle;
+            $titleSource = $autoTitleSource;
+        }
+
+        if (!empty($manualDescription)) {
+            $finalDesc = self::replacePlaceholders($manualDescription, $context);
+            $descSource = 'manual';
+        } else {
+            $finalDesc = $autoDesc;
+            $descSource = $autoDescSource;
+        }
+
+        return [
+            'name' => $catName,
+            'category_name' => $catName,
+            'title' => $finalTitle,
+            'title_source' => $titleSource,
+            'title_length' => mb_strlen($finalTitle),
+            'title_len' => mb_strlen($finalTitle),
+            'title_tier' => $titleSource,
+            'title_limit' => $rule->title_char_limit,
+            'auto_title' => $autoTitle,
+            'auto_title_source' => $autoTitleSource,
+            'manual_title' => $manualTitle,
+            'has_custom_title' => !empty($manualTitle),
+
+            'description' => $finalDesc,
+            'description_source' => $descSource,
+            'description_length' => mb_strlen($finalDesc),
+            'description_len' => mb_strlen($finalDesc),
+            'description_tier' => $descSource,
+            'description_limit' => $rule->description_char_limit,
+            'auto_description' => $autoDesc,
+            'auto_description_source' => $autoDescSource,
+            'manual_description' => $manualDescription,
+            'has_custom_description' => !empty($manualDescription),
+        ];
+    }
+
     public static function resolveFeatureMeta($feature, $category = null, int $langId = 1, ?MetaTagRule $rule = null): array
     {
         if (!$rule) {

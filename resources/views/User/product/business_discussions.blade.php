@@ -20,8 +20,11 @@
     $totalActiveToday = $activeTodayDiscs + $activeTodayComments;
 @endphp
 
-@section('meta_title', format_meta_text($bName . ' Community Discussions & Q&A'))
-@section('meta_description', format_meta_text('Join the ' . $bName . ' community discussion. Ask questions, share insights, read user threads and engage with active users.'))
+@php
+    $discMeta = \App\Services\MetaTagService::resolveBusinessDiscussionsMeta($business, $lang_id);
+@endphp
+@section('meta_title', format_meta_text($discMeta['title']))
+@section('meta_description', format_meta_text($discMeta['description']))
 <style>
     
     .top-rated-heading-sec {

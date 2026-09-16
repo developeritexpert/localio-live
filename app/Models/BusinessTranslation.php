@@ -60,6 +60,8 @@ class BusinessTranslation extends Model
         'faqs_meta_description',
         'comparison_meta_title',
         'comparison_meta_description',
+        'discussions_meta_title',
+        'discussions_meta_description',
     ];
 
     public function business()
