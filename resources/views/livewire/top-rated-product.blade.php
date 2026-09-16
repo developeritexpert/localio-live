@@ -1,6 +1,9 @@
 <div>
     <style>
-    [x-cloak] { display: none !important; }
+    [x-cloak] {
+        display: none !important;
+    }
+
     .automotive-card.auto-bg.aos-init.aos-animate {
         background-color: #f7f9fb !important;
     }
@@ -163,26 +166,30 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 15px;
     }
+
     @media(max-width: 991px) {
         .explore-categories-sec .top-products-grid {
             grid-template-columns: repeat(2, 1fr);
         }
     }
+
     @media(max-width: 575px) {
         .explore-categories-sec .top-products-grid {
             grid-template-columns: 1fr;
         }
     }
+
     .explore-categories-sec .top-product-card {
         border: 1px solid #e2e8f0;
         border-radius: 10px;
         padding: 16px;
         background: #fdfdfd !important;
-        transition: all 0.2s ease;
     }
+
     .explore-categories-sec .top-product-card:hover {
         box-shadow: 0px 0px 16px 0px rgb(0 0 0 / 13%) !important;
     }
+
     .explore-categories-sec .top-product-info p {
         font-size: 14px;
         font-weight: 600;
@@ -191,9 +198,9 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        transition: color 0.2s ease;
+        line-height: 1;
     }
-   
+
     .explore-categories-sec .top-product-rating {
         display: flex;
         align-items: center;
@@ -202,12 +209,14 @@
         color: #777;
         margin-top: 4px;
     }
+
     .explore-categories-sec .top-product-stars {
         color: var(--color-primary-orange) !important;
         font-size: 11px;
         display: flex;
         align-items: center;
     }
+
     .explore-categories-sec .btn-view-details {
         border: 1.5px solid #174889 !important;
         background: transparent !important;
@@ -220,11 +229,13 @@
         align-items: center !important;
         justify-content: center !important;
     }
+
     .explore-categories-sec .btn-view-details:hover {
         background: #174889 !important;
         color: #fff !important;
         text-decoration: none !important;
     }
+
     .explore-categories-sec .btn-orng {
         background: var(--color-primary-orange) !important;
         border: 1px solid var(--color-primary-orange) !important;
@@ -238,17 +249,19 @@
         justify-content: center !important;
         transition: opacity 0.2s ease !important;
     }
+
     .explore-categories-sec .btn-orng:hover {
         opacity: 0.9 !important;
         color: #fff !important;
     }
+
     .explore-categories-sec .subcat-link:hover {
         text-decoration: underline !important;
     }
+
     strong {
         font-weight: 600;
     }
-
     </style>
     <section class="top-rated-heading-sec">
         <div class="container">
@@ -268,8 +281,10 @@
                                     style="font-size: 13px; color: #1e3050 !important; text-decoration:none; font-weight: 500;">
                                     Top rated on Localio
                                 </a> -->
-                                <span style=" color: #002347 !important; text-decoration:none; font-weight: 500; margin-left:2px;">Top rated on Localio</span>
-                                
+                                <span
+                                    style=" color: #002347 !important; text-decoration:none; font-weight: 500; margin-left:2px;">Top
+                                    rated on Localio</span>
+
                             </li>
 
 
@@ -283,41 +298,45 @@
             <div class="top-rated-heading-block">
                 <div class="row align-items-start">
                     <div class="col-md-8 text-start">
-                        <h1 >{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
+                        <h1>{{ $topProductContents['top_rated_headline'] ?? 'Top rated on Localio' }} </h1>
                         <p class="text-meta">Last updated {{ now()->subDay()->format('F j, Y') }}</p>
                         <p style=" margin-bottom: 0;">
-                            {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
+                            {!! $topProductContents['top_rated_subheadline'] ?? 'Learn more from our team about Website
+                            Builder Software pricing features and benefits in our Website Builder Buyers Guide' !!}
                         </p>
                     </div>
                     <div class="col-md-4 mt-4 mt-md-0 text-start">
                         <div class="verified-insights-card"
                             style="background-color: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; text-align: left;">
                             <div class="d-flex align-items-center justify-content-between mb-2 gap-2">
-                                <p style="margin: 0; font-weight: 600; color: #002347; font-size: 16px;">{{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
-                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users" style="height: 30px; width: auto; object-fit: contain;">
+                                <p style="margin: 0; font-weight: 600; color: #002347; font-size: 16px;">
+                                    {{ static_text('community_insights_title') ?: 'Real user ratings' }}</p>
+                                <img src="{{ asset('front/img/top_rated_img.png') }}" alt="Real users"
+                                    style="height: 30px; width: auto; object-fit: contain;">
                             </div>
                             <p style=" margin-bottom: 8px; ">
                                 {{ static_text('community_insights_desc') ?: 'Ratings and reviews come from real Localio users.' }}
                             </p>
-                            <a href="javascript:void(0)" onclick="openRankingsModal()" class="learn_mre_btn">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
+                            <a href="javascript:void(0)" onclick="openRankingsModal()"
+                                class="learn_mre_btn">{{ static_text('how_rankings_work') ?: 'How rankings work' }}</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    
+
     <section class="top-automotive-sec top_rate_pg light  " style="padding-top:25px !important;">
-        
+
         <div class="top-auto-btm">
             <div class="container">
                 <h2 style="margin-bottom: 16px; margin-top: 0; ">
                     {{ $topProductContents['top_rated_listing_headline'] ?? '“Top-rated brands, products and services' }}
                 </h2>
                 @if(!empty($topProductContents['top_rated_listing_subheadline']))
-                    <div style="font-size: 16px; color: #475569; margin-bottom: 24px; margin-top: -10px;">
-                        {!! $topProductContents['top_rated_listing_subheadline'] !!}
-                    </div>
+                <div style="font-size: 16px; color: #475569; margin-bottom: 24px; margin-top: -10px;">
+                    {!! $topProductContents['top_rated_listing_subheadline'] !!}
+                </div>
                 @endif
                 <div class="top-auto-choice" style="border-top: 1px solid #e8eef6 !important;padding-top: 20px;">
                     <!-- <div class="top-rated-heading-block" style=" padding-bottom: 16px; margin-bottom: 24px;">
@@ -358,26 +377,30 @@
                                         <div class="form-check mb-2">
                                             <input type="checkbox" class="form-check-input"
                                                 wire:model.live="selectedRatings" value="4" id="rating-4">
-                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-4" style="cursor: pointer;">
+                                            <label class="form-check-label d-flex align-items-center gap-1"
+                                                for="rating-4" style="cursor: pointer;">
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="far fa-star text-warning"></i>
-                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
+                                                <span class="ms-1"
+                                                    style="font-weight: 500; font-size: 14px; color: #334155;">4+</span>
                                             </label>
                                         </div>
 
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input"
                                                 wire:model.live="selectedRatings" value="3" id="rating-3">
-                                            <label class="form-check-label d-flex align-items-center gap-1" for="rating-3" style="cursor: pointer;">
+                                            <label class="form-check-label d-flex align-items-center gap-1"
+                                                for="rating-3" style="cursor: pointer;">
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="fas fa-star text-warning"></i>
                                                 <i class="far fa-star text-warning"></i>
                                                 <i class="far fa-star text-warning"></i>
-                                                <span class="ms-1" style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
+                                                <span class="ms-1"
+                                                    style="font-weight: 500; font-size: 14px; color: #334155;">3+</span>
                                             </label>
                                         </div>
                                     </div>
@@ -635,10 +658,10 @@
                             </div>
 
                         </div>
-                       
+
                         @if ($products->count())
                         <div class="auto-choice-rgt ">
-                            
+
                             <!-- Product Count and Sort -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
@@ -676,9 +699,9 @@
                                         id="topRatedSortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false"
                                         style="background-color:#fdfdfd; color: #002347;  padding: 7px 16px; border: 1px solid #cbd5e1; outline: none; cursor: pointer;">
                                         <span>Sort: <span style="font-weight: 600;">{{ $currentLabel }}</span></span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14"
-                                            height="14" viewBox="0 0 24 24" fill="none" stroke="#475569"
-                                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
                                             <polyline points="6 9 12 15 18 9" />
                                         </svg>
                                     </button>
@@ -709,8 +732,7 @@
                             </div>
                             @if (!empty($products))
                             @foreach ($products as $index => $item)
-                            <div class="automotive-card auto-bg"
-                                wire:key="product-{{ $item->id }}">
+                            <div class="automotive-card auto-bg" wire:key="product-{{ $item->id }}">
                                 <div class="auto-choice-card" style="position: relative; ">
                                     @php
                                     $topAffId = $this->topAffiliatedBusinessId;
@@ -727,28 +749,30 @@
                                         0;
                                         @endphp
 
-                                        
+
                                         @if($isRecommended)
                                         <div class="best-value-inline-container" style="padding-bottom:20px">
                                             <div class="best-value-inline">
                                                 <!-- <i class="fa-regular fa-thumbs-up"></i> -->
                                                 <i class="far fa-star text-warning"></i>
-                                                <span style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
+                                                <span
+                                                    style="text-transform: none !important;">{{ static_text('category_badge_label') ?: 'Top rated' }}</span>
                                             </div>
                                             <!-- start recomment this section here -->
                                             @if($totalRevCount > 0 && !empty($item->is_affiliate))
-                                                <div class="d-flex align-items-center recommended-per"
-                                                    style="color: #002347; font-size: 13px; font-weight: 600;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                        viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2"
-                                                        stroke-linecap="round" stroke-linejoin="round"
-                                                        style="margin-right: 5px; flex-shrink: 0;">
-                                                        <path
-                                                            d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
-                                                        </path>
-                                                    </svg>
-                                                    <span>{{ $recPercent }}% {{ static_text('recommend_this') ?: 'of users recommend' }}</span>
-                                                </div>
+                                            <div class="d-flex align-items-center recommended-per"
+                                                style="color: #002347; font-size: 13px; font-weight: 600;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    viewBox="0 0 24 24" fill="none" stroke="#002347" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    style="margin-right: 5px; flex-shrink: 0;">
+                                                    <path
+                                                        d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
+                                                    </path>
+                                                </svg>
+                                                <span>{{ $recPercent }}%
+                                                    {{ static_text('recommend_this') ?: 'of users recommend' }}</span>
+                                            </div>
                                             @endif
                                             <!-- end recomment this section here -->
                                         </div>
@@ -946,44 +970,46 @@
                                                 }
                                                 @endphp
 
-                                               @if ($startingPrice && !empty($item->is_affiliate))
-    <div class="text-center mt-4 w-100"
-        style="padding: 15px 25px; border-radius: 8px;">
+                                                @if ($startingPrice && !empty($item->is_affiliate))
+                                                <div class="text-center mt-4 w-100"
+                                                    style="padding: 15px 25px; border-radius: 8px;">
 
-        <h6
-            style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
-            Starting price
-        </h6>
+                                                    <h6
+                                                        style="font-size: 13px; color: #002347; font-weight: 600; margin-bottom: 4px;">
+                                                        Starting price
+                                                    </h6>
 
-        <h3
-            style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
-            {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
-        </h3>
+                                                    <h3
+                                                        style="font-weight: 700 !important; color: #002347; font-size: 26px !important; margin-bottom: 2px;">
+                                                        {{ $startingPrice->currency }}{{ number_format($displayPrice, 2) }}
+                                                    </h3>
 
-        @if (
-            !empty($startingPrice->additional_info) &&
-            !in_array(
-                strtoupper(trim((string) $startingPrice->additional_info)),
-                ['NA', 'N/A', 'NULL']
-            )
-        )
-            <p style="font-size: 11px; margin-bottom: 0;">
-                {{ $startingPrice->additional_info }}
-            </p>
-        @elseif(!empty($startingPrice->time_unit) && !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na', 'n/a', 'null']))
-            <p style="font-size: 11px; margin-bottom: 0;">
-                per {{ strtolower($startingPrice->time_unit) }}
-            </p>
-        @endif
+                                                    @if (
+                                                    !empty($startingPrice->additional_info) &&
+                                                    !in_array(
+                                                    strtoupper(trim((string) $startingPrice->additional_info)),
+                                                    ['NA', 'N/A', 'NULL']
+                                                    )
+                                                    )
+                                                    <p style="font-size: 11px; margin-bottom: 0;">
+                                                        {{ $startingPrice->additional_info }}
+                                                    </p>
+                                                    @elseif(!empty($startingPrice->time_unit) &&
+                                                    !in_array(strtolower($startingPrice->time_unit), ['one_time', 'na',
+                                                    'n/a', 'null']))
+                                                    <p style="font-size: 11px; margin-bottom: 0;">
+                                                        per {{ strtolower($startingPrice->time_unit) }}
+                                                    </p>
+                                                    @endif
 
-    </div>
-@endif
+                                                </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
                                     <div style="width: 100%;">
                                         <livewire:compare-products :item="$item" :key="'compare-' . $item->id" />
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -1053,11 +1079,12 @@
                         @else
 
                         <div class="auto-choice-rgt">
-                           
+
                             @if($products->count() > 0)
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="showing_tabs">
-                                    <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing {{ $products->count() }} results </p>
+                                    <p class="m-0" style="font-size: 13px; color:#5b6b7a;">Showing
+                                        {{ $products->count() }} results </p>
                                 </div>
                                 <div class="d-none">
                                     <x-social-icon />
@@ -1065,12 +1092,16 @@
                             </div>
                             @endif
 
-                            <div class="alert alert-info py-4 px-3" style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
+                            <div class="alert alert-info py-4 px-3"
+                                style="background-color:#f7f9fb; border: 1px solid #e2e8f0; border-radius: 8px;">
                                 @if ($this->hasActiveFilters())
-                                    <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
-                                    <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or removing some filters to see more options.</p>
+                                <h4 class="mb-2 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches
+                                    found</h4>
+                                <p class="m-0 text-center text-secondary" style="font-size: 15px;">Try adjusting or
+                                    removing some filters to see more options.</p>
                                 @else
-                                    <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches found</h4>
+                                <h4 class="m-0 text-center fw-bold" style="color: #1e3050; font-size: 20px;">No matches
+                                    found</h4>
                                 @endif
                             </div>
                         </div>
@@ -1094,44 +1125,53 @@
         </div>
         <livewire:compare-bar />
     </section>
-@if(($products->currentPage() ?? ($page ?? 1)) == 1)
+    @if(($products->currentPage() ?? ($page ?? 1)) == 1)
     <!-- Explore Top-Rated Categories Section -->
     @if(isset($exploreCategories) && $exploreCategories->isNotEmpty())
     <section class="explore-categories-sec py-5" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
         <div class="container">
             <div class="text-start mb-4">
-                <h2 style="margin-bottom: 8px;">{{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
-                <p style=" margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover top-rated software, services, and solutions across our most popular categories.' !!}</p>
+                <h2 style="margin-bottom: 8px;">
+                    {{ $topProductContents['explore_categories_headline'] ?? 'Explore top-rated categories' }}</h2>
+                <p style=" margin-bottom: 0;">{!! $topProductContents['explore_categories_subheadline'] ?? 'Discover
+                    top-rated software, services, and solutions across our most popular categories.' !!}</p>
             </div>
 
             <div class="explore-categories-list d-flex flex-column gap-4">
                 @foreach($exploreCategories as $cat)
                 @php
-                    $trans = null;
-                    if (isset($cat->translations)) {
-                        if (is_object($cat->translations) && !($cat->translations instanceof \Illuminate\Database\Eloquent\Collection)) {
-                            $trans = $cat->translations;
-                        } elseif ($cat->translations instanceof \Illuminate\Database\Eloquent\Collection && $cat->translations->isNotEmpty()) {
-                            $trans = $cat->translations->first();
-                        }
-                    }
-                    $catItemName = $trans->name ?? $cat->name ?? '';
-                    $catItemSeeAllText = $trans->see_all_text ?? '';
-                    $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
-                    $catItemDesc = !empty($cat->custom_top_rated_description)
-                        ? $cat->custom_top_rated_description
-                        : (!empty($trans->top_rated_description)
-                            ? $trans->top_rated_description
-                            : ($trans->description ?? $cat->description ?? ''));
-                    if (empty($catItemDesc) && !empty($catItemName)) {
-                        $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions. Explore providers using features, starting prices, real user reviews, and community ratings to identify the right match.';
-                    }
+                $trans = null;
+                if (isset($cat->translations)) {
+                if (is_object($cat->translations) && !($cat->translations instanceof
+                \Illuminate\Database\Eloquent\Collection)) {
+                $trans = $cat->translations;
+                } elseif ($cat->translations instanceof \Illuminate\Database\Eloquent\Collection &&
+                $cat->translations->isNotEmpty()) {
+                $trans = $cat->translations->first();
+                }
+                }
+                $catItemName = $trans->name ?? $cat->name ?? '';
+                $catItemSeeAllText = $trans->see_all_text ?? '';
+                $catItemSlug = $trans->slug ?? $cat->slug ?? (string)$cat->id;
+                $catItemDesc = !empty($cat->custom_top_rated_description)
+                ? $cat->custom_top_rated_description
+                : (!empty($trans->top_rated_description)
+                ? $trans->top_rated_description
+                : ($trans->description ?? $cat->description ?? ''));
+                if (empty($catItemDesc) && !empty($catItemName)) {
+                $catItemDesc = 'Compare ' . $catItemName . ' providers offering different services and solutions.
+                Explore providers using features, starting prices, real user reviews, and community ratings to identify
+                the right match.';
+                }
                 @endphp
                 @if(!empty($catItemName))
-                <div class="subcat-block p-4" style="background: #fdfdfd; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);">
+                <div class="subcat-block p-4"
+                    style="background: #fdfdfd; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h3 style="margin: 0;">{{ $catItemName }}</h3>
-                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}" class="subcat-link" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                        <a href="{{ route('category.detail', ['locale' => app()->getLocale(), 'slug' => $catItemSlug]) }}"
+                            class="subcat-link" onmouseover="this.style.textDecoration='underline'"
+                            onmouseout="this.style.textDecoration='none'">
                             {{ !empty($catItemSeeAllText) ? $catItemSeeAllText : 'See all ' . $catItemName }}
                         </a>
                     </div>
@@ -1141,56 +1181,42 @@
                     <div class="top-products-grid">
                         @foreach($cat->top_businesses ?? [] as $business)
                         @php
-                            $bizName = $business->translations->first()->name ?? $business->name ?? '';
+                        $hasTrackedUrl = !empty($business->getTrackedUrl());
                         @endphp
-                        @if(!empty($bizName))
-                        <div class="top-product-card d-flex flex-column justify-content-between p-3" style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 12px;">
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <div class="top-product-logo" style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
-                                    <x-business-logo :business="$business" :name="$bizName" />
+                        <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
+                            class="top-product-card d-flex flex-column justify-content-between p-3 text-decoration-none"
+                            style="background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 8px; color: inherit; display: flex;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="top-product-logo"
+                                    style="width: 45px; height: 45px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                                    <x-business-logo :business="$business" />
                                 </div>
                                 <div class="top-product-info min-w-0">
-                                    <p class="m-0 d-flex align-items-center gap-1" >
-                                        {{ $bizName }}
+                                    <p class="m-0 d-flex align-items-center gap-1">
+                                        {{ $business->translations->first()->name ?? $business->name }}
                                     </p>
-                                    <div class="rating-group" >
-                                        <span class="rate_box_num">{{ formatRating($business->average_rating) }}</span>
-                                        <div class="rating-stars" >
-                                            @php $rating = round($business->average_rating); @endphp
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= $rating)
-                                                    <i class="fas fa-star" ></i>
-                                                @else
-                                                    <i class="far fa-star" ></i>
-                                                @endif
-                                            @endfor
+                                    <div class="rating-group">
+                                        <span
+                                            class="rate_box_num">{{ formatRating($business->reviews->avg('rating')) }}</span>
+                                        <div class="rating-stars">
+                                            @for ($i = 1; $i <= 5; $i++) @if ($i <=floor($business->
+                                                reviews->avg('rating')))
+                                                <i class="fas fa-star"></i>
+                                                @elseif ($i - 0.5 <= $business->reviews->avg('rating'))
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                    <i class="far fa-star"></i>
+                                                    @endif
+                                                    @endfor
                                         </div>
-                                        <span class="">({{ $business->active_reviews_count }})</span>
+                                        <span class="">({{ $business->reviews->count() }})</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex gap-2 w-100 mt-auto">
-                                @php
-                                    $hasTrackedUrl = !empty($business->getTrackedUrl());
-                                @endphp
-                                <a href="{{ route('user.product_detail', ['locale' => app()->getLocale(), 'id' => $business->translations->first()->slug ?? $business->slug]) }}"
-                                   class="btn-view-details btn py-1 px-2 fw-medium {{ ($hasTrackedUrl) ? 'w-50' : 'w-100' }}">
-                                    {{ static_text('profile_and_reviews') ?: 'Profile & reviews' }}
-                                </a>
-                                @if($hasTrackedUrl)
-                                <a href="{{ $business->getTrackedUrl() }}"
-                                   target="_blank"
-                                   rel="sponsored"
-                                   class="btn-orng btn py-1 px-2 fw-medium w-50 text-white"
-                                   style="font-size: 11px; text-align: center; transition:unset !important;">
-                                    {{ static_text('visit_website') ?: 'Visit website' }} <i class="fas fa-external-link-alt" style="font-size: 9px; margin-left: 2px;"></i>
-                                </a>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
+                        </a>
                         @endforeach
                     </div>
+
                 </div>
                 @endif
                 @endforeach
@@ -1220,29 +1246,31 @@
                         @endif
 
                         @if(!empty($section['sub_sections']) && is_array($section['sub_sections']))
-                            @foreach($section['sub_sections'] as $sub)
-                            <div class="sub-section-block mt-4 mb-3">
-                                <div class="d-flex {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Right') ? 'flex-row-reverse' : 'flex-row' }} gap-3 align-items-start">
-                                    @if(!empty($sub['h3_image']))
-                                        <div class="sub-section-image flex-shrink-0">
-                                            <img src="{{ asset($sub['h3_image']) }}" alt="Sub-section Image" style="width: {{ $sub['h3_image_size'] ?? '50px' }};">
-                                        </div>
+                        @foreach($section['sub_sections'] as $sub)
+                        <div class="sub-section-block mt-4 mb-3">
+                            <div
+                                class="d-flex {{ (isset($sub['h3_image_position']) && $sub['h3_image_position'] == 'Right') ? 'flex-row-reverse' : 'flex-row' }} gap-3 align-items-start">
+                                @if(!empty($sub['h3_image']))
+                                <div class="sub-section-image flex-shrink-0">
+                                    <img src="{{ asset($sub['h3_image']) }}" alt="Sub-section Image"
+                                        style="width: {{ $sub['h3_image_size'] ?? '50px' }};">
+                                </div>
+                                @endif
+                                <div class="sub-section-content flex-grow-1">
+                                    @if(!empty($sub['h3_title']))
+                                    <h3 style="margin-bottom: 10px;">
+                                        {{ $sub['h3_title'] }}
+                                    </h3>
                                     @endif
-                                    <div class="sub-section-content flex-grow-1">
-                                        @if(!empty($sub['h3_title']))
-                                        <h3 style="margin-bottom: 10px;">
-                                            {{ $sub['h3_title'] }}
-                                        </h3>
-                                        @endif
-                                        @if(!empty($sub['h3_text']))
-                                        <div class="rich-text-content" style="color: #5b6b7a;">
-                                            {!! $sub['h3_text'] !!}
-                                        </div>
-                                        @endif
+                                    @if(!empty($sub['h3_text']))
+                                    <div class="rich-text-content" style="color: #5b6b7a;">
+                                        {!! $sub['h3_text'] !!}
                                     </div>
+                                    @endif
                                 </div>
                             </div>
-                            @endforeach
+                        </div>
+                        @endforeach
                         @endif
                     </div>
                     @endforeach
@@ -1259,20 +1287,29 @@
             <div class="row">
                 <div class="">
                     <div class="text-start mb-4">
-                        <h2 style="margin-bottom: 8px;">{{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
-                        <p style="margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything you need to know about Localio top-rated rankings and community reviews.' !!}</p>
+                        <h2 style="margin-bottom: 8px;">
+                            {{ $topProductContents['faq_section_headline'] ?? 'Frequently asked questions' }}</h2>
+                        <p style="margin-bottom: 0;">{!! $topProductContents['faq_section_subheadline'] ?? 'Everything
+                            you need to know about Localio top-rated rankings and community reviews.' !!}</p>
                     </div>
 
                     <div class="accordion" id="topRatedFaqAccordion">
                         @foreach($faqs as $fIndex => $faq)
                         @if($loop->iteration > 10) @break @endif
-                        <div class="accordion-item mb-3" style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
+                        <div class="accordion-item mb-3"
+                            style="border-radius: 8px !important; border: 1px solid #e2e8f0; overflow: hidden;">
                             <h3 class="accordion-header" id="faqHeading{{ $fIndex }}">
-                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}" aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}" aria-controls="faqCollapse{{ $fIndex }}" style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
+                                <button class="accordion-button {{ $fIndex > 0 ? 'collapsed' : '' }}" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faqCollapse{{ $fIndex }}"
+                                    aria-expanded="{{ $fIndex === 0 ? 'true' : 'false' }}"
+                                    aria-controls="faqCollapse{{ $fIndex }}"
+                                    style="font-weight: 600; font-size: 16px; color: #002347; background-color: #fff;">
                                     {{ $faq['question'] }}
                                 </button>
                             </h3>
-                            <div id="faqCollapse{{ $fIndex }}" class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}" aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
+                            <div id="faqCollapse{{ $fIndex }}"
+                                class="accordion-collapse collapse {{ $fIndex === 0 ? 'show' : '' }}"
+                                aria-labelledby="faqHeading{{ $fIndex }}" data-bs-parent="#topRatedFaqAccordion">
                                 <div class="accordion-body rich-text-content" style="background-color: #fff;">
                                     {!! $faq['answer'] !!}
                                 </div>
@@ -1282,8 +1319,8 @@
                     </div>
 
                     <div class="text-center mt-4">
-                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link" >
-                            View all FAQs 
+                        <a href="{{ route('top-rated.faqs', ['locale' => app()->getLocale()]) }}" class="btn-g-link">
+                            View all FAQs
                         </a>
                     </div>
                 </div>
@@ -1296,97 +1333,97 @@
         <x-news-letter-subscription />
     </section>
     @endif
-<script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
-<script>
-function initPriceSlider() {
-    setTimeout(() => {
-        const slider = document.getElementById('priceRangeSlider2');
-        const minInput = document.getElementById('minPriceInput2');
-        const maxInput = document.getElementById('maxPriceInput2');
-        // Get the dynamic maximum price from the data attribute
-        const maxPriceValue = slider.dataset.maxPrice ? parseInt(slider.dataset.maxPrice) : 10000;
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.0/dist/nouislider.min.js"></script>
+    <script>
+    function initPriceSlider() {
+        setTimeout(() => {
+            const slider = document.getElementById('priceRangeSlider2');
+            const minInput = document.getElementById('minPriceInput2');
+            const maxInput = document.getElementById('maxPriceInput2');
+            // Get the dynamic maximum price from the data attribute
+            const maxPriceValue = slider.dataset.maxPrice ? parseInt(slider.dataset.maxPrice) : 10000;
 
-        if (!slider || !minInput || !maxInput || typeof noUiSlider === 'undefined') {
-            console.warn("Slider init failed.");
-            return;
-        }
+            if (!slider || !minInput || !maxInput || typeof noUiSlider === 'undefined') {
+                console.warn("Slider init failed.");
+                return;
+            }
 
-        if (slider.noUiSlider) {
-            slider.noUiSlider.destroy();
-        }
+            if (slider.noUiSlider) {
+                slider.noUiSlider.destroy();
+            }
 
-        noUiSlider.create(slider, {
-            start: [parseInt(minInput.value) || 0, parseInt(maxInput.value) || maxPriceValue],
-            connect: true,
-            range: {
-                min: 0,
-                max: maxPriceValue
-            },
-            step: Math.max(1, Math.floor(maxPriceValue / 100)) // Dynamic step based on max price
+            noUiSlider.create(slider, {
+                start: [parseInt(minInput.value) || 0, parseInt(maxInput.value) || maxPriceValue],
+                connect: true,
+                range: {
+                    min: 0,
+                    max: maxPriceValue
+                },
+                step: Math.max(1, Math.floor(maxPriceValue / 100)) // Dynamic step based on max price
+            });
+
+            slider.noUiSlider.on('update', function(values) {
+                const min = Math.round(values[0]);
+                const max = Math.round(values[1]);
+                minInput.value = min;
+                maxInput.value = max;
+            });
+
+            slider.noUiSlider.on('change', function() {
+                minInput.dispatchEvent(new Event('input', {
+                    bubbles: true
+                }));
+                maxInput.dispatchEvent(new Event('input', {
+                    bubbles: true
+                }));
+            });
+
+            minInput.addEventListener('change', function() {
+                slider.noUiSlider.set([this.value, null]);
+            });
+
+            maxInput.addEventListener('change', function() {
+                slider.noUiSlider.set([null, this.value]);
+            });
+        }, 100); // slight delay to ensure DOM is updated
+    }
+
+    document.addEventListener('DOMContentLoaded', initPriceSlider);
+    document.addEventListener('livewire:load', initPriceSlider);
+
+    // Set up a listener for Livewire events that might update max price
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('set-price-range', (data) => {
+            const slider = document.getElementById('priceRangeSlider2');
+            if (slider && data.maxPrice) {
+                slider.dataset.maxPrice = data.maxPrice;
+                // Re-initialize slider with the new max value
+                initPriceSlider();
+            }
         });
-
-        slider.noUiSlider.on('update', function(values) {
-            const min = Math.round(values[0]);
-            const max = Math.round(values[1]);
-            minInput.value = min;
-            maxInput.value = max;
-        });
-
-        slider.noUiSlider.on('change', function() {
-            minInput.dispatchEvent(new Event('input', {
-                bubbles: true
-            }));
-            maxInput.dispatchEvent(new Event('input', {
-                bubbles: true
-            }));
-        });
-
-        minInput.addEventListener('change', function() {
-            slider.noUiSlider.set([this.value, null]);
-        });
-
-        maxInput.addEventListener('change', function() {
-            slider.noUiSlider.set([null, this.value]);
-        });
-    }, 100); // slight delay to ensure DOM is updated
-}
-
-document.addEventListener('DOMContentLoaded', initPriceSlider);
-document.addEventListener('livewire:load', initPriceSlider);
-
-// Set up a listener for Livewire events that might update max price
-document.addEventListener('livewire:initialized', () => {
-    Livewire.on('set-price-range', (data) => {
-        const slider = document.getElementById('priceRangeSlider2');
-        if (slider && data.maxPrice) {
-            slider.dataset.maxPrice = data.maxPrice;
-            // Re-initialize slider with the new max value
-            initPriceSlider();
-        }
     });
-});
-// Livewire.hook('message.processed', (message, component) => {
-//     initPriceSlider(); // Re-initialize after DOM is updated by Livewire
-// });
-</script>
-<script>
-window.addEventListener('scroll-to-middle', function() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+    // Livewire.hook('message.processed', (message, component) => {
+    //     initPriceSlider(); // Re-initialize after DOM is updated by Livewire
+    // });
+    </script>
+    <script>
+    window.addEventListener('scroll-to-middle', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     });
-});
-window.addEventListener('scroll-to-top', function() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+    window.addEventListener('scroll-to-top', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     });
-});
-// Update browser URL when pagination changes
-window.addEventListener('update-pagination-url', function(event) {
-    window.history.pushState(null, '', event.detail.url);
-});
-</script>
+    // Update browser URL when pagination changes
+    window.addEventListener('update-pagination-url', function(event) {
+        window.history.pushState(null, '', event.detail.url);
+    });
+    </script>
 
 
 

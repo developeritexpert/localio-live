@@ -184,7 +184,7 @@ class GlobalSectionSeeder extends Seeder
                 ],
                 [
                     'meta_key' => 'placeholder_text',
-                    'meta_value' => 'Search for a company or category...',
+                    'meta_value' => 'Search digital products & services',
                     'page_name' => 'home',
                     'type'         => 'text',
                     'lang_id' => '1',

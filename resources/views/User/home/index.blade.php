@@ -34,7 +34,7 @@
                         <div class="banner_content_inner">
                             <h1>{{ $homeContents['header_title'] ?? null }}</h1>
                             <p>{{ $homeContents['header_description'] ?? null }}</p>
-                            @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search...'])
+                            @livewire('search-bar', ['placeholder' => $homeContents['placeholder_text'] ?? 'Search digital products & services'])
                         </div>
                     </div>
                     <div class="banner_image_col d-none">
