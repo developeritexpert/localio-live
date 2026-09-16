@@ -105,10 +105,65 @@ class ContentTemplateService
 
     public const FEATURE_FIELDS = [
         'feature_h1' => [
-            'label' => 'Feature Page H1 Headline',
+            'label' => 'H1 Headline',
             'type' => 'single',
             'field1_label' => 'Feature H1 Headline',
             'description' => 'Main page title for Feature pages (e.g. Best [category_tc] with [feature_tc] [country2] [year]).',
+        ],
+        'header_intro' => [
+            'label' => 'Header Introduction Text',
+            'type' => 'combined',
+            'field1_label' => 'Header Question (ends paragraph 1)',
+            'field2_label' => 'Second Header Text (paragraph 2)',
+            'description' => 'Combines individual feature intro with question and second overview paragraph.',
+        ],
+        'compare_top_rated' => [
+            'label' => 'Compare Top-Rated',
+            'type' => 'combined',
+            'field1_label' => 'Compare Top-Rated Headline (H2)',
+            'field2_label' => 'Compare Top-Rated Subtext',
+            'description' => 'Headline and subtext for the top-rated providers section on feature page.',
+        ],
+        'top_10' => [
+            'label' => 'Top 10',
+            'type' => 'combined',
+            'field1_label' => 'Top 10 Headline (H2)',
+            'field2_label' => 'Top 10 Subtext',
+            'description' => 'Headline and subtext for the Top 10 comparison table section on feature page.',
+        ],
+        'pros_cons' => [
+            'label' => 'Pros and Cons',
+            'type' => 'combined',
+            'field1_label' => 'Pros and Cons Headline (H2)',
+            'field2_label' => 'Pros and Cons Subtext',
+            'description' => 'Headline and subtext for the community feedback section on feature page.',
+        ],
+        'popular_comparisons' => [
+            'label' => 'Popular Comparisons',
+            'type' => 'combined',
+            'field1_label' => 'Popular Comparisons Headline (H2)',
+            'field2_label' => 'Popular Comparisons Subtext',
+            'description' => 'Headline and subtext for the popular side-by-side comparisons section on feature page.',
+        ],
+        'compare_tool' => [
+            'label' => 'Comparison Tool',
+            'type' => 'combined',
+            'field1_label' => 'Comparison Tool Headline (H2)',
+            'field2_label' => 'Comparison Tool Subtext',
+            'description' => 'Headline and subtext for interactive comparison tool box on feature page.',
+        ],
+        'explore_subcategories' => [
+            'label' => 'Explore Subcategories',
+            'type' => 'combined',
+            'field1_label' => 'Explore Subcategories Headline (H2)',
+            'field2_label' => 'Explore Subcategories Subtext',
+            'description' => 'Headline and subtext for explore subcategories/categories section on feature page.',
+        ],
+        'explore_link' => [
+            'label' => '"Explore [business]" Link Text',
+            'type' => 'single',
+            'field1_label' => 'Link Text',
+            'description' => 'Used on top-rated block link (e.g. See all [entities1_cap] with [feature_tc]).',
         ],
     ];
 
@@ -203,19 +258,22 @@ class ContentTemplateService
     public static function assignMissingForFeatures(int $langId = 1): int
     {
         $allFeatureIds = Feature::pluck('id');
+        $allFieldKeys = array_keys(self::FEATURE_FIELDS);
         $assignedCount = 0;
 
         foreach ($allFeatureIds as $featId) {
-            $exists = ContentTemplateAssignment::where('entity_type', 'feature')
-                ->where('entity_id', $featId)
-                ->where('lang_id', $langId)
-                ->where('field_key', 'feature_h1')
-                ->exists();
+            foreach ($allFieldKeys as $fieldKey) {
+                $exists = ContentTemplateAssignment::where('entity_type', 'feature')
+                    ->where('entity_id', $featId)
+                    ->where('lang_id', $langId)
+                    ->where('field_key', $fieldKey)
+                    ->exists();
 
-            if (!$exists) {
-                $template = self::getOrAssignTemplate('feature', $featId, 'feature_h1', $langId);
-                if ($template) {
-                    $assignedCount++;
+                if (!$exists) {
+                    $template = self::getOrAssignTemplate('feature', $featId, $fieldKey, $langId);
+                    if ($template) {
+                        $assignedCount++;
+                    }
                 }
             }
         }
@@ -591,6 +649,71 @@ class ContentTemplateService
 
         return [
             'headline' => $headline,
+            'template' => $template,
+            'option_number' => $optionNumber,
+        ];
+    }
+
+    /**
+     * Resolves the Feature introduction paragraphs merging individual text with template.
+     */
+    public static function resolveFeatureIntro(Feature $feature, ?Category $category = null, ?string $individualIntro = null, int $langId = 1): string
+    {
+        $template = self::getOrAssignTemplate('feature', $feature->id, 'header_intro', $langId);
+
+        if (!$template) {
+            if (!empty($individualIntro)) {
+                return $individualIntro;
+            }
+            return $category ? self::resolveCategoryIntro($category, $langId) : '<p>Browse and compare the best options</p>';
+        }
+
+        $question = self::replacePlaceholders($template->headline, $category, $feature, $langId);
+        $secondText = self::replacePlaceholders($template->subtext, $category, $feature, $langId);
+
+        $cleanedIntro = preg_replace('/^<p>(.*?)<\/p>$/s', '$1', trim($individualIntro ?? ''));
+
+        $p1 = trim($cleanedIntro);
+        if ($question) {
+            if ($p1 !== '') {
+                $p1 .= ' ' . $question;
+            } else {
+                $p1 = $question;
+            }
+        }
+
+        $output = '';
+        if ($p1 !== '') {
+            $output .= '<p>' . $p1 . '</p>';
+        }
+
+        if ($secondText) {
+            $output .= '<p>' . $secondText . '</p>';
+        }
+
+        return $output ?: '<p>Browse and compare the best options</p>';
+    }
+
+    /**
+     * Resolves a feature section headline and subtext using assigned template with fallback.
+     */
+    public static function resolveFeatureSection(Feature $feature, ?Category $category, string $fieldKey, int $langId = 1): array
+    {
+        $template = self::getOrAssignTemplate('feature', $feature->id, $fieldKey, $langId);
+
+        $headline = '';
+        $subtext = '';
+        $optionNumber = null;
+
+        if ($template) {
+            $headline = self::replacePlaceholders($template->headline, $category, $feature, $langId);
+            $subtext = self::replacePlaceholders($template->subtext, $category, $feature, $langId);
+            $optionNumber = $template->option_number;
+        }
+
+        return [
+            'headline' => $headline,
+            'subtext' => $subtext,
             'template' => $template,
             'option_number' => $optionNumber,
         ];

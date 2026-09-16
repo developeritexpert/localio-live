@@ -207,7 +207,7 @@
                     </table>
                 </div>
             </div>
-            <div class="card-footer d-flex flex-wrap justify-content-between align-items-center bg-light gap-2">
+            <div class="card-footer d-flex flex-wrap justify-content-between align-items-center bg-light ">
                 <div class="text-muted small">
                     Showing {{ $features->firstItem() ?? 0 }} to {{ $features->lastItem() ?? 0 }} of {{ $features->total() }} features. Blank inputs inherit dynamic cascade rules.
                 </div>

@@ -528,7 +528,7 @@
                         <div class="col-md-6 text-start">
                             
                             <div class="category-description-text">
-                                {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : \App\Services\ContentTemplateService::resolveCategoryIntro($category, $currentLangId)) !!}
+                                {!! !empty($featureContent->description) ? $featureContent->description : (!empty($featureDescription) ? $featureDescription : ($lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureIntro($lockedFeatureObj, $category, null, $currentLangId) : \App\Services\ContentTemplateService::resolveCategoryIntro($category, $currentLangId))) !!}
                             </div>
                         </div>
                         <div class="col-md-6 mt-4 mt-md-0 text-end cat_img_header">
@@ -553,9 +553,12 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-start" style="margin-bottom: 16px; border-bottom: 1px solid #e8eef6 !important; padding-bottom: 20px;">
                         <div class="host-pro flex-grow-1" style="max-width: 50%;">
                             @php
-                                $defaultTopRatedH2 = ($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : '');
+                                $resolvedTopRated = $lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'compare_top_rated', $currentLangId) : [];
+                                $defaultTopRatedH2 = !empty($resolvedTopRated['headline'])
+                                    ? $resolvedTopRated['headline']
+                                    : (($category->translation->top_rated_listing_headline ?? ('Best ' . strtolower($category->name) . ' services')) . (!empty($category->top_rated_listing_headline_addition) ? ' ' . $category->top_rated_listing_headline_addition : ''));
                                 $topRatedHeadline = !empty($featureContent->top_rated_listing_headline) ? $featureContent->top_rated_listing_headline : $defaultTopRatedH2;
-                                $topRatedSubtext = !empty($featureContent->top_rated_listing_subtext) ? $featureContent->top_rated_listing_subtext : ($category->translation->top_rated_listing_subtext ?? '');
+                                $topRatedSubtext = !empty($featureContent->top_rated_listing_subtext) ? $featureContent->top_rated_listing_subtext : (!empty($resolvedTopRated['subtext']) ? $resolvedTopRated['subtext'] : ($category->translation->top_rated_listing_subtext ?? ''));
                             @endphp
                             <h2 style="margin-bottom: 8px;">
                                {{ $applyDynamicVars($topRatedHeadline) }}
@@ -1745,15 +1748,18 @@
                 <div class="container">
                     <div class="comparison-table-section my-5 pt-4">
                         @php
-                            $defaultCompH2 = !empty($category->translations->compare_alternatives_headline) 
-                                ? $category->translations->compare_alternatives_headline 
-                                : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives');
+                            $resolvedTop10 = $lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'top_10', $currentLangId) : [];
+                            $defaultCompH2 = !empty($resolvedTop10['headline'])
+                                ? $resolvedTop10['headline']
+                                : (!empty($category->translations->compare_alternatives_headline) 
+                                    ? $category->translations->compare_alternatives_headline 
+                                    : ('Compare ' . ($category->translations->name ?? $category->name) . ' alternatives'));
                             $compAlternativesHeadline = !empty($featureContent->compare_alternatives_headline)
                                 ? $featureContent->compare_alternatives_headline
                                 : $defaultCompH2;
                             $compAlternativesSubtext = !empty($featureContent->compare_alternatives_subtext)
                                 ? $featureContent->compare_alternatives_subtext
-                                : ($category->translations->compare_alternatives_subtext ?? null);
+                                : (!empty($resolvedTop10['subtext']) ? $resolvedTop10['subtext'] : ($category->translations->compare_alternatives_subtext ?? null));
                         @endphp
                         <h2>
                             {{ $applyDynamicVars($compAlternativesHeadline) }}
@@ -1874,15 +1880,18 @@
                         <div class="community-feedback-table-section">
                             <div class="mb-3">
                                 @php
-                                    $defaultCommH2 = !empty($category->translations->community_says_headline) 
-                                        ? $category->translations->community_says_headline 
-                                        : 'What the Localio community says';
+                                    $resolvedProsCons = $lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'pros_cons', $currentLangId) : [];
+                                    $defaultCommH2 = !empty($resolvedProsCons['headline'])
+                                        ? $resolvedProsCons['headline']
+                                        : (!empty($category->translations->community_says_headline) 
+                                            ? $category->translations->community_says_headline 
+                                            : 'What the Localio community says');
                                     $commFeedbackHeadline = !empty($featureContent->community_says_headline)
                                         ? $featureContent->community_says_headline
                                         : $defaultCommH2;
                                     $commFeedbackSubtext = !empty($featureContent->community_says_subtext)
                                         ? $featureContent->community_says_subtext
-                                        : ($category->translations->community_says_subtext ?? null);
+                                        : (!empty($resolvedProsCons['subtext']) ? $resolvedProsCons['subtext'] : ($category->translations->community_says_subtext ?? null));
                                 @endphp
                                 <h2 style="margin-bottom: 4px;">{{ $applyDynamicVars($commFeedbackHeadline) }}</h2>
                                 @if(!empty($commFeedbackSubtext))
@@ -1992,9 +2001,12 @@
                 ? $category->translations->first() 
                 : ($category->translations ?? $category->translation);
             $catCurrentName = $catTrans->name ?? $category->name ?? 'Category';
-            $defaultPopH2 = !empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons';
+            $resolvedPopComp = $lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'popular_comparisons', $currentLangId) : [];
+            $defaultPopH2 = !empty($resolvedPopComp['headline']) 
+                ? $resolvedPopComp['headline'] 
+                : (!empty($catTrans->popular_comparisons_headline) ? $catTrans->popular_comparisons_headline : 'Popular comparisons');
             $popCompHeadline = !empty($featureContent->popular_comparisons_headline) ? $featureContent->popular_comparisons_headline : $defaultPopH2;
-            $popCompSubtext = !empty($featureContent->popular_comparisons_subtext) ? $featureContent->popular_comparisons_subtext : ($catTrans->popular_comparisons_subtext ?? null);
+            $popCompSubtext = !empty($featureContent->popular_comparisons_subtext) ? $featureContent->popular_comparisons_subtext : (!empty($resolvedPopComp['subtext']) ? $resolvedPopComp['subtext'] : ($catTrans->popular_comparisons_subtext ?? null));
         @endphp
         <section class="compare-section p_50 light" id="section-compare" style="background-color: #fdfdfd !important;">
             <div class="container">
@@ -2062,10 +2074,12 @@
 
                 <!-- Interactive Compare Tool (Bottom of Section) -->
                 @php
-                    $compToolHeadline = !empty($catTrans->compare_tool_headline)
-                        ? $catTrans->compare_tool_headline
-                        : 'Compare ' . $catCurrentName . ' with any provider';
-                    $compToolSubtext = $catTrans->compare_tool_subtext ?? null;
+                    $resolvedCompTool = $lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'compare_tool', $currentLangId) : [];
+                    $defaultToolH2 = !empty($resolvedCompTool['headline'])
+                        ? $resolvedCompTool['headline']
+                        : (!empty($catTrans->compare_tool_headline) ? $catTrans->compare_tool_headline : ('Compare ' . $catCurrentName . ' with any provider'));
+                    $compToolHeadline = !empty($featureContent->compare_tool_headline) ? $featureContent->compare_tool_headline : $defaultToolH2;
+                    $compToolSubtext = !empty($featureContent->compare_tool_subtext) ? $featureContent->compare_tool_subtext : (!empty($resolvedCompTool['subtext']) ? $resolvedCompTool['subtext'] : ($catTrans->compare_tool_subtext ?? null));
                     $compSlug = $catTrans->comparison_slug ?? 'compare';
                     $vsKeyword = static_text('vs_keyword') ?: 'vs';
                     if (empty($vsKeyword) || $vsKeyword === 'vs_keyword') $vsKeyword = 'vs';
@@ -2407,9 +2421,12 @@
             $catTrans = $category->translations instanceof \Illuminate\Database\Eloquent\Collection 
                 ? $category->translations->first() 
                 : ($category->translations ?? $category->translation);
-            $defaultExpH2 = !empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories');
+            $resolvedExploreSub = $lockedFeatureObj ? \App\Services\ContentTemplateService::resolveFeatureSection($lockedFeatureObj, $category, 'explore_subcategories', $currentLangId) : [];
+            $defaultExpH2 = !empty($resolvedExploreSub['headline']) 
+                ? $resolvedExploreSub['headline'] 
+                : (!empty($catTrans->explore_subcategories_headline) ? $catTrans->explore_subcategories_headline : ($exploreSubcategories['title'] ?? 'Explore categories'));
             $exploreHeadline = !empty($featureContent->explore_subcategories_headline) ? $featureContent->explore_subcategories_headline : $defaultExpH2;
-            $exploreSubtext = !empty($featureContent->explore_subcategories_subtext) ? $featureContent->explore_subcategories_subtext : ($catTrans->explore_subcategories_subtext ?? null);
+            $exploreSubtext = !empty($featureContent->explore_subcategories_subtext) ? $featureContent->explore_subcategories_subtext : (!empty($resolvedExploreSub['subtext']) ? $resolvedExploreSub['subtext'] : ($catTrans->explore_subcategories_subtext ?? null));
         @endphp
         <section class="explore-subcategories-sec py-5" style="background: #f7f9fb; border-top: 1px solid #e2e8f0;border-bottom: 1px solid #e2e8f0;">
             <div class="container">

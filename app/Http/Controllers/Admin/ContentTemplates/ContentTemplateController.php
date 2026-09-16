@@ -182,12 +182,14 @@ class ContentTemplateController extends Controller
             ->where('lang_id', $lang_id)
             ->with('template')
             ->get()
-            ->keyBy('entity_id');
+            ->groupBy('entity_id');
 
         $templates = ContentTemplate::where('section_group', 'features')
             ->where('lang_id', $lang_id)
+            ->orderBy('field_key')
             ->orderBy('option_number')
-            ->get();
+            ->get()
+            ->groupBy('field_key');
 
         $fieldDefs = ContentTemplateService::FEATURE_FIELDS;
 
@@ -339,7 +341,7 @@ class ContentTemplateController extends Controller
         } elseif ($sectionGroup === 'category_faqs') {
             $query->whereIn('field_key', array_keys(ContentTemplateService::CATEGORY_FAQ_FIELDS));
         } elseif ($sectionGroup === 'features') {
-            $query->whereIn('field_key', ['feature_h1']);
+            $query->whereIn('field_key', array_keys(ContentTemplateService::FEATURE_FIELDS));
         }
 
         $deleted = $query->delete();

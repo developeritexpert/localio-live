@@ -172,7 +172,7 @@
                                     </a>
                                 </li>
                                 <!-- Category Feature Content -->
-                                <li class="nk-menu-item">
+                                <li class="nk-menu-item d-none">
                                     <a href="{{ route('admin.category-feature-content.index') }}" class="nk-menu-link">
                                         <span class="nk-menu-icon">
                                              <em class="icon ni ni-file-docs"></em>
