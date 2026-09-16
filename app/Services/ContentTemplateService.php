@@ -74,12 +74,18 @@ class ContentTemplateService
     ];
 
     public const CATEGORY_FAQ_FIELDS = [
-        'category_page_faqs' => [
-            'label' => 'Category Page FAQs',
+        'faq_h1' => [
+            'label' => 'H1 headline',
+            'type' => 'single',
+            'field1_label' => 'H1 Headline',
+            'description' => 'Main H1 headline for the Category FAQs page.',
+        ],
+        'faq_header_intro' => [
+            'label' => 'Header Intro',
             'type' => 'combined',
-            'field1_label' => 'Category Page FAQs Headline (H2)',
-            'field2_label' => 'Category Page FAQs Subtext',
-            'description' => 'Headline and subtext for the FAQ section on main Category page.',
+            'field1_label' => 'Header1',
+            'field2_label' => 'Header2',
+            'description' => 'Main introductory paragraphs directly below the H1 headline.',
         ],
         'faq_about' => [
             'label' => 'FAQ Page Second Headline & Content',
@@ -251,25 +257,40 @@ class ContentTemplateService
             return;
         }
 
-        $existingCount = ContentTemplate::where('section_group', $sectionGroup)
-            ->where('lang_id', $langId)
-            ->count();
+        $fieldDefs = [];
+        if ($sectionGroup === 'category') {
+            $fieldDefs = self::CATEGORY_FIELDS;
+        } elseif ($sectionGroup === 'category_faqs') {
+            $fieldDefs = self::CATEGORY_FAQ_FIELDS;
+        } elseif ($sectionGroup === 'features') {
+            $fieldDefs = self::FEATURE_FIELDS;
+        }
 
-        if ($existingCount === 0) {
-            $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
-                ->where('lang_id', 1)
-                ->get();
+        if ($langId > 1) {
+            foreach (array_keys($fieldDefs) as $fKey) {
+                $hasKey = ContentTemplate::where('section_group', $sectionGroup)
+                    ->where('field_key', $fKey)
+                    ->where('lang_id', $langId)
+                    ->exists();
 
-            foreach ($defaultTemplates as $defTpl) {
-                ContentTemplate::create([
-                    'section_group' => $defTpl->section_group,
-                    'field_key' => $defTpl->field_key,
-                    'option_number' => $defTpl->option_number,
-                    'headline' => $defTpl->headline,
-                    'subtext' => $defTpl->subtext,
-                    'is_active' => $defTpl->is_active,
-                    'lang_id' => $langId,
-                ]);
+                if (!$hasKey) {
+                    $defaultTemplates = ContentTemplate::where('section_group', $sectionGroup)
+                        ->where('field_key', $fKey)
+                        ->where('lang_id', 1)
+                        ->get();
+
+                    foreach ($defaultTemplates as $defTpl) {
+                        ContentTemplate::create([
+                            'section_group' => $defTpl->section_group,
+                            'field_key' => $defTpl->field_key,
+                            'option_number' => $defTpl->option_number,
+                            'headline' => $defTpl->headline,
+                            'subtext' => $defTpl->subtext,
+                            'is_active' => $defTpl->is_active,
+                            'lang_id' => $langId,
+                        ]);
+                    }
+                }
             }
         }
     }
@@ -514,6 +535,14 @@ class ContentTemplateService
                 case 'explore_subcategories':
                     $headline = $catTrans->explore_subcategories_headline ?? ('Explore ' . ($catTrans->name ?? '') . ' categories');
                     $subtext = $catTrans->explore_subcategories_subtext ?? '';
+                    break;
+                case 'faq_h1':
+                    $headline = !empty($catTrans->faq_h1_title) ? $catTrans->faq_h1_title : (($catTrans->name ?? 'Category') . ' FAQs');
+                    $subtext = '';
+                    break;
+                case 'faq_header_intro':
+                    $headline = $catTrans->faq_subtext ?? '';
+                    $subtext = '';
                     break;
                 case 'category_page_faqs':
                     $headline = $catTrans->category_faqs_headline ?? 'Frequently asked questions';

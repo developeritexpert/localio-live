@@ -199,9 +199,19 @@
             </div>
         </div>
 
+                        @php
+                            $resolvedFaqH1 = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_h1', $lang_id ?? 1);
+                            $faqH1Title = !empty($resolvedFaqH1['headline']) 
+                                ? $resolvedFaqH1['headline'] 
+                                : (!empty($categoryTranslation->faq_h1_title) ? $categoryTranslation->faq_h1_title : ($catName . ' FAQs'));
+
+                            $resolvedFaqHeader = \App\Services\ContentTemplateService::resolveCategorySection($category, 'faq_header_intro', $lang_id ?? 1);
+                            $faqHeader1 = $resolvedFaqHeader['headline'] ?? null;
+                            $faqHeader2 = $resolvedFaqHeader['subtext'] ?? null;
+                        @endphp
                         <div class="an_lkd d-flex align-items-center gap-2 flex-wrap">
                             <h1 style="font-size: 28px; font-weight: 700; margin: 0; line-height: 1.2; color: #1e3050;">
-                                {{ !empty($categoryTranslation->faq_h1_title) ? $categoryTranslation->faq_h1_title : ($catName . ' FAQs') }}
+                                {{ $faqH1Title }}
                             </h1>
                         </div>
         <!-- Category Header Row -->
@@ -209,9 +219,15 @@
             <div class="col-md-6 col-12">
                 <div class="top_head d-flex align-items-center gap-3 mt-2">
                     <div>
-                        
                         <div class="faq-subtext-container ck-content" style="font-size: 16px; color: #444; margin-top: 4px; margin-bottom: 0; font-weight: 400;">
-                            @if(!empty($categoryTranslation->faq_subtext))
+                            @if(!empty($faqHeader1) || !empty($faqHeader2))
+                                @if(!empty($faqHeader1))
+                                    <p style="margin-bottom: 8px;">{!! $faqHeader1 !!}</p>
+                                @endif
+                                @if(!empty($faqHeader2))
+                                    <p style="margin: 0;">{!! $faqHeader2 !!}</p>
+                                @endif
+                            @elseif(!empty($categoryTranslation->faq_subtext))
                                 {!! $categoryTranslation->faq_subtext !!}
                             @else
                                 <p style="margin: 0;">
