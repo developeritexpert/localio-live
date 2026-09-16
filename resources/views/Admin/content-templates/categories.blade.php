@@ -191,20 +191,30 @@
                                             <span class="badge bg-info text-white fs-11px py-1 px-2 cursor-pointer" 
                                                   data-toggle="tooltip" data-bs-toggle="tooltip" 
                                                   title="{{ $tpl->headline ? Str::limit($tpl->headline, 70) : 'Option #' . $tpl->option_number }}">
-                                                Option {{ $tpl->option_number }}
+                                                {{ $tpl->option_number }}
                                             </span>
                                         @else
-                                            <span class="badge bg-secondary text-white fs-11px py-1 px-2">Unassigned</span>
+                                            <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
                                         @endif
                                     </td>
                                 @endforeach
                                 <td class="text-end pe-3 py-3">
-                                    <button type="button" class="btn btn-sm btn-dark btn-view-assign" 
-                                            data-cat-id="{{ $parent->id }}" 
-                                            data-cat-name="{{ $parentName }}"
-                                            data-assignments="{{ json_encode($catAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}">
-                                        <em class="icon ni ni-eye me-1"></em> View / Edit
-                                    </button>
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-sm btn-dark btn-view-assign p-1 px-2" 
+                                                data-cat-id="{{ $parent->id }}" 
+                                                data-cat-name="{{ $parentName }}"
+                                                data-assignments="{{ json_encode($catAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}"
+                                                title="Edit Assignments" data-toggle="tooltip">
+                                            <em class="icon ni ni-edit"></em>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger btn-reset-entity p-1 px-2 ms-1"
+                                                data-entity-type="category"
+                                                data-entity-id="{{ $parent->id }}"
+                                                data-entity-name="{{ $parentName }}"
+                                                title="Reset Assignments" data-toggle="tooltip">
+                                            <em class="icon ni ni-reload"></em>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -235,20 +245,30 @@
                                                 <span class="badge bg-primary text-white fs-11px py-1 px-2 cursor-pointer"
                                                       data-toggle="tooltip" data-bs-toggle="tooltip" 
                                                       title="{{ $sTpl->headline ? Str::limit($sTpl->headline, 70) : 'Option #' . $sTpl->option_number }}">
-                                                    Option {{ $sTpl->option_number }}
+                                                    {{ $sTpl->option_number }}
                                                 </span>
                                             @else
-                                                <span class="badge bg-secondary text-white fs-11px py-1 px-2">Unassigned</span>
+                                                <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
                                             @endif
                                         </td>
                                     @endforeach
                                     <td class="text-end pe-3 py-2">
-                                        <button type="button" class="btn btn-sm btn-dark btn-view-assign" 
-                                                data-cat-id="{{ $sub->id }}" 
-                                                data-cat-name="{{ $subName }}"
-                                                data-assignments="{{ json_encode($subAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}">
-                                            <em class="icon ni ni-eye me-1"></em> View / Edit
-                                        </button>
+                                        <div class="d-inline-flex align-items-center gap-1">
+                                            <button type="button" class="btn btn-sm btn-dark btn-view-assign p-1 px-2" 
+                                                    data-cat-id="{{ $sub->id }}" 
+                                                    data-cat-name="{{ $subName }}"
+                                                    data-assignments="{{ json_encode($subAssignments->map(fn($a) => ['template_id' => $a->template_id, 'option_number' => $a->template?->option_number])) }}"
+                                                    title="Edit Assignments" data-toggle="tooltip">
+                                                <em class="icon ni ni-edit"></em>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-reset-entity p-1 px-2 ms-1"
+                                                    data-entity-type="category"
+                                                    data-entity-id="{{ $sub->id }}"
+                                                    data-entity-name="{{ $subName }}"
+                                                    title="Reset Assignments" data-toggle="tooltip">
+                                                <em class="icon ni ni-reload"></em>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -694,6 +714,41 @@ $(document).ready(function() {
         });
 
         $('#modalViewAssignments').modal('show');
+    });
+
+    // Reset Entity Assignments
+    $('.btn-reset-entity').on('click', function(e) {
+        e.preventDefault();
+        let entityType = $(this).data('entity-type');
+        let entityId = $(this).data('entity-id');
+        let entityName = $(this).data('entity-name');
+
+        let msg = 'Do you really want to reset the template assignments for "' + entityName + '"?\n\nThe assigned templates will be removed. You can then click "Assign Missing" at the top to re-assign randomly.';
+        if (!confirm(msg)) {
+            return;
+        }
+
+        let btn = $(this);
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("admin.content-templates.reset-entity") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                entity_type: entityType,
+                entity_id: entityId,
+                section_group: 'category',
+                lang_id: '{{ $lang_id }}'
+            },
+            success: function(resp) {
+                window.location.reload();
+            },
+            error: function() {
+                btn.prop('disabled', false);
+                alert('Failed to reset templates. Please try again.');
+            }
+        });
     });
 
     // Save individual assignment lock

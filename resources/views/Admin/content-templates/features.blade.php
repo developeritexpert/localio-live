@@ -170,21 +170,31 @@
                                 <td class="py-3">
                                     @if($tpl)
                                         <div class="d-flex align-items-center gap-2">
-                                            <span class="badge bg-dark text-white">Option #{{ $tpl->option_number }}</span>
+                                            <span class="badge bg-dark text-white">{{ $tpl->option_number }}</span>
                                             <span class="font-monospace text-dark small">{{ $resolvedH1 }}</span>
                                         </div>
                                     @else
-                                        <span class="badge bg-secondary text-white fs-11px py-1 px-2">Unassigned</span>
+                                        <span class="badge bg-secondary text-white fs-11px py-1 px-2">-</span>
                                     @endif
                                 </td>
                                 <td class="text-end pe-3 py-3">
-                                    <button type="button" class="btn btn-sm btn-dark btn-override-feat"
-                                            data-feat-id="{{ $feature->id }}"
-                                            data-feat-name="{{ $featureName }}"
-                                            data-cat-name="{{ $categoryName }}"
-                                            data-selected-tpl="{{ $tpl?->id ?? '' }}">
-                                        <em class="icon ni ni-eye me-1"></em> View / Edit
-                                    </button>
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-sm btn-dark btn-override-feat p-1 px-2"
+                                                data-feat-id="{{ $feature->id }}"
+                                                data-feat-name="{{ $featureName }}"
+                                                data-cat-name="{{ $categoryName }}"
+                                                data-selected-tpl="{{ $tpl?->id ?? '' }}"
+                                                title="Edit Assignment" data-toggle="tooltip">
+                                            <em class="icon ni ni-edit"></em>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger btn-reset-entity p-1 px-2 ms-1"
+                                                data-entity-type="feature"
+                                                data-entity-id="{{ $feature->id }}"
+                                                data-entity-name="{{ $featureName }}"
+                                                title="Reset Assignment" data-toggle="tooltip">
+                                            <em class="icon ni ni-reload"></em>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -462,6 +472,41 @@ $(document).ready(function() {
                 $('#modalManageTemplates').modal('show');
             }, 200);
         }
+    });
+
+    // Reset Entity Assignments
+    $('.btn-reset-entity').on('click', function(e) {
+        e.preventDefault();
+        let entityType = $(this).data('entity-type');
+        let entityId = $(this).data('entity-id');
+        let entityName = $(this).data('entity-name');
+
+        let msg = 'Do you really want to reset the template assignments for "' + entityName + '"?\n\nThe assigned template will be removed. You can then click "Assign Missing" at the top to re-assign randomly.';
+        if (!confirm(msg)) {
+            return;
+        }
+
+        let btn = $(this);
+        btn.prop('disabled', true);
+
+        $.ajax({
+            url: '{{ route("admin.content-templates.reset-entity") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                entity_type: entityType,
+                entity_id: entityId,
+                section_group: 'features',
+                lang_id: '{{ $lang_id }}'
+            },
+            success: function(resp) {
+                window.location.reload();
+            },
+            error: function() {
+                btn.prop('disabled', false);
+                alert('Failed to reset templates. Please try again.');
+            }
+        });
     });
 
     let currentFeatId = null;

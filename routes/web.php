@@ -444,6 +444,7 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
         Route::post('/assign-missing', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'assignMissing'])->name('admin.content-templates.assign-missing');
         Route::post('/assign-single', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'assignSingle'])->name('admin.content-templates.assign-single');
+        Route::post('/reset-entity', [\App\Http\Controllers\Admin\ContentTemplates\ContentTemplateController::class, 'resetEntity'])->name('admin.content-templates.reset-entity');
     });
 
         // Meta Tags Management Routes
